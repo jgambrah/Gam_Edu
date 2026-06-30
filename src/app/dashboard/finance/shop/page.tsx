@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
+import { useState, useMemo, useEffect } from 'react';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, updateDoc, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, updateDoc, getDocs, getDoc } from 'firebase/firestore';
 import { 
   ShoppingBag, Package, PlusCircle, ShoppingCart, 
   Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2, ArchiveRestore, Edit, Loader2,
@@ -356,6 +356,7 @@ function ShopManager({ schoolId, onAddItem }: { schoolId: string; onAddItem: () 
 // --- COMPONENT: Receipt Dialog ---
 interface ReceiptData {
     receiptNo: string;
+    buyerName?: string;
     date: Date;
     items: { name: string; quantity: number; price: number; total: number }[];
     total: number;
@@ -363,14 +364,235 @@ interface ReceiptData {
     soldBy: string;
 }
 
-function ReceiptModal({ data, open, onClose }: { data: ReceiptData | null; open: boolean; onClose: () => void }) {
+function ReceiptModal({ data, open, onClose, schoolProfile }: { data: ReceiptData | null; open: boolean; onClose: () => void; schoolProfile: any }) {
     if (!data) return null;
 
-    const handlePrint = () => {
-        const printWindow = window.open('', '_blank', 'width=600,height=800');
+    const schoolName = schoolProfile?.name || 'GAM SCHOOLS SHOP';
+    const schoolAddress = schoolProfile?.address || '';
+    const schoolPhone = schoolProfile?.phone ? `Tel: ${schoolProfile.phone}` : (schoolProfile?.telephone ? `Tel: ${schoolProfile.telephone}` : '');
+    const schoolEmail = schoolProfile?.email ? `Email: ${schoolProfile.email}` : '';
+
+    const handlePrint = (format: 'thermal' | 'a5') => {
+        const printWindow = window.open('', '_blank', 'width=700,height=800');
         if (!printWindow) return;
         
-        printWindow.document.write(`
+        const htmlContent = format === 'a5' ? `
+            <html>
+            <head>
+                <title>Receipt ${data.receiptNo}</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+                    body {
+                        font-family: 'Inter', sans-serif;
+                        font-size: 13px;
+                        color: #1e293b;
+                        padding: 30px;
+                        margin: 0;
+                        background: #fff;
+                        max-width: 650px;
+                        margin: 0 auto;
+                    }
+                    .header-grid {
+                        display: grid;
+                        grid-template-cols: 1fr 1fr;
+                        gap: 20px;
+                        border-bottom: 2px solid #cbd5e1;
+                        padding-bottom: 20px;
+                        margin-bottom: 25px;
+                    }
+                    .school-info {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .school-name {
+                        font-size: 20px;
+                        font-weight: 800;
+                        color: #0f172a;
+                        margin-bottom: 5px;
+                        letter-spacing: -0.025em;
+                        text-transform: uppercase;
+                    }
+                    .school-details {
+                        font-size: 12px;
+                        color: #64748b;
+                        line-height: 1.5;
+                    }
+                    .receipt-info {
+                        text-align: right;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                    }
+                    .receipt-title {
+                        font-size: 22px;
+                        font-weight: 900;
+                        color: #059669;
+                        letter-spacing: 0.05em;
+                        margin-bottom: 10px;
+                    }
+                    .meta-item {
+                        font-size: 12px;
+                        color: #334155;
+                        margin-bottom: 4px;
+                    }
+                    .meta-item strong {
+                        color: #0f172a;
+                    }
+                    .items-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 10px;
+                        margin-bottom: 25px;
+                    }
+                    .items-table th {
+                        background-color: #f8fafc;
+                        color: #475569;
+                        font-weight: 700;
+                        text-align: left;
+                        padding: 12px 14px;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                        border-bottom: 2px solid #e2e8f0;
+                    }
+                    .items-table td {
+                        padding: 14px 14px;
+                        border-bottom: 1px solid #e2e8f0;
+                        color: #334155;
+                    }
+                    .items-table tr:last-child td {
+                        border-bottom: none;
+                    }
+                    .text-right { text-align: right; }
+                    .total-box {
+                        display: flex;
+                        justify-content: flex-end;
+                        margin-top: 15px;
+                    }
+                    .total-card {
+                        background-color: #ecfdf5;
+                        border: 1px solid #a7f3d0;
+                        border-radius: 8px;
+                        padding: 15px 20px;
+                        width: 250px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .total-label {
+                        font-size: 12px;
+                        font-weight: 700;
+                        color: #065f46;
+                    }
+                    .total-val {
+                        font-size: 18px;
+                        font-weight: 900;
+                        color: #047857;
+                    }
+                    .footer-notes {
+                        margin-top: 50px;
+                        border-top: 1px solid #e2e8f0;
+                        padding-top: 15px;
+                        text-align: center;
+                        font-size: 11px;
+                        color: #94a3b8;
+                    }
+                    .stamp-container {
+                        position: relative;
+                    }
+                    .paid-stamp {
+                        position: absolute;
+                        right: 30px;
+                        bottom: 80px;
+                        border: 3px double #059669;
+                        color: #059669;
+                        font-size: 14px;
+                        font-weight: 900;
+                        text-transform: uppercase;
+                        padding: 5px 15px;
+                        border-radius: 6px;
+                        transform: rotate(-12deg);
+                        opacity: 0.85;
+                        letter-spacing: 0.1em;
+                    }
+                    @media print {
+                        body { padding: 0; margin: 0; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header-grid">
+                    <div class="school-info">
+                        <div class="school-name">${schoolName}</div>
+                        <div class="school-details">
+                            ${schoolAddress ? `<div>${schoolAddress}</div>` : ''}
+                            ${schoolPhone ? `<div>${schoolPhone}</div>` : ''}
+                            ${schoolEmail ? `<div>${schoolEmail}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="receipt-info">
+                        <div class="receipt-title">SALES RECEIPT</div>
+                        <div>
+                            <div class="meta-item"><strong>Receipt No:</strong> #${data.receiptNo}</div>
+                            <div class="meta-item"><strong>Date:</strong> ${data.date.toLocaleString()}</div>
+                            <div class="meta-item"><strong>Payment Method:</strong> ${data.paymentMethod}</div>
+                            <div class="meta-item"><strong>Issued By:</strong> ${data.soldBy.substring(0, 8)}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="meta-item" style="margin-bottom: 15px; font-size: 13px;">
+                    <strong>Bill To / Buyer:</strong> ${data.buyerName || 'Guest Buyer'}
+                </div>
+
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Item Description</th>
+                            <th class="text-right">Unit Price</th>
+                            <th class="text-right">Qty</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.items.map(item => `
+                            <tr>
+                                <td style="font-weight: 600; color: #0f172a;">${item.name}</td>
+                                <td class="text-right">GH₵${item.price.toFixed(2)}</td>
+                                <td class="text-right">${item.quantity}</td>
+                                <td class="text-right" style="font-weight: 700;">GH₵${item.total.toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+
+                <div class="stamp-container">
+                    <div class="paid-stamp">PAID</div>
+                </div>
+
+                <div class="total-box">
+                    <div class="total-card">
+                        <span class="total-label">TOTAL PAID</span>
+                        <span class="total-val">GH₵${data.total.toFixed(2)}</span>
+                    </div>
+                </div>
+
+                <div class="footer-notes">
+                    <p>Thank you for your business!</p>
+                    <p>Items purchased cannot be refunded after 7 days.</p>
+                </div>
+
+                <script>
+                    window.onload = function() { 
+                        window.print(); 
+                    };
+                    window.onafterprint = function() {
+                        window.close();
+                    };
+                </script>
+            </body>
+            </html>
+        ` : `
             <html>
             <head>
                 <title>Receipt ${data.receiptNo}</title>
@@ -397,12 +619,14 @@ function ReceiptModal({ data, open, onClose }: { data: ReceiptData | null; open:
             </head>
             <body>
                 <div class="text-center header">
-                    <div class="title">GAM SCHOOLS SHOP</div>
-                    <div>Official Sales Receipt</div>
-                    <div>Tel: +233 (0) 24 123 4567</div>
+                    <div class="title">${schoolName.toUpperCase()}</div>
+                    ${schoolAddress ? `<div>${schoolAddress}</div>` : ''}
+                    ${schoolPhone || schoolEmail ? `<div>${[schoolPhone, schoolEmail].filter(Boolean).join(' | ')}</div>` : ''}
+                    <div style="font-size: 11px; margin-top: 5px; text-decoration: underline;">Official Sales Receipt</div>
                 </div>
                 <div class="divider"></div>
                 <div><strong>Receipt No:</strong> ${data.receiptNo}</div>
+                <div><strong>Buyer:</strong> ${data.buyerName || 'Guest Buyer'}</div>
                 <div><strong>Date:</strong> ${data.date.toLocaleString()}</div>
                 <div><strong>Cashier ID:</strong> ${data.soldBy.substring(0, 8)}</div>
                 <div><strong>Payment:</strong> ${data.paymentMethod}</div>
@@ -435,11 +659,17 @@ function ReceiptModal({ data, open, onClose }: { data: ReceiptData | null; open:
                     <p>Items purchased cannot be refunded after 7 days.</p>
                 </div>
                 <script>
-                    window.onload = function() { window.print(); window.close(); }
+                    window.onload = function() { 
+                        window.print(); 
+                    };
+                    window.onafterprint = function() {
+                        window.close();
+                    };
                 </script>
             </body>
             </html>
-        `);
+        `;
+        printWindow.document.write(htmlContent);
         printWindow.document.close();
     };
 
@@ -456,11 +686,14 @@ function ReceiptModal({ data, open, onClose }: { data: ReceiptData | null; open:
 
                 <div className="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 font-mono text-xs text-slate-700 space-y-3">
                     <div className="text-center space-y-1">
-                        <span className="font-bold text-sm block tracking-wider">GAM SCHOOL SHOP</span>
-                        <span>Official Transaction Record</span>
+                        <span className="font-bold text-sm block tracking-wider uppercase text-slate-900">{schoolName}</span>
+                        {schoolAddress && <span className="block text-[11px] text-slate-500">{schoolAddress}</span>}
+                        {(schoolPhone || schoolEmail) && <span className="block text-[10px] text-slate-500">{[schoolPhone, schoolEmail].filter(Boolean).join(' | ')}</span>}
+                        <span className="block text-[10px] font-bold text-emerald-800 uppercase tracking-wide pt-1">Official Transaction Record</span>
                     </div>
                     <div className="border-b border-dashed border-slate-300 pb-2 space-y-1">
                         <div><strong>Receipt No:</strong> <span className="text-slate-900">{data.receiptNo}</span></div>
+                        <div><strong>Buyer:</strong> <span className="text-slate-950 font-bold">{data.buyerName || 'Guest Buyer'}</span></div>
                         <div><strong>Date:</strong> {data.date.toLocaleString()}</div>
                         <div><strong>Payment:</strong> <Badge variant="secondary" className="font-sans text-[10px]">{data.paymentMethod}</Badge></div>
                     </div>
@@ -483,9 +716,10 @@ function ReceiptModal({ data, open, onClose }: { data: ReceiptData | null; open:
                     </div>
                 </div>
 
-                <DialogFooter className="grid grid-cols-2 gap-3 sm:gap-0 mt-2">
-                    <Button variant="outline" onClick={onClose} className="w-full">Dismiss</Button>
-                    <Button onClick={handlePrint} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"><Printer className="mr-2 h-4 w-4" /> Print Receipt</Button>
+                <DialogFooter className="grid grid-cols-3 gap-2 mt-2">
+                    <Button variant="outline" onClick={onClose} className="w-full text-xs font-bold">Dismiss</Button>
+                    <Button onClick={() => handlePrint('thermal')} className="w-full bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold"><Printer className="mr-1 h-3.5 w-3.5" /> Thermal</Button>
+                    <Button onClick={() => handlePrint('a5')} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"><Printer className="mr-1 h-3.5 w-3.5" /> A5 Sheet</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -493,7 +727,7 @@ function ReceiptModal({ data, open, onClose }: { data: ReceiptData | null; open:
 }
 
 // --- COMPONENT: Point of Sale (POS) ---
-function PointOfSale({ items, schoolId, activeTill, onSaleSuccess }: { items: ShopItem[], schoolId: string, activeTill: any, onSaleSuccess: () => void }) {
+function PointOfSale({ items, schoolId, activeTill, onSaleSuccess, onShowReceipt, students, staff, schoolProfile }: { items: ShopItem[], schoolId: string, activeTill: any, onSaleSuccess: () => void, onShowReceipt: (data: ReceiptData) => void, students: any[] | null, staff: any[] | null, schoolProfile: any }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -503,8 +737,45 @@ function PointOfSale({ items, schoolId, activeTill, onSaleSuccess }: { items: Sh
     const [categoryFilter, setCategoryFilter] = useState<string>('All');
     const [paymentMethod, setPaymentMethod] = useState('Cash');
     const [isProcessing, setIsProcessing] = useState(false);
-    
-    const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+    const [buyerName, setBuyerName] = useState('');
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
+    const suggestions = useMemo(() => {
+        if (!buyerName.trim()) return [];
+        const searchLower = buyerName.toLowerCase();
+        
+        const matches: any[] = [];
+        
+        if (students) {
+            students.forEach((s: any) => {
+                const fullName = `${s.firstName || ''} ${s.lastName || ''} ${s.otherNames || ''}`.trim();
+                if (fullName.toLowerCase().includes(searchLower) || (s.studentId && s.studentId.toLowerCase().includes(searchLower))) {
+                    matches.push({
+                        id: s.id,
+                        name: fullName,
+                        type: 'Student',
+                        detail: s.className || 'Student'
+                    });
+                }
+            });
+        }
+        
+        if (staff) {
+            staff.forEach((s: any) => {
+                const fullName = `${s.firstName || ''} ${s.lastName || ''}`.trim();
+                if (fullName.toLowerCase().includes(searchLower) || (s.email && s.email.toLowerCase().includes(searchLower))) {
+                    matches.push({
+                        id: s.id,
+                        name: fullName,
+                        type: 'Staff',
+                        detail: s.role || 'Staff'
+                    });
+                }
+            });
+        }
+        
+        return matches.slice(0, 5); // Limit to top 5 suggestions
+    }, [buyerName, students, staff]);
 
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
@@ -558,7 +829,8 @@ function PointOfSale({ items, schoolId, activeTill, onSaleSuccess }: { items: Sh
     const handleCheckout = async () => {
         if (cart.length === 0 || !user || !schoolId || !firestore) return;
         
-        if (paymentMethod === 'Cash' && !activeTill) {
+        const tillMode = schoolProfile?.shopTillMode || 'cashier';
+        if (paymentMethod === 'Cash' && tillMode !== 'disabled' && tillMode !== 'shop_drawer' && !activeTill) {
             toast({ variant: 'destructive', title: "Till Closed", description: "Please OPEN YOUR TILL before making cash sales." });
             return;
         }
@@ -567,8 +839,32 @@ function PointOfSale({ items, schoolId, activeTill, onSaleSuccess }: { items: Sh
         try {
             const batch = writeBatch(firestore!);
             const transactionId = doc(collection(firestore!, 'school_shop_transactions')).id;
+            const logRef = doc(firestore!, 'school_shop_transactions', transactionId);
             
-            if (paymentMethod === 'Cash' && activeTill) {
+            if (paymentMethod === 'Cash' && tillMode === 'shop_drawer' && !activeTill) {
+                const newDrawerRef = doc(collection(firestore!, 'tills'));
+                batch.set(newDrawerRef, {
+                    id: newDrawerRef.id,
+                    tillName: "School Shop Cash Drawer",
+                    accountantId: "shop_drawer",
+                    accountantName: "School Shop",
+                    status: "Open",
+                    currentBalance: totalAmount,
+                    isShopDrawer: true,
+                    schoolId: schoolId,
+                    createdAt: serverTimestamp()
+                });
+                
+                const transRef = doc(collection(firestore!, `tills/${newDrawerRef.id}/transactions`));
+                batch.set(transRef, {
+                    tillId: newDrawerRef.id,
+                    amount: totalAmount,
+                    type: 'Inflow',
+                    description: `Shop Sales (Receipt: #${transactionId.substring(0, 8).toUpperCase()})`,
+                    timestamp: serverTimestamp(),
+                    schoolId: schoolId,
+                });
+            } else if (paymentMethod === 'Cash' && tillMode !== 'disabled' && activeTill) {
                 const transRef = doc(collection(firestore!, `tills/${activeTill.id}/transactions`));
                 batch.set(transRef, {
                     tillId: activeTill.id,
@@ -587,37 +883,48 @@ function PointOfSale({ items, schoolId, activeTill, onSaleSuccess }: { items: Sh
             cart.forEach(item => {
                 const itemRef = doc(firestore!, 'school_shop_items', item.id);
                 batch.update(itemRef, { stock: increment(-item.quantity) });
+            });
 
-                const logRef = doc(firestore!, 'school_shop_transactions', transactionId);
-                batch.set(logRef, {
-                    type: 'SALE',
-                    itemId: item.id,
-                    itemName: item.name,
-                    quantity: item.quantity,
-                    priceAtSale: item.price,
-                    total: item.price * item.quantity,
-                    soldBy: user.uid,
-                    paymentMethod: paymentMethod,
-                    date: serverTimestamp(),
-                    schoolId: schoolId,
-                });
+            const receiptItems = cart.map(i => ({
+                itemId: i.id,
+                name: i.name,
+                quantity: i.quantity,
+                price: i.price,
+                total: i.price * i.quantity
+            }));
+
+            const finalBuyerName = buyerName.trim() || 'Guest Buyer';
+
+            batch.set(logRef, {
+                receiptNo: transactionId.substring(0, 8).toUpperCase(),
+                buyerName: finalBuyerName,
+                paymentMethod: paymentMethod,
+                soldBy: user.uid,
+                soldByName: user.displayName || user.email || 'Cashier',
+                date: serverTimestamp(),
+                schoolId: schoolId,
+                total: totalAmount,
+                items: receiptItems
             });
 
             await batch.commit();
 
             // Prepare Receipt Data
-            setReceiptData({
+            const receiptData: ReceiptData = {
                 receiptNo: transactionId.substring(0, 8).toUpperCase(),
+                buyerName: finalBuyerName,
                 date: new Date(),
                 items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price, total: i.price * i.quantity })),
                 total: totalAmount,
                 paymentMethod: paymentMethod,
-                soldBy: user.email || user.uid,
-            });
+                soldBy: user.displayName || user.email || user.uid,
+            };
 
             toast({ title: "Sale Complete", description: `Received GH₵${totalAmount.toFixed(2)} via ${paymentMethod}` });
             setCart([]);
+            setBuyerName('');
             onSaleSuccess();
+            onShowReceipt(receiptData);
 
         } catch (e: any) {
             console.error(e);
@@ -743,6 +1050,52 @@ function PointOfSale({ items, schoolId, activeTill, onSaleSuccess }: { items: Sh
                         <span className="text-emerald-700">GH₵{totalAmount.toFixed(2)}</span>
                     </div>
 
+                    <div className="space-y-2 relative">
+                        <Label className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Buyer Name / Student (Optional)</Label>
+                        <Input 
+                            placeholder="Search student/staff or type name..." 
+                            value={buyerName} 
+                            onChange={e => {
+                                setBuyerName(e.target.value);
+                                setShowSuggestions(true);
+                            }}
+                            onFocus={() => setShowSuggestions(true)}
+                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                            className="h-9 mt-0.5 border-slate-200 text-xs bg-white"
+                        />
+                        {showSuggestions && buyerName.trim() && (
+                            <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto font-sans text-xs">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowSuggestions(false);
+                                    }}
+                                    className="w-full text-left px-3 py-2 bg-slate-55/60 hover:bg-slate-100 hover:text-slate-900 transition-colors border-b border-slate-200 flex justify-between items-center text-slate-500 font-semibold"
+                                >
+                                    <span>Use custom name: "{buyerName}"</span>
+                                    <Badge variant="outline" className="text-[9px] font-bold border-slate-300 text-slate-500">Custom Option</Badge>
+                                </button>
+                                {suggestions.map((s: any) => (
+                                    <button
+                                        key={s.id}
+                                        type="button"
+                                        onClick={() => {
+                                            setBuyerName(`${s.name} (${s.detail})`);
+                                            setShowSuggestions(false);
+                                        }}
+                                        className="w-full text-left px-3 py-2 hover:bg-emerald-50 hover:text-emerald-800 transition-colors border-b last:border-b-0 border-slate-100 flex justify-between items-center"
+                                    >
+                                        <div className="flex flex-col">
+                                            <span className="font-semibold text-slate-800">{s.name}</span>
+                                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">{s.type}</span>
+                                        </div>
+                                        <Badge variant="secondary" className="text-[9px] font-bold bg-slate-100 text-slate-600">{s.detail}</Badge>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <Label className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Method</Label>
@@ -774,14 +1127,12 @@ function PointOfSale({ items, schoolId, activeTill, onSaleSuccess }: { items: Sh
                     </Button>
                 </div>
             </Card>
-
-            <ReceiptModal data={receiptData} open={!!receiptData} onClose={() => setReceiptData(null)} />
         </div>
     );
 }
 
 // --- COMPONENT: Sales Reports & Analytics ---
-function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[] | null; items: ShopItem[]; schoolId: string }) {
+function SalesAnalyticsTab({ sales, items, schoolId, onShowReceipt }: { sales: SaleTransaction[] | null; items: ShopItem[]; schoolId: string; onShowReceipt: (data: ReceiptData) => void }) {
     const [search, setSearch] = useState('');
     const [methodFilter, setMethodFilter] = useState('All');
 
@@ -801,7 +1152,54 @@ function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[
         const itemCategories = new Map<string, string>();
         items.forEach(i => itemCategories.set(i.id, i.category));
 
-        const filteredList = sales.filter(sale => {
+        const flattenedSales: any[] = [];
+        sales.forEach(sale => {
+            // Check if sale has nested items (our new format)
+            if (Array.isArray((sale as any).items)) {
+                (sale as any).items.forEach((item: any) => {
+                    flattenedSales.push({
+                        id: `${sale.id}-${item.itemId || item.id}`,
+                        receiptNo: (sale as any).receiptNo || sale.id.substring(0, 8).toUpperCase(),
+                        buyerName: (sale as any).buyerName || 'Guest Buyer',
+                        date: sale.date,
+                        itemId: item.itemId || item.id,
+                        itemName: item.name || item.itemName,
+                        quantity: item.quantity,
+                        priceAtSale: item.price || item.priceAtSale,
+                        total: item.total || (item.price * item.quantity),
+                        paymentMethod: sale.paymentMethod,
+                        soldBy: sale.soldBy,
+                        rawSale: sale // reference to original sale for re-printing
+                    });
+                });
+            } else {
+                // Backward compatibility for old format
+                flattenedSales.push({
+                    id: sale.id,
+                    receiptNo: sale.id.substring(0, 8).toUpperCase(),
+                    buyerName: 'Guest Buyer',
+                    date: sale.date,
+                    itemId: sale.itemId,
+                    itemName: sale.itemName,
+                    quantity: sale.quantity,
+                    priceAtSale: sale.priceAtSale,
+                    total: sale.total,
+                    paymentMethod: sale.paymentMethod,
+                    soldBy: sale.soldBy,
+                    rawSale: {
+                        receiptNo: sale.id.substring(0, 8).toUpperCase(),
+                        buyerName: 'Guest Buyer',
+                        date: sale.date,
+                        items: [{ name: sale.itemName, quantity: sale.quantity, price: sale.priceAtSale, total: sale.total }],
+                        total: sale.total,
+                        paymentMethod: sale.paymentMethod,
+                        soldBy: sale.soldBy
+                    }
+                });
+            }
+        });
+
+        const filteredList = flattenedSales.filter(sale => {
             const matchesSearch = sale.itemName.toLowerCase().includes(search.toLowerCase());
             const matchesMethod = methodFilter === 'All' || sale.paymentMethod === methodFilter;
             
@@ -823,6 +1221,32 @@ function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[
         };
     }, [sales, items, search, methodFilter]);
 
+    const handlePrintPastReceipt = (rawSale: any) => {
+        let saleDate = new Date();
+        if (rawSale.date) {
+            if (rawSale.date.toDate) {
+                saleDate = rawSale.date.toDate();
+            } else if (rawSale.date.seconds) {
+                saleDate = new Date(rawSale.date.seconds * 1000);
+            } else {
+                saleDate = new Date(rawSale.date);
+            }
+        }
+
+        // Map Firebase record attributes to ReceiptData structure
+        onShowReceipt({
+            receiptNo: rawSale.receiptNo || rawSale.id?.substring(0, 8).toUpperCase() || 'SHOP',
+            buyerName: rawSale.buyerName || 'Guest Buyer',
+            date: saleDate,
+            items: Array.isArray(rawSale.items) 
+                ? rawSale.items.map((i: any) => ({ name: i.name, quantity: i.quantity, price: i.price, total: i.total }))
+                : [{ name: rawSale.itemName, quantity: rawSale.quantity, price: rawSale.priceAtSale, total: rawSale.total }],
+            total: rawSale.total,
+            paymentMethod: rawSale.paymentMethod || 'Cash',
+            soldBy: rawSale.soldByName || rawSale.soldBy || 'Cashier'
+        });
+    };
+
     const maxCategoryVal = Math.max(...Object.values(analyticsData.categoryRevenue), 1);
 
     return (
@@ -837,7 +1261,7 @@ function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[
                         <p className="text-[10px] text-muted-foreground mt-1">Accumulated across filtered items</p>
                     </CardContent>
                 </Card>
-
+ 
                 <Card className="border-emerald-100 shadow-sm">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-xs uppercase font-bold text-slate-400">Total Items Processed</CardDescription>
@@ -847,7 +1271,7 @@ function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[
                         <p className="text-[10px] text-muted-foreground mt-1">From {analyticsData.salesCount} sale events</p>
                     </CardContent>
                 </Card>
-
+ 
                 <Card className="border-emerald-100 shadow-sm">
                     <CardHeader className="pb-2">
                         <CardDescription className="text-xs uppercase font-bold text-slate-400">Top Sale Category</CardDescription>
@@ -860,7 +1284,7 @@ function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[
                     </CardContent>
                 </Card>
             </div>
-
+ 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="lg:col-span-2 shadow-sm border-slate-200">
                     <CardHeader className="pb-3 border-b flex flex-row justify-between items-center gap-4 flex-wrap">
@@ -888,28 +1312,39 @@ function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="text-xs pl-4">Date</TableHead>
+                                    <TableHead className="text-xs pl-4">Receipt #</TableHead>
+                                    <TableHead className="text-xs">Buyer</TableHead>
                                     <TableHead className="text-xs">Product</TableHead>
                                     <TableHead className="text-xs text-right">Qty</TableHead>
                                     <TableHead className="text-xs text-right">Price</TableHead>
                                     <TableHead className="text-xs text-right">Total</TableHead>
-                                    <TableHead className="text-xs text-center">Method</TableHead>
+                                    <TableHead className="text-xs text-center font-bold">Print</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {analyticsData.list.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-10 text-muted-foreground text-xs">No records found matching filters.</TableCell>
+                                        <TableCell colSpan={7} className="text-center py-10 text-muted-foreground text-xs">No records found matching filters.</TableCell>
                                     </TableRow>
                                 ) : (
                                     analyticsData.list.slice(0, 50).map((sale) => (
                                         <TableRow key={sale.id} className="hover:bg-slate-50/50">
-                                            <TableCell className="text-xs text-slate-500 pl-4">{formatDateSafe(sale.date)}</TableCell>
+                                            <TableCell className="text-xs font-mono font-bold text-slate-500 pl-4">#{sale.receiptNo}</TableCell>
+                                            <TableCell className="text-xs font-semibold text-slate-700">{sale.buyerName}</TableCell>
                                             <TableCell className="text-xs font-semibold text-slate-800">{sale.itemName}</TableCell>
                                             <TableCell className="text-xs text-right font-medium">{sale.quantity}</TableCell>
                                             <TableCell className="text-xs text-right">GH₵{sale.priceAtSale.toFixed(2)}</TableCell>
                                             <TableCell className="text-xs text-right font-bold text-slate-700">GH₵{sale.total.toFixed(2)}</TableCell>
-                                            <TableCell className="text-xs text-center"><Badge variant="outline" className="text-[9px] uppercase font-bold">{sale.paymentMethod || 'Cash'}</Badge></TableCell>
+                                            <TableCell className="text-xs text-center">
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    onClick={() => handlePrintPastReceipt(sale.rawSale)} 
+                                                    className="h-8 w-8 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-full"
+                                                >
+                                                    <Printer size={14} />
+                                                </Button>
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}
@@ -917,7 +1352,7 @@ function SalesAnalyticsTab({ sales, items, schoolId }: { sales: SaleTransaction[
                         </Table>
                     </CardContent>
                 </Card>
-
+ 
                 <Card className="shadow-sm border-slate-200">
                     <CardHeader className="pb-3 border-b">
                         <CardTitle className="text-slate-800 text-md font-bold">Revenue by Category</CardTitle>
@@ -957,23 +1392,64 @@ export default function SchoolShopPage() {
     
     const [restockItem, setRestockItem] = useState<ShopItem | null>(null);
     const [editingItem, setEditingItem] = useState<ShopItem | null>(null);
+    const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+    const [isClearDrawerOpen, setIsClearDrawerOpen] = useState(false);
 
     // Queries
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolProfile } = useDoc<any>(schoolRef);
+
     const itemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId), orderBy('name')) : null, [firestore, schoolId]);
     const { data: items, isLoading, forceRefetch } = useCollection<ShopItem>(itemsQuery);
 
     const salesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_transactions'), where('schoolId', '==', schoolId), orderBy('date', 'desc')) : null, [firestore, schoolId]);
     const { data: sales, isLoading: isLoadingSales, forceRefetch: forceRefetchSales } = useCollection<SaleTransaction>(salesQuery);
 
-    const tillQuery = useMemoFirebase(() => (firestore && schoolId && user) ? query(
-        collection(firestore, 'tills'), 
-        where('accountantId', '==', user.uid), 
-        where('status', '==', 'Open'),
-        where('schoolId', '==', schoolId)
-    ) : null, [firestore, schoolId, user]);
+    const tillQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !user) return null;
+        const mode = schoolProfile?.shopTillMode || 'cashier';
+        if (mode === 'disabled' || mode === 'shop_drawer') return null;
+        if (mode === 'main') {
+            return query(
+                collection(firestore, 'tills'),
+                where('status', '==', 'Open'),
+                where('schoolId', '==', schoolId)
+            );
+        }
+        return query(
+            collection(firestore, 'tills'),
+            where('accountantId', '==', user.uid),
+            where('status', '==', 'Open'),
+            where('schoolId', '==', schoolId)
+        );
+    }, [firestore, schoolId, user, schoolProfile?.shopTillMode]);
     const { data: tills, isLoading: isLoadingTills, forceRefetch: forceRefetchTills } = useCollection<any>(tillQuery);
 
-    const activeTill = tills && tills.length > 0 ? tills[0] : null;
+    // Dedicated Shop Drawer Query
+    const shopDrawerQuery = useMemoFirebase(() => (firestore && schoolId) ? query(
+        collection(firestore, 'tills'),
+        where('isShopDrawer', '==', true),
+        where('schoolId', '==', schoolId)
+    ) : null, [firestore, schoolId]);
+    const { data: shopDrawers, forceRefetch: forceRefetchShopDrawer } = useCollection<any>(shopDrawerQuery);
+    const shopDrawer = shopDrawers && shopDrawers.length > 0 ? shopDrawers[0] : null;
+
+    // All Open Accountant Tills Query (for cash drops)
+    const allOpenTillsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(
+        collection(firestore, 'tills'),
+        where('status', '==', 'Open'),
+        where('schoolId', '==', schoolId)
+    ) : null, [firestore, schoolId]);
+    const { data: allOpenTills, forceRefetch: forceRefetchAllOpenTills } = useCollection<any>(allOpenTillsQuery);
+
+    // School Community Queries
+    const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: students } = useCollection<any>(studentsQuery);
+
+    const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: staff } = useCollection<any>(staffQuery);
+
+    const activeTill = schoolProfile?.shopTillMode === 'shop_drawer' ? shopDrawer : (tills && tills.length > 0 ? tills[0] : null);
     const canManage = role ? ['Administrator', 'Director', 'Accountant'].includes(role) : false;
     const isLoadingPage = isLoadingSchool || isLoading || isLoadingTills;
 
@@ -986,6 +1462,8 @@ export default function SchoolShopPage() {
         forceRefetch();
         forceRefetchSales();
         forceRefetchTills();
+        forceRefetchShopDrawer();
+        forceRefetchAllOpenTills();
     };
 
     return (
@@ -1001,10 +1479,23 @@ export default function SchoolShopPage() {
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
                                 <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-2 py-0.5 text-[10px]">POINT OF SALE & INVENTORY</Badge>
-                                {activeTill ? (
-                                    <Badge className="bg-green-500 text-white hover:bg-green-600 text-[10px] font-bold"><Check className="h-3 w-3 mr-1"/> Till Open</Badge>
+                                {schoolProfile?.shopTillMode === 'disabled' ? (
+                                    <Badge className="bg-slate-500 text-white text-[10px] font-bold">Till Tracking: Bypass</Badge>
+                                ) : schoolProfile?.shopTillMode === 'shop_drawer' ? (
+                                    <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
+                                        <Check className="h-3 w-3 mr-1"/> 
+                                        Shop Drawer Cash: GH₵{Number(shopDrawer?.currentBalance || 0).toFixed(2)}
+                                    </Badge>
+                                ) : activeTill ? (
+                                    <Badge className="bg-green-500 text-white hover:bg-green-600 text-[10px] font-bold">
+                                        <Check className="h-3 w-3 mr-1"/> 
+                                        {schoolProfile?.shopTillMode === 'main' ? 'Main Till Open' : 'Personal Till Open'}
+                                    </Badge>
                                 ) : (
-                                    <Badge variant="destructive" className="text-[10px] font-bold animate-pulse"><AlertTriangle className="h-3 w-3 mr-1"/> Till Closed</Badge>
+                                    <Badge variant="destructive" className="text-[10px] font-bold animate-pulse">
+                                        <AlertTriangle className="h-3 w-3 mr-1"/> 
+                                        {schoolProfile?.shopTillMode === 'main' ? 'No Active School Till' : 'Personal Till Closed'}
+                                    </Badge>
                                 )}
                             </div>
                             <h1 className="text-3xl font-black tracking-tight">Merchandise & School Shop</h1>
@@ -1014,6 +1505,14 @@ export default function SchoolShopPage() {
                             <Button size="icon" variant="ghost" className="text-white/80 hover:text-white hover:bg-white/10" onClick={refreshDashboard}>
                                 <RefreshCw className="h-4 w-4"/>
                             </Button>
+                            {schoolProfile?.shopTillMode === 'shop_drawer' && shopDrawer && (
+                                <Button 
+                                    onClick={() => setIsClearDrawerOpen(true)}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9.5 rounded-xl border-0 shadow-sm flex items-center gap-1.5"
+                                >
+                                    <Coins className="h-4 w-4"/> Clear Drawer
+                                </Button>
+                            )}
                             {schoolId && <ShopManager schoolId={schoolId} onAddItem={forceRefetch}/>}
                         </div>
                     </div>
@@ -1068,6 +1567,10 @@ export default function SchoolShopPage() {
                                 schoolId={schoolId!} 
                                 activeTill={activeTill} 
                                 onSaleSuccess={refreshDashboard}
+                                onShowReceipt={setReceiptData}
+                                students={students || []}
+                                staff={staff || []}
+                                schoolProfile={schoolProfile}
                             />
                         )}
                     </TabsContent>
@@ -1134,6 +1637,7 @@ export default function SchoolShopPage() {
                                 sales={sales || []} 
                                 items={items || []} 
                                 schoolId={schoolId!} 
+                                onShowReceipt={setReceiptData}
                             />
                         )}
                     </TabsContent>
@@ -1157,6 +1661,189 @@ export default function SchoolShopPage() {
                     onRestockComplete={refreshDashboard}
                 />
             )}
+
+            <ReceiptModal 
+                data={receiptData} 
+                open={!!receiptData} 
+                onClose={() => setReceiptData(null)} 
+                schoolProfile={schoolProfile}
+            />
+
+            {isClearDrawerOpen && (
+                <ClearShopDrawerDialog
+                    open={isClearDrawerOpen}
+                    onOpenChange={setIsClearDrawerOpen}
+                    shopDrawer={shopDrawer}
+                    receivingTills={allOpenTills?.filter((t: any) => !t.isShopDrawer) || []}
+                    schoolId={schoolId!}
+                    onClearSuccess={refreshDashboard}
+                />
+            )}
         </>
+    );
+}
+
+// --- COMPONENT: ClearShopDrawerDialog ---
+function ClearShopDrawerDialog({ 
+    open, 
+    onOpenChange, 
+    shopDrawer, 
+    receivingTills, 
+    schoolId, 
+    onClearSuccess 
+}: { 
+    open: boolean; 
+    onOpenChange: (val: boolean) => void; 
+    shopDrawer: any; 
+    receivingTills: any[]; 
+    schoolId: string; 
+    onClearSuccess: () => void; 
+}) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [amount, setAmount] = useState('');
+    const [targetTillId, setTargetTillId] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Set initial amount to drawer balance
+    useEffect(() => {
+        if (shopDrawer) {
+            setAmount(shopDrawer.currentBalance?.toString() || '0');
+        }
+    }, [shopDrawer, open]);
+
+    const handleClearance = async () => {
+        const transferAmount = parseFloat(amount);
+        if (isNaN(transferAmount) || transferAmount <= 0) {
+            toast({ variant: 'destructive', title: "Invalid Amount", description: "Please enter a valid amount greater than zero." });
+            return;
+        }
+        if (shopDrawer && transferAmount > (shopDrawer.currentBalance || 0)) {
+            toast({ variant: 'destructive', title: "Insufficient Funds", description: "You cannot transfer more than the drawer's current balance." });
+            return;
+        }
+        if (!targetTillId) {
+            toast({ variant: 'destructive', title: "Select Target Till", description: "Please select an open accountant till to receive the cash." });
+            return;
+        }
+
+        const targetTill = receivingTills.find(t => t.id === targetTillId);
+        if (!targetTill) return;
+
+        setIsSubmitting(true);
+        try {
+            const batch = writeBatch(firestore!);
+
+            // 1. Decrement Shop Drawer Balance
+            const shopDrawerRef = doc(firestore!, 'tills', shopDrawer.id);
+            batch.update(shopDrawerRef, {
+                currentBalance: increment(-transferAmount)
+            });
+
+            // 2. Log Outflow Transaction in Shop Drawer
+            const shopTransRef = doc(collection(firestore!, `tills/${shopDrawer.id}/transactions`));
+            batch.set(shopTransRef, {
+                tillId: shopDrawer.id,
+                amount: transferAmount,
+                type: 'Outflow',
+                description: `Cash Drop: Transferred to Accountant Till (Owner: ${targetTill.accountantName || 'Accountant'})`,
+                timestamp: serverTimestamp(),
+                schoolId: schoolId
+            });
+
+            // 3. Increment Target Till Balance
+            const targetTillRef = doc(firestore!, 'tills', targetTillId);
+            batch.update(targetTillRef, {
+                currentBalance: increment(transferAmount)
+            });
+
+            // 4. Log Inflow Transaction in Target Till
+            const targetTransRef = doc(collection(firestore!, `tills/${targetTillId}/transactions`));
+            batch.set(targetTransRef, {
+                tillId: targetTillId,
+                amount: transferAmount,
+                type: 'Inflow',
+                description: `Shop Cash Drop: Received from School Shop Cash Drawer`,
+                timestamp: serverTimestamp(),
+                schoolId: schoolId
+            });
+
+            await batch.commit();
+
+            toast({ title: "Clearance Complete", description: `Successfully dropped GH₵${transferAmount.toFixed(2)} to ${targetTill.accountantName || 'Accountant'}'s till.` });
+            onClearSuccess();
+            onOpenChange(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Clearance Failed", description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-slate-800 font-bold">
+                        <Coins className="h-5 w-5 text-emerald-600"/> Cash Drawer Clearance
+                    </DialogTitle>
+                    <DialogDescription>
+                        Transfer collected shop cash to the main accountant till to clear your balance.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4 py-2">
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <span className="text-[10px] text-emerald-800 uppercase font-black block tracking-wider">Drawer Balance</span>
+                            <span className="text-2xl font-black text-emerald-900">GH₵{Number(shopDrawer?.currentBalance || 0).toFixed(2)}</span>
+                        </div>
+                        <Badge className="bg-emerald-600 text-white font-bold">Always Open</Badge>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-bold text-slate-600">Amount to Transfer (GH₵)</Label>
+                        <Input 
+                            type="number" 
+                            value={amount} 
+                            onChange={e => setAmount(e.target.value)} 
+                            placeholder="0.00"
+                            className="h-10 border-2 rounded-xl font-bold font-mono text-base"
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-bold text-slate-600">Select Receiving Accountant Till</Label>
+                        <Select value={targetTillId} onValueChange={targetTillId => setTargetTillId(targetTillId)}>
+                            <SelectTrigger className="border-2 h-10 rounded-xl font-semibold bg-white">
+                                <SelectValue placeholder="Choose an active open till..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {receivingTills.map(t => (
+                                    <SelectItem key={t.id} value={t.id} className="font-semibold">
+                                        {t.tillName} ({t.accountantName || 'Accountant'}) - GH₵{Number(t.currentBalance || 0).toFixed(2)}
+                                    </SelectItem>
+                                ))}
+                                {receivingTills.length === 0 && (
+                                    <div className="p-2 text-center text-xs text-red-500 font-bold">No active open tills found. Ask the accountant to open their till.</div>
+                                )}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <DialogFooter className="grid grid-cols-2 gap-2 mt-2">
+                    <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl font-bold">Cancel</Button>
+                    <Button 
+                        type="button" 
+                        onClick={handleClearance} 
+                        disabled={isSubmitting || receivingTills.length === 0} 
+                        className="rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Confirm Cash Drop'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }

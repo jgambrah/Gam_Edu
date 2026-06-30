@@ -26,7 +26,8 @@ import {
   MapPin,
   Clock,
   Trash2,
-  Layers
+  Layers,
+  ShoppingBag
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn, DEFAULT_GRADING_SYSTEM, type GradeBracket } from '@/lib/utils';
@@ -124,6 +125,7 @@ export default function SchoolProfilePage() {
   const [paystackSecKey, setPaystackSecKey] = useState('');
   const [enablePaystack, setEnablePaystack] = useState(false);
   const [enableTransflow, setEnableTransflow] = useState(false);
+  const [shopTillMode, setShopTillMode] = useState<'cashier' | 'main' | 'disabled'>('cashier');
   
   // Social Links
   const [facebookUrl, setFacebookUrl] = useState('');
@@ -208,6 +210,7 @@ export default function SchoolProfilePage() {
         setPaystackSecKey(profile.paystackSecKey || '');
         setEnablePaystack(profile.enablePaystack === true);
         setEnableTransflow(profile.enableTransflow === true);
+        setShopTillMode(profile.shopTillMode || 'cashier');
         
         if (profile.termStartDate) {
             setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
@@ -321,6 +324,7 @@ export default function SchoolProfilePage() {
             paystackSecKey,
             enablePaystack,
             enableTransflow,
+            shopTillMode,
             reportCardPositionMode,
             gradingSystem: cleanedGrading,
             customCostCenters: customCostCenters.filter(cc => cc.id.trim() !== '' && cc.name.trim() !== ''),
@@ -745,6 +749,38 @@ export default function SchoolProfilePage() {
                                             </code>
                                         </div>
                                     )}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* --- SCHOOL SHOP CONFIGURATION --- */}
+                        <Card className="mt-6 border-t-4 border-t-emerald-600 rounded-[2rem] shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="text-emerald-800 flex items-center gap-2 uppercase tracking-tight">
+                                    <ShoppingBag className="h-5 w-5"/> School Shop & POS Till Settings
+                                </CardTitle>
+                                <CardDescription className="font-medium italic">Configure how transaction cash flows from the school shop are routed to tills.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label className="font-bold">Shop Sales Till Routing Mode</Label>
+                                    <Select value={shopTillMode} onValueChange={(v: any) => setShopTillMode(v)}>
+                                        <SelectTrigger className="bg-white border-2 h-11 rounded-xl font-bold">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="cashier" className="font-semibold">Logged-in Cashier Till (Separate store till tracking)</SelectItem>
+                                            <SelectItem value="main" className="font-semibold">Main Accountant Open Till (All sales go to the accountant)</SelectItem>
+                                            <SelectItem value="shop_drawer" className="font-semibold">Dedicated Shop Drawer (Clear to Accountant Till)</SelectItem>
+                                            <SelectItem value="disabled" className="font-semibold">Direct/Bypass Till Tracking (No cash till requirement)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        <strong>Cashier Till:</strong> Requires the logged-in staff member (e.g. store keeper or cash clerk) to open their own till; shop sales update their individual till balance.<br />
+                                        <strong>Main Accountant Till:</strong> Routes all shop sales to any active open till in the school. Useful for smaller schools where the store keeper doesn't manage their own till.<br />
+                                        <strong>Dedicated Shop Drawer:</strong> Accumulates all shop cash sales inside a dedicated "School Shop Cash Drawer". The store keeper can drop the daily cash to clear/transfer the bulk amount to the main accountant till.<br />
+                                        <strong>Direct/Bypass Till:</strong> Permits making cash shop sales without requiring an open till.
+                                    </p>
                                 </div>
                             </CardContent>
                         </Card>
