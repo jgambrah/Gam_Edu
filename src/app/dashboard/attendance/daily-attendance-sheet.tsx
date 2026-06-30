@@ -4,6 +4,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
@@ -11,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText, AlertCircle, Sparkles } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
-import { format, startOfDay } from 'date-fns';
+import { format, startOfDay, differenceInDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -62,8 +72,17 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
     const [hasExistingRecords, setHasExistingRecords] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [pendingData, setPendingData] = useState<AttendanceFormData | null>(null);
 
-    const canOverwrite = role === 'Director' || role === 'Administrator';
+    const canOverwrite = useMemo(() => {
+        if (role === 'Director' || role === 'Administrator') return true;
+        if (role === 'Teacher') {
+            const daysDiff = differenceInDays(startOfDay(new Date()), startOfDay(selectedDate));
+            return daysDiff >= 0 && daysDiff <= 8;
+        }
+        return false;
+    }, [role, selectedDate]);
     const isLocked = hasExistingRecords && !canOverwrite;
 
     const classesQuery = useMemoFirebase(() => {
@@ -319,6 +338,19 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         }
     }
 
+    const handlePreSubmit = (data: AttendanceFormData) => {
+        setPendingData(data);
+        setIsConfirmOpen(true);
+    };
+
+    const handleConfirmSubmit = () => {
+        if (pendingData) {
+            onSubmit(pendingData);
+            setIsConfirmOpen(false);
+            setPendingData(null);
+        }
+    };
+
     const records = form.watch("records") || [];
     
     const billingBusCount = records.filter((r) => {
@@ -382,7 +414,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                             <div>
                                 <h4 className="text-sm font-bold text-rose-800">Attendance Sheet Locked</h4>
                                 <p className="text-xs text-rose-650 mt-0.5">
-                                    Attendance has already been marked for this date. Standard teachers are locked from making modifications. Please contact the Administrator or the Director to request changes.
+                                    Attendance has already been marked for this date. Standard teachers are locked from making modifications after 8 days. Please contact the Administrator or the Director to request changes.
                                 </p>
                             </div>
                         </div>
@@ -392,7 +424,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                             <div>
                                 <h4 className="text-sm font-bold text-amber-800">Overwrite Mode Enabled</h4>
                                 <p className="text-xs text-amber-650 mt-0.5">
-                                    Attendance has already been marked for this date. As an Administrator or Director, you are permitted to overwrite the existing entries.
+                                    Attendance has already been marked for this date. {role === 'Teacher' ? 'As a Teacher, you are allowed an 8-day grace period to correct/overwrite your entries.' : 'As an Administrator or Director, you are permitted to overwrite the existing entries.'}
                                 </p>
                             </div>
                         </div>
@@ -420,7 +452,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
                 {studentsLoaded && (
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 relative">
+                        <form onSubmit={form.handleSubmit(handlePreSubmit)} className="flex flex-col flex-1 relative">
                             <div className="space-y-4 overflow-y-auto flex-1 pb-4 pr-1" style={{ maxHeight: 'calc(100vh - 280px)' }}>
                                 {fields.map((field, index) => {
                                     const student = students.find(s => s.uid === field.studentId);
@@ -610,8 +642,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 </span>
                             )}
                             <Button
-                                onClick={form.handleSubmit(onSubmit)}
-                                className="w-full md:w-auto h-11 px-6 font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-lg shadow-teal-950/20 transition-all duration-200 hover:shadow-teal-500/20 active:scale-[0.98]"
+                                onClick={form.handleSubmit(handlePreSubmit)}
+                                className="w-full md:w-auto h-11 px-6 font-bold bg-teal-650 hover:bg-teal-700 text-white rounded-xl shadow-lg shadow-teal-950/20 transition-all duration-200 hover:shadow-teal-500/20 active:scale-[0.98]"
                                 disabled={isLoading || isLocked}
                             >
                                 {isLoading ? (
@@ -628,6 +660,34 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                             </Button>
                         </div>
                     </div>
+                )}
+                {isConfirmOpen && (
+                    <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+                        <AlertDialogContent className="rounded-2xl max-w-md border border-slate-150 bg-white">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="text-slate-800 font-extrabold text-lg flex items-center gap-2">
+                                    <AlertCircle className="h-5 w-5 text-teal-650" />
+                                    Confirm Attendance Submission
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-slate-500 text-sm leading-relaxed mt-2">
+                                    You are about to record student attendance and process daily billing for canteen and bus services.
+                                    <br /><br />
+                                    <span className="font-semibold text-rose-650">Please review carefully:</span> You cannot modify or undo this sheet after <span className="font-bold">8 days</span>. Only a Director or Administrator can request modifications after the grace period.
+                                    <br /><br />
+                                    Are you sure you want to proceed and save this register?
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter className="mt-4 gap-2 sm:gap-0">
+                                <AlertDialogCancel className="rounded-xl font-bold border-slate-200">Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                    onClick={handleConfirmSubmit}
+                                    className="rounded-xl font-bold bg-teal-650 hover:bg-teal-700 text-white border-0"
+                                >
+                                    Confirm & Submit
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 )}
             </CardContent>
         </Card>
