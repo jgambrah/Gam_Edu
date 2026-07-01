@@ -249,28 +249,7 @@ export function PaymentReceipt({
         </section>
       </div>
 
-      <footer className="px-8 pb-6 text-xs mt-6 relative z-10">
-        <div className="flex justify-between items-end">
-            <div className="text-center w-1/3 space-y-2">
-                {/* SVG stamp seal marking it as PAID */}
-                <div className={cn(
-                  "relative flex items-center justify-center w-20 h-20 mx-auto rotate-[-12deg] opacity-90 border-2 border-dashed rounded-full p-1",
-                  isPlainA5 ? "border-slate-700 text-slate-800" : "border-emerald-500 text-emerald-500"
-                )}>
-                    <div className={cn("flex flex-col items-center justify-center border-2 rounded-full w-full h-full", isPlainA5 ? "border-slate-700 text-slate-800" : "border-emerald-500 text-emerald-500")}>
-                        <span className="text-[6px] font-black uppercase tracking-widest leading-none">OFFICIAL</span>
-                        <span className="text-sm font-black uppercase italic my-0.5 leading-none">PAID</span>
-                        <span className="text-[5px] font-black uppercase tracking-wider leading-none">{paymentDate.slice(0, 11)}</span>
-                    </div>
-                </div>
-                <div className="border-b border-dashed border-slate-400 w-full"></div>
-                <p className="text-[7px] font-black uppercase text-slate-500 tracking-widest">Bursar's Signature</p>
-            </div>
-             <div className="text-right opacity-50">
-                <p className="text-[6px] font-black uppercase tracking-widest text-slate-500">GAM-EDU SECURE RECEIPT</p>
-             </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
