@@ -98,54 +98,66 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         setLoading(true);
 
         const isThermal = layoutStyle === 'thermal';
-        const originalElement = printRef.current;
-        const innerElement = originalElement.firstElementChild || originalElement;
         
-        // Clone the inner receipt element and render it offscreen for clean capture
-        const clone = innerElement.cloneNode(true) as HTMLDivElement;
-        clone.style.position = 'fixed';
-        clone.style.left = '0';
-        clone.style.top = '0';
-        clone.style.zIndex = '-9999';
-        clone.style.margin = '0';
-        clone.style.padding = '0';
-        clone.style.overflow = 'visible';
-        // Do NOT override width — the receipt element already has its own inline width (148mm or 80mm)
+        // Clone the ENTIRE wrapper (including receipt inside it)
+        const clone = printRef.current.cloneNode(true) as HTMLDivElement;
+        
+        // Strip all visual/layout classes that could clip or offset content
+        clone.className = '';
+        clone.style.cssText = `
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: -9999;
+            margin: 0;
+            padding: 0;
+            background: white;
+            overflow: visible;
+            width: ${isThermal ? '320px' : '600px'};
+        `;
+        
+        // Also ensure the inner receipt element has no overflow restriction
+        const innerReceipt = clone.firstElementChild as HTMLDivElement;
+        if (innerReceipt) {
+            innerReceipt.style.width = '100%';
+            innerReceipt.style.overflow = 'visible';
+            innerReceipt.style.minWidth = 'unset';
+            innerReceipt.style.maxWidth = 'unset';
+        }
         
         document.body.appendChild(clone);
 
-        // Allow the browser a tick to fully lay out the cloned element
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Give browser time to fully lay out the cloned element
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         try {
-            const captureWidth = Math.max(clone.scrollWidth, clone.offsetWidth);
-            const captureHeight = Math.max(clone.scrollHeight, clone.offsetHeight);
+            const w = clone.scrollWidth;
+            const h = clone.scrollHeight;
             
             const canvas = await html2canvas(clone, { 
-                scale: 2, 
+                scale: 3, 
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                width: captureWidth,
-                height: captureHeight,
-                windowWidth: captureWidth + 100,
-                windowHeight: captureHeight + 100
+                width: w,
+                height: h,
+                windowWidth: w + 50,
+                windowHeight: h + 50
             });
             const imgData = canvas.toDataURL('image/png');
             
-            const width = isThermal ? 80 : 148;
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const aspect = canvasHeight / canvasWidth;
-            const height = width * aspect;
+            // Size the PDF page to match the captured aspect ratio
+            const pdfWidth = isThermal ? 80 : 148;
+            const aspect = canvas.height / canvas.width;
+            const pdfHeight = pdfWidth * aspect;
 
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
-                format: [width, height]
+                format: [pdfWidth, pdfHeight]
             });
 
-            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`Receipt_${student.firstName}_${student.lastName}_${transaction.id.slice(0,6)}.pdf`);
         } catch (error) {
             console.error('PDF Generation Failed:', error);
