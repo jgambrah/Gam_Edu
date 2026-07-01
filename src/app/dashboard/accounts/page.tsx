@@ -277,8 +277,17 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
         if (!activeTill || activeTill.status !== 'Open') return false;
         if (loadingPayments) return false;
         
+        const openTime = activeTill.dateOpened?.toMillis ? activeTill.dateOpened.toMillis() : activeTill.dateOpened?.seconds ? activeTill.dateOpened.seconds * 1000 : 0;
+        if (!openTime) return false;
+
         // If there are payments, check if all were logged under the current active till
-        return payments.every(p => p.tillId && p.tillId === activeTill.id);
+        return payments.every(p => {
+            if (p.tillId && p.tillId === activeTill.id) return true;
+            
+            // Fallback: Check if payment was paid during the active till session (paidAt >= dateOpened)
+            const payTime = p.paidAt?.toMillis ? p.paidAt.toMillis() : p.paidAt?.seconds ? p.paidAt.seconds * 1000 : 0;
+            return payTime >= openTime;
+        });
     }, [payments, activeTill, loadingPayments]);
 
     async function handleRequest() {
