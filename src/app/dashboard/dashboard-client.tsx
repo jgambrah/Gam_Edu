@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState, useTransition, useCallback } from 'react';
+import { useMemo, useState, useTransition, useCallback, useEffect } from 'react';
+import StudentLearningResourcesView from './StudentLearningResourcesView';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc } from 'firebase/firestore';
@@ -23,6 +24,7 @@ import {
   Search,
   AlertTriangle,
   Send,
+  Play, Pause, Headphones, HelpCircle, Volume2, ArrowLeft, RotateCcw,
   BookOpen,
   Utensils,
   ChefHat,
@@ -33,7 +35,10 @@ import {
   Wrench,
   User,
   Calendar,
-  Heart
+  Heart,
+  Building,
+  Tag,
+  IdCard
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area, LineChart, Line } from 'recharts';
@@ -11235,6 +11240,7 @@ function OldParentDashboard({
 
 function StudentDashboard({ profile }: any) {
     const { user } = useUser();
+    const [activeSection, setActiveSection] = useState<'desk' | 'homework' | 'academics' | 'resources'>('desk');
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { role, loading: isRoleLoading } = useRole();
@@ -11247,6 +11253,55 @@ function StudentDashboard({ profile }: any) {
     }, [firestore, schoolId, profile?.classId]);
     const { data: classData } = useDoc<any>(classDocRef);
     const className = classData?.name || 'Classroom';
+
+    // 1b. Fetch Teacher Details
+    const teacherDocRef = useMemoFirebase(() => {
+        if (!firestore || !classData?.teacherId) return null;
+        return doc(firestore, 'staff', classData.teacherId);
+    }, [firestore, classData?.teacherId]);
+    const { data: teacherData } = useDoc<any>(teacherDocRef);
+
+    // 1c. Fetch School Settings
+    const settingsDocRef = useMemoFirebase(() => {
+        if (!firestore || !schoolId) return null;
+        return doc(firestore, 'schoolSettings', schoolId);
+    }, [firestore, schoolId]);
+    const { data: schoolSettings } = useDoc<any>(settingsDocRef);
+
+    // 1d. Fetch timetable entries
+    const timetableQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !profile?.classId) return null;
+        return query(
+            collection(firestore, 'timetables'),
+            where('schoolId', '==', schoolId),
+            where('classId', '==', profile.classId)
+        );
+    }, [firestore, schoolId, profile?.classId]);
+    const { data: classTimetable } = useCollection<any>(timetableQuery);
+
+    // 1e. Fetch school calendar events
+    const calendarQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId) return null;
+        return query(
+            collection(firestore, 'school_calendar'),
+            where('schoolId', '==', schoolId)
+        );
+    }, [firestore, schoolId]);
+    const { data: calendarEvents } = useCollection<any>(calendarQuery);
+
+    // 1f. Fetch subjects list
+    const subjectsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId) return null;
+        return query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
+    const { data: subjectsList } = useCollection<any>(subjectsQuery);
+
+    // 1g. Fetch rooms list
+    const roomsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId) return null;
+        return query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
+    const { data: roomsList } = useCollection<any>(roomsQuery);
 
     // 2. Fetch student's assessments for overall average grade
     const assessmentsQuery = useMemoFirebase(() => {
@@ -11336,6 +11391,82 @@ function StudentDashboard({ profile }: any) {
     }, [firestore, schoolId]);
     const { data: announcements, isLoading: loadingAnnouncements } = useCollection<any>(annQuery);
 
+    // 10. Fetch published report cards (Index-Free Query)
+    const reportCardQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !user?.uid) return null;
+        return query(
+            collection(firestore, 'report-cards'),
+            where('schoolId', '==', schoolId),
+            where('studentId', '==', user.uid),
+            where('status', '==', 'Published')
+        );
+    }, [firestore, schoolId, user?.uid]);
+    const { data: latestReportCards } = useCollection<any>(reportCardQuery);
+
+    const latestReport = useMemo(() => {
+        if (!latestReportCards || latestReportCards.length === 0) return null;
+        return [...latestReportCards].sort((a: any, b: any) => {
+            const timeA = a.publishedAt?.toDate?.()?.getTime() || 0;
+            const timeB = b.publishedAt?.toDate?.()?.getTime() || 0;
+            return timeB - timeA;
+        })[0];
+    }, [latestReportCards]);
+
+    // 11. Fetch behavioral records
+    const behaviorQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !user?.uid) return null;
+        return query(
+            collection(firestore, 'behavioral_records'),
+            where('schoolId', '==', schoolId),
+            where('studentId', '==', user.uid)
+        );
+    }, [firestore, schoolId, user?.uid]);
+    const { data: studentBehavior } = useCollection<any>(behaviorQuery);
+
+    // 12. Fetch learning materials
+    const materialsQuery = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'learning_materials'));
+    }, [firestore]);
+    const { data: dbMaterials } = useCollection<any>(materialsQuery);
+
+    const behaviorRating = useMemo(() => {
+        if (!studentBehavior || studentBehavior.length === 0) return 'Excellent (A)';
+        const infractions = studentBehavior.filter((r: any) => r.incidentType === 'Infraction' || r.incidentType === 'Disciplinary Action');
+        if (infractions.length === 0) return 'Very Good (B)';
+        if (infractions.length === 1) return 'Satisfactory (C)';
+        return 'Needs Attention';
+    }, [studentBehavior]);
+
+    // 12. Group subject averages for subjects passed vs requiring improvement
+    const subjectAverages = useMemo(() => {
+        if (!studentAssessments) return {};
+        const groups: Record<string, { total: number; max: number }> = {};
+        studentAssessments.forEach((a: any) => {
+            const subject = a.subjectName || 'General';
+            if (!groups[subject]) {
+                groups[subject] = { total: 0, max: 0 };
+            }
+            groups[subject].total += a.score || 0;
+            groups[subject].max += a.maxScore || 100;
+        });
+        
+        const averages: Record<string, number> = {};
+        Object.keys(groups).forEach((sub) => {
+            const m = groups[sub].max;
+            averages[sub] = m > 0 ? Math.round((groups[sub].total / m) * 100) : 0;
+        });
+        return averages;
+    }, [studentAssessments]);
+
+    const subjectsPassed = useMemo(() => {
+        return Object.keys(subjectAverages).filter((sub) => subjectAverages[sub] >= 50);
+    }, [subjectAverages]);
+
+    const subjectsToImprove = useMemo(() => {
+        return Object.keys(subjectAverages).filter((sub) => subjectAverages[sub] < 50);
+    }, [subjectAverages]);
+
     // In-memory sorting and statistics computations
     const sortedAssessments = useMemo(() => {
         if (!studentAssessments) return [];
@@ -11379,6 +11510,99 @@ function StudentDashboard({ profile }: any) {
         const present = studentAttendance.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
         return Math.round((present / studentAttendance.length) * 100);
     }, [studentAttendance]);
+
+    const promotionStatus = useMemo(() => {
+        if (profile?.enrollmentStatus === 'Graduated') return 'Graduated';
+        if (latestReport?.promotionStatus) return latestReport.promotionStatus;
+        if (latestReport?.promotedTo) return `Promoted to ${latestReport.promotedTo}`;
+        if (overallAvg >= 50) return 'Passing (On track for promotion)';
+        return 'Needs Academic Recovery (Risk of retention)';
+    }, [profile?.enrollmentStatus, latestReport, overallAvg]);
+
+    const todayLessons = useMemo(() => {
+        if (!classTimetable) return [];
+        const currentDayName = format(new Date(), 'EEEE');
+        return [...classTimetable]
+            .filter((entry: any) => entry.day === currentDayName)
+            .sort((a: any, b: any) => (a.startTime || '').localeCompare(b.startTime || ''));
+    }, [classTimetable]);
+
+    const [resolvedTeachers, setResolvedTeachers] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        async function resolveTeachers() {
+            if (!firestore || !todayLessons || todayLessons.length === 0) return;
+            const newResolved: Record<string, string> = { ...resolvedTeachers };
+            let changed = false;
+            for (const lesson of todayLessons) {
+                if (lesson.teacherId && !newResolved[lesson.teacherId]) {
+                    try {
+                        const staffSnap = await getDoc(doc(firestore, 'staff', lesson.teacherId));
+                        if (staffSnap.exists()) {
+                            const staffData = staffSnap.data();
+                            newResolved[lesson.teacherId] = `${staffData.firstName || ''} ${staffData.lastName || ''}`.trim();
+                            changed = true;
+                        } else {
+                            newResolved[lesson.teacherId] = 'Teacher';
+                        }
+                    } catch (err) {
+                        newResolved[lesson.teacherId] = 'Teacher';
+                    }
+                }
+            }
+            if (changed) {
+                setResolvedTeachers(newResolved);
+            }
+        }
+        resolveTeachers();
+    }, [firestore, todayLessons]);
+
+    const todayEvents = useMemo(() => {
+        if (!calendarEvents) return [];
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        return calendarEvents.filter((ev: any) => {
+            if (!ev.date) return false;
+            const evDateStr = format(ev.date.toDate(), 'yyyy-MM-dd');
+            return evDateStr === todayStr;
+        });
+    }, [calendarEvents]);
+
+    const sortedActivities = useMemo(() => {
+        const events: any[] = [];
+        const practicals: any[] = [];
+        const clubs: any[] = [];
+        const sports: any[] = [];
+
+        todayEvents.forEach((ev: any) => {
+            const title = (ev.title || '').toLowerCase();
+            
+            if (ev.type === 'Sports' || title.includes('sport') || title.includes('match') || title.includes('football') || title.includes('basketball') || title.includes('athletics')) {
+                sports.push(ev);
+            } else if (ev.type === 'Activity' || title.includes('club') || title.includes('society')) {
+                clubs.push(ev);
+            } else if (title.includes('practical') || title.includes('lab') || title.includes('experiment') || title.includes('workshop')) {
+                practicals.push(ev);
+            } else {
+                events.push(ev);
+            }
+        });
+
+        // Also check if any of today's lessons are practical classes (e.g. Science Practical or ICT Lab)
+        todayLessons.forEach((lesson: any) => {
+            const subject = subjectsList?.find((s: any) => s.id === lesson.subjectId);
+            const subName = (subject?.name || '').toLowerCase();
+            if (subName.includes('practical') || subName.includes('lab') || subName.includes('experiment')) {
+                practicals.push({
+                    title: subject?.name || 'Practical Session',
+                    time: `${lesson.startTime} - ${lesson.endTime}`,
+                    location: roomsList?.find((r: any) => r.id === lesson.roomId)?.name || 'Science/ICT Lab',
+                    description: 'Scheduled timetable practical session.'
+                });
+            }
+        });
+
+        return { events, practicals, clubs, sports };
+    }, [todayEvents, todayLessons, subjectsList, roomsList]);
 
     const submissionsMap = useMemo(() => {
         if (!studentSubmissions) return new Map();
@@ -11431,6 +11655,51 @@ function StudentDashboard({ profile }: any) {
             return sum + Math.max(0, due);
         }, 0);
     }, [studentBills]);
+
+    const homeworkDetails = useMemo(() => {
+        const assignmentsList = classAssignments || [];
+        const submissionsList = studentSubmissions || [];
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        
+        // 1. Homework Due Today (not submitted yet, or submitted today)
+        const dueToday = assignmentsList.filter((a: any) => {
+            if (!a.dueDate) return false;
+            const dueStr = format(new Date(a.dueDate), 'yyyy-MM-dd');
+            return dueStr === todayStr;
+        });
+
+        // 2. Upcoming Assignments (due after today, not submitted)
+        const upcoming = assignmentsList.filter((a: any) => {
+            if (!a.dueDate) return false;
+            const dueStr = format(new Date(a.dueDate), 'yyyy-MM-dd');
+            return dueStr > todayStr && !submissionsMap.has(a.id);
+        });
+
+        // 3. Pending Homework (all unsubmitted homework)
+        const pending = assignmentsList.filter((a: any) => !submissionsMap.has(a.id));
+
+        // 4. Submitted Homework (present in submissions)
+        const submitted = submissionsList.map((sub: any) => {
+            const assignment = assignmentsList.find((a: any) => a.id === sub.assignmentId);
+            return {
+                ...sub,
+                assignmentTitle: assignment?.title || sub.assignmentTitle || 'Class Assignment',
+                subjectName: assignment?.subjectName || sub.subjectName || 'General',
+                dueDate: assignment?.dueDate
+            };
+        });
+
+        // 5. Teacher Feedback (submissions with grading remarks)
+        const feedback = submissionsList.filter((sub: any) => sub.feedback || sub.remark || sub.teacherRemark || sub.gradingRemark);
+
+        // 6. Assignment Scores (graded assessments matching Homework)
+        const scores = (studentAssessments || []).filter((a: any) => {
+            const type = (a.assessmentType || '').toLowerCase();
+            return type.includes('homework') || type.includes('assignment') || type.includes('task');
+        });
+
+        return { dueToday, upcoming, pending, submitted, feedback, scores };
+    }, [classAssignments, studentSubmissions, studentAssessments, submissionsMap]);
 
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
 
@@ -11499,153 +11768,910 @@ function StudentDashboard({ profile }: any) {
                 </div>
             </div>
 
-            {/* 2. KPI Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard 
-                    title="Academic Grade" 
-                    value={`${overallAvg}% (${averageGradeLetter})`} 
-                    icon={Award} 
-                    link="/dashboard/my-grades" 
-                    isLoading={false} 
-                    color="text-amber-500" 
-                    subtitle={`Based on ${studentAssessments?.length || 0} marks`}
-                />
-                <StatCard 
-                    title="Pending Tasks" 
-                    value={`${pendingTasks.length} Pending`} 
-                    icon={Clock} 
-                    link="/dashboard/assignments" 
-                    isLoading={false} 
-                    color="text-rose-500" 
-                    subtitle="Homeworks & Quizzes due"
-                />
-                <StatCard 
-                    title="Attendance Health" 
-                    value={`${attendanceRate}%`} 
-                    icon={CalendarCheck} 
-                    link="/dashboard/my-attendance" 
-                    isLoading={false} 
-                    color="text-emerald-500" 
-                    subtitle="Of school days logged"
-                />
-                <StatCard 
-                    title="Account Statement" 
-                    value={outstandingBalance === 0 ? "Good Standing" : `GH₵ ${outstandingBalance.toLocaleString()}`} 
-                    icon={Banknote} 
-                    link="/dashboard/my-bills" 
-                    isLoading={false} 
-                    color="text-indigo-500" 
-                    subtitle={outstandingBalance === 0 ? "All fees paid" : "Outstanding balance"}
-                />
+            {/* Glassmorphic Section Switcher */}
+            <div className="flex p-1 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 w-full sm:w-max gap-1">
+                <Button 
+                    variant="ghost" 
+                    onClick={() => setActiveSection('desk')} 
+                    className={cn(
+                        "rounded-xl px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2", 
+                        activeSection === 'desk' 
+                          ? "bg-white text-indigo-700 shadow-sm border border-slate-200/20" 
+                          : "text-slate-500 hover:text-indigo-650 hover:bg-slate-200/30"
+                    )}
+                >
+                    <BookOpen className="h-4 w-4" /> School Desk
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => setActiveSection('homework')} 
+                    className={cn(
+                        "rounded-xl px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2", 
+                        activeSection === 'homework' 
+                          ? "bg-white text-indigo-700 shadow-sm border border-slate-200/20" 
+                          : "text-slate-500 hover:text-indigo-650 hover:bg-slate-200/30"
+                    )}
+                >
+                    <ClipboardList className="h-4 w-4" /> Homework & Tasks
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => setActiveSection('resources')} 
+                    className={cn(
+                        "rounded-xl px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2", 
+                        activeSection === 'resources' 
+                          ? "bg-white text-indigo-700 shadow-sm border border-slate-200/20" 
+                          : "text-slate-500 hover:text-indigo-650 hover:bg-slate-200/30"
+                    )}
+                >
+                    <Compass className="h-4 w-4" /> Learning Resources
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => setActiveSection('academics')} 
+                    className={cn(
+                        "rounded-xl px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2", 
+                        activeSection === 'academics' 
+                          ? "bg-white text-indigo-700 shadow-sm border border-slate-200/20" 
+                          : "text-slate-500 hover:text-indigo-650 hover:bg-slate-200/30"
+                    )}
+                >
+                    <Award className="h-4 w-4" /> Academic Performance
+                </Button>
             </div>
+
+            {activeSection === 'desk' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <StatCard 
+                        title="Academic Grade" 
+                        value={`${overallAvg}% (${averageGradeLetter})`} 
+                        icon={Award} 
+                        link="/dashboard/my-grades" 
+                        isLoading={false} 
+                        color="text-amber-500" 
+                        subtitle={`Based on ${studentAssessments?.length || 0} marks`}
+                    />
+                    <StatCard 
+                        title="Pending Tasks" 
+                        value={`${pendingTasks.length} Pending`} 
+                        icon={Clock} 
+                        link="/dashboard/assignments" 
+                        isLoading={false} 
+                        color="text-rose-500" 
+                        subtitle="Homeworks & Quizzes due"
+                    />
+                    <StatCard 
+                        title="Attendance Health" 
+                        value={`${attendanceRate}%`} 
+                        icon={CalendarCheck} 
+                        link="/dashboard/my-attendance" 
+                        isLoading={false} 
+                        color="text-emerald-500" 
+                        subtitle="Of school days logged"
+                    />
+                    <StatCard 
+                        title="Account Statement" 
+                        value={outstandingBalance === 0 ? "Good Standing" : `GH₵ ${outstandingBalance.toLocaleString()}`} 
+                        icon={Banknote} 
+                        link="/dashboard/my-bills" 
+                        isLoading={false} 
+                        color="text-indigo-500" 
+                        subtitle={outstandingBalance === 0 ? "All fees paid" : "Outstanding balance"}
+                    />
+                </div>
+            )}
 
             {/* 3. Main Split Columns Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column - Learning Desk (2/3 width) */}
                 <div className="lg:col-span-2 space-y-8">
-                    {/* Pending Homework Feed */}
-                    <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
-                        <CardHeader className="border-b border-slate-50 bg-slate-50/15 p-6 flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle className="text-lg font-black text-slate-800 flex items-center gap-2">
-                                    <Clock className="h-5 w-5 text-indigo-650" /> Pending Homework & Quizzes
-                                </CardTitle>
-                                <CardDescription className="text-slate-400">Tasks requiring your attention or response submission.</CardDescription>
-                            </div>
-                            <Button asChild variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-800 font-bold text-xs rounded-xl">
-                                <Link href="/dashboard/assignments" className="flex items-center gap-1">View All <ChevronRight className="h-4 w-4"/></Link>
-                            </Button>
-                        </CardHeader>
-                        <CardContent className="p-6 space-y-4">
-                            {pendingTasks.length > 0 ? (
-                                pendingTasks.slice(0, 3).map((task: any) => (
-                                    <div 
-                                        key={task.id} 
-                                        className={cn(
-                                            "p-4 border-2 border-slate-50 hover:border-slate-100 bg-white rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-4 transition-all hover:shadow-sm border-l-4", 
-                                            task.color
+                    {activeSection === 'desk' && (
+                        <>
+                            {/* Today's School Activities Card */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="bg-slate-50/50 p-6 border-b border-slate-100 flex flex-row items-center gap-3">
+                                    <div className="p-2 bg-indigo-100 rounded-xl text-indigo-650">
+                                        <Calendar className="h-5 w-5 animate-pulse" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Today's School Activities</CardTitle>
+                                        <CardDescription className="text-slate-400">Timetable lessons, classrooms, teachers, and today's campus events.</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        {/* Left Column: Lessons Timeline */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-xs font-black uppercase text-indigo-700 tracking-wider flex items-center gap-2">
+                                                <GraduationCap className="h-4 w-4" /> Today's Scheduled Lessons ({todayLessons.length})
+                                            </h3>
+                                            
+                                            {todayLessons.length > 0 ? (
+                                                <div className="space-y-4 border-l-2 border-slate-100 pl-4 ml-2 relative">
+                                                    {todayLessons.map((lesson: any, index: number) => {
+                                                        const subjectName = subjectsList?.find((s: any) => s.id === lesson.subjectId)?.name || 'Unlinked Subject';
+                                                        const roomName = roomsList?.find((r: any) => r.id === lesson.roomId)?.name || 'Classroom';
+                                                        const teacherName = resolvedTeachers[lesson.teacherId] || 'Assigned Teacher';
+
+                                                        return (
+                                                            <div key={lesson.id || index} className="relative group space-y-1">
+                                                                {/* Timeline Dot Indicator */}
+                                                                <div className="absolute left-[-21px] top-1.5 h-2.5 w-2.5 rounded-full bg-indigo-500 border-2 border-white ring-2 ring-indigo-100 group-hover:bg-indigo-700 transition-colors" />
+                                                                
+                                                                <div className="flex items-center justify-between">
+                                                                    <span className="text-[10px] font-black text-indigo-600 tracking-wide uppercase bg-indigo-50 px-2 py-0.5 rounded-md">
+                                                                        {lesson.startTime} - {lesson.endTime}
+                                                                    </span>
+                                                                </div>
+                                                                <h4 className="font-extrabold text-slate-850 text-sm group-hover:text-indigo-650 transition-colors">
+                                                                    {subjectName}
+                                                                </h4>
+                                                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
+                                                                    <span className="flex items-center gap-1">
+                                                                        <Users className="h-3.5 w-3.5 text-slate-400" /> {teacherName}
+                                                                    </span>
+                                                                    <span className="flex items-center gap-1">
+                                                                        <School className="h-3.5 w-3.5 text-slate-400" /> {roomName}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            ) : (
+                                                <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
+                                                    <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto mb-2.5 stroke-[1.2]" />
+                                                    <p className="text-xs font-black uppercase text-slate-400">No lessons scheduled for today</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Right Column: Campus Events & Extracurricular Activities */}
+                                        <div className="space-y-6">
+                                            <h3 className="text-xs font-black uppercase text-indigo-700 tracking-wider flex items-center gap-2">
+                                                <Compass className="h-4 w-4" /> Extracurriculars & Special Events
+                                            </h3>
+
+                                            {(() => {
+                                                const { events, practicals, clubs, sports } = sortedActivities;
+                                                const hasAnyActivity = events.length > 0 || practicals.length > 0 || clubs.length > 0 || sports.length > 0;
+
+                                                if (!hasAnyActivity) {
+                                                    return (
+                                                        <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
+                                                            <Compass className="h-10 w-10 text-slate-300 mx-auto mb-2.5 stroke-[1.2]" />
+                                                            <p className="text-xs font-black uppercase text-slate-400">No extracurricular activities today</p>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <div className="space-y-4">
+                                                        {/* 1. School Events */}
+                                                        {events.length > 0 && (
+                                                            <div className="p-4 rounded-2xl bg-emerald-50/45 border border-emerald-100/50 space-y-2">
+                                                                <h4 className="text-[10px] font-black text-emerald-700 uppercase tracking-widest flex items-center gap-1.5">
+                                                                    <Calendar className="h-3.5 w-3.5" /> General School Events ({events.length})
+                                                                </h4>
+                                                                <div className="space-y-3">
+                                                                    {events.map((ev, idx) => (
+                                                                        <div key={idx} className="space-y-0.5">
+                                                                            <p className="text-xs font-extrabold text-slate-800">{ev.title}</p>
+                                                                            {ev.time && <p className="text-[10px] text-slate-550 font-medium">Time: {ev.time} {ev.location ? `| Loc: ${ev.location}` : ''}</p>}
+                                                                            {ev.description && <p className="text-[10.5px] text-slate-550 italic leading-snug">"{ev.description}"</p>}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* 2. Practical Sessions */}
+                                                        {practicals.length > 0 && (
+                                                            <div className="p-4 rounded-2xl bg-sky-50/45 border border-sky-100/50 space-y-2">
+                                                                <h4 className="text-[10px] font-black text-sky-700 uppercase tracking-widest flex items-center gap-1.5">
+                                                                    <FlaskConical className="h-3.5 w-3.5" /> Practical & Lab Sessions ({practicals.length})
+                                                                </h4>
+                                                                <div className="space-y-3">
+                                                                    {practicals.map((ev, idx) => (
+                                                                        <div key={idx} className="space-y-0.5">
+                                                                            <p className="text-xs font-extrabold text-slate-800">{ev.title}</p>
+                                                                            <p className="text-[10px] text-slate-555 font-medium">Time: {ev.time || 'Class schedule'} {ev.location ? `| Lab: ${ev.location}` : ''}</p>
+                                                                            {ev.description && <p className="text-[10.5px] text-slate-555 italic">"{ev.description}"</p>}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* 3. Club Activities */}
+                                                        {clubs.length > 0 && (
+                                                            <div className="p-4 rounded-2xl bg-pink-50/45 border border-pink-100/50 space-y-2">
+                                                                <h4 className="text-[10px] font-black text-pink-700 uppercase tracking-widest flex items-center gap-1.5">
+                                                                    <Compass className="h-3.5 w-3.5" /> Club Activities & Societies ({clubs.length})
+                                                                </h4>
+                                                                <div className="space-y-3">
+                                                                    {clubs.map((ev, idx) => (
+                                                                        <div key={idx} className="space-y-0.5">
+                                                                            <p className="text-xs font-extrabold text-slate-800">{ev.title}</p>
+                                                                            {ev.time && <p className="text-[10px] text-slate-555 italic leading-snug">Time: {ev.time} {ev.location ? `| Room: ${ev.location}` : ''}</p>}
+                                                                            {ev.description && <p className="text-[10.5px] text-slate-555 italic leading-snug">"{ev.description}"</p>}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* 4. Sports Activities */}
+                                                        {sports.length > 0 && (
+                                                            <div className="p-4 rounded-2xl bg-amber-50/45 border border-amber-100/50 space-y-2">
+                                                                <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest flex items-center gap-1.5">
+                                                                    <Activity className="h-3.5 w-3.5" /> Sports & Games ({sports.length})
+                                                                </h4>
+                                                                <div className="space-y-3">
+                                                                    {sports.map((ev, idx) => (
+                                                                        <div key={idx} className="space-y-0.5">
+                                                                            <p className="text-xs font-extrabold text-slate-800">{ev.title}</p>
+                                                                            {ev.time && <p className="text-[10px] text-slate-555 italic leading-snug">Time: {ev.time} {ev.location ? `| Pitch: ${ev.location}` : ''}</p>}
+                                                                            {ev.description && <p className="text-[10.5px] text-slate-555 italic leading-snug">"{ev.description}"</p>}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Pending Homework Feed */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="border-b border-slate-50 bg-slate-50/15 p-6 flex flex-row items-center justify-between">
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-slate-800 flex items-center gap-2">
+                                            <Clock className="h-5 w-5 text-indigo-650" /> Pending Homework & Quizzes
+                                        </CardTitle>
+                                        <CardDescription className="text-slate-400">Tasks requiring your attention or response submission.</CardDescription>
+                                    </div>
+                                    <Button asChild variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-800 font-bold text-xs rounded-xl">
+                                        <Link href="/dashboard/assignments" className="flex items-center gap-1">View All <ChevronRight className="h-4 w-4"/></Link>
+                                    </Button>
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-4">
+                                    {pendingTasks.length > 0 ? (
+                                        pendingTasks.slice(0, 3).map((task: any) => (
+                                            <div 
+                                                key={task.id} 
+                                                className={cn(
+                                                    "p-4 border-2 border-slate-50 hover:border-slate-100 bg-white rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-4 transition-all hover:shadow-sm border-l-4", 
+                                                    task.color
+                                                )}
+                                            >
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge className={cn("text-[9px] font-black uppercase tracking-wider py-0.5 px-2 rounded-lg", task.type === 'Quiz' ? "bg-purple-50 text-purple-755 border border-purple-100 hover:bg-purple-50" : "bg-blue-50 text-blue-755 border border-blue-100 hover:bg-blue-55")}>
+                                                            {task.type}
+                                                        </Badge>
+                                                        {task.dueDate && (
+                                                            <span className="text-[10px] text-slate-400 font-bold">
+                                                                Due: {format(new Date(task.dueDate), 'MMM dd')}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <h4 className="font-extrabold text-slate-800 text-sm">{task.title}</h4>
+                                                    <p className="text-xs text-slate-550 line-clamp-1">{task.description}</p>
+                                                </div>
+                                                <Button asChild size="sm" className={cn("rounded-xl text-xs font-bold shrink-0 self-start sm:self-center", task.type === 'Quiz' ? "bg-purple-650 hover:bg-purple-755 text-white" : "bg-blue-650 hover:bg-blue-750 text-white")}>
+                                                    <Link href={task.type === 'Quiz' ? `/dashboard/assignments/quiz/${task.id}` : "/dashboard/assignments"}>
+                                                        {task.type === 'Quiz' ? 'Start Quiz' : 'Submit Work'} <ChevronRight className="ml-1 h-3.5 w-3.5"/>
+                                                    </Link>
+                                                </Button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
+                                            <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto mb-2.5 stroke-[1.2]" />
+                                            <p className="text-xs font-black uppercase text-slate-400">All tasks submitted! Excellent work! 🎉</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
+
+                    {activeSection === 'homework' && (
+                        <>
+                            {/* Homework Overview Card */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="bg-slate-50/50 p-6 border-b border-slate-100 flex flex-row items-center gap-3">
+                                    <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
+                                        <BookOpenCheck className="h-5 w-5 animate-pulse" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Homework & Assignments Desk</CardTitle>
+                                        <CardDescription className="text-slate-400">Complete tasks, review feedback, and track your grades.</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                        {/* Due Today */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-rose-50/45 border border-rose-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Due Today</span>
+                                            <span className="text-2xl font-black text-rose-700 block">{homeworkDetails.dueToday.length}</span>
+                                            <span className="text-[10px] text-slate-500 font-bold block uppercase tracking-tight">Today's Deadline</span>
+                                        </div>
+
+                                        {/* Upcoming */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-indigo-50/45 border border-indigo-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Upcoming</span>
+                                            <span className="text-2xl font-black text-indigo-700 block">{homeworkDetails.upcoming.length}</span>
+                                            <span className="text-[10px] text-slate-500 font-bold block uppercase tracking-tight">Due Later</span>
+                                        </div>
+
+                                        {/* Pending */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-amber-50/45 border border-amber-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Pending</span>
+                                            <span className="text-2xl font-black text-amber-700 block">{homeworkDetails.pending.length}</span>
+                                            <span className="text-[10px] text-slate-555 font-bold block uppercase tracking-tight">Unsubmitted Tasks</span>
+                                        </div>
+
+                                        {/* Submitted */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-emerald-50/45 border border-emerald-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Submitted</span>
+                                            <span className="text-2xl font-black text-emerald-700 block">{homeworkDetails.submitted.length}</span>
+                                            <span className="text-[10px] text-slate-500 font-bold block uppercase tracking-tight">Turned In</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Split Panels: Pending & Submitted */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Left Side: Pending Homework & Today's Deadlines */}
+                                <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                    <CardHeader className="border-b border-slate-50 bg-slate-50/15 p-6">
+                                        <CardTitle className="text-base font-black text-slate-805 flex items-center gap-2">
+                                            <Clock className="h-4.5 w-4.5 text-indigo-650" /> Pending Homework & Deadlines
+                                        </CardTitle>
+                                        <CardDescription className="text-xs text-slate-400">Assignments requiring your immediate response.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-6 space-y-4">
+                                        {homeworkDetails.pending.length > 0 ? (
+                                            <div className="space-y-4">
+                                                {homeworkDetails.pending.map((a: any) => {
+                                                    const isDueToday = homeworkDetails.dueToday.some((dt: any) => dt.id === a.id);
+                                                    return (
+                                                        <div 
+                                                            key={a.id} 
+                                                            className={cn(
+                                                                "p-4 border rounded-2xl flex flex-col justify-between gap-3 transition-all hover:shadow-sm bg-white border-l-4",
+                                                                isDueToday ? "border-l-rose-500 border-rose-100 bg-rose-50/10" : "border-l-indigo-500 border-slate-100"
+                                                            )}
+                                                        >
+                                                            <div className="space-y-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Badge className={cn("text-[9px] font-black uppercase tracking-wider py-0.5 px-2 rounded-lg", isDueToday ? "bg-rose-50 text-rose-700" : "bg-indigo-50 text-indigo-700")}>
+                                                                        {isDueToday ? 'Due Today' : 'Pending'}
+                                                                    </Badge>
+                                                                    {a.dueDate && (
+                                                                        <span className="text-[10px] text-slate-400 font-bold">
+                                                                            Due: {format(new Date(a.dueDate), 'MMM dd, yyyy')}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <h4 className="font-extrabold text-slate-800 text-sm">{a.title}</h4>
+                                                                <p className="text-xs text-slate-500 font-medium">Subject: <span className="text-slate-700 font-semibold">{a.subjectName || 'General'}</span></p>
+                                                                <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">{a.description}</p>
+                                                            </div>
+                                                            <Button asChild size="sm" className="rounded-xl text-xs font-bold self-start mt-1 bg-indigo-650 hover:bg-indigo-755 text-white">
+                                                                <Link href="/dashboard/assignments">
+                                                                    Submit Work <ChevronRight className="ml-1 h-3.5 w-3.5"/>
+                                                                </Link>
+                                                            </Button>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
+                                                <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto mb-2.5 stroke-[1.2]" />
+                                                <p className="text-xs font-black uppercase text-slate-400">All homework submitted! 🎉</p>
+                                            </div>
                                         )}
-                                    >
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <Badge className={cn("text-[9px] font-black uppercase tracking-wider py-0.5 px-2 rounded-lg", task.type === 'Quiz' ? "bg-purple-50 text-purple-755 border border-purple-100 hover:bg-purple-50" : "bg-blue-50 text-blue-755 border border-blue-100 hover:bg-blue-50")}>
-                                                    {task.type}
-                                                </Badge>
-                                                {task.dueDate && (
-                                                    <span className="text-[10px] text-slate-400 font-bold">
-                                                        Due: {format(new Date(task.dueDate), 'MMM dd')}
-                                                    </span>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Right Side: Submission History & Scores */}
+                                <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                    <CardHeader className="border-b border-slate-50 bg-slate-50/15 p-6">
+                                        <CardTitle className="text-base font-black text-slate-805 flex items-center gap-2">
+                                            <BookOpenCheck className="h-4.5 w-4.5 text-emerald-600" /> Submitted Homework & Scores
+                                        </CardTitle>
+                                        <CardDescription className="text-xs text-slate-400">Track scores and evaluation states of your turned-in work.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="p-6 space-y-4">
+                                        {homeworkDetails.submitted.length > 0 ? (
+                                            <div className="space-y-4">
+                                                {homeworkDetails.submitted.map((sub: any, idx: number) => {
+                                                    const matchingScore = homeworkDetails.scores.find((s: any) => s.assessmentName === sub.assignmentTitle || s.subjectName === sub.subjectName);
+                                                    
+                                                    return (
+                                                        <div key={sub.id || idx} className="p-4 border border-slate-100 rounded-2xl space-y-3 bg-slate-50/20">
+                                                            <div className="flex items-center justify-between gap-2 flex-wrap">
+                                                                <span className="text-[10px] text-slate-400 font-bold">
+                                                                    Submitted {sub.submittedAt?.toDate ? format(sub.submittedAt.toDate(), 'MMM dd, yyyy') : 'Recently'}
+                                                                </span>
+                                                                <Badge className={cn("text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg border-0", 
+                                                                    matchingScore ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                                                                )}>
+                                                                    {matchingScore ? 'Graded' : 'Pending Review'}
+                                                                </Badge>
+                                                            </div>
+                                                            <div>
+                                                                <h4 className="font-extrabold text-slate-800 text-xs uppercase">{sub.assignmentTitle}</h4>
+                                                                <p className="text-[10.5px] text-slate-500 font-medium">Subject: <span className="text-slate-700 font-semibold">{sub.subjectName}</span></p>
+                                                            </div>
+                                                            {matchingScore && (
+                                                                <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50/40 border border-emerald-100/50">
+                                                                    <span className="text-[10px] text-emerald-850 font-black uppercase tracking-wider">Score Achieved:</span>
+                                                                    <span className="text-xs font-black text-emerald-800 font-mono">
+                                                                        {matchingScore.score} / {matchingScore.maxScore} ({Math.round((matchingScore.score / matchingScore.maxScore) * 100)}%)
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
+                                                <Clock className="h-10 w-10 text-slate-300 mx-auto mb-2.5 stroke-[1.2]" />
+                                                <p className="text-xs font-black uppercase text-slate-400">No submissions recorded yet.</p>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            {/* Full Width Bottom: Teacher Feedback Bulletin */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="bg-slate-50/50 p-6 border-b border-slate-100 flex flex-row items-center gap-3">
+                                    <div className="p-2 bg-purple-100 rounded-xl text-purple-600">
+                                        <MessageSquare className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-base font-black text-slate-805 uppercase tracking-tight italic">Teacher Feedback Bulletin</CardTitle>
+                                        <CardDescription className="text-slate-400">Direct remarks and constructive advice from your teachers.</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8">
+                                    {homeworkDetails.feedback.length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            {homeworkDetails.feedback.map((sub: any, idx: number) => {
+                                                const remark = sub.feedback || sub.remark || sub.teacherRemark || sub.gradingRemark;
+                                                return (
+                                                    <div key={sub.id || idx} className="p-5 border border-purple-50 rounded-2xl space-y-3 bg-purple-50/10 relative">
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <Badge className="bg-purple-100 text-purple-755 border-0 font-black text-[9px] uppercase px-2 py-0.5 rounded-lg">
+                                                                {sub.subjectName || 'General'}
+                                                            </Badge>
+                                                            <span className="text-[10px] text-slate-400 font-bold">
+                                                                {sub.gradedAt?.toDate ? format(sub.gradedAt.toDate(), 'MMM dd, yyyy') : 'Recent Feedback'}
+                                                            </span>
+                                                        </div>
+                                                        <h4 className="font-extrabold text-slate-805 text-xs">{sub.assignmentTitle}</h4>
+                                                        <div className="p-3 bg-white border border-purple-100/50 rounded-xl shadow-xs italic text-[11.5px] text-slate-650 relative">
+                                                            <span className="absolute top-1.5 left-1.5 text-purple-300 font-serif text-lg leading-none">“</span>
+                                                            <p className="pl-4 pr-2">"{remark}"</p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-12 bg-slate-50/50 border border-dashed border-slate-200 rounded-3xl">
+                                            <MessageSquare className="h-10 w-10 text-slate-300 mx-auto mb-2.5 stroke-[1.2]" />
+                                            <p className="text-xs font-black uppercase text-slate-400">No grading feedback logged yet.</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
+
+                    {activeSection === 'resources' && (
+                        <StudentLearningResourcesView studentClass={className} dbMaterials={dbMaterials || undefined} />
+                    )}
+
+                    {activeSection === 'academics' && (
+                        <>
+                            {/* Academic Summary Card */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="bg-slate-50/50 p-6 border-b border-slate-100 flex flex-row items-center gap-3">
+                                    <div className="p-2 bg-indigo-100 rounded-xl text-indigo-650">
+                                        <Award className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Academic Summary</CardTitle>
+                                        <CardDescription className="text-slate-400">Quick overview of terminal progress and enrollment health indicators.</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                        {/* Current Average */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-indigo-50/45 border border-indigo-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Avg Score</span>
+                                            <span className="text-2xl font-black text-indigo-700 block">{overallAvg}%</span>
+                                            <span className="text-[10px] text-slate-550 font-bold block uppercase tracking-tight">Current Average</span>
+                                        </div>
+
+                                        {/* Overall Performance */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-emerald-50/45 border border-emerald-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Performance</span>
+                                            <span className="text-sm font-extrabold text-emerald-800 block truncate">
+                                                {overallAvg >= 90 ? 'Excellent (A+)' :
+                                                 overallAvg >= 80 ? 'Very Good (A)' :
+                                                 overallAvg >= 70 ? 'Good (B)' :
+                                                 overallAvg >= 60 ? 'Satisfactory (C)' :
+                                                 overallAvg >= 50 ? 'Pass (D)' : 'Needs Review (F)'}
+                                            </span>
+                                            <span className="text-[10px] text-slate-555 font-bold block uppercase tracking-tight">Academic Rating</span>
+                                        </div>
+
+                                        {/* Class Position */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-purple-50/45 border border-purple-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Class Position</span>
+                                            <span className="text-sm font-extrabold text-purple-800 block truncate">
+                                                {latestReport?.classPosition ? `${latestReport.classPosition} of ${latestReport.totalStudents || 'N/A'}` : 'Pending Roster'}
+                                            </span>
+                                            <span className="text-[10px] text-slate-555 font-bold block uppercase tracking-tight">Terminal Rank</span>
+                                        </div>
+
+                                        {/* Attendance Rate */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-sky-50/45 border border-sky-100/50">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Attendance Rate</span>
+                                            <span className="text-sm font-extrabold text-sky-850 block">{attendanceRate}%</span>
+                                            <span className="text-[10px] text-slate-555 font-bold block uppercase tracking-tight">Roster Presence</span>
+                                        </div>
+
+                                        {/* Behaviour Rating */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-amber-50/45 border border-amber-100/50 col-span-2 md:col-span-2">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Behaviour Rating</span>
+                                            <span className="text-xs font-extrabold text-amber-850 block">
+                                                {behaviorRating}
+                                            </span>
+                                            <span className="text-[10px] text-slate-555 font-bold block uppercase tracking-tight">Conduct Records Log</span>
+                                        </div>
+
+                                        {/* Promotion Status */}
+                                        <div className="space-y-1.5 p-4 rounded-2xl bg-pink-50/45 border border-pink-100/50 col-span-2 md:col-span-2">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Promotion Status</span>
+                                            <span className="text-xs font-extrabold text-pink-855 block truncate">
+                                                {promotionStatus}
+                                            </span>
+                                            <span className="text-[10px] text-slate-555 font-bold block uppercase tracking-tight">Enrollment Advancement</span>
+                                        </div>
+
+                                        {/* Subjects Passed */}
+                                        <div className="col-span-2 space-y-2">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Subjects Passed ({subjectsPassed.length})</span>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {subjectsPassed.length > 0 ? (
+                                                    subjectsPassed.map((sub, idx) => (
+                                                        <Badge key={idx} variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-100 font-black text-[9px] uppercase px-2 py-0.5 rounded-lg">
+                                                            {sub}
+                                                        </Badge>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-xs font-bold text-slate-400 italic">No records graded yet.</span>
                                                 )}
                                             </div>
-                                            <h4 className="font-extrabold text-slate-800 text-sm">{task.title}</h4>
-                                            <p className="text-xs text-slate-550 line-clamp-1">{task.description}</p>
                                         </div>
-                                        <Button asChild size="sm" className={cn("rounded-xl text-xs font-bold shrink-0 self-start sm:self-center", task.type === 'Quiz' ? "bg-purple-650 hover:bg-purple-750 text-white" : "bg-blue-650 hover:bg-blue-750 text-white")}>
-                                            <Link href={task.type === 'Quiz' ? `/dashboard/assignments/quiz/${task.id}` : "/dashboard/assignments"}>
-                                                {task.type === 'Quiz' ? 'Start Quiz' : 'Submit Work'} <ChevronRight className="ml-1 h-3.5 w-3.5"/>
-                                            </Link>
-                                        </Button>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
-                                    <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto mb-2.5 stroke-[1.2]" />
-                                    <p className="text-xs font-black uppercase text-slate-400">All tasks submitted! Excellent work! 🎉</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
 
-                    {/* Recent Grades Ledger */}
-                    <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
-                        <CardHeader className="border-b border-slate-50 bg-slate-50/15 p-6">
-                            <CardTitle className="text-lg font-black text-slate-800 flex items-center gap-2">
-                                <TrendingUp className="h-5 w-5 text-indigo-650" /> Recent Grades & Marks
-                            </CardTitle>
-                            <CardDescription className="text-slate-400">Your latest assessment scores and teacher remarks.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            {sortedAssessments.length > 0 ? (
-                                <div className="space-y-3">
-                                    {sortedAssessments.slice(0, 3).map((a: any, idx: number) => (
-                                        <div 
-                                            key={a.id || idx} 
-                                            className="p-4 bg-slate-50 hover:bg-slate-100/50 rounded-2xl flex flex-col sm:flex-row justify-between sm:items-center gap-3 transition-all border border-transparent hover:border-slate-100"
-                                        >
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                                                        {a.createdAt?.toDate ? format(a.createdAt.toDate(), 'MMM dd, yyyy') : 'Recently'}
-                                                    </span>
-                                                    <span className="text-[10px] text-indigo-500 font-bold uppercase tracking-widest">• {a.assessmentType || 'Class Exercise'}</span>
-                                                </div>
-                                                <h4 className="font-extrabold text-slate-805 text-sm uppercase">{a.subjectName || 'Exercise'}</h4>
-                                                <p className="text-xs text-slate-500 italic">"{a.teacherRemark || 'No remark entered.'}"</p>
+                                        {/* Subjects Requiring Improvement */}
+                                        <div className="col-span-2 space-y-2">
+                                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider block">Requires Improvement ({subjectsToImprove.length})</span>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {subjectsToImprove.length > 0 ? (
+                                                    subjectsToImprove.map((sub, idx) => (
+                                                        <Badge key={idx} variant="outline" className="bg-rose-50 text-rose-700 border-rose-100 font-black text-[9px] uppercase px-2 py-0.5 rounded-lg">
+                                                            {sub}
+                                                        </Badge>
+                                                    ))
+                                                ) : (
+                                                    <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-100 font-black text-[9px] uppercase px-2 py-0.5 rounded-lg">
+                                                        None 🎉
+                                                    </Badge>
+                                                )}
                                             </div>
-                                            <Badge className={cn(
-                                                "font-black text-xs py-1 px-3.5 rounded-full shrink-0 self-start sm:self-center",
-                                                (a.score / (a.maxScore || 100)) >= 0.8 ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-100" :
-                                                (a.score / (a.maxScore || 100)) >= 0.5 ? "bg-indigo-50 text-indigo-755 hover:bg-indigo-55" :
-                                                "bg-rose-50 border border-rose-250 text-rose-700 hover:bg-rose-50"
-                                            )}>
-                                                Score: {a.score} / {a.maxScore}
-                                            </Badge>
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-250 rounded-2xl">
-                                    <TrendingUp className="h-10 w-10 text-slate-300 mx-auto mb-2.5 stroke-[1.2]" />
-                                    <p className="text-xs font-black uppercase text-slate-400">No graded assessments recorded yet.</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Subject Performance Analysis Card */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="bg-slate-50/50 p-6 border-b border-slate-100 flex flex-row items-center gap-3">
+                                    <div className="p-2 bg-indigo-100 rounded-xl text-indigo-650">
+                                        <TrendingUp className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-slate-805 uppercase tracking-tight italic">Subject Performance Analysis</CardTitle>
+                                        <CardDescription className="text-slate-400">Average grades and performance distributions grouped by subject area.</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8 space-y-6">
+                                    {Object.keys(subjectAverages).length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            {Object.keys(subjectAverages).map((subject, idx) => {
+                                                const score = subjectAverages[subject];
+                                                const barColor = score >= 80 ? 'bg-emerald-500' :
+                                                                 score >= 70 ? 'bg-indigo-500' :
+                                                                 score >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+                                                const textColor = score >= 80 ? 'text-emerald-700 bg-emerald-50' :
+                                                                  score >= 70 ? 'text-indigo-700 bg-indigo-50' :
+                                                                  score >= 50 ? 'text-amber-700 bg-amber-50' : 'text-rose-700 bg-rose-50';
+                                                
+                                                // Find latest assessment for this subject
+                                                const subAssessments = (studentAssessments || []).filter((a: any) => (a.subjectName || 'General') === subject);
+                                                const latestTopic = subAssessments[0]?.assessmentName || 'No topic graded';
+
+                                                return (
+                                                    <div key={idx} className="p-4 border border-slate-100 rounded-2xl space-y-3 hover:shadow-sm transition-all bg-slate-50/20">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="font-extrabold text-slate-855 uppercase text-xs">{subject}</span>
+                                                            <Badge className={cn("text-[10px] font-black uppercase rounded-lg px-2.5 py-0.5", textColor)}>
+                                                                {score}%
+                                                            </Badge>
+                                                        </div>
+                                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                            <div className={cn("h-full rounded-full transition-all duration-500", barColor)} style={{ width: `${score}%` }} />
+                                                        </div>
+                                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight block">
+                                                            Latest: <span className="text-slate-600 font-semibold">{latestTopic}</span>
+                                                        </p>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
+                                            <TrendingUp className="h-10 w-10 text-slate-300 mx-auto mb-2.5 stroke-[1.2]" />
+                                            <p className="text-xs font-black uppercase text-slate-400">No subject grading history found</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            {/* Detailed Continuous Assessment & Exams Tracker Card */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="bg-slate-50/50 p-6 border-b border-slate-100 flex flex-row items-center gap-3">
+                                    <div className="p-2 bg-indigo-100 rounded-xl text-indigo-650">
+                                        <ClipboardList className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-black text-slate-805 uppercase tracking-tight italic">Continuous Assessments & Term Exams</CardTitle>
+                                        <CardDescription className="text-slate-400">Detailed records of Class Tests, Projects, Assignments, and Exam marks.</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8">
+                                    <div className="space-y-6">
+                                        {[
+                                            {
+                                                title: 'Class Tests (CA)',
+                                                matches: (sortedAssessments || []).filter((a: any) => {
+                                                    const type = (a.assessmentType || '').toLowerCase();
+                                                    const isAssignment = type.includes('homework') || type.includes('assignment') || type.includes('task');
+                                                    const isMidTerm = type.includes('mid');
+                                                    const isEndTerm = type.includes('end') || type.includes('exam') || type.includes('terminal');
+                                                    return !isAssignment && !isMidTerm && !isEndTerm;
+                                                }),
+                                                bg: 'bg-indigo-50/30',
+                                                border: 'border-indigo-100/50',
+                                                icon: ClipboardList
+                                            },
+                                            {
+                                                title: 'Assignments (CA)',
+                                                matches: (sortedAssessments || []).filter((a: any) => {
+                                                    const type = (a.assessmentType || '').toLowerCase();
+                                                    return type.includes('homework') || type.includes('assignment') || type.includes('task');
+                                                }),
+                                                bg: 'bg-emerald-50/30',
+                                                border: 'border-emerald-100/50',
+                                                icon: BookOpenCheck
+                                            },
+                                            {
+                                                title: 'Mid-Term Examinations',
+                                                matches: (sortedAssessments || []).filter((a: any) => {
+                                                    const type = (a.assessmentType || '').toLowerCase();
+                                                    return type.includes('mid');
+                                                }),
+                                                bg: 'bg-purple-50/30',
+                                                border: 'border-purple-100/50',
+                                                icon: Clock
+                                            },
+                                            {
+                                                title: 'End-of-Term Examinations',
+                                                matches: (sortedAssessments || []).filter((a: any) => {
+                                                    const type = (a.assessmentType || '').toLowerCase();
+                                                    return type.includes('end') || type.includes('exam') || type.includes('terminal');
+                                                }),
+                                                bg: 'bg-pink-50/30',
+                                                border: 'border-pink-100/50',
+                                                icon: Award
+                                            }
+                                        ].map((sect, sectIdx) => {
+                                            const matches = sect.matches;
+                                            const SectIcon = sect.icon;
+
+                                            return (
+                                                <div key={sectIdx} className={cn("p-5 border rounded-2xl space-y-4", sect.bg, sect.border)}>
+                                                    <h4 className="text-xs font-black uppercase text-slate-805 tracking-wider flex items-center gap-2">
+                                                        <SectIcon className="h-4 w-4 text-indigo-650" /> {sect.title} ({matches.length})
+                                                    </h4>
+                                                    
+                                                    {matches.length > 0 ? (
+                                                        <div className="divide-y divide-slate-100">
+                                                            {matches.map((a: any) => {
+                                                                const pct = a.maxScore > 0 ? Math.round((a.score / a.maxScore) * 100) : 0;
+                                                                const pctColor = pct >= 80 ? 'text-emerald-700 bg-emerald-50' :
+                                                                                 pct >= 70 ? 'text-indigo-700 bg-indigo-50' :
+                                                                                 pct >= 50 ? 'text-amber-700 bg-amber-50' : 'text-rose-700 bg-rose-50';
+
+                                                                return (
+                                                                    <div key={a.id} className="py-3 first:pt-0 last:pb-0 flex flex-col sm:flex-row justify-between gap-3">
+                                                                        <div className="space-y-1">
+                                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                                <span className="text-xs font-extrabold text-slate-800 uppercase">{a.subjectName || 'General'}</span>
+                                                                                <span className="text-[10px] text-slate-400 font-bold">• {format(a.assessmentDate?.toDate(), 'MMM dd, yyyy')}</span>
+                                                                            </div>
+                                                                            <p className="text-xs text-slate-655 font-medium">Topic: <span className="font-semibold text-slate-855">{a.assessmentName}</span></p>
+                                                                            {a.teacherRemark && (
+                                                                                <p className="text-[10.5px] text-slate-550 italic leading-snug">
+                                                                                    Remark: "{a.teacherRemark}"
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex items-center gap-3 shrink-0 self-start sm:self-center">
+                                                                            <span className="text-sm font-black text-slate-805 font-mono">
+                                                                                {a.score} / {a.maxScore}
+                                                                            </span>
+                                                                            <Badge className={cn("text-[9px] font-black rounded-lg px-2 py-0.5", pctColor)}>
+                                                                                {pct}%
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-xs text-slate-400 font-semibold italic pl-6">No graded marks loaded for this category.</p>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Terminal Report Cards & Certification Link */}
+                            <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                                <CardHeader className="bg-slate-50/50 p-6 border-b border-slate-100 flex flex-row items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-indigo-100 rounded-xl text-indigo-650">
+                                            <FileText className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <CardTitle className="text-lg font-black text-slate-805 uppercase tracking-tight italic">Terminal Report Cards</CardTitle>
+                                            <CardDescription className="text-slate-400">Access official published school report cards and final teacher evaluations.</CardDescription>
+                                        </div>
+                                    </div>
+                                    <Button asChild size="sm" className="rounded-xl text-xs font-black uppercase tracking-wider bg-indigo-650 hover:bg-indigo-755 text-white shrink-0">
+                                        <Link href="/dashboard/report-cards">
+                                            View Report Cards <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                                        </Link>
+                                    </Button>
+                                </CardHeader>
+                                <CardContent className="p-6 md:p-8 space-y-4">
+                                    {latestReport ? (
+                                        <div className="flex items-center justify-between p-4 border border-indigo-50 bg-indigo-50/10 rounded-2xl">
+                                            <div className="space-y-1">
+                                                <span className="text-[9px] font-black text-indigo-650 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-md">
+                                                    Latest Report Published
+                                                </span>
+                                                <h4 className="font-extrabold text-slate-800 text-sm">
+                                                    {latestReport.academicYear} - {latestReport.term}
+                                                </h4>
+                                                <p className="text-xs text-slate-550">
+                                                    Published by Head of School on {format(latestReport.publishedAt?.toDate(), 'MMM dd, yyyy')}.
+                                                </p>
+                                            </div>
+                                            <Button asChild variant="outline" className="rounded-xl font-black text-xs uppercase text-slate-700 bg-white shadow-sm border-slate-200">
+                                                <Link href="/dashboard/report-cards">
+                                                    Review
+                                                 </Link>
+                                             </Button>
+                                         </div>
+                                     ) : (
+                                        <div className="text-center py-10 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl">
+                                            <FileText className="h-10 w-10 text-slate-300 mx-auto mb-2.5 stroke-[1.2]" />
+                                            <p className="text-xs font-black uppercase text-slate-400">No published report cards on record</p>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </>
+                    )}
                 </div>
 
                 {/* Right Column - Study Desk Sidebar (1/3 width) */}
                 <div className="space-y-8">
-                    {/* Dr. Gam AI Study Buddy */}
+                    {/* Student Profile Card (Sidebar) */}
+                    <Card className="rounded-[2.2rem] border border-slate-100 shadow-md bg-white overflow-hidden">
+                        <div className="bg-gradient-to-r from-blue-700 via-indigo-650 to-indigo-800 p-6 text-white text-center">
+                            <div className="h-20 w-20 rounded-full overflow-hidden border-4 border-white/20 mx-auto bg-white/10 shadow-md mb-2 flex items-center justify-center">
+                                {profile?.photoURL ? (
+                                    <img src={profile.photoURL} alt="Student Profile" className="h-full w-full object-cover" />
+                                ) : (
+                                    <span className="text-xl font-black uppercase text-white">
+                                        {profile?.firstName?.[0] || displayName[0]}{profile?.lastName?.[0] || ''}
+                                    </span>
+                                )}
+                            </div>
+                            <h3 className="font-black text-white text-base leading-tight mt-1">{profile?.firstName} {profile?.lastName}</h3>
+                            <div className="flex justify-center mt-2">
+                                <Badge className={cn("font-black text-[9px] uppercase px-2.5 py-0.5 rounded-lg border-0 shadow-sm", 
+                                    (profile?.enrollmentStatus || 'Active') === 'Active' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+                                )}>
+                                    Status: {profile?.enrollmentStatus || 'Active'}
+                                </Badge>
+                            </div>
+                        </div>
+                        <CardContent className="p-5 space-y-4 text-xs font-semibold">
+                            <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Student ID</span>
+                                <span className="font-extrabold text-slate-800">{profile?.studentId || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Admission Number</span>
+                                <span className="font-extrabold text-slate-800">{profile?.studentId || profile?.id || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Class / Grade</span>
+                                <span className="font-extrabold text-slate-800">{className}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Boarding House</span>
+                                <span className="font-extrabold text-slate-800 uppercase">{profile?.house || 'Not Assigned'}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Programme / Dept</span>
+                                <span className="font-extrabold text-slate-800">{profile?.programme || profile?.department || profile?.track || 'General'}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Academic Year</span>
+                                <span className="font-extrabold text-slate-800 text-indigo-650">
+                                    {schoolSettings?.academicYear || 'Current Year'}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center py-1.5 border-b border-slate-50">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Semester / Term</span>
+                                <span className="font-extrabold text-slate-800 text-indigo-650">
+                                    {schoolSettings?.term || 'Current Term'}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-start py-1.5 gap-2">
+                                <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px] shrink-0">Class Teacher</span>
+                                <span className="font-extrabold text-slate-800 text-right">
+                                    {teacherData ? `${teacherData.firstName} ${teacherData.lastName}` : 'Not Assigned'}
+                                </span>
+                            </div>
+                        </CardContent>
+                    </Card>
+ 
+                     {/* Dr. Gam AI Study Buddy */}
                     <Card className="rounded-[2.2rem] border-none shadow-2xl bg-slate-955 text-white overflow-hidden relative group">
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/20 via-slate-900 to-purple-950/20" />
                         <div className="absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl group-hover:scale-125 transition-transform duration-700 pointer-events-none" />

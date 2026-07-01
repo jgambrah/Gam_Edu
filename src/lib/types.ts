@@ -929,7 +929,8 @@ export interface VideoLink {
 export interface Attachment {
   name: string;
   url: string;
-  type: 'PDF' | 'IMAGE' | 'DOC' | 'Spreadsheet' | 'Link';
+  type: 'PDF' | 'IMAGE' | 'DOC' | 'Spreadsheet' | 'Link' | 'AUDIO';
+  category?: 'PDF Document' | 'Worksheet' | 'Revision Guide' | 'Interactive Material' | 'Audio Lesson';
 }
 
 export interface RichQuizQuestion {

@@ -643,7 +643,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                             )}
                             <Button
                                 onClick={form.handleSubmit(handlePreSubmit)}
-                                className="w-full md:w-auto h-11 px-6 font-bold bg-teal-650 hover:bg-teal-700 text-white rounded-xl shadow-lg shadow-teal-950/20 transition-all duration-200 hover:shadow-teal-500/20 active:scale-[0.98]"
+                                className="w-full md:w-auto h-11 px-6 font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-lg shadow-teal-950/20 transition-all duration-200 hover:shadow-teal-500/20 active:scale-[0.98]"
                                 disabled={isLoading || isLocked}
                             >
                                 {isLoading ? (
@@ -666,13 +666,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                         <AlertDialogContent className="rounded-2xl max-w-md border border-slate-150 bg-white">
                             <AlertDialogHeader>
                                 <AlertDialogTitle className="text-slate-800 font-extrabold text-lg flex items-center gap-2">
-                                    <AlertCircle className="h-5 w-5 text-teal-650" />
+                                    <AlertCircle className="h-5 w-5 text-teal-600" />
                                     Confirm Attendance Submission
                                 </AlertDialogTitle>
                                 <AlertDialogDescription className="text-slate-500 text-sm leading-relaxed mt-2">
                                     You are about to record student attendance and process daily billing for canteen and bus services.
                                     <br /><br />
-                                    <span className="font-semibold text-rose-650">Please review carefully:</span> You cannot modify or undo this sheet after <span className="font-bold">8 days</span>. Only a Director or Administrator can request modifications after the grace period.
+                                    <span className="font-semibold text-rose-600">Please review carefully:</span> You cannot modify or undo this sheet after <span className="font-bold">8 days</span>. Only a Director or Administrator can request modifications after the grace period.
                                     <br /><br />
                                     Are you sure you want to proceed and save this register?
                                 </AlertDialogDescription>
@@ -681,7 +681,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 <AlertDialogCancel className="rounded-xl font-bold border-slate-200">Cancel</AlertDialogCancel>
                                 <AlertDialogAction 
                                     onClick={handleConfirmSubmit}
-                                    className="rounded-xl font-bold bg-teal-650 hover:bg-teal-700 text-white border-0"
+                                    className="rounded-xl font-bold bg-teal-600 hover:bg-teal-700 text-white transition-all shadow-md hover:shadow-lg active:scale-95 border-0"
                                 >
                                     Confirm & Submit
                                 </AlertDialogAction>

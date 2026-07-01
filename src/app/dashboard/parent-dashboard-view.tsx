@@ -2050,7 +2050,7 @@ export function ParentDashboard({
                         {/* KPI Metrics Row */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                             <Card className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex items-center gap-5 hover:scale-[1.02] transition-transform duration-300">
-                                <div className="p-4 bg-teal-50 text-teal-650 rounded-2xl">
+                                <div className="p-4 bg-teal-50 text-teal-600 rounded-2xl">
                                     <MessageSquare className="h-6 w-6" />
                                 </div>
                                 <div className="space-y-1">
@@ -2289,7 +2289,7 @@ export function ParentDashboard({
 
                                 {loadingSatisfaction ? (
                                     <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
-                                        <Loader2 className="h-8 w-8 animate-spin text-teal-650" />
+                                        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
                                         <span className="text-xs font-semibold animate-pulse text-slate-500">Loading satisfaction history...</span>
                                     </div>
                                 ) : pastSubmissions.length > 0 ? (

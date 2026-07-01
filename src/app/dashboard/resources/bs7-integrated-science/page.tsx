@@ -35,7 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import { updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { 
   BookOpen, Edit, Loader2, Save, Plus, Trash2, 
-  FileText, Video, HelpCircle, Paperclip, UploadCloud 
+  FileText, Video, HelpCircle, Paperclip, UploadCloud, Headphones
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
@@ -113,7 +113,9 @@ function MaterialEditorDialog({
       const file = e.target.files[0];
       const fakeUrl = URL.createObjectURL(file); 
       
-      const type = file.type.includes('pdf') ? 'PDF' : file.type.includes('image') ? 'IMAGE' : 'DOC';
+      const type = file.type.includes('pdf') ? 'PDF' : 
+                   file.type.includes('image') ? 'IMAGE' : 
+                   (file.type.includes('audio') || file.name.endsWith('.mp3') || file.name.endsWith('.wav') || file.name.endsWith('.m4a')) ? 'AUDIO' : 'DOC';
       
       setAttachments([...attachments, { name: file.name, url: fakeUrl, type }]);
       toast({ title: "File Selected", description: "In production, this would upload to Storage." });
@@ -257,16 +259,46 @@ function MaterialEditorDialog({
                         </Card>
 
                         <Card>
-                            <CardHeader><CardTitle>Documents (PDF, Word, Images)</CardTitle></CardHeader>
+                            <CardHeader><CardTitle>Documents & Audio (PDF, Word, MP3, etc.)</CardTitle></CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <Input type="file" onChange={handleFileUpload} className="w-full" />
                                 </div>
                                 <div className="space-y-2">
                                     {attachments.map((f, i) => (
-                                        <div key={i} className="flex items-center justify-between p-2 border rounded bg-white">
-                                            <span className="flex items-center gap-2"><Paperclip className="w-4 h-4 text-blue-500"/> {f.name}</span>
-                                            <Button variant="ghost" size="sm" onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))}><Trash2 className="w-4 h-4 text-red-500"/></Button>
+                                        <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded bg-white gap-3">
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                {f.type === 'AUDIO' || f.name.toLowerCase().endsWith('.mp3') || f.name.toLowerCase().endsWith('.wav') || f.name.toLowerCase().endsWith('.m4a') ? (
+                                                    <Headphones className="w-4 h-4 text-emerald-500 shrink-0"/>
+                                                ) : (
+                                                    <Paperclip className="w-4 h-4 text-blue-500 shrink-0"/>
+                                                )}
+                                                <span className="truncate text-xs font-semibold text-slate-700">{f.name}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <Select
+                                                    value={f.category || "PDF Document"}
+                                                    onValueChange={(val) => {
+                                                        const updated = [...attachments];
+                                                        updated[i] = { ...updated[i], category: val as any };
+                                                        setAttachments(updated);
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="h-8 text-[11px] w-36">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="PDF Document">PDF Document</SelectItem>
+                                                        <SelectItem value="Worksheet">Worksheet</SelectItem>
+                                                        <SelectItem value="Revision Guide">Revision Guide</SelectItem>
+                                                        <SelectItem value="Interactive Material">Interactive Material</SelectItem>
+                                                        <SelectItem value="Audio Lesson">Audio Lesson</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))}>
+                                                    <Trash2 className="w-4 h-4 text-red-500"/>
+                                                </Button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -456,7 +488,11 @@ export default function BS7IntegratedSciencePage() {
                                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-4 border-t">
                                                             {topic.attachments.map((file, i) => (
                                                                 <a key={i} href={file.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 border rounded hover:bg-slate-100 transition-colors">
-                                                                    <Paperclip className="h-4 w-4 text-blue-500"/>
+                                                                    {file.type === 'AUDIO' || file.name.toLowerCase().endsWith('.mp3') || file.name.toLowerCase().endsWith('.wav') || file.name.toLowerCase().endsWith('.m4a') ? (
+                                                                        <Headphones className="h-4 w-4 text-emerald-500"/>
+                                                                    ) : (
+                                                                        <Paperclip className="h-4 w-4 text-blue-500"/>
+                                                                    )}
                                                                     <span className="truncate text-sm font-medium">{file.name}</span>
                                                                 </a>
                                                             ))}
