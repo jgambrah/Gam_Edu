@@ -100,11 +100,12 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         const isThermal = layoutStyle === 'thermal';
         const originalElement = printRef.current;
         
-        // Clone the element and place it offscreen to avoid modal and scroll clipping offsets
+        // Clone the element and place it at (0,0) with a negative z-index to avoid html2canvas negative coordinate clipping bugs
         const clone = originalElement.cloneNode(true) as HTMLDivElement;
-        clone.style.position = 'absolute';
-        clone.style.left = '-9999px';
+        clone.style.position = 'fixed';
+        clone.style.left = '0';
         clone.style.top = '0';
+        clone.style.zIndex = '-9999';
         clone.style.margin = '0';
         clone.style.padding = '0';
         clone.style.width = isThermal ? '80mm' : '148mm';
@@ -116,7 +117,9 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                 scale: 2, 
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                width: clone.offsetWidth,
+                height: clone.offsetHeight
             });
             const imgData = canvas.toDataURL('image/png');
             

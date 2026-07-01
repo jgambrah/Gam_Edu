@@ -359,6 +359,22 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                 reversalReason: deleteField(),
                 reversalRequestedAt: deleteField()
             });
+
+            // 4. Log the reversal to a permanent audit collection
+            const logRef = doc(collection(firestore, 'reversalLogs'));
+            batch.set(logRef, {
+                id: logRef.id,
+                recordId: record.id,
+                studentId: record.studentId,
+                studentName: record.studentName,
+                chargeDescription: record.description,
+                billedAmount: record.billedAmount,
+                amountReversed: totalReversed,
+                reason: 'Immediate Reversal',
+                approvedBy: 'Cashier (Immediate)',
+                timestamp: serverTimestamp(),
+                schoolId: record.schoolId || ''
+            });
             
             await batch.commit();
             
@@ -3369,6 +3385,22 @@ export default function AccountsPage() {
             status: newStatus,
             reversalReason: deleteField(),
             reversalRequestedAt: deleteField()
+        });
+
+        // 3. Log the reversal to a permanent audit collection
+        const logRef = doc(collection(firestore, 'reversalLogs'));
+        batch.set(logRef, {
+            id: logRef.id,
+            recordId: record.id,
+            studentId: record.studentId,
+            studentName: record.studentName,
+            chargeDescription: record.description,
+            billedAmount: record.billedAmount,
+            amountReversed: totalReversed,
+            reason: (record as any).reversalReason || 'Director Approved Reversal',
+            approvedBy: 'Director',
+            timestamp: serverTimestamp(),
+            schoolId: record.schoolId || ''
         });
         
         await batch.commit();
