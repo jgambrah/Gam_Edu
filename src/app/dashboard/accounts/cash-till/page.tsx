@@ -495,13 +495,13 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
                                 <p className="text-xs text-slate-400 mt-1">Session opened: {activeTill.dateOpened ? formatDateSafe(activeTill.dateOpened) : 'N/A'}</p>
                             </div>
                             <div className="flex gap-2 mt-6">
-                                <Button variant="outline" onClick={() => setIsAdjustmentOpen(true)} className="border-white/20 text-white hover:bg-white/10 h-9 text-xs font-bold">
+                                <Button variant="ghost" onClick={() => setIsAdjustmentOpen(true)} className="border border-white/20 text-white hover:bg-white/10 hover:text-white h-9 text-xs font-bold bg-transparent">
                                     Manual Cash Adjustment
                                 </Button>
                                 <Button 
                                     onClick={() => handlePrintReport(activeTill, transactions || [])}
-                                    variant="outline"
-                                    className="border-white/20 text-white hover:bg-white/10 h-9 text-xs font-bold"
+                                    variant="ghost"
+                                    className="border border-white/20 text-white hover:bg-white/10 hover:text-white h-9 text-xs font-bold bg-transparent"
                                 >
                                     <Printer className="h-3.5 w-3.5 mr-1"/> Print Audit
                                 </Button>
