@@ -95,7 +95,7 @@ export function PaymentReceipt({
   return (
     <div 
         className="bg-white text-black font-sans flex flex-col relative overflow-hidden"
-        style={{ width: '148mm', minHeight: '195mm', position: 'relative' }}
+        style={{ width: '148mm', minHeight: '140mm', position: 'relative' }}
     >
       {/* Decorative top border */}
       {!isPlainA5 && <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-650 to-emerald-500" />}
