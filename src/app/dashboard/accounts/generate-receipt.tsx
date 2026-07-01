@@ -99,13 +99,19 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
 
         try {
             const element = printRef.current;
+            const rect = element.getBoundingClientRect();
+            
             const canvas = await html2canvas(element, { 
                 scale: 2, 
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                height: element.scrollHeight,
-                windowHeight: element.scrollHeight
+                width: rect.width,
+                height: rect.height,
+                scrollX: window.scrollX,
+                scrollY: window.scrollY,
+                x: rect.left + window.scrollX,
+                y: rect.top + window.scrollY
             });
             const imgData = canvas.toDataURL('image/png');
             
