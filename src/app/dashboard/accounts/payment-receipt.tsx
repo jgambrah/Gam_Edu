@@ -95,7 +95,7 @@ export function PaymentReceipt({
   return (
     <div 
         className="bg-white text-black font-sans flex flex-col relative"
-        style={{ width: '148mm', minHeight: '125mm', position: 'relative' }}
+        style={{ width: '148mm', minHeight: '125mm', position: 'relative', boxSizing: 'border-box' }}
     >
       {/* Decorative top border */}
       {!isPlainA5 && <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-650 to-emerald-500" />}
@@ -112,7 +112,7 @@ export function PaymentReceipt({
       {/* Standard Colorful Banner Header */}
       {!isPlainA5 && (
         <header 
-          className="flex items-center justify-between px-8 py-3 mb-2 relative z-10"
+          className="flex items-center justify-between px-5 py-3 mb-2 relative z-10"
           style={{ backgroundColor: primaryTheme, color: '#ffffff' }}
         >
           <div className="flex items-center gap-4">
@@ -158,7 +158,7 @@ export function PaymentReceipt({
 
       {/* Alternative Minimalist B&W Text Header */}
       {isPlainA5 && (
-        <header className="px-8 pt-3 pb-1.5 mb-1.5 border-b border-slate-300 relative z-10 flex items-center justify-between">
+        <header className="px-5 pt-3 pb-1.5 mb-1.5 border-b border-slate-300 relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {schoolProfile?.logoBase64 && (
               <img 
@@ -189,7 +189,7 @@ export function PaymentReceipt({
         </header>
       )}
       
-      <div className="px-6 pb-2 flex-1 relative z-10">
+      <div className="px-4 pb-2 flex-1 relative z-10">
         <section className="grid grid-cols-2 gap-4 my-2 text-xs bg-slate-100/40 p-2 rounded-lg border border-slate-200">
           <div>
             <h3 className="text-[8px] uppercase font-black text-slate-900 tracking-widest mb-0.5">Billed To</h3>
@@ -249,7 +249,7 @@ export function PaymentReceipt({
         </section>
       </div>
 
-      <footer className="px-6 pb-2 text-xs mt-auto relative z-10">
+      <footer className="px-4 pb-2 text-xs mt-auto relative z-10">
         <div className="flex justify-between items-end">
             <div className="text-center w-1/3 space-y-1">
                 {/* SVG stamp seal marking it as PAID */}

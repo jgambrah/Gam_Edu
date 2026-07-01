@@ -101,7 +101,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         const originalElement = printRef.current;
         const innerElement = originalElement.firstElementChild || originalElement;
         
-        // Clone the inner element and place it at (0,0) with a negative z-index to avoid html2canvas clipping bugs
+        // Clone the inner receipt element and render it offscreen for clean capture
         const clone = innerElement.cloneNode(true) as HTMLDivElement;
         clone.style.position = 'fixed';
         clone.style.left = '0';
@@ -109,20 +109,27 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         clone.style.zIndex = '-9999';
         clone.style.margin = '0';
         clone.style.padding = '0';
-        clone.style.width = isThermal ? '80mm' : '148mm';
+        clone.style.overflow = 'visible';
+        // Do NOT override width — the receipt element already has its own inline width (148mm or 80mm)
         
         document.body.appendChild(clone);
 
+        // Allow the browser a tick to fully lay out the cloned element
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         try {
+            const captureWidth = Math.max(clone.scrollWidth, clone.offsetWidth);
+            const captureHeight = Math.max(clone.scrollHeight, clone.offsetHeight);
+            
             const canvas = await html2canvas(clone, { 
                 scale: 2, 
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
-                width: clone.offsetWidth,
-                height: clone.offsetHeight,
-                windowWidth: 1200,
-                windowHeight: 1200
+                width: captureWidth,
+                height: captureHeight,
+                windowWidth: captureWidth + 100,
+                windowHeight: captureHeight + 100
             });
             const imgData = canvas.toDataURL('image/png');
             
