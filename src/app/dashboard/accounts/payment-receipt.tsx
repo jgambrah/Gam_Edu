@@ -249,7 +249,7 @@ export function PaymentReceipt({
         </section>
       </div>
 
-      <footer className="px-8 pb-6 text-xs mt-auto relative z-10">
+      <footer className="px-8 pb-6 text-xs mt-6 relative z-10">
         <div className="flex justify-between items-end">
             <div className="text-center w-1/3 space-y-2">
                 {/* SVG stamp seal marking it as PAID */}
