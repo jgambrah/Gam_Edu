@@ -99,9 +99,10 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
 
         const isThermal = layoutStyle === 'thermal';
         const originalElement = printRef.current;
+        const innerElement = originalElement.firstElementChild || originalElement;
         
-        // Clone the element and place it at (0,0) with a negative z-index to avoid html2canvas negative coordinate clipping bugs
-        const clone = originalElement.cloneNode(true) as HTMLDivElement;
+        // Clone the inner element and place it at (0,0) with a negative z-index to avoid html2canvas clipping bugs
+        const clone = innerElement.cloneNode(true) as HTMLDivElement;
         clone.style.position = 'fixed';
         clone.style.left = '0';
         clone.style.top = '0';
@@ -119,7 +120,9 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                 logging: false,
                 backgroundColor: '#ffffff',
                 width: clone.offsetWidth,
-                height: clone.offsetHeight
+                height: clone.offsetHeight,
+                windowWidth: 1200,
+                windowHeight: 1200
             });
             const imgData = canvas.toDataURL('image/png');
             
