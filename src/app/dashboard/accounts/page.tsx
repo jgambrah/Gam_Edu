@@ -369,6 +369,29 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
+                    <div className="border border-slate-200 p-4 rounded-2xl bg-slate-50/50 space-y-2.5 shadow-xs">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <span className="block text-[10px] uppercase font-black text-slate-400 tracking-wider">Student Profile</span>
+                                <span className="text-sm font-bold text-slate-800">{record.studentName}</span>
+                            </div>
+                            <div className="text-right">
+                                <span className="block text-[10px] uppercase font-black text-slate-400 tracking-wider">Charge Item</span>
+                                <span className="text-xs font-bold text-slate-650 max-w-[180px] truncate block">{record.description}</span>
+                            </div>
+                        </div>
+                        <div className="border-t border-dashed border-slate-200 my-2 pt-2 grid grid-cols-2 gap-4">
+                            <div>
+                                <span className="block text-[10px] uppercase font-black text-slate-400 tracking-wider">Total Billed</span>
+                                <span className="text-xs font-mono font-bold text-slate-700">GH₵{record.billedAmount.toFixed(2)}</span>
+                            </div>
+                            <div className="text-right">
+                                <span className="block text-[10px] uppercase font-black text-slate-400 tracking-wider">To Be Reversed</span>
+                                <span className="text-sm font-mono font-black text-red-600">GH₵{(record.amountPaid || 0).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+
                     {loadingPayments ? (
                         <div className="flex items-center justify-center py-6 text-xs text-slate-400 font-bold uppercase tracking-wider">
                             <Loader2 className="h-5 w-5 animate-spin mr-2 text-indigo-650" /> Evaluating reversal eligibility...
@@ -1921,13 +1944,19 @@ function PaymentHistory({ record }: { record: FinancialRecord }) {
     );
 }
 
-function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver, onEditRecord, onReverseTransaction }: { student: Student; records: FinancialRecord[]; onRecordPayment: (record: FinancialRecord) => void; onApplyWaiver: (record: FinancialRecord) => void; onEditRecord: (record: FinancialRecord) => void; onReverseTransaction: (record: FinancialRecord) => void; }) {
+function StudentLedgerDetail({ student, records, globalDateRange, onRecordPayment, onApplyWaiver, onEditRecord, onReverseTransaction }: { student: Student; records: FinancialRecord[]; globalDateRange?: DateRange; onRecordPayment: (record: FinancialRecord) => void; onApplyWaiver: (record: FinancialRecord) => void; onEditRecord: (record: FinancialRecord) => void; onReverseTransaction: (record: FinancialRecord) => void; }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
     const [isBilling, setIsBilling] = useState(false);
-    const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: startOfMonth(new Date()), to: endOfDay(new Date()) });
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(globalDateRange || { from: startOfMonth(new Date()), to: endOfDay(new Date()) });
     const [openRowId, setOpenRowId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (globalDateRange) {
+            setDateRange(globalDateRange);
+        }
+    }, [globalDateRange]);
     
     const filteredRecords = useMemo(() => {
         if (!records) return [];
@@ -2854,6 +2883,10 @@ export default function AccountsPage() {
   
   const [isOpeningTill, setIsOpeningTill] = useState(false);
   const [sendingSMSStudentId, setSendingSMSStudentId] = useState<string | null>(null);
+  const [globalDateRange, setGlobalDateRange] = useState<DateRange | undefined>({ 
+      from: startOfMonth(new Date()), 
+      to: endOfDay(new Date()) 
+  });
 
   const activeTillQuery = useMemoFirebase(() => 
     (firestore && user?.uid && schoolId) ? 
@@ -3918,9 +3951,33 @@ export default function AccountsPage() {
                             </div>
                         )}
                         
-                        <div className="flex items-center gap-2 relative max-w-sm">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="pl-8" placeholder="Search student by name or ID..." />
+                        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-4">
+                            <div className="flex items-center gap-2 relative max-w-sm w-full">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="pl-8" placeholder="Search student by name or ID..." />
+                            </div>
+                            <div className="flex items-center gap-2 w-full md:w-auto">
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide whitespace-nowrap">Global Date Filter:</span>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant={"outline"} className={cn("w-full md:w-[280px] justify-start text-left font-normal text-xs", !globalDateRange && "text-muted-foreground")}>
+                                            <CalendarIcon className="mr-2 h-4 w-4 text-slate-400" />
+                                            {globalDateRange?.from ? (
+                                                globalDateRange.to ? (
+                                                    <>{format(globalDateRange.from, "LLL dd, y")} - {format(globalDateRange.to, "LLL dd, y")}</>
+                                                ) : (
+                                                    format(globalDateRange.from, "LLL dd, y")
+                                                )
+                                            ) : (
+                                                <span>Filter by Date Range</span>
+                                            )}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="end">
+                                        <Calendar initialFocus mode="range" defaultMonth={globalDateRange?.from} selected={globalDateRange} onSelect={setGlobalDateRange} numberOfMonths={2} />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
                         </div>
                         
                         {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
@@ -3946,6 +4003,7 @@ export default function AccountsPage() {
                                                     <StudentLedgerDetail 
                                                         student={student} 
                                                         records={records} 
+                                                        globalDateRange={globalDateRange}
                                                         onRecordPayment={(rec) => setDialogState({ type: 'payment', record: rec })} 
                                                         onApplyWaiver={(rec) => setDialogState({ type: 'waiver', record: rec })} 
                                                         onEditRecord={(rec) => setEditingRecord(rec)} 

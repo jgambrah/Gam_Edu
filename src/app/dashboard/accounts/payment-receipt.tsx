@@ -64,16 +64,16 @@ export function PaymentReceipt({
           <div className="border-b border-black border-dashed my-2"></div>
         </div>
         <div className="space-y-1 mb-3 text-[10px]">
-          <div className="flex justify-between"><span>Date:</span> <span>{payment.paidAt?.toDate ? format(payment.paidAt.toDate(), 'dd/MM/yy HH:mm') : 'N/A'}</span></div>
-          <div className="flex justify-between font-bold text-slate-900"><span>Student:</span> <span>{student?.firstName} {student?.lastName}</span></div>
-          <div className="flex justify-between"><span>ID:</span> <span className="font-mono">{student ? formatStudentId(student) : ''}</span></div>
-          <div className="flex justify-between"><span>Method:</span> <span>{payment.method}</span></div>
-          {payment.notes && <div className="flex justify-between"><span>Ref:</span> <span>{payment.notes}</span></div>}
+          <div className="flex justify-between font-bold"><span>Date:</span> <span>{payment.paidAt?.toDate ? format(payment.paidAt.toDate(), 'dd/MM/yy HH:mm') : 'N/A'}</span></div>
+          <div className="flex justify-between font-bold text-black"><span>Student:</span> <span>{student?.firstName} {student?.lastName}</span></div>
+          <div className="flex justify-between font-bold"><span>ID:</span> <span className="font-mono font-bold">{student ? formatStudentId(student) : ''}</span></div>
+          <div className="flex justify-between font-bold"><span>Method:</span> <span>{payment.method}</span></div>
+          {payment.notes && <div className="flex justify-between font-bold"><span>Ref:</span> <span>{payment.notes}</span></div>}
         </div>
         <div className="border-t border-black border-dashed pt-2 mb-2 text-[10px]">
-          <span className="font-bold block text-[9px] uppercase tracking-wider mb-0.5 text-slate-500">Narration</span>
+          <span className="font-black block text-[9px] uppercase tracking-wider mb-0.5 text-black">Narration</span>
           <div className="flex justify-between items-start gap-1 font-bold">
-            <span className="text-slate-800">{payment.description || transaction.description} ({transaction.type})</span>
+            <span className="text-black">{payment.description || transaction.description} ({transaction.type})</span>
             <span className="font-mono shrink-0">GH₵{amountPaid.toFixed(2)}</span>
           </div>
         </div>
@@ -95,7 +95,7 @@ export function PaymentReceipt({
   return (
     <div 
         className="bg-white text-black font-sans flex flex-col relative overflow-hidden"
-        style={{ width: '148mm', minHeight: '210mm', position: 'relative' }}
+        style={{ width: '148mm', minHeight: '195mm', position: 'relative' }}
     >
       {/* Decorative top border */}
       {!isPlainA5 && <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-650 to-emerald-500" />}
@@ -112,11 +112,11 @@ export function PaymentReceipt({
       {/* Standard Colorful Banner Header */}
       {!isPlainA5 && (
         <header 
-          className="flex items-center justify-between px-8 py-8 mb-6 relative z-10"
+          className="flex items-center justify-between px-8 py-4 mb-3 relative z-10"
           style={{ backgroundColor: primaryTheme, color: '#ffffff' }}
         >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-white rounded-xl p-2 flex items-center justify-center shadow-md border border-white/20">
+            <div className="w-12 h-12 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-md border border-white/20">
               {schoolProfile?.logoBase64 ? (
                 <img 
                   src={schoolProfile.logoBase64} 
@@ -158,7 +158,7 @@ export function PaymentReceipt({
 
       {/* Alternative Minimalist B&W Text Header */}
       {isPlainA5 && (
-        <header className="px-8 pt-8 pb-4 mb-4 border-b border-slate-300 relative z-10 flex items-center justify-between">
+        <header className="px-8 pt-4 pb-2 mb-2 border-b border-slate-300 relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {schoolProfile?.logoBase64 && (
               <img 
@@ -190,23 +190,23 @@ export function PaymentReceipt({
       )}
       
       <div className="px-8 pb-8 flex-1 relative z-10">
-        <section className="grid grid-cols-2 gap-8 my-6 text-xs bg-slate-100/40 p-4 rounded-2xl border border-slate-200">
+        <section className="grid grid-cols-2 gap-8 my-3 text-xs bg-slate-100/40 p-3 rounded-xl border border-slate-200">
           <div>
-            <h3 className="text-[8px] uppercase font-black text-slate-500 font-bold mb-1 tracking-widest">Billed To</h3>
+            <h3 className="text-[8px] uppercase font-black text-slate-900 tracking-widest mb-1">Billed To</h3>
             <p className="font-black text-sm uppercase text-slate-800">{student?.firstName} {student?.lastName}</p>
-            <p className="text-slate-650 font-mono font-bold text-[10px] mt-0.5">{student ? formatStudentId(student) : ''}</p>
+            <p className="text-slate-900 font-mono font-black text-[10px] mt-0.5">{student ? formatStudentId(student) : ''}</p>
           </div>
           <div className="text-right">
-            <h3 className="text-[8px] uppercase font-black text-slate-500 font-bold mb-1 tracking-widest">Payment Details</h3>
-            <p className="font-bold text-slate-700"><span className="opacity-60">Date:</span> {paymentDate}</p>
-            <p className="font-bold text-slate-700"><span className="opacity-60">Method:</span> {payment.method}</p>
-            {payment.notes && <p className="font-bold text-slate-700"><span className="opacity-60">Ref:</span> {payment.notes}</p>}
+            <h3 className="text-[8px] uppercase font-black text-slate-900 tracking-widest mb-1">Payment Details</h3>
+            <p className="font-bold text-slate-700"><span className="font-extrabold text-slate-900">Date:</span> {paymentDate}</p>
+            <p className="font-bold text-slate-700"><span className="font-extrabold text-slate-900">Method:</span> {payment.method}</p>
+            {payment.notes && <p className="font-bold text-slate-700"><span className="font-extrabold text-slate-900">Ref:</span> {payment.notes}</p>}
           </div>
         </section>
 
-        <section className="mt-8">
+        <section className="mt-4">
             <h3 
-                className="text-[9px] font-black uppercase tracking-[0.2em] mb-4 pb-1 border-b-2"
+                className="text-[9px] font-black uppercase tracking-[0.2em] mb-2 pb-1 border-b-2"
                 style={isPlainA5 ? { borderColor: '#94a3b8', color: '#1e293b' } : { color: primaryTheme, borderBottomColor: secondaryTheme }}
             >
                 Financial Breakdown
@@ -214,17 +214,17 @@ export function PaymentReceipt({
             <table className="w-full text-xs border rounded-xl overflow-hidden shadow-sm" style={isPlainA5 ? { borderColor: '#cbd5e1' } : { border: `1px solid ${secondaryTheme}40` }}>
                 <thead style={isPlainA5 ? { backgroundColor: '#f1f5f9', color: '#1e293b' } : { backgroundColor: secondaryTheme, color: 'white' }}>
                     <tr className="border-b" style={isPlainA5 ? { borderBottomColor: '#cbd5e1' } : { borderBottomColor: `${secondaryTheme}30` }}>
-                        <th className="text-left p-3 font-black uppercase tracking-widest text-[9px]">Description</th>
-                        <th className="text-right p-3 font-black uppercase tracking-widest text-[9px]">Amount Paid</th>
+                        <th className="text-left p-2 font-black uppercase tracking-widest text-[9px]">Description</th>
+                        <th className="text-right p-2 font-black uppercase tracking-widest text-[9px]">Amount Paid</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr className="bg-white">
-                        <td className="p-3 border-r" style={isPlainA5 ? { borderRightColor: '#cbd5e1' } : { borderRightColor: `${secondaryTheme}30` }}>
+                        <td className="p-2 border-r" style={isPlainA5 ? { borderRightColor: '#cbd5e1' } : { borderRightColor: `${secondaryTheme}30` }}>
                             <p className="font-bold text-slate-800">{payment.description || transaction.description}</p>
                             <p className="text-[9px] text-slate-600 font-black uppercase mt-1">FEE TYPE: {transaction.type}</p>
                         </td>
-                        <td className="text-right p-3 font-black text-slate-800 font-mono" style={isPlainA5 ? { color: '#0f172a' } : { color: primaryTheme }}>
+                        <td className="text-right p-2 font-black text-slate-800 font-mono" style={isPlainA5 ? { color: '#0f172a' } : { color: primaryTheme }}>
                             GH₵ {amountPaid.toFixed(2)}
                         </td>
                     </tr>
@@ -232,24 +232,24 @@ export function PaymentReceipt({
             </table>
         </section>
         
-        <section className="flex justify-end mt-8">
+        <section className="flex justify-end mt-4">
             <div className="w-2/3 space-y-2">
                 <div 
-                    className="flex justify-between items-center py-4 px-5 rounded-2xl border"
+                    className="flex justify-between items-center py-2.5 px-4 rounded-xl border"
                     style={isPlainA5 ? { backgroundColor: '#f8fafc', borderColor: '#94a3b8', color: '#1e293b' } : { backgroundColor: primaryTheme, color: '#ffffff' }}
                 >
                     <span className="font-black uppercase tracking-wide text-[10px]">Total Outstanding Ledger</span>
                     <span className="font-black text-base font-mono">GH₵ {totalBalance.toFixed(2)}</span>
                 </div>
                 
-                <p className="text-[8px] text-slate-500 font-bold italic text-right pt-2 uppercase">
+                <p className="text-[8px] text-slate-500 font-bold italic text-right pt-1 uppercase">
                     * Final balance includes all pending school fees.
                 </p>
             </div>
         </section>
       </div>
 
-      <footer className="px-8 pb-8 text-xs mt-auto relative z-10">
+      <footer className="px-8 pb-4 text-xs mt-auto relative z-10">
         <div className="flex justify-between items-end">
             <div className="text-center w-1/3 space-y-1.5">
                 {/* SVG stamp seal marking it as PAID */}
