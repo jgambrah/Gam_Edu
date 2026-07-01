@@ -97,27 +97,30 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         if (!printRef.current || !student) return;
         setLoading(true);
 
+        const isThermal = layoutStyle === 'thermal';
+        const originalElement = printRef.current;
+        
+        // Clone the element and place it offscreen to avoid modal and scroll clipping offsets
+        const clone = originalElement.cloneNode(true) as HTMLDivElement;
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.top = '0';
+        clone.style.margin = '0';
+        clone.style.padding = '0';
+        clone.style.width = isThermal ? '80mm' : '148mm';
+        
+        document.body.appendChild(clone);
+
         try {
-            const element = printRef.current;
-            const rect = element.getBoundingClientRect();
-            
-            const canvas = await html2canvas(element, { 
+            const canvas = await html2canvas(clone, { 
                 scale: 2, 
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#ffffff',
-                width: rect.width,
-                height: rect.height,
-                scrollX: window.scrollX,
-                scrollY: window.scrollY,
-                x: rect.left + window.scrollX,
-                y: rect.top + window.scrollY
+                backgroundColor: '#ffffff'
             });
             const imgData = canvas.toDataURL('image/png');
             
-            const isThermal = layoutStyle === 'thermal';
             const width = isThermal ? 80 : 148;
-            
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
             const aspect = canvasHeight / canvasWidth;
@@ -135,6 +138,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
             console.error('PDF Generation Failed:', error);
             alert("Failed to generate PDF. Please try again.");
         } finally {
+            document.body.removeChild(clone);
             setLoading(false);
         }
     };
