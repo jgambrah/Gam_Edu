@@ -340,13 +340,29 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                 }
             }
             
-            // 3. Delete the parent record charge
+            // 3. Reset the parent record charge to unpaid/partially paid instead of deleting it
             const recordRef = doc(firestore, 'financialRecords', record.id);
-            batch.delete(recordRef);
+            const totalReversed = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+            const newAmountPaid = Math.max(0, (record.amountPaid || 0) - totalReversed);
+            const totalCredited = newAmountPaid + (record.waiverAmount || 0);
+            
+            let newStatus: 'Paid' | 'Partially Paid' | 'Unpaid' = 'Unpaid';
+            if (totalCredited >= record.billedAmount) {
+                newStatus = 'Paid';
+            } else if (totalCredited > 0) {
+                newStatus = 'Partially Paid';
+            }
+            
+            batch.update(recordRef, {
+                amountPaid: newAmountPaid,
+                status: newStatus,
+                reversalReason: deleteField(),
+                reversalRequestedAt: deleteField()
+            });
             
             await batch.commit();
             
-            toast({ title: 'Reversal Completed', description: 'Transaction reversed immediately. Till balance adjusted.' });
+            toast({ title: 'Reversal Completed', description: 'Payment reversed immediately. The bill has been reset to unpaid/partially paid.' });
             onUpdate();
             setOpen(false);
         } catch (e: any) {
@@ -3325,8 +3341,38 @@ export default function AccountsPage() {
     if (!firestore || isProcessingReversal) return;
     setIsProcessingReversal(record.id);
     try {
-        await deleteDoc(doc(firestore, 'financialRecords', record.id));
-        toast({ title: "Reversal Approved", description: "The bill has been permanently removed from the student's ledger." });
+        const batch = writeBatch(firestore);
+        
+        // 1. Fetch payments from subcollection and delete them
+        const querySnap = await getDocs(collection(firestore, 'financialRecords', record.id, 'payments'));
+        const paymentsList = querySnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PaymentTransaction));
+        
+        for (const p of paymentsList) {
+            batch.delete(doc(firestore, 'financialRecords', record.id, 'payments', p.id));
+        }
+        
+        // 2. Reset parent record charge status and amountPaid
+        const recordRef = doc(firestore, 'financialRecords', record.id);
+        const totalReversed = paymentsList.reduce((sum, p) => sum + (p.amount || 0), 0);
+        const newAmountPaid = Math.max(0, (record.amountPaid || 0) - totalReversed);
+        const totalCredited = newAmountPaid + (record.waiverAmount || 0);
+        
+        let newStatus: 'Paid' | 'Partially Paid' | 'Unpaid' = 'Unpaid';
+        if (totalCredited >= record.billedAmount) {
+            newStatus = 'Paid';
+        } else if (totalCredited > 0) {
+            newStatus = 'Partially Paid';
+        }
+        
+        batch.update(recordRef, {
+            amountPaid: newAmountPaid,
+            status: newStatus,
+            reversalReason: deleteField(),
+            reversalRequestedAt: deleteField()
+        });
+        
+        await batch.commit();
+        toast({ title: "Reversal Approved", description: "The payment has been reversed. The bill has been reset to unpaid/partially paid on the student's ledger." });
         forceRefetch();
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Approval Failed", description: e.message });
