@@ -95,10 +95,10 @@ export function PaymentReceipt({
   return (
     <div 
         className="bg-white text-black font-sans flex flex-col relative"
-        style={{ width: '148mm', minHeight: '125mm', position: 'relative', boxSizing: 'border-box' }}
+        style={{ width: '210mm', minHeight: '297mm', position: 'relative', boxSizing: 'border-box' }}
     >
       {/* Decorative top border */}
-      {!isPlainA5 && <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-650 to-emerald-500" />}
+      {!isPlainA5 && <div className="h-2 w-full bg-gradient-to-r from-amber-500 via-indigo-650 to-emerald-500" />}
 
       {/* Official background watermark */}
       {!isPlainA5 && (
@@ -112,11 +112,11 @@ export function PaymentReceipt({
       {/* Standard Colorful Banner Header */}
       {!isPlainA5 && (
         <header 
-          className="flex items-center justify-between px-5 py-3 mb-2 relative z-10"
+          className="flex items-center justify-between px-10 py-5 mb-4 relative z-10"
           style={{ backgroundColor: primaryTheme, color: '#ffffff' }}
         >
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-white rounded-xl p-1 flex items-center justify-center shadow-md border border-white/20">
+            <div className="w-14 h-14 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-md border border-white/20">
               {schoolProfile?.logoBase64 ? (
                 <img 
                   src={schoolProfile.logoBase64} 
@@ -128,7 +128,7 @@ export function PaymentReceipt({
               )}
             </div>
             <div>
-              <h1 className="text-lg font-black uppercase tracking-tight leading-none text-white mb-0.5">
+              <h1 className="text-xl font-black uppercase tracking-tight leading-none text-white mb-1">
                 {schoolProfile?.name || 'School Name'}
               </h1>
               
@@ -148,7 +148,7 @@ export function PaymentReceipt({
             </div>
           </div>
           <div className="text-right">
-            <h2 className="text-2xl font-black uppercase tracking-widest opacity-40 text-white">Receipt</h2>
+            <h2 className="text-3xl font-black uppercase tracking-widest opacity-40 text-white">Receipt</h2>
             <p className="text-[8px] font-mono font-black mt-1 uppercase opacity-80 text-white">
               #{payment.id.slice(0, 16)}
             </p>
@@ -158,7 +158,7 @@ export function PaymentReceipt({
 
       {/* Alternative Minimalist B&W Text Header */}
       {isPlainA5 && (
-        <header className="px-5 pt-3 pb-1.5 mb-1.5 border-b border-slate-300 relative z-10 flex items-center justify-between">
+        <header className="px-10 pt-5 pb-3 mb-3 border-b border-slate-300 relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {schoolProfile?.logoBase64 && (
               <img 
@@ -189,8 +189,8 @@ export function PaymentReceipt({
         </header>
       )}
       
-      <div className="px-4 pb-2 flex-1 relative z-10">
-        <section className="grid grid-cols-2 gap-4 my-2 text-xs bg-slate-100/40 p-2 rounded-lg border border-slate-200">
+      <div className="px-8 pb-4 flex-1 relative z-10">
+        <section className="grid grid-cols-2 gap-8 my-4 text-xs bg-slate-100/40 p-4 rounded-lg border border-slate-200">
           <div>
             <h3 className="text-[8px] uppercase font-black text-slate-900 tracking-widest mb-0.5">Billed To</h3>
             <p className="font-black text-sm uppercase text-slate-800 leading-tight">{student?.firstName} {student?.lastName}</p>
@@ -204,7 +204,7 @@ export function PaymentReceipt({
           </div>
         </section>
 
-        <section className="mt-3">
+        <section className="mt-5">
             <h3 
                 className="text-[9px] font-black uppercase tracking-[0.2em] mb-1 pb-0.5 border-b"
                 style={isPlainA5 ? { borderColor: '#94a3b8', color: '#1e293b' } : { color: primaryTheme, borderBottomColor: secondaryTheme }}
@@ -214,17 +214,17 @@ export function PaymentReceipt({
             <table className="w-full text-xs border rounded-lg overflow-hidden shadow-xs" style={isPlainA5 ? { borderColor: '#cbd5e1' } : { border: `1px solid ${secondaryTheme}40` }}>
                 <thead style={isPlainA5 ? { backgroundColor: '#f1f5f9', color: '#1e293b' } : { backgroundColor: secondaryTheme, color: 'white' }}>
                     <tr className="border-b" style={isPlainA5 ? { borderBottomColor: '#cbd5e1' } : { borderBottomColor: `${secondaryTheme}30` }}>
-                        <th className="text-left p-1.5 font-black uppercase tracking-widest text-[9px]">Description</th>
-                        <th className="text-right p-1.5 font-black uppercase tracking-widest text-[9px]">Amount Paid</th>
+                        <th className="text-left p-3 font-black uppercase tracking-widest text-[9px]">Description</th>
+                        <th className="text-right p-3 font-black uppercase tracking-widest text-[9px]">Amount Paid</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr className="bg-white">
-                        <td className="p-1.5 border-r" style={isPlainA5 ? { borderRightColor: '#cbd5e1' } : { borderRightColor: `${secondaryTheme}30` }}>
+                        <td className="p-3 border-r" style={isPlainA5 ? { borderRightColor: '#cbd5e1' } : { borderRightColor: `${secondaryTheme}30` }}>
                             <p className="font-bold text-slate-800 leading-tight">{payment.description || transaction.description}</p>
                             <p className="text-[9px] text-slate-650 font-black uppercase mt-0.5">FEE TYPE: {transaction.type}</p>
                         </td>
-                        <td className="text-right p-1.5 font-black text-slate-800 font-mono" style={isPlainA5 ? { color: '#0f172a' } : { color: primaryTheme }}>
+                        <td className="text-right p-3 font-black text-slate-800 font-mono" style={isPlainA5 ? { color: '#0f172a' } : { color: primaryTheme }}>
                             GH₵ {amountPaid.toFixed(2)}
                         </td>
                     </tr>
@@ -232,10 +232,10 @@ export function PaymentReceipt({
             </table>
         </section>
         
-        <section className="flex justify-end mt-3">
-            <div className="w-2/3 space-y-1">
+        <section className="flex justify-end mt-5">
+            <div className="w-2/3 space-y-2">
                 <div 
-                    className="flex justify-between items-center py-2 px-3 rounded-lg border"
+                    className="flex justify-between items-center py-3 px-5 rounded-lg border"
                     style={isPlainA5 ? { backgroundColor: '#f8fafc', borderColor: '#94a3b8', color: '#1e293b' } : { backgroundColor: primaryTheme, color: '#ffffff' }}
                 >
                     <span className="font-black uppercase tracking-wide text-[10px]">Total Outstanding Ledger</span>
@@ -249,18 +249,18 @@ export function PaymentReceipt({
         </section>
       </div>
 
-      <footer className="px-4 pb-2 text-xs mt-auto relative z-10">
+      <footer className="px-8 pb-6 text-xs mt-auto relative z-10">
         <div className="flex justify-between items-end">
-            <div className="text-center w-1/3 space-y-1">
+            <div className="text-center w-1/3 space-y-2">
                 {/* SVG stamp seal marking it as PAID */}
                 <div className={cn(
-                  "relative flex items-center justify-center w-12 h-12 mx-auto rotate-[-12deg] opacity-90 border border-dashed rounded-full p-0.5",
+                  "relative flex items-center justify-center w-20 h-20 mx-auto rotate-[-12deg] opacity-90 border-2 border-dashed rounded-full p-1",
                   isPlainA5 ? "border-slate-700 text-slate-800" : "border-emerald-500 text-emerald-500"
                 )}>
-                    <div className={cn("flex flex-col items-center justify-center border rounded-full w-full h-full", isPlainA5 ? "border-slate-700 text-slate-800" : "border-emerald-500 text-emerald-500")}>
-                        <span className="text-[4px] font-black uppercase tracking-widest leading-none">OFFICIAL</span>
-                        <span className="text-[8px] font-black uppercase italic my-0.5 leading-none">PAID</span>
-                        <span className="text-[3px] font-black uppercase tracking-wider leading-none">{paymentDate.slice(0, 11)}</span>
+                    <div className={cn("flex flex-col items-center justify-center border-2 rounded-full w-full h-full", isPlainA5 ? "border-slate-700 text-slate-800" : "border-emerald-500 text-emerald-500")}>
+                        <span className="text-[6px] font-black uppercase tracking-widest leading-none">OFFICIAL</span>
+                        <span className="text-sm font-black uppercase italic my-0.5 leading-none">PAID</span>
+                        <span className="text-[5px] font-black uppercase tracking-wider leading-none">{paymentDate.slice(0, 11)}</span>
                     </div>
                 </div>
                 <div className="border-b border-dashed border-slate-400 w-full"></div>

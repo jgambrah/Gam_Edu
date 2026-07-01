@@ -113,7 +113,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
             padding: 0;
             background: white;
             overflow: visible;
-            width: ${isThermal ? '320px' : '600px'};
+            width: ${isThermal ? '320px' : '800px'};
         `;
         
         // Also ensure the inner receipt element has no overflow restriction
@@ -147,7 +147,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
             const imgData = canvas.toDataURL('image/png');
             
             // Size the PDF page to match the captured aspect ratio
-            const pdfWidth = isThermal ? 80 : 148;
+            const pdfWidth = isThermal ? 80 : 210;
             const aspect = canvas.height / canvas.width;
             const pdfHeight = pdfWidth * aspect;
 
