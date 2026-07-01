@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -247,11 +247,39 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
 }
 
 // --- SUB-COMPONENT: Reversal Request Dialog ---
-function ReversalRequestDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+// --- SUB-COMPONENT: Reversal Request Dialog ---
+function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: { record: FinancialRecord, activeTill: any, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [reason, setReason] = useState('');
+    const [payments, setPayments] = useState<PaymentTransaction[]>([]);
+    const [loadingPayments, setLoadingPayments] = useState(true);
+
+    useEffect(() => {
+        async function fetchPayments() {
+            if (!firestore || !record.id || !open) return;
+            setLoadingPayments(true);
+            try {
+                const querySnap = await getDocs(collection(firestore, 'financialRecords', record.id, 'payments'));
+                const list = querySnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PaymentTransaction));
+                setPayments(list);
+            } catch (e) {
+                console.error("Failed to fetch payments for reversal check:", e);
+            } finally {
+                setLoadingPayments(false);
+            }
+        }
+        fetchPayments();
+    }, [firestore, record.id, open]);
+
+    const isEligibleForImmediate = useMemo(() => {
+        if (!activeTill || activeTill.status !== 'Open') return false;
+        if (loadingPayments) return false;
+        
+        // If there are payments, check if all were logged under the current active till
+        return payments.every(p => p.tillId && p.tillId === activeTill.id);
+    }, [payments, activeTill, loadingPayments]);
 
     async function handleRequest() {
         if (!firestore || !record.id || !reason.trim()) return;
@@ -272,21 +300,103 @@ function ReversalRequestDialog({ record, open, setOpen, onUpdate }: { record: Fi
         }
     }
 
+    async function handleImmediateReversal() {
+        if (!firestore || !record.id || isSubmitting) return;
+        setIsSubmitting(true);
+        try {
+            const batch = writeBatch(firestore);
+            
+            // 1. Delete all payments from subcollection
+            for (const payment of payments) {
+                const paymentRef = doc(firestore, 'financialRecords', record.id, 'payments', payment.id);
+                batch.delete(paymentRef);
+                
+                // 2. If Cash and activeTill, write negative reversal transaction and adjust drawer cash balance
+                if (payment.method === 'Cash' && activeTill) {
+                    const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
+                    batch.set(tillTransRef, {
+                        amount: -payment.amount,
+                        studentName: record.studentName,
+                        timestamp: serverTimestamp(),
+                        type: 'Reversal',
+                        description: `Reversal of Receipt #${payment.id} for ${record.description}`,
+                        status: 'Completed',
+                        schoolId: record.schoolId || ''
+                    });
+                    
+                    const tillRef = doc(firestore, 'tills', activeTill.id);
+                    batch.update(tillRef, {
+                        currentBalance: increment(-payment.amount)
+                    });
+                }
+            }
+            
+            // 3. Delete the parent record charge
+            const recordRef = doc(firestore, 'financialRecords', record.id);
+            batch.delete(recordRef);
+            
+            await batch.commit();
+            
+            toast({ title: 'Reversal Completed', description: 'Transaction reversed immediately. Till balance adjusted.' });
+            onUpdate();
+            setOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Reversal Failed', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Request Transaction Reversal</DialogTitle>
-                    <DialogDescription>This will flag the record for administrative review and possible cancellation.</DialogDescription>
+                    <DialogTitle>{isEligibleForImmediate ? "Cancel & Reverse Transaction" : "Request Transaction Reversal"}</DialogTitle>
+                    <DialogDescription>
+                        {isEligibleForImmediate 
+                          ? "This transaction is eligible for immediate cancellation and reversal." 
+                          : "This will flag the record for administrative review and possible cancellation."}
+                    </DialogDescription>
                 </DialogHeader>
+
                 <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                        <Label>Reason for Reversal</Label>
-                        <Textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain why this transaction needs to be reversed..." />
-                    </div>
-                    <Button variant="destructive" onClick={handleRequest} disabled={isSubmitting || !reason.trim()} className="w-full">
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Submit Reversal Request
-                    </Button>
+                    {loadingPayments ? (
+                        <div className="flex items-center justify-center py-6 text-xs text-slate-400 font-bold uppercase tracking-wider">
+                            <Loader2 className="h-5 w-5 animate-spin mr-2 text-indigo-650" /> Evaluating reversal eligibility...
+                        </div>
+                    ) : isEligibleForImmediate ? (
+                        <>
+                            <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl space-y-1.5 shadow-sm">
+                                <p className="text-xs font-black text-indigo-850 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Sparkles className="h-4 w-4 text-indigo-600 animate-pulse" /> Immediate Reversal Eligible
+                                </p>
+                                <p className="text-[11.5px] text-indigo-650 leading-relaxed font-semibold">
+                                    All payments associated with this charge were logged during your current open till session. Your till balance will be automatically adjusted.
+                                </p>
+                            </div>
+                            <Button variant="destructive" onClick={handleImmediateReversal} disabled={isSubmitting} className="w-full h-11 text-sm font-black uppercase tracking-wider shadow-sm mt-2">
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Execute Immediate Reversal
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-1.5 shadow-xs">
+                                <p className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Info className="h-4 w-4 text-slate-500" /> Director Approval Required
+                                </p>
+                                <p className="text-[11.5px] text-slate-600 leading-relaxed font-semibold">
+                                    This transaction belongs to a closed/submitted till session, or has past-shift payments. The request must be reviewed and approved by the Director.
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Reason for Reversal</Label>
+                                <Textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain why this transaction needs to be reversed..." className="min-h-[100px] text-sm" />
+                            </div>
+                            <Button variant="destructive" onClick={handleRequest} disabled={isSubmitting || !reason.trim()} className="w-full h-11 text-sm font-black uppercase tracking-wider shadow-sm mt-2">
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Submit Reversal Request
+                            </Button>
+                        </>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>
@@ -1612,6 +1722,15 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
         if (!firestore || !user || !record.id || !schoolId) return;
         setIsSubmitting(true);
         try {
+            // Retrieve open till session for the accountant if one exists
+            const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'), where('schoolId', '==', schoolId));
+            const tillSnap = await getDocs(tillQuery);
+            const activeTill = !tillSnap.empty ? tillSnap.docs[0] : null;
+
+            if (values.method === 'Cash' && !activeTill) {
+                throw new Error("You must have an OPEN TILL to accept cash.");
+            }
+
             const batch = writeBatch(firestore);
             const receiptId = await generateNextReceiptId(firestore, schoolId);
             const paymentDocRef = doc(firestore, 'financialRecords', record.id, 'payments', receiptId);
@@ -1627,18 +1746,20 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 processedByName: user.displayName || user.email, 
                 studentId: record.studentId, 
                 description: paymentDescription, 
-                schoolId: schoolId 
+                schoolId: schoolId,
+                tillId: activeTill ? activeTill.id : ''
             };
             const recordRef = doc(firestore, 'financialRecords', record.id);
             const newAmountPaid = (record.amountPaid || 0) + values.amount;
             const isFullyPaid = (record.billedAmount - newAmountPaid - (record.waiverAmount || 0)) <= 0.001;
-            batch.update(recordRef, { amountPaid: newAmountPaid, status: isFullyPaid ? 'Paid' : 'Unpaid', lastPaymentDate: serverTimestamp() });
+            batch.update(recordRef, { 
+                amountPaid: newAmountPaid, 
+                status: isFullyPaid ? 'Paid' : 'Unpaid', 
+                lastPaymentDate: serverTimestamp(),
+                paymentNarration: paymentDescription
+            });
             
-            if (values.method === 'Cash') {
-                const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'), where('schoolId', '==', schoolId));
-                const tillSnap = await getDocs(tillQuery);
-                if (tillSnap.empty) throw new Error("You must have an OPEN TILL to accept cash.");
-                const activeTill = tillSnap.docs[0];
+            if (values.method === 'Cash' && activeTill) {
                 const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
                 batch.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${paymentDescription} (Receipt: ${receiptId})`, status: 'Completed', schoolId: schoolId });
                 batch.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(values.amount) });
@@ -1760,7 +1881,8 @@ function PaymentHistory({ record }: { record: FinancialRecord }) {
                         amount: record.amountPaid,
                         method: 'Recorded Payment',
                         paidAt: record.lastPaymentDate || record.createdAt,
-                        notes: 'Legacy record'
+                        notes: 'Legacy record',
+                        description: (record as any).paymentNarration || record.description
                     } as any} 
                     variant="full" 
                 />
@@ -1914,7 +2036,7 @@ function StudentLedgerDetail({ student, records, onRecordPayment, onApplyWaiver,
                                                           <DialogTrigger asChild><DropdownMenuItem onSelect={(e) => e.preventDefault()}><Receipt className="mr-2 h-4 w-4"/> Print Full Receipt</DropdownMenuItem></DialogTrigger>
                                                           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                                                               <DialogHeader><DialogTitle>Full Statement Receipt</DialogTitle><DialogDescription>Consolidated receipt for all payments made against this bill.</DialogDescription></DialogHeader>
-                                                              <GenerateReceipt transaction={rec} payment={{ id: 'consolidated-' + rec.id, amount: rec.amountPaid, method: 'Total Recorded', paidAt: rec.lastPaymentDate || rec.createdAt, notes: 'Consolidated Receipt for ' + rec.description } as any} variant="full" />
+                                                              <GenerateReceipt transaction={rec} payment={{ id: 'consolidated-' + rec.id, amount: rec.amountPaid, method: 'Total Recorded', paidAt: rec.lastPaymentDate || rec.createdAt, notes: 'Consolidated Receipt for ' + rec.description, description: (rec as any).paymentNarration || rec.description } as any} variant="full" />
                                                           </DialogContent>
                                                       </Dialog>
                                                       <DropdownMenuItem 
@@ -3892,7 +4014,7 @@ export default function AccountsPage() {
             <ApplyWaiverDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'waiver', record: null})} onUpdate={forceRefetch} />
         )}
         {dialogState.record && dialogState.type === 'reversal' && (
-            <ReversalRequestDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={forceRefetch} />
+            <ReversalRequestDialog record={dialogState.record} activeTill={activeTill} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={forceRefetch} />
         )}
         {editingRecord && (
             <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={forceRefetch} />

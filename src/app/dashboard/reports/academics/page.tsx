@@ -50,6 +50,9 @@ export default function AcademicReportsPage() {
     const { user } = useUser();
     const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
     
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolData } = useDoc<any>(schoolRef);
+    
     // States
     const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
     const [selectedSubjectId, setSelectedSubjectId] = useState<string>('all');
@@ -823,7 +826,8 @@ export default function AcademicReportsPage() {
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => {
-                                                        const prompt = `Draft a supportive and professional parent notification message for student ${student.studentName}, who is currently flagged under Academic Risk. Their average score is ${student.average}% and their weakest subject is ${lowestSubName} (${lowestScore}%). The notification should communicate the situation constructively and propose a discussion to help the student improve.`;
+                                                        const schoolName = schoolData?.name || 'our school';
+                                                        const prompt = `Draft a supportive and professional parent notification message for student ${student.studentName}, who is currently flagged under Academic Risk. Their average score is ${student.average}% and their weakest subject is ${lowestSubName} (${lowestScore}%). Please write the message on behalf of the school "${schoolName}" (do NOT use "GAM Edu", which is the software app name). The notification should communicate the situation constructively and propose a discussion to help the student improve.`;
                                                         window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
                                                     }}
                                                     className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm shrink-0"

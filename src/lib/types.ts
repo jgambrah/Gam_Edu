@@ -671,6 +671,7 @@ export type PaymentTransaction = {
     schoolId?: string;
     description?: string;
     studentId?: string;
+    tillId?: string;
 };
 
 export type Staff = {

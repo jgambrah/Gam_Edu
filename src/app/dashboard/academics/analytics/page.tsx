@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
+import { collection, query, where, doc } from 'firebase/firestore';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ScatterChart, Scatter
 } from 'recharts';
@@ -41,6 +41,9 @@ export default function LearningAnalyticsPage() {
   const { user } = useUser();
   const { toast } = useToast();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
+  
+  const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+  const { data: schoolData } = useDoc<any>(schoolRef);
   const { role, loading: isRoleLoading } = useRole();
   const router = useRouter();
   
@@ -527,7 +530,8 @@ export default function LearningAnalyticsPage() {
                                                           variant="outline"
                                                           size="sm"
                                                           onClick={() => {
-                                                              const prompt = `Draft a supportive and professional parent notification message for student ${risk.studentName}, who has been flagged with an Academic/Attendance Risk. Trigger Reason: ${risk.reason}. Suggested Intervention: ${risk.intervention}. The message should communicate the situation constructively and propose a discussion to help the student improve.`;
+                                                              const schoolName = schoolData?.name || 'our school';
+                                                              const prompt = `Draft a supportive and professional parent notification message for student ${risk.studentName}, who has been flagged with an Academic/Attendance Risk. Trigger Reason: ${risk.reason}. Suggested Intervention: ${risk.intervention}. Please write the message on behalf of the school "${schoolName}" (do NOT use "GAM Edu", which is the software app name). The message should communicate the situation constructively and propose a discussion to help the student improve.`;
                                                               window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
                                                           }}
                                                           className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm flex-1 justify-center whitespace-nowrap"

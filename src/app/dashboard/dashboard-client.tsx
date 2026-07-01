@@ -2,9 +2,11 @@
 
 import { useMemo, useState, useTransition, useCallback, useEffect } from 'react';
 import StudentLearningResourcesView from './StudentLearningResourcesView';
+import StudentTimetableView from './StudentTimetableView';
+import StudentCalendarView from './StudentCalendarView';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc } from 'firebase/firestore';
+import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
@@ -38,7 +40,8 @@ import {
   Heart,
   Building,
   Tag,
-  IdCard
+  IdCard,
+  Milestone
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area, LineChart, Line } from 'recharts';
@@ -52,6 +55,8 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Route, Bus, Stop, Student, Assessment } from '@/lib/types';
+import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
 import { StudentDisplay } from '@/components/student-display';
@@ -1567,6 +1572,7 @@ function AdminDashboard({
             rooms={rooms}
             behavioralRecords={behavioralRecords}
             financialRecords={financialRecords}
+            schoolData={schoolData}
           />
         )}
 
@@ -2583,6 +2589,7 @@ function AcademicPerformanceDashboardView({
   rooms,
   behavioralRecords,
   financialRecords,
+  schoolData,
 }: any) {
   const hasSHS = useMemo(() => {
     if (!classes || classes.length === 0) return false;
@@ -3279,7 +3286,8 @@ function AcademicPerformanceDashboardView({
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const prompt = `Draft a supportive and professional parent notification message for student ${s.name} (Class: ${s.class}), who is currently flagged under Academic Risk. Their average score is ${s.average} and they are struggling in these subjects: ${s.subjects}. The notification should communicate the situation constructively and propose a discussion to help the student improve.`;
+                            const schoolName = schoolData?.name || 'our school';
+                            const prompt = `Draft a supportive and professional parent notification message for student ${s.name} (Class: ${s.class}), who is currently flagged under Academic Risk. Their average score is ${s.average} and they are struggling in these subjects: ${s.subjects}. Please write the message on behalf of the school "${schoolName}" (do NOT use "GAM Edu", which is the software app name). The notification should communicate the situation constructively and propose a discussion to help the student improve.`;
                             window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
                           }}
                           className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm"
@@ -5254,6 +5262,7 @@ function DirectorDashboard({
             rooms={rooms}
             behavioralRecords={behavioralRecords}
             financialRecords={financialRecords}
+            schoolData={schoolData}
           />
         )}
 
@@ -11240,7 +11249,7 @@ function OldParentDashboard({
 
 function StudentDashboard({ profile }: any) {
     const { user } = useUser();
-    const [activeSection, setActiveSection] = useState<'desk' | 'homework' | 'academics' | 'resources'>('desk');
+    const [activeSection, setActiveSection] = useState<'desk' | 'homework' | 'academics' | 'resources' | 'timetable' | 'calendar'>('desk');
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { role, loading: isRoleLoading } = useRole();
@@ -11302,6 +11311,20 @@ function StudentDashboard({ profile }: any) {
         return query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId));
     }, [firestore, schoolId]);
     const { data: roomsList } = useCollection<any>(roomsQuery);
+
+    // 1h. Fetch time slots list
+    const timeSlotsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId) return null;
+        return query(collection(firestore, 'timeSlots'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
+    const { data: timeSlotsList } = useCollection<any>(timeSlotsQuery);
+
+    // 1i. Fetch staff list
+    const staffQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId) return null;
+        return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
+    const { data: staffList } = useCollection<any>(staffQuery);
 
     // 2. Fetch student's assessments for overall average grade
     const assessmentsQuery = useMemoFirebase(() => {
@@ -11556,6 +11579,80 @@ function StudentDashboard({ profile }: any) {
         }
         resolveTeachers();
     }, [firestore, todayLessons]);
+
+    // Seeder effect to populate school calendar if it is empty
+    useEffect(() => {
+        if (!firestore || !schoolId || !calendarEvents || calendarEvents.length > 0) return;
+        
+        const seedEvents = [
+            {
+                title: "JHS Mock Exam: Integrated Science Paper 1 & 2",
+                type: "Academic",
+                description: "Terminal BECE preparatory mock exams.",
+                location: "Assembly Hall",
+                time: "09:00 AM - 11:30 AM",
+                date: Timestamp.fromDate(new Date("2026-07-03T09:00:00")),
+                schoolId
+            },
+            {
+                title: "JHS Mock Exam: Mathematics Paper 1 & 2",
+                type: "Academic",
+                description: "Algebraic equations and geometry theorems validation.",
+                location: "Assembly Hall",
+                time: "09:00 AM - 11:30 AM",
+                date: Timestamp.fromDate(new Date("2026-07-04T09:00:00")),
+                schoolId
+            },
+            {
+                title: "JHS Mock Exam: Social Studies Paper 1 & 2",
+                type: "Academic",
+                description: "Environment, culture, and ancient civilizations paper.",
+                location: "Assembly Hall",
+                time: "01:00 PM - 03:00 PM",
+                date: Timestamp.fromDate(new Date("2026-07-05T13:00:00")),
+                schoolId
+            },
+            {
+                title: "Weekly School Assembly & Worship",
+                type: "Event",
+                description: "Morning devotions, announcements, and opening messages.",
+                location: "Forecourt / Assembly Ground",
+                time: "07:30 AM - 08:15 AM",
+                date: Timestamp.fromDate(new Date("2026-07-01T07:30:00")),
+                schoolId
+            },
+            {
+                title: "Science & Robotics Club Meeting",
+                type: "Event",
+                description: "Hands-on projects covering block coding, sensors, and structural builds.",
+                location: "ICT Laboratory",
+                time: "03:00 PM - 04:30 PM",
+                date: Timestamp.fromDate(new Date("2026-07-01T15:00:00")),
+                schoolId
+            },
+            {
+                title: "Inter-Class Sports Festival: Football & Basketball Finals",
+                type: "Sports",
+                description: "Athletics competitions and inter-house matches.",
+                location: "Sports Stadium / Arena",
+                time: "02:30 PM - 04:30 PM",
+                date: Timestamp.fromDate(new Date("2026-07-01T14:30:00")),
+                schoolId
+            }
+        ];
+
+        async function seed() {
+            try {
+                for (const ev of seedEvents) {
+                    await addDoc(collection(firestore!, 'school_calendar'), ev);
+                }
+                console.log("School calendar events seeded successfully!");
+            } catch (err) {
+                console.error("Seeding calendar events failed: ", err);
+            }
+        }
+        seed();
+    }, [firestore, schoolId, calendarEvents]);
 
     const todayEvents = useMemo(() => {
         if (!calendarEvents) return [];
@@ -11817,6 +11914,30 @@ function StudentDashboard({ profile }: any) {
                     )}
                 >
                     <Award className="h-4 w-4" /> Academic Performance
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => setActiveSection('timetable')} 
+                    className={cn(
+                        "rounded-xl px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2", 
+                        activeSection === 'timetable' 
+                          ? "bg-white text-indigo-700 shadow-sm border border-slate-200/20" 
+                          : "text-slate-500 hover:text-indigo-650 hover:bg-slate-200/30"
+                    )}
+                >
+                    <Clock className="h-4 w-4" /> Weekly Timetable
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    onClick={() => setActiveSection('calendar')} 
+                    className={cn(
+                        "rounded-xl px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center gap-2", 
+                        activeSection === 'calendar' 
+                          ? "bg-white text-indigo-700 shadow-sm border border-slate-200/20" 
+                          : "text-slate-500 hover:text-indigo-650 hover:bg-slate-200/30"
+                    )}
+                >
+                    <Calendar className="h-4 w-4" /> School Calendar
                 </Button>
             </div>
 
@@ -12285,6 +12406,21 @@ function StudentDashboard({ profile }: any) {
                         <StudentLearningResourcesView studentClass={className} dbMaterials={dbMaterials || undefined} />
                     )}
 
+                    {activeSection === 'timetable' && (
+                        <StudentTimetableView 
+                            classTimetable={classTimetable || []} 
+                            subjectsList={subjectsList || []} 
+                            staffList={staffList || []} 
+                            roomsList={roomsList || []} 
+                            timeSlotsList={timeSlotsList || []} 
+                            calendarEvents={calendarEvents || []}
+                        />
+                    )}
+
+                    {activeSection === 'calendar' && (
+                        <StudentCalendarView calendarEvents={calendarEvents || []} />
+                    )}
+
                     {activeSection === 'academics' && (
                         <>
                             {/* Academic Summary Card */}
@@ -12667,6 +12803,28 @@ function StudentDashboard({ profile }: any) {
                                 <span className="font-extrabold text-slate-800 text-right">
                                     {teacherData ? `${teacherData.firstName} ${teacherData.lastName}` : 'Not Assigned'}
                                 </span>
+                            </div>
+                            <div className="pt-3 border-t border-slate-105 mt-2">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button className="w-full h-9 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black rounded-xl transition-all flex items-center justify-center gap-2 border border-indigo-100 shadow-xs">
+                                            <Milestone className="h-4 w-4" /> View Student Journey
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl p-6 bg-white">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-xl font-black uppercase text-slate-900 flex items-center gap-2 italic">
+                                                <GraduationCap className="h-6 w-6 text-indigo-650 animate-bounce" /> Student Journey Timeline
+                                            </DialogTitle>
+                                            <DialogDescription className="text-xs text-slate-500 uppercase tracking-wider font-bold">
+                                                Permanent digital record from admission to graduation
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="mt-4">
+                                            <StudentJourneyTimeline studentId={profile?.uid || profile?.id || ''} />
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
                         </CardContent>
                     </Card>

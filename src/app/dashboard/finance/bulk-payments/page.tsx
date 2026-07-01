@@ -291,7 +291,8 @@ export default function BulkDailyReceiptsPage() {
                 batch.update(recordRef, {
                     amountPaid: newAmountPaid,
                     lastPaymentDate: serverTimestamp(),
-                    status: isFullyPaid ? 'Paid' : 'Unpaid'
+                    status: isFullyPaid ? 'Paid' : 'Unpaid',
+                    paymentNarration: finalDescription
                 });
 
                 batch.set(paymentRef, {
@@ -304,7 +305,8 @@ export default function BulkDailyReceiptsPage() {
                     schoolId: schoolId,
                     studentId: bill.studentId,
                     description: finalDescription,
-                    notes: 'Bulk Daily Receipting'
+                    notes: 'Bulk Daily Receipting',
+                    tillId: activeTill.id
                 });
 
                 batch.set(tillTransRef, {
