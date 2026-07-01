@@ -420,6 +420,23 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                                     This transaction belongs to a closed/submitted till session, or has past-shift payments. The request must be reviewed and approved by the Director.
                                 </p>
                             </div>
+                            
+                            {/* Diagnostic Debug Block */}
+                            <div className="bg-red-50/50 p-3 rounded-xl border border-red-100 text-[10px] font-mono space-y-1 my-2">
+                                <p className="font-bold text-red-800">Diagnostics:</p>
+                                <p>Till Open: {activeTill?.dateOpened?.toDate ? activeTill.dateOpened.toDate().toLocaleString() : 'N/A'}</p>
+                                <p>Till ID: {activeTill?.id || 'None'}</p>
+                                <p>Payments found: {payments.length}</p>
+                                {payments.map((p, idx) => (
+                                    <div key={p.id} className="border-t border-red-100 pt-1 mt-1">
+                                        <p>Payment #{idx + 1}: {p.id} - GH₵{p.amount}</p>
+                                        <p>Payment Till ID: {p.tillId || 'none'}</p>
+                                        <p>Paid At: {p.paidAt?.toDate ? p.paidAt.toDate().toLocaleString() : p.paidAt?.seconds ? new Date(p.paidAt.seconds * 1000).toLocaleString() : 'N/A'}</p>
+                                        <p>Eligible: {String((p.tillId && p.tillId === activeTill.id) || (p.paidAt && activeTill.dateOpened && (p.paidAt.toDate ? p.paidAt.toDate().getTime() : p.paidAt.seconds * 1000) >= (activeTill.dateOpened.toDate ? activeTill.dateOpened.toDate().getTime() : activeTill.dateOpened.seconds * 1000)))}</p>
+                                    </div>
+                                ))}
+                            </div>
+
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Reason for Reversal</Label>
                                 <Textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain why this transaction needs to be reversed..." className="min-h-[100px] text-sm" />
