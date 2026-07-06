@@ -351,6 +351,11 @@ service cloud.firestore {
       );
     }
 
+    match /reversalLogs/{logId} {
+      allow read, list, create: if isFinanceStaff() || isAdmin();
+      allow update, delete: if false;
+    }
+
     match /paymentVouchers/{voucherId} {
       allow read, list: if isSuperAdmin() || isFinanceStaff() || isAdmin();
       allow create: if isSuperAdmin() || isFinanceStaff() || isAdmin();
