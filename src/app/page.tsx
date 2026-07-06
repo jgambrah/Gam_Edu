@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { useAuth } from '@/firebase'; 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -44,6 +44,65 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const auth = useAuth();
+
+  const handleGoogleLogin = async () => {
+    if (!auth) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Firebase is not initialized. Please refresh.",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      // Try popup first
+      await signInWithPopup(auth, provider);
+      toast({ title: "Welcome back!", description: "Logging you in via Google..." });
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.warn("Popup blocked or failed, falling back to redirect. Error:", error);
+      if (
+        error.code === 'auth/popup-blocked' || 
+        error.code === 'auth/popup-closed-by-user' || 
+        error.code === 'auth/cancelled-popup-request' ||
+        error.message?.includes('popup')
+      ) {
+        // Fallback to redirect
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (redirectErr: any) {
+          console.error("Redirect auth failed:", redirectErr);
+          toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Google authentication failed. Please check your browser settings."
+          });
+          setLoading(false);
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: error.message || "Google authentication failed."
+        });
+        setLoading(false);
+      }
+    }
+  };
+
+  // Redirect to dashboard automatically if user session is active
+  useEffect(() => {
+    if (!auth) return;
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        router.push('/dashboard');
+      }
+    });
+    return () => unsubscribe();
+  }, [auth, router]);
 
   useEffect(() => {
     // Only show splash screen if the app is launched as a PWA (standalone) or on small screens
@@ -239,6 +298,27 @@ export default function LoginPage() {
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
                   </Button>
                 </form>
+
+                <div className="relative flex items-center justify-center my-4">
+                  <div className="border-t border-slate-200 w-full"></div>
+                  <span className="bg-white px-3 text-[10px] text-slate-400 uppercase absolute font-bold tracking-wider">Or continue with</span>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleGoogleLogin}
+                  className="w-full flex items-center justify-center gap-2 h-11 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold transition-all animate-in fade-in slide-in-from-bottom-2 duration-300"
+                  disabled={loading}
+                >
+                  <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
+                    <path
+                      fill="#EA4335"
+                      d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.113-5.136 4.113-3.472 0-6.287-2.815-6.287-6.287s2.815-6.287 6.287-6.287c1.713 0 3.228.68 4.35 1.796l3.074-3.074C19.336 2.015 15.996 1 12.24 1 6.033 1 12.24 6.033 1 12.24s5.033 11.24 11.24 11.24c5.897 0 10.867-4.237 10.867-11.24 0-.745-.067-1.464-.19-2.155H12.24z"
+                    />
+                  </svg>
+                  Sign in with Google
+                </Button>
               </CardContent>
               <CardFooter className="flex flex-col gap-4 bg-slate-50/50 pt-6 border-t pb-6">
                 <div className="text-center text-sm text-slate-500">
