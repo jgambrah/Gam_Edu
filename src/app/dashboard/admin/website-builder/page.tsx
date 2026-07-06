@@ -455,6 +455,9 @@ export default function WebsiteBuilderPage() {
                                         <li>
                                             <strong>Link it in the Builder:</strong> 
                                             {" "}Once DNS records are configured, type your domain in the <strong>Custom Domain</strong> input field above (e.g. <code className="font-mono">www.yourschool.com</code>) and click <strong>SAVE & PUBLISH</strong>.
+                                            <div className="mt-1.5 p-2 bg-indigo-50 text-indigo-800 rounded-xl text-[10px] font-bold border border-indigo-100 leading-snug max-w-lg">
+                                                💡 Important: After saving, please notify platform support (or email support@gamedu.com) so we can activate the domain on the Vercel server and provision your SSL security certificate (HTTPS) automatically.
+                                            </div>
                                         </li>
                                         <li>
                                             <strong>SaaS Portal Subscription:</strong> 
