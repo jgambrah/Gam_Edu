@@ -63,6 +63,11 @@ export default function SchoolProfilePage() {
   const [name, setName] = useState('');
   const [motto, setMotto] = useState('');
   const [address, setAddress] = useState('');
+  
+  const [customDomain, setCustomDomain] = useState('');
+  const [slug, setSlug] = useState('');
+  
+  const isSuperAdmin = user?.email === 'jamesgambrah@gmail.com' || user?.uid === 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
@@ -170,6 +175,8 @@ export default function SchoolProfilePage() {
         setName(profile.name || '');
         setMotto(profile.motto || '');
         setAddress(profile.address || '');
+        setCustomDomain(profile.customDomain || '');
+        setSlug(profile.slug || '');
         setPhone(profile.phone || '');
         setEmail(profile.email || '');
         setWebsite(profile.website || '');
@@ -293,6 +300,8 @@ export default function SchoolProfilePage() {
             secondaryColor,
             headmasterSignature,
             headmasterSignatureUrl: headmasterSignature,
+            customDomain: customDomain.trim(),
+            slug: slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, ''),
             facebookUrl,
             instagramUrl,
             linkedinUrl,
@@ -1153,6 +1162,52 @@ export default function SchoolProfilePage() {
                                     </div>
                                 )}
                             </div>
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2">
+                            <Globe className="h-5 w-5 text-indigo-650" />
+                            <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight italic">Domain & Storefront Settings</h3>
+                        </div>
+                        <div className="bg-slate-50 p-6 rounded-[2rem] border-2 border-slate-200 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <Label className="font-black text-xs uppercase tracking-widest text-slate-500">Custom Domain Name</Label>
+                                    <Input 
+                                        type="text" 
+                                        value={customDomain} 
+                                        onChange={e => setCustomDomain(e.target.value)} 
+                                        placeholder="e.g. www.yourschool.com" 
+                                        disabled={!isSuperAdmin}
+                                        className="h-12 border-2 rounded-xl font-bold bg-white"
+                                    />
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight mt-1">
+                                        Point your domain's DNS A record to <code className="text-slate-650 font-black">76.76.21.21</code> and connect it in Vercel first.
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="font-black text-xs uppercase tracking-widest text-slate-500">Unique School Slug (URL Prefix)</Label>
+                                    <Input 
+                                        type="text" 
+                                        value={slug} 
+                                        onChange={e => setSlug(e.target.value)} 
+                                        placeholder="e.g. yourschool" 
+                                        disabled={!isSuperAdmin}
+                                        className="h-12 border-2 rounded-xl font-bold bg-white"
+                                    />
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight mt-1">
+                                        Used for storefront lookup: <code className="text-slate-655 font-black">gamedu.com/s/{slug || 'slug'}</code>. Letters, numbers, and hyphens only.
+                                    </p>
+                                </div>
+                            </div>
+                            {!isSuperAdmin && (
+                                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-800 text-[10px] font-bold uppercase leading-tight">
+                                    ⚠️ Note: Domain configurations are locked. Please contact the platform super-admin (support@gamedu.com) to link or modify custom domains.
+                                </div>
+                            )}
                         </div>
                     </div>
 
