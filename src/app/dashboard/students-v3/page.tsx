@@ -90,6 +90,9 @@ export default function StudentsV3Page() {
   const [billingModel, setBillingModel] = useState<'Daily' | 'Termly'>('Daily');
   const [canteenBillingMode, setCanteenBillingMode] = useState<'Daily' | 'Termly' | 'None'>('Daily');
   const [selectedStatus, setSelectedStatus] = useState<string>('Active');
+  const [isSponsored, setIsSponsored] = useState(false);
+  const [selectedSponsorId, setSelectedSponsorId] = useState('');
+  const [sponsorName, setSponsorName] = useState('');
 
   // --- PERMISSIONS ---
   const schoolSettingsQuery = useMemoFirebase(
@@ -97,6 +100,12 @@ export default function StudentsV3Page() {
       [firestore, adminSchoolId]
   );
   const { data: schoolSettings } = useDoc<any>(schoolSettingsQuery as any);
+
+  const sponsorsQuery = useMemoFirebase(
+      () => (firestore && adminSchoolId) ? query(collection(firestore, 'sponsors'), where('schoolId', '==', adminSchoolId)) : null,
+      [firestore, adminSchoolId]
+  );
+  const { data: sponsorsList } = useCollection<any>(sponsorsQuery);
 
   const canManage = useMemo(() => {
     if (!role) return false;
@@ -165,6 +174,9 @@ export default function StudentsV3Page() {
         setUsesBus(false);
         setBillingModel('Daily');
         setCanteenBillingMode('Daily');
+        setIsSponsored(false);
+        setSelectedSponsorId('');
+        setSponsorName('');
     }
   }, [isAddOpen]);
 
@@ -178,6 +190,9 @@ export default function StudentsV3Page() {
         setBillingModel(editingStudent.transportBillingModel || 'Daily');
         setCanteenBillingMode(editingStudent.canteenBillingMode || 'Daily');
         setSelectedStatus(editingStudent.enrollmentStatus || 'Active');
+        setIsSponsored(editingStudent.isSponsored === true);
+        setSelectedSponsorId(editingStudent.sponsorId || '');
+        setSponsorName(editingStudent.sponsorName || '');
     }
   }, [editingStudent]);
 
@@ -282,6 +297,8 @@ export default function StudentsV3Page() {
           }
 
           const newStudentId = await generateNextStudentId(firestore!, adminSchoolId);
+          const sponsorObj = sponsorsList?.find(sp => sp.id === selectedSponsorId);
+          const finalSponsorName = isSponsored ? (sponsorObj?.name || null) : null;
           
           await setDoc(doc(firestore!, 'students', result.uid), {
               uid: result.uid,
@@ -298,6 +315,9 @@ export default function StudentsV3Page() {
               transportBillingModel: usesBus ? billingModel : null,
               canteenBillingMode: canteenBillingMode || 'Daily',
               usesCanteen: canteenBillingMode !== 'None',
+              isSponsored: isSponsored,
+              sponsorId: isSponsored ? selectedSponsorId : null,
+              sponsorName: finalSponsorName,
               photoURL: photoURL || null,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp(),
@@ -396,10 +416,16 @@ export default function StudentsV3Page() {
 
         // Only update billing fields if the user has permission
         if (canEditBillingToggles) {
+            const sponsorObj = sponsorsList?.find(sp => sp.id === selectedSponsorId);
+            const finalSponsorName = isSponsored ? (sponsorObj?.name || null) : null;
+
             updateData.usesBusService = usesBus;
             updateData.transportBillingModel = usesBus ? billingModel : null;
             updateData.canteenBillingMode = canteenBillingMode || 'Daily';
             updateData.usesCanteen = canteenBillingMode !== 'None';
+            updateData.isSponsored = isSponsored;
+            updateData.sponsorId = isSponsored ? selectedSponsorId : null;
+            updateData.sponsorName = finalSponsorName;
         }
 
         await updateDoc(studentRef, updateData);
@@ -598,11 +624,18 @@ export default function StudentsV3Page() {
                                             {formatStudentId(s)}
                                         </TableCell>
                                         <TableCell className="py-4">
-                                            {s.classId ? (
-                                                <Badge variant="secondary" className="font-semibold bg-slate-100 text-slate-700 border border-slate-200/50 rounded">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge>
-                                            ) : (
-                                                <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-200 bg-amber-50 font-black tracking-wider uppercase">Unplaced</Badge>
-                                            )}
+                                            <div className="flex flex-col gap-1.5 items-start">
+                                                {s.classId ? (
+                                                    <Badge variant="secondary" className="font-semibold bg-slate-100 text-slate-700 border border-slate-200/50 rounded">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge>
+                                                ) : (
+                                                    <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-200 bg-amber-50 font-black tracking-wider uppercase">Unplaced</Badge>
+                                                )}
+                                                {s.isSponsored && (
+                                                    <Badge variant="outline" className="font-black text-[9px] uppercase tracking-wider bg-indigo-50 border-indigo-200 text-indigo-700">
+                                                        Sponsor: {s.sponsorName || 'NGO'}
+                                                    </Badge>
+                                                )}
+                                            </div>
                                         </TableCell>
                                         <TableCell className="py-4 text-xs">
                                             {(() => {
@@ -796,6 +829,33 @@ export default function StudentsV3Page() {
                                 </Select>
                             </div>
                         )}
+                        <div className="space-y-2 border-t pt-4">
+                            <Label className="flex items-center gap-2 font-bold text-slate-700">NGO / Third-Party Sponsorship</Label>
+                            <div className="flex items-center space-x-2 h-10 mt-1">
+                                <Checkbox id="isSponsored" checked={isSponsored} onCheckedChange={(v) => setIsSponsored(!!v)} />
+                                <Label htmlFor="isSponsored" className="cursor-pointer font-semibold text-slate-655">Fees Paid by NGO / Sponsor</Label>
+                            </div>
+                            {isSponsored && (
+                                <div className="space-y-1.5 mt-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                                    <Label className="text-xs font-bold text-slate-500">Select Sponsor / NGO *</Label>
+                                    {sponsorsList && sponsorsList.length > 0 ? (
+                                        <Select value={selectedSponsorId} onValueChange={setSelectedSponsorId}>
+                                            <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a registered sponsor" /></SelectTrigger>
+                                            <SelectContent>
+                                                {sponsorsList.map((sp: any) => (
+                                                    <SelectItem key={sp.id} value={sp.id}>{sp.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <div className="p-3 bg-amber-50 text-amber-700 text-xs border border-amber-200 rounded-lg flex items-center gap-2">
+                                            <AlertTriangle className="h-4 w-4 shrink-0" />
+                                            <span>No sponsors registered in the registry. Go to Accounts &gt; Sponsors to create one.</span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 ) : (
                     <div className="p-4 bg-slate-50 border rounded-xl flex items-center gap-3 opacity-60">
@@ -988,6 +1048,33 @@ export default function StudentsV3Page() {
                                             </Select>
                                         </div>
                                     )}
+                                    <div className="space-y-2 border-t pt-4">
+                                        <Label className="flex items-center gap-2 font-bold text-slate-700">NGO / Third-Party Sponsorship</Label>
+                                        <div className="flex items-center space-x-2 h-10 mt-1">
+                                            <Checkbox id="editIsSponsored" checked={isSponsored} onCheckedChange={(v) => setIsSponsored(!!v)} />
+                                            <Label htmlFor="editIsSponsored" className="cursor-pointer font-semibold text-slate-655">Fees Paid by NGO / Sponsor</Label>
+                                        </div>
+                                        {isSponsored && (
+                                            <div className="space-y-1.5 mt-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                <Label className="text-xs font-bold text-slate-500">Select Sponsor / NGO *</Label>
+                                                {sponsorsList && sponsorsList.length > 0 ? (
+                                                    <Select value={selectedSponsorId} onValueChange={setSelectedSponsorId}>
+                                                        <SelectTrigger className="bg-white"><SelectValue placeholder="Choose a registered sponsor" /></SelectTrigger>
+                                                        <SelectContent>
+                                                            {sponsorsList.map((sp: any) => (
+                                                                <SelectItem key={sp.id} value={sp.id}>{sp.name}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                ) : (
+                                                    <div className="p-3 bg-amber-50 text-amber-700 text-xs border border-amber-200 rounded-lg flex items-center gap-2">
+                                                        <AlertTriangle className="h-4 w-4 shrink-0" />
+                                                        <span>No sponsors registered in the registry. Go to Accounts &gt; Sponsors to create one.</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="p-4 bg-slate-50 border rounded-xl flex items-center gap-3 opacity-60">

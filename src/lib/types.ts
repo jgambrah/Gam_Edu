@@ -469,6 +469,9 @@ export type Student = {
     transportBillingModel?: 'Daily' | 'Termly';
     canteenBillingMode?: 'Daily' | 'Termly' | 'None';
     schoolId?: string;
+    isSponsored?: boolean;
+    sponsorId?: string;
+    sponsorName?: string;
     biometricId?: string;
     bloodGroup?: string;
     chronicIllnesses?: string;

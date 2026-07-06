@@ -2930,6 +2930,11 @@ export default function AccountsPage() {
   const [analyticsTab, setAnalyticsTab] = useState('summary');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
   
+  const [isSponsorDialogOpen, setIsSponsorDialogOpen] = useState(false);
+  const [editingSponsor, setEditingSponsor] = useState<any>(null);
+  const [isSavingSponsor, setIsSavingSponsor] = useState(false);
+  const [sponsorForm, setSponsorForm] = useState({ name: '', contactPerson: '', phone: '', email: '', budgetLimit: 0 });
+  
   const [isOpeningTill, setIsOpeningTill] = useState(false);
   const [sendingSMSStudentId, setSendingSMSStudentId] = useState<string | null>(null);
   const [globalDateRange, setGlobalDateRange] = useState<DateRange | undefined>({ 
@@ -2982,6 +2987,9 @@ export default function AccountsPage() {
   
   const rawStudentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(rawStudentsQuery);
+
+  const sponsorsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'sponsors'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: sponsorsList, forceRefetch: refetchSponsors } = useCollection<any>(sponsorsQuery);
   
   const students = useMemo(() => {
       if (!rawStudents) return [];
@@ -3036,6 +3044,39 @@ export default function AccountsPage() {
       };
     }).filter(d => d.balance >= minDebt);
   }, [students, records, minDebt]);
+
+  const sponsorsWithBalances = useMemo(() => {
+      if (!sponsorsList || !students || !records) return [];
+      
+      const studentSponsorMap = new Map<string, string>();
+      students.forEach(s => {
+          if (s.isSponsored && s.sponsorId) {
+              studentSponsorMap.set(s.uid, s.sponsorId);
+          }
+      });
+      
+      const sponsorBalances = new Map<string, number>();
+      records.forEach(r => {
+          if (r.status === 'Pending Reversal') return;
+          const sId = studentSponsorMap.get(r.studentId);
+          if (sId) {
+              const balance = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+              if (balance > 0) {
+                  sponsorBalances.set(sId, (sponsorBalances.get(sId) || 0) + balance);
+              }
+          }
+      });
+      
+      return sponsorsList.map((sp: any) => {
+          const outstanding = sponsorBalances.get(sp.id) || 0;
+          const sponsoredCount = students.filter(s => s.isSponsored && s.sponsorId === sp.id).length;
+          return {
+              ...sp,
+              outstanding,
+              sponsoredCount
+          };
+      });
+  }, [sponsorsList, students, records]);
 
   const classGroupedDebtors = useMemo(() => {
     const groups: Record<string, typeof debtors> = {};
@@ -3476,12 +3517,13 @@ export default function AccountsPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="bg-slate-100/80 p-1 rounded-xl mb-4 border border-slate-200/50">
+            <TabsList className="bg-slate-100/80 p-1 rounded-xl mb-4 border border-slate-200/50 flex gap-1 w-fit">
                 <TabsTrigger value="billing" className="rounded-lg font-semibold px-4">Student Billing</TabsTrigger>
                 <TabsTrigger value="approval" className="rounded-lg font-semibold px-4">
                     Reversal Requests 
                     <Badge className="ml-2 bg-red-500 text-white border-0 hover:bg-red-600">{pendingReversals.length}</Badge>
                 </TabsTrigger>
+                <TabsTrigger value="sponsors" className="rounded-lg font-semibold px-4">Sponsors Registry</TabsTrigger>
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
                 {/* Advanced Analytics Grid */}
@@ -4161,11 +4203,235 @@ export default function AccountsPage() {
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {pendingReversals.length === 0 && <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground italic">No pending reversal requests.</TableCell></TableRow>}
+{pendingReversals.length === 0 && <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground italic">No pending reversal requests.</TableCell></TableRow>}
                             </TableBody>
                          </Table>
                     </CardContent>
                  </Card>
+             </TabsContent>
+             <TabsContent value="sponsors" className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-800">Sponsors & NGO Registry</h2>
+                        <p className="text-sm text-slate-500 mt-1">Configure external sponsors and track deferred outstanding student balances against termly budgets.</p>
+                    </div>
+                    <Button onClick={() => {
+                        setEditingSponsor(null);
+                        setSponsorForm({ name: '', contactPerson: '', phone: '', email: '', budgetLimit: 0 });
+                        setIsSponsorDialogOpen(true);
+                    }}>
+                        <PlusCircle className="h-4 w-4 mr-2" /> Add New Sponsor
+                    </Button>
+                </div>
+
+                <div className="grid gap-6">
+                    <Card>
+                        <CardContent className="p-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Sponsor / NGO Name</TableHead>
+                                        <TableHead>Contact Details</TableHead>
+                                        <TableHead className="text-center">Sponsored Students</TableHead>
+                                        <TableHead className="text-right">Termly Budget Limit</TableHead>
+                                        <TableHead className="text-right">Total Outstanding Balance</TableHead>
+                                        <TableHead className="text-center">Budget Utilization</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {sponsorsWithBalances.map((sp: any) => {
+                                        const utilization = sp.budgetLimit > 0 ? Math.min(100, Math.round((sp.outstanding / sp.budgetLimit) * 100)) : 0;
+                                        const limitExceeded = sp.outstanding > sp.budgetLimit && sp.budgetLimit > 0;
+                                        return (
+                                            <TableRow key={sp.id}>
+                                                <TableCell className="font-bold text-slate-800">
+                                                    <div className="flex flex-col">
+                                                        <span>{sp.name}</span>
+                                                        {limitExceeded && (
+                                                            <span className="text-[10px] text-rose-600 font-extrabold uppercase mt-1 flex items-center gap-1 animate-pulse">
+                                                                <AlertTriangle className="h-3 w-3" /> Budget Limit Exceeded
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-xs">
+                                                    <div className="flex flex-col gap-0.5 text-slate-600">
+                                                        {sp.contactPerson && <span className="font-medium text-slate-800">{sp.contactPerson}</span>}
+                                                        {sp.phone && <span>Phone: {sp.phone}</span>}
+                                                        {sp.email && <span>Email: {sp.email}</span>}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-center font-bold text-slate-700">{sp.sponsoredCount}</TableCell>
+                                                <TableCell className="text-right font-mono font-bold text-slate-700">GH₵{sp.budgetLimit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                                                <TableCell className="text-right font-mono font-black text-indigo-700">GH₵{sp.outstanding.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                                                <TableCell className="max-w-[150px]">
+                                                    <div className="flex flex-col gap-1 px-4">
+                                                        <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                                                            <span>{utilization}%</span>
+                                                            {sp.budgetLimit > 0 && <span>Limit: GH₵{Math.round(sp.budgetLimit)}</span>}
+                                                        </div>
+                                                        <Progress 
+                                                            value={utilization} 
+                                                            className={cn(
+                                                                "h-2", 
+                                                                limitExceeded ? "bg-rose-100 [&>[data-state=checked]]:bg-rose-600 animate-pulse" : "bg-slate-100 [&>[data-state=checked]]:bg-indigo-600"
+                                                            )} 
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex gap-2 justify-end">
+                                                        <Button variant="ghost" size="icon" onClick={() => {
+                                                            setEditingSponsor(sp);
+                                                            setSponsorForm({
+                                                                name: sp.name,
+                                                                contactPerson: sp.contactPerson || '',
+                                                                phone: sp.phone || '',
+                                                                email: sp.email || '',
+                                                                budgetLimit: sp.budgetLimit || 0
+                                                            });
+                                                            setIsSponsorDialogOpen(true);
+                                                        }}>
+                                                            <Edit className="h-4 w-4 text-blue-600" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" onClick={async () => {
+                                                            if (sp.sponsoredCount > 0) {
+                                                                toast({
+                                                                    variant: 'destructive',
+                                                                    title: 'Cannot Delete',
+                                                                    description: 'This sponsor is currently assigned to ' + sp.sponsoredCount + ' students. Unlink them first.'
+                                                                });
+                                                                return;
+                                                            }
+                                                            if (confirm('Are you sure you want to delete sponsor ' + sp.name + '?')) {
+                                                                try {
+                                                                    await deleteDoc(doc(firestore!, 'sponsors', sp.id));
+                                                                    toast({ title: 'Deleted', description: 'Sponsor deleted successfully.' });
+                                                                    if (refetchSponsors) refetchSponsors();
+                                                                } catch (e: any) {
+                                                                    toast({ variant: 'destructive', title: 'Error', description: e.message });
+                                                                }
+                                                            }
+                                                        }}>
+                                                            <Trash2 className="h-4 w-4 text-rose-600" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                    {sponsorsWithBalances.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={7} className="text-center py-20 text-slate-400 italic text-xs uppercase tracking-wider font-bold">
+                                                No Sponsors or NGOs registered. Click 'Add New Sponsor' to begin.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <Dialog open={isSponsorDialogOpen} onOpenChange={setIsSponsorDialogOpen}>
+                    <DialogContent className="sm:max-w-[450px]">
+                        <DialogHeader>
+                            <DialogTitle>{editingSponsor ? 'Edit Sponsor Details' : 'Register New Sponsor'}</DialogTitle>
+                            <DialogDescription>Add a new sponsor to the master registry to manage deferred student billing.</DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={async (e) => {
+                            e.preventDefault();
+                            if (!firestore || !schoolId) return;
+                            setIsSavingSponsor(true);
+                            try {
+                                if (editingSponsor) {
+                                    await updateDoc(doc(firestore, 'sponsors', editingSponsor.id), {
+                                        ...sponsorForm,
+                                        budgetLimit: Number(sponsorForm.budgetLimit) || 0,
+                                        updatedAt: serverTimestamp()
+                                    });
+                                    toast({ title: 'Updated', description: 'Sponsor details saved successfully.' });
+                                } else {
+                                    const newSponsorRef = doc(collection(firestore, 'sponsors'));
+                                    await setDoc(newSponsorRef, {
+                                        id: newSponsorRef.id,
+                                        ...sponsorForm,
+                                        budgetLimit: Number(sponsorForm.budgetLimit) || 0,
+                                        schoolId,
+                                        createdAt: serverTimestamp()
+                                    });
+                                    toast({ title: 'Registered', description: 'New sponsor created successfully.' });
+                                }
+                                setIsSponsorDialogOpen(false);
+                                if (refetchSponsors) refetchSponsors();
+                            } catch (error: any) {
+                                toast({ variant: 'destructive', title: 'Error', description: error.message });
+                            } finally {
+                                setIsSavingSponsor(false);
+                            }
+                        }} className="space-y-4 py-2">
+                            <div className="space-y-1">
+                                <Label>Sponsor / NGO Name *</Label>
+                                <Input 
+                                    required
+                                    value={sponsorForm.name}
+                                    onChange={e => setSponsorForm({...sponsorForm, name: e.target.value})}
+                                    placeholder="e.g. Save the Children, Compassion Intl"
+                                    className="bg-white"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label>Contact Person</Label>
+                                <Input 
+                                    value={sponsorForm.contactPerson}
+                                    onChange={e => setSponsorForm({...sponsorForm, contactPerson: e.target.value})}
+                                    placeholder="e.g. James Gambrah"
+                                    className="bg-white"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <Label>Phone Number</Label>
+                                    <Input 
+                                        value={sponsorForm.phone}
+                                        onChange={e => setSponsorForm({...sponsorForm, phone: e.target.value})}
+                                        placeholder="e.g. +23324..."
+                                        className="bg-white"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label>Email Address</Label>
+                                    <Input 
+                                        type="email"
+                                        value={sponsorForm.email}
+                                        onChange={e => setSponsorForm({...sponsorForm, email: e.target.value})}
+                                        placeholder="e.g. contact@ngo.org"
+                                        className="bg-white"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <Label>Termly Budget / Credit Limit (GH₵) *</Label>
+                                <Input 
+                                    type="number"
+                                    required
+                                    value={sponsorForm.budgetLimit}
+                                    onChange={e => setSponsorForm({...sponsorForm, budgetLimit: parseFloat(e.target.value) || 0})}
+                                    placeholder="e.g. 10000"
+                                    className="bg-white"
+                                />
+                                <span className="text-[10px] text-slate-400">Sets the maximum limit of sponsored outstanding fees allowed for this term.</span>
+                            </div>
+                            <DialogFooter className="pt-4 border-t">
+                                <Button type="submit" className="w-full" disabled={isSavingSponsor}>
+                                    {isSavingSponsor ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                                    {editingSponsor ? 'Save Details' : 'Register Sponsor'}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             </TabsContent>
         </Tabs>
 

@@ -375,6 +375,11 @@ service cloud.firestore {
       allow write: if isFinanceStaff() || isAdmin();
     }
 
+    match /sponsors/{sponsorId} {
+      allow read, list: if isSignedIn();
+      allow write: if isFinanceStaff() || isAdmin();
+    }
+
     match /accountsPayable/{payableId} {
       allow read, list: if isFinanceStaff() || isAdmin();
       allow write: if isFinanceStaff() || isAdmin();
