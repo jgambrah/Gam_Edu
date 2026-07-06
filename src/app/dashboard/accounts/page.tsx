@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -2779,6 +2779,181 @@ function ParentLetterPrintArea({
   );
 }
 
+interface SponsorStatementPrintAreaProps {
+  sponsorId: string;
+  sponsorsList: any[] | null;
+  students: Student[];
+  classes: Class[];
+  records: any[] | null;
+  schoolName: string;
+  schoolProfile: any;
+}
+
+function SponsorStatementPrintArea({
+  sponsorId,
+  sponsorsList,
+  students,
+  classes,
+  records,
+  schoolName,
+  schoolProfile
+}: SponsorStatementPrintAreaProps) {
+  const sponsor = sponsorsList?.find(sp => sp.id === sponsorId);
+  
+  const sponsorStudents = useMemo(() => {
+    if (!sponsorId || !students || !records) return [];
+    const list = students.filter(s => s.isSponsored && s.sponsorId === sponsorId);
+    return list.map(s => {
+        const studentRecords = records.filter(r => r.studentId === s.uid && r.status !== 'Pending Reversal');
+        const tuition = studentRecords.filter(r => r.type.toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+        const canteen = studentRecords.filter(r => r.type.toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+        const transport = studentRecords.filter(r => r.type.toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+        const total = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+        const other = total - tuition - canteen - transport;
+        const classObj = classes?.find(c => c.id === s.classId);
+
+        return {
+            student: s,
+            className: classObj?.name || 'Unplaced',
+            tuition,
+            canteen,
+            transport,
+            other,
+            total
+        };
+    });
+  }, [sponsorId, students, records, classes]);
+
+  const grandTotal = useMemo(() => {
+    return sponsorStudents.reduce((sum, s) => sum + s.total, 0);
+  }, [sponsorStudents]);
+
+  if (!sponsor) return null;
+
+  return (
+    <div id="sponsor-statement-print-area" className="hidden print:block text-black bg-white w-full p-4 font-sans leading-normal">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          div.space-y-6.accounts-page-container > *:not(#sponsor-statement-print-area) {
+            display: none !important;
+          }
+          #sponsor-statement-print-area {
+            display: block !important;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+          .no-print { display: none !important; }
+        }
+        #sponsor-statement-print-area table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 15px;
+        }
+        #sponsor-statement-print-area th, #sponsor-statement-print-area td {
+          border: 1px solid #cbd5e1;
+          padding: 8px;
+          text-align: left;
+          font-size: 11px;
+        }
+        #sponsor-statement-print-area th {
+          background-color: #f8fafc !important;
+          font-weight: 800;
+        }
+      `}} />
+
+      {/* School Letterhead */}
+      <div className="border-b-4 border-slate-900 pb-4 text-center">
+        <h1 className="text-2xl font-black uppercase tracking-tight">{schoolName}</h1>
+        <p className="text-xs text-slate-500 font-bold uppercase mt-1">Sponsorship Billing Statement Invoice</p>
+        <p className="text-xs text-slate-400 font-medium mt-0.5">Date Generated: {format(new Date(), 'PPpp')}</p>
+      </div>
+
+      {/* Metadata */}
+      <div className="grid grid-cols-2 gap-4 py-4 text-xs border-b">
+        <div>
+          <h3 className="font-extrabold uppercase text-slate-500 mb-1">Billed To (Sponsor):</h3>
+          <p className="font-black text-sm text-slate-800">{sponsor.name}</p>
+          {sponsor.contactPerson && <p className="font-medium text-slate-600">Attn: {sponsor.contactPerson}</p>}
+          {sponsor.email && <p>Email: {sponsor.email}</p>}
+          {sponsor.phone && <p>Phone: {sponsor.phone}</p>}
+        </div>
+        <div className="text-right flex flex-col justify-between items-end">
+          <div>
+            <h3 className="font-extrabold uppercase text-slate-500 mb-1">Invoice Metadata:</h3>
+            <p><strong>Total Sponsored Ward(s):</strong> {sponsorStudents.length} student(s)</p>
+            <p><strong>Sponsorship Credit Limit:</strong> GH₵{sponsor.budgetLimit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+          </div>
+          <div className="mt-2 p-2 bg-slate-50 border rounded-lg inline-block self-end text-right">
+            <span className="text-[10px] font-bold text-slate-500 uppercase">Grand Outstanding Total</span>
+            <p className="text-base font-black text-indigo-700 font-mono">GH₵{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Table */}
+      <table>
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Class</th>
+            <th className="text-right">Tuition</th>
+            <th className="text-right">Canteen</th>
+            <th className="text-right">Transport</th>
+            <th className="text-right">Other</th>
+            <th className="text-right">Total Owed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sponsorStudents.map(s => (
+            <tr key={s.student.uid}>
+              <td className="font-mono">{s.student.studentId || 'ID Pending'}</td>
+              <td className="font-bold">{s.student.firstName} {s.student.lastName}</td>
+              <td>{s.className}</td>
+              <td className="text-right font-mono">GH₵{s.tuition.toFixed(2)}</td>
+              <td className="text-right font-mono">GH₵{s.canteen.toFixed(2)}</td>
+              <td className="text-right font-mono">GH₵{s.transport.toFixed(2)}</td>
+              <td className="text-right font-mono">GH₵{s.other.toFixed(2)}</td>
+              <td className="text-right font-bold font-mono text-indigo-700">GH₵{s.total.toFixed(2)}</td>
+            </tr>
+          ))}
+          <tr className="bg-slate-50 font-bold">
+            <td colSpan={3} className="text-right font-black uppercase text-xs">Total Bill Sum:</td>
+            <td className="text-right font-mono">GH₵{sponsorStudents.reduce((sum, s) => sum + s.tuition, 0).toFixed(2)}</td>
+            <td className="text-right font-mono">GH₵{sponsorStudents.reduce((sum, s) => sum + s.canteen, 0).toFixed(2)}</td>
+            <td className="text-right font-mono">GH₵{sponsorStudents.reduce((sum, s) => sum + s.transport, 0).toFixed(2)}</td>
+            <td className="text-right font-mono">GH₵{sponsorStudents.reduce((sum, s) => sum + s.other, 0).toFixed(2)}</td>
+            <td className="text-right font-black font-mono text-indigo-700 text-sm">GH₵{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Payment details */}
+      <div className="mt-8 border p-3 rounded-lg bg-slate-50 text-[11px] leading-relaxed">
+        <p className="font-bold text-slate-700 uppercase mb-0.5">Approved Disbursement Options:</p>
+        <p className="text-slate-600">
+          • Please remit bulk payment to the school's bank account.<br />
+          • Specify the Sponsor / NGO Name: <strong>{sponsor.name}</strong> as reference on the slip.
+        </p>
+      </div>
+
+      {/* Signatures */}
+      <div className="grid grid-cols-2 gap-8 pt-16 text-center text-xs">
+        <div>
+          <div className="border-b border-slate-400 h-8 max-w-[200px] mx-auto"></div>
+          <p className="font-bold text-slate-500 mt-2 uppercase text-[9px]">Sponsor Representative Sign & Seal</p>
+        </div>
+        <div>
+          <div className="border-b border-slate-400 h-8 max-w-[200px] mx-auto"></div>
+          <p className="font-bold text-slate-500 mt-2 uppercase text-[9px]">Authorized School Finance Officer</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface ParentDemandLettersDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -2922,7 +3097,7 @@ export default function AccountsPage() {
   const [printDebtorsOpen, setPrintDebtorsOpen] = useState(false); 
   const [parentLettersOpen, setParentLettersOpen] = useState(false);
   const [selectedParentIdForPrint, setSelectedParentIdForPrint] = useState<string>('');
-  const [activePrintType, setActivePrintType] = useState<'debtors-list' | 'parent-letter' | null>(null);
+  const [activePrintType, setActivePrintType] = useState<'debtors-list' | 'parent-letter' | 'sponsor-statement' | null>(null);
   const [printMode, setPrintMode] = useState<'all-classes-split' | 'single-class' | 'whole-school-grouped'>('all-classes-split');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [minDebt, setMinDebt] = useState<number>(1); 
@@ -2934,6 +3109,9 @@ export default function AccountsPage() {
   const [editingSponsor, setEditingSponsor] = useState<any>(null);
   const [isSavingSponsor, setIsSavingSponsor] = useState(false);
   const [sponsorForm, setSponsorForm] = useState({ name: '', contactPerson: '', phone: '', email: '', budgetLimit: 0 });
+  
+  const [selectedSponsorIdForStudents, setSelectedSponsorIdForStudents] = useState<string | null>(null);
+  const [selectedSponsorIdForPrint, setSelectedSponsorIdForPrint] = useState<string>('');
   
   const [isOpeningTill, setIsOpeningTill] = useState(false);
   const [sendingSMSStudentId, setSendingSMSStudentId] = useState<string | null>(null);
@@ -3070,13 +3248,52 @@ export default function AccountsPage() {
       return sponsorsList.map((sp: any) => {
           const outstanding = sponsorBalances.get(sp.id) || 0;
           const sponsoredCount = students.filter(s => s.isSponsored && s.sponsorId === sp.id).length;
+          
+          const hasBills = records.some(r => {
+              if (r.status === 'Pending Reversal') return false;
+              const sId = studentSponsorMap.get(r.studentId);
+              return sId === sp.id;
+          });
+
           return {
               ...sp,
               outstanding,
-              sponsoredCount
+              sponsoredCount,
+              hasBills
           };
       });
   }, [sponsorsList, students, records]);
+
+  const selectedSponsor = useMemo(() => {
+      return sponsorsList?.find((sp: any) => sp.id === selectedSponsorIdForStudents);
+  }, [sponsorsList, selectedSponsorIdForStudents]);
+
+  const sponsoredStudentsBreakdown = useMemo(() => {
+      if (!selectedSponsorIdForStudents || !students || !records) return [];
+      
+      const list = students.filter(s => s.isSponsored && s.sponsorId === selectedSponsorIdForStudents);
+      
+      return list.map(s => {
+          const studentRecords = records.filter(r => r.studentId === s.uid && r.status !== 'Pending Reversal');
+          
+          const tuition = studentRecords.filter(r => r.type.toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+          const canteen = studentRecords.filter(r => r.type.toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+          const transport = studentRecords.filter(r => r.type.toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+          const total = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+          const other = total - tuition - canteen - transport;
+          const classObj = classes?.find(c => c.id === s.classId);
+
+          return {
+              student: s,
+              className: classObj?.name || 'Unplaced',
+              tuition: Math.max(0, tuition),
+              canteen: Math.max(0, canteen),
+              transport: Math.max(0, transport),
+              other: Math.max(0, other),
+              total: Math.max(0, total)
+          };
+      });
+  }, [selectedSponsorIdForStudents, students, records, classes]);
 
   const classGroupedDebtors = useMemo(() => {
     const groups: Record<string, typeof debtors> = {};
@@ -4262,7 +4479,19 @@ export default function AccountsPage() {
                                                         {sp.email && <span>Email: {sp.email}</span>}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="text-center font-bold text-slate-700">{sp.sponsoredCount}</TableCell>
+                                                <TableCell className="text-center">
+                                                    {sp.sponsoredCount > 0 ? (
+                                                        <Button 
+                                                            variant="link" 
+                                                            onClick={() => setSelectedSponsorIdForStudents(sp.id)}
+                                                            className="font-bold text-indigo-650 hover:text-indigo-800 p-0 underline"
+                                                        >
+                                                            {sp.sponsoredCount} students
+                                                        </Button>
+                                                    ) : (
+                                                        <span className="font-bold text-slate-400">0</span>
+                                                    )}
+                                                </TableCell>
                                                 <TableCell className="text-right font-mono font-bold text-slate-700">GH₵{sp.budgetLimit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                                                 <TableCell className="text-right font-mono font-black text-indigo-700">GH₵{sp.outstanding.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
                                                 <TableCell className="max-w-[150px]">
@@ -4296,6 +4525,22 @@ export default function AccountsPage() {
                                                             <Edit className="h-4 w-4 text-blue-600" />
                                                         </Button>
                                                         <Button variant="ghost" size="icon" onClick={async () => {
+                                                            if (sp.outstanding > 0.01) {
+                                                                toast({
+                                                                    variant: 'destructive',
+                                                                    title: 'Cannot Delete',
+                                                                    description: 'This sponsor has outstanding bills of GH₵' + sp.outstanding.toFixed(2) + '. You cannot delete a sponsor with active financial liabilities.'
+                                                                });
+                                                                return;
+                                                            }
+                                                            if (sp.hasBills) {
+                                                                toast({
+                                                                    variant: 'destructive',
+                                                                    title: 'Cannot Delete',
+                                                                    description: 'This sponsor has historical billing records associated with their sponsored students. Deleting them would violate audit trails.'
+                                                                });
+                                                                return;
+                                                            }
                                                             if (sp.sponsoredCount > 0) {
                                                                 toast({
                                                                     variant: 'destructive',
@@ -4446,6 +4691,106 @@ export default function AccountsPage() {
         )}
         {editingRecord && (
             <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={forceRefetch} />
+        )}
+        {selectedSponsorIdForStudents && (
+            <Dialog open={true} onOpenChange={(open) => !open && setSelectedSponsorIdForStudents(null)}>
+                <DialogContent className="sm:max-w-4xl max-h-[85vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-lg font-bold">
+                            <Users className="h-5 w-5 text-indigo-650" />
+                            {selectedSponsor?.name} - Sponsored Student Invoices
+                        </DialogTitle>
+                        <DialogDescription>
+                            Itemized breakdown of fees and outstanding balances for all students sponsored by this organization.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-2">
+                        {/* Quick metrics */}
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="bg-slate-50 border p-3 rounded-xl">
+                                <span className="text-[10px] font-bold text-slate-500 uppercase">Total Ward(s)</span>
+                                <p className="text-xl font-extrabold text-slate-800 mt-1">{sponsoredStudentsBreakdown.length}</p>
+                            </div>
+                            <div className="bg-slate-50 border p-3 rounded-xl">
+                                <span className="text-[10px] font-bold text-slate-500 uppercase">Total Budget Limit</span>
+                                <p className="text-xl font-extrabold text-slate-800 mt-1">GH₵{selectedSponsor?.budgetLimit.toLocaleString()}</p>
+                            </div>
+                            <div className="bg-slate-50 border p-3 rounded-xl border-indigo-100 bg-indigo-50/20">
+                                <span className="text-[10px] font-bold text-indigo-500 uppercase">Grand Outstanding Total</span>
+                                <p className="text-xl font-black text-indigo-700 mt-1 font-mono">GH₵{sponsoredStudentsBreakdown.reduce((sum, s) => sum + s.total, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                            </div>
+                        </div>
+
+                        {/* Students breakdown table */}
+                        <div className="border rounded-lg overflow-hidden bg-white">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Student ID</TableHead>
+                                        <TableHead>Student Name</TableHead>
+                                        <TableHead>Class</TableHead>
+                                        <TableHead className="text-right">Tuition</TableHead>
+                                        <TableHead className="text-right">Canteen</TableHead>
+                                        <TableHead className="text-right">Transport</TableHead>
+                                        <TableHead className="text-right">Other</TableHead>
+                                        <TableHead className="text-right">Total Owed</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {sponsoredStudentsBreakdown.map((s) => (
+                                        <TableRow key={s.student.uid}>
+                                            <TableCell className="font-mono text-xs">{s.student.studentId || 'ID Pending'}</TableCell>
+                                            <TableCell className="font-bold text-slate-800">{s.student.firstName} {s.student.lastName}</TableCell>
+                                            <TableCell className="text-xs font-semibold text-slate-500">{s.className}</TableCell>
+                                            <TableCell className="text-right font-mono text-xs">GH₵{s.tuition.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right font-mono text-xs">GH₵{s.canteen.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right font-mono text-xs">GH₵{s.transport.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right font-mono text-xs">GH₵{s.other.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right font-bold font-mono text-indigo-650 text-xs">GH₵{s.total.toFixed(2)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {sponsoredStudentsBreakdown.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={8} className="text-center py-10 text-slate-400 italic text-xs uppercase tracking-wider font-bold">
+                                                No students are currently linked to this sponsor.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="pt-4 border-t mt-2">
+                        <Button variant="outline" onClick={() => setSelectedSponsorIdForStudents(null)}>Close</Button>
+                        <Button 
+                            disabled={sponsoredStudentsBreakdown.length === 0}
+                            onClick={() => {
+                                setSelectedSponsorIdForPrint(selectedSponsor.id);
+                                setActivePrintType('sponsor-statement');
+                                setTimeout(() => {
+                                    window.print();
+                                }, 150);
+                            }}
+                            className="bg-indigo-600 hover:bg-indigo-700"
+                        >
+                            <Printer className="mr-2 h-4 w-4" /> Print Sponsor Statement Invoice
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        )}
+        {activePrintType === 'sponsor-statement' && (
+            <SponsorStatementPrintArea 
+                sponsorId={selectedSponsorIdForPrint}
+                sponsorsList={sponsorsList}
+                students={students}
+                classes={classes || []}
+                records={records}
+                schoolName={schoolName}
+                schoolProfile={schoolProfile}
+            />
         )}
         <PrintDebtorsDialog 
             open={printDebtorsOpen} 

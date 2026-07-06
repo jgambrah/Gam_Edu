@@ -203,6 +203,7 @@ export function FinancialDashboardView({
     }
 
     let totalOutstanding = 0;
+    let totalSponsoredOutstanding = 0;
     if (financialRecords) {
       financialRecords.forEach((r: any) => {
         const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
@@ -215,7 +216,11 @@ export function FinancialDashboardView({
         const waiver = Number(r.waiverAmount) || 0;
         const balance = billed - paid - waiver;
         if (balance > 0 && r.status !== 'Pending Reversal') {
-          totalOutstanding += balance;
+          if (studentObj.isSponsored) {
+            totalSponsoredOutstanding += balance;
+          } else {
+            totalOutstanding += balance;
+          }
         }
       });
     }
@@ -233,6 +238,7 @@ export function FinancialDashboardView({
       cashBalance,
       bankBalance,
       totalReceivables: totalOutstanding,
+      totalSponsoredReceivables: totalSponsoredOutstanding,
       budgetUtilization,
       budgetedExpenses,
     };
@@ -253,7 +259,7 @@ export function FinancialDashboardView({
     });
 
     return students
-      .filter((student: any) => student.enrollmentStatus === 'Active' || !student.enrollmentStatus)
+      .filter((student: any) => (student.enrollmentStatus === 'Active' || !student.enrollmentStatus) && !student.isSponsored)
       .map((student: any) => {
         const studentRecords = recordsByStudent[student.uid] || recordsByStudent[student.id] || [];
         const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
@@ -296,6 +302,7 @@ export function FinancialDashboardView({
       if (!studentObj) return;
       const isActive = studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
       if (!isActive) return;
+      if (studentObj.isSponsored) return;
       
       const billed = Number(r.billedAmount) || 0;
       const paid = Number(r.amountPaid) || 0;
@@ -415,7 +422,7 @@ export function FinancialDashboardView({
         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 font-bold">
           <Clock className="h-4 w-4 text-rose-500" /> Receivables
         </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Outstanding Fees Card */}
           <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
             <div>
@@ -425,6 +432,18 @@ export function FinancialDashboardView({
             </div>
             <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl w-fit mt-4">
               <AlertTriangle className="h-5 w-5" />
+            </div>
+          </Card>
+
+          {/* Sponsored NGO Outstanding Fees Card */}
+          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+              <p className="text-[9px] font-black text-indigo-650 uppercase tracking-widest font-bold">NGO / Sponsor Receivables</p>
+              <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {cashPosition.totalSponsoredReceivables.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
+              <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Pledged/Deferred NGO Fees</p>
+            </div>
+            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl w-fit mt-4">
+              <Award className="h-5 w-5" />
             </div>
           </Card>
 
