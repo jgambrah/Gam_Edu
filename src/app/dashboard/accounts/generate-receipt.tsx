@@ -135,7 +135,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
             const h = clone.scrollHeight;
             
             const canvas = await html2canvas(clone, { 
-                scale: 3, 
+                scale: 2, 
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
@@ -144,7 +144,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                 windowWidth: w + 50,
                 windowHeight: h + 50
             });
-            const imgData = canvas.toDataURL('image/png');
+            const imgData = canvas.toDataURL('image/jpeg', 0.75);
             
             // Size the PDF page to match the captured aspect ratio
             const pdfWidth = isThermal ? 80 : 210;
@@ -157,7 +157,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                 format: [pdfWidth, pdfHeight]
             });
 
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
             pdf.save(`Receipt_${student.firstName}_${student.lastName}_${transaction.id.slice(0,6)}.pdf`);
         } catch (error) {
             console.error('PDF Generation Failed:', error);
