@@ -494,20 +494,27 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                   <div className="absolute top-0 left-0 w-full h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor})` }} />
                   <div className={`flex flex-col ${school.directorLayout === 'alongside' ? 'lg:flex-row' : ''}`}>
                     {/* Photo */}
-                    <div className={`relative bg-slate-100 flex items-center justify-center overflow-hidden ${
+                    <div className={`relative bg-slate-50 flex items-center justify-center overflow-hidden ${
                       school.directorLayout === 'alongside'
-                        ? 'lg:w-[380px] xl:w-[460px] min-h-[400px] lg:min-h-[500px] xl:min-h-[580px] shrink-0'
-                        : 'w-full h-[450px] sm:h-[550px] md:h-[600px]'
+                        ? 'lg:w-[380px] xl:w-[460px] min-h-[350px] lg:min-h-[500px] xl:min-h-[580px] shrink-0 lg:border-r border-slate-100'
+                        : 'w-full border-b border-slate-100'
                     }`}>
                       {school.directorPhotoUrl ? (
-                        <img src={school.directorPhotoUrl} alt="School Director" className="w-full h-full object-cover object-top" />
+                        <img 
+                          src={school.directorPhotoUrl} 
+                          alt="School Director" 
+                          className={`w-full object-contain ${
+                            school.directorLayout === 'alongside'
+                              ? 'h-full lg:max-h-[580px]'
+                              : 'h-auto max-h-[450px] sm:max-h-[550px] md:max-h-[600px] py-4'
+                          }`}
+                        />
                       ) : (
-                        <div className="flex flex-col items-center gap-3 text-slate-300">
+                        <div className="flex flex-col items-center gap-3 text-slate-300 py-16">
                           <User className="h-24 w-24" />
                           <span className="text-xs font-bold uppercase tracking-widest">Director</span>
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                       <div className="absolute bottom-5 left-6 z-10">
                         <span
                           className="inline-block px-4 py-1.5 rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-sm"
@@ -537,20 +544,27 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                   <div className="absolute top-0 left-0 w-full h-2" style={{ background: `linear-gradient(90deg, ${secondaryColor}, ${tertiaryColor})` }} />
                   <div className={`flex flex-col ${school.principalLayout === 'alongside' ? 'lg:flex-row' : ''}`}>
                     {/* Photo */}
-                    <div className={`relative bg-slate-100 flex items-center justify-center overflow-hidden ${
+                    <div className={`relative bg-slate-50 flex items-center justify-center overflow-hidden ${
                       school.principalLayout === 'alongside'
-                        ? 'lg:w-[380px] xl:w-[460px] min-h-[400px] lg:min-h-[500px] xl:min-h-[580px] shrink-0'
-                        : 'w-full h-[450px] sm:h-[550px] md:h-[600px]'
+                        ? 'lg:w-[380px] xl:w-[460px] min-h-[350px] lg:min-h-[500px] xl:min-h-[580px] shrink-0 lg:border-r border-slate-100'
+                        : 'w-full border-b border-slate-100'
                     }`}>
                       {school.principalPhotoUrl ? (
-                        <img src={school.principalPhotoUrl} alt="School Principal" className="w-full h-full object-cover object-top" />
+                        <img 
+                          src={school.principalPhotoUrl} 
+                          alt="School Principal" 
+                          className={`w-full object-contain ${
+                            school.principalLayout === 'alongside'
+                              ? 'h-full lg:max-h-[580px]'
+                              : 'h-auto max-h-[450px] sm:max-h-[550px] md:max-h-[600px] py-4'
+                          }`}
+                        />
                       ) : (
-                        <div className="flex flex-col items-center gap-3 text-slate-300">
+                        <div className="flex flex-col items-center gap-3 text-slate-300 py-16">
                           <User className="h-24 w-24" />
                           <span className="text-xs font-bold uppercase tracking-widest">Principal</span>
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                       <div className="absolute bottom-5 left-6 z-10">
                         <span
                           className="inline-block px-4 py-1.5 rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-sm"
