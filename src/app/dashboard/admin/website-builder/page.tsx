@@ -48,6 +48,8 @@ export default function WebsiteBuilderPage() {
   const [hasCopied, setHasCopied] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const [galleryUploading, setGalleryUploading] = useState(false);
+  const [directorUploading, setDirectorUploading] = useState(false);
+  const [principalUploading, setPrincipalUploading] = useState(false);
 
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData, isLoading } = useDoc<any>(schoolRef);
@@ -73,7 +75,13 @@ export default function WebsiteBuilderPage() {
     address: '',
     facebookUrl: '',
     instagramUrl: '',
-    linkedinUrl: ''
+    linkedinUrl: '',
+    directorMessage: '',
+    directorPhotoUrl: '',
+    directorLayout: 'alongside' as 'alongside' | 'below',
+    principalMessage: '',
+    principalPhotoUrl: '',
+    principalLayout: 'alongside' as 'alongside' | 'below'
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -132,7 +140,13 @@ export default function WebsiteBuilderPage() {
         address: schoolData.address || '',
         facebookUrl: schoolData.facebookUrl || '',
         instagramUrl: schoolData.instagramUrl || '',
-        linkedinUrl: schoolData.linkedinUrl || ''
+        linkedinUrl: schoolData.linkedinUrl || '',
+        directorMessage: schoolData.directorMessage || '',
+        directorPhotoUrl: schoolData.directorPhotoUrl || '',
+        directorLayout: schoolData.directorLayout || 'alongside',
+        principalMessage: schoolData.principalMessage || '',
+        principalPhotoUrl: schoolData.principalPhotoUrl || '',
+        principalLayout: schoolData.principalLayout || 'alongside'
       });
     }
   }, [schoolData]);
@@ -291,9 +305,45 @@ export default function WebsiteBuilderPage() {
 
   const removeCustomStaff = (index: number) => {
     setFormData(prev => ({
-      ...prev,
-      customStaff: prev.customStaff.filter((_, i) => i !== index)
+        ...prev,
+        customStaff: prev.customStaff.filter((_, i) => i !== index)
     }));
+  };
+
+  const handleDirectorPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !schoolId) return;
+    setDirectorUploading(true);
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `schools/${schoolId}/website/director_${Date.now()}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setFormData(prev => ({ ...prev, directorPhotoUrl: url }));
+      toast({ title: "Director Photo Uploaded", description: "Photo is ready. Save to publish." });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setDirectorUploading(false);
+    }
+  };
+
+  const handlePrincipalPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !schoolId) return;
+    setPrincipalUploading(true);
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `schools/${schoolId}/website/principal_${Date.now()}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setFormData(prev => ({ ...prev, principalPhotoUrl: url }));
+      toast({ title: "Principal Photo Uploaded", description: "Photo is ready. Save to publish." });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setPrincipalUploading(false);
+    }
   };
 
   const handleNewsImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -556,6 +606,116 @@ export default function WebsiteBuilderPage() {
                                     rows={3} 
                                     placeholder="e.g. Excellence, Integrity, Collaboration..." 
                                 />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2"><User className="h-5 w-5 text-indigo-605" /> Leadership Messages</CardTitle>
+                            <CardDescription>Add personal messages from the Director and the Principal to display on the storefront.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Director's Message Section */}
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4">
+                                <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                                    <User className="h-4 w-4 text-indigo-605" /> Director's Message
+                                </h4>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Director's Photo</Label>
+                                        <div className="flex gap-2">
+                                            {formData.directorPhotoUrl ? (
+                                                <div className="h-10 w-10 rounded-lg overflow-hidden border shrink-0 bg-slate-200">
+                                                    <img src={formData.directorPhotoUrl} className="h-full w-full object-cover" />
+                                                </div>
+                                            ) : null}
+                                            <input type="file" accept="image/*" onChange={handleDirectorPhotoUpload} className="hidden" id="director-file-input" disabled={directorUploading} />
+                                            <Button type="button" variant="outline" asChild disabled={directorUploading} className="w-full">
+                                                <label htmlFor="director-file-input" className="cursor-pointer flex items-center justify-center gap-1.5 font-bold">
+                                                    {directorUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                                    Upload Director Photo
+                                                </label>
+                                            </Button>
+                                            {formData.directorPhotoUrl && (
+                                                <Button type="button" variant="destructive" size="icon" onClick={() => setFormData({...formData, directorPhotoUrl: ''})} className="shrink-0">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Layout Type</Label>
+                                        <select 
+                                            value={formData.directorLayout} 
+                                            onChange={e => setFormData({...formData, directorLayout: e.target.value as any})}
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-bold"
+                                        >
+                                            <option value="alongside">Alongside Photo (Horizontal)</option>
+                                            <option value="below">Below Photo (Vertical Stack)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Director's Message Text</Label>
+                                    <Textarea 
+                                        value={formData.directorMessage} 
+                                        onChange={e => setFormData({...formData, directorMessage: e.target.value})} 
+                                        placeholder="Write a welcoming or inspiring message from the School Director..." 
+                                        rows={4} 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Principal's Message Section */}
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4">
+                                <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                                    <User className="h-4 w-4 text-indigo-605" /> Principal's Message
+                                </h4>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Principal's Photo</Label>
+                                        <div className="flex gap-2">
+                                            {formData.principalPhotoUrl ? (
+                                                <div className="h-10 w-10 rounded-lg overflow-hidden border shrink-0 bg-slate-200">
+                                                    <img src={formData.principalPhotoUrl} className="h-full w-full object-cover" />
+                                                </div>
+                                            ) : null}
+                                            <input type="file" accept="image/*" onChange={handlePrincipalPhotoUpload} className="hidden" id="principal-file-input" disabled={principalUploading} />
+                                            <Button type="button" variant="outline" asChild disabled={principalUploading} className="w-full">
+                                                <label htmlFor="principal-file-input" className="cursor-pointer flex items-center justify-center gap-1.5 font-bold">
+                                                    {principalUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                                    Upload Principal Photo
+                                                </label>
+                                            </Button>
+                                            {formData.principalPhotoUrl && (
+                                                <Button type="button" variant="destructive" size="icon" onClick={() => setFormData({...formData, principalPhotoUrl: ''})} className="shrink-0">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Layout Type</Label>
+                                        <select 
+                                            value={formData.principalLayout} 
+                                            onChange={e => setFormData({...formData, principalLayout: e.target.value as any})}
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-bold"
+                                        >
+                                            <option value="alongside">Alongside Photo (Horizontal)</option>
+                                            <option value="below">Below Photo (Vertical Stack)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Principal's Message Text</Label>
+                                    <Textarea 
+                                        value={formData.principalMessage} 
+                                        onChange={e => setFormData({...formData, principalMessage: e.target.value})} 
+                                        placeholder="Write a message or word of advice from the School Principal..." 
+                                        rows={4} 
+                                    />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
