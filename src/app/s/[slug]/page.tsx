@@ -455,19 +455,19 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                   <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/20 rounded-full blur-2xl pointer-events-none" />
                   <div className={`flex flex-col gap-6 h-full justify-between ${school.directorLayout === 'alongside' ? "sm:flex-row items-start text-left" : "items-center text-center"}`}>
                     {school.directorPhotoUrl ? (
-                      <div className="h-36 w-36 rounded-[2rem] overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
+                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
                         <img src={school.directorPhotoUrl} alt="Director" className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="h-36 w-36 rounded-[2rem] bg-slate-100 flex items-center justify-center border-2 border-white shrink-0 shadow-md">
-                        <User className="h-14 w-14 text-slate-300" />
+                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] bg-slate-100 flex items-center justify-center border-2 border-white shrink-0 shadow-md">
+                        <User className="h-20 w-20 text-slate-300" />
                       </div>
                     )}
                     <div className="space-y-4 flex-1">
                       <div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded bg-slate-200/50 text-slate-600">School Director</span>
                       </div>
-                      <blockquote className="text-slate-650 leading-relaxed italic text-sm md:text-base font-medium">
+                      <blockquote className="text-slate-650 leading-relaxed italic text-sm md:text-base font-medium whitespace-pre-wrap">
                         "{school.directorMessage}"
                       </blockquote>
                     </div>
@@ -481,19 +481,19 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                   <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/20 rounded-full blur-2xl pointer-events-none" />
                   <div className={`flex flex-col gap-6 h-full justify-between ${school.principalLayout === 'alongside' ? "sm:flex-row items-start text-left" : "items-center text-center"}`}>
                     {school.principalPhotoUrl ? (
-                      <div className="h-36 w-36 rounded-[2rem] overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
+                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
                         <img src={school.principalPhotoUrl} alt="Principal" className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="h-36 w-36 rounded-[2rem] bg-slate-100 flex items-center justify-center border-2 border-white shrink-0 shadow-md">
-                        <User className="h-14 w-14 text-slate-300" />
+                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] bg-slate-100 flex items-center justify-center border-2 border-white shrink-0 shadow-md">
+                        <User className="h-20 w-20 text-slate-300" />
                       </div>
                     )}
                     <div className="space-y-4 flex-1">
                       <div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded bg-slate-200/50 text-slate-600">School Principal</span>
                       </div>
-                      <blockquote className="text-slate-650 leading-relaxed italic text-sm md:text-base font-medium">
+                      <blockquote className="text-slate-650 leading-relaxed italic text-sm md:text-base font-medium whitespace-pre-wrap">
                         "{school.principalMessage}"
                       </blockquote>
                     </div>
