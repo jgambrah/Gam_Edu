@@ -410,29 +410,47 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
             {/* mission / vision / core values */}
             {(school.mission || school.vision || school.coreValues) && (
-              <div className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-6 pt-4">
+                <div className="grid sm:grid-cols-2 gap-6">
                   {school.mission && (
-                    <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: brand }}>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Mission</p>
-                      <div className="prose-school text-slate-800 text-sm font-semibold leading-relaxed">
+                    <div className="relative p-8 rounded-[2rem] bg-gradient-to-br from-slate-50 to-white border border-slate-100 shadow-sm overflow-hidden group/card transition-shadow hover:shadow-md">
+                      <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-[2rem]" style={{ background: `linear-gradient(90deg, ${brand}, ${brand}80)` }} />
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: `${brand}15` }}>
+                          <Star className="h-5 w-5" style={{ color: brand }} />
+                        </div>
+                        <h4 className="text-lg font-black uppercase tracking-wider" style={{ color: brand }}>Mission</h4>
+                      </div>
+                      <div className="prose-school text-slate-700 text-sm leading-relaxed">
                         <ReactMarkdown>{school.mission}</ReactMarkdown>
                       </div>
                     </div>
                   )}
                   {school.vision && (
-                    <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: secondaryColor }}>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Vision</p>
-                      <div className="prose-school text-slate-800 text-sm font-semibold leading-relaxed">
+                    <div className="relative p-8 rounded-[2rem] bg-gradient-to-br from-slate-50 to-white border border-slate-100 shadow-sm overflow-hidden group/card transition-shadow hover:shadow-md">
+                      <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-[2rem]" style={{ background: `linear-gradient(90deg, ${secondaryColor}, ${secondaryColor}80)` }} />
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: `${secondaryColor}15` }}>
+                          <BookOpen className="h-5 w-5" style={{ color: secondaryColor }} />
+                        </div>
+                        <h4 className="text-lg font-black uppercase tracking-wider" style={{ color: secondaryColor }}>Vision</h4>
+                      </div>
+                      <div className="prose-school text-slate-700 text-sm leading-relaxed">
                         <ReactMarkdown>{school.vision}</ReactMarkdown>
                       </div>
                     </div>
                   )}
                 </div>
                 {school.coreValues && (
-                  <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: tertiaryColor }}>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Core Values</p>
-                    <div className="prose-school text-slate-800 text-sm font-semibold leading-relaxed">
+                  <div className="relative p-8 rounded-[2rem] bg-gradient-to-br from-slate-50 to-white border border-slate-100 shadow-sm overflow-hidden group/card transition-shadow hover:shadow-md">
+                    <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-[2rem]" style={{ background: `linear-gradient(90deg, ${tertiaryColor}, ${tertiaryColor}80)` }} />
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" style={{ backgroundColor: `${tertiaryColor}15` }}>
+                        <Award className="h-5 w-5" style={{ color: tertiaryColor }} />
+                      </div>
+                      <h4 className="text-lg font-black uppercase tracking-wider" style={{ color: tertiaryColor }}>Core Values</h4>
+                    </div>
+                    <div className="prose-school text-slate-700 text-sm leading-relaxed">
                       <ReactMarkdown>{school.coreValues}</ReactMarkdown>
                     </div>
                   </div>
