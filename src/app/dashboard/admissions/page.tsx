@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useUser, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { logAuditEvent } from '@/lib/audit';
-import { collection, doc, query, where, getDocs, getDoc, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, getDoc, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -208,6 +208,52 @@ function AdminApplicationDashboard() {
     const [aiThinking, setAiThinking] = useState(false);
     const [aiReasoning, setAiReasoning] = useState<string | null>(null);
 
+    // Evaluation Scores State
+    const [entranceExamScore, setEntranceExamScore] = useState('');
+    const [interviewScore, setInterviewScore] = useState('');
+    const [processingScores, setProcessingScores] = useState(false);
+
+    // Student Credentials State
+    const [studentEmail, setStudentEmail] = useState('');
+    const [studentPassword, setStudentPassword] = useState('password123');
+
+    // School data query
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolData } = useDoc<any>(schoolRef);
+
+    useEffect(() => {
+        if (selectedApp) {
+            setEntranceExamScore(selectedApp.entranceExamScore !== undefined && selectedApp.entranceExamScore !== null ? selectedApp.entranceExamScore.toString() : '');
+            setInterviewScore(selectedApp.interviewScore !== undefined && selectedApp.interviewScore !== null ? selectedApp.interviewScore.toString() : '');
+        } else {
+            setEntranceExamScore('');
+            setInterviewScore('');
+        }
+    }, [selectedApp]);
+
+    useEffect(() => {
+        if (decision === 'Approve' && selectedApp && !studentEmail) {
+            const cleanName = selectedApp.student.fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const cleanSlug = schoolData?.slug || 'school';
+            setStudentEmail(`${cleanName}@${cleanSlug}.gamedu.com`);
+        } else if (!selectedApp) {
+            setStudentEmail('');
+            setStudentPassword('password123');
+        }
+    }, [decision, selectedApp, schoolData, studentEmail]);
+
+    const averageScore = useMemo(() => {
+        if (!selectedApp) return 0;
+        const exam = selectedApp.entranceExamScore || 0;
+        const interview = selectedApp.interviewScore || 0;
+        const count = (selectedApp.entranceExamScore !== undefined && selectedApp.entranceExamScore !== null ? 1 : 0) + 
+                      (selectedApp.interviewScore !== undefined && selectedApp.interviewScore !== null ? 1 : 0);
+        return count > 0 ? Math.round((exam + interview) / count) : 0;
+    }, [selectedApp]);
+
+    const hasScores = selectedApp?.entranceExamScore !== undefined && selectedApp?.entranceExamScore !== null || 
+                      selectedApp?.interviewScore !== undefined && selectedApp?.interviewScore !== null;
+
     useEffect(() => {
         if (!firestore || !schoolId) return;
         const q = query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId));
@@ -332,6 +378,31 @@ function AdminApplicationDashboard() {
         }
     };
 
+    const handleSaveScores = async () => {
+        if (!selectedApp || !firestore) return;
+        setProcessingScores(true);
+        try {
+            const appRef = doc(firestore, 'admissionApplications', selectedApp.id);
+            const updates: any = {};
+            
+            updates.entranceExamScore = entranceExamScore !== '' ? Number(entranceExamScore) : null;
+            updates.interviewScore = interviewScore !== '' ? Number(interviewScore) : null;
+
+            await updateDoc(appRef, updates);
+            toast({ title: "Scores Saved", description: "Admission evaluation scores have been updated." });
+            
+            setSelectedApp((prev: any) => ({
+                ...prev,
+                ...updates
+            }));
+        } catch (error) {
+            console.error("Failed to save scores:", error);
+            toast({ variant: "destructive", title: "Error", description: "Failed to save evaluation scores." });
+        } finally {
+            setProcessingScores(false);
+        }
+    };
+
     const handleProcessApplication = async () => {
         if (!selectedApp || !user || !schoolId || !firestore) return;
         setProcessing(true);
@@ -353,21 +424,51 @@ function AdminApplicationDashboard() {
                 const firstName = nameParts[0] || 'New';
                 const lastName = nameParts.slice(1).join(' ') || 'Student';
 
+                if (!studentEmail.trim()) {
+                    toast({ variant: "destructive", title: "Email Required", description: "Please enter a student email address." });
+                    setProcessing(false);
+                    return;
+                }
+
+                // Create Firebase User account for the student
+                const userResult = await createNewUser(
+                    studentEmail.trim(), 
+                    studentPassword || 'password123', 
+                    'Student', 
+                    { firstName, lastName }, 
+                    schoolId
+                );
+
+                if (userResult.error) {
+                    toast({ variant: "destructive", title: "Account Creation Failed", description: userResult.error });
+                    setProcessing(false);
+                    return;
+                }
+
+                const newUid = userResult.uid;
+                if (!newUid) {
+                    toast({ variant: "destructive", title: "Account Creation Failed", description: "Failed to generate UID for student." });
+                    setProcessing(false);
+                    return;
+                }
+
                 const studentData = {
-                    uid: selectedApp.submittedByParentId,
+                    uid: newUid,
                     studentId: newStudentId,
                     firstName: firstName,
                     lastName: lastName,
-                    email: selectedApp.parent1.email,
+                    email: studentEmail.trim(),
                     classId: assignedClass,
                     gender: selectedApp.student.gender,
                     dateOfBirth: selectedApp.student.dateOfBirth,
                     address: selectedApp.student.address,
                     enrollmentStatus: 'Active',
                     schoolId: schoolId,
+                    parentId: selectedApp.submittedByParentId || null,
                 };
                 
-                await addDoc(collection(firestore, 'students'), studentData);
+                // Save the full student details into the collection using the generated UID
+                await setDoc(doc(firestore, 'students', newUid), studentData, { merge: true });
 
                 let academicYear = '';
                 let term = '';
@@ -383,7 +484,7 @@ function AdminApplicationDashboard() {
 
                 try {
                     await TimelineService.logEvent(firestore, {
-                        studentId: selectedApp.submittedByParentId,
+                        studentId: newUid,
                         title: "Admission Approved",
                         description: `Admission application (${selectedApp.applicationId}) has been approved and student is assigned to class ${availableClasses?.find(c => c.id === assignedClass)?.name || assignedClass}.`,
                         category: 'admission',
@@ -796,6 +897,70 @@ function AdminApplicationDashboard() {
                                 )}
                             </div>
 
+                            {/* Section 3.5: Scientific Evaluation & Scores */}
+                            <div className="space-y-3 p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                                <div className="flex items-center gap-1.5 border-b pb-1">
+                                    <span className="text-lg">📊</span>
+                                    <h4 className="text-xs font-black uppercase tracking-wider text-violet-650">Scientific Evaluation</h4>
+                                </div>
+                                <p className="text-[11px] text-slate-500 font-medium">Enter optional entrance exam and interview scores to assess the student scientifically.</p>
+                                <div className="grid grid-cols-2 gap-4 pt-2">
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-bold text-slate-650">Entrance Exam Score (0-100)</Label>
+                                        <Input 
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            placeholder="e.g. 85"
+                                            value={entranceExamScore}
+                                            onChange={(e) => setEntranceExamScore(e.target.value)}
+                                            className="bg-white rounded-xl focus:ring-violet-500 text-sm font-semibold"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-bold text-slate-650">Interview Score (0-100)</Label>
+                                        <Input 
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            placeholder="e.g. 78"
+                                            value={interviewScore}
+                                            onChange={(e) => setInterviewScore(e.target.value)}
+                                            className="bg-white rounded-xl focus:ring-violet-500 text-sm font-semibold"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-2 border-t border-slate-200/50 mt-3">
+                                    {hasScores ? (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-slate-600">Average: <strong className="text-slate-800 font-black">{averageScore}%</strong></span>
+                                            <Badge className={cn(
+                                                "font-bold text-[10px] rounded-lg px-2 py-0.5 border shadow-none",
+                                                averageScore >= 75 ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                                                averageScore >= 50 ? "bg-amber-50 text-amber-700 border-amber-100" :
+                                                "bg-rose-50 text-rose-700 border-rose-100"
+                                            )}>
+                                                {averageScore >= 75 ? "Excellent Fit" : averageScore >= 50 ? "Pass Fit" : "Fail / Reassess"}
+                                            </Badge>
+                                        </div>
+                                    ) : (
+                                        <span className="text-[10px] italic text-slate-400">No evaluation scores saved yet</span>
+                                    )}
+
+                                    <Button 
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={handleSaveScores}
+                                        disabled={processingScores}
+                                        className="h-8 rounded-lg text-xs bg-white text-violet-700 hover:bg-slate-50 font-bold border-violet-250 shadow-sm"
+                                    >
+                                        {processingScores ? <Loader2 className="animate-spin h-3 w-3 mr-1"/> : null}
+                                        Save Scores
+                                    </Button>
+                                </div>
+                            </div>
+
                             {/* Section 4: AI Placement recommendations */}
                             {(selectedApp.status === 'Pending Review' || selectedApp.status === 'Under Review') && (
                                 <div className="relative overflow-hidden bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-fuchsia-500/10 p-5 rounded-2xl border border-violet-100/50 space-y-3">
@@ -880,6 +1045,36 @@ function AdminApplicationDashboard() {
                                         ))}
                                     </SelectContent>
                                 </Select>
+                            </div>
+                            <div className="space-y-4 pt-4 border-t">
+                                <h4 className="text-xs font-black uppercase tracking-wider text-violet-655 flex items-center gap-1"><GraduationCap className="h-4 w-4"/> Student Portal Credentials</h4>
+                                <p className="text-[11px] text-slate-500 leading-normal">
+                                    Setup a student account so they can log in to the portal. Enter a custom email or leave the auto-generated one.
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-semibold text-slate-700">Student Portal Email</Label>
+                                        <Input 
+                                            type="email"
+                                            value={studentEmail}
+                                            onChange={(e) => setStudentEmail(e.target.value)}
+                                            className="border-slate-200 rounded-xl focus:ring-violet-500 text-sm font-semibold"
+                                            placeholder="student@school.com"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-semibold text-slate-700">Default Temporary Password</Label>
+                                        <Input 
+                                            type="text"
+                                            value={studentPassword}
+                                            onChange={(e) => setStudentPassword(e.target.value)}
+                                            className="border-slate-200 rounded-xl focus:ring-violet-500 text-sm font-semibold"
+                                            placeholder="password123"
+                                            required
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
