@@ -415,20 +415,26 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                   {school.mission && (
                     <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: brand }}>
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Mission</p>
-                      <p className="text-slate-800 text-sm font-semibold leading-relaxed">{school.mission}</p>
+                      <div className="prose-school text-slate-800 text-sm font-semibold leading-relaxed">
+                        <ReactMarkdown>{school.mission}</ReactMarkdown>
+                      </div>
                     </div>
                   )}
                   {school.vision && (
                     <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: secondaryColor }}>
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Vision</p>
-                      <p className="text-slate-800 text-sm font-semibold leading-relaxed">{school.vision}</p>
+                      <div className="prose-school text-slate-800 text-sm font-semibold leading-relaxed">
+                        <ReactMarkdown>{school.vision}</ReactMarkdown>
+                      </div>
                     </div>
                   )}
                 </div>
                 {school.coreValues && (
                   <div className="p-6 rounded-3xl bg-slate-50 border-l-4" style={{ borderColor: tertiaryColor }}>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Core Values</p>
-                    <p className="text-slate-800 text-sm font-semibold leading-relaxed whitespace-pre-wrap">{school.coreValues}</p>
+                    <div className="prose-school text-slate-800 text-sm font-semibold leading-relaxed">
+                      <ReactMarkdown>{school.coreValues}</ReactMarkdown>
+                    </div>
                   </div>
                 )}
               </div>
