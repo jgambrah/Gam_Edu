@@ -31,9 +31,17 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next();
     }
 
+    const domains = [hostname];
+    const cleanHost = hostname.replace(/^www\./i, '');
+    if (hostname.toLowerCase().startsWith('www.')) {
+      domains.push(cleanHost);
+    } else {
+      domains.push(`www.${hostname}`);
+    }
+
     const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:runQuery`;
 
-    // Query Firestore for schools where customDomain == hostname
+    // Query Firestore for schools where customDomain is either the hostname or its www/non-www counterpart
     const response = await fetch(firestoreUrl, {
       method: 'POST',
       headers: {
@@ -45,8 +53,12 @@ export async function middleware(req: NextRequest) {
           where: {
             fieldFilter: {
               field: { fieldPath: 'customDomain' },
-              op: 'EQUAL',
-              value: { stringValue: hostname }
+              op: 'IN',
+              value: {
+                arrayValue: {
+                  values: domains.map(d => ({ stringValue: d }))
+                }
+              }
             }
           },
           limit: 1
