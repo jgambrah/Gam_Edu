@@ -496,11 +496,11 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     {/* Photo */}
                     <div className={`relative bg-slate-100 flex items-center justify-center overflow-hidden ${
                       school.directorLayout === 'alongside'
-                        ? 'lg:w-[340px] xl:w-[400px] min-h-[320px] lg:min-h-[400px] shrink-0'
-                        : 'w-full h-[320px] sm:h-[400px]'
+                        ? 'lg:w-[380px] xl:w-[460px] min-h-[400px] lg:min-h-[500px] xl:min-h-[580px] shrink-0'
+                        : 'w-full h-[450px] sm:h-[550px] md:h-[600px]'
                     }`}>
                       {school.directorPhotoUrl ? (
-                        <img src={school.directorPhotoUrl} alt="School Director" className="w-full h-full object-cover" />
+                        <img src={school.directorPhotoUrl} alt="School Director" className="w-full h-full object-cover object-top" />
                       ) : (
                         <div className="flex flex-col items-center gap-3 text-slate-300">
                           <User className="h-24 w-24" />
@@ -539,11 +539,11 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                     {/* Photo */}
                     <div className={`relative bg-slate-100 flex items-center justify-center overflow-hidden ${
                       school.principalLayout === 'alongside'
-                        ? 'lg:w-[340px] xl:w-[400px] min-h-[320px] lg:min-h-[400px] shrink-0'
-                        : 'w-full h-[320px] sm:h-[400px]'
+                        ? 'lg:w-[380px] xl:w-[460px] min-h-[400px] lg:min-h-[500px] xl:min-h-[580px] shrink-0'
+                        : 'w-full h-[450px] sm:h-[550px] md:h-[600px]'
                     }`}>
                       {school.principalPhotoUrl ? (
-                        <img src={school.principalPhotoUrl} alt="School Principal" className="w-full h-full object-cover" />
+                        <img src={school.principalPhotoUrl} alt="School Principal" className="w-full h-full object-cover object-top" />
                       ) : (
                         <div className="flex flex-col items-center gap-3 text-slate-300">
                           <User className="h-24 w-24" />
