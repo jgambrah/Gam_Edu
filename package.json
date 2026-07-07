@@ -67,7 +67,7 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.2",
     "react-katex": "^3.0.1",
-    "react-markdown": "^9.0.1",
+    "react-markdown": "^9.1.0",
     "react-paystack": "^6.0.0",
     "recharts": "^2.15.4",
     "resend": "^3.2.0",

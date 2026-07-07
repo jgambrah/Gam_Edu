@@ -483,30 +483,47 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
       {/* ─── LEADERSHIP MESSAGES ────────────────────────────── */}
       {(school.directorMessage || school.principalMessage) && (
-        <section id="leadership" className="py-32 px-6 bg-white border-t border-slate-100">
+        <section id="leadership" className="py-32 px-6 bg-slate-50">
           <div className="max-w-7xl mx-auto space-y-20">
             <SectionHeader eyebrow="Leadership" title="Messages from Leadership" color={brand} />
 
-            <div className="grid md:grid-cols-2 gap-12 items-stretch">
-              {/* Director's Message Card */}
+            <div className="space-y-16">
+              {/* Director's Message */}
               {school.directorMessage && (
-                <div className="bg-slate-50/50 rounded-[2.5rem] p-8 md:p-10 border border-slate-100 flex flex-col justify-between space-y-6 card-hover relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/20 rounded-full blur-2xl pointer-events-none" />
-                  <div className={`flex flex-col gap-6 h-full justify-between ${school.directorLayout === 'alongside' ? "sm:flex-row items-start text-left" : "items-center text-center"}`}>
-                    {school.directorPhotoUrl ? (
-                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
-                        <img src={school.directorPhotoUrl} alt="Director" className="w-full h-full object-cover" />
+                <div className="relative bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-lg">
+                  <div className="absolute top-0 left-0 w-full h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor})` }} />
+                  <div className={`flex flex-col ${school.directorLayout === 'alongside' ? 'lg:flex-row' : ''}`}>
+                    {/* Photo */}
+                    <div className={`relative bg-slate-100 flex items-center justify-center overflow-hidden ${
+                      school.directorLayout === 'alongside'
+                        ? 'lg:w-[340px] xl:w-[400px] min-h-[320px] lg:min-h-[400px] shrink-0'
+                        : 'w-full h-[320px] sm:h-[400px]'
+                    }`}>
+                      {school.directorPhotoUrl ? (
+                        <img src={school.directorPhotoUrl} alt="School Director" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-3 text-slate-300">
+                          <User className="h-24 w-24" />
+                          <span className="text-xs font-bold uppercase tracking-widest">Director</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                      <div className="absolute bottom-5 left-6 z-10">
+                        <span
+                          className="inline-block px-4 py-1.5 rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-sm"
+                          style={{ background: `linear-gradient(135deg, ${brand}dd, ${secondaryColor}dd)` }}
+                        >
+                          School Director
+                        </span>
                       </div>
-                    ) : (
-                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] bg-slate-100 flex items-center justify-center border-2 border-white shrink-0 shadow-md">
-                        <User className="h-20 w-20 text-slate-300" />
-                      </div>
-                    )}
-                    <div className="space-y-4 flex-1">
-                      <div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded bg-slate-200/50 text-slate-600">School Director</span>
-                      </div>
-                      <div className="prose-school text-slate-650 leading-relaxed text-sm md:text-base font-medium">
+                    </div>
+
+                    {/* Message */}
+                    <div className="flex-1 p-8 md:p-12 lg:p-14 flex flex-col justify-center">
+                      <h3 className="serif text-2xl md:text-3xl italic mb-6" style={{ color: brand }}>
+                        Message from the Director
+                      </h3>
+                      <div className="prose-school text-slate-600 leading-relaxed text-[15px]">
                         <ReactMarkdown>{school.directorMessage}</ReactMarkdown>
                       </div>
                     </div>
@@ -514,25 +531,42 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                 </div>
               )}
 
-              {/* Principal's Message Card */}
+              {/* Principal's Message */}
               {school.principalMessage && (
-                <div className="bg-slate-50/50 rounded-[2.5rem] p-8 md:p-10 border border-slate-100 flex flex-col justify-between space-y-6 card-hover relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50/20 rounded-full blur-2xl pointer-events-none" />
-                  <div className={`flex flex-col gap-6 h-full justify-between ${school.principalLayout === 'alongside' ? "sm:flex-row items-start text-left" : "items-center text-center"}`}>
-                    {school.principalPhotoUrl ? (
-                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] overflow-hidden border-2 border-white bg-white shrink-0 shadow-md">
-                        <img src={school.principalPhotoUrl} alt="Principal" className="w-full h-full object-cover" />
+                <div className="relative bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-lg">
+                  <div className="absolute top-0 left-0 w-full h-2" style={{ background: `linear-gradient(90deg, ${secondaryColor}, ${tertiaryColor})` }} />
+                  <div className={`flex flex-col ${school.principalLayout === 'alongside' ? 'lg:flex-row' : ''}`}>
+                    {/* Photo */}
+                    <div className={`relative bg-slate-100 flex items-center justify-center overflow-hidden ${
+                      school.principalLayout === 'alongside'
+                        ? 'lg:w-[340px] xl:w-[400px] min-h-[320px] lg:min-h-[400px] shrink-0'
+                        : 'w-full h-[320px] sm:h-[400px]'
+                    }`}>
+                      {school.principalPhotoUrl ? (
+                        <img src={school.principalPhotoUrl} alt="School Principal" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-3 text-slate-300">
+                          <User className="h-24 w-24" />
+                          <span className="text-xs font-bold uppercase tracking-widest">Principal</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                      <div className="absolute bottom-5 left-6 z-10">
+                        <span
+                          className="inline-block px-4 py-1.5 rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-sm"
+                          style={{ background: `linear-gradient(135deg, ${secondaryColor}dd, ${tertiaryColor}dd)` }}
+                        >
+                          School Principal
+                        </span>
                       </div>
-                    ) : (
-                      <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] bg-slate-100 flex items-center justify-center border-2 border-white shrink-0 shadow-md">
-                        <User className="h-20 w-20 text-slate-300" />
-                      </div>
-                    )}
-                    <div className="space-y-4 flex-1">
-                      <div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded bg-slate-200/50 text-slate-600">School Principal</span>
-                      </div>
-                      <div className="prose-school text-slate-650 leading-relaxed text-sm md:text-base font-medium">
+                    </div>
+
+                    {/* Message */}
+                    <div className="flex-1 p-8 md:p-12 lg:p-14 flex flex-col justify-center">
+                      <h3 className="serif text-2xl md:text-3xl italic mb-6" style={{ color: secondaryColor }}>
+                        Message from the Principal
+                      </h3>
+                      <div className="prose-school text-slate-600 leading-relaxed text-[15px]">
                         <ReactMarkdown>{school.principalMessage}</ReactMarkdown>
                       </div>
                     </div>
