@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import ReactMarkdown from 'react-markdown';
 
 // ─── helpers ────────────────────────────────────────────────
 function getYouTubeId(url: string) {
@@ -175,6 +176,18 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         .card-hover:hover { transform: translateY(-6px); box-shadow: 0 24px 48px -12px rgba(0,0,0,0.15); }
         @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
         .fade-up { animation: fadeUp 0.7s ease forwards; }
+        .prose-school h1 { font-size: 2rem; font-weight: 900; margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.2; }
+        .prose-school h2 { font-size: 1.5rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; line-height: 1.3; }
+        .prose-school h3 { font-size: 1.25rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .prose-school p { margin-bottom: 1rem; line-height: 1.8; }
+        .prose-school strong { font-weight: 700; color: #1e293b; }
+        .prose-school em { font-style: italic; }
+        .prose-school ul, .prose-school ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .prose-school li { margin-bottom: 0.35rem; line-height: 1.7; }
+        .prose-school ul { list-style-type: disc; }
+        .prose-school ol { list-style-type: decimal; }
+        .prose-school hr { border: none; border-top: 2px solid #e2e8f0; margin: 2.5rem 0; }
+        .prose-school blockquote { border-left: 4px solid #cbd5e1; padding-left: 1rem; margin: 1.5rem 0; font-style: italic; color: #475569; }
       `}</style>
 
       {/* ─── NAV ────────────────────────────────────────────── */}
@@ -388,9 +401,11 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
               <h2 className="serif text-5xl md:text-6xl italic leading-tight mb-6" style={{ color: brand }}>
                 Welcome to Our Campus
               </h2>
-              <p className="text-lg text-slate-600 leading-relaxed whitespace-pre-wrap">
-                {school.aboutText || 'Welcome to our institution where excellence is the standard and every student is empowered to thrive.'}
-              </p>
+              <div className="prose-school text-lg text-slate-600 leading-relaxed">
+                <ReactMarkdown>
+                  {school.aboutText || 'Welcome to our institution where excellence is the standard and every student is empowered to thrive.'}
+                </ReactMarkdown>
+              </div>
             </div>
 
             {/* mission / vision / core values */}
@@ -467,9 +482,9 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                       <div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded bg-slate-200/50 text-slate-600">School Director</span>
                       </div>
-                      <blockquote className="text-slate-650 leading-relaxed italic text-sm md:text-base font-medium whitespace-pre-wrap">
-                        "{school.directorMessage}"
-                      </blockquote>
+                      <div className="prose-school text-slate-650 leading-relaxed text-sm md:text-base font-medium">
+                        <ReactMarkdown>{school.directorMessage}</ReactMarkdown>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -493,9 +508,9 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                       <div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded bg-slate-200/50 text-slate-600">School Principal</span>
                       </div>
-                      <blockquote className="text-slate-650 leading-relaxed italic text-sm md:text-base font-medium whitespace-pre-wrap">
-                        "{school.principalMessage}"
-                      </blockquote>
+                      <div className="prose-school text-slate-650 leading-relaxed text-sm md:text-base font-medium">
+                        <ReactMarkdown>{school.principalMessage}</ReactMarkdown>
+                      </div>
                     </div>
                   </div>
                 </div>
