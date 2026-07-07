@@ -422,7 +422,7 @@ export type StudentRegistrationData = z.infer<typeof studentRegistrationSchema>;
 export type AdmissionApplication = StudentRegistrationData & {
     id: string;
     applicationId: string; // A user-friendly, unique ID
-    status: 'Pending Review' | 'Admitted' | 'Rejected';
+    status: 'Pending Review' | 'Under Review' | 'Admitted' | 'Rejected';
     submittedByParentId: string;
     submittedAt: any;
     rejectionReason?: string;

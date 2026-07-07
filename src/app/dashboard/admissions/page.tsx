@@ -210,9 +210,14 @@ function AdminApplicationDashboard() {
 
     useEffect(() => {
         if (!firestore || !schoolId) return;
-        const q = query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), where('status', '==', 'Pending Review'));
+        const q = query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            apps.sort((a: any, b: any) => {
+                const timeA = a.submittedAt?.seconds || 0;
+                const timeB = b.submittedAt?.seconds || 0;
+                return timeB - timeA;
+            });
             setApplications(apps);
             setLoading(false);
         });
@@ -275,6 +280,56 @@ function AdminApplicationDashboard() {
             toast({ variant: "destructive", title: "AI Failed", description: "Could not generate a suggestion." });
         }
         setAiThinking(false);
+    };
+
+    const handleStartReview = async (app: any) => {
+        if (!firestore || !user || !schoolId) return;
+        setProcessing(true);
+        try {
+            const appRef = doc(firestore, 'admissionApplications', app.id);
+            await updateDoc(appRef, {
+                status: 'Under Review',
+                reviewedBy: user.uid,
+                reviewedAt: serverTimestamp()
+            });
+
+            let academicYear = '';
+            let term = '';
+            try {
+                const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId));
+                if (settingsSnap.exists()) {
+                    academicYear = settingsSnap.data().academicYear || '';
+                    term = settingsSnap.data().term || '';
+                }
+            } catch (e) {
+                console.error("Failed to fetch settings:", e);
+            }
+
+            try {
+                await TimelineService.logEvent(firestore, {
+                    studentId: app.submittedByParentId,
+                    title: "Application Under Review",
+                    description: `Admission application (${app.applicationId}) has been moved to Under Review.`,
+                    category: 'admission',
+                    schoolId,
+                    recordedBy: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user.displayName || 'System'),
+                    recordedById: user.uid,
+                    academicYear,
+                    term,
+                    date: new Date()
+                });
+            } catch (err) {
+                console.error("Failed to log timeline event:", err);
+            }
+
+            toast({ title: "Review Started", description: "Application status updated to Under Review." });
+            setSelectedApp((prev: any) => ({ ...prev, status: 'Under Review' }));
+        } catch (error) {
+            console.error('Error starting review:', error);
+            toast({ variant: "destructive", title: "Error", description: "Failed to update application." });
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const handleProcessApplication = async () => {
@@ -388,6 +443,11 @@ function AdminApplicationDashboard() {
         }
     };
     
+    const pendingApps = useMemo(() => applications.filter(a => a.status === 'Pending Review'), [applications]);
+    const underReviewApps = useMemo(() => applications.filter(a => a.status === 'Under Review'), [applications]);
+    const admittedApps = useMemo(() => applications.filter(a => a.status === 'Admitted' || a.status === 'Enrolled'), [applications]);
+    const rejectedApps = useMemo(() => applications.filter(a => a.status === 'Rejected'), [applications]);
+
     const getAiFlags = (app: any) => {
         const flags = [];
 
@@ -409,6 +469,72 @@ function AdminApplicationDashboard() {
         return flags;
     };
 
+    const renderAppList = (list: any[], emptyTitle: string, emptyDesc: string) => {
+        if (list.length === 0) {
+            return (
+                <div className="py-16 text-center text-slate-400 border-2 border-dashed rounded-3xl bg-slate-50 flex flex-col items-center justify-center gap-3">
+                    <AlertCircle className="h-10 w-10 text-slate-300" />
+                    <div>
+                        <p className="font-semibold text-slate-700">{emptyTitle}</p>
+                        <p className="text-xs text-slate-400 mt-1">{emptyDesc}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="grid gap-4">
+                {list.map((app) => {
+                    const aiFlags = getAiFlags(app);
+                    return (
+                        <div key={app.id} className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-violet-200 transition-all duration-300">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 font-bold text-lg border border-violet-100/50">
+                                        {app.student.fullName?.charAt(0) || '?'}
+                                    </div>
+                                    <div>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <h3 className="font-semibold text-slate-800 text-lg group-hover:text-violet-700 transition-colors">
+                                                {app.student.fullName}
+                                            </h3>
+                                            {aiFlags.map((flag, i) => (
+                                                <Badge key={i} variant={flag.type === 'warning' ? 'destructive' : 'secondary'} className={cn("text-xs font-semibold px-2 py-0.5", flag.type === 'warning' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100/50 border-rose-100' : 'bg-amber-50 text-amber-700 hover:bg-amber-100/50 border-amber-100')}>
+                                                    <AlertCircle className="h-3 w-3 mr-1 shrink-0" /> {flag.text}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                        
+                                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                                            <span className="flex items-center gap-1.5">
+                                                Desired: <Badge variant="outline" className="border-violet-100 bg-violet-50/50 text-violet-700 font-semibold px-2 py-0.5 rounded-md">{app.student.desiredGrade}</Badge>
+                                            </span>
+                                            <span className="text-slate-300">•</span>
+                                            <span>App ID: <code className="font-mono text-slate-600 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">{app.applicationId}</code></span>
+                                            <span className="text-slate-300">•</span>
+                                            <span>Parent: <strong className="text-slate-600 font-medium">{app.parent1.name}</strong></span>
+                                            {app.submittedAt && (
+                                                <>
+                                                    <span className="text-slate-300">•</span>
+                                                    <span>Submitted: {app.submittedAt.toDate ? format(app.submittedAt.toDate(), 'PP') : 'N/A'}</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 md:self-center self-end">
+                                    <Button size="sm" variant="outline" className="h-9 text-violet-655 hover:text-violet-700 hover:bg-violet-50 border-violet-200 font-semibold rounded-xl transition-all"
+                                        onClick={() => { setSelectedApp(app); setDecision(null); }}>
+                                        <FilePenLine className="mr-1.5 h-4 w-4 text-violet-500" /> Review Application
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
 
     if (loading) {
         return (
@@ -436,12 +562,12 @@ function AdminApplicationDashboard() {
                     
                     <div className="flex flex-wrap gap-4 shrink-0">
                         <div className="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-md border border-white/10">
-                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">Pending Review</div>
-                            <div className="text-2xl md:text-3xl font-black mt-1">{applications.length} Applications</div>
+                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">New/Pending</div>
+                            <div className="text-2xl md:text-3xl font-black mt-1">{pendingApps.length} Applications</div>
                         </div>
                         <div className="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-md border border-white/10">
-                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">Active Classes</div>
-                            <div className="text-2xl md:text-3xl font-black mt-1">{availableClasses.length} Channels</div>
+                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">In Review</div>
+                            <div className="text-2xl md:text-3xl font-black mt-1">{underReviewApps.length} Applications</div>
                         </div>
                     </div>
                 </div>
@@ -450,95 +576,265 @@ function AdminApplicationDashboard() {
                 <div className="absolute left-1/3 bottom-0 -mb-12 h-48 w-48 rounded-full bg-violet-400/20 blur-3xl pointer-events-none"></div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-slate-800">Incoming Applications</h2>
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{applications.length} Records</span>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{applications.length} total records</span>
                 </div>
                 
-                {applications.length === 0 ? (
-                    <div className="py-16 text-center text-slate-400 border-2 border-dashed rounded-3xl bg-slate-50 flex flex-col items-center justify-center gap-3">
-                        <AlertCircle className="h-10 w-10 text-slate-300" />
-                        <div>
-                            <p className="font-semibold text-slate-700">No applications pending review</p>
-                            <p className="text-xs text-slate-400 mt-1">New submissions will show up here in real time.</p>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="grid gap-4">
-                        {applications.map((app) => {
-                            const aiFlags = getAiFlags(app);
-                            return (
-                                <div key={app.id} className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-violet-200 transition-all duration-300">
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                        <div className="flex items-start gap-4">
-                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 font-bold text-lg border border-violet-100/50">
-                                                {app.student.fullName?.charAt(0) || '?'}
-                                            </div>
-                                            <div>
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <h3 className="font-semibold text-slate-800 text-lg group-hover:text-violet-700 transition-colors">
-                                                        {app.student.fullName}
-                                                    </h3>
-                                                    {aiFlags.map((flag, i) => (
-                                                        <Badge key={i} variant={flag.type === 'warning' ? 'destructive' : 'secondary'} className={cn("text-xs font-semibold px-2 py-0.5", flag.type === 'warning' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100/50 border-rose-100' : 'bg-amber-50 text-amber-700 hover:bg-amber-100/50 border-amber-100')}>
-                                                            <AlertCircle className="h-3 w-3 mr-1 shrink-0" /> {flag.text}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                                
-                                                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                                                    <span className="flex items-center gap-1.5">
-                                                        Desired: <Badge variant="outline" className="border-violet-100 bg-violet-50/50 text-violet-700 font-semibold px-2 py-0.5 rounded-md">{app.student.desiredGrade}</Badge>
-                                                    </span>
-                                                    <span className="text-slate-300">•</span>
-                                                    <span>App ID: <code className="font-mono text-slate-600 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">{app.applicationId}</code></span>
-                                                    <span className="text-slate-300">•</span>
-                                                    <span>Parent: <strong className="text-slate-600 font-medium">{app.parent1.name}</strong></span>
-                                                    {app.submittedAt && (
-                                                        <>
-                                                            <span className="text-slate-300">•</span>
-                                                            <span>Submitted: {app.submittedAt.toDate ? format(app.submittedAt.toDate(), 'PP') : 'N/A'}</span>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2 md:self-center self-end">
-                                            <Button size="sm" variant="outline" className="h-9 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200 font-semibold rounded-xl transition-all"
-                                                onClick={() => { setSelectedApp(app); setDecision('Approve'); }}>
-                                                <Check className="mr-1.5 h-4 w-4 text-emerald-500" /> Approve
-                                            </Button>
-                                            <Button size="sm" variant="outline" className="h-9 text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200 font-semibold rounded-xl transition-all"
-                                                onClick={() => { setSelectedApp(app); setDecision('Reject'); }}>
-                                                <X className="mr-1.5 h-4 w-4 text-rose-500" /> Reject
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>
-                )}
+                <Tabs defaultValue="pending" className="w-full">
+                    <TabsList className="grid grid-cols-4 w-full md:max-w-2xl bg-slate-100 rounded-2xl p-1">
+                        <TabsTrigger value="pending" className="rounded-xl font-bold">
+                            Pending ({pendingApps.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="review" className="rounded-xl font-bold">
+                            Reviewing ({underReviewApps.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="admitted" className="rounded-xl font-bold">
+                            Admitted ({admittedApps.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="rejected" className="rounded-xl font-bold">
+                            Rejected ({rejectedApps.length})
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="pending" className="mt-6 space-y-4">
+                        {renderAppList(pendingApps, 'No pending applications', 'Newly submitted applications will show up here.')}
+                    </TabsContent>
+                    <TabsContent value="review" className="mt-6 space-y-4">
+                        {renderAppList(underReviewApps, 'No applications in review', 'Move pending applications to "Under Review" to track progress.')}
+                    </TabsContent>
+                    <TabsContent value="admitted" className="mt-6 space-y-4">
+                        {renderAppList(admittedApps, 'No admitted students', 'Applications you approve will list here.')}
+                    </TabsContent>
+                    <TabsContent value="rejected" className="mt-6 space-y-4">
+                        {renderAppList(rejectedApps, 'No rejected applications', 'Unsuccessful applications will list here.')}
+                    </TabsContent>
+                </Tabs>
             </div>
 
-            <Dialog open={!!selectedApp} onOpenChange={(open) => { if(!open) { setSelectedApp(null); setAiReasoning(null); } }}>
-                <DialogContent className="sm:max-w-md rounded-3xl">
-                    <DialogHeader>
+            <Dialog open={!!selectedApp} onOpenChange={(open) => { if(!open) { setSelectedApp(null); setDecision(null); setAiReasoning(null); } }}>
+                <DialogContent className="sm:max-w-2xl rounded-[2rem] p-6 max-h-[90vh] flex flex-col justify-between overflow-hidden">
+                    <DialogHeader className="pb-3 border-b">
                         <DialogTitle className="text-xl font-bold flex items-center gap-2">
                             {decision === 'Approve' ? (
                                 <span className="flex items-center gap-2 text-emerald-600"><CheckCircle2 className="h-5 w-5" /> Approve Application</span>
-                            ) : (
+                            ) : decision === 'Reject' ? (
                                 <span className="flex items-center gap-2 text-rose-600"><AlertCircle className="h-5 w-5" /> Reject Application</span>
+                            ) : (
+                                <span className="flex items-center gap-2 text-violet-650"><GraduationCap className="h-6 w-6" /> Review Admission Application</span>
                             )}
                         </DialogTitle>
-                        <DialogDescription className="text-slate-500 text-sm">
+                        <DialogDescription className="text-slate-500 text-xs">
                             Reviewing <strong>{selectedApp?.student?.fullName}</strong> for {selectedApp?.student?.desiredGrade}.
                         </DialogDescription>
                     </DialogHeader>
 
+                    {decision === null && selectedApp && (
+                        <div className="space-y-6 py-4 overflow-y-auto flex-1 pr-1">
+                            {/* App status badge */}
+                            <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Current Status</p>
+                                    <Badge className={cn(
+                                        "mt-1 font-bold rounded-lg px-2.5 py-1 text-xs border shadow-none",
+                                        selectedApp.status === 'Admitted' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                                        selectedApp.status === 'Rejected' ? 'bg-rose-50 text-rose-700 border-rose-100' :
+                                        selectedApp.status === 'Under Review' ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                                        'bg-blue-50 text-blue-700 border-blue-100'
+                                    )}>
+                                        {selectedApp.status}
+                                    </Badge>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Application ID</p>
+                                    <p className="font-mono text-sm font-bold text-slate-700 mt-1">{selectedApp.applicationId}</p>
+                                </div>
+                            </div>
+
+                            {/* Section 1: Student Information */}
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-black uppercase tracking-wider text-violet-600 border-b pb-1">Student Details</h4>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+                                    <div>
+                                        <span className="text-slate-400 text-xs block">Full Name</span>
+                                        <span className="font-semibold text-slate-750">{selectedApp.student?.fullName}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400 text-xs block">Desired Grade</span>
+                                        <span className="font-semibold text-slate-750">{selectedApp.student?.desiredGrade}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400 text-xs block">Date of Birth</span>
+                                        <span className="font-semibold text-slate-750">
+                                            {selectedApp.student?.dateOfBirth?.toDate 
+                                                ? format(selectedApp.student.dateOfBirth.toDate(), 'PPP') 
+                                                : selectedApp.student?.dateOfBirth ? format(new Date(selectedApp.student.dateOfBirth), 'PPP') : 'N/A'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="text-slate-400 text-xs block">Gender</span>
+                                        <span className="font-semibold text-slate-750">{selectedApp.student?.gender}</span>
+                                    </div>
+                                    <div className="col-span-2">
+                                        <span className="text-slate-400 text-xs block">Address</span>
+                                        <span className="font-medium text-slate-750">{selectedApp.student?.address}</span>
+                                    </div>
+                                    {selectedApp.student?.previousSchool && (
+                                        <div className="col-span-2">
+                                            <span className="text-slate-400 text-xs block">Previous School</span>
+                                            <span className="font-medium text-slate-750">{selectedApp.student.previousSchool}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Section 2: Parent Information */}
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-black uppercase tracking-wider text-violet-600 border-b pb-1">Parent / Guardian Details</h4>
+                                <div className="bg-slate-50 p-4 rounded-2xl space-y-4 border border-slate-100">
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm border-b pb-4 border-slate-200/60 last:border-b-0 last:pb-0">
+                                        <div className="col-span-2">
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Parent 1 (Primary)</span>
+                                            <span className="font-bold text-slate-800 text-base">{selectedApp.parent1?.name}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400 text-xs block">Relationship</span>
+                                            <span className="font-semibold text-slate-700">{selectedApp.parent1?.relationship}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400 text-xs block">Phone</span>
+                                            <span className="font-semibold text-slate-700">{selectedApp.parent1?.phone}</span>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <span className="text-slate-400 text-xs block">Email</span>
+                                            <span className="font-semibold text-slate-700 break-all">{selectedApp.parent1?.email}</span>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <span className="text-slate-400 text-xs block">Address</span>
+                                            <span className="font-medium text-slate-700">
+                                                {selectedApp.parent1?.addressSameAsStudent ? 'Same as Student Address' : selectedApp.parent1?.address}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {selectedApp.addParent2 && selectedApp.parent2 && (
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm pt-2">
+                                            <div className="col-span-2">
+                                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Parent 2 (Secondary)</span>
+                                                <span className="font-bold text-slate-800 text-base">{selectedApp.parent2.name}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-slate-400 text-xs block">Relationship</span>
+                                                <span className="font-semibold text-slate-700">{selectedApp.parent2.relationship}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-slate-400 text-xs block">Phone</span>
+                                                <span className="font-semibold text-slate-700">{selectedApp.parent2.phone}</span>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <span className="text-slate-400 text-xs block">Email</span>
+                                                <span className="font-semibold text-slate-700 break-all">{selectedApp.parent2.email}</span>
+                                            </div>
+                                            <div className="col-span-2">
+                                                <span className="text-slate-400 text-xs block">Address</span>
+                                                <span className="font-medium text-slate-700">
+                                                    {selectedApp.parent2.addressSameAsStudent ? 'Same as Student' : selectedApp.parent2.address}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Section 3: Emergency & Medical Info */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-3">
+                                    <h4 className="text-xs font-black uppercase tracking-wider text-violet-600 border-b pb-1">Emergency Contact</h4>
+                                    <div className="text-sm space-y-2">
+                                        <div>
+                                            <span className="text-slate-400 text-xs block">Contact Name</span>
+                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.name}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400 text-xs block">Relationship</span>
+                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.relationship}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400 text-xs block">Phone</span>
+                                            <span className="font-semibold text-slate-750">{selectedApp.emergencyContact?.phone}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {selectedApp.addMedicalInfo && selectedApp.medical && (
+                                    <div className="space-y-3">
+                                        <h4 className="text-xs font-black uppercase tracking-wider text-violet-600 border-b pb-1">Medical Info</h4>
+                                        <div className="text-sm space-y-2">
+                                            {selectedApp.medical.allergies && (
+                                                <div>
+                                                    <span className="text-slate-400 text-xs block">Allergies</span>
+                                                    <span className="font-semibold text-slate-750">{selectedApp.medical.allergies}</span>
+                                                </div>
+                                            )}
+                                            {selectedApp.medical.conditions && (
+                                                <div>
+                                                    <span className="text-slate-400 text-xs block">Medical Conditions</span>
+                                                    <span className="font-semibold text-slate-750">{selectedApp.medical.conditions}</span>
+                                                </div>
+                                            )}
+                                            {selectedApp.medical.physicianName && (
+                                                <div>
+                                                    <span className="text-slate-400 text-xs block">Physician</span>
+                                                    <span className="font-semibold text-slate-750">
+                                                        {selectedApp.medical.physicianName} {selectedApp.medical.physicianPhone ? `(${selectedApp.medical.physicianPhone})` : ''}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Section 4: AI Placement recommendations */}
+                            {(selectedApp.status === 'Pending Review' || selectedApp.status === 'Under Review') && (
+                                <div className="relative overflow-hidden bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-fuchsia-500/10 p-5 rounded-2xl border border-violet-100/50 space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-violet-700 flex items-center gap-1.5 uppercase tracking-wider">
+                                            <Sparkles className="w-4 h-4 text-violet-600 animate-pulse" /> Smart Placement Assistant
+                                        </span>
+                                        {!aiReasoning && (
+                                            <Button 
+                                                variant="outline" 
+                                                size="sm" 
+                                                className="h-8 text-xs bg-white text-violet-700 border-violet-200 hover:bg-violet-50 hover:text-violet-800 font-semibold rounded-lg shadow-sm" 
+                                                onClick={handleAskAI} 
+                                                disabled={aiThinking}
+                                            >
+                                                {aiThinking ? <Loader2 className="animate-spin w-3 h-3 mr-1" /> : 'Suggest Placement (-1 Credit)'}
+                                            </Button>
+                                        )}
+                                    </div>
+                                    {aiThinking && (
+                                        <div className="flex items-center gap-2 py-2 text-violet-600 text-xs">
+                                            <Loader2 className="animate-spin h-3.5 w-3.5" />
+                                            <span>Analyzing age metrics and class capacities...</span>
+                                        </div>
+                                    )}
+                                    {aiReasoning && (
+                                        <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+                                            <p className="text-xs text-violet-900 leading-relaxed italic bg-white/60 p-3.5 rounded-xl border border-violet-100/50">
+                                                "{aiReasoning}"
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {decision === 'Approve' && (
-                        <div className="space-y-5 py-3">
+                        <div className="space-y-5 py-4 overflow-y-auto flex-1 pr-1">
                             {/* Premium AI Recommendation Panel */}
                             <div className="relative overflow-hidden bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-fuchsia-500/10 p-5 rounded-2xl border border-violet-100/50">
                                 <div className="flex justify-between items-center mb-3">
@@ -589,7 +885,7 @@ function AdminApplicationDashboard() {
                     )}
 
                     {decision === 'Reject' && (
-                        <div className="space-y-4 py-3">
+                        <div className="space-y-4 py-4 overflow-y-auto flex-1 pr-1">
                             <div className="space-y-2">
                                 <Label className="text-slate-700 font-semibold text-sm">Reason for Rejection</Label>
                                 <Input 
@@ -602,16 +898,56 @@ function AdminApplicationDashboard() {
                         </div>
                     )}
 
-                    <DialogFooter className="gap-2">
-                        <Button variant="ghost" onClick={() => setSelectedApp(null)} disabled={processing} className="rounded-xl hover:bg-slate-100">Cancel</Button>
-                        <Button 
-                            onClick={handleProcessApplication} 
-                            disabled={processing}
-                            className={cn("rounded-xl font-semibold shadow-md px-5", decision === 'Approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white')}
-                        >
-                            {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Confirm {decision}
-                        </Button>
+                    <DialogFooter className="gap-2 border-t pt-4">
+                        {decision === null ? (
+                            <>
+                                <Button variant="ghost" onClick={() => setSelectedApp(null)} className="rounded-xl">
+                                    Close
+                                </Button>
+                                {(selectedApp?.status === 'Pending Review' || selectedApp?.status === 'Under Review') && (
+                                    <>
+                                        {selectedApp?.status === 'Pending Review' && (
+                                            <Button 
+                                                variant="outline" 
+                                                onClick={() => handleStartReview(selectedApp)} 
+                                                disabled={processing}
+                                                className="rounded-xl font-semibold border-amber-250 text-amber-700 hover:text-amber-800 hover:bg-amber-50"
+                                            >
+                                                {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                Start Review
+                                            </Button>
+                                        )}
+                                        <Button 
+                                            onClick={() => setDecision('Reject')} 
+                                            variant="outline" 
+                                            className="rounded-xl border-rose-200 text-rose-600 hover:text-rose-700 hover:bg-rose-50 font-semibold"
+                                        >
+                                            Reject
+                                        </Button>
+                                        <Button 
+                                            onClick={() => setDecision('Approve')} 
+                                            className="rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold shadow-md px-5"
+                                        >
+                                            Approve Admission
+                                        </Button>
+                                    </>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <Button variant="ghost" onClick={() => setDecision(null)} disabled={processing} className="rounded-xl hover:bg-slate-100">
+                                    Back to Profile
+                                </Button>
+                                <Button 
+                                    onClick={handleProcessApplication} 
+                                    disabled={processing}
+                                    className={cn("rounded-xl font-semibold shadow-md px-5", decision === 'Approve' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white')}
+                                >
+                                    {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Confirm {decision}
+                                </Button>
+                            </>
+                        )}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -620,7 +956,7 @@ function AdminApplicationDashboard() {
 }
 
 function ParentDashboard({ schoolId }: { schoolId: string }) {
-     const { user } = useUser();
+    const { user } = useUser();
     const firestore = useFirestore();
     const [myApps, setMyApps] = useState<any[]>([]);
     const [showForm, setShowForm] = useState(false);
@@ -699,9 +1035,10 @@ function ParentDashboard({ schoolId }: { schoolId: string }) {
                                         <CardDescription className="text-xs font-mono mt-0.5 text-slate-500">Application ID: {app.applicationId}</CardDescription>
                                     </div>
                                     <Badge className={cn(
-                                        "w-fit font-bold rounded-lg px-2.5 py-1 text-xs",
+                                        "w-fit font-bold rounded-lg px-2.5 py-1 text-xs border shadow-none",
                                         app.status === 'Admitted' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-50' : 
                                         app.status === 'Rejected' ? 'bg-rose-50 text-rose-700 border border-rose-100 hover:bg-rose-50' : 
+                                        app.status === 'Under Review' ? 'bg-amber-50 text-amber-700 border border-amber-100 hover:bg-amber-50' :
                                         'bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-50'
                                     )}>
                                         {app.status}
