@@ -196,6 +196,8 @@ function AdminApplicationDashboard() {
     const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [availableClasses, setAvailableClasses] = useState<{id: string, name: string, capacity: number, currentStudents: number}[]>([]);
+    const [enquiries, setEnquiries] = useState<any[]>([]);
+    const [loadingEnquiries, setLoadingEnquiries] = useState(true);
     
     // Dialog State
     const [selectedApp, setSelectedApp] = useState<any>(null);
@@ -269,6 +271,36 @@ function AdminApplicationDashboard() {
         });
         return () => unsubscribe();
     }, [firestore, schoolId]);
+
+    useEffect(() => {
+        if (!firestore || !schoolId) return;
+        const q = query(collection(firestore, 'admissionEnquiries'), where('schoolId', '==', schoolId));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const enqs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            enqs.sort((a: any, b: any) => {
+                const timeA = a.createdAt?.seconds || 0;
+                const timeB = b.createdAt?.seconds || 0;
+                return timeB - timeA;
+            });
+            setEnquiries(enqs);
+            setLoadingEnquiries(false);
+        });
+        return () => unsubscribe();
+    }, [firestore, schoolId]);
+
+    const handleToggleEnquiryStatus = async (enquiryId: string, currentStatus: string) => {
+        if (!firestore) return;
+        try {
+            const newStatus = currentStatus === 'Responded' ? 'Pending Response' : 'Responded';
+            await updateDoc(doc(firestore, 'admissionEnquiries', enquiryId), {
+                status: newStatus
+            });
+            toast({ title: "Status Updated", description: `Enquiry status updated to ${newStatus}.` });
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to update status." });
+        }
+    };
 
     useEffect(() => {
         if (!firestore || !schoolId) return;
@@ -684,18 +716,21 @@ function AdminApplicationDashboard() {
                 </div>
                 
                 <Tabs defaultValue="pending" className="w-full">
-                    <TabsList className="grid grid-cols-4 w-full md:max-w-2xl bg-slate-100 rounded-2xl p-1">
-                        <TabsTrigger value="pending" className="rounded-xl font-bold">
+                    <TabsList className="grid grid-cols-5 w-full md:max-w-3xl bg-slate-100 rounded-2xl p-1">
+                        <TabsTrigger value="pending" className="rounded-xl font-bold text-xs md:text-sm">
                             Pending ({pendingApps.length})
                         </TabsTrigger>
-                        <TabsTrigger value="review" className="rounded-xl font-bold">
+                        <TabsTrigger value="review" className="rounded-xl font-bold text-xs md:text-sm">
                             Reviewing ({underReviewApps.length})
                         </TabsTrigger>
-                        <TabsTrigger value="admitted" className="rounded-xl font-bold">
+                        <TabsTrigger value="admitted" className="rounded-xl font-bold text-xs md:text-sm">
                             Admitted ({admittedApps.length})
                         </TabsTrigger>
-                        <TabsTrigger value="rejected" className="rounded-xl font-bold">
+                        <TabsTrigger value="rejected" className="rounded-xl font-bold text-xs md:text-sm">
                             Rejected ({rejectedApps.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="enquiries" className="rounded-xl font-bold text-xs md:text-sm">
+                            Enquiries ({enquiries.length})
                         </TabsTrigger>
                     </TabsList>
 
@@ -710,6 +745,53 @@ function AdminApplicationDashboard() {
                     </TabsContent>
                     <TabsContent value="rejected" className="mt-6 space-y-4">
                         {renderAppList(rejectedApps, 'No rejected applications', 'Unsuccessful applications will list here.')}
+                    </TabsContent>
+                    <TabsContent value="enquiries" className="mt-6 space-y-4">
+                        {loadingEnquiries ? (
+                            <div className="flex justify-center py-12"><Loader2 className="animate-spin h-6 w-6 text-violet-650"/></div>
+                        ) : enquiries.length === 0 ? (
+                            <div className="py-16 text-center text-slate-400 border-2 border-dashed rounded-3xl bg-slate-50 flex flex-col items-center justify-center gap-4">
+                                <AlertCircle className="h-10 w-10 text-slate-350" />
+                                <p className="font-semibold text-slate-700">No enquiries submitted yet</p>
+                            </div>
+                        ) : (
+                            <div className="grid gap-4">
+                                {enquiries.map((enq) => (
+                                    <div key={enq.id} className="p-5 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="font-bold text-slate-800 text-lg">{enq.parentName}</h4>
+                                                    <Badge variant="outline" className="border-indigo-100 bg-indigo-50/50 text-indigo-700 font-semibold text-xs px-2 py-0.5 rounded-md">
+                                                        Interested in {enq.interest}
+                                                    </Badge>
+                                                </div>
+                                                <div className="text-xs text-slate-550 font-semibold space-x-3 mt-1">
+                                                    <span>📞 {enq.parentPhone}</span>
+                                                    <span>✉️ {enq.parentEmail}</span>
+                                                    <span>📅 Submitted: {enq.createdAt?.toDate ? format(enq.createdAt.toDate(), 'PP') : 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                size="sm"
+                                                variant={enq.status === 'Responded' ? 'outline' : 'default'}
+                                                className={cn(
+                                                    "rounded-xl font-bold transition-all h-9 self-start sm:self-center",
+                                                    enq.status === 'Responded' ? 'text-slate-505 border-slate-200 hover:bg-slate-50' : 'bg-violet-600 hover:bg-violet-700 text-white shadow-sm'
+                                                )}
+                                                onClick={() => handleToggleEnquiryStatus(enq.id, enq.status)}
+                                            >
+                                                {enq.status === 'Responded' ? '✓ Responded' : 'Mark Responded'}
+                                            </Button>
+                                        </div>
+                                        <Separator className="my-3 opacity-60" />
+                                        <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-2xl border border-slate-100 font-medium leading-relaxed">
+                                            {enq.message}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </TabsContent>
                 </Tabs>
             </div>

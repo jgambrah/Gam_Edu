@@ -567,6 +567,11 @@ service cloud.firestore {
       allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
     }
 
+    match /admissionEnquiries/{enquiryId} {
+      allow read, write, list: if isAdmin() || isSuperAdmin();
+      allow create: if true;
+    }
+
     // =========================================================
     // 8. JUNIOR / SENIOR ACADEMY & CLUBS
     // =========================================================
