@@ -370,7 +370,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               src={imgUrl}
               alt={`Campus Banner ${idx + 1}`}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-                idx === currentBannerIdx ? 'opacity-70' : 'opacity-0'
+                idx === currentBannerIdx ? 'opacity-85' : 'opacity-0'
               }`}
             />
           ))
@@ -379,18 +379,18 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             <img
               src={school.coverImageUrl}
               alt="Campus"
-              className="absolute inset-0 w-full h-full object-cover opacity-75"
+              className="absolute inset-0 w-full h-full object-cover opacity-90"
             />
           )
         )}
 
         {/* premium dark glassmorphism gradient overlay */}
         <div
-          className="absolute inset-0 opacity-40"
-          style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}33 0%, transparent 70%)` }}
+          className="absolute inset-0 opacity-30"
+          style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}22 0%, transparent 70%)` }}
         />
-        <div className="absolute inset-0 bg-slate-950/40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/20 to-slate-950/80" />
+        <div className="absolute inset-0 bg-slate-950/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/10 to-slate-950/70" />
 
         {/* content */}
         <div className="relative z-10 max-w-5xl fade-up space-y-8">
@@ -398,12 +398,12 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             <Sparkles className="h-3.5 w-3.5 text-yellow-400" /> Admissions Open
           </span>
 
-          <h1 className="serif text-6xl md:text-8xl text-white leading-none italic drop-shadow-2xl font-black">
+          <h1 className="serif text-6xl md:text-8xl text-white leading-none italic font-black drop-shadow-[0_4px_16px_rgba(0,0,0,0.7)]">
             {school.name}
           </h1>
 
           {school.motto && (
-            <p className="text-xl md:text-2xl text-slate-200 font-semibold max-w-2xl mx-auto drop-shadow">
+            <p className="text-xl md:text-2xl text-slate-100 font-semibold max-w-2xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]">
               {school.motto}
             </p>
           )}
