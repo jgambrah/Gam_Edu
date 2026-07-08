@@ -91,6 +91,19 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [loading, setLoading] = useState(true);
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentBannerIdx, setCurrentBannerIdx] = useState(0);
+
+  const banners = school?.bannerImages && school.bannerImages.length > 0
+    ? school.bannerImages
+    : (school?.coverImageUrl ? [school.coverImageUrl] : []);
+
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentBannerIdx(prev => (prev + 1) % banners.length);
+    }, 12000);
+    return () => clearInterval(interval);
+  }, [banners.length]);
 
   // scroll detection for nav & body scroll override
   useEffect(() => {
@@ -147,20 +160,6 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-
-  const [currentBannerIdx, setCurrentBannerIdx] = useState(0);
-
-  const banners = school.bannerImages && school.bannerImages.length > 0
-    ? school.bannerImages
-    : (school.coverImageUrl ? [school.coverImageUrl] : []);
-
-  useEffect(() => {
-    if (banners.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentBannerIdx(prev => (prev + 1) % banners.length);
-    }, 12000);
-    return () => clearInterval(interval);
-  }, [banners.length]);
 
   const fallbackDepartments = [
     {
