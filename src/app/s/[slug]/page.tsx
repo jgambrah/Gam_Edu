@@ -189,18 +189,18 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
   const fallbackPillars = [
     {
-      title: 'Digital Library',
-      description: 'Equipped with thousands of physical and digital study aids, supporting collaborative research and independent reading projects.',
+      title: 'School Library',
+      description: 'A quiet space stocked with textbooks, reading books, and reference materials to encourage reading habits and support class studies.',
       icon: 'BookOpen'
     },
     {
-      title: 'Science & IT Labs',
-      description: 'State-of-the-art laboratory stations for physics, chemistry, biology, and computational study with visual experiment software.',
+      title: 'Computer & Science Room',
+      description: 'Equipped with computer setups and basic science kits to give students hands-on practical skills in ICT and elementary sciences.',
       icon: 'Atom'
     },
     {
-      title: 'Coding & Robotics',
-      description: 'Pioneering standard STEM programs in coding, physical computing, and robotics to prepare youngsters for digital workspaces.',
+      title: 'Creative & Sports Activities',
+      description: 'Healthy extra-curricular programs including arts, board games, and sports to develop students\' creative talents outside the classroom.',
       icon: 'Sparkles'
     }
   ];
