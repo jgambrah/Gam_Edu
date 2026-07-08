@@ -202,7 +202,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             )}
             <span
               className="text-xl font-black tracking-tight"
-              style={{ color: navScrolled ? brand : (isLight ? '#0f172a' : 'white') }}
+              style={{ color: navScrolled ? brand : (isLight ? '#1e293b' : 'white') }}
             >
               {school.name}
             </span>
@@ -230,7 +230,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
               className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-sm border flex items-center gap-1.5 ${
                 navScrolled 
                   ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900' 
-                  : (isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50' : 'bg-white/10 border-white/20 text-white hover:bg-white/20')
+                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
               }`}
             >
               <GraduationCap className="h-4 w-4" /> Portal Login
@@ -248,7 +248,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
             className="flex md:hidden p-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all"
-            style={{ color: navScrolled ? brand : (isLight ? '#0f172a' : 'white') }}
+            style={{ color: navScrolled ? brand : 'white' }}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -311,51 +311,26 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
           />
         )}
 
-        {/* gradient overlay */}
-        {isLight ? (
-          <>
-            <div
-              className="absolute inset-0 opacity-20"
-              style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}22 0%, transparent 70%)` }}
-            />
-            <div className="absolute inset-0 bg-white/15" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/70" />
-          </>
-        ) : (
-          <>
-            <div
-              className="absolute inset-0 opacity-40"
-              style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}33 0%, transparent 70%)` }}
-            />
-            <div className="absolute inset-0 bg-black/30" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/70" />
-          </>
-        )}
+        {/* premium dark glassmorphism gradient overlay */}
+        <div
+          className="absolute inset-0 opacity-40"
+          style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}33 0%, transparent 70%)` }}
+        />
+        <div className="absolute inset-0 bg-slate-950/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/20 to-slate-950/80" />
 
         {/* content */}
         <div className="relative z-10 max-w-5xl fade-up space-y-8">
-          {isLight ? (
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/5 border border-black/10 text-slate-800 text-[10px] font-black uppercase tracking-widest backdrop-blur-sm animate-pulse">
-              <Sparkles className="h-3 w-3 text-yellow-500" /> Admissions Open
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest backdrop-blur-sm">
-              <Sparkles className="h-3 w-3 text-yellow-400" /> Admissions Open
-            </span>
-          )}
+          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 text-[11px] font-black uppercase tracking-[0.25em] backdrop-blur-md shadow-lg shadow-emerald-950/30 animate-pulse">
+            <Sparkles className="h-3.5 w-3.5 text-yellow-400" /> Admissions Open
+          </span>
 
-          {isLight ? (
-            <h1 className="serif text-6xl md:text-9xl text-slate-900 leading-none italic">
-              {school.name}
-            </h1>
-          ) : (
-            <h1 className="serif text-6xl md:text-9xl text-white leading-none italic drop-shadow-2xl">
-              {school.name}
-            </h1>
-          )}
+          <h1 className="serif text-6xl md:text-8xl text-white leading-none italic drop-shadow-2xl font-black">
+            {school.name}
+          </h1>
 
           {school.motto && (
-            <p className={isLight ? "text-xl md:text-2xl text-slate-650 font-semibold max-w-2xl mx-auto" : "text-xl md:text-2xl text-white/70 font-medium max-w-2xl mx-auto"}>
+            <p className="text-xl md:text-2xl text-slate-200 font-semibold max-w-2xl mx-auto drop-shadow">
               {school.motto}
             </p>
           )}
@@ -365,20 +340,20 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
               href="https://gam-it-service.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-10 py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight shadow-2xl transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+              className="px-8 py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border border-white/10 hover:shadow-indigo-500/10 transition-all"
               style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
             >
               <GraduationCap className="h-5 w-5" /> Portal Login
             </a>
             <button
               onClick={() => scrollTo('apply')}
-              className={isLight ? "px-10 py-4 rounded-2xl bg-black/5 border border-black/20 text-slate-800 text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-black/10 transition-colors animate-pulse" : "px-10 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-white/20 transition-colors"}
+              className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-lg font-black uppercase tracking-tight shadow-xl border border-emerald-400/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5"
             >
-              Start Application
+              <GraduationCap className="h-5 w-5" /> Start Application
             </button>
             <button
               onClick={() => scrollTo('about')}
-              className={isLight ? "px-10 py-4 rounded-2xl bg-black/5 border border-black/20 text-slate-800 text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-black/10 transition-colors" : "px-10 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-white/20 transition-colors"}
+              className="px-8 py-4 rounded-2xl bg-white/10 border border-white/20 text-white text-lg font-black uppercase tracking-tight backdrop-blur-md hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
             >
               Learn More
             </button>
@@ -386,7 +361,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         </div>
 
         {/* scroll cue */}
-        <div className={isLight ? "absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-slate-500/70" : "absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/40"}>
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/40">
           <span className="text-[9px] uppercase tracking-[0.3em] font-bold">Scroll</span>
           <ChevronDown className="h-5 w-5 animate-bounce" />
         </div>
