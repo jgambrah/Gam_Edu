@@ -223,6 +223,18 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
                 {link.label}
               </button>
             ))}
+            <a
+              href="https://gam-it-service.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-sm border flex items-center gap-1.5 ${
+                navScrolled 
+                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900' 
+                  : (isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50' : 'bg-white/10 border-white/20 text-white hover:bg-white/20')
+              }`}
+            >
+              <GraduationCap className="h-4 w-4" /> Portal Login
+            </a>
             <button
               onClick={() => scrollTo('apply')}
               className="px-6 py-2.5 rounded-xl text-white text-sm font-black uppercase tracking-widest transition-opacity hover:opacity-90 shadow-lg"
@@ -268,6 +280,14 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
               >
                 Apply Now
               </button>
+              <a
+                href="https://gam-it-service.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight transition-opacity hover:opacity-90 shadow-lg mt-4 border border-white/20 bg-white/10 flex items-center justify-center gap-2"
+              >
+                <GraduationCap className="h-5 w-5" /> Portal Login
+              </a>
             </div>
             
             <div className="text-center text-xs text-slate-650 font-bold uppercase tracking-widest pb-6">
@@ -341,28 +361,27 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
           )}
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <a
+              href="https://gam-it-service.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-10 py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight shadow-2xl transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+              style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+            >
+              <GraduationCap className="h-5 w-5" /> Portal Login
+            </a>
             <button
               onClick={() => scrollTo('apply')}
-              className="px-10 py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight shadow-2xl transition-transform hover:scale-105 active:scale-95"
-              style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+              className={isLight ? "px-10 py-4 rounded-2xl bg-black/5 border border-black/20 text-slate-800 text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-black/10 transition-colors animate-pulse" : "px-10 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-white/20 transition-colors"}
             >
               Start Application
             </button>
-            {isLight ? (
-              <button
-                onClick={() => scrollTo('about')}
-                className="px-10 py-4 rounded-2xl bg-black/5 border border-black/20 text-slate-800 text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-black/10 transition-colors"
-              >
-                Learn More
-              </button>
-            ) : (
-              <button
-                onClick={() => scrollTo('about')}
-                className="px-10 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-white/20 transition-colors"
-              >
-                Learn More
-              </button>
-            )}
+            <button
+              onClick={() => scrollTo('about')}
+              className={isLight ? "px-10 py-4 rounded-2xl bg-black/5 border border-black/20 text-slate-800 text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-black/10 transition-colors" : "px-10 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-sm hover:bg-white/20 transition-colors"}
+            >
+              Learn More
+            </button>
           </div>
         </div>
 
@@ -932,11 +951,19 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
           </div>
 
           {/* Bottom Bar: Powered by */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-8 text-xs font-bold uppercase tracking-widest text-slate-650 border-t border-slate-900">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-8 text-xs font-bold uppercase tracking-widest text-slate-655 border-t border-slate-900">
             <div className="flex items-center gap-2 bg-slate-900/60 px-4 py-2 rounded-full border border-slate-900/50 backdrop-blur-sm">
               <Globe className="h-3.5 w-3.5 text-slate-500 animate-pulse" />
               <span className="text-slate-500">Powered by <strong className="text-slate-450">GAM Edu</strong></span>
             </div>
+            <a
+              href="https://gam-it-service.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5"
+            >
+              <GraduationCap className="h-4 w-4 text-slate-400" /> Go to Portal Login
+            </a>
           </div>
         </div>
       </footer>
