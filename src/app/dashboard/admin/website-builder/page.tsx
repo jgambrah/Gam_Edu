@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -86,7 +86,8 @@ export default function WebsiteBuilderPage() {
     academicsGrading: '',
     academicsDepartments: [] as { level: string; ageRange: string; focus: string; imageUrl?: string }[],
     admissionsGuidelines: '',
-    bannerImages: [] as string[]
+    bannerImages: [] as string[],
+    academicsPillars: [] as { title: string; description: string; icon?: string }[]
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -118,6 +119,11 @@ export default function WebsiteBuilderPage() {
   const [deptImageUrl, setDeptImageUrl] = useState('');
   const [deptUploading, setDeptUploading] = useState(false);
   const [bannersUploading, setBannersUploading] = useState(false);
+
+  // Custom Pillars Form States
+  const [pillarTitle, setPillarTitle] = useState('');
+  const [pillarDesc, setPillarDesc] = useState('');
+  const [pillarIcon, setPillarIcon] = useState('BookOpen');
 
   useEffect(() => {
     if (schoolData) {
@@ -164,7 +170,8 @@ export default function WebsiteBuilderPage() {
         academicsGrading: schoolData.academicsGrading || '',
         academicsDepartments: schoolData.academicsDepartments || [],
         admissionsGuidelines: schoolData.admissionsGuidelines || '',
-        bannerImages: schoolData.bannerImages || []
+        bannerImages: schoolData.bannerImages || [],
+        academicsPillars: schoolData.academicsPillars || []
       });
     }
   }, [schoolData]);
@@ -455,6 +462,27 @@ export default function WebsiteBuilderPage() {
     setFormData(prev => ({
       ...prev,
       academicsDepartments: (prev.academicsDepartments || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const addPillar = () => {
+    if (!pillarTitle || !pillarDesc) return;
+    setFormData(prev => ({
+      ...prev,
+      academicsPillars: [
+        ...(prev.academicsPillars || []),
+        { title: pillarTitle, description: pillarDesc, icon: pillarIcon }
+      ]
+    }));
+    setPillarTitle('');
+    setPillarDesc('');
+    setPillarIcon('BookOpen');
+  };
+
+  const removePillar = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      academicsPillars: (prev.academicsPillars || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -799,6 +827,60 @@ export default function WebsiteBuilderPage() {
                                                     </div>
                                                 </div>
                                                 <Button type="button" variant="ghost" size="sm" onClick={() => removeAcademicDept(i)} className="text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0"><Trash2 className="h-4 w-4"/></Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Academic Resource Pillars list */}
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4 pt-4 border-t-2">
+                                <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1">
+                                    <Sparkles className="h-4 w-4 text-indigo-600"/> Academic Pillars / Special Assets
+                                </h4>
+                                <CardDescription className="text-xs">Configure custom school pillars (e.g. Digital Library, Science Labs, Music Studio, Swimming Pool).</CardDescription>
+                                
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-semibold text-slate-600">Pillar Title</Label>
+                                        <Input value={pillarTitle} onChange={e => setPillarTitle(e.target.value)} placeholder="e.g. Modern Swimming Pool" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-semibold text-slate-600">Icon Type</Label>
+                                        <select 
+                                            value={pillarIcon} 
+                                            onChange={e => setPillarIcon(e.target.value)} 
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 font-bold"
+                                        >
+                                            <option value="BookOpen">📖 Book / Library</option>
+                                            <option value="Atom">🔬 Atom / Science / Lab</option>
+                                            <option value="Sparkles">✨ Star / Sparkles / Tech</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-semibold text-slate-650">Pillar Description</Label>
+                                    <Textarea value={pillarDesc} onChange={e => setPillarDesc(e.target.value)} placeholder="e.g. Standard sized pool for water sports and swimming lessons." rows={2} />
+                                </div>
+                                <Button type="button" onClick={addPillar} variant="outline" className="w-full font-bold">
+                                    <Plus className="mr-2 h-4 w-4"/> Add Academic Pillar
+                                </Button>
+                            </div>
+
+                            {/* Configured Pillars List */}
+                            <div className="space-y-3 pt-2">
+                                <Label>Configured Academic Pillars</Label>
+                                {(formData.academicsPillars || []).length === 0 ? (
+                                    <p className="text-sm text-muted-foreground italic">No custom academic pillars added. Default Library, Science Labs, and Coding program will be displayed.</p>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {(formData.academicsPillars || []).map((p, i) => (
+                                            <div key={i} className="flex justify-between items-center p-3 bg-white border rounded-2xl">
+                                                <div>
+                                                    <span className="font-bold text-slate-800 block text-sm">{p.title} <span className="text-[10px] text-slate-400 font-mono">({p.icon})</span></span>
+                                                    <span className="text-xs text-slate-500 line-clamp-1">{p.description}</span>
+                                                </div>
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => removePillar(i)} className="text-red-500 hover:text-red-650 hover:bg-red-50 shrink-0"><Trash2 className="h-4 w-4"/></Button>
                                             </div>
                                         ))}
                                     </div>

@@ -187,6 +187,46 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
   const gradingPolicyText = school.academicsGrading || 'Assessment is continuous throughout each term. Typically, students are graded on Class Assignments & Quizzes (10%), Project-based Assignments (30%), and End-of-Term Examinations (60%). Regular report cards are issued to track and communicate progress.';
 
+  const fallbackPillars = [
+    {
+      title: 'Digital Library',
+      description: 'Equipped with thousands of physical and digital study aids, supporting collaborative research and independent reading projects.',
+      icon: 'BookOpen'
+    },
+    {
+      title: 'Science & IT Labs',
+      description: 'State-of-the-art laboratory stations for physics, chemistry, biology, and computational study with visual experiment software.',
+      icon: 'Atom'
+    },
+    {
+      title: 'Coding & Robotics',
+      description: 'Pioneering standard STEM programs in coding, physical computing, and robotics to prepare youngsters for digital workspaces.',
+      icon: 'Sparkles'
+    }
+  ];
+
+  const pillars = school.academicsPillars && school.academicsPillars.length > 0
+    ? school.academicsPillars
+    : fallbackPillars;
+
+  const getPillarIcon = (iconName?: string) => {
+    switch (iconName) {
+      case 'BookOpen':
+      case 'library':
+      case 'book':
+        return <BookOpen className="h-6 w-6 text-indigo-400" />;
+      case 'Atom':
+      case 'lab':
+      case 'science':
+        return <Atom className="h-6 w-6 text-emerald-400" />;
+      case 'Sparkles':
+      case 'coding':
+      case 'robotics':
+      default:
+        return <Sparkles className="h-6 w-6 text-yellow-400" />;
+    }
+  };
+
   const fallbackAdmissionsGuidelines = `
 ### Admissions Guidelines & Requirements
 
@@ -745,32 +785,22 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           </div>
 
           {/* Academic Resource Pillars */}
-          <div className="bg-slate-950 text-white rounded-[3rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl" />
-            <div className="relative z-10 grid md:grid-cols-3 gap-8 text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/10">
-              <div className="md:px-6 space-y-3 pt-6 md:pt-0">
-                <div className="mx-auto md:mx-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                  <BookOpen className="h-6 w-6 text-indigo-400" />
-                </div>
-                <h4 className="text-lg font-black uppercase tracking-wider">Digital Library</h4>
-                <p className="text-white/60 text-sm leading-relaxed font-medium">Equipped with thousands of physical and digital study aids, supporting collaborative research and independent reading projects.</p>
-              </div>
-              <div className="md:px-8 space-y-3 pt-6 md:pt-0">
-                <div className="mx-auto md:mx-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                  <Atom className="h-6 w-6 text-emerald-400" />
-                </div>
-                <h4 className="text-lg font-black uppercase tracking-wider">Science & IT Labs</h4>
-                <p className="text-white/60 text-sm leading-relaxed font-medium">State-of-the-art laboratory stations for physics, chemistry, biology, and computational study with visual experiment software.</p>
-              </div>
-              <div className="md:px-8 space-y-3 pt-6 md:pt-0">
-                <div className="mx-auto md:mx-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-yellow-400" />
-                </div>
-                <h4 className="text-lg font-black uppercase tracking-wider">Coding & Robotics</h4>
-                <p className="text-white/60 text-sm leading-relaxed font-medium">Pioneering standard STEM programs in coding, physical computing, and robotics to prepare youngsters for digital workspaces.</p>
+          {pillars.length > 0 && (
+            <div className="bg-slate-950 text-white rounded-[3rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl" />
+              <div className="relative z-10 grid md:grid-cols-3 gap-8 text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/10">
+                {pillars.map((pillar: any, idx: number) => (
+                  <div key={idx} className="md:px-6 space-y-3 pt-6 md:pt-0 first:pt-0 first:pl-0 md:first:pt-0">
+                    <div className="mx-auto md:mx-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                      {getPillarIcon(pillar.icon)}
+                    </div>
+                    <h4 className="text-lg font-black uppercase tracking-wider">{pillar.title}</h4>
+                    <p className="text-white/60 text-sm leading-relaxed font-medium">{pillar.description}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Assessment & Grading Policy Section */}
           {gradingPolicyText && (
