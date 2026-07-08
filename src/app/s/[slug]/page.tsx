@@ -2,7 +2,7 @@
 import { use, useState, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
-import { AdmissionForm } from '@/components/public/AdmissionForm';
+import { AdmissionForm, AdmissionEnquiryForm } from '@/components/public/AdmissionForm';
 import {
   Loader2, MapPin, Phone, Mail, Globe,
   Camera, Info, Facebook, Instagram, Linkedin, Video,
@@ -92,6 +92,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentBannerIdx, setCurrentBannerIdx] = useState(0);
+  const [admissionTab, setAdmissionTab] = useState<'enquiry' | 'apply'>('enquiry');
 
   const banners = school?.bannerImages && school.bannerImages.length > 0
     ? school.bannerImages
@@ -771,7 +772,10 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   </div>
 
                   <div 
-                    onClick={() => scrollTo('apply')}
+                    onClick={() => {
+                      setAdmissionTab('enquiry');
+                      scrollTo('apply');
+                    }}
                     className="mx-8 mb-8 pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-400 group-hover:text-indigo-650 transition-colors cursor-pointer"
                   >
                     <span>Inquire Admission</span>
@@ -1048,10 +1052,42 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             </div>
 
             {/* Form Column */}
-            <div className="lg:col-span-7 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
-              <div className="h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }} />
-              <div className="p-10 md:p-14">
-                <AdmissionForm schoolId={school.id} primaryColor={brand} />
+            <div className="lg:col-span-7 space-y-6">
+              {/* Tab Selector */}
+              <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-full max-w-sm">
+                <button
+                  type="button"
+                  onClick={() => setAdmissionTab('enquiry')}
+                  className={`flex-1 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+                    admissionTab === 'enquiry'
+                      ? 'bg-white text-slate-800 shadow-sm font-bold'
+                      : 'text-slate-500 hover:text-slate-700 font-semibold'
+                  }`}
+                >
+                  Enquire Online
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAdmissionTab('apply')}
+                  className={`flex-1 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+                    admissionTab === 'apply'
+                      ? 'bg-white text-slate-800 shadow-sm font-bold'
+                      : 'text-slate-500 hover:text-slate-700 font-semibold'
+                  }`}
+                >
+                  Start Application
+                </button>
+              </div>
+
+              <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+                <div className="h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }} />
+                <div className="p-10 md:p-14">
+                  {admissionTab === 'enquiry' ? (
+                    <AdmissionEnquiryForm schoolId={school.id} primaryColor={brand} />
+                  ) : (
+                    <AdmissionForm schoolId={school.id} primaryColor={brand} />
+                  )}
+                </div>
               </div>
             </div>
           </div>
