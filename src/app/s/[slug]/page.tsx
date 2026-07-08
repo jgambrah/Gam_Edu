@@ -176,11 +176,6 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       level: 'Junior High School (JHS)',
       ageRange: 'Ages 12 - 15',
       focus: 'Focuses on rigorous academic preparation, critical thinking, ICT/Coding projects, and preparing students for regional BECE qualifications.'
-    },
-    {
-      level: 'Senior High School (SHS)',
-      ageRange: 'Ages 15 - 18',
-      focus: 'Provides specialized career paths in General Science, Business, Agricultural Science, Visual Arts, and General Arts, leading to tertiary admission.'
     }
   ];
 
