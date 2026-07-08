@@ -7,7 +7,7 @@ import {
   Loader2, MapPin, Phone, Mail, Globe,
   Camera, Info, Facebook, Instagram, Linkedin, Video,
   Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap,
-  User, Users, ChevronDown, Star, BookOpen, Award, Menu, X
+  User, Users, ChevronDown, Star, BookOpen, Award, Menu, X, Atom
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -148,9 +148,75 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
+  const [currentBannerIdx, setCurrentBannerIdx] = useState(0);
+
+  const banners = school.bannerImages && school.bannerImages.length > 0
+    ? school.bannerImages
+    : (school.coverImageUrl ? [school.coverImageUrl] : []);
+
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentBannerIdx(prev => (prev + 1) % banners.length);
+    }, 12000);
+    return () => clearInterval(interval);
+  }, [banners.length]);
+
+  const fallbackDepartments = [
+    {
+      level: 'Early Years / Pre-School',
+      ageRange: 'Ages 2 - 5',
+      focus: 'Focuses on early sensory exploration, motor skills, social play, and basic pre-literacy/numerical concepts using interactive methods.'
+    },
+    {
+      level: 'Primary / Basic School',
+      ageRange: 'Ages 6 - 11',
+      focus: 'Focuses on core subjects: Mathematics, English Language, Integrated Science, Citizenship Education, and Creative Arts with hands-on learning.'
+    },
+    {
+      level: 'Junior High School (JHS)',
+      ageRange: 'Ages 12 - 15',
+      focus: 'Focuses on rigorous academic preparation, critical thinking, ICT/Coding projects, and preparing students for regional BECE qualifications.'
+    },
+    {
+      level: 'Senior High School (SHS)',
+      ageRange: 'Ages 15 - 18',
+      focus: 'Provides specialized career paths in General Science, Business, Agricultural Science, Visual Arts, and General Arts, leading to tertiary admission.'
+    }
+  ];
+
+  const departments = school.academicsDepartments && school.academicsDepartments.length > 0
+    ? school.academicsDepartments
+    : fallbackDepartments;
+
+  const academicsOverviewText = school.academicsOverview || 'We are dedicated to providing a balanced, comprehensive academic program that fosters analytical thinking, creative problem-solving, and standard exam preparations. Our certified educators utilize modern learning aids to inspire curiosity and shape future leaders.';
+
+  const gradingPolicyText = school.academicsGrading || 'Assessment is continuous throughout each term. Typically, students are graded on Class Assignments & Quizzes (10%), Project-based Assignments (30%), and End-of-Term Examinations (60%). Regular report cards are issued to track and communicate progress.';
+
+  const fallbackAdmissionsGuidelines = `
+### Admissions Guidelines & Requirements
+
+Welcome to our admissions portal! To ensure a smooth application process for your child, please review the requirements below:
+
+#### 1. Required Documents Checklist:
+*   **Copy of Child's Birth Certificate** (or passport copy)
+*   **Immunization Card / Medical History** records
+*   **2 Passport-sized Photographs** of the student
+*   **Previous School Reports / Academic Transcripts** (if transferring)
+
+#### 2. Next Steps in the Process:
+1.  **Submit Admission Form**: Fill out the online form on this page.
+2.  **Document Verification**: Our admissions officer will verify the details.
+3.  **Entrance Assessment**: Prospective students may undergo a standard placement review.
+4.  **Enrollment Confirmation**: Upon successful review, admission credentials will be generated automatically.
+  `;
+
+  const admissionsGuidelinesText = school.admissionsGuidelines || fallbackAdmissionsGuidelines;
+
   const navLinks = [
     { label: 'About', id: 'about' },
     (school.directorMessage || school.principalMessage) && { label: 'Leadership', id: 'leadership' },
+    { label: 'Academics', id: 'academics' },
     team.length > 0 && { label: 'Team', id: 'team' },
     newsList && newsList.length > 0 && { label: 'News', id: 'news' },
     school.gallery?.length > 0 && { label: 'Gallery', id: 'gallery' },
@@ -302,13 +368,26 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden hero-grain"
         style={{ backgroundColor: bannerBgColor }}
       >
-        {/* cover image */}
-        {school.coverImageUrl && (
-          <img
-            src={school.coverImageUrl}
-            alt="Campus"
-            className="absolute inset-0 w-full h-full object-cover opacity-75"
-          />
+        {/* cover image slideshow */}
+        {banners.length > 0 ? (
+          banners.map((imgUrl: string, idx: number) => (
+            <img
+              key={idx}
+              src={imgUrl}
+              alt={`Campus Banner ${idx + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                idx === currentBannerIdx ? 'opacity-70' : 'opacity-0'
+              }`}
+            />
+          ))
+        ) : (
+          school.coverImageUrl && (
+            <img
+              src={school.coverImageUrl}
+              alt="Campus"
+              className="absolute inset-0 w-full h-full object-cover opacity-75"
+            />
+          )
         )}
 
         {/* premium dark glassmorphism gradient overlay */}
@@ -586,6 +665,136 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
         </section>
       )}
 
+      {/* ─── ACADEMICS ──────────────────────────────────────── */}
+      <section id="academics" className="py-32 px-6 bg-white relative overflow-hidden">
+        {/* Decorative subtle backdrop elements */}
+        <div className="absolute top-1/4 right-0 w-96 h-96 rounded-full bg-slate-50 opacity-50 blur-3xl -z-10" />
+        <div className="absolute bottom-1/4 left-0 w-96 h-96 rounded-full bg-indigo-50/10 opacity-30 blur-3xl -z-10" />
+
+        <div className="max-w-7xl mx-auto space-y-20">
+          <div className="text-center max-w-3xl mx-auto space-y-6">
+            <span
+              className="inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border"
+              style={{ color: brand, borderColor: `${brand}40`, backgroundColor: `${brand}10` }}
+            >
+              Academic Excellence
+            </span>
+            <h2 className="serif text-5xl md:text-6xl italic leading-tight" style={{ color: brand }}>
+              Curriculum & Programs
+            </h2>
+            <div className="prose-school text-lg text-slate-650 leading-relaxed font-medium">
+              <ReactMarkdown>{academicsOverviewText}</ReactMarkdown>
+            </div>
+          </div>
+
+          {/* Departments Grid */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {departments.map((dept: any, i: number) => {
+              const hasImg = !!dept.imageUrl;
+              return (
+                <div
+                  key={i}
+                  className="relative rounded-[2.5rem] bg-gradient-to-br from-slate-50 to-white border border-slate-100/80 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 group flex flex-col justify-between overflow-hidden"
+                >
+                  <div>
+                    {hasImg ? (
+                      <div className="relative aspect-video w-full overflow-hidden">
+                        <img 
+                          src={dept.imageUrl} 
+                          alt={dept.level} 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+                        <div className="absolute bottom-4 left-6 right-6 flex justify-between items-center">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 shadow-sm">
+                            <GraduationCap className="h-5 w-5 text-white" />
+                          </div>
+                          {dept.ageRange && (
+                            <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 bg-white/20 text-white border border-white/10 backdrop-blur-md rounded-full font-mono">
+                              {dept.ageRange}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div className="p-8 space-y-4">
+                      {!hasImg && (
+                        <div className="flex justify-between items-start">
+                          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-50 border border-indigo-100 shadow-inner group-hover:scale-110 transition-transform">
+                            <GraduationCap className="h-6 w-6 text-indigo-600" />
+                          </div>
+                          {dept.ageRange && (
+                            <span className="text-[10px] font-black tracking-widest uppercase px-3 py-1 bg-slate-100 text-slate-600 rounded-full font-mono">
+                              {dept.ageRange}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-2xl font-black tracking-tight text-slate-800 mb-2">{dept.level}</h3>
+                        <p className="text-slate-600 text-sm leading-relaxed font-medium">{dept.focus}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div 
+                    onClick={() => scrollTo('apply')}
+                    className="mx-8 mb-8 pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-black uppercase tracking-wider text-slate-400 group-hover:text-indigo-650 transition-colors cursor-pointer"
+                  >
+                    <span>Inquire Admission</span>
+                    <ChevronDown className="-rotate-90 h-4 w-4" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Academic Resource Pillars */}
+          <div className="bg-slate-950 text-white rounded-[3rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl" />
+            <div className="relative z-10 grid md:grid-cols-3 gap-8 text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/10">
+              <div className="md:px-6 space-y-3 pt-6 md:pt-0">
+                <div className="mx-auto md:mx-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-indigo-400" />
+                </div>
+                <h4 className="text-lg font-black uppercase tracking-wider">Digital Library</h4>
+                <p className="text-white/60 text-sm leading-relaxed font-medium">Equipped with thousands of physical and digital study aids, supporting collaborative research and independent reading projects.</p>
+              </div>
+              <div className="md:px-8 space-y-3 pt-6 md:pt-0">
+                <div className="mx-auto md:mx-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Atom className="h-6 w-6 text-emerald-400" />
+                </div>
+                <h4 className="text-lg font-black uppercase tracking-wider">Science & IT Labs</h4>
+                <p className="text-white/60 text-sm leading-relaxed font-medium">State-of-the-art laboratory stations for physics, chemistry, biology, and computational study with visual experiment software.</p>
+              </div>
+              <div className="md:px-8 space-y-3 pt-6 md:pt-0">
+                <div className="mx-auto md:mx-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-yellow-400" />
+                </div>
+                <h4 className="text-lg font-black uppercase tracking-wider">Coding & Robotics</h4>
+                <p className="text-white/60 text-sm leading-relaxed font-medium">Pioneering standard STEM programs in coding, physical computing, and robotics to prepare youngsters for digital workspaces.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Assessment & Grading Policy Section */}
+          {gradingPolicyText && (
+            <div className="bg-slate-50 border border-slate-200/60 rounded-[2.5rem] p-8 md:p-12 max-w-4xl mx-auto space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                  <Award className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="text-lg font-black uppercase tracking-wider text-slate-800 animate-pulse">Grading & Assessment Framework</h3>
+              </div>
+              <p className="text-slate-650 text-[15px] leading-relaxed font-semibold">
+                {gradingPolicyText}
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ─── TEAM ───────────────────────────────────────────── */}
       {team.length > 0 && (
         <section id="team" className="py-32 px-6 bg-slate-50">
@@ -791,9 +1000,9 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
       {/* ─── APPLY ──────────────────────────────────────────── */}
       <section id="apply" className="py-32 px-6" style={{ backgroundColor: `${brand}08` }}>
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto space-y-16">
           {/* header */}
-          <div className="text-center mb-16 space-y-4">
+          <div className="text-center space-y-4">
             <span
               className="inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border"
               style={{ color: brand, borderColor: `${brand}40`, backgroundColor: `${brand}10` }}
@@ -803,16 +1012,25 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             <h2 className="serif text-5xl md:text-6xl italic" style={{ color: brand }}>
               Join Our Community
             </h2>
-            <p className="text-lg text-slate-500 max-w-xl mx-auto">
-              Take the first step. Fill in the form below and our admissions team will be in touch within 24 hours.
+            <p className="text-lg text-slate-500 max-w-xl mx-auto font-medium">
+              Take the first step. Fill out the application form or review our admissions checklist below.
             </p>
           </div>
 
-          {/* form wrapper */}
-          <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
-            <div className="h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }} />
-            <div className="p-10 md:p-14">
-              <AdmissionForm schoolId={school.id} primaryColor={brand} />
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            {/* Guidelines Column */}
+            <div className="lg:col-span-5 bg-white border border-slate-100/80 p-8 md:p-10 rounded-[2.5rem] shadow-sm space-y-6">
+              <div className="prose-school text-slate-650 text-sm leading-relaxed font-medium">
+                <ReactMarkdown>{admissionsGuidelinesText}</ReactMarkdown>
+              </div>
+            </div>
+
+            {/* Form Column */}
+            <div className="lg:col-span-7 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+              <div className="h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }} />
+              <div className="p-10 md:p-14">
+                <AdmissionForm schoolId={school.id} primaryColor={brand} />
+              </div>
             </div>
           </div>
         </div>

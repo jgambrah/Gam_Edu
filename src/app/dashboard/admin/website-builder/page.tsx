@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -81,7 +81,12 @@ export default function WebsiteBuilderPage() {
     directorLayout: 'alongside' as 'alongside' | 'below',
     principalMessage: '',
     principalPhotoUrl: '',
-    principalLayout: 'alongside' as 'alongside' | 'below'
+    principalLayout: 'alongside' as 'alongside' | 'below',
+    academicsOverview: '',
+    academicsGrading: '',
+    academicsDepartments: [] as { level: string; ageRange: string; focus: string; imageUrl?: string }[],
+    admissionsGuidelines: '',
+    bannerImages: [] as string[]
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -105,6 +110,14 @@ export default function WebsiteBuilderPage() {
   const [newsImageUrl, setNewsImageUrl] = useState('');
   const [newsVideoUrl, setNewsVideoUrl] = useState('');
   const [newsImageUploading, setNewsImageUploading] = useState(false);
+
+  // Custom Academics Form States
+  const [deptLevel, setDeptLevel] = useState('');
+  const [deptAgeRange, setDeptAgeRange] = useState('');
+  const [deptFocus, setDeptFocus] = useState('');
+  const [deptImageUrl, setDeptImageUrl] = useState('');
+  const [deptUploading, setDeptUploading] = useState(false);
+  const [bannersUploading, setBannersUploading] = useState(false);
 
   useEffect(() => {
     if (schoolData) {
@@ -146,7 +159,12 @@ export default function WebsiteBuilderPage() {
         directorLayout: schoolData.directorLayout || 'alongside',
         principalMessage: schoolData.principalMessage || '',
         principalPhotoUrl: schoolData.principalPhotoUrl || '',
-        principalLayout: schoolData.principalLayout || 'alongside'
+        principalLayout: schoolData.principalLayout || 'alongside',
+        academicsOverview: schoolData.academicsOverview || '',
+        academicsGrading: schoolData.academicsGrading || '',
+        academicsDepartments: schoolData.academicsDepartments || [],
+        admissionsGuidelines: schoolData.admissionsGuidelines || '',
+        bannerImages: schoolData.bannerImages || []
       });
     }
   }, [schoolData]);
@@ -395,6 +413,84 @@ export default function WebsiteBuilderPage() {
     }));
   };
 
+  const addAcademicDept = () => {
+    if (!deptLevel.trim() || !deptFocus.trim()) {
+      toast({ variant: 'destructive', title: "Error", description: "Division Level and Focus Details are required." });
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      academicsDepartments: [...(prev.academicsDepartments || []), {
+        level: deptLevel.trim(),
+        ageRange: deptAgeRange.trim(),
+        focus: deptFocus.trim(),
+        imageUrl: deptImageUrl
+      }]
+    }));
+    setDeptLevel('');
+    setDeptAgeRange('');
+    setDeptFocus('');
+    setDeptImageUrl('');
+  };
+
+  const handleDeptImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !schoolId) return;
+    setDeptUploading(true);
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `schools/${schoolId}/website/academics_${Date.now()}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setDeptImageUrl(url);
+      toast({ title: "Division Image Uploaded", description: "Image is ready. Click Add Division Level to save." });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setDeptUploading(false);
+    }
+  };
+
+  const removeAcademicDept = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      academicsDepartments: (prev.academicsDepartments || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleBannerImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !schoolId) return;
+    setBannersUploading(true);
+    try {
+      const storage = getStorage();
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const storageRef = ref(storage, `schools/${schoolId}/website/banner_${Date.now()}_${i}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        uploadedUrls.push(url);
+      }
+      setFormData(prev => ({
+        ...prev,
+        bannerImages: [...(prev.bannerImages || []), ...uploadedUrls]
+      }));
+      toast({ title: "Banners Uploaded", description: `${uploadedUrls.length} image(s) added to slideshow.` });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: "Upload Failed", description: err.message });
+    } finally {
+      setBannersUploading(false);
+    }
+  };
+
+  const removeBannerImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      bannerImages: (prev.bannerImages || []).filter((_, i) => i !== index)
+    }));
+  };
+
   if (isLoading) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600"/></div>;
 
   return (
@@ -605,6 +701,132 @@ export default function WebsiteBuilderPage() {
                                     onChange={e => setFormData({...formData, coreValues: e.target.value})} 
                                     rows={3} 
                                     placeholder="e.g. Excellence, Integrity, Collaboration..." 
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <GraduationCap className="h-5 w-5 text-indigo-600" /> Academics Setup
+                            </CardTitle>
+                            <CardDescription>Configure educational cycles, departments, and grading policy details.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-2">
+                                <Label>Academic Overview & Philosophy</Label>
+                                <Textarea 
+                                    value={formData.academicsOverview} 
+                                    onChange={e => setFormData({...formData, academicsOverview: e.target.value})} 
+                                    rows={3} 
+                                    placeholder="e.g. We provide a rigorous STEM-based curriculum designed to foster critical thinking and practical innovation..." 
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Grading & Assessment Policy (Optional)</Label>
+                                <Textarea 
+                                    value={formData.academicsGrading} 
+                                    onChange={e => setFormData({...formData, academicsGrading: e.target.value})} 
+                                    rows={3} 
+                                    placeholder="e.g. Assessment is continuous, combining quizzes (40%) and term examinations (60%)..." 
+                                />
+                            </div>
+
+                            {/* Dynamic Departments list */}
+                            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4">
+                                <h4 className="text-sm font-bold text-slate-800">Academic Divisions / Levels</h4>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-semibold text-slate-600">Division Name</Label>
+                                        <Input value={deptLevel} onChange={e => setDeptLevel(e.target.value)} placeholder="e.g. Senior High School" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-xs font-semibold text-slate-600">Age Range</Label>
+                                        <Input value={deptAgeRange} onChange={e => setDeptAgeRange(e.target.value)} placeholder="e.g. Ages 15 - 18" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-semibold text-slate-650">Division Focus & Details</Label>
+                                    <Textarea value={deptFocus} onChange={e => setDeptFocus(e.target.value)} placeholder="e.g. Focus on specialized tracks in Science, Business, and Arts preparing students for WAEC examinations." rows={2} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-semibold text-slate-655">Optional Division Image (e.g. Robotics, Science Lab, Activities)</Label>
+                                    <div className="flex gap-2">
+                                        {deptImageUrl ? (
+                                            <div className="h-10 w-10 rounded-lg overflow-hidden border shrink-0 bg-slate-200">
+                                                <img src={deptImageUrl} className="h-full w-full object-cover" />
+                                            </div>
+                                        ) : null}
+                                        <input type="file" accept="image/*" onChange={handleDeptImageUpload} className="hidden" id="dept-file-input" disabled={deptUploading} />
+                                        <Button type="button" variant="outline" asChild disabled={deptUploading} className="w-full">
+                                            <label htmlFor="dept-file-input" className="cursor-pointer flex items-center justify-center gap-1.5 font-bold">
+                                                {deptUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                                Upload Division Photo
+                                            </label>
+                                        </Button>
+                                        {deptImageUrl && (
+                                            <Button type="button" variant="destructive" size="icon" onClick={() => setDeptImageUrl('')} className="shrink-0">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                                <Button type="button" onClick={addAcademicDept} variant="secondary" className="w-full font-bold">
+                                    <Plus className="mr-2 h-4 w-4"/> Add Division Level
+                                </Button>
+                            </div>
+
+                            {/* Configured Departments List */}
+                            <div className="space-y-3">
+                                <Label>Configured Academic divisions</Label>
+                                {formData.academicsDepartments?.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground italic">No custom academic divisions added yet. High-fidelity defaults will be shown on the live site.</p>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {formData.academicsDepartments?.map((dept, i) => (
+                                            <div key={i} className="flex justify-between items-start p-4 bg-white border rounded-2xl relative group animate-in fade-in">
+                                                <div className="flex items-center gap-3">
+                                                    {dept.imageUrl && (
+                                                        <div className="h-12 w-12 rounded-xl overflow-hidden border shrink-0 bg-slate-100">
+                                                            <img src={dept.imageUrl} className="h-full w-full object-cover" />
+                                                        </div>
+                                                    )}
+                                                    <div className="space-y-1">
+                                                        <span className="font-bold text-slate-850 block">{dept.level} <span className="text-xs font-medium text-slate-500 font-mono ml-2">({dept.ageRange})</span></span>
+                                                        <span className="text-xs text-slate-600 leading-normal block">{dept.focus}</span>
+                                                    </div>
+                                                </div>
+                                                <Button type="button" variant="ghost" size="sm" onClick={() => removeAcademicDept(i)} className="text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0"><Trash2 className="h-4 w-4"/></Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Megaphone className="h-5 w-5 text-indigo-600" /> Admissions Setup
+                            </CardTitle>
+                            <CardDescription>Share guidelines, checklists, and instructions for prospective parents filling out the admission form.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Admissions Guidelines & Requirements (Supports Markdown)</Label>
+                                <Textarea 
+                                    value={formData.admissionsGuidelines} 
+                                    onChange={e => setFormData({...formData, admissionsGuidelines: e.target.value})} 
+                                    rows={6} 
+                                    placeholder="e.g. 
+### Required Documents:
+- Copy of Child's Birth Certificate
+- Immunization card / health records
+- 2 passport sized photographs
+- Academic transcript from former school (for transfers)" 
                                 />
                             </div>
                         </CardContent>
@@ -1023,6 +1245,44 @@ export default function WebsiteBuilderPage() {
                                             </label>
                                         </Button>
                                     </div>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-2 pt-4 border-t border-indigo-100">
+                                <Label className="flex items-center gap-2">Hero Slideshow Banner Images (Carousel)</Label>
+                                <CardDescription className="text-xs">Upload several images. The live homepage banner will rotate these smoothly every 12 seconds to make the page look alive.</CardDescription>
+                                
+                                <div className="grid grid-cols-2 gap-2 pt-2">
+                                    {(formData.bannerImages || []).map((img, i) => (
+                                        <div key={i} className="relative aspect-video rounded-xl overflow-hidden border group bg-slate-100">
+                                            <img src={img} className="w-full h-full object-cover" />
+                                            <button 
+                                                type="button" 
+                                                onClick={() => removeBannerImage(i)} 
+                                                className="absolute top-1.5 right-1.5 bg-red-600 text-white p-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity active:scale-95 shadow-lg"
+                                            >
+                                                <Trash2 className="h-4 w-4"/>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="relative pt-2">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        multiple 
+                                        onChange={handleBannerImageUpload} 
+                                        className="hidden" 
+                                        id="slideshow-file-input" 
+                                        disabled={bannersUploading} 
+                                    />
+                                    <Button type="button" variant="outline" asChild disabled={bannersUploading} className="w-full">
+                                        <label htmlFor="slideshow-file-input" className="cursor-pointer flex items-center justify-center gap-1.5 font-bold">
+                                            {bannersUploading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}
+                                            Upload Slideshow Photos
+                                        </label>
+                                    </Button>
                                 </div>
                             </div>
                             <div className="space-y-2 pt-2 border-t border-indigo-100">
