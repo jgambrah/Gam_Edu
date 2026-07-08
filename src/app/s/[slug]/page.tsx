@@ -785,7 +785,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           </div>
 
           {/* Academic Resource Pillars */}
-          {pillars.length > 0 && (
+          {school.showAcademicsPillars !== false && pillars.length > 0 && (
             <div className="bg-slate-950 text-white rounded-[3rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl" />
               <div className="relative z-10 grid md:grid-cols-3 gap-8 text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/10">

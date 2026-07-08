@@ -87,7 +87,8 @@ export default function WebsiteBuilderPage() {
     academicsDepartments: [] as { level: string; ageRange: string; focus: string; imageUrl?: string }[],
     admissionsGuidelines: '',
     bannerImages: [] as string[],
-    academicsPillars: [] as { title: string; description: string; icon?: string }[]
+    academicsPillars: [] as { title: string; description: string; icon?: string }[],
+    showAcademicsPillars: true
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -171,7 +172,8 @@ export default function WebsiteBuilderPage() {
         academicsDepartments: schoolData.academicsDepartments || [],
         admissionsGuidelines: schoolData.admissionsGuidelines || '',
         bannerImages: schoolData.bannerImages || [],
-        academicsPillars: schoolData.academicsPillars || []
+        academicsPillars: schoolData.academicsPillars || [],
+        showAcademicsPillars: schoolData.showAcademicsPillars !== false
       });
     }
   }, [schoolData]);
@@ -759,6 +761,20 @@ export default function WebsiteBuilderPage() {
                                     onChange={e => setFormData({...formData, academicsGrading: e.target.value})} 
                                     rows={3} 
                                     placeholder="e.g. Assessment is continuous, combining quizzes (40%) and term examinations (60%)..." 
+                                    className="bg-white"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-slate-50 border rounded-2xl">
+                                <div className="space-y-0.5">
+                                    <Label className="text-sm font-bold text-slate-800">Show Academic Resource Pillars</Label>
+                                    <CardDescription className="text-xs">Display the Library, Science Labs, and Coding/STEM highlights on the storefront.</CardDescription>
+                                </div>
+                                <input 
+                                    type="checkbox" 
+                                    checked={formData.showAcademicsPillars} 
+                                    onChange={e => setFormData({...formData, showAcademicsPillars: e.target.checked})} 
+                                    className="h-5 w-5 rounded border-slate-350 text-indigo-650 focus:ring-indigo-500 cursor-pointer" 
                                 />
                             </div>
 
