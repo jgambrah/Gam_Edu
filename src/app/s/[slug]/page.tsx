@@ -397,10 +397,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         )}
       </nav>
 
-      {/* ─── HERO ───────────────────────────────────────────── */}
       <section 
-        className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden hero-grain"
-        style={{ backgroundColor: bannerBgColor }}
+        className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden hero-grain bg-white"
+        style={{ backgroundColor: '#ffffff' }}
       >
         {/* cover image slideshow */}
         {banners.length > 0 ? (
@@ -410,7 +409,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               src={imgUrl}
               alt={`Campus Banner ${idx + 1}`}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-                idx === currentBannerIdx ? 'opacity-85' : 'opacity-0'
+                idx === currentBannerIdx ? 'opacity-95' : 'opacity-0'
               }`}
             />
           ))
@@ -419,18 +418,25 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             <img
               src={school.coverImageUrl}
               alt="Campus"
-              className="absolute inset-0 w-full h-full object-cover opacity-90"
+              className="absolute inset-0 w-full h-full object-cover opacity-100"
             />
           )
         )}
 
-        {/* premium dark glassmorphism gradient overlay */}
+        {/* brand color overlay tint applied on top of the pictures */}
+        {bannerBgColor && bannerBgColor !== '#ffffff' && (
+          <div 
+            className="absolute inset-0 pointer-events-none transition-all duration-1000 mix-blend-multiply opacity-25"
+            style={{ backgroundColor: bannerBgColor }}
+          />
+        )}
+
+        {/* premium glassmorphism glow overlay */}
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-20 pointer-events-none"
           style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}22 0%, transparent 70%)` }}
         />
-        <div className="absolute inset-0 bg-slate-950/20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/10 to-slate-950/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/60 pointer-events-none" />
 
         {/* content */}
         <div className="relative z-10 max-w-5xl fade-up space-y-8">
