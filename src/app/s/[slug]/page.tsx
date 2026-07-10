@@ -54,6 +54,34 @@ function isLightColor(colorHex: string) {
   return false;
 }
 
+function getCleanEmailLink(emailStr: string) {
+  if (!emailStr) return '';
+  const trimmed = emailStr.trim();
+  if (trimmed.toLowerCase().startsWith('mailto:')) {
+    return trimmed;
+  }
+  return `mailto:${trimmed}`;
+}
+
+function getCleanPhoneLink(phoneStr: string) {
+  if (!phoneStr) return '';
+  const trimmed = phoneStr.trim();
+  if (trimmed.toLowerCase().startsWith('tel:')) {
+    return trimmed;
+  }
+  return `tel:${trimmed}`;
+}
+
+function getCleanWhatsAppLink(waStr: string) {
+  if (!waStr) return '';
+  const trimmed = waStr.trim();
+  if (trimmed.toLowerCase().startsWith('http://') || trimmed.toLowerCase().startsWith('https://')) {
+    return trimmed;
+  }
+  const numbersOnly = trimmed.replace(/[^0-9]/g, '');
+  return `https://wa.me/${numbersOnly}`;
+}
+
 // ─── stat pill ──────────────────────────────────────────────
 function StatPill({ icon: Icon, label, value, color }: any) {
   return (
@@ -1153,7 +1181,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   )}
                   {school.email && (
                     <p className="flex items-center">
-                      <a href={`mailto:${school.email.trim()}`} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+                      <a href={getCleanEmailLink(school.email)} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
                         <Mail className="h-4 w-4 shrink-0 text-slate-500 hover:text-white transition-colors" />
                         <span>{school.email}</span>
                       </a>
@@ -1161,7 +1189,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   )}
                   {school.phone && (
                     <p className="flex items-center">
-                      <a href={`tel:${school.phone.trim()}`} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+                      <a href={getCleanPhoneLink(school.phone)} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
                         <Phone className="h-4 w-4 shrink-0 text-slate-500 hover:text-white transition-colors" />
                         <span>{school.phone}</span>
                       </a>
@@ -1170,7 +1198,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   {school.whatsappNumber && (
                     <p className="flex items-center">
                       <a 
-                        href={`https://wa.me/${school.whatsappNumber.replace(/[^0-9]/g, '')}`} 
+                        href={getCleanWhatsAppLink(school.whatsappNumber)} 
                         target="_blank" 
                         rel="noreferrer" 
                         className="text-slate-400 hover:text-emerald-400 transition-colors font-bold flex items-center gap-2"
