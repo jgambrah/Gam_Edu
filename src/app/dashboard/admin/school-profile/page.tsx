@@ -69,6 +69,7 @@ export default function SchoolProfilePage() {
   
   const isSuperAdmin = user?.email === 'jamesgambrah@gmail.com' || user?.uid === 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
   const [phone, setPhone] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
@@ -178,6 +179,7 @@ export default function SchoolProfilePage() {
         setCustomDomain(profile.customDomain || '');
         setSlug(profile.slug || '');
         setPhone(profile.phone || '');
+        setWhatsappNumber(profile.whatsappNumber || '');
         setEmail(profile.email || '');
         setWebsite(profile.website || '');
         setLogoUrl(profile.logoUrl || '');
@@ -296,7 +298,7 @@ export default function SchoolProfilePage() {
         setGradingSystem(cleanedGrading);
 
         const brandingData = {
-            name, motto, address, phone, email, website, logoUrl, brandColor,
+            name, motto, address, phone, whatsappNumber, email, website, logoUrl, brandColor,
             secondaryColor,
             headmasterSignature,
             headmasterSignatureUrl: headmasterSignature,
@@ -469,8 +471,9 @@ export default function SchoolProfilePage() {
                             <div className="space-y-2"><Label className="font-bold">Motto / Slogan</Label><Input value={motto} onChange={e => setMotto(e.target.value)} placeholder="e.g. Excellence & Integrity" className="h-12 border-2 rounded-xl" /></div>
                         </div>
                         <div className="space-y-2"><Label className="font-bold">Physical Address</Label><Textarea value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. 123 Education Street, Accra, Ghana" rows={3} className="border-2 rounded-xl" /></div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Phone className="h-3 w-3"/> Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+233..." className="h-11 border-2 rounded-xl" /></div>
+                            <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><MessageCircle className="h-3 w-3 text-emerald-600"/> WhatsApp</Label><Input value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)} placeholder="e.g. +233241234567" className="h-11 border-2 rounded-xl" /></div>
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Mail className="h-3 w-3"/> Email</Label><Input value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@school.com" className="h-11 border-2 rounded-xl" /></div>
                             <div className="space-y-2"><Label className="flex items-center gap-2 font-bold"><Globe className="h-3 w-3"/> Website</Label><Input value={website} onChange={e => setWebsite(e.target.value)} placeholder="www.school.com" className="h-11 border-2 rounded-xl" /></div>
                         </div>

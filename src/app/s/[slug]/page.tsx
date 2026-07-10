@@ -7,7 +7,8 @@ import {
   Loader2, MapPin, Phone, Mail, Globe,
   Camera, Info, Facebook, Instagram, Linkedin, Video,
   Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap,
-  User, Users, ChevronDown, Star, BookOpen, Award, Menu, X, Atom
+  User, Users, ChevronDown, Star, BookOpen, Award, Menu, X, Atom,
+  MessageCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -1151,16 +1152,31 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     </div>
                   )}
                   {school.email && (
-                    <p>
+                    <p className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 shrink-0 text-slate-500" />
                       <a href={`mailto:${school.email}`} className="text-slate-400 hover:text-white transition-colors">
                         {school.email}
                       </a>
                     </p>
                   )}
                   {school.phone && (
-                    <p>
+                    <p className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 shrink-0 text-slate-500" />
                       <a href={`tel:${school.phone}`} className="text-slate-400 hover:text-white transition-colors">
                         {school.phone}
+                      </a>
+                    </p>
+                  )}
+                  {school.whatsappNumber && (
+                    <p className="flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4 shrink-0 text-emerald-500 animate-pulse" />
+                      <a 
+                        href={`https://wa.me/${school.whatsappNumber.replace(/[^0-9]/g, '')}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-slate-400 hover:text-emerald-400 transition-colors font-bold"
+                      >
+                        {school.whatsappNumber} (WhatsApp)
                       </a>
                     </p>
                   )}
