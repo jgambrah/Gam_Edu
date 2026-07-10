@@ -441,6 +441,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
                 idx === currentBannerIdx ? 'opacity-100' : 'opacity-0'
               }`}
+              style={{ filter: 'brightness(1.15) saturate(1.25) contrast(1.05)' }}
             />
           ))
         ) : (
@@ -449,16 +450,18 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               src={school.coverImageUrl}
               alt="Campus"
               className="absolute inset-0 w-full h-full object-cover opacity-100"
+              style={{ filter: 'brightness(1.15) saturate(1.25) contrast(1.05)' }}
             />
           )
         )}
 
         {/* premium glassmorphism glow overlay */}
         <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-25 pointer-events-none"
           style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}22 0%, transparent 70%)` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/15 to-black/65 pointer-events-none" />
+        {/* Lighter overlay so images stay bright but text remains readable */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/45 pointer-events-none" />
 
         {/* content */}
         <div className="relative z-10 max-w-5xl fade-up space-y-8">
