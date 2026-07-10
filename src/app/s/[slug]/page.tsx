@@ -1181,7 +1181,13 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   )}
                   {school.email && (
                     <p className="flex items-center">
-                      <a href={getCleanEmailLink(school.email)} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+                      <a
+                        href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(school.email.trim())}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        title={`Send email to ${school.email}`}
+                        className="text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+                      >
                         <Mail className="h-4 w-4 shrink-0 text-slate-500 hover:text-white transition-colors" />
                         <span>{school.email}</span>
                       </a>
