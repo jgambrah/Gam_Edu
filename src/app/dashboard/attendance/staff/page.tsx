@@ -41,7 +41,7 @@ export default function StaffAttendancePage() {
   const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
 
-  const isStaff = role && !['Student', 'Parent'].includes(role);
+  const isStaff = role && !['student', 'parent'].includes(role.toLowerCase());
 
   // Fetch School Settings for Geofencing and Time Tracking
   const schoolSettingsRef = useMemoFirebase(

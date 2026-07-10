@@ -32,7 +32,8 @@ export function AttendanceAuditLogs() {
         setIsLoading(true);
         setError(null);
         try {
-            const isManager = role === 'Director' || role === 'Administrator';
+            const lowerRole = role?.toLowerCase();
+            const isManager = lowerRole === 'director' || lowerRole === 'administrator' || lowerRole === 'admin';
             let q;
             if (isManager) {
                 q = query(

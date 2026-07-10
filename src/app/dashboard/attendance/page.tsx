@@ -17,7 +17,8 @@ export default function AttendancePage() {
   // Protect the attendance-taking page from non-staff
   useEffect(() => {
     if (!loading) {
-      if (role === 'Student' || role === 'Parent') {
+      const lowerRole = role?.toLowerCase();
+      if (lowerRole === 'student' || lowerRole === 'parent') {
         router.replace('/dashboard/my-children');
       }
     }
@@ -32,7 +33,8 @@ export default function AttendancePage() {
   }
 
   // Final check before rendering
-  const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant'].includes(role || '');
+  const lowerRole = role?.toLowerCase();
+  const isStaff = ['teacher', 'administrator', 'director', 'accountant', 'admin'].includes(lowerRole || '');
 
   if (!isStaff) {
     return (

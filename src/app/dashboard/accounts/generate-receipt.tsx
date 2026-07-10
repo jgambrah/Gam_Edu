@@ -168,6 +168,71 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         }
     };
     
+    const handlePrintDirect = () => {
+        if (!printRef.current) return;
+        
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+        
+        const doc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (!doc) return;
+
+        const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+            .map(style => style.outerHTML)
+            .join('\n');
+
+        const isThermal = layoutStyle === 'thermal';
+
+        doc.write(`
+            <html>
+                <head>
+                    <title>Print Receipt</title>
+                    ${styles}
+                    <style>
+                        body {
+                            background: white !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                        }
+                        @page {
+                            size: ${isThermal ? '80mm auto' : 'A5 portrait'};
+                            margin: 0 !important;
+                        }
+                        @media print {
+                            body {
+                                -webkit-print-color-adjust: exact !important;
+                                print-color-adjust: exact !important;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div style="width: ${isThermal ? '100%' : 'auto'}">
+                        ${printRef.current.innerHTML}
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.focus();
+                            window.print();
+                            setTimeout(function() {
+                                window.parent.document.body.removeChild(window.frameElement);
+                            }, 500);
+                        };
+                    </script>
+                </body>
+            </html>
+        `);
+        doc.close();
+    };
+
     const triggerButton = variant === 'icon' ? (
         <Button variant="ghost" size="icon" className="h-7 w-7"><Printer className="h-4 w-4 text-blue-600"/></Button>
     ) : (

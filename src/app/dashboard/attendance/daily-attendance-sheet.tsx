@@ -76,10 +76,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const [pendingData, setPendingData] = useState<AttendanceFormData | null>(null);
 
     const canOverwrite = useMemo(() => {
-        if (role === 'Director' || role === 'Administrator') return true;
-        if (role === 'Teacher') {
+        const lowerRole = role?.toLowerCase();
+        if (lowerRole === 'director' || lowerRole === 'administrator' || lowerRole === 'admin') return true;
+        if (lowerRole === 'teacher' || lowerRole === 'accountant') {
             const daysDiff = differenceInDays(startOfDay(new Date()), startOfDay(selectedDate));
-            return daysDiff >= 0 && daysDiff <= 8;
+            return daysDiff <= 8;
         }
         return false;
     }, [role, selectedDate]);
@@ -92,7 +93,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     const timetableQuery = useMemoFirebase(() => 
-      (firestore && schoolId && role === 'Teacher')
+      (firestore && schoolId && role?.toLowerCase() === 'teacher')
         ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
         : null, 
     [firestore, schoolId, role]);
@@ -100,7 +101,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
     const visibleClasses = useMemo(() => {
         if (!classes) return [];
-        if (role !== 'Teacher') return classes;
+        if (role?.toLowerCase() !== 'teacher') return classes;
         const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
         return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
     }, [classes, timetable, role, user?.uid]);
@@ -181,7 +182,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
     useEffect(() => {
         if (selectedClassId && !isLoadingClasses) {
-            if (role === 'Teacher') {
+            if (role?.toLowerCase() === 'teacher') {
                 const isAuthorized = visibleClasses.some((c: any) => c.id === selectedClassId);
                 if (!isAuthorized) {
                     toast({
@@ -424,7 +425,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                             <div>
                                 <h4 className="text-sm font-bold text-amber-800">Overwrite Mode Enabled</h4>
                                 <p className="text-xs text-amber-650 mt-0.5">
-                                    Attendance has already been marked for this date. {role === 'Teacher' ? 'As a Teacher, you are allowed an 8-day grace period to correct/overwrite your entries.' : 'As an Administrator or Director, you are permitted to overwrite the existing entries.'}
+                                    Attendance has already been marked for this date. {role?.toLowerCase() === 'teacher' ? 'As a Teacher, you are allowed an 8-day grace period to correct/overwrite your entries.' : 'As an Administrator or Director, you are permitted to overwrite the existing entries.'}
                                 </p>
                             </div>
                         </div>
