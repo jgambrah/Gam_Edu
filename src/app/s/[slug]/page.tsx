@@ -858,11 +858,21 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {team.map((member, idx) => {
-                const name = member.name || `${member.firstName || ''} ${member.lastName || ''}`.trim();
+                const rawName = member.name || `${member.firstName || ''} ${member.lastName || ''}`.trim();
+                // Convert ALL CAPS to Title Case for display
+                const isAllCaps = (s: string) => s === s.toUpperCase() && s.length > 3;
+                const toTitleCase = (s: string) => s.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+                const toSentenceCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+                const name = isAllCaps(rawName) ? toTitleCase(rawName) : rawName;
+
                 const photo = member.photoUrl || member.publicPhotoUrl;
-                const bio = member.bio || member.publicBio;
+                const rawBio = member.bio || member.publicBio || '';
+                const bio = rawBio.replace(/^"|"$/g, '').trim(); // strip any wrapping quotes from the stored value
+                const role = member.role ? (isAllCaps(member.role) ? toTitleCase(member.role) : member.role) : '';
+                const qualifications = member.qualifications || '';
+
                 return (
-                  <div key={member.id || idx} className="bg-white rounded-3xl overflow-hidden border border-slate-100 card-hover">
+                  <div key={member.id || idx} className="bg-white rounded-3xl overflow-hidden border border-slate-100 card-hover flex flex-col">
                     {/* photo */}
                     <div className="h-64 bg-slate-100 flex items-center justify-center relative overflow-hidden">
                       {photo ? (
@@ -872,32 +882,36 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <User className="h-20 w-20 text-slate-350" />
+                        <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${brand}22, ${secondaryColor}22)` }}>
+                          <User className="h-12 w-12 text-slate-400" />
+                        </div>
                       )}
                       {/* role badge */}
-                      <div
-                        className="absolute top-4 right-4 px-3 py-1.5 rounded-xl text-white text-[9px] font-black uppercase tracking-widest shadow-md"
-                        style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
-                      >
-                        {member.role}
-                      </div>
+                      {role && (
+                        <div
+                          className="absolute top-4 right-4 px-3 py-1.5 rounded-xl text-white text-[9px] font-black uppercase tracking-widest shadow-md"
+                          style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                        >
+                          {role}
+                        </div>
+                      )}
                     </div>
 
                     {/* info */}
-                    <div className="p-7 space-y-3">
-                      <h4 className="text-xl font-black text-slate-800">
+                    <div className="p-7 space-y-3 flex flex-col flex-1">
+                      <h4 className="text-xl font-black text-slate-800 leading-snug">
                         {name}
                       </h4>
-                      {member.qualifications && (
+                      {qualifications && (
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                           <GraduationCap size={13} style={{ color: brand }} />
-                          {member.qualifications}
+                          {qualifications}
                         </p>
                       )}
                       {bio && (
-                        <p className="text-sm text-slate-500 leading-relaxed border-l-2 pl-4 italic"
+                        <p className="text-sm text-slate-500 leading-relaxed border-l-2 pl-4 mt-1"
                           style={{ borderColor: `${secondaryColor}80` }}>
-                          "{bio}"
+                          {isAllCaps(bio) ? toSentenceCase(bio) : bio}
                         </p>
                       )}
                     </div>
