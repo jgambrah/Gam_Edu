@@ -1152,31 +1152,31 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     </div>
                   )}
                   {school.email && (
-                    <p className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 shrink-0 text-slate-500" />
-                      <a href={`mailto:${school.email}`} className="text-slate-400 hover:text-white transition-colors">
-                        {school.email}
+                    <p className="flex items-center">
+                      <a href={`mailto:${school.email.trim()}`} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+                        <Mail className="h-4 w-4 shrink-0 text-slate-500 hover:text-white transition-colors" />
+                        <span>{school.email}</span>
                       </a>
                     </p>
                   )}
                   {school.phone && (
-                    <p className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 shrink-0 text-slate-500" />
-                      <a href={`tel:${school.phone}`} className="text-slate-400 hover:text-white transition-colors">
-                        {school.phone}
+                    <p className="flex items-center">
+                      <a href={`tel:${school.phone.trim()}`} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+                        <Phone className="h-4 w-4 shrink-0 text-slate-500 hover:text-white transition-colors" />
+                        <span>{school.phone}</span>
                       </a>
                     </p>
                   )}
                   {school.whatsappNumber && (
-                    <p className="flex items-center gap-2">
-                      <MessageCircle className="h-4 w-4 shrink-0 text-emerald-500 animate-pulse" />
+                    <p className="flex items-center">
                       <a 
                         href={`https://wa.me/${school.whatsappNumber.replace(/[^0-9]/g, '')}`} 
                         target="_blank" 
                         rel="noreferrer" 
-                        className="text-slate-400 hover:text-emerald-400 transition-colors font-bold"
+                        className="text-slate-400 hover:text-emerald-400 transition-colors font-bold flex items-center gap-2"
                       >
-                        {school.whatsappNumber} (WhatsApp)
+                        <MessageCircle className="h-4 w-4 shrink-0 text-emerald-500 animate-pulse hover:text-emerald-400 transition-colors" />
+                        <span>{school.whatsappNumber} (WhatsApp)</span>
                       </a>
                     </p>
                   )}
