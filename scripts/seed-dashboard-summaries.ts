@@ -165,7 +165,9 @@ async function seedSchool(schoolId: string): Promise<void> {
     }
   });
 
-  const collectionRate = totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0;
+  const collectionRate = (totalRevenue + totalOutstanding) > 0 
+    ? Math.round((totalRevenue / (totalRevenue + totalOutstanding)) * 100) 
+    : 0;
 
   // 5. Pending admissions
   const admSnap = await db.collection('admissionApplications').where('schoolId', '==', schoolId).where('status', '==', 'Pending Review').get();
