@@ -95,36 +95,113 @@ exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{reco
 });
 // ── TRIGGER 3: Financial Records ──────────────────────────────────────────────
 exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRecords/{recordId}', async (event) => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+    var _a, _b, _c, _d, _e;
     const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
     const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
-    if (!(after === null || after === void 0 ? void 0 : after.schoolId))
+    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
+    if (!schoolId)
         return;
-    const schoolId = after.schoolId;
-    const balBefore = Number((_f = (_e = before === null || before === void 0 ? void 0 : before.outstandingBalance) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.balance) !== null && _f !== void 0 ? _f : 0);
-    const balAfter = Number((_h = (_g = after.outstandingBalance) !== null && _g !== void 0 ? _g : after.balance) !== null && _h !== void 0 ? _h : 0);
-    const balDelta = balAfter - balBefore;
-    const paidAt = after.paidAt;
-    const paidAtMs = (_k = (_j = paidAt === null || paidAt === void 0 ? void 0 : paidAt.toMillis) === null || _j === void 0 ? void 0 : _j.call(paidAt)) !== null && _k !== void 0 ? _k : 0;
-    const isPaidToday = paidAtMs >= todayStartMs();
-    const amountDelta = Number((_l = after.amountPaid) !== null && _l !== void 0 ? _l : 0) - Number((_m = before === null || before === void 0 ? void 0 : before.amountPaid) !== null && _m !== void 0 ? _m : 0);
-    const wasInArrears = (Number((_o = before === null || before === void 0 ? void 0 : before.outstandingBalance) !== null && _o !== void 0 ? _o : 0)) > 0;
-    const isInArrears = balAfter > 0;
-    const arrearsDelta = (isInArrears ? 1 : 0) - (wasInArrears ? 1 : 0);
-    const update = {
+    // Fetch all financial records for this school to calculate full, accurate aggregates
+    const snap = await db.collection('financialRecords')
+        .where('schoolId', '==', schoolId)
+        .get();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let totalBilled = 0;
+    let totalRevenue = 0;
+    let totalOutstanding = 0;
+    let arrearsCount = 0;
+    let current = 0;
+    let age30 = 0;
+    let age60 = 0;
+    let age90 = 0;
+    let overpayments = 0;
+    let totalCollectedToday = 0;
+    let totalCollectedThisMonth = 0;
+    let totalCollectedThisTerm = 0;
+    let lastPaymentAmount = 0;
+    let lastPaymentAt = null;
+    const todayMs = todayStartMs();
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    const monthMs = monthStart.getTime();
+    snap.forEach(doc => {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        const r = doc.data();
+        if (r.status === 'Pending Reversal')
+            return;
+        const billed = Number((_b = (_a = r.billedAmount) !== null && _a !== void 0 ? _a : r.amount) !== null && _b !== void 0 ? _b : 0);
+        const paid = Number((_c = r.amountPaid) !== null && _c !== void 0 ? _c : 0);
+        const waiver = Number((_d = r.waiverAmount) !== null && _d !== void 0 ? _d : 0);
+        const balance = billed - paid - waiver;
+        totalBilled += billed;
+        totalRevenue += paid;
+        // Track paid amounts within time bounds for dashboard collections card
+        const paidTs = r.paidAt;
+        const paidMs = (_f = (_e = paidTs === null || paidTs === void 0 ? void 0 : paidTs.toMillis) === null || _e === void 0 ? void 0 : _e.call(paidTs)) !== null && _f !== void 0 ? _f : 0;
+        if (paidMs >= todayMs) {
+            totalCollectedToday += paid;
+            if (paid > lastPaymentAmount) {
+                lastPaymentAmount = paid;
+                lastPaymentAt = paidTs !== null && paidTs !== void 0 ? paidTs : firestore_2.Timestamp.now();
+            }
+        }
+        if (paidMs >= monthMs) {
+            totalCollectedThisMonth += paid;
+        }
+        // Assuming Term collected is equal to month collected for dashboard display
+        totalCollectedThisTerm = totalCollectedThisMonth;
+        if (balance < 0) {
+            overpayments += Math.abs(balance);
+            return;
+        }
+        if (balance <= 0.01)
+            return;
+        totalOutstanding += balance;
+        arrearsCount++;
+        // Debt aging buckets
+        const dueTs = r.dueDate;
+        const dueMs = (_h = (_g = dueTs === null || dueTs === void 0 ? void 0 : dueTs.toMillis) === null || _g === void 0 ? void 0 : _g.call(dueTs)) !== null && _h !== void 0 ? _h : (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
+        const diffTime = today.getTime() - dueMs;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays <= 0) {
+            current += balance;
+        }
+        else if (diffDays <= 30) {
+            age30 += balance;
+        }
+        else if (diffDays <= 60) {
+            age60 += balance;
+        }
+        else {
+            age90 += balance;
+        }
+    });
+    const collectionRate = totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0;
+    await SUMMARY(schoolId).set({
         schoolId,
         lastUpdated: firestore_2.FieldValue.serverTimestamp(),
-        'financials.totalOutstanding': firestore_2.FieldValue.increment(balDelta),
-        'financials.arrearsCount': firestore_2.FieldValue.increment(arrearsDelta),
-    };
-    if (isPaidToday && amountDelta > 0) {
-        update['financials.totalCollectedToday'] = firestore_2.FieldValue.increment(amountDelta);
-        update['financials.totalCollectedThisMonth'] = firestore_2.FieldValue.increment(amountDelta);
-        update['financials.totalCollectedThisTerm'] = firestore_2.FieldValue.increment(amountDelta);
-        update['financials.lastPaymentAmount'] = amountDelta;
-        update['financials.lastPaymentAt'] = firestore_2.Timestamp.now();
-    }
-    await SUMMARY(schoolId).set(update, { merge: true });
+        financials: {
+            totalCollectedToday,
+            totalCollectedThisMonth,
+            totalCollectedThisTerm,
+            totalOutstanding,
+            totalBilled,
+            totalRevenue,
+            collectionRate,
+            arrearsCount,
+            lastPaymentAmount,
+            lastPaymentAt,
+        },
+        debtAging: {
+            current,
+            age30,
+            age60,
+            age90,
+            overpayments,
+        }
+    }, { merge: true });
 });
 // ── TRIGGER 4: Staff Attendance ───────────────────────────────────────────────
 exports.onStaffAttendanceWrite = (0, firestore_1.onDocumentWritten)('staff_attendance/{recordId}', async (event) => {

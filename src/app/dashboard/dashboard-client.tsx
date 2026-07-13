@@ -667,11 +667,21 @@ function AdminDashboard({
 
   const studentTeacherRatio = useMemo(() => {
     const teachers = staff?.filter((s: any) => s.role === 'Teacher')?.length || 0;
-    if (teachers === 0) return activeStudents.length;
-    return parseFloat((activeStudents.length / teachers).toFixed(1));
-  }, [activeStudents, staff]);
+    if (teachers === 0) return effectiveActiveCount;
+    return parseFloat((effectiveActiveCount / teachers).toFixed(1));
+  }, [effectiveActiveCount, staff]);
 
   const financials = useMemo(() => {
+    if (dashboardSummary?.financials?.totalBilled !== undefined) {
+      return {
+        totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
+        totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
+        totalBilled: dashboardSummary.financials.totalBilled ?? 0,
+        collectionRate: dashboardSummary.financials.collectionRate ?? 0,
+        revenueByType: []
+      };
+    }
+
     if (!financialRecords || activeStudents.length === 0) return { totalOutstanding: 0, totalRevenue: 0, collectionRate: 0, totalBilled: 0, revenueByType: [] };
     
     const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
@@ -720,9 +730,21 @@ function AdminDashboard({
       collectionRate, 
       revenueByType 
     };
-  }, [financialRecords, activeStudents]);
+  }, [financialRecords, activeStudents, dashboardSummary]);
 
   const debtAgingStats = useMemo(() => {
+    if (dashboardSummary?.debtAging !== undefined) {
+      return {
+        current: dashboardSummary.debtAging.current ?? 0,
+        age30: dashboardSummary.debtAging.age30 ?? 0,
+        age60: dashboardSummary.debtAging.age60 ?? 0,
+        age90: dashboardSummary.debtAging.age90 ?? 0,
+        overpayments: dashboardSummary.debtAging.overpayments ?? 0,
+        total: (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0) - (dashboardSummary.debtAging.overpayments ?? 0),
+        grossTotal: (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0)
+      };
+    }
+
     if (!financialRecords || !activeStudents || activeStudents.length === 0) {
       return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
     }
@@ -768,7 +790,7 @@ function AdminDashboard({
     const total = current + age30 + age60 + age90 - overpayments;
     const grossTotal = current + age30 + age60 + age90;
     return { current, age30, age60, age90, total, overpayments, grossTotal };
-  }, [financialRecords, activeStudents]);
+  }, [financialRecords, activeStudents, dashboardSummary]);
 
   // If summary data is available (Director path), use it directly.
   // Otherwise fall back to in-memory array derivation (Administrator path).

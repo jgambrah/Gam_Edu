@@ -1,4 +1,4 @@
-﻿/**
+/**
  * seed-dashboard-summaries.ts
  *
  * One-time migration script. Run ONCE to backfill the dashboard_summaries
@@ -63,18 +63,58 @@ async function seedSchool(schoolId: string): Promise<void> {
   // 4. Financial aggregates
   const finSnap = await db.collection('financialRecords').where('schoolId', '==', schoolId).get();
   let totalOutstanding = 0, arrearsCount = 0, totalCollectedToday = 0, totalCollectedThisMonth = 0;
+  let totalBilled = 0, totalRevenue = 0;
+  let current = 0, age30 = 0, age60 = 0, age90 = 0, overpayments = 0;
+
   const todayMs = todayStartMs();
-  const monthMs = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const monthMs = monthStart.getTime();
+
   finSnap.forEach(doc => {
-    const d = doc.data();
-    const outstanding = Number(d.outstandingBalance ?? d.balance ?? 0);
-    totalOutstanding += outstanding;
-    if (outstanding > 0) arrearsCount++;
-    const paidMs = (d.paidAt as FirebaseFirestore.Timestamp)?.toMillis?.() ?? 0;
-    const amt = Number(d.amountPaid ?? 0);
-    if (paidMs >= todayMs) totalCollectedToday += amt;
-    if (paidMs >= monthMs) totalCollectedThisMonth += amt;
+    const r = doc.data();
+    if (r.status === 'Pending Reversal') return;
+
+    const billed = Number(r.billedAmount ?? r.amount ?? 0);
+    const paid = Number(r.amountPaid ?? 0);
+    const waiver = Number(r.waiverAmount ?? 0);
+    const balance = billed - paid - waiver;
+
+    totalBilled += billed;
+    totalRevenue += paid;
+
+    const paidTs = r.paidAt as admin.firestore.Timestamp | undefined;
+    const paidMs = paidTs?.toMillis?.() ?? 0;
+    if (paidMs >= todayMs) totalCollectedToday += paid;
+    if (paidMs >= monthMs) totalCollectedThisMonth += paid;
+
+    if (balance < 0) {
+      overpayments += Math.abs(balance);
+      return;
+    }
+    if (balance <= 0.01) return;
+
+    totalOutstanding += balance;
+    arrearsCount++;
+
+    const dueTs = r.dueDate as admin.firestore.Timestamp | undefined;
+    const dueMs = dueTs?.toMillis?.() ?? (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
+    const diffTime = new Date().getTime() - dueMs;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 0) {
+      current += balance;
+    } else if (diffDays <= 30) {
+      age30 += balance;
+    } else if (diffDays <= 60) {
+      age60 += balance;
+    } else {
+      age90 += balance;
+    }
   });
+
+  const collectionRate = totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0;
 
   // 5. Pending admissions
   const admSnap = await db.collection('admissionApplications').where('schoolId', '==', schoolId).where('status', '==', 'Pending Review').get();
@@ -109,7 +149,25 @@ async function seedSchool(schoolId: string): Promise<void> {
     lastUpdated: FieldValue.serverTimestamp(),
     studentCount: { total: totalStudents, active: activeStudents, withdrawn: withdrawnStudents, new_this_month: 0 },
     attendance: { date: today, totalPresent: present, totalAbsent: absent, totalLate: late, attendanceRate, absentStudentIds: absentIds },
-    financials: { totalCollectedToday, totalCollectedThisMonth, totalCollectedThisTerm: totalCollectedThisMonth, totalOutstanding, arrearsCount, lastPaymentAt: null, lastPaymentAmount: 0 },
+    financials: {
+      totalCollectedToday,
+      totalCollectedThisMonth,
+      totalCollectedThisTerm: totalCollectedThisMonth,
+      totalOutstanding,
+      totalBilled,
+      totalRevenue,
+      collectionRate,
+      arrearsCount,
+      lastPaymentAt: null,
+      lastPaymentAmount: 0
+    },
+    debtAging: {
+      current,
+      age30,
+      age60,
+      age90,
+      overpayments,
+    },
     staff: { total: totalStaff, presentToday: presentStaffSet.size, absentToday: Math.max(0, totalStaff - presentStaffSet.size), lateToday: staffLate },
     academics: { avgScorePercent: 0, passingRatePercent: 0, activeAlerts: 0, pendingAssessments: 0 },
     admissions: { pendingCount: pendingAdmissions, approvedThisMonth: 0 },
