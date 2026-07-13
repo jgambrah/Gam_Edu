@@ -9651,7 +9651,7 @@ function TeacherDashboard({ profile, classes, students, assessments, announcemen
         const text = `Hello parent, this is from ${student.firstName}'s class teacher. We wanted to touch base regarding their classroom performance and engagement. Please contact us when free.`;
         toast({ title: "Sending SMS...", description: "Connecting to SMS Gateway" });
         try {
-            const res = await sendSchoolSMSAction(student.parentPhone, text, student.schoolId);
+            const res = await sendSchoolSMSAction(student.schoolId || schoolId, student.parentPhone, text);
             if (res.success) {
                 toast({ title: "SMS Sent", description: `Message delivered to ${student.firstName}'s parent.` });
             } else {
