@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { sendSchoolSMSAction } from '@/app/actions/sms'; 
+import { sendSchoolSMSAction, sendSchoolBulkSMSAction } from '@/app/actions/sms'; 
 import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -174,18 +174,58 @@ export default function BulkSMSPage() {
     let count = 0;
     let failCount = 0;
 
-    for (let i = 0; i < finalRecipients.length; i++) {
-        const parent = finalRecipients[i];
-        const phone = parent.phone;
-        const parentName = `${parent.firstName} ${parent.lastName}`;
+    if (channel === 'sms') {
+        const validRecipients = finalRecipients.filter(p => p.phone);
+        const skipRecipients = finalRecipients.filter(p => !p.phone);
 
-        setBroadcastCurrent(i + 1);
-        setBroadcastProgress(Math.round(((i + 1) / finalRecipients.length) * 100));
-        setBroadcastStatusText(`Delivering message to ${parentName}...`);
+        // Process skipped entries first
+        skipRecipients.forEach(parent => {
+            const parentName = `${parent.firstName} ${parent.lastName}`;
+            setBroadcastLogs(prev => [...prev, `[SKIP] Parent ${parentName} has no registered phone number.`]);
+        });
+        failCount += skipRecipients.length;
 
-        if (phone) {
+        if (validRecipients.length > 0) {
+            const phones = validRecipients.map(p => p.phone);
             try {
-                if (channel === 'whatsapp') {
+                setBroadcastStatusText(`Delivering bulk SMS to ${validRecipients.length} parents...`);
+                const res = await sendSchoolBulkSMSAction(schoolId, phones, message);
+                
+                if (res.success) {
+                    count += validRecipients.length;
+                    setBroadcastLogs(prev => [
+                        ...prev, 
+                        `[SUCCESS] Bulk SMS broadcast successfully accepted by Arkesel for ${validRecipients.length} numbers.`
+                    ]);
+                } else {
+                    failCount += validRecipients.length;
+                    setBroadcastLogs(prev => [
+                        ...prev, 
+                        `[ERROR] Bulk SMS broadcast failed: ${res.error || 'Gateway Reject'}`
+                    ]);
+                }
+            } catch (err: any) {
+                failCount += validRecipients.length;
+                setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error: ${err.message}`]);
+            }
+        }
+        
+        // Complete the progress instantly for bulk single-call action
+        setBroadcastProgress(100);
+        setBroadcastCurrent(finalRecipients.length);
+    } else {
+        // Run sequential loop for WhatsApp
+        for (let i = 0; i < finalRecipients.length; i++) {
+            const parent = finalRecipients[i];
+            const phone = parent.phone;
+            const parentName = `${parent.firstName} ${parent.lastName}`;
+
+            setBroadcastCurrent(i + 1);
+            setBroadcastProgress(Math.round(((i + 1) / finalRecipients.length) * 100));
+            setBroadcastStatusText(`Delivering message to ${parentName}...`);
+
+            if (phone) {
+                try {
                     const res = await sendSchoolWhatsApp(schoolId, phone, message);
                     if (res.success) {
                         count++;
@@ -194,23 +234,14 @@ export default function BulkSMSPage() {
                         failCount++;
                         setBroadcastLogs(prev => [...prev, `[ERROR] WhatsApp failed for ${parentName}: ${res.error || 'Gateway Timeout'}`]);
                     }
-                } else {
-                    const res = await sendSchoolSMSAction(schoolId, phone, message);
-                    if (res.success) {
-                        count++;
-                        setBroadcastLogs(prev => [...prev, `[SUCCESS] SMS delivered to ${parentName} (${phone})`]);
-                    } else {
-                        failCount++;
-                        setBroadcastLogs(prev => [...prev, `[ERROR] SMS failed for ${parentName}: ${res.error || 'Gateway Reject'}`]);
-                    }
+                } catch (err: any) {
+                    failCount++;
+                    setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error for ${parentName}: ${err.message}`]);
                 }
-            } catch (err: any) {
+            } else {
                 failCount++;
-                setBroadcastLogs(prev => [...prev, `[FATAL] Gateway Error for ${parentName}: ${err.message}`]);
+                setBroadcastLogs(prev => [...prev, `[SKIP] Parent ${parentName} has no registered phone number.`]);
             }
-        } else {
-            failCount++;
-            setBroadcastLogs(prev => [...prev, `[SKIP] Parent ${parentName} has no registered phone number.`]);
         }
     }
 
