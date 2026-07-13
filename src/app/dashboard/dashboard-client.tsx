@@ -13098,23 +13098,8 @@ export default function DashboardClient() {
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
 
-  // Director gets attendance from summary (today's snapshot) but queries today's logs for detail list. Admin, Receptionist, Secretary still need full list.
-  const attendanceQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
-    if (isDirector) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return query(
-        collection(firestore, 'attendance'),
-        where('schoolId', '==', schoolId),
-        where('date', '==', today)
-      );
-    }
-    if (isAdmin || isReceptionist || isSecretary) {
-      return query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId));
-    }
-    return null;
-  }, [firestore, schoolId, isAdmin, isDirector, isReceptionist, isSecretary]);
+  // Director gets attendance from summary (today's snapshot) but needs full list for Chronic Absenteeism calculation. Admin, Receptionist, Secretary still need full list.
+  const attendanceQuery = useMemoFirebase(() => (firestore && schoolId && (isAdmin || isReceptionist || isSecretary)) ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isReceptionist, isSecretary]);
   const { data: attendance } = useCollection(attendanceQuery);
 
   const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
