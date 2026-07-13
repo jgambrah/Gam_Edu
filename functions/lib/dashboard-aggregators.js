@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
+exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const app_1 = require("firebase-admin/app");
 const firestore_2 = require("firebase-admin/firestore");
@@ -19,6 +19,24 @@ function todayStartMs() {
     d.setHours(0, 0, 0, 0);
     return d.getTime();
 }
+/** Robust helper to get YYYY-MM-DD from Timestamp, Date, or string */
+function getYYYYMMDD(val) {
+    if (!val)
+        return '';
+    let d;
+    if (typeof val.toDate === 'function') {
+        d = val.toDate();
+    }
+    else if (val instanceof Date) {
+        d = val;
+    }
+    else {
+        d = new Date(val);
+    }
+    if (isNaN(d.getTime()))
+        return '';
+    return d.toISOString().slice(0, 10);
+}
 /** Helper to recalculate financial metrics for a school considering active students */
 async function recalculateSchoolFinancials(schoolId) {
     // Fetch active students first
@@ -34,6 +52,10 @@ async function recalculateSchoolFinancials(schoolId) {
     });
     // Fetch all financial records for this school to calculate full, accurate aggregates
     const snap = await db.collection('financialRecords')
+        .where('schoolId', '==', schoolId)
+        .get();
+    // Fetch all payments for this school via collectionGroup to calculate collections today/this month
+    const paymentsSnap = await db.collectionGroup('payments')
         .where('schoolId', '==', schoolId)
         .get();
     const today = new Date();
@@ -57,8 +79,9 @@ async function recalculateSchoolFinancials(schoolId) {
     monthStart.setDate(1);
     monthStart.setHours(0, 0, 0, 0);
     const monthMs = monthStart.getTime();
+    // 1. Process parent financial records (billing, arrears, and debt aging)
     snap.forEach(doc => {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
+        var _a, _b, _c, _d, _e, _f;
         const r = doc.data();
         if (r.status === 'Pending Reversal')
             return;
@@ -70,21 +93,6 @@ async function recalculateSchoolFinancials(schoolId) {
         const balance = billed - paid - waiver;
         totalBilled += billed;
         totalRevenue += paid;
-        // Track paid amounts within time bounds for dashboard collections card
-        const paidTs = r.paidAt;
-        const paidMs = (_f = (_e = paidTs === null || paidTs === void 0 ? void 0 : paidTs.toMillis) === null || _e === void 0 ? void 0 : _e.call(paidTs)) !== null && _f !== void 0 ? _f : 0;
-        if (paidMs >= todayMs) {
-            totalCollectedToday += paid;
-            if (paid > lastPaymentAmount) {
-                lastPaymentAmount = paid;
-                lastPaymentAt = paidTs !== null && paidTs !== void 0 ? paidTs : firestore_2.Timestamp.now();
-            }
-        }
-        if (paidMs >= monthMs) {
-            totalCollectedThisMonth += paid;
-        }
-        // Assuming Term collected is equal to month collected for dashboard display
-        totalCollectedThisTerm = totalCollectedThisMonth;
         if (balance < 0) {
             overpayments += Math.abs(balance);
             return;
@@ -95,7 +103,7 @@ async function recalculateSchoolFinancials(schoolId) {
         arrearsCount++;
         // Debt aging buckets
         const dueTs = r.dueDate;
-        const dueMs = (_h = (_g = dueTs === null || dueTs === void 0 ? void 0 : dueTs.toMillis) === null || _g === void 0 ? void 0 : _g.call(dueTs)) !== null && _h !== void 0 ? _h : (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
+        const dueMs = (_f = (_e = dueTs === null || dueTs === void 0 ? void 0 : dueTs.toMillis) === null || _e === void 0 ? void 0 : _e.call(dueTs)) !== null && _f !== void 0 ? _f : (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
         const diffTime = today.getTime() - dueMs;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         if (diffDays <= 0) {
@@ -111,6 +119,32 @@ async function recalculateSchoolFinancials(schoolId) {
             age90 += balance;
         }
     });
+    // 2. Process payments for actual collection sums (today, this month, this term)
+    paymentsSnap.forEach(pDoc => {
+        var _a, _b;
+        const p = pDoc.data();
+        if (p.studentId && !activeStudentIds.has(p.studentId))
+            return;
+        const amount = Number(p.amount) || 0;
+        if (amount <= 0)
+            return;
+        const dateVal = p.paidAt || p.createdAt || p.date;
+        if (!dateVal)
+            return;
+        const pTs = dateVal;
+        const pMs = (_b = (_a = pTs.toMillis) === null || _a === void 0 ? void 0 : _a.call(pTs)) !== null && _b !== void 0 ? _b : (dateVal ? new Date(dateVal).getTime() : 0);
+        if (pMs >= todayMs) {
+            totalCollectedToday += amount;
+            if (amount > lastPaymentAmount) {
+                lastPaymentAmount = amount;
+                lastPaymentAt = pTs;
+            }
+        }
+        if (pMs >= monthMs) {
+            totalCollectedThisMonth += amount;
+        }
+    });
+    totalCollectedThisTerm = totalCollectedThisMonth;
     const collectionRate = totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0;
     await SUMMARY(schoolId).set({
         schoolId,
@@ -178,18 +212,22 @@ exports.onStudentWrite = (0, firestore_1.onDocumentWritten)('students/{studentId
 });
 // ── TRIGGER 2: Student Attendance ─────────────────────────────────────────────
 exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{recordId}', async (event) => {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f;
     const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
     const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
     const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
     if (!schoolId)
         return;
-    const dateStr = (_g = (_f = after === null || after === void 0 ? void 0 : after.date) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.date) !== null && _g !== void 0 ? _g : '';
-    if (dateStr !== todayStr())
+    const dateVal = (_f = after === null || after === void 0 ? void 0 : after.date) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.date;
+    const dateStr = getYYYYMMDD(dateVal);
+    if (!dateStr || dateStr !== todayStr())
         return;
+    // Convert dateStr (e.g. "2026-07-13") to the exact Timestamp object to query Firestore
+    const startOfToday = new Date(dateStr + 'T00:00:00.000Z');
+    const todayTimestamp = firestore_2.Timestamp.fromDate(startOfToday);
     const snap = await db.collection('attendance')
         .where('schoolId', '==', schoolId)
-        .where('date', '==', dateStr)
+        .where('date', '==', todayTimestamp)
         .get();
     let present = 0, absent = 0, late = 0;
     const absentIds = [];
@@ -215,6 +253,16 @@ exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{reco
 });
 // ── TRIGGER 3: Financial Records ──────────────────────────────────────────────
 exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRecords/{recordId}', async (event) => {
+    var _a, _b, _c, _d, _e;
+    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
+    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
+    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
+    if (!schoolId)
+        return;
+    await recalculateSchoolFinancials(schoolId);
+});
+// ── TRIGGER 3.5: Payments Subcollection ─────────────────────────────────────────
+exports.onPaymentSubcollectionWrite = (0, firestore_1.onDocumentWritten)('financialRecords/{recordId}/payments/{paymentId}', async (event) => {
     var _a, _b, _c, _d, _e;
     const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
     const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();

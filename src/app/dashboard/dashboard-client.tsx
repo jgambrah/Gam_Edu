@@ -4643,13 +4643,23 @@ function DirectorDashboard({
   }, [attendance, activeStudents, summaryPresentCount]);
 
   const hasTodayAttendance = useMemo(() => {
+    if (dashboardSummary?.attendance?.date !== undefined) {
+      const summaryDate = dashboardSummary.attendance.date;
+      const today = new Date().toISOString().slice(0, 10);
+      return summaryDate === today && (
+        (dashboardSummary.attendance.totalPresent ?? 0) + 
+        (dashboardSummary.attendance.totalAbsent ?? 0) + 
+        (dashboardSummary.attendance.totalLate ?? 0) > 0
+      );
+    }
+
     if (!attendance || attendance.length === 0) return false;
     const today = startOfDay(new Date());
     return attendance.some((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
       return startOfDay(d).getTime() === today.getTime();
     });
-  }, [attendance]);
+  }, [attendance, dashboardSummary]);
 
   const todayAttendanceRate = useMemo(() => {
     if (summaryAttendanceRate !== undefined) return summaryAttendanceRate;

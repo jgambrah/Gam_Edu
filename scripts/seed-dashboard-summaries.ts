@@ -71,7 +71,14 @@ async function seedSchool(schoolId: string): Promise<void> {
 
   // 3. Today's attendance
   const today = todayStr();
-  const attSnap = await db.collection('attendance').where('schoolId', '==', schoolId).where('date', '==', today).get();
+  const startOfToday = new Date(today + 'T00:00:00.000Z');
+  const todayTimestamp = Timestamp.fromDate(startOfToday);
+
+  const attSnap = await db.collection('attendance')
+    .where('schoolId', '==', schoolId)
+    .where('date', '==', todayTimestamp)
+    .get();
+
   let present = 0, absent = 0, late = 0;
   const absentIds: string[] = [];
   attSnap.forEach(doc => {
@@ -85,6 +92,8 @@ async function seedSchool(schoolId: string): Promise<void> {
 
   // 4. Financial aggregates
   const finSnap = await db.collection('financialRecords').where('schoolId', '==', schoolId).get();
+  const paymentsSnap = await db.collectionGroup('payments').where('schoolId', '==', schoolId).get();
+
   let totalOutstanding = 0, arrearsCount = 0, totalCollectedToday = 0, totalCollectedThisMonth = 0;
   let totalBilled = 0, totalRevenue = 0;
   let current = 0, age30 = 0, age60 = 0, age90 = 0, overpayments = 0;
@@ -95,6 +104,7 @@ async function seedSchool(schoolId: string): Promise<void> {
   monthStart.setHours(0, 0, 0, 0);
   const monthMs = monthStart.getTime();
 
+  // Process billing metrics from parent financial records
   finSnap.forEach(doc => {
     const r = doc.data();
     if (r.status === 'Pending Reversal') return;
@@ -107,11 +117,6 @@ async function seedSchool(schoolId: string): Promise<void> {
 
     totalBilled += billed;
     totalRevenue += paid;
-
-    const paidTs = r.paidAt as Timestamp | undefined;
-    const paidMs = paidTs?.toMillis?.() ?? 0;
-    if (paidMs >= todayMs) totalCollectedToday += paid;
-    if (paidMs >= monthMs) totalCollectedThisMonth += paid;
 
     if (balance < 0) {
       overpayments += Math.abs(balance);
@@ -135,6 +140,28 @@ async function seedSchool(schoolId: string): Promise<void> {
       age60 += balance;
     } else {
       age90 += balance;
+    }
+  });
+
+  // Process collections from payments collectionGroup
+  paymentsSnap.forEach(pDoc => {
+    const p = pDoc.data();
+    if (p.studentId && !activeStudentIds.has(p.studentId)) return;
+
+    const amount = Number(p.amount) || 0;
+    if (amount <= 0) return;
+
+    const dateVal = p.paidAt || p.createdAt || p.date;
+    if (!dateVal) return;
+
+    const pTs = dateVal as Timestamp;
+    const pMs = pTs.toMillis?.() ?? (dateVal ? new Date(dateVal).getTime() : 0);
+
+    if (pMs >= todayMs) {
+      totalCollectedToday += amount;
+    }
+    if (pMs >= monthMs) {
+      totalCollectedThisMonth += amount;
     }
   });
 

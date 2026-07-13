@@ -21,6 +21,21 @@ function todayStartMs(): number {
   return d.getTime();
 }
 
+/** Robust helper to get YYYY-MM-DD from Timestamp, Date, or string */
+function getYYYYMMDD(val: any): string {
+  if (!val) return '';
+  let d: Date;
+  if (typeof val.toDate === 'function') {
+    d = val.toDate();
+  } else if (val instanceof Date) {
+    d = val;
+  } else {
+    d = new Date(val);
+  }
+  if (isNaN(d.getTime())) return '';
+  return d.toISOString().slice(0, 10);
+}
+
 /** Helper to recalculate financial metrics for a school considering active students */
 async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
   // Fetch active students first
@@ -38,6 +53,11 @@ async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
 
   // Fetch all financial records for this school to calculate full, accurate aggregates
   const snap = await db.collection('financialRecords')
+    .where('schoolId', '==', schoolId)
+    .get();
+
+  // Fetch all payments for this school via collectionGroup to calculate collections today/this month
+  const paymentsSnap = await db.collectionGroup('payments')
     .where('schoolId', '==', schoolId)
     .get();
 
@@ -67,6 +87,7 @@ async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
   monthStart.setHours(0, 0, 0, 0);
   const monthMs = monthStart.getTime();
 
+  // 1. Process parent financial records (billing, arrears, and debt aging)
   snap.forEach(doc => {
     const r = doc.data();
     if (r.status === 'Pending Reversal') return;
@@ -79,22 +100,6 @@ async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
 
     totalBilled += billed;
     totalRevenue += paid;
-
-    // Track paid amounts within time bounds for dashboard collections card
-    const paidTs = r.paidAt as FirebaseFirestore.Timestamp | undefined;
-    const paidMs = paidTs?.toMillis?.() ?? 0;
-    if (paidMs >= todayMs) {
-      totalCollectedToday += paid;
-      if (paid > lastPaymentAmount) {
-        lastPaymentAmount = paid;
-        lastPaymentAt = paidTs ?? Timestamp.now();
-      }
-    }
-    if (paidMs >= monthMs) {
-      totalCollectedThisMonth += paid;
-    }
-    // Assuming Term collected is equal to month collected for dashboard display
-    totalCollectedThisTerm = totalCollectedThisMonth;
 
     if (balance < 0) {
       overpayments += Math.abs(balance);
@@ -122,6 +127,33 @@ async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
     }
   });
 
+  // 2. Process payments for actual collection sums (today, this month, this term)
+  paymentsSnap.forEach(pDoc => {
+    const p = pDoc.data();
+    if (p.studentId && !activeStudentIds.has(p.studentId)) return;
+
+    const amount = Number(p.amount) || 0;
+    if (amount <= 0) return;
+
+    const dateVal = p.paidAt || p.createdAt || p.date;
+    if (!dateVal) return;
+
+    const pTs = dateVal as Timestamp;
+    const pMs = pTs.toMillis?.() ?? (dateVal ? new Date(dateVal).getTime() : 0);
+
+    if (pMs >= todayMs) {
+      totalCollectedToday += amount;
+      if (amount > lastPaymentAmount) {
+        lastPaymentAmount = amount;
+        lastPaymentAt = pTs;
+      }
+    }
+    if (pMs >= monthMs) {
+      totalCollectedThisMonth += amount;
+    }
+  });
+  totalCollectedThisTerm = totalCollectedThisMonth;
+
   const collectionRate = totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0;
 
   await SUMMARY(schoolId).set({
@@ -148,6 +180,7 @@ async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
     }
   }, { merge: true });
 }
+
 
 
 // ── TRIGGER 1: Students ────────────────────────────────────────────────────────
@@ -195,12 +228,17 @@ export const onAttendanceWrite = onDocumentWritten(
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
 
-    const dateStr: string = after?.date ?? before?.date ?? '';
-    if (dateStr !== todayStr()) return;
+    const dateVal = after?.date ?? before?.date;
+    const dateStr = getYYYYMMDD(dateVal);
+    if (!dateStr || dateStr !== todayStr()) return;
+
+    // Convert dateStr (e.g. "2026-07-13") to the exact Timestamp object to query Firestore
+    const startOfToday = new Date(dateStr + 'T00:00:00.000Z');
+    const todayTimestamp = Timestamp.fromDate(startOfToday);
 
     const snap = await db.collection('attendance')
       .where('schoolId', '==', schoolId)
-      .where('date', '==', dateStr)
+      .where('date', '==', todayTimestamp)
       .get();
 
     let present = 0, absent = 0, late = 0;
@@ -227,6 +265,19 @@ export const onAttendanceWrite = onDocumentWritten(
 // ── TRIGGER 3: Financial Records ──────────────────────────────────────────────
 export const onFinancialRecordWrite = onDocumentWritten(
   'financialRecords/{recordId}',
+  async (event) => {
+    const after  = event.data?.after?.data();
+    const before = event.data?.before?.data();
+    const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
+    if (!schoolId) return;
+
+    await recalculateSchoolFinancials(schoolId);
+  }
+);
+
+// ── TRIGGER 3.5: Payments Subcollection ─────────────────────────────────────────
+export const onPaymentSubcollectionWrite = onDocumentWritten(
+  'financialRecords/{recordId}/payments/{paymentId}',
   async (event) => {
     const after  = event.data?.after?.data();
     const before = event.data?.before?.data();
