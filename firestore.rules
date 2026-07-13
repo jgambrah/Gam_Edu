@@ -70,6 +70,18 @@ service cloud.firestore {
       allow update: if isSignedIn() && isDirector();
     }
 
+    // ─── DASHBOARD SUMMARY (aggregation cache) ────────────────────────────────
+    // Read: Director or Administrator of that specific school only.
+    // Write: Cloud Functions only (no client write access — prevents tampering).
+    match /dashboard_summaries/{schoolId} {
+      allow read: if isSignedIn() && (
+        isSuperAdmin() ||
+        getUserRole() in ['Director', 'Administrator']
+      );
+      allow write: if false; // Server-side only via Cloud Functions
+    }
+
+
     match /schoolSettings/{docId} {
       allow read: if isSignedIn();
       allow write: if isAdmin() || isFinanceStaff();
