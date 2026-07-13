@@ -4470,9 +4470,8 @@ function DirectorDashboard({
 
   // If director summary is available, use it; otherwise derive from students array
   const activeStudents = useMemo(() => {
-    if (summaryStudentActive !== undefined) return [];
     return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
-  }, [students, summaryStudentActive]);
+  }, [students]);
 
   // Effective counts: prefer summary for Directors, array-length for Admins
   const effectiveActiveCount = summaryStudentActive ?? activeStudents.length;
@@ -13079,7 +13078,7 @@ export default function DashboardClient() {
 
   // Director skips the full students sweep — uses summary doc counts instead.
   // Other roles (Admin, Teacher, Parent) still fetch the full list for their features.
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && (isStaff || isParent) && !isDirector) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isParent, isDirector]);
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && (isStaff || isParent)) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isParent]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
@@ -13099,8 +13098,23 @@ export default function DashboardClient() {
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
 
-  // Director gets attendance from summary (today's snapshot). Admin, Receptionist, Secretary still need full list.
-  const attendanceQuery = useMemoFirebase(() => (firestore && schoolId && ((isAdmin && !isDirector) || isReceptionist || isSecretary)) ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isDirector, isReceptionist, isSecretary]);
+  // Director gets attendance from summary (today's snapshot) but queries today's logs for detail list. Admin, Receptionist, Secretary still need full list.
+  const attendanceQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    if (isDirector) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return query(
+        collection(firestore, 'attendance'),
+        where('schoolId', '==', schoolId),
+        where('date', '==', today)
+      );
+    }
+    if (isAdmin || isReceptionist || isSecretary) {
+      return query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId));
+    }
+    return null;
+  }, [firestore, schoolId, isAdmin, isDirector, isReceptionist, isSecretary]);
   const { data: attendance } = useCollection(attendanceQuery);
 
   const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
@@ -13225,23 +13239,22 @@ export default function DashboardClient() {
   const { data: recentAssessments, isLoading: loadingAssessments } = useCollection(assessmentsQuery);
 
   // For Director: parents, admissions, behavioral, staffAttendance, performanceReviews
-  // counts come from the summary doc. Raw fetches only for Admin (non-Director).
-  const parentsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && !isDirector) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isDirector]);
+  const parentsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: parents, isLoading: loadingParents } = useCollection<any>(parentsQuery);
 
-  const admissionsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && !isDirector) ? query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isDirector]);
+  const admissionsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: admissions, isLoading: loadingAdmissions } = useCollection<any>(admissionsQuery);
 
-  const behavioralQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && !isDirector) ? query(collection(firestore, 'behavioral_records'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isDirector]);
+  const behavioralQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'behavioral_records'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: behavioralRecords, isLoading: loadingBehavioral } = useCollection<any>(behavioralQuery);
 
-  const medicalLogsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && !isDirector) ? query(collection(firestore, 'infirmary_logs'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isDirector]);
+  const medicalLogsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'infirmary_logs'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: medicalLogs, isLoading: loadingMedical } = useCollection<any>(medicalLogsQuery);
 
-  const staffAttendanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && !isDirector) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isDirector]);
+  const staffAttendanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: staffAttendance, isLoading: loadingStaffAttendance } = useCollection<any>(staffAttendanceQuery);
 
-  const performanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && !isDirector) ? query(collection(firestore, 'performanceReviews'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin, isDirector]);
+  const performanceQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'performanceReviews'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
   const { data: performanceReviews, isLoading: loadingPerformance } = useCollection<any>(performanceQuery);
 
   const lessonPlansQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'lesson-plans'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAdmin]);
