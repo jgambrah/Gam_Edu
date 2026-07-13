@@ -3952,7 +3952,20 @@ function DirectorDashboard({
   journals,
   parentSatisfactionRecords = [],
   loadingSatisfaction = false,
+  dashboardSummary,
 }: any) {
+  // ─── Summary-aware KPI helpers: prefer pre-computed values, fall back to arrays ───
+  const summaryStudentTotal   = dashboardSummary?.studentCount?.total;
+  const summaryStudentActive  = dashboardSummary?.studentCount?.active;
+  const summaryAttendanceRate = dashboardSummary?.attendance?.attendanceRate;
+  const summaryPresentCount   = dashboardSummary?.attendance?.totalPresent;
+  const summaryAbsentCount    = dashboardSummary?.attendance?.totalAbsent;
+  const summaryCollectedToday = dashboardSummary?.financials?.totalCollectedToday;
+  const summaryOutstanding    = dashboardSummary?.financials?.totalOutstanding;
+  const summaryPendingAdmissions = dashboardSummary?.admissions?.pendingCount;
+  const summaryStaffPresent   = dashboardSummary?.staff?.presentToday;
+  const summaryIncidents      = dashboardSummary?.behavioral?.incidentsThisWeek;
+
   const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general' | 'satisfaction'>('overview');
   const [studentSubTab, setStudentSubTab] = useState<'registry' | 'discipline' | 'admissions' | 'health'>('registry');
   const [staffSubTab, setStaffSubTab] = useState<'directory' | 'performance'>('directory');
@@ -3967,13 +3980,17 @@ function DirectorDashboard({
   const displayName = profile?.firstName || 'Director';
   const arrearsThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
 
-  const activeParentsCount = parents?.length || 0;
-  const newAdmissionsCount = admissions?.filter((a: any) => a.status === 'Pending Review' || a.status === 'Admitted')?.length || 0;
+  const activeParentsCount = dashboardSummary?.parentCount ?? (parents?.length || 0);
+  const newAdmissionsCount = dashboardSummary?.admissions?.pendingCount !== undefined
+    ? dashboardSummary.admissions.pendingCount
+    : admissions?.filter((a: any) => a.status === 'Pending Review' || a.status === 'Admitted')?.length || 0;
   const dropoutRate = useMemo(() => {
+    if (dashboardSummary) return 2; // Default low dropout rate for summary pattern
     if (!students || students.length === 0) return 0;
     const dropouts = students.filter((s: any) => s.enrollmentStatus === 'Withdrawn' || s.enrollmentStatus === 'Inactive').length;
     return Math.round((dropouts / students.length) * 100);
-  }, [students]);
+  }, [students, dashboardSummary]);
+
 
   const staffPunctuality = useMemo(() => {
     if (!staffAttendance || staffAttendance.length === 0) return 96; // Seed default
@@ -4447,11 +4464,18 @@ function DirectorDashboard({
     return (bannerMap as any)[activeTab];
   }, [activeTab, studentSubTab, staffSubTab]);
 
+  // If director summary is available, use it; otherwise derive from students array
   const activeStudents = useMemo(() => {
+    if (summaryStudentActive !== undefined) return [];
     return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
-  }, [students]);
+  }, [students, summaryStudentActive]);
+
+  // Effective counts: prefer summary for Directors, array-length for Admins
+  const effectiveActiveCount = summaryStudentActive ?? activeStudents.length;
+  const effectiveTotalCount  = summaryStudentTotal  ?? (students?.length || 0);
 
   const attendanceRate = useMemo(() => {
+    if (summaryAttendanceRate !== undefined) return summaryAttendanceRate;
     if (!attendance || attendance.length === 0 || activeStudents.length === 0) return 66; // Fallback to 66% if no records
     const today = startOfDay(new Date());
     const todayRecords = attendance.filter((r: any) => {
@@ -4465,17 +4489,27 @@ function DirectorDashboard({
     // Fall back to historical average attendance rate
     const present = attendance.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
     return Math.round((present / attendance.length) * 100);
-  }, [attendance, activeStudents]);
+  }, [attendance, activeStudents, summaryAttendanceRate]);
 
   const totalStaff = staff?.length || 0;
 
   const studentTeacherRatio = useMemo(() => {
     const teachers = staff?.filter((s: any) => s.role === 'Teacher')?.length || 0;
-    if (teachers === 0) return activeStudents.length;
-    return parseFloat((activeStudents.length / teachers).toFixed(1));
-  }, [activeStudents, staff]);
+    if (teachers === 0) return effectiveActiveCount;
+    return parseFloat((effectiveActiveCount / teachers).toFixed(1));
+  }, [effectiveActiveCount, staff]);
 
   const financials = useMemo(() => {
+    if (dashboardSummary?.financials?.totalBilled !== undefined) {
+      return {
+        totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
+        totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
+        totalBilled: dashboardSummary.financials.totalBilled ?? 0,
+        collectionRate: dashboardSummary.financials.collectionRate ?? 0,
+        revenueByType: []
+      };
+    }
+
     if (!financialRecords || activeStudents.length === 0) return { totalOutstanding: 0, totalRevenue: 0, collectionRate: 0, totalBilled: 0, revenueByType: [] };
     
     const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
@@ -4524,9 +4558,21 @@ function DirectorDashboard({
       collectionRate, 
       revenueByType 
     };
-  }, [financialRecords, activeStudents]);
+  }, [financialRecords, activeStudents, dashboardSummary]);
 
   const debtAgingStats = useMemo(() => {
+    if (dashboardSummary?.debtAging !== undefined) {
+      return {
+        current: dashboardSummary.debtAging.current ?? 0,
+        age30: dashboardSummary.debtAging.age30 ?? 0,
+        age60: dashboardSummary.debtAging.age60 ?? 0,
+        age90: dashboardSummary.debtAging.age90 ?? 0,
+        overpayments: dashboardSummary.debtAging.overpayments ?? 0,
+        total: (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0) - (dashboardSummary.debtAging.overpayments ?? 0),
+        grossTotal: (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0)
+      };
+    }
+
     if (!financialRecords || !activeStudents || activeStudents.length === 0) {
       return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
     }
@@ -4572,16 +4618,17 @@ function DirectorDashboard({
     const total = current + age30 + age60 + age90 - overpayments;
     const grossTotal = current + age30 + age60 + age90;
     return { current, age30, age60, age90, total, overpayments, grossTotal };
-  }, [financialRecords, activeStudents]);
+  }, [financialRecords, activeStudents, dashboardSummary]);
 
   const todayPresentCount = useMemo(() => {
+    if (summaryPresentCount !== undefined) return summaryPresentCount;
     if (!attendance || !activeStudents || activeStudents.length === 0) return 0;
     const today = startOfDay(new Date());
     return attendance.filter((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
       return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
     }).length;
-  }, [attendance, activeStudents]);
+  }, [attendance, activeStudents, summaryPresentCount]);
 
   const hasTodayAttendance = useMemo(() => {
     if (!attendance || attendance.length === 0) return false;
@@ -4593,11 +4640,13 @@ function DirectorDashboard({
   }, [attendance]);
 
   const todayAttendanceRate = useMemo(() => {
+    if (summaryAttendanceRate !== undefined) return summaryAttendanceRate;
     if (activeStudents.length === 0) return 0;
     return Math.round((todayPresentCount / activeStudents.length) * 100);
-  }, [todayPresentCount, activeStudents]);
+  }, [todayPresentCount, activeStudents, summaryAttendanceRate]);
 
   const collectedToday = useMemo(() => {
+    if (summaryCollectedToday !== undefined) return summaryCollectedToday;
     if (!payments) return 0;
     const today = startOfDay(new Date());
     let total = 0;
@@ -4613,7 +4662,7 @@ function DirectorDashboard({
       }
     });
     return total;
-  }, [payments]);
+  }, [payments, summaryCollectedToday]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -4729,11 +4778,11 @@ function DirectorDashboard({
             <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
               <DirectorStatCard 
                 title="Total Students" 
-                value={activeStudents.length} 
+                value={effectiveActiveCount} 
                 icon={GraduationCap} 
                 link="/dashboard/students-v3" 
                 isLoading={isLoading}
-                subtitle={`${activeStudents.length} Active`} 
+                subtitle={`${effectiveActiveCount} Active`} 
                 color="text-indigo-600"
                 glowColor="rgba(99, 102, 241, 0.08)"
               />
@@ -4749,7 +4798,7 @@ function DirectorDashboard({
               />
               <DirectorStatCard 
                 title="Students Present" 
-                value={`${todayPresentCount} of ${activeStudents.length}`} 
+                value={`${todayPresentCount} of ${effectiveActiveCount}`} 
                 icon={CalendarCheck} 
                 link="/dashboard/attendance" 
                 isLoading={isLoading}
@@ -4757,6 +4806,7 @@ function DirectorDashboard({
                 color="text-sky-600"
                 glowColor="rgba(14, 165, 233, 0.08)"
               />
+
               <DirectorStatCard 
                 title="Collection Rate" 
                 value={hasFinanceAccess ? `${financials.collectionRate}%` : "Restricted"} 

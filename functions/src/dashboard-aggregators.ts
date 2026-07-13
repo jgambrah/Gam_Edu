@@ -315,3 +315,29 @@ export const onBehavioralWrite = onDocumentWritten(
     }, { merge: true });
   }
 );
+
+// ── TRIGGER 7: Parents ─────────────────────────────────────────────────────────
+export const onParentWrite = onDocumentWritten(
+  'parents/{parentId}',
+  async (event) => {
+    const after  = event.data?.after?.data();
+    const before = event.data?.before?.data();
+    const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
+    if (!schoolId) return;
+
+    let delta = 0;
+    if (!before && after)       { delta = 1; }
+    else if (before && !after)  { delta = -1; }
+
+    if (delta === 0) return;
+
+    await SUMMARY(schoolId).set({
+      schoolId,
+      lastUpdated: FieldValue.serverTimestamp(),
+      parentCount: FieldValue.increment(delta),
+    }, { merge: true });
+  }
+);
+
+
+

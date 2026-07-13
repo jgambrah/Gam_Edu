@@ -143,6 +143,10 @@ async function seedSchool(schoolId: string): Promise<void> {
     if (ms >= todayMs) { presentStaffSet.add(d.staffId); if (d.status === 'Late') staffLate++; }
   });
 
+  // 8. Parent counts
+  const parentsSnap = await db.collection('parents').where('schoolId', '==', schoolId).get();
+  const parentCount = parentsSnap.size;
+
   // Write the summary document
   const summaryData = {
     schoolId,
@@ -168,6 +172,7 @@ async function seedSchool(schoolId: string): Promise<void> {
       age90,
       overpayments,
     },
+    parentCount,
     staff: { total: totalStaff, presentToday: presentStaffSet.size, absentToday: Math.max(0, totalStaff - presentStaffSet.size), lateToday: staffLate },
     academics: { avgScorePercent: 0, passingRatePercent: 0, activeAlerts: 0, pendingAssessments: 0 },
     admissions: { pendingCount: pendingAdmissions, approvedThisMonth: 0 },

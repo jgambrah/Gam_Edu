@@ -1,1 +1,1 @@
-export { onStudentWrite, onAttendanceWrite, onFinancialRecordWrite, onStaffAttendanceWrite, onAdmissionWrite, onBehavioralWrite } from './dashboard-aggregators';
+export { onStudentWrite, onAttendanceWrite, onFinancialRecordWrite, onStaffAttendanceWrite, onAdmissionWrite, onBehavioralWrite, onParentWrite } from './dashboard-aggregators';

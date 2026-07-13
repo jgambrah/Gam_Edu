@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
+exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const app_1 = require("firebase-admin/app");
 const firestore_2 = require("firebase-admin/firestore");
@@ -300,6 +300,29 @@ exports.onBehavioralWrite = (0, firestore_1.onDocumentWritten)('behavioral_recor
         lastUpdated: firestore_2.FieldValue.serverTimestamp(),
         'behavioral.incidentsThisWeek': firestore_2.FieldValue.increment(infDelta),
         'behavioral.positiveThisWeek': firestore_2.FieldValue.increment(posDelta),
+    }, { merge: true });
+});
+// ── TRIGGER 7: Parents ─────────────────────────────────────────────────────────
+exports.onParentWrite = (0, firestore_1.onDocumentWritten)('parents/{parentId}', async (event) => {
+    var _a, _b, _c, _d, _e;
+    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
+    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
+    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
+    if (!schoolId)
+        return;
+    let delta = 0;
+    if (!before && after) {
+        delta = 1;
+    }
+    else if (before && !after) {
+        delta = -1;
+    }
+    if (delta === 0)
+        return;
+    await SUMMARY(schoolId).set({
+        schoolId,
+        lastUpdated: firestore_2.FieldValue.serverTimestamp(),
+        parentCount: firestore_2.FieldValue.increment(delta),
     }, { merge: true });
 });
 //# sourceMappingURL=dashboard-aggregators.js.map
