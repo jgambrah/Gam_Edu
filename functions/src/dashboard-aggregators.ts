@@ -21,6 +21,135 @@ function todayStartMs(): number {
   return d.getTime();
 }
 
+/** Helper to recalculate financial metrics for a school considering active students */
+async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
+  // Fetch active students first
+  const studentsSnap = await db.collection('students')
+    .where('schoolId', '==', schoolId)
+    .get();
+  
+  const activeStudentIds = new Set<string>();
+  studentsSnap.forEach(sDoc => {
+    const s = sDoc.data();
+    if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
+      activeStudentIds.add(sDoc.id);
+    }
+  });
+
+  // Fetch all financial records for this school to calculate full, accurate aggregates
+  const snap = await db.collection('financialRecords')
+    .where('schoolId', '==', schoolId)
+    .get();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let totalBilled = 0;
+  let totalRevenue = 0;
+  let totalOutstanding = 0;
+  let arrearsCount = 0;
+
+  let current = 0;
+  let age30 = 0;
+  let age60 = 0;
+  let age90 = 0;
+  let overpayments = 0;
+
+  let totalCollectedToday = 0;
+  let totalCollectedThisMonth = 0;
+  let totalCollectedThisTerm = 0;
+  let lastPaymentAmount = 0;
+  let lastPaymentAt: Timestamp | null = null;
+
+  const todayMs = todayStartMs();
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const monthMs = monthStart.getTime();
+
+  snap.forEach(doc => {
+    const r = doc.data();
+    if (r.status === 'Pending Reversal') return;
+    if (!activeStudentIds.has(r.studentId)) return;
+
+    const billed = Number(r.billedAmount ?? r.amount ?? 0);
+    const paid = Number(r.amountPaid ?? 0);
+    const waiver = Number(r.waiverAmount ?? 0);
+    const balance = billed - paid - waiver;
+
+    totalBilled += billed;
+    totalRevenue += paid;
+
+    // Track paid amounts within time bounds for dashboard collections card
+    const paidTs = r.paidAt as FirebaseFirestore.Timestamp | undefined;
+    const paidMs = paidTs?.toMillis?.() ?? 0;
+    if (paidMs >= todayMs) {
+      totalCollectedToday += paid;
+      if (paid > lastPaymentAmount) {
+        lastPaymentAmount = paid;
+        lastPaymentAt = paidTs ?? Timestamp.now();
+      }
+    }
+    if (paidMs >= monthMs) {
+      totalCollectedThisMonth += paid;
+    }
+    // Assuming Term collected is equal to month collected for dashboard display
+    totalCollectedThisTerm = totalCollectedThisMonth;
+
+    if (balance < 0) {
+      overpayments += Math.abs(balance);
+      return;
+    }
+    if (balance <= 0.01) return;
+
+    totalOutstanding += balance;
+    arrearsCount++;
+
+    // Debt aging buckets
+    const dueTs = r.dueDate as FirebaseFirestore.Timestamp | undefined;
+    const dueMs = dueTs?.toMillis?.() ?? (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
+    const diffTime = today.getTime() - dueMs;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 0) {
+      current += balance;
+    } else if (diffDays <= 30) {
+      age30 += balance;
+    } else if (diffDays <= 60) {
+      age60 += balance;
+    } else {
+      age90 += balance;
+    }
+  });
+
+  const collectionRate = totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0;
+
+  await SUMMARY(schoolId).set({
+    schoolId,
+    lastUpdated: FieldValue.serverTimestamp(),
+    financials: {
+      totalCollectedToday,
+      totalCollectedThisMonth,
+      totalCollectedThisTerm,
+      totalOutstanding,
+      totalBilled,
+      totalRevenue,
+      collectionRate,
+      arrearsCount,
+      lastPaymentAmount,
+      lastPaymentAt,
+    },
+    debtAging: {
+      current,
+      age30,
+      age60,
+      age90,
+      overpayments,
+    }
+  }, { merge: true });
+}
+
+
 // ── TRIGGER 1: Students ────────────────────────────────────────────────────────
 export const onStudentWrite = onDocumentWritten(
   'students/{studentId}',
@@ -50,6 +179,10 @@ export const onStudentWrite = onDocumentWritten(
       'studentCount.active':    FieldValue.increment(activeDelta),
       'studentCount.withdrawn': FieldValue.increment(withdrawnDelta),
     }, { merge: true });
+
+    if (activeDelta !== 0) {
+      await recalculateSchoolFinancials(schoolId);
+    }
   }
 );
 
@@ -100,116 +233,7 @@ export const onFinancialRecordWrite = onDocumentWritten(
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
 
-    // Fetch all financial records for this school to calculate full, accurate aggregates
-    const snap = await db.collection('financialRecords')
-      .where('schoolId', '==', schoolId)
-      .get();
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let totalBilled = 0;
-    let totalRevenue = 0;
-    let totalOutstanding = 0;
-    let arrearsCount = 0;
-
-    let current = 0;
-    let age30 = 0;
-    let age60 = 0;
-    let age90 = 0;
-    let overpayments = 0;
-
-    let totalCollectedToday = 0;
-    let totalCollectedThisMonth = 0;
-    let totalCollectedThisTerm = 0;
-    let lastPaymentAmount = 0;
-    let lastPaymentAt: Timestamp | null = null;
-
-    const todayMs = todayStartMs();
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
-    const monthMs = monthStart.getTime();
-
-    snap.forEach(doc => {
-      const r = doc.data();
-      if (r.status === 'Pending Reversal') return;
-
-      const billed = Number(r.billedAmount ?? r.amount ?? 0);
-      const paid = Number(r.amountPaid ?? 0);
-      const waiver = Number(r.waiverAmount ?? 0);
-      const balance = billed - paid - waiver;
-
-      totalBilled += billed;
-      totalRevenue += paid;
-
-      // Track paid amounts within time bounds for dashboard collections card
-      const paidTs = r.paidAt as FirebaseFirestore.Timestamp | undefined;
-      const paidMs = paidTs?.toMillis?.() ?? 0;
-      if (paidMs >= todayMs) {
-        totalCollectedToday += paid;
-        if (paid > lastPaymentAmount) {
-          lastPaymentAmount = paid;
-          lastPaymentAt = paidTs ?? Timestamp.now();
-        }
-      }
-      if (paidMs >= monthMs) {
-        totalCollectedThisMonth += paid;
-      }
-      // Assuming Term collected is equal to month collected for dashboard display
-      totalCollectedThisTerm = totalCollectedThisMonth;
-
-      if (balance < 0) {
-        overpayments += Math.abs(balance);
-        return;
-      }
-      if (balance <= 0.01) return;
-
-      totalOutstanding += balance;
-      arrearsCount++;
-
-      // Debt aging buckets
-      const dueTs = r.dueDate as FirebaseFirestore.Timestamp | undefined;
-      const dueMs = dueTs?.toMillis?.() ?? (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
-      const diffTime = today.getTime() - dueMs;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays <= 0) {
-        current += balance;
-      } else if (diffDays <= 30) {
-        age30 += balance;
-      } else if (diffDays <= 60) {
-        age60 += balance;
-      } else {
-        age90 += balance;
-      }
-    });
-
-    const collectionRate = totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0;
-
-    await SUMMARY(schoolId).set({
-      schoolId,
-      lastUpdated: FieldValue.serverTimestamp(),
-      financials: {
-        totalCollectedToday,
-        totalCollectedThisMonth,
-        totalCollectedThisTerm,
-        totalOutstanding,
-        totalBilled,
-        totalRevenue,
-        collectionRate,
-        arrearsCount,
-        lastPaymentAmount,
-        lastPaymentAt,
-      },
-      debtAging: {
-        current,
-        age30,
-        age60,
-        age90,
-        overpayments,
-      }
-    }, { merge: true });
+    await recalculateSchoolFinancials(schoolId);
   }
 );
 

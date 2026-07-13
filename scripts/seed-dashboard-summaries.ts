@@ -51,10 +51,15 @@ async function seedSchool(schoolId: string): Promise<void> {
   // 1. Student counts
   const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
   let totalStudents = 0, activeStudents = 0, withdrawnStudents = 0;
+  const activeStudentIds = new Set<string>();
   studentsSnap.forEach(doc => {
     const d = doc.data();
     totalStudents++;
-    if (d.enrollmentStatus === 'Active' || !d.enrollmentStatus) activeStudents++;
+    const isStudentActive = d.enrollmentStatus === 'Active' || !d.enrollmentStatus;
+    if (isStudentActive) {
+      activeStudents++;
+      activeStudentIds.add(doc.id);
+    }
     if (d.enrollmentStatus === 'Withdrawn') withdrawnStudents++;
   });
   console.log(`  Students: total=${totalStudents}, active=${activeStudents}, withdrawn=${withdrawnStudents}`);
@@ -93,6 +98,7 @@ async function seedSchool(schoolId: string): Promise<void> {
   finSnap.forEach(doc => {
     const r = doc.data();
     if (r.status === 'Pending Reversal') return;
+    if (!activeStudentIds.has(r.studentId)) return;
 
     const billed = Number(r.billedAmount ?? r.amount ?? 0);
     const paid = Number(r.amountPaid ?? 0);

@@ -19,88 +19,19 @@ function todayStartMs() {
     d.setHours(0, 0, 0, 0);
     return d.getTime();
 }
-// ── TRIGGER 1: Students ────────────────────────────────────────────────────────
-exports.onStudentWrite = (0, firestore_1.onDocumentWritten)('students/{studentId}', async (event) => {
-    var _a, _b, _c, _d, _e;
-    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
-    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
-    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
-    if (!schoolId)
-        return;
-    const wasActive = !!(before && (before.enrollmentStatus === 'Active' || !before.enrollmentStatus));
-    const isActive = !!(after && (after.enrollmentStatus === 'Active' || !after.enrollmentStatus));
-    const wasWithdrawn = (before === null || before === void 0 ? void 0 : before.enrollmentStatus) === 'Withdrawn';
-    const isWithdrawn = (after === null || after === void 0 ? void 0 : after.enrollmentStatus) === 'Withdrawn';
-    let totalDelta = 0, activeDelta = 0, withdrawnDelta = 0;
-    if (!before && after) {
-        totalDelta = 1;
-        activeDelta = isActive ? 1 : 0;
-        withdrawnDelta = isWithdrawn ? 1 : 0;
-    }
-    else if (before && !after) {
-        totalDelta = -1;
-        activeDelta = wasActive ? -1 : 0;
-        withdrawnDelta = wasWithdrawn ? -1 : 0;
-    }
-    else {
-        activeDelta = (isActive ? 1 : 0) - (wasActive ? 1 : 0);
-        withdrawnDelta = (isWithdrawn ? 1 : 0) - (wasWithdrawn ? 1 : 0);
-    }
-    if (totalDelta === 0 && activeDelta === 0 && withdrawnDelta === 0)
-        return;
-    await SUMMARY(schoolId).set({
-        schoolId,
-        lastUpdated: firestore_2.FieldValue.serverTimestamp(),
-        'studentCount.total': firestore_2.FieldValue.increment(totalDelta),
-        'studentCount.active': firestore_2.FieldValue.increment(activeDelta),
-        'studentCount.withdrawn': firestore_2.FieldValue.increment(withdrawnDelta),
-    }, { merge: true });
-});
-// ── TRIGGER 2: Student Attendance ─────────────────────────────────────────────
-exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{recordId}', async (event) => {
-    var _a, _b, _c, _d, _e, _f, _g;
-    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
-    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
-    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
-    if (!schoolId)
-        return;
-    const dateStr = (_g = (_f = after === null || after === void 0 ? void 0 : after.date) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.date) !== null && _g !== void 0 ? _g : '';
-    if (dateStr !== todayStr())
-        return;
-    const snap = await db.collection('attendance')
+/** Helper to recalculate financial metrics for a school considering active students */
+async function recalculateSchoolFinancials(schoolId) {
+    // Fetch active students first
+    const studentsSnap = await db.collection('students')
         .where('schoolId', '==', schoolId)
-        .where('date', '==', dateStr)
         .get();
-    let present = 0, absent = 0, late = 0;
-    const absentIds = [];
-    snap.forEach(doc => {
-        const d = doc.data();
-        if (d.status === 'Present')
-            present++;
-        else if (d.status === 'Absent') {
-            absent++;
-            if (absentIds.length < 25)
-                absentIds.push(d.studentId);
+    const activeStudentIds = new Set();
+    studentsSnap.forEach(sDoc => {
+        const s = sDoc.data();
+        if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
+            activeStudentIds.add(sDoc.id);
         }
-        else if (d.status === 'Late')
-            late++;
     });
-    const total = present + absent + late;
-    const rate = total > 0 ? Math.round((present / total) * 100) : 0;
-    await SUMMARY(schoolId).set({
-        schoolId,
-        lastUpdated: firestore_2.FieldValue.serverTimestamp(),
-        attendance: { date: dateStr, totalPresent: present, totalAbsent: absent, totalLate: late, attendanceRate: rate, absentStudentIds: absentIds },
-    }, { merge: true });
-});
-// ── TRIGGER 3: Financial Records ──────────────────────────────────────────────
-exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRecords/{recordId}', async (event) => {
-    var _a, _b, _c, _d, _e;
-    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
-    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
-    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
-    if (!schoolId)
-        return;
     // Fetch all financial records for this school to calculate full, accurate aggregates
     const snap = await db.collection('financialRecords')
         .where('schoolId', '==', schoolId)
@@ -130,6 +61,8 @@ exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRe
         var _a, _b, _c, _d, _e, _f, _g, _h;
         const r = doc.data();
         if (r.status === 'Pending Reversal')
+            return;
+        if (!activeStudentIds.has(r.studentId))
             return;
         const billed = Number((_b = (_a = r.billedAmount) !== null && _a !== void 0 ? _a : r.amount) !== null && _b !== void 0 ? _b : 0);
         const paid = Number((_c = r.amountPaid) !== null && _c !== void 0 ? _c : 0);
@@ -202,6 +135,93 @@ exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRe
             overpayments,
         }
     }, { merge: true });
+}
+// ── TRIGGER 1: Students ────────────────────────────────────────────────────────
+exports.onStudentWrite = (0, firestore_1.onDocumentWritten)('students/{studentId}', async (event) => {
+    var _a, _b, _c, _d, _e;
+    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
+    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
+    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
+    if (!schoolId)
+        return;
+    const wasActive = !!(before && (before.enrollmentStatus === 'Active' || !before.enrollmentStatus));
+    const isActive = !!(after && (after.enrollmentStatus === 'Active' || !after.enrollmentStatus));
+    const wasWithdrawn = (before === null || before === void 0 ? void 0 : before.enrollmentStatus) === 'Withdrawn';
+    const isWithdrawn = (after === null || after === void 0 ? void 0 : after.enrollmentStatus) === 'Withdrawn';
+    let totalDelta = 0, activeDelta = 0, withdrawnDelta = 0;
+    if (!before && after) {
+        totalDelta = 1;
+        activeDelta = isActive ? 1 : 0;
+        withdrawnDelta = isWithdrawn ? 1 : 0;
+    }
+    else if (before && !after) {
+        totalDelta = -1;
+        activeDelta = wasActive ? -1 : 0;
+        withdrawnDelta = wasWithdrawn ? -1 : 0;
+    }
+    else {
+        activeDelta = (isActive ? 1 : 0) - (wasActive ? 1 : 0);
+        withdrawnDelta = (isWithdrawn ? 1 : 0) - (wasWithdrawn ? 1 : 0);
+    }
+    if (totalDelta === 0 && activeDelta === 0 && withdrawnDelta === 0)
+        return;
+    await SUMMARY(schoolId).set({
+        schoolId,
+        lastUpdated: firestore_2.FieldValue.serverTimestamp(),
+        'studentCount.total': firestore_2.FieldValue.increment(totalDelta),
+        'studentCount.active': firestore_2.FieldValue.increment(activeDelta),
+        'studentCount.withdrawn': firestore_2.FieldValue.increment(withdrawnDelta),
+    }, { merge: true });
+    if (activeDelta !== 0) {
+        await recalculateSchoolFinancials(schoolId);
+    }
+});
+// ── TRIGGER 2: Student Attendance ─────────────────────────────────────────────
+exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{recordId}', async (event) => {
+    var _a, _b, _c, _d, _e, _f, _g;
+    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
+    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
+    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
+    if (!schoolId)
+        return;
+    const dateStr = (_g = (_f = after === null || after === void 0 ? void 0 : after.date) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.date) !== null && _g !== void 0 ? _g : '';
+    if (dateStr !== todayStr())
+        return;
+    const snap = await db.collection('attendance')
+        .where('schoolId', '==', schoolId)
+        .where('date', '==', dateStr)
+        .get();
+    let present = 0, absent = 0, late = 0;
+    const absentIds = [];
+    snap.forEach(doc => {
+        const d = doc.data();
+        if (d.status === 'Present')
+            present++;
+        else if (d.status === 'Absent') {
+            absent++;
+            if (absentIds.length < 25)
+                absentIds.push(d.studentId);
+        }
+        else if (d.status === 'Late')
+            late++;
+    });
+    const total = present + absent + late;
+    const rate = total > 0 ? Math.round((present / total) * 100) : 0;
+    await SUMMARY(schoolId).set({
+        schoolId,
+        lastUpdated: firestore_2.FieldValue.serverTimestamp(),
+        attendance: { date: dateStr, totalPresent: present, totalAbsent: absent, totalLate: late, attendanceRate: rate, absentStudentIds: absentIds },
+    }, { merge: true });
+});
+// ── TRIGGER 3: Financial Records ──────────────────────────────────────────────
+exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRecords/{recordId}', async (event) => {
+    var _a, _b, _c, _d, _e;
+    const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
+    const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
+    const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
+    if (!schoolId)
+        return;
+    await recalculateSchoolFinancials(schoolId);
 });
 // ── TRIGGER 4: Staff Attendance ───────────────────────────────────────────────
 exports.onStaffAttendanceWrite = (0, firestore_1.onDocumentWritten)('staff_attendance/{recordId}', async (event) => {
