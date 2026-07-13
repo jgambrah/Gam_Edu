@@ -13087,12 +13087,12 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Director gets financial KPIs from summary doc. Only Accountant & Admin fetch raw records.
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || (isAdmin && !isDirector))) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, isDirector]);
+  // Director gets financial KPIs from summary doc but needs raw records for detail tabs. Only Accountant & Admin fetch raw records.
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin)) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
-  // collectionGroup scan removed for Director — financial KPIs come from summary doc.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || (isAdmin && !isDirector))) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, isDirector]);
+  // collectionGroup scan restored for Director for detail tabs.
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin)) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
