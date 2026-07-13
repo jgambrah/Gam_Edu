@@ -8,14 +8,32 @@
  *   npx ts-node scripts/seed-dashboard-summaries.ts
  */
 
-import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import * as dotenv from 'dotenv';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
+
+dotenv.config();
 
 if (!getApps().length) {
-  initializeApp();
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+  if (clientEmail && privateKey) {
+    initializeApp({
+      credential: cert({
+        projectId,
+        clientEmail,
+        privateKey,
+      }),
+    });
+  } else {
+    initializeApp();
+  }
 }
 
 const db = getFirestore();
+
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -84,7 +102,7 @@ async function seedSchool(schoolId: string): Promise<void> {
     totalBilled += billed;
     totalRevenue += paid;
 
-    const paidTs = r.paidAt as admin.firestore.Timestamp | undefined;
+    const paidTs = r.paidAt as Timestamp | undefined;
     const paidMs = paidTs?.toMillis?.() ?? 0;
     if (paidMs >= todayMs) totalCollectedToday += paid;
     if (paidMs >= monthMs) totalCollectedThisMonth += paid;
@@ -98,7 +116,7 @@ async function seedSchool(schoolId: string): Promise<void> {
     totalOutstanding += balance;
     arrearsCount++;
 
-    const dueTs = r.dueDate as admin.firestore.Timestamp | undefined;
+    const dueTs = r.dueDate as Timestamp | undefined;
     const dueMs = dueTs?.toMillis?.() ?? (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
     const diffTime = new Date().getTime() - dueMs;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -126,7 +144,7 @@ async function seedSchool(schoolId: string): Promise<void> {
   let incidentsThisWeek = 0, positiveThisWeek = 0;
   behSnap.forEach(doc => {
     const d = doc.data();
-    const ms = (d.date as FirebaseFirestore.Timestamp)?.toMillis?.() ?? 0;
+    const ms = (d.date as Timestamp)?.toMillis?.() ?? 0;
     if (ms >= weekAgoMs) {
       if (d.incidentType === 'Infraction') incidentsThisWeek++;
       if (d.incidentType === 'Positive Behavior') positiveThisWeek++;
@@ -139,7 +157,7 @@ async function seedSchool(schoolId: string): Promise<void> {
   let staffLate = 0;
   staffAttSnap.forEach(doc => {
     const d = doc.data();
-    const ms = (d.timestamp as FirebaseFirestore.Timestamp)?.toMillis?.() ?? 0;
+    const ms = (d.timestamp as Timestamp)?.toMillis?.() ?? 0;
     if (ms >= todayMs) { presentStaffSet.add(d.staffId); if (d.status === 'Late') staffLate++; }
   });
 
@@ -186,10 +204,35 @@ async function seedSchool(schoolId: string): Promise<void> {
 
 async function main() {
   console.log('=== Dashboard Summary Seeder ===');
-  console.log('Fetching all schools...');
+  const schoolIdsSet = new Set<string>();
+
+  console.log('Fetching all schools from schools collection...');
   const schoolsSnap = await db.collection('schools').get();
-  const schoolIds = schoolsSnap.docs.map(d => d.id);
-  console.log(`Found ${schoolIds.length} schools to process.`);
+  schoolsSnap.forEach(d => { if (d.id) schoolIdsSet.add(d.id); });
+
+  console.log('Fetching school IDs from staff...');
+  const staffSnap = await db.collection('staff').get();
+  staffSnap.forEach(doc => {
+    const data = doc.data();
+    if (data.schoolId) schoolIdsSet.add(data.schoolId);
+  });
+
+  console.log('Fetching school IDs from students...');
+  const studentsSnap = await db.collection('students').get();
+  studentsSnap.forEach(doc => {
+    const data = doc.data();
+    if (data.schoolId) schoolIdsSet.add(data.schoolId);
+  });
+
+  console.log('Fetching school IDs from financialRecords...');
+  const finSnap = await db.collection('financialRecords').get();
+  finSnap.forEach(doc => {
+    const data = doc.data();
+    if (data.schoolId) schoolIdsSet.add(data.schoolId);
+  });
+
+  const schoolIds = Array.from(schoolIdsSet).filter(Boolean);
+  console.log(`Found ${schoolIds.length} unique schools across collections to process.`);
 
   for (const schoolId of schoolIds) {
     try {
@@ -204,3 +247,4 @@ async function main() {
 }
 
 main().catch(err => { console.error(err); process.exit(1); });
+

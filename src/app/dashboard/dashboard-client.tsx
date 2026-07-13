@@ -3966,7 +3966,11 @@ function DirectorDashboard({
   const summaryStaffPresent   = dashboardSummary?.staff?.presentToday;
   const summaryIncidents      = dashboardSummary?.behavioral?.incidentsThisWeek;
 
+
+
+
   const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general' | 'satisfaction'>('overview');
+
   const [studentSubTab, setStudentSubTab] = useState<'registry' | 'discipline' | 'admissions' | 'health'>('registry');
   const [staffSubTab, setStaffSubTab] = useState<'directory' | 'performance'>('directory');
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
@@ -4560,7 +4564,11 @@ function DirectorDashboard({
     };
   }, [financialRecords, activeStudents, dashboardSummary]);
 
+
+
+
   const debtAgingStats = useMemo(() => {
+
     if (dashboardSummary?.debtAging !== undefined) {
       return {
         current: dashboardSummary.debtAging.current ?? 0,
@@ -4619,6 +4627,10 @@ function DirectorDashboard({
     const grossTotal = current + age30 + age60 + age90;
     return { current, age30, age60, age90, total, overpayments, grossTotal };
   }, [financialRecords, activeStudents, dashboardSummary]);
+
+
+
+
 
   const todayPresentCount = useMemo(() => {
     if (summaryPresentCount !== undefined) return summaryPresentCount;
@@ -13044,7 +13056,11 @@ export default function DashboardClient() {
     isDirector ? schoolId : null
   );
 
+
+
+
   // Core Data Queries
+
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData } = useDoc<any>(schoolRef);
 
