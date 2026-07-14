@@ -1293,62 +1293,73 @@ export default function StudentsV3Page() {
       </Dialog>
 
       {/* ==================== PRINT-ONLY CLASS ROSTER PDF LAYOUT ==================== */}
-      <div id="print-roster-root" className="hidden print:block bg-white text-black p-8 font-sans w-full min-h-screen">
-        <div className="flex flex-col items-center text-center border-b-2 border-slate-900 pb-4 mb-6">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 uppercase">
-            {schoolSettings?.name || schoolSettings?.schoolName || 'GAM Edu School System'}
+      <div id="print-roster-root" className="hidden print:block bg-white text-black font-sans w-full">
+        {/* ─── School Header ─── */}
+        <div style={{ borderBottom: '2.5px solid #111', paddingBottom: '10px', marginBottom: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <h1 style={{ fontSize: '16pt', fontWeight: 900, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#111', margin: 0 }}>
+            {schoolSettings?.name || schoolSettings?.schoolName || 'School Name'}
           </h1>
           {schoolSettings?.motto && (
-            <p className="text-xs italic text-slate-500 mt-1 uppercase font-bold tracking-wide">
-              "{schoolSettings.motto}"
+            <p style={{ fontSize: '8pt', fontStyle: 'italic', color: '#444', margin: '3px 0 0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              &ldquo;{schoolSettings.motto}&rdquo;
             </p>
           )}
-          <p className="text-xs text-slate-600 mt-1">
-            {schoolSettings?.address || ''} 
-            {schoolSettings?.phone ? ` | Tel: ${schoolSettings.phone}` : ''}
-            {schoolSettings?.email ? ` | Email: ${schoolSettings.email}` : ''}
+          <p style={{ fontSize: '8pt', color: '#555', margin: '4px 0 0' }}>
+            {[schoolSettings?.address, schoolSettings?.phone ? `Tel: ${schoolSettings.phone}` : '', schoolSettings?.email ? `Email: ${schoolSettings.email}` : ''].filter(Boolean).join('  |  ')}
           </p>
-          
-          <div className="mt-6 w-full flex justify-between items-center text-xs font-black uppercase text-slate-700 tracking-wider">
-            <span>Document: Official Student Roster</span>
-            <span>Class: {printClassId === 'all' ? 'Whole School (All Classes)' : classes.find(c => c.id === printClassId)?.name || 'Unassigned'}</span>
-            <span>Total Count: {printedStudents.length} Students</span>
-          </div>
         </div>
 
-        <table className="w-full border-collapse border border-slate-400 text-xs text-left">
+        {/* ─── Document Title & Meta Bar ─── */}
+        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+          <h2 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#222', margin: 0 }}>Official Student Roster</h2>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7.5pt', color: '#444', backgroundColor: '#f1f5f9', padding: '5px 8px', borderRadius: '3px', marginBottom: '10px', border: '1px solid #cbd5e1' }}>
+          <span><strong>Class:</strong>&nbsp;{printClassId === 'all' ? 'Whole School — All Classes' : classes.find(c => c.id === printClassId)?.name || 'Unassigned'}</span>
+          <span><strong>Total Students:</strong>&nbsp;{printedStudents.length}</span>
+          <span><strong>Status Filter:</strong>&nbsp;{printStatus === 'All' ? 'All Cohorts' : printStatus}</span>
+          <span><strong>Printed:</strong>&nbsp;{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+        </div>
+
+        {/* ─── Roster Table ─── */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt', tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: '4%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '13%' }} />
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '20%' }} />
+          </colgroup>
           <thead>
-            <tr className="bg-slate-100 text-slate-800 font-extrabold uppercase border-b-2 border-slate-900">
-              <th className="border border-slate-400 p-2 text-center w-12">#</th>
-              <th className="border border-slate-400 p-2 w-36">Student ID</th>
-              <th className="border border-slate-400 p-2">Full Name</th>
-              <th className="border border-slate-400 p-2 w-20 text-center">Gender</th>
-              <th className="border border-slate-400 p-2 w-32">Class</th>
-              <th className="border border-slate-400 p-2">Guardian Name</th>
-              <th className="border border-slate-400 p-2 w-36">Guardian Contact</th>
+            <tr style={{ backgroundColor: '#1e293b', color: '#fff' }}>
+              {['#', 'Student ID', 'Full Name', 'Gender', 'Class', 'Guardian Name', 'Guardian Contact'].map((h, i) => (
+                <th key={i} style={{ padding: '5px 6px', border: '1px solid #334155', fontWeight: 700, textAlign: i === 0 || i === 3 ? 'center' : 'left', fontSize: '7pt', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden' }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {printedStudents.map((s, idx) => {
               const studentClass = classes.find(c => c.id === s.classId)?.name || 'Unassigned';
               const guardian = parentMap[s.uid] || parentMap[s.id];
-              const guardianName = guardian ? `${guardian.firstName || ''} ${guardian.lastName || ''}`.trim() : 'N/A';
-              const guardianPhone = guardian ? guardian.phone || 'N/A' : 'N/A';
+              const guardianName = guardian ? `${guardian.firstName || ''} ${guardian.lastName || ''}`.trim() : '—';
+              const guardianPhone = guardian ? guardian.phone || '—' : '—';
+              const rowBg = idx % 2 === 0 ? '#fff' : '#f8fafc';
               return (
-                <tr key={s.uid || s.id} className="border-b border-slate-300">
-                  <td className="border border-slate-400 p-2 text-center font-bold">{idx + 1}</td>
-                  <td className="border border-slate-400 p-2 font-mono">{formatStudentId(s)}</td>
-                  <td className="border border-slate-400 p-2 font-bold">{`${s.firstName || ''} ${s.lastName || ''}`.trim()}</td>
-                  <td className="border border-slate-400 p-2 text-center capitalize">{s.gender || 'N/A'}</td>
-                  <td className="border border-slate-400 p-2 font-semibold">{studentClass}</td>
-                  <td className="border border-slate-400 p-2">{guardianName}</td>
-                  <td className="border border-slate-400 p-2 font-semibold">{guardianPhone}</td>
+                <tr key={s.uid || s.id} style={{ backgroundColor: rowBg, pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', textAlign: 'center', fontWeight: 700, color: '#64748b' }}>{idx + 1}</td>
+                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontFamily: 'monospace', fontSize: '7.5pt', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{formatStudentId(s)}</td>
+                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{`${s.firstName || ''} ${s.lastName || ''}`.trim()}</td>
+                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', textAlign: 'center', textTransform: 'capitalize' }}>{s.gender || '—'}</td>
+                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{studentClass}</td>
+                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{guardianName}</td>
+                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontFamily: 'monospace', fontSize: '7.5pt', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{guardianPhone}</td>
                 </tr>
               );
             })}
             {printedStudents.length === 0 && (
               <tr>
-                <td colSpan={7} className="border border-slate-400 p-4 text-center text-slate-500 italic">
+                <td colSpan={7} style={{ padding: '14px', textAlign: 'center', color: '#64748b', fontStyle: 'italic', border: '1px solid #cbd5e1' }}>
                   No students found matching the selected criteria.
                 </td>
               </tr>
@@ -1356,57 +1367,98 @@ export default function StudentsV3Page() {
           </tbody>
         </table>
 
-        <div className="mt-12 flex justify-between text-xs pt-8 border-t border-slate-200">
-          <div className="flex flex-col items-start gap-1">
-            <span className="font-bold text-slate-500">Prepared By:</span>
-            <div className="h-10 w-40 border-b border-slate-400" />
-            <span className="font-semibold text-slate-700">Administrator / Secretary Signature</span>
+        {/* ─── Count Summary Row ─── */}
+        <div style={{ marginTop: '6px', textAlign: 'right', fontSize: '7.5pt', color: '#475569' }}>
+          Total records: <strong>{printedStudents.length}</strong> student{printedStudents.length !== 1 ? 's' : ''}
+        </div>
+
+        {/* ─── Signature & Footer ─── */}
+        <div style={{ marginTop: '28px', paddingTop: '14px', borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '200px' }}>
+            <span style={{ fontSize: '7.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Prepared &amp; Verified By</span>
+            <div style={{ height: '1px', width: '200px', backgroundColor: '#94a3b8', marginTop: '32px' }} />
+            <span style={{ fontSize: '7pt', color: '#64748b' }}>Name &amp; Signature / Date</span>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <span className="font-bold text-slate-500">Date Printed:</span>
-            <span className="font-semibold text-slate-700 font-mono">
-              {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '200px', alignItems: 'flex-end' }}>
+            <span style={{ fontSize: '7.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Authorised By (Head of School)</span>
+            <div style={{ height: '1px', width: '200px', backgroundColor: '#94a3b8', marginTop: '32px' }} />
+            <span style={{ fontSize: '7pt', color: '#64748b' }}>Name &amp; Signature / Date</span>
           </div>
+        </div>
+        <div style={{ marginTop: '10px', textAlign: 'center', fontSize: '7pt', color: '#94a3b8', letterSpacing: '0.04em' }}>
+          This is an official document of {schoolSettings?.name || schoolSettings?.schoolName || 'the school'}. Unauthorised reproduction is prohibited.
         </div>
       </div>
 
       <style>{`
+        @page {
+          size: A4 portrait;
+          margin: 18mm 15mm 18mm 15mm;
+        }
         @media print {
-          /* Deactivate layout scroll locks during printing to allow multi-page pagination */
-          html, body, #__next, main, .flex, .h-screen, .overflow-hidden, [class*="overflow-"] {
+          /* Reset all layout scroll locks so multi-page content flows */
+          html, body, #__next, main,
+          .flex, .h-screen, .overflow-hidden,
+          [class*="overflow-"], [class*="h-screen"] {
             height: auto !important;
             min-height: auto !important;
             max-height: none !important;
             overflow: visible !important;
             position: static !important;
           }
-          /* Hide screen-only layouts */
+
+          /* Hide everything on screen */
           body * {
             visibility: hidden !important;
           }
-          /* Show print content */
-          #print-roster-root, #print-roster-root * {
+
+          /* Reveal only the print root */
+          #print-roster-root,
+          #print-roster-root * {
             visibility: visible !important;
           }
+
           #print-roster-root {
-            position: absolute !important;
-            left: 0 !important;
+            position: fixed !important;
             top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
             height: auto !important;
             overflow: visible !important;
             display: block !important;
             margin: 0 !important;
             padding: 0 !important;
+            font-family: 'Segoe UI', Arial, sans-serif !important;
+            font-size: 9pt !important;
+            color: #000 !important;
+            background: #fff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
-          /* Prevent row splitting and repeat table header on each page */
+
+          /* Repeat header on every page, avoid splitting rows */
+          thead {
+            display: table-header-group !important;
+          }
+          tfoot {
+            display: table-footer-group !important;
+          }
           tr {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
           }
-          thead {
-            display: table-header-group !important;
+
+          /* Ensure dark header background prints */
+          thead tr th {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          /* Zebra row backgrounds */
+          tbody tr:nth-child(even) td {
+            background-color: #f8fafc !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
         }
       `}</style>
