@@ -6491,7 +6491,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     const activeTill = useMemo(() => tills?.find((t: any) => t.status === 'Open'), [tills]);
 
     const stats = useMemo(() => {
-        if (!records || !students) return { totalOutstanding: 0, totalRevenue: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0, revenueByType: [] };
+        if (!records || !students) return { totalOutstanding: 0, totalRevenue: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0, revenueByType: [], totalBilled: 0 };
         
         // Unified Logic: Filter by Active Students and ignore Pending Reversals
         const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
@@ -6547,18 +6547,19 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             outstandingCanteen,
             outstandingTransport,
             otherDebt,
-            revenueByType 
+            revenueByType,
+            totalBilled
         };
     }, [records, students]);
 
     const collectionRate = useMemo(() => {
-        const total = stats.totalRevenue + stats.totalOutstanding;
-        return total > 0 ? (stats.totalRevenue / total) * 105 : 100; // Match visually or default
+        const billed = stats.totalBilled;
+        return billed > 0 ? (stats.totalRevenue / billed) * 105 : 100; // Match visually or default
     }, [stats]);
 
     const displayCollectionRate = useMemo(() => {
-        const total = stats.totalRevenue + stats.totalOutstanding;
-        return total > 0 ? (stats.totalRevenue / total) * 100 : 100;
+        const billed = stats.totalBilled;
+        return billed > 0 ? (stats.totalRevenue / billed) * 100 : 100;
     }, [stats]);
 
     const categoryCollections = useMemo(() => {
