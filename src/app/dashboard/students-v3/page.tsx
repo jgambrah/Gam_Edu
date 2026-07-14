@@ -1279,9 +1279,102 @@ export default function StudentsV3Page() {
             <Button
               onClick={() => {
                 setIsPrintDialogOpen(false);
-                // Allow state updates to settle before printing
                 setTimeout(() => {
-                  window.print();
+                  // Build the HTML for the roster
+                  const schoolName = schoolSettings?.name || schoolSettings?.schoolName || 'School Name';
+                  const motto = schoolSettings?.motto || '';
+                  const contactParts = [
+                    schoolSettings?.address,
+                    schoolSettings?.phone ? `Tel: ${schoolSettings.phone}` : '',
+                    schoolSettings?.email ? `Email: ${schoolSettings.email}` : '',
+                  ].filter(Boolean).join('  |  ');
+                  const selectedClass = printClassId === 'all' ? 'Whole School \u2014 All Classes' : classes.find((c: any) => c.id === printClassId)?.name || 'Unassigned';
+                  const statusLabel = printStatus === 'All' ? 'All Cohorts' : printStatus;
+                  const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                  const rows = printedStudents.map((s: any, idx: number) => {
+                    const studentClass = classes.find((c: any) => c.id === s.classId)?.name || 'Unassigned';
+                    const guardian = parentMap[s.uid] || parentMap[s.id];
+                    const guardianName = guardian ? `${guardian.firstName || ''} ${guardian.lastName || ''}`.trim() || '\u2014' : '\u2014';
+                    const guardianPhone = guardian?.phone || '\u2014';
+                    const bg = idx % 2 === 0 ? '#fff' : '#f8fafc';
+                    return `<tr style="background:${bg};page-break-inside:avoid">
+                      <td style="padding:4px 6px;border:1px solid #cbd5e1;text-align:center;font-weight:700;color:#64748b">${idx + 1}</td>
+                      <td style="padding:4px 6px;border:1px solid #cbd5e1;font-family:monospace;font-size:7.5pt">${formatStudentId(s)}</td>
+                      <td style="padding:4px 6px;border:1px solid #cbd5e1;font-weight:600">${`${s.firstName || ''} ${s.lastName || ''}`.trim()}</td>
+                      <td style="padding:4px 6px;border:1px solid #cbd5e1;text-align:center;text-transform:capitalize">${s.gender || '\u2014'}</td>
+                      <td style="padding:4px 6px;border:1px solid #cbd5e1;font-weight:500">${studentClass}</td>
+                      <td style="padding:4px 6px;border:1px solid #cbd5e1">${guardianName}</td>
+                      <td style="padding:4px 6px;border:1px solid #cbd5e1;font-family:monospace;font-size:7.5pt">${guardianPhone}</td>
+                    </tr>`;
+                  }).join('');
+
+                  const html = `<!DOCTYPE html>
+<html><head><title>Student Roster - ${schoolName}</title>
+<style>
+  @page { size: A4 portrait; margin: 18mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9pt; color: #000; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; }
+</style>
+</head><body>
+  <div style="border-bottom:2.5px solid #111;padding-bottom:10px;margin-bottom:12px;text-align:center">
+    <h1 style="font-size:16pt;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#111;margin:0">${schoolName}</h1>
+    ${motto ? `<p style="font-size:8pt;font-style:italic;color:#444;margin:3px 0 0;letter-spacing:0.05em;text-transform:uppercase">&ldquo;${motto}&rdquo;</p>` : ''}
+    <p style="font-size:8pt;color:#555;margin:4px 0 0">${contactParts}</p>
+  </div>
+  <div style="text-align:center;margin-bottom:8px">
+    <h2 style="font-size:11pt;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#222;margin:0">Official Student Roster</h2>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:7.5pt;color:#444;background:#f1f5f9;padding:5px 8px;border-radius:3px;margin-bottom:10px;border:1px solid #cbd5e1">
+    <span><strong>Class:</strong>&nbsp;${selectedClass}</span>
+    <span><strong>Total Students:</strong>&nbsp;${printedStudents.length}</span>
+    <span><strong>Status:</strong>&nbsp;${statusLabel}</span>
+    <span><strong>Printed:</strong>&nbsp;${dateStr}</span>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:8pt;table-layout:fixed">
+    <colgroup><col style="width:4%"><col style="width:12%"><col style="width:22%"><col style="width:7%"><col style="width:13%"><col style="width:22%"><col style="width:20%"></colgroup>
+    <thead>
+      <tr style="background:#1e293b;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+        <th style="padding:5px 6px;border:1px solid #334155;font-weight:700;text-align:center;font-size:7pt;text-transform:uppercase;letter-spacing:0.04em">#</th>
+        <th style="padding:5px 6px;border:1px solid #334155;font-weight:700;text-align:left;font-size:7pt;text-transform:uppercase;letter-spacing:0.04em">Student ID</th>
+        <th style="padding:5px 6px;border:1px solid #334155;font-weight:700;text-align:left;font-size:7pt;text-transform:uppercase;letter-spacing:0.04em">Full Name</th>
+        <th style="padding:5px 6px;border:1px solid #334155;font-weight:700;text-align:center;font-size:7pt;text-transform:uppercase;letter-spacing:0.04em">Gender</th>
+        <th style="padding:5px 6px;border:1px solid #334155;font-weight:700;text-align:left;font-size:7pt;text-transform:uppercase;letter-spacing:0.04em">Class</th>
+        <th style="padding:5px 6px;border:1px solid #334155;font-weight:700;text-align:left;font-size:7pt;text-transform:uppercase;letter-spacing:0.04em">Guardian Name</th>
+        <th style="padding:5px 6px;border:1px solid #334155;font-weight:700;text-align:left;font-size:7pt;text-transform:uppercase;letter-spacing:0.04em">Guardian Contact</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows || '<tr><td colspan="7" style="padding:14px;text-align:center;color:#64748b;font-style:italic;border:1px solid #cbd5e1">No students found.</td></tr>'}
+    </tbody>
+  </table>
+  <div style="margin-top:6px;text-align:right;font-size:7.5pt;color:#475569">Total records: <strong>${printedStudents.length}</strong> student${printedStudents.length !== 1 ? 's' : ''}</div>
+  <div style="margin-top:28px;padding-top:14px;border-top:1px solid #cbd5e1;display:flex;justify-content:space-between;align-items:flex-end">
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:200px">
+      <span style="font-size:7.5pt;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">Prepared &amp; Verified By</span>
+      <div style="height:1px;width:200px;background:#94a3b8;margin-top:32px"></div>
+      <span style="font-size:7pt;color:#64748b">Name &amp; Signature / Date</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:200px;align-items:flex-end">
+      <span style="font-size:7.5pt;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">Authorised By (Head of School)</span>
+      <div style="height:1px;width:200px;background:#94a3b8;margin-top:32px"></div>
+      <span style="font-size:7pt;color:#64748b">Name &amp; Signature / Date</span>
+    </div>
+  </div>
+  <div style="margin-top:10px;text-align:center;font-size:7pt;color:#94a3b8;letter-spacing:0.04em">
+    This is an official document of ${schoolName}. Unauthorised reproduction is prohibited.
+  </div>
+</body></html>`;
+
+                  const printWin = window.open('', '_blank', 'width=800,height=600');
+                  if (printWin) {
+                    printWin.document.write(html);
+                    printWin.document.close();
+                    printWin.focus();
+                    setTimeout(() => { printWin.print(); }, 400);
+                  }
                 }, 300);
               }}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg border-0"
@@ -1291,184 +1384,6 @@ export default function StudentsV3Page() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* ==================== PRINT-ONLY CLASS ROSTER PDF LAYOUT ==================== */}
-      <div id="print-roster-root" className="hidden print:block bg-white text-black font-sans w-full">
-        {/* ─── School Header ─── */}
-        <div style={{ borderBottom: '2.5px solid #111', paddingBottom: '10px', marginBottom: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '16pt', fontWeight: 900, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#111', margin: 0 }}>
-            {schoolSettings?.name || schoolSettings?.schoolName || 'School Name'}
-          </h1>
-          {schoolSettings?.motto && (
-            <p style={{ fontSize: '8pt', fontStyle: 'italic', color: '#444', margin: '3px 0 0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              &ldquo;{schoolSettings.motto}&rdquo;
-            </p>
-          )}
-          <p style={{ fontSize: '8pt', color: '#555', margin: '4px 0 0' }}>
-            {[schoolSettings?.address, schoolSettings?.phone ? `Tel: ${schoolSettings.phone}` : '', schoolSettings?.email ? `Email: ${schoolSettings.email}` : ''].filter(Boolean).join('  |  ')}
-          </p>
-        </div>
-
-        {/* ─── Document Title & Meta Bar ─── */}
-        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-          <h2 style={{ fontSize: '11pt', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#222', margin: 0 }}>Official Student Roster</h2>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '7.5pt', color: '#444', backgroundColor: '#f1f5f9', padding: '5px 8px', borderRadius: '3px', marginBottom: '10px', border: '1px solid #cbd5e1' }}>
-          <span><strong>Class:</strong>&nbsp;{printClassId === 'all' ? 'Whole School — All Classes' : classes.find(c => c.id === printClassId)?.name || 'Unassigned'}</span>
-          <span><strong>Total Students:</strong>&nbsp;{printedStudents.length}</span>
-          <span><strong>Status Filter:</strong>&nbsp;{printStatus === 'All' ? 'All Cohorts' : printStatus}</span>
-          <span><strong>Printed:</strong>&nbsp;{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-        </div>
-
-        {/* ─── Roster Table ─── */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt', tableLayout: 'fixed' }}>
-          <colgroup>
-            <col style={{ width: '4%' }} />
-            <col style={{ width: '12%' }} />
-            <col style={{ width: '22%' }} />
-            <col style={{ width: '7%' }} />
-            <col style={{ width: '13%' }} />
-            <col style={{ width: '22%' }} />
-            <col style={{ width: '20%' }} />
-          </colgroup>
-          <thead>
-            <tr style={{ backgroundColor: '#1e293b', color: '#fff' }}>
-              {['#', 'Student ID', 'Full Name', 'Gender', 'Class', 'Guardian Name', 'Guardian Contact'].map((h, i) => (
-                <th key={i} style={{ padding: '5px 6px', border: '1px solid #334155', fontWeight: 700, textAlign: i === 0 || i === 3 ? 'center' : 'left', fontSize: '7pt', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {printedStudents.map((s, idx) => {
-              const studentClass = classes.find(c => c.id === s.classId)?.name || 'Unassigned';
-              const guardian = parentMap[s.uid] || parentMap[s.id];
-              const guardianName = guardian ? `${guardian.firstName || ''} ${guardian.lastName || ''}`.trim() : '—';
-              const guardianPhone = guardian ? guardian.phone || '—' : '—';
-              const rowBg = idx % 2 === 0 ? '#fff' : '#f8fafc';
-              return (
-                <tr key={s.uid || s.id} style={{ backgroundColor: rowBg, pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', textAlign: 'center', fontWeight: 700, color: '#64748b' }}>{idx + 1}</td>
-                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontFamily: 'monospace', fontSize: '7.5pt', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{formatStudentId(s)}</td>
-                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{`${s.firstName || ''} ${s.lastName || ''}`.trim()}</td>
-                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', textAlign: 'center', textTransform: 'capitalize' }}>{s.gender || '—'}</td>
-                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{studentClass}</td>
-                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{guardianName}</td>
-                  <td style={{ padding: '4px 6px', border: '1px solid #cbd5e1', fontFamily: 'monospace', fontSize: '7.5pt', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{guardianPhone}</td>
-                </tr>
-              );
-            })}
-            {printedStudents.length === 0 && (
-              <tr>
-                <td colSpan={7} style={{ padding: '14px', textAlign: 'center', color: '#64748b', fontStyle: 'italic', border: '1px solid #cbd5e1' }}>
-                  No students found matching the selected criteria.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        {/* ─── Count Summary Row ─── */}
-        <div style={{ marginTop: '6px', textAlign: 'right', fontSize: '7.5pt', color: '#475569' }}>
-          Total records: <strong>{printedStudents.length}</strong> student{printedStudents.length !== 1 ? 's' : ''}
-        </div>
-
-        {/* ─── Signature & Footer ─── */}
-        <div style={{ marginTop: '28px', paddingTop: '14px', borderTop: '1px solid #cbd5e1', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '200px' }}>
-            <span style={{ fontSize: '7.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Prepared &amp; Verified By</span>
-            <div style={{ height: '1px', width: '200px', backgroundColor: '#94a3b8', marginTop: '32px' }} />
-            <span style={{ fontSize: '7pt', color: '#64748b' }}>Name &amp; Signature / Date</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '200px', alignItems: 'flex-end' }}>
-            <span style={{ fontSize: '7.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Authorised By (Head of School)</span>
-            <div style={{ height: '1px', width: '200px', backgroundColor: '#94a3b8', marginTop: '32px' }} />
-            <span style={{ fontSize: '7pt', color: '#64748b' }}>Name &amp; Signature / Date</span>
-          </div>
-        </div>
-        <div style={{ marginTop: '10px', textAlign: 'center', fontSize: '7pt', color: '#94a3b8', letterSpacing: '0.04em' }}>
-          This is an official document of {schoolSettings?.name || schoolSettings?.schoolName || 'the school'}. Unauthorised reproduction is prohibited.
-        </div>
-      </div>
-
-      <style>{`
-        @page {
-          size: A4 portrait;
-          margin: 18mm 15mm 18mm 15mm;
-        }
-        @media print {
-          /* 1. Unlock all scroll-locked ancestors so content can flow across pages */
-          html, body, #__next, main,
-          [class*="overflow-"], [class*="h-screen"],
-          .flex, .h-screen, .overflow-hidden {
-            height: auto !important;
-            min-height: 0 !important;
-            max-height: none !important;
-            overflow: visible !important;
-            position: static !important;
-            display: block !important;
-          }
-
-          /* 2. Make ALL elements invisible + collapse their spacing so they occupy zero space */
-          body * {
-            visibility: hidden !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            min-height: 0 !important;
-            height: auto !important;
-            line-height: 0 !important;
-            font-size: 0 !important;
-          }
-
-          /* 3. Restore the print root and ALL its contents */
-          #print-roster-root,
-          #print-roster-root * {
-            visibility: visible !important;
-            margin: revert !important;
-            padding: revert !important;
-            border: revert !important;
-            line-height: normal !important;
-            font-size: revert !important;
-            height: auto !important;
-          }
-
-          /* 4. Position the print root at the top of the page */
-          #print-roster-root {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            overflow: visible !important;
-            display: block !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            font-family: 'Segoe UI', Arial, sans-serif !important;
-            font-size: 9pt !important;
-            line-height: 1.4 !important;
-            color: #000 !important;
-            background: #fff !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-
-          /* 5. Table print behaviour */
-          thead { display: table-header-group !important; }
-          tfoot { display: table-footer-group !important; }
-          tr    { page-break-inside: avoid !important; break-inside: avoid !important; }
-
-          /* 6. Force backgrounds to print */
-          #print-roster-root thead tr th {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          #print-roster-root tbody tr:nth-child(even) td {
-            background-color: #f8fafc !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
