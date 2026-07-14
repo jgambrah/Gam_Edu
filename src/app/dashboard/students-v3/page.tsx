@@ -1419,9 +1419,7 @@ export default function StudentsV3Page() {
           }
 
           #print-roster-root {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
+            position: static !important;
             width: 100% !important;
             height: auto !important;
             overflow: visible !important;
