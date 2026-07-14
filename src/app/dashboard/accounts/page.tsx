@@ -3350,7 +3350,7 @@ export default function AccountsPage() {
   const isLoading = isLoadingRecords || isLoadingStudents;
 
   const dashboardStats = useMemo(() => {
-    if (!records || !students) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0 };
+    if (!records || !students) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0, totalBilled: 0 };
     
     const activeStudentIds = new Set(students.map(s => s.uid));
 
@@ -3360,7 +3360,7 @@ export default function AccountsPage() {
         r.status !== 'Pending Reversal'
     );
 
-    let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0;
+    let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0, totalBilled = 0;
 
     for (const record of activeRecords) {
         const billed = Number(record.billedAmount) || 0;
@@ -3368,6 +3368,7 @@ export default function AccountsPage() {
         const waiver = Number(record.waiverAmount) || 0;
         const balance = billed - paid - waiver;
         totalPaid += paid;
+        totalBilled += billed;
         
         if (balance > 0) {
             const type = record.type.toLowerCase();
@@ -3384,7 +3385,8 @@ export default function AccountsPage() {
         outstandingTuition, 
         outstandingCanteen, 
         outstandingTransport, 
-        otherDebt 
+        otherDebt,
+        totalBilled
     };
   }, [records, students]);
 
@@ -3504,8 +3506,8 @@ export default function AccountsPage() {
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
 
   const collectionRate = useMemo(() => {
-    const total = dashboardStats.totalRevenue + dashboardStats.totalOutstanding;
-    return total > 0 ? (dashboardStats.totalRevenue / total) * 100 : 100;
+    const billed = dashboardStats.totalBilled;
+    return billed > 0 ? (dashboardStats.totalRevenue / billed) * 100 : 100;
   }, [dashboardStats]);
 
   const categoryCollections = useMemo(() => {
@@ -3729,7 +3731,7 @@ export default function AccountsPage() {
                     <div>
                         <p className="text-[10px] text-emerald-200 font-bold uppercase tracking-wide">Overall Collection Rate</p>
                         <p className="text-2xl font-extrabold tracking-tight text-white mt-0.5">
-                            {((dashboardStats.totalRevenue / (dashboardStats.totalRevenue + dashboardStats.totalOutstanding + 0.0001)) * 100).toFixed(1)}%
+                            {(dashboardStats.totalBilled > 0 ? (dashboardStats.totalRevenue / dashboardStats.totalBilled) * 100 : 0).toFixed(1)}%
                         </p>
                     </div>
                 </div>
