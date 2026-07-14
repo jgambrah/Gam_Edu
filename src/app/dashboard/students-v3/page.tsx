@@ -1296,7 +1296,7 @@ export default function StudentsV3Page() {
       <div id="print-roster-root" className="hidden print:block bg-white text-black p-8 font-sans w-full min-h-screen">
         <div className="flex flex-col items-center text-center border-b-2 border-slate-900 pb-4 mb-6">
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 uppercase">
-            {schoolSettings?.schoolName || 'GAM Edu School System'}
+            {schoolSettings?.name || schoolSettings?.schoolName || 'GAM Edu School System'}
           </h1>
           {schoolSettings?.motto && (
             <p className="text-xs italic text-slate-500 mt-1 uppercase font-bold tracking-wide">
