@@ -17,7 +17,7 @@ function todayStr(): string {
 /** Epoch ms for start of today */
 function todayStartMs(): number {
   const d = new Date();
-  d.setHours(0, 0, 0, 0);
+  d.setUTCHours(0, 0, 0, 0);
   return d.getTime();
 }
 
@@ -83,8 +83,8 @@ async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
 
   const todayMs = todayStartMs();
   const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
+  monthStart.setUTCDate(1);
+  monthStart.setUTCHours(0, 0, 0, 0);
   const monthMs = monthStart.getTime();
 
   // 1. Process parent financial records (billing, arrears, and debt aging)

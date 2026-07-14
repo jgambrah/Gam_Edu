@@ -4665,22 +4665,22 @@ function DirectorDashboard({
   }, [todayPresentCount, activeStudents, summaryAttendanceRate]);
 
   const collectedToday = useMemo(() => {
-    if (summaryCollectedToday !== undefined) return summaryCollectedToday;
-    if (!payments) return 0;
     const today = startOfDay(new Date());
-    let total = 0;
-    payments.forEach((p: any) => {
-      const amount = Number(p.amount) || 0;
-      if (amount <= 0) return;
-      const dateVal = p.paidAt || p.createdAt || p.date;
-      if (!dateVal) return;
-      const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
-      if (isNaN(d.getTime())) return;
-      if (startOfDay(d).getTime() === today.getTime()) {
-        total += amount;
-      }
-    });
-    return total;
+    let clientTotal = 0;
+    if (payments) {
+      payments.forEach((p: any) => {
+        const amount = Number(p.amount) || 0;
+        if (amount <= 0) return;
+        const dateVal = p.paidAt || p.createdAt || p.date;
+        if (!dateVal) return;
+        const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
+        if (isNaN(d.getTime())) return;
+        if (startOfDay(d).getTime() === today.getTime()) {
+          clientTotal += amount;
+        }
+      });
+    }
+    return Math.max(clientTotal, summaryCollectedToday ?? 0);
   }, [payments, summaryCollectedToday]);
 
   const classSizes = useMemo(() => {
@@ -13091,12 +13091,12 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Director gets financial KPIs from summary doc but needs raw records for detail tabs. Only Accountant & Admin fetch raw records.
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin)) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin]);
+  // Director gets financial KPIs from summary doc but needs raw records for detail tabs. Accountant, Admin, and Director fetch raw records.
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || role === 'Director')) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, role]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
   // collectionGroup scan restored for Director for detail tabs.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin)) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin]);
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, role]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
