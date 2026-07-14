@@ -1373,9 +1373,19 @@ export default function StudentsV3Page() {
 
       <style>{`
         @media print {
+          /* Deactivate layout scroll locks during printing to allow multi-page pagination */
+          html, body, #__next, main, .flex, .h-screen, .overflow-hidden, [class*="overflow-"] {
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            position: static !important;
+          }
+          /* Hide screen-only layouts */
           body * {
             visibility: hidden !important;
           }
+          /* Show print content */
           #print-roster-root, #print-roster-root * {
             visibility: visible !important;
           }
@@ -1384,9 +1394,19 @@ export default function StudentsV3Page() {
             left: 0 !important;
             top: 0 !important;
             width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
             margin: 0 !important;
             padding: 0 !important;
-            display: block !important;
+          }
+          /* Prevent row splitting and repeat table header on each page */
+          tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          thead {
+            display: table-header-group !important;
           }
         }
       `}</style>
