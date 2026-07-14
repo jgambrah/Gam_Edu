@@ -1400,7 +1400,7 @@ export default function StudentsV3Page() {
       <style>{`
         @page {
           size: A4 portrait;
-          margin: 18mm 15mm 18mm 15mm;
+          margin: 20mm 20mm 20mm 20mm;
         }
         @media print {
           /* Hide all screen layout wrappers at the body root */
