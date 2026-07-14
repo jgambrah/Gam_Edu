@@ -6538,8 +6538,10 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             .sort((a, b) => b.value - a.value)
             .slice(0, 5);
 
+        const totalOutstanding = outstandingTuition + outstandingCanteen + outstandingTransport + otherDebt;
+
         return { 
-            totalOutstanding: totalBilled - totalPaid - totalWaivers, 
+            totalOutstanding, 
             totalRevenue: totalPaid, 
             outstandingTuition,
             outstandingCanteen,
