@@ -716,8 +716,7 @@ function AdminDashboard({
       }
     });
 
-    const finalBilled = totalPaid + totalOutstanding;
-    const collectionRate = finalBilled > 0 ? Math.round((totalPaid / finalBilled) * 100) : 0;
+    const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
 
     const revenueByType = Object.entries(types).map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
@@ -726,7 +725,7 @@ function AdminDashboard({
     return { 
       totalOutstanding, 
       totalRevenue: totalPaid, 
-      totalBilled: finalBilled,
+      totalBilled,
       collectionRate, 
       revenueByType 
     };
@@ -4547,8 +4546,7 @@ function DirectorDashboard({
       }
     });
 
-    const finalBilled = totalPaid + totalOutstanding;
-    const collectionRate = finalBilled > 0 ? Math.round((totalPaid / finalBilled) * 100) : 0;
+    const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
 
     const revenueByType = Object.entries(types).map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value)
@@ -4557,7 +4555,7 @@ function DirectorDashboard({
     return { 
       totalOutstanding, 
       totalRevenue: totalPaid, 
-      totalBilled: finalBilled,
+      totalBilled,
       collectionRate, 
       revenueByType 
     };

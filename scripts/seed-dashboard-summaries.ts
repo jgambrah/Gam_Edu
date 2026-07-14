@@ -165,8 +165,8 @@ async function seedSchool(schoolId: string): Promise<void> {
     }
   });
 
-  const collectionRate = (totalRevenue + totalOutstanding) > 0 
-    ? Math.round((totalRevenue / (totalRevenue + totalOutstanding)) * 100) 
+  const collectionRate = totalBilled > 0 
+    ? Math.round((totalRevenue / totalBilled) * 100) 
     : 0;
 
   // 5. Pending admissions
