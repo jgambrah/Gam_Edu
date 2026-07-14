@@ -145,8 +145,8 @@ async function recalculateSchoolFinancials(schoolId) {
         }
     });
     totalCollectedThisTerm = totalCollectedThisMonth;
-    const collectionRate = (totalRevenue + totalOutstanding) > 0
-        ? Math.round((totalRevenue / (totalRevenue + totalOutstanding)) * 100)
+    const collectionRate = totalBilled > 0
+        ? Math.round((totalRevenue / totalBilled) * 100)
         : 0;
     await SUMMARY(schoolId).set({
         schoolId,

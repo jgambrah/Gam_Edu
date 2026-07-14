@@ -81,6 +81,7 @@ export default function SchoolProfilePage() {
   const [autoLockDebtors, setAutoLockDebtors] = useState(false);
   const [autoLockStudents, setAutoLockStudents] = useState(false);
   const [debtorLockThreshold, setDebtorLockThreshold] = useState(0);
+  const [highArrearsThreshold, setHighArrearsThreshold] = useState<number>(10000);
   const [reportCardPositionMode, setReportCardPositionMode] = useState<'both' | 'subject_only' | 'none'>('both');
   const [gradingSystem, setGradingSystem] = useState<GradeBracket[]>([]);
   const [customCostCenters, setCustomCostCenters] = useState<{ id: string, name: string }[]>([]);
@@ -196,6 +197,7 @@ export default function SchoolProfilePage() {
         setAutoLockDebtors(profile.autoLockDebtors === true);
         setAutoLockStudents(profile.autoLockStudents === true);
         setDebtorLockThreshold(Number(profile.debtorLockThreshold) || 0);
+        setHighArrearsThreshold(Number(profile.highArrearsThreshold) || 10000);
 
         setSchoolLat(profile.schoolLat ?? '');
         setSchoolLng(profile.schoolLng ?? '');
@@ -317,6 +319,7 @@ export default function SchoolProfilePage() {
             autoLockDebtors,
             autoLockStudents,
             debtorLockThreshold: Number(debtorLockThreshold),
+            highArrearsThreshold: Number(highArrearsThreshold),
             schoolLat: schoolLat !== '' ? Number(schoolLat) : null,
             schoolLng: schoolLng !== '' ? Number(schoolLng) : null,
             allowedRadius: Number(allowedRadius),
@@ -1164,6 +1167,24 @@ export default function SchoolProfilePage() {
                                         <p className="text-[10px] font-bold text-red-500 uppercase italic">Example: If set to 500, a parent with 3 children is locked out only if their total debt exceeds 1,500 GH₵.</p>
                                     </div>
                                 )}
+
+                                <div className="space-y-2 pt-4 border-t border-red-100">
+                                    <Label className="text-red-800 font-bold uppercase text-[10px] tracking-widest flex items-center gap-1.5">
+                                        <AlertCircle className="h-4 w-4 text-red-600"/>
+                                        High Arrears Alert Threshold (GH₵)
+                                    </Label>
+                                    <p className="text-[11px] font-medium text-red-600/70 max-w-md">
+                                        Set the total outstanding fee threshold above which the dashboard displays a "High Arrears Level" warning.
+                                    </p>
+                                    <Input 
+                                        type="number" 
+                                        value={highArrearsThreshold} 
+                                        onChange={e => setHighArrearsThreshold(Number(e.target.value))} 
+                                        className="max-w-[200px] h-12 border-2 border-red-200 font-black text-red-600 text-lg rounded-xl focus:ring-red-500"
+                                        placeholder="10000"
+                                    />
+                                    <p className="text-[10px] font-bold text-red-500/80 uppercase italic">Default: 10,000 GH₵</p>
+                                </div>
                             </div>
                         </div>
                     </div>
