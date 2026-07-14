@@ -563,7 +563,10 @@ export default function AcademicReportsPage() {
                             <SelectTrigger className="w-full bg-indigo-50/50 border-indigo-200 focus:ring-indigo-500 font-medium">
                                 <SelectValue placeholder="Choose a Class..." />
                             </SelectTrigger>
-                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            <SelectContent>
+                                <SelectItem value="all">🏫 Entire School (All Classes)</SelectItem>
+                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
                         </Select>
                     </div>
 
@@ -598,6 +601,27 @@ export default function AcademicReportsPage() {
                             <BookOpen className="h-5 w-5 text-indigo-500" /> Active Classes Overview
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {classes && classes.length > 0 && (
+                                <Card className="hover:border-indigo-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group bg-gradient-to-br from-indigo-50/20 to-indigo-100/10 border-indigo-200">
+                                    <CardHeader className="pb-2">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <Badge className="bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Entire School</Badge>
+                                            <Users className="h-5 w-5 text-indigo-500" />
+                                        </div>
+                                        <CardTitle className="text-xl font-bold text-slate-800">All Classes Combined</CardTitle>
+                                        <CardDescription className="line-clamp-2 text-xs">Run cross-institutional grading analysis and subject-by-subject master sheet.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="pb-4 pt-2 border-t mt-4 text-xs font-semibold text-slate-500 flex justify-between bg-slate-50/50">
+                                        <span>School-Wide Analytics</span>
+                                        <span>All Subjects</span>
+                                    </CardContent>
+                                    <CardFooter className="pt-2 pb-4 bg-slate-50/50 border-t">
+                                        <Button onClick={() => setSelectedClassId('all')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-sm transition-all text-xs font-bold py-1.5 h-8">
+                                            Run Analytics <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                                        </Button>
+                                    </CardFooter>
+                                </Card>
+                            )}
                             {classes?.map(c => (
                                 <Card key={c.id} className="hover:border-indigo-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group">
                                     <CardHeader className="pb-2">
