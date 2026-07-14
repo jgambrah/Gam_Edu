@@ -35,7 +35,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -58,6 +58,7 @@ export default function StudentsV3Page() {
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [hostelAllocations, setHostelAllocations] = useState<any[]>([]);
+  const [parentMap, setParentMap] = useState<Record<string, any>>({});
   
   const [isLoading, setIsLoading] = useState(true);
   const [statusMsg, setStatusMsg] = useState("Initializing...");
@@ -81,6 +82,11 @@ export default function StudentsV3Page() {
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<string>('Active');
+
+  // Print Dialog States
+  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
+  const [printClassId, setPrintClassId] = useState('all');
+  const [printStatus, setPrintStatus] = useState('Active');
 
   // Form State (Subscription Focused)
   const [selectedClassId, setSelectedClassId] = useState('');
@@ -149,6 +155,19 @@ export default function StudentsV3Page() {
         const allocationSnap = await getDocs(allocationQuery);
         const allocationList = allocationSnap.docs.map(d => ({ id: d.id, ...d.data() }));
         setHostelAllocations(allocationList);
+
+        const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
+        const parentSnap = await getDocs(parentQuery);
+        const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const pMap: Record<string, any> = {};
+        parentList.forEach((p: any) => {
+            if (p.studentIds && Array.isArray(p.studentIds)) {
+                p.studentIds.forEach((sid: string) => {
+                    pMap[sid] = p;
+                });
+            }
+        });
+        setParentMap(pMap);
         
         setStatusMsg("Ready");
     } catch (err: any) {
@@ -461,6 +480,19 @@ export default function StudentsV3Page() {
     });
   }, [students, searchTerm, classFilter, statusFilter]);
 
+  const printedStudents = useMemo(() => {
+    return students.filter(s => {
+      const currentStatus = s.enrollmentStatus || 'Active';
+      const matchesStatus = printStatus === 'All' ? true : currentStatus === printStatus;
+      const matchesClass = printClassId === 'all' ? true : s.classId === printClassId;
+      return matchesStatus && matchesClass;
+    }).sort((a, b) => {
+      const aName = `${a.firstName || ''} ${a.lastName || ''}`.trim();
+      const bName = `${b.firstName || ''} ${b.lastName || ''}`.trim();
+      return aName.localeCompare(bName);
+    });
+  }, [students, printClassId, printStatus]);
+
   const overallLoading = isLoadingSchool || isLoading;
   const isAuthorized = role === 'Director' || role === 'Administrator' || role === 'Secretary' || role === 'Receptionist';
 
@@ -502,6 +534,9 @@ export default function StudentsV3Page() {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <Button variant="outline" onClick={loadData} disabled={overallLoading} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
               <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
+            </Button>
+            <Button onClick={() => setIsPrintDialogOpen(true)} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white font-bold px-5 h-11 rounded-xl shadow-md border-0" disabled={!adminSchoolId}>
+              <Printer className="h-4.5 w-4.5 mr-2"/> Print Class List
             </Button>
             {canManage && (
               <Button onClick={() => setIsAddOpen(true)} className="bg-white text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 font-bold px-5 h-11 rounded-xl shadow-lg border border-emerald-100" disabled={!adminSchoolId}>
@@ -1186,6 +1221,175 @@ export default function StudentsV3Page() {
           </div>
         </div>
       )}
+
+      {/* ==================== PRINT CLASS ROSTER DIALOG ==================== */}
+      <Dialog open={isPrintDialogOpen} onOpenChange={setIsPrintDialogOpen}>
+        <DialogContent className="sm:max-w-md bg-white rounded-3xl p-6 shadow-xl border border-slate-100">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <Printer className="h-5 w-5 text-emerald-600" /> Print Class Roster
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 text-xs">
+              Configure parameters to export or print a student list in PDF format.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-slate-500 uppercase">Class Group</Label>
+              <Select value={printClassId} onValueChange={setPrintClassId}>
+                <SelectTrigger className="w-full h-11 border-slate-200 rounded-xl focus:ring-emerald-500">
+                  <SelectValue placeholder="Select Class" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="all">Whole School (All Classes)</SelectItem>
+                  {classes.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-slate-500 uppercase">Enrollment Status</Label>
+              <Select value={printStatus} onValueChange={setPrintStatus}>
+                <SelectTrigger className="w-full h-11 border-slate-200 rounded-xl focus:ring-emerald-500">
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="All">All Cohorts (Active & Inactive)</SelectItem>
+                  <SelectItem value="Active">Active Enrolled</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                  <SelectItem value="Withdrawn">Withdrawn</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0 border-t pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsPrintDialogOpen(false)}
+              className="rounded-xl font-bold border-slate-200 shadow-sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setIsPrintDialogOpen(false);
+                // Allow state updates to settle before printing
+                setTimeout(() => {
+                  window.print();
+                }, 300);
+              }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg border-0"
+            >
+              Print PDF
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ==================== PRINT-ONLY CLASS ROSTER PDF LAYOUT ==================== */}
+      <div id="print-roster-root" className="hidden print:block bg-white text-black p-8 font-sans w-full min-h-screen">
+        <div className="flex flex-col items-center text-center border-b-2 border-slate-900 pb-4 mb-6">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 uppercase">
+            {schoolSettings?.schoolName || 'GAM Edu School System'}
+          </h1>
+          {schoolSettings?.motto && (
+            <p className="text-xs italic text-slate-500 mt-1 uppercase font-bold tracking-wide">
+              "{schoolSettings.motto}"
+            </p>
+          )}
+          <p className="text-xs text-slate-600 mt-1">
+            {schoolSettings?.address || ''} 
+            {schoolSettings?.phone ? ` | Tel: ${schoolSettings.phone}` : ''}
+            {schoolSettings?.email ? ` | Email: ${schoolSettings.email}` : ''}
+          </p>
+          
+          <div className="mt-6 w-full flex justify-between items-center text-xs font-black uppercase text-slate-700 tracking-wider">
+            <span>Document: Official Student Roster</span>
+            <span>Class: {printClassId === 'all' ? 'Whole School (All Classes)' : classes.find(c => c.id === printClassId)?.name || 'Unassigned'}</span>
+            <span>Total Count: {printedStudents.length} Students</span>
+          </div>
+        </div>
+
+        <table className="w-full border-collapse border border-slate-400 text-xs text-left">
+          <thead>
+            <tr className="bg-slate-100 text-slate-800 font-extrabold uppercase border-b-2 border-slate-900">
+              <th className="border border-slate-400 p-2 text-center w-12">#</th>
+              <th className="border border-slate-400 p-2 w-36">Student ID</th>
+              <th className="border border-slate-400 p-2">Full Name</th>
+              <th className="border border-slate-400 p-2 w-20 text-center">Gender</th>
+              <th className="border border-slate-400 p-2 w-32">Class</th>
+              <th className="border border-slate-400 p-2">Guardian Name</th>
+              <th className="border border-slate-400 p-2 w-36">Guardian Contact</th>
+            </tr>
+          </thead>
+          <tbody>
+            {printedStudents.map((s, idx) => {
+              const studentClass = classes.find(c => c.id === s.classId)?.name || 'Unassigned';
+              const guardian = parentMap[s.uid] || parentMap[s.id];
+              const guardianName = guardian ? `${guardian.firstName || ''} ${guardian.lastName || ''}`.trim() : 'N/A';
+              const guardianPhone = guardian ? guardian.phone || 'N/A' : 'N/A';
+              return (
+                <tr key={s.uid || s.id} className="border-b border-slate-300">
+                  <td className="border border-slate-400 p-2 text-center font-bold">{idx + 1}</td>
+                  <td className="border border-slate-400 p-2 font-mono">{formatStudentId(s)}</td>
+                  <td className="border border-slate-400 p-2 font-bold">{`${s.firstName || ''} ${s.lastName || ''}`.trim()}</td>
+                  <td className="border border-slate-400 p-2 text-center capitalize">{s.gender || 'N/A'}</td>
+                  <td className="border border-slate-400 p-2 font-semibold">{studentClass}</td>
+                  <td className="border border-slate-400 p-2">{guardianName}</td>
+                  <td className="border border-slate-400 p-2 font-semibold">{guardianPhone}</td>
+                </tr>
+              );
+            })}
+            {printedStudents.length === 0 && (
+              <tr>
+                <td colSpan={7} className="border border-slate-400 p-4 text-center text-slate-500 italic">
+                  No students found matching the selected criteria.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        <div className="mt-12 flex justify-between text-xs pt-8 border-t border-slate-200">
+          <div className="flex flex-col items-start gap-1">
+            <span className="font-bold text-slate-500">Prepared By:</span>
+            <div className="h-10 w-40 border-b border-slate-400" />
+            <span className="font-semibold text-slate-700">Administrator / Secretary Signature</span>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <span className="font-bold text-slate-500">Date Printed:</span>
+            <span className="font-semibold text-slate-700 font-mono">
+              {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden !important;
+          }
+          #print-roster-root, #print-roster-root * {
+            visibility: visible !important;
+          }
+          #print-roster-root {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: block !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
