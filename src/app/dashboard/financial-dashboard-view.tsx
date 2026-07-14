@@ -258,7 +258,7 @@ export function FinancialDashboardView({
       recordsByStudent[key].push(r);
     });
 
-    return students
+    const list = students
       .filter((student: any) => (student.enrollmentStatus === 'Active' || !student.enrollmentStatus) && !student.isSponsored)
       .map((student: any) => {
         const studentRecords = recordsByStudent[student.uid] || recordsByStudent[student.id] || [];
@@ -279,9 +279,15 @@ export function FinancialDashboardView({
         };
       })
       .filter((d: any) => d.outstanding > 0.01)
-      .sort((a: any, b: any) => b.outstanding - a.outstanding)
-      .slice(0, 5);
-  }, [financialRecords, students, classes]);
+      .sort((a: any, b: any) => b.outstanding - a.outstanding);
+
+    const actualThreshold = (arrearsThreshold ?? Number(schoolSettings?.highArrearsThreshold)) || 10000;
+    const exceeding = list.filter((d: any) => d.outstanding >= actualThreshold);
+    if (exceeding.length > 0) {
+      return exceeding;
+    }
+    return list.slice(0, 5);
+  }, [financialRecords, students, classes, arrearsThreshold, schoolSettings]);
 
   // 6. Debt Aging Analysis
   const debtAgingStats = useMemo(() => {

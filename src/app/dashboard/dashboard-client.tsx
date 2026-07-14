@@ -6451,7 +6451,7 @@ function ReceptionistDashboard({ profile, announcements, attendance, students, i
     );
 }
 
-function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading }: any) {
+function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading, schoolSettings }: any) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -6625,10 +6625,13 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     }, [records, students]);
 
     const topDebtors = useMemo(() => {
-        return studentFinancials
-            .filter((sf: any) => sf.balance > 0.01)
-            .slice(0, 5);
-    }, [studentFinancials]);
+        const actualThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
+        const exceeding = studentFinancials.filter((sf: any) => sf.balance >= actualThreshold);
+        if (exceeding.length > 0) {
+            return exceeding;
+        }
+        return studentFinancials.filter((sf: any) => sf.balance > 0.01).slice(0, 5);
+    }, [studentFinancials, schoolSettings]);
 
     const getOldestOverdueDays = useCallback((studentRecords: any[]) => {
         const unpaidOrOverdue = studentRecords.filter(r => 
@@ -13365,7 +13368,7 @@ export default function DashboardClient() {
   }
 
   if (role === 'Accountant') {
-    return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={loadingStudents || loadingRecords || loadingTills} />;
+    return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={loadingStudents || loadingRecords || loadingTills} schoolSettings={schoolSettings} />;
   }
 
   if (isSupportStaff) {

@@ -3550,10 +3550,13 @@ export default function AccountsPage() {
   }, [records, students]);
 
   const topDebtors = useMemo(() => {
-      return studentFinancials
-          .filter(sf => sf.balance > 0.01)
-          .slice(0, 5);
-  }, [studentFinancials]);
+      const actualThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
+      const exceeding = studentFinancials.filter(sf => sf.balance >= actualThreshold);
+      if (exceeding.length > 0) {
+          return exceeding;
+      }
+      return studentFinancials.filter(sf => sf.balance > 0.01).slice(0, 5);
+  }, [studentFinancials, schoolSettings]);
 
   const getOldestOverdueDays = useCallback((studentRecords: FinancialRecord[]) => {
       const unpaidOrOverdue = studentRecords.filter(r => 
