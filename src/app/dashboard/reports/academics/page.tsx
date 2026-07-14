@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, where, doc } from 'firebase/firestore';
@@ -26,6 +27,7 @@ import Link from 'next/link';
 import { useUser } from '@/firebase/provider';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { cn } from '@/lib/utils';
 
 const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'N/A' => {
     if (score >= 80) return 'A';
@@ -59,6 +61,12 @@ export default function AcademicReportsPage() {
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [selectedTerm, setSelectedTerm] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [viewMode, setViewMode] = useState<'dashboard' | 'master_report'>('dashboard');
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const isAdmin = ['Administrator', 'Director'].includes(role || '');
     const isTeacher = role === 'Teacher';
@@ -101,6 +109,9 @@ export default function AcademicReportsPage() {
     // Query Students (dependent on selectedClassId)
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+        if (selectedClassId === 'all') {
+            return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+        }
         return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
     }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
     const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
@@ -113,6 +124,9 @@ export default function AcademicReportsPage() {
     // Query ALL Assessments for the selected class (so we can compile multi-subject aggregates in-memory)
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+        if (selectedClassId === 'all') {
+            return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId));
+        }
         return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId));
     }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
@@ -415,6 +429,42 @@ export default function AcademicReportsPage() {
             .slice(0, 3);
     }, [academicData]);
 
+    // Filter subjects to only those that have at least one grade recorded for the selected class/cohort
+    const activeSubjects = useMemo(() => {
+        if (!subjects || !academicData?.studentSubjectScores) return [];
+        return subjects.filter(subject => {
+            return Object.values(academicData.studentSubjectScores).some(
+                scores => scores[subject.id] !== undefined
+            );
+        });
+    }, [subjects, academicData]);
+
+    // Rank students by total marks descending
+    const rankedStudents = useMemo(() => {
+        if (!academicData?.studentAverages) return [];
+        
+        const list = academicData.studentAverages.map(s => {
+            const totalMarks = Object.values(s.subjectScores).reduce((sum, val) => sum + val, 0);
+            return {
+                ...s,
+                totalMarks: parseFloat(totalMarks.toFixed(1))
+            };
+        });
+
+        list.sort((a, b) => b.totalMarks - a.totalMarks);
+
+        let currentRank = 1;
+        return list.map((item, idx) => {
+            if (idx > 0 && list[idx - 1].totalMarks > item.totalMarks) {
+                currentRank = idx + 1;
+            }
+            return {
+                ...item,
+                rank: currentRank
+            };
+        });
+    }, [academicData]);
+
     const isLoading = isSchoolLoading || isRoleLoading || isLoadingClasses || isLoadingSubjects;
 
     if (isLoading) {
@@ -599,327 +649,357 @@ export default function AcademicReportsPage() {
                 /* CLASS OVERVIEW DASHBOARD (ALL SUBJECTS SUMMARY)                          */
                 /* ========================================================================= */
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
-                    
-                    {/* STATS STRIP */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 border-indigo-100 shadow-sm relative overflow-hidden group">
-                            <CardContent className="p-5 flex items-center gap-4">
-                                <div className="bg-indigo-600 p-3 rounded-2xl text-white shadow-md">
-                                    <TrendingUp className="h-6 w-6" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Class Average</p>
-                                    <h3 className="text-2xl font-black text-slate-800">{academicData.classOverallAverage}%</h3>
-                                </div>
-                                <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
-                                    <TrendingUp className="h-24 w-24 text-indigo-900" />
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-100 shadow-sm relative overflow-hidden group">
-                            <CardContent className="p-5 flex items-center gap-4">
-                                <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-md">
-                                    <UserCheck className="h-6 w-6" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Overall Pass Rate</p>
-                                    <h3 className="text-2xl font-black text-slate-800">{academicData.classPassRate}%</h3>
-                                </div>
-                                <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
-                                    <UserCheck className="h-24 w-24 text-emerald-900" />
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-100 shadow-sm relative overflow-hidden group">
-                            <CardContent className="p-5 flex items-center gap-4">
-                                <div className="bg-amber-500 p-3 rounded-2xl text-white shadow-md">
-                                    <Award className="h-6 w-6" />
-                                </div>
-                                <div className="space-y-0.5 max-w-[70%]">
-                                    <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Top Performer</p>
-                                    <h3 className="text-lg font-black text-slate-800 truncate" title={academicData.topPerformer?.studentName}>
-                                        {academicData.topPerformer?.studentName || 'N/A'}
-                                    </h3>
-                                    <p className="text-[10px] text-amber-600 font-semibold">{academicData.topPerformer?.average || 0}% Average</p>
-                                </div>
-                                <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
-                                    <Award className="h-24 w-24 text-amber-900" />
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-gradient-to-br from-rose-50 to-rose-100/50 border-rose-100 shadow-sm relative overflow-hidden group">
-                            <CardContent className="p-5 flex items-center gap-4">
-                                <div className="bg-rose-500 p-3 rounded-2xl text-white shadow-md">
-                                    <AlertTriangle className="h-6 w-6" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-xs font-bold text-rose-600 uppercase tracking-wider">Needs Support</p>
-                                    <h3 className="text-2xl font-black text-slate-800">{academicData.atRiskStudents.length} Students</h3>
-                                    <p className="text-[10px] text-rose-600 font-semibold">&lt;50% overall average score</p>
-                                </div>
-                                <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
-                                    <AlertTriangle className="h-24 w-24 text-rose-900" />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    {/* CHARTS CONTAINER */}
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                        {/* SUBJECT COMPARISON BAR */}
-                        <Card className="lg:col-span-3 border border-slate-200/80 shadow-sm">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-700">
-                                    <BarChart2 className="h-5 w-5 text-indigo-500" /> Subject Average Comparison
-                                </CardTitle>
-                                <CardDescription>Class performance benchmarks grouped by academic subject.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="h-[320px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={academicData.subjectPerformance} margin={{ top: 10, right: 10, bottom: 20, left: -10 }}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                        <XAxis dataKey="subjectName" tick={{ fontSize: 10, fontWeight: 600, fill: '#64748b' }} interval={0} />
-                                        <YAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
-                                        <Tooltip 
-                                            contentStyle={{ backgroundColor: '#1e293b', color: '#fff', borderRadius: '8px', border: 'none' }}
-                                            formatter={(value) => [`${value}%`, 'Class Average']}
-                                        />
-                                        <Bar dataKey="average" radius={[4, 4, 0, 0]} name="Subject Average">
-                                            {academicData.subjectPerformance.map((entry, index) => {
-                                                const color = entry.average < 50 ? '#ef4444' : entry.average >= 75 ? '#10b981' : '#6366f1';
-                                                return <Cell key={`cell-${index}`} fill={color} />;
-                                            })}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-
-                        {/* PERFORMANCE TIERS PIE */}
-                        <Card className="lg:col-span-2 border border-slate-200/80 shadow-sm flex flex-col justify-between">
-                            <CardHeader className="pb-0">
-                                <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-700">
-                                    <Users className="h-5 w-5 text-indigo-500" /> Grade Level Shares
-                                </CardTitle>
-                                <CardDescription>Class distribution across general performance tiers.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="h-[220px] flex items-center justify-center relative">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={academicData.performanceTiers}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
-                                            paddingAngle={4}
-                                            dataKey="value"
-                                        >
-                                            {academicData.performanceTiers.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip formatter={(value) => [`${value} Students`, 'Student Count']} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div className="absolute text-center">
-                                    <p className="text-[10px] uppercase font-bold text-slate-400">Total Students</p>
-                                    <p className="text-2xl font-black text-slate-800">{students?.length || 0}</p>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex-col gap-1 border-t bg-slate-50/50 p-4">
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 w-full text-xs">
-                                    {academicData.performanceTiers.map((tier, idx) => (
-                                        <div key={idx} className="flex items-center gap-1.5 py-0.5">
-                                            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: tier.color }} />
-                                            <span className="text-slate-600 truncate font-medium">{tier.name}: <strong>{tier.value}</strong></span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardFooter>
-                        </Card>
-                    </div>
-
-                    {/* TOP PERFORMERS SPOTLIGHT */}
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                            <Award className="h-5 w-5 text-amber-500" /> Class Leader Spotlights (Top 3)
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {topSpots.map((student, index) => {
-                                const rankColors = [
-                                    'from-yellow-400 to-amber-500 border-amber-300 ring-yellow-200',
-                                    'from-slate-300 to-slate-400 border-slate-200 ring-slate-100',
-                                    'from-amber-600 to-orange-700 border-orange-500 ring-orange-100'
-                                ];
-                                const rankTitles = ['Class Valedictorian', '2nd Position', '3rd Position'];
-                                
-                                return (
-                                    <Card key={student.studentId} className={`border border-t-4 border-t-indigo-600 shadow-sm relative overflow-hidden`}>
-                                        <CardHeader className="pb-2 flex flex-row justify-between items-start">
-                                            <div>
-                                                <span className={`text-[10px] font-black uppercase text-indigo-600 px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100`}>
-                                                    {rankTitles[index]}
-                                                </span>
-                                                <CardTitle className="text-lg font-black text-slate-800 mt-2 truncate max-w-[200px]" title={student.studentName}>
-                                                    {student.studentName}
-                                                </CardTitle>
-                                            </div>
-                                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${rankColors[index]} text-white flex items-center justify-center font-bold text-sm shadow-md ring-4`}>
-                                                {index + 1}
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="pb-4">
-                                            <div className="flex justify-between items-center text-xs font-bold mt-2">
-                                                <span className="text-slate-400">Class Average Score</span>
-                                                <span className="text-indigo-600 text-lg font-black">{student.average}%</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold mt-1">
-                                                <span>Subjects Passed</span>
-                                                <span>{student.passCount} / {student.totalTestedSubjects}</span>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* TWO-COLUMN LOWER SECTION (INTERVENTIONS & FULL LEADERBOARD) */}
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                        
-                        {/* ACADEMIC INTERVENTION DESK */}
-                        <Card className="lg:col-span-2 border border-slate-200/80 shadow-sm flex flex-col justify-between">
-                            <CardHeader className="bg-rose-50/50 border-b border-rose-100">
-                                <CardTitle className="text-base font-bold text-rose-700 flex items-center gap-2">
-                                    <AlertTriangle className="h-5 w-5 text-rose-500" /> Academic Intervention Desk
-                                </CardTitle>
-                                <CardDescription className="text-rose-600">Students with overall weighted average score below 50%.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-0 overflow-y-auto max-h-[400px] divide-y">
-                                {academicData.atRiskStudents.map(student => {
-                                    // Find their lowest subject score
-                                    let lowestSubName = 'N/A';
-                                    let lowestScore = 100;
-                                    Object.entries(student.subjectScores).forEach(([subId, score]) => {
-                                        const sub = subjects?.find(s => s.id === subId);
-                                        if (score < lowestScore) {
-                                            lowestScore = score;
-                                            lowestSubName = sub?.name || 'Unknown';
-                                        }
-                                    });
-
-                                    return (
-                                        <div key={student.studentId} className="p-4 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                            <div className="space-y-1">
-                                                <p className="font-bold text-sm text-slate-800">{student.studentName}</p>
-                                                <p className="text-[10px] text-rose-500 font-semibold">
-                                                    Weakest Subject: <strong className="font-extrabold">{lowestSubName}</strong> ({lowestScore}%)
-                                                </p>
-                                            </div>
-                                            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:justify-end">
-                                                <Badge variant="destructive" className="font-bold shrink-0">{student.average}% Avg</Badge>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        const schoolName = schoolData?.name || 'our school';
-                                                        const prompt = `Draft a supportive and professional parent notification message for student ${student.studentName}, who is currently flagged under Academic Risk. Their average score is ${student.average}% and their weakest subject is ${lowestSubName} (${lowestScore}%). Please write the message on behalf of the school "${schoolName}" (do NOT use "GAM Edu", which is the software app name). The notification should communicate the situation constructively and propose a discussion to help the student improve.`;
-                                                        window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
-                                                    }}
-                                                    className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 transition-all flex items-center gap-1 shadow-sm shrink-0"
-                                                >
-                                                    <Sparkles className="w-3 h-3 text-purple-500 animate-pulse" />
-                                                    Draft AI parent notification text
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        const prompt = `Recommend specific academic remediation tasks and interventions for student ${student.studentName}. Their average score is ${student.average}% and their weakest subject is ${lowestSubName} (${lowestScore}%). Please provide concrete, actionable study plans, topics to review, or exercises to practice.`;
-                                                        window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
-                                                    }}
-                                                    className="h-7 text-[10px] font-black uppercase tracking-wider px-2.5 rounded-lg border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all flex items-center gap-1 shadow-sm shrink-0"
-                                                >
-                                                    <Wand2 className="w-3 h-3 text-emerald-500 animate-pulse" />
-                                                    Recommend remediation tasks
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                                {academicData.atRiskStudents.length === 0 && (
-                                    <div className="text-center py-12 text-slate-400 text-sm font-medium">
-                                        🎉 Brilliant! All students are currently passing this term.
-                                    </div>
+                    {/* VIEW TOGGLE BAR */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-50 border border-slate-200 p-3 rounded-xl shadow-sm print:hidden">
+                        <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 w-fit">
+                            <button
+                                onClick={() => setViewMode('dashboard')}
+                                className={cn(
+                                    "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                                    viewMode === 'dashboard' 
+                                        ? "bg-white text-indigo-750 shadow-sm" 
+                                        : "text-slate-600 hover:text-slate-800"
                                 )}
-                            </CardContent>
-                            <CardFooter className="py-3 px-4 border-t bg-slate-50/50 text-[10px] font-semibold text-slate-500">
-                                List acts as a reference for remedial/intervention coordination.
-                            </CardFooter>
-                        </Card>
+                            >
+                                <BarChart2 className="h-3.5 w-3.5" />
+                                Overview Dashboard
+                            </button>
+                            <button
+                                onClick={() => setViewMode('master_report')}
+                                className={cn(
+                                    "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                                    viewMode === 'master_report' 
+                                        ? "bg-white text-indigo-750 shadow-sm" 
+                                        : "text-slate-600 hover:text-slate-800"
+                                )}
+                            >
+                                <FileSpreadsheet className="h-3.5 w-3.5" />
+                                Master Report Sheet
+                            </button>
+                        </div>
+                        {viewMode === 'master_report' && (
+                            <Button onClick={() => window.print()} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 shadow-sm border-0">
+                                <Printer className="mr-1.5 h-4 w-4" /> Print Master Report
+                            </Button>
+                        )}
+                    </div>
 
-                        {/* FULL LEADERBOARD TABLE */}
-                        <Card className="lg:col-span-3 border border-slate-200/80 shadow-sm">
-                            <CardHeader className="pb-3 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-2 bg-slate-50/50">
-                                <div>
-                                    <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-700">
-                                        <FileText className="h-5 w-5 text-indigo-500" /> Student Leaderboard Ranking
-                                    </CardTitle>
-                                    <CardDescription>Full academic rank sorting for {selectedClass?.name || 'Class'}.</CardDescription>
+                    {viewMode === 'dashboard' ? (
+                        <>
+                            {/* STATS STRIP */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 border-indigo-100 shadow-sm relative overflow-hidden group">
+                                    <CardContent className="p-5 flex items-center gap-4">
+                                        <div className="bg-indigo-600 p-3 rounded-2xl text-white shadow-md">
+                                            <TrendingUp className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Class Average</p>
+                                            <h3 className="text-2xl font-black text-slate-800">{academicData.classOverallAverage}%</h3>
+                                        </div>
+                                        <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
+                                            <TrendingUp className="h-24 w-24 text-indigo-900" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-100 shadow-sm relative overflow-hidden group">
+                                    <CardContent className="p-5 flex items-center gap-4">
+                                        <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-md">
+                                            <UserCheck className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Overall Pass Rate</p>
+                                            <h3 className="text-2xl font-black text-slate-800">{academicData.classPassRate}%</h3>
+                                        </div>
+                                        <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
+                                            <UserCheck className="h-24 w-24 text-emerald-900" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-100 shadow-sm relative overflow-hidden group">
+                                    <CardContent className="p-5 flex items-center gap-4">
+                                        <div className="bg-amber-505 p-3 rounded-2xl text-white shadow-md">
+                                            <Award className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-0.5 max-w-[70%]">
+                                            <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Top Performer</p>
+                                            <h3 className="text-lg font-black text-slate-800 truncate" title={academicData.topPerformer?.studentName}>
+                                                {academicData.topPerformer?.studentName || 'N/A'}
+                                            </h3>
+                                            <p className="text-[10px] text-amber-600 font-semibold">{academicData.topPerformer?.average || 0}% Average</p>
+                                        </div>
+                                        <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
+                                            <Award className="h-24 w-24 text-amber-900" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="bg-gradient-to-br from-rose-50 to-rose-100/50 border-rose-100 shadow-sm relative overflow-hidden group">
+                                    <CardContent className="p-5 flex items-center gap-4">
+                                        <div className="bg-rose-500 p-3 rounded-2xl text-white shadow-md">
+                                            <AlertTriangle className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <p className="text-xs font-bold text-rose-600 uppercase tracking-wider">Needs Support</p>
+                                            <h3 className="text-2xl font-black text-slate-800">{academicData.atRiskStudents.length} Students</h3>
+                                            <p className="text-[10px] text-rose-600 font-semibold">&lt;50% overall average score</p>
+                                        </div>
+                                        <div className="absolute right-2 -bottom-2 opacity-10 group-hover:scale-110 transition-transform">
+                                            <AlertTriangle className="h-24 w-24 text-rose-900" />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            {/* CHARTS CONTAINER */}
+                            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                                {/* SUBJECT COMPARISON BAR */}
+                                <Card className="lg:col-span-3 border border-slate-200/80 shadow-sm">
+                                    <CardHeader className="pb-2">
+                                        <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-700">
+                                            <BarChart2 className="h-5 w-5 text-indigo-500" /> Subject Average Comparison
+                                        </CardTitle>
+                                        <CardDescription>Class performance benchmarks grouped by academic subject.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="h-[320px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={academicData.subjectPerformance} margin={{ top: 10, right: 10, bottom: 20, left: -10 }}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                <XAxis dataKey="subjectName" tick={{ fontSize: 10, fontWeight: 600, fill: '#64748b' }} interval={0} />
+                                                <YAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
+                                                <Tooltip 
+                                                    contentStyle={{ backgroundColor: '#1e293b', color: '#fff', borderRadius: '8px', border: 'none' }}
+                                                    formatter={(value) => [`${value}%`, 'Class Average']}
+                                                />
+                                                <Bar dataKey="average" radius={[4, 4, 0, 0]} name="Subject Average">
+                                                    {academicData.subjectPerformance.map((entry, index) => {
+                                                        const color = entry.average < 50 ? '#ef4444' : entry.average >= 75 ? '#10b981' : '#6366f1';
+                                                        return <Cell key={`cell-${index}`} fill={color} />;
+                                                    })}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </CardContent>
+                                </Card>
+
+                                {/* PERFORMANCE TIERS PIE */}
+                                <Card className="lg:col-span-2 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                                    <CardHeader className="pb-0">
+                                        <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-700">
+                                            <Users className="h-5 w-5 text-indigo-500" /> Grade Level Shares
+                                        </CardTitle>
+                                        <CardDescription>Class distribution across general performance tiers.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="h-[220px] flex items-center justify-center relative">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <Pie
+                                                    data={academicData.performanceTiers}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={60}
+                                                    outerRadius={80}
+                                                    paddingAngle={4}
+                                                    dataKey="value"
+                                                >
+                                                    {academicData.performanceTiers.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                                    ))}
+                                                </Pie>
+                                                <Tooltip formatter={(value) => [`${value} Students`, 'Student Count']} />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                        <div className="absolute text-center">
+                                            <p className="text-[10px] uppercase font-bold text-slate-400">Total Students</p>
+                                            <p className="text-2xl font-black text-slate-800">{students?.length || 0}</p>
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter className="flex-col gap-1 border-t bg-slate-50/50 p-4">
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 w-full text-xs">
+                                            {academicData.performanceTiers.map((tier, idx) => (
+                                                <div key={idx} className="flex items-center gap-1.5 py-0.5">
+                                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: tier.color }} />
+                                                    <span className="text-slate-600 truncate font-medium">{tier.name}: <strong>{tier.value}</strong></span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </CardFooter>
+                                </Card>
+                            </div>
+
+                            {/* TOP PERFORMERS SPOTLIGHT */}
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                    <Award className="h-5 w-5 text-amber-500" /> Class Leader Spotlights (Top 3)
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {topSpots.map((student, index) => {
+                                        const rankColors = [
+                                            'from-yellow-400 to-amber-500 border-amber-300 ring-yellow-200',
+                                            'from-slate-300 to-slate-400 border-slate-200 ring-slate-100',
+                                            'from-amber-600 to-orange-700 border-orange-500 ring-orange-100'
+                                        ];
+                                        const rankTitles = ['Class Valedictorian', '2nd Position', '3rd Position'];
+                                        
+                                        return (
+                                            <Card key={student.studentId} className={`border border-t-4 border-t-indigo-600 shadow-sm relative overflow-hidden`}>
+                                                <CardHeader className="pb-2 flex flex-row justify-between items-start">
+                                                    <div>
+                                                        <span className={`text-[10px] font-black uppercase text-indigo-600 px-2 py-0.5 rounded-full bg-indigo-55 border border-indigo-100`}>
+                                                            {rankTitles[index]}
+                                                        </span>
+                                                        <CardTitle className="text-lg font-black text-slate-800 mt-2 truncate max-w-[200px]" title={student.studentName}>
+                                                            {student.studentName}
+                                                        </CardTitle>
+                                                    </div>
+                                                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${rankColors[index]} text-white flex items-center justify-center font-bold text-sm shadow-md ring-4`}>
+                                                        {index + 1}
+                                                    </div>
+                                                </CardHeader>
+                                                <CardContent className="pb-4">
+                                                    <div className="flex justify-between items-center text-xs font-bold mt-2">
+                                                        <span className="text-slate-400">Class Average Score</span>
+                                                        <span className="text-indigo-600 text-lg font-black">{student.average}%</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold mt-1">
+                                                        <span>Subjects Passed</span>
+                                                        <span>{student.passCount} / {student.totalTestedSubjects}</span>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                    {topSpots.length === 0 && (
+                                        <div className="col-span-full text-center py-6 text-slate-400 bg-slate-50 border rounded-lg">No spotlight statistics found.</div>
+                                    )}
                                 </div>
-                                <div className="relative w-full md:w-48 print:hidden">
-                                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-                                    <Input
-                                        placeholder="Search student..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-8 h-8 text-xs bg-white"
-                                    />
+                            </div>
+
+                            {/* LEADERBOARD TABLE */}
+                            <div className="space-y-4">
+                                <Card className="border border-slate-200/80 shadow-sm">
+                                    <CardHeader className="pb-3 border-b bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div>
+                                            <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-700">
+                                                <FileText className="h-5 w-5 text-indigo-500" /> Student Leaderboard Ranking
+                                            </CardTitle>
+                                            <CardDescription>Full academic rank sorting for {selectedClass?.name || 'Class'}.</CardDescription>
+                                        </div>
+                                        <div className="relative w-full md:w-48 print:hidden">
+                                            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                                            <Input
+                                                placeholder="Search student..."
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="pl-8 h-8 text-xs bg-white"
+                                            />
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead className="w-[10%] text-center font-bold">Rank</TableHead>
+                                                    <TableHead className="w-[50%] font-bold">Student Name</TableHead>
+                                                    <TableHead className="text-right w-[20%] font-bold">Average (%)</TableHead>
+                                                    <TableHead className="text-right w-[20%] font-bold">Status</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredLeaderboard.map((student, index) => {
+                                                    const rankNum = academicData.studentAverages
+                                                        .filter(s => s.totalTestedSubjects > 0)
+                                                        .sort((a, b) => b.average - a.average)
+                                                        .findIndex(s => s.studentId === student.studentId) + 1;
+
+                                                    return (
+                                                        <TableRow key={student.studentId} className="hover:bg-slate-50 transition-colors">
+                                                            <TableCell className="text-center font-bold text-slate-500">{rankNum > 0 ? rankNum : '-'}</TableCell>
+                                                            <TableCell className="font-bold text-slate-700">{student.studentName}</TableCell>
+                                                            <TableCell className="text-right font-black text-indigo-650">{student.totalTestedSubjects > 0 ? `${student.average}%` : 'N/A'}</TableCell>
+                                                            <TableCell className="text-right">{getStatusBadge(student.average)}</TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                                {filteredLeaderboard.length === 0 && (
+                                                    <TableRow>
+                                                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No students match the search filter.</TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </>
+                    ) : (
+                        <Card className="border border-slate-200 shadow-md">
+                            <CardHeader className="border-b bg-slate-50/50 pb-4">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div>
+                                        <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                            <FileSpreadsheet className="h-5 w-5 text-indigo-600" /> Academic Master Report Sheet
+                                        </CardTitle>
+                                        <CardDescription>
+                                            Subject-by-subject weighted score log for {selectedClassId === 'all' ? 'Entire School' : selectedClass?.name || 'Class'}.
+                                        </CardDescription>
+                                    </div>
+                                    <div className="flex items-center gap-2 print:hidden">
+                                        <span className="text-xs text-slate-400 font-semibold italic">Columns dynamically filter to active subjects.</span>
+                                    </div>
                                 </div>
                             </CardHeader>
-                            <CardContent className="p-0">
+                            <CardContent className="p-0 overflow-x-auto animate-in fade-in duration-300">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[10%] text-center">Rank</TableHead>
-                                            <TableHead className="w-[50%]">Student Name</TableHead>
-                                            <TableHead className="text-right w-[20%]">Average (%)</TableHead>
-                                            <TableHead className="text-right w-[20%]">Status</TableHead>
+                                        <TableRow className="bg-slate-100 hover:bg-slate-100 border-b border-slate-200">
+                                            <TableHead className="w-16 text-center font-bold text-slate-700">Position</TableHead>
+                                            <TableHead className="min-w-[180px] font-bold text-slate-700">Student Name</TableHead>
+                                            {activeSubjects.map(sub => (
+                                                <TableHead key={sub.id} className="text-center font-bold text-slate-700 min-w-[95px]">{sub.name}</TableHead>
+                                            ))}
+                                            <TableHead className="text-center font-bold text-slate-700 w-28 bg-slate-50">Total Marks</TableHead>
+                                            <TableHead className="text-center font-bold text-slate-700 w-24">Average (%)</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {filteredLeaderboard.map((student, index) => {
-                                            // Get overall rank based on position in un-filtered list
-                                            const rankNum = academicData.studentAverages
-                                                .filter(s => s.totalTestedSubjects > 0)
-                                                .sort((a, b) => b.average - a.average)
-                                                .findIndex(s => s.studentId === student.studentId) + 1;
-
-                                            return (
-                                                <TableRow key={student.studentId} className="hover:bg-slate-50 transition-colors">
-                                                    <TableCell className="text-center font-bold text-slate-500">{rankNum > 0 ? rankNum : '-'}</TableCell>
-                                                    <TableCell className="font-bold text-slate-700">{student.studentName}</TableCell>
-                                                    <TableCell className="text-right font-black text-indigo-600">{student.totalTestedSubjects > 0 ? `${student.average}%` : 'N/A'}</TableCell>
-                                                    <TableCell className="text-right">{getStatusBadge(student.average)}</TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                        {filteredLeaderboard.length === 0 && (
+                                        {rankedStudents.map((s) => (
+                                            <TableRow key={s.studentId} className="hover:bg-slate-50/55 transition-colors border-b">
+                                                <TableCell className="text-center font-bold text-slate-500">{s.rank}</TableCell>
+                                                <TableCell className="font-bold text-slate-700">{s.studentName}</TableCell>
+                                                {activeSubjects.map(sub => {
+                                                    const score = s.subjectScores[sub.id];
+                                                    return (
+                                                        <TableCell key={sub.id} className="text-center font-medium">
+                                                            {score !== undefined ? (
+                                                                <span className={score < 50 ? 'text-red-500 font-bold' : 'text-slate-700'}>
+                                                                    {score}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-slate-300">—</span>
+                                                            )}
+                                                        </TableCell>
+                                                    );
+                                                })}
+                                                <TableCell className="text-center font-extrabold text-slate-700 bg-slate-50/50">{s.totalMarks}</TableCell>
+                                                <TableCell className="text-center font-extrabold text-indigo-650">{s.average}%</TableCell>
+                                            </TableRow>
+                                        ))}
+                                        {rankedStudents.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No students match the search filter.</TableCell>
+                                                <TableCell colSpan={activeSubjects.length + 4} className="text-center py-10 text-slate-400 italic">
+                                                    No student records compiled for the selected parameters.
+                                                </TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
                                 </Table>
                             </CardContent>
                         </Card>
-                    </div>
-                </div>
-            ) : (
+                    )}
+                </div>            ) : (
                 /* ========================================================================= */
                 /* SUBJECT DRILLDOWN DASHBOARD (SINGLE SUBJECT ANALYSIS)                    */
                 /* ========================================================================= */
@@ -1107,6 +1187,133 @@ export default function AcademicReportsPage() {
                     </div>
                 )
             )}
+
+            {/* PRINT PORTAL FOR LANDSCAPE REPORT */}
+            {mounted && createPortal(
+                <div id="print-master-report-root" className="hidden print:block bg-white text-black font-sans w-full">
+                    {/* School Header */}
+                    <div className="flex flex-col items-center text-center border-b-[2.5px] border-slate-900 pb-3 mb-4">
+                        <h1 className="text-[20pt] font-black tracking-wide uppercase text-slate-900 leading-none">
+                            {schoolProfile?.schoolName || schoolProfile?.name || "School Name"}
+                        </h1>
+                        {schoolProfile?.motto && (
+                            <p className="text-[9.5pt] italic text-slate-600 mt-1 uppercase tracking-wider">
+                                &ldquo;{schoolProfile.motto}&rdquo;
+                            </p>
+                        )}
+                        <p className="text-[9.5pt] text-slate-500 mt-1 font-medium">
+                            {[
+                                schoolProfile?.address,
+                                schoolProfile?.phone ? `Tel: ${schoolProfile.phone}` : "",
+                                schoolProfile?.email ? `Email: ${schoolProfile.email}` : ""
+                            ].filter(Boolean).join("  |  ")}
+                        </p>
+                    </div>
+
+                    {/* Report Meta Header */}
+                    <div className="text-center mb-4">
+                        <h2 className="text-[13pt] font-black uppercase tracking-widest text-slate-800">Academic Master Report Sheet</h2>
+                        <p className="text-[9.5pt] text-slate-500 mt-0.5 font-bold">
+                            Academic Year: {selectedYear} | Term: {selectedTerm} | Class: {selectedClassId === 'all' ? 'Entire School (All Classes)' : selectedClass?.name || 'Unassigned'}
+                        </p>
+                    </div>
+
+                    {/* Roster Table */}
+                    <table className="w-full border-collapse text-[8.5pt]">
+                        <thead>
+                            <tr className="bg-[#1e293b] text-white">
+                                <th className="border border-slate-800 p-1.5 w-14 text-center font-bold">Pos</th>
+                                <th className="border border-slate-800 p-1.5 text-left min-w-[150px] font-bold">Student Name</th>
+                                {activeSubjects.map(sub => (
+                                    <th key={sub.id} className="border border-slate-800 p-1.5 text-center font-bold">{sub.name}</th>
+                                ))}
+                                <th className="border border-slate-800 p-1.5 w-24 text-center font-bold bg-[#334155]">Total Marks</th>
+                                <th className="border border-slate-800 p-1.5 w-20 text-center font-bold">Average (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rankedStudents.map((s) => (
+                                <tr key={s.studentId} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+                                    <td className="border border-slate-300 p-1.5 text-center font-bold text-slate-600">{s.rank}</td>
+                                    <td className="border border-slate-300 p-1.5 font-bold text-slate-800">{s.studentName}</td>
+                                    {activeSubjects.map(sub => {
+                                        const score = s.subjectScores[sub.id];
+                                        return (
+                                            <td key={sub.id} className="border border-slate-300 p-1.5 text-center font-medium">
+                                                {score !== undefined ? score : '—'}
+                                            </td>
+                                        );
+                                    })}
+                                    <td className="border border-slate-300 p-1.5 text-center font-extrabold text-slate-900 bg-slate-100/50">{s.totalMarks}</td>
+                                    <td className="border border-slate-300 p-1.5 text-center font-extrabold text-indigo-700">{s.average}%</td>
+                                </tr>
+                            ))}
+                            {rankedStudents.length === 0 && (
+                                <tr>
+                                    <td colSpan={activeSubjects.length + 4} className="border border-slate-300 p-4 text-center text-slate-400 italic">
+                                        No student records compiled for the selected term and filters.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+
+                    {/* Signature Blocks */}
+                    <div className="mt-12 pt-4 border-t border-slate-200 flex justify-between items-end">
+                        <div className="flex flex-col gap-1 min-w-[220px]">
+                            <span className="text-[8pt] font-bold text-slate-500 uppercase tracking-widest">Class Teacher Signature</span>
+                            <div className="h-[1px] w-[220px] bg-slate-400 mt-8" />
+                            <span className="text-[7.5pt] text-slate-400 mt-1">Date: ________________________</span>
+                        </div>
+                        <div className="flex flex-col gap-1 min-w-[220px] items-end">
+                            <span className="text-[8pt] font-bold text-slate-500 uppercase tracking-widest">Headteacher / Director Approval</span>
+                            <div className="h-[1px] w-[220px] bg-slate-400 mt-8" />
+                            <span className="text-[7.5pt] text-slate-400 mt-1">Date: ________________________</span>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            <style>{`
+                @page {
+                    size: A4 landscape;
+                    margin: 12mm 12mm 12mm 12mm;
+                }
+                @media print {
+                    body > *:not(#print-master-report-root) {
+                        display: none !important;
+                    }
+                    #print-master-report-root {
+                        display: block !important;
+                        visibility: visible !important;
+                        position: static !important;
+                        width: 100% !important;
+                        height: auto !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        background: #fff !important;
+                        color: #000 !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    #print-master-report-root * {
+                        visibility: visible !important;
+                    }
+                    thead { display: table-header-group !important; }
+                    tfoot { display: table-footer-group !important; }
+                    tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+                    thead tr th {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    tbody tr:nth-child(even) td {
+                        background-color: #f8fafc !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
