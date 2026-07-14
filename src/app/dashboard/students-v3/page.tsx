@@ -1396,64 +1396,73 @@ export default function StudentsV3Page() {
           margin: 18mm 15mm 18mm 15mm;
         }
         @media print {
-          /* Reset all layout scroll locks so multi-page content flows */
+          /* 1. Unlock all scroll-locked ancestors so content can flow across pages */
           html, body, #__next, main,
-          .flex, .h-screen, .overflow-hidden,
-          [class*="overflow-"], [class*="h-screen"] {
+          [class*="overflow-"], [class*="h-screen"],
+          .flex, .h-screen, .overflow-hidden {
             height: auto !important;
-            min-height: auto !important;
+            min-height: 0 !important;
             max-height: none !important;
             overflow: visible !important;
             position: static !important;
+            display: block !important;
           }
 
-          /* Hide everything on screen */
+          /* 2. Make ALL elements invisible + collapse their spacing so they occupy zero space */
           body * {
             visibility: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            min-height: 0 !important;
+            height: auto !important;
+            line-height: 0 !important;
+            font-size: 0 !important;
           }
 
-          /* Reveal only the print root */
+          /* 3. Restore the print root and ALL its contents */
           #print-roster-root,
           #print-roster-root * {
             visibility: visible !important;
+            margin: revert !important;
+            padding: revert !important;
+            border: revert !important;
+            line-height: normal !important;
+            font-size: revert !important;
+            height: auto !important;
           }
 
+          /* 4. Position the print root at the top of the page */
           #print-roster-root {
-            position: static !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
-            height: auto !important;
             overflow: visible !important;
             display: block !important;
             margin: 0 !important;
             padding: 0 !important;
+            border: none !important;
             font-family: 'Segoe UI', Arial, sans-serif !important;
             font-size: 9pt !important;
+            line-height: 1.4 !important;
             color: #000 !important;
             background: #fff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
 
-          /* Repeat header on every page, avoid splitting rows */
-          thead {
-            display: table-header-group !important;
-          }
-          tfoot {
-            display: table-footer-group !important;
-          }
-          tr {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-          }
+          /* 5. Table print behaviour */
+          thead { display: table-header-group !important; }
+          tfoot { display: table-footer-group !important; }
+          tr    { page-break-inside: avoid !important; break-inside: avoid !important; }
 
-          /* Ensure dark header background prints */
-          thead tr th {
+          /* 6. Force backgrounds to print */
+          #print-roster-root thead tr th {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-
-          /* Zebra row backgrounds */
-          tbody tr:nth-child(even) td {
+          #print-roster-root tbody tr:nth-child(even) td {
             background-color: #f8fafc !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
