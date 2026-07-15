@@ -12962,12 +12962,12 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Director gets financial KPIs from summary doc but needs raw records for detail tabs. Accountant, Admin, and Director fetch raw records.
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || role === 'Director')) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, role]);
+  // Director gets financial KPIs from summary doc but needs raw records for detail tabs. Accountant and Director fetch raw records (Admin doesn't need them on the dashboard anymore).
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
   // collectionGroup scan restored for Director for detail tabs.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || isAdmin || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, isAdmin, role]);
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
@@ -13169,16 +13169,17 @@ export default function DashboardClient() {
     (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
     user?.email === 'jamesgambrah@gmail.com';
 
-  const budgetsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'budgets'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  // Admin no longer has financial stats or tabs on this page, so we don't load budgets, accounts, etc. for Admin on this dashboard.
+  const budgetsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess && role !== 'Administrator') ? query(collection(firestore, 'budgets'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess, role]);
   const { data: budgets } = useCollection<any>(budgetsQuery);
 
-  const budgetItemsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'budget_items'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  const budgetItemsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess && role !== 'Administrator') ? query(collection(firestore, 'budget_items'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess, role]);
   const { data: budgetItems } = useCollection<any>(budgetItemsQuery);
 
-  const accountsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  const accountsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess && role !== 'Administrator') ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess, role]);
   const { data: accounts } = useCollection<any>(accountsQuery);
 
-  const journalsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess]);
+  const journalsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess && role !== 'Administrator') ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess, role]);
   const { data: journals } = useCollection<any>(journalsQuery);
 
   const isLoading = roleLoading || schoolLoading;
