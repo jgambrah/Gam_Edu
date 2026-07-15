@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc, useAuth } from '@/firebase';
 import { logAuditEvent } from '@/lib/audit';
 import { 
   collection, 
@@ -49,6 +49,7 @@ import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
 
 
 export default function StudentsV3Page() {
+  const auth = useAuth();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
@@ -312,7 +313,8 @@ export default function StudentsV3Page() {
       const email = (values.email as string) || '';
 
       try {
-          const result = await createNewUser(email, "password123", 'Student', { firstName, lastName }, adminSchoolId);
+          const idToken = await auth?.currentUser?.getIdToken();
+          const result = await createNewUser(email, "password123", 'Student', { firstName, lastName }, adminSchoolId, idToken);
           if ('error' in result) throw new Error(result.error);
 
           let photoURL = null;
@@ -1168,7 +1170,8 @@ export default function StudentsV3Page() {
                           if (!resetPasswordUser || newTempPassword.length < 6) return;
                           setIsResetting(true);
                           
-                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'students');
+                          const idToken = await auth?.currentUser?.getIdToken();
+                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'students', idToken);
                           
                           if (res.success) {
                               toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });

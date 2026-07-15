@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useUser, useMemoFirebase, useDoc } from '@/firebase';
+import { useCollection, useFirestore, useUser, useMemoFirebase, useDoc, useAuth } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { logAuditEvent } from '@/lib/audit';
 import { collection, doc, query, where, getDocs, getDoc, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy, setDoc } from 'firebase/firestore';
@@ -186,6 +186,7 @@ function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void,
 
 // --- ADMIN REVIEW DASHBOARD ---
 function AdminApplicationDashboard() {
+    const auth = useAuth();
     const firestore = useFirestore();
     const { user } = useUser();
     const { profile } = useRole();
@@ -463,12 +464,14 @@ function AdminApplicationDashboard() {
                 }
 
                 // Create Firebase User account for the student
+                const idToken = await auth?.currentUser?.getIdToken();
                 const userResult = await createNewUser(
                     studentEmail.trim(), 
                     studentPassword || 'password123', 
                     'Student', 
                     { firstName, lastName }, 
-                    schoolId
+                    schoolId,
+                    idToken
                 );
 
                 if (userResult.error) {

@@ -41,7 +41,8 @@ export async function createNewUser(
   password: string,
   role?: string,
   details?: { firstName: string, lastName: string },
-  schoolId?: string 
+  schoolId?: string,
+  idToken?: string
 ) {
   console.log("🚀 Starting User Creation for:", email);
 
@@ -49,6 +50,38 @@ export async function createNewUser(
     const adminApp = getAdminApp();
     const auth = getAuth(adminApp);
     const firestore = getFirestore(adminApp);
+
+    // --- SECURE: Caller Authentication and Authorization Check ---
+    if (!idToken) {
+      throw new Error("Authentication token required.");
+    }
+
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+
+    let callerSchoolId = "";
+    let callerRole = "";
+
+    if (!isSuperAdmin) {
+      const callerUserSnap = await firestore.collection('users').doc(callerUid).get();
+      if (!callerUserSnap.exists) {
+        throw new Error("Unauthorized caller profile context.");
+      }
+      const callerData = callerUserSnap.data();
+      callerSchoolId = callerData?.schoolId || "";
+      callerRole = callerData?.role || "";
+
+      if (!['Director', 'Administrator', 'Admin'].includes(callerRole)) {
+        throw new Error("Unauthorized role privileges.");
+      }
+    }
+
+    // Force target schoolId to match caller's schoolId unless Super Admin
+    const targetSchoolId = isSuperAdmin ? (schoolId || "") : callerSchoolId;
+    if (!targetSchoolId) {
+      throw new Error("School ID context is required.");
+    }
 
     // 1. Check if user already exists
     try {
@@ -96,21 +129,21 @@ export async function createNewUser(
         requirePasswordChange: true 
     };
 
-    if (schoolId) profileData.schoolId = schoolId;
+    if (targetSchoolId) profileData.schoolId = targetSchoolId;
 
     await firestore.collection(collectionName).doc(userRecord.uid).set(profileData, { merge: true });
     
     // 4. User Mapping
     await firestore.collection('users').doc(userRecord.uid).set({
         role: role || 'Parent',
-        schoolId: schoolId,
+        schoolId: targetSchoolId,
         email,
         requirePasswordChange: true 
     }, { merge: true });
     
     // 5. Send Credentials Email
-    if (details?.firstName && schoolId) {
-        const schoolDoc = await firestore.collection('schools').doc(schoolId).get();
+    if (details?.firstName && targetSchoolId) {
+        const schoolDoc = await firestore.collection('schools').doc(targetSchoolId).get();
         const schoolName = schoolDoc.data()?.name || 'Your School';
         await sendSchoolCredentialsEmail(email, details.firstName, schoolName, password);
     }

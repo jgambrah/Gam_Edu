@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useAuth } from '@/firebase';
 import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, query, where, orderBy, updateDoc, limit, getDoc } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user'; 
 import { sendSchoolCredentialsEmail } from '@/lib/email';
@@ -265,6 +265,7 @@ function TutorialManager() {
 
 // --- MAIN PAGE ---
 export default function SuperAdminPage() {
+  const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   
@@ -340,9 +341,10 @@ export default function SuperAdminPage() {
 
       const newSchoolId = schoolRef.id;
       const password = "password123"; 
+      const idToken = await auth?.currentUser?.getIdToken();
       const result = await createNewUser(
         adminEmail, password, 'Director', 
-        { firstName: adminName, lastName: 'Admin' }, newSchoolId 
+        { firstName: adminName, lastName: 'Admin' }, newSchoolId, idToken
       );
 
       if ('error' in result) throw new Error(result.error);

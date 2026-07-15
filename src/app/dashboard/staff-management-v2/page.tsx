@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useUser, useAuth } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { logAuditEvent } from '@/lib/audit';
 import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
@@ -54,6 +54,7 @@ type Subject = {
 
 // ═════════════════════════════════════════════════════════════════════════════
 export default function StaffManagementPage() {
+  const auth = useAuth();
   const firestore = useFirestore();
   const { user } = useUser();
   const { profile } = useRole();
@@ -127,7 +128,8 @@ export default function StaffManagementPage() {
     const email     = fd.get('email')     as string;
 
     try {
-      const result = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName }, adminSchoolId);
+      const idToken = await auth?.currentUser?.getIdToken();
+      const result = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName }, adminSchoolId, idToken);
       if ('error' in result) throw new Error(result.error);
 
       await logAuditEvent({
@@ -535,7 +537,8 @@ export default function StaffManagementPage() {
                       onClick={async () => {
                           if (!resetPasswordUser || newTempPassword.length < 6) return;
                           setIsResetting(true);
-                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'staff');
+                          const idToken = await auth?.currentUser?.getIdToken();
+                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'staff', idToken);
                           if (res.success) {
                               toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
                               setResetPasswordUser(null);

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useCollection, useMemoFirebase, useAuth } from '@/firebase';
 import { collection, query, where, doc, setDoc, serverTimestamp, getDocs, writeBatch, limit, arrayUnion, updateDoc, Timestamp } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -51,6 +51,7 @@ function getRowValue(row: any, keys: string[]): string {
 }
 
 export default function MigrationHubPage() {
+  const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
@@ -209,12 +210,14 @@ export default function MigrationHubPage() {
           continue;
         }
 
+        const idToken = await auth?.currentUser?.getIdToken();
         const result = await createNewUser(
           email,
           "password123",
           'Student',
           { firstName, lastName },
-          schoolId
+          schoolId,
+          idToken
         );
 
         if ('error' in result) {
@@ -280,7 +283,8 @@ export default function MigrationHubPage() {
 
         if (!email || !firstName) { failCount++; setParentImportProgress(i + 1); continue; }
 
-        const result = await createNewUser(email, "password123", 'Parent', { firstName, lastName }, schoolId);
+        const idToken = await auth?.currentUser?.getIdToken();
+        const result = await createNewUser(email, "password123", 'Parent', { firstName, lastName }, schoolId, idToken);
         if ('error' in result) { failCount++; setParentImportProgress(i + 1); continue; }
 
         const linkedStudentId = studentEmailMap.get(studentEmail);

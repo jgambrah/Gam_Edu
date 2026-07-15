@@ -61,6 +61,7 @@ type Student = {
 
 // --- MAIN PAGE COMPONENT ---
 export default function ParentsPage() {
+  const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const { role } = useRole();
@@ -159,7 +160,8 @@ export default function ParentsPage() {
       const password = "password123";
 
       try {
-          const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName }, adminSchoolId);
+          const idToken = await auth?.currentUser?.getIdToken();
+          const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName }, adminSchoolId, idToken);
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'parents', result.uid), {
@@ -655,7 +657,8 @@ export default function ParentsPage() {
                           if (!resetPasswordUser || newTempPassword.length < 6) return;
                           setIsResetting(true);
                           
-                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'parents');
+                          const idToken = await auth?.currentUser?.getIdToken();
+                          const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'parents', idToken);
                           
                           if (res.success) {
                               toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });

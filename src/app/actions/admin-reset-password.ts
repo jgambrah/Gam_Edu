@@ -26,11 +26,45 @@ function getAdminApp() {
   }, 'admin');
 }
 
-export async function adminResetUserPassword(uid: string, newPassword: string, collectionName: string) {
+export async function adminResetUserPassword(
+  uid: string,
+  newPassword: string,
+  collectionName: string,
+  idToken?: string
+) {
   try {
     const adminApp = getAdminApp();
     const auth = getAuth(adminApp);
     const db = getFirestore(adminApp);
+
+    // --- SECURE: Caller Authentication and Authorization Check ---
+    if (!idToken) {
+      throw new Error("Authentication token required.");
+    }
+
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+
+    if (!isSuperAdmin) {
+      const callerUserSnap = await db.collection('users').doc(callerUid).get();
+      if (!callerUserSnap.exists) {
+        throw new Error("Unauthorized caller profile context.");
+      }
+      const callerData = callerUserSnap.data();
+      const callerSchoolId = callerData?.schoolId || "";
+      const callerRole = callerData?.role || "";
+
+      if (!['Director', 'Administrator', 'Admin'].includes(callerRole)) {
+        throw new Error("Unauthorized role privileges.");
+      }
+
+      // Verify the target user belongs to the same school
+      const targetUserDoc = await db.collection('users').doc(uid).get();
+      if (!targetUserDoc.exists || targetUserDoc.data()?.schoolId !== callerSchoolId) {
+        throw new Error("Unauthorized: Cannot reset password for users outside your school.");
+      }
+    }
 
     // 1. Update the password in Firebase Auth directly
     await auth.updateUser(uid, { password: newPassword });
