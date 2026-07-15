@@ -794,14 +794,16 @@ function AdminDashboard({
   // If summary data is available (Director path), use it directly.
   // Otherwise fall back to in-memory array derivation (Administrator path).
   const todayPresentCount = useMemo(() => {
-    if (summaryPresentCount !== undefined) return summaryPresentCount;
+    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
+    if (isAttendanceToday && summaryPresentCount !== undefined) return summaryPresentCount;
     if (!attendance || !activeStudents || activeStudents.length === 0) return 0;
     const today = startOfDay(new Date());
     return attendance.filter((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
       return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
     }).length;
-  }, [attendance, activeStudents, summaryPresentCount]);
+  }, [attendance, activeStudents, summaryPresentCount, dashboardSummary?.attendance?.date]);
 
   const hasTodayAttendance = useMemo(() => {
     if (!attendance || attendance.length === 0) return false;
@@ -813,10 +815,12 @@ function AdminDashboard({
   }, [attendance]);
 
   const todayAttendanceRate = useMemo(() => {
-    if (summaryAttendanceRate !== undefined) return summaryAttendanceRate;
+    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
+    if (isAttendanceToday && summaryAttendanceRate !== undefined) return summaryAttendanceRate;
     if (activeStudents.length === 0) return 0;
     return Math.round((todayPresentCount / activeStudents.length) * 100);
-  }, [todayPresentCount, activeStudents, summaryAttendanceRate]);
+  }, [todayPresentCount, activeStudents, summaryAttendanceRate, dashboardSummary?.attendance?.date]);
 
   const collectedToday = useMemo(() => {
     if (!payments) return 0;
@@ -4630,14 +4634,16 @@ function DirectorDashboard({
 
 
   const todayPresentCount = useMemo(() => {
-    if (summaryPresentCount !== undefined) return summaryPresentCount;
+    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
+    if (isAttendanceToday && summaryPresentCount !== undefined) return summaryPresentCount;
     if (!attendance || !activeStudents || activeStudents.length === 0) return 0;
     const today = startOfDay(new Date());
     return attendance.filter((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
       return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
     }).length;
-  }, [attendance, activeStudents, summaryPresentCount]);
+  }, [attendance, activeStudents, summaryPresentCount, dashboardSummary?.attendance?.date]);
 
   const hasTodayAttendance = useMemo(() => {
     if (dashboardSummary?.attendance?.date !== undefined) {
@@ -4659,10 +4665,12 @@ function DirectorDashboard({
   }, [attendance, dashboardSummary]);
 
   const todayAttendanceRate = useMemo(() => {
-    if (summaryAttendanceRate !== undefined) return summaryAttendanceRate;
+    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
+    if (isAttendanceToday && summaryAttendanceRate !== undefined) return summaryAttendanceRate;
     if (activeStudents.length === 0) return 0;
     return Math.round((todayPresentCount / activeStudents.length) * 100);
-  }, [todayPresentCount, activeStudents, summaryAttendanceRate]);
+  }, [todayPresentCount, activeStudents, summaryAttendanceRate, dashboardSummary?.attendance?.date]);
 
   const collectedToday = useMemo(() => {
     const today = startOfDay(new Date());
@@ -4680,8 +4688,22 @@ function DirectorDashboard({
         }
       });
     }
-    return Math.max(clientTotal, summaryCollectedToday ?? 0);
-  }, [payments, summaryCollectedToday]);
+    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const isSummaryToday = dashboardSummary?.lastUpdated 
+      ? (() => {
+          try {
+            const lastUpdatedDate = typeof dashboardSummary.lastUpdated.toDate === 'function'
+              ? dashboardSummary.lastUpdated.toDate()
+              : new Date(dashboardSummary.lastUpdated.seconds ? dashboardSummary.lastUpdated.seconds * 1000 : dashboardSummary.lastUpdated);
+            return lastUpdatedDate.toISOString().slice(0, 10) === todayUTCStr;
+          } catch (e) {
+            return false;
+          }
+        })()
+      : false;
+    const finalSummaryToday = isSummaryToday ? (summaryCollectedToday ?? 0) : 0;
+    return Math.max(clientTotal, finalSummaryToday);
+  }, [payments, summaryCollectedToday, dashboardSummary?.lastUpdated]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
