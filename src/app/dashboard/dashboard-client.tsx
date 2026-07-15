@@ -639,15 +639,14 @@ function AdminDashboard({
     };
   }, [recentAssessments]);
 
-  // If director summary is available, use it; otherwise derive from students array
+  // Derive active students from students array
   const activeStudents = useMemo(() => {
-    if (summaryStudentActive !== undefined) return [];
     return students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
-  }, [students, summaryStudentActive]);
+  }, [students]);
 
-  // Effective counts: prefer summary for Directors, array-length for Admins
-  const effectiveActiveCount = summaryStudentActive ?? activeStudents.length;
-  const effectiveTotalCount  = summaryStudentTotal  ?? (students?.length || 0);
+  // Effective counts: prefer live array-length for Admin (with fallback to summary counts)
+  const effectiveActiveCount = activeStudents.length || summaryStudentActive || 0;
+  const effectiveTotalCount  = (students?.length || 0) || summaryStudentTotal || 0;
 
   const attendanceRate = useMemo(() => {
     if (!attendance || attendance.length === 0 || activeStudents.length === 0) return 66; // Fallback to 66% if no records
@@ -1036,11 +1035,11 @@ function AdminDashboard({
             <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
               <DirectorStatCard 
                 title="Total Students" 
-                value={activeStudents.length} 
+                value={effectiveActiveCount} 
                 icon={GraduationCap} 
                 link="/dashboard/students-v3" 
                 isLoading={isLoading}
-                subtitle={`${activeStudents.length} Active`} 
+                subtitle={`${effectiveActiveCount} Active`} 
                 color="text-indigo-600"
                 glowColor="rgba(99, 102, 241, 0.08)"
               />
@@ -1056,7 +1055,7 @@ function AdminDashboard({
               />
               <DirectorStatCard 
                 title="Students Present" 
-                value={`${todayPresentCount} of ${activeStudents.length}`} 
+                value={`${todayPresentCount} of ${effectiveActiveCount}`} 
                 icon={CalendarCheck} 
                 link="/dashboard/attendance" 
                 isLoading={isLoading}
