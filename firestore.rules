@@ -32,9 +32,15 @@ service cloud.firestore {
     }
 
     function getUserSchoolId() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
-        : '';
+      return exists(/databases/$(database)/documents/staff/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId
+        : (exists(/databases/$(database)/documents/students/$(request.auth.uid))
+           ? get(/databases/$(database)/documents/students/$(request.auth.uid)).data.schoolId
+           : (exists(/databases/$(database)/documents/parents/$(request.auth.uid))
+              ? get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.schoolId
+              : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+                 ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
+                 : '')));
     }
 
     function getUserRole() {
