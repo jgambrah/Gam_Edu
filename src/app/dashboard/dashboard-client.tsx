@@ -4688,22 +4688,27 @@ function DirectorDashboard({
         }
       });
     }
-    const todayUTCStr = new Date().toISOString().slice(0, 10);
-    const isSummaryToday = dashboardSummary?.lastUpdated 
-      ? (() => {
-          try {
-            const lastUpdatedDate = typeof dashboardSummary.lastUpdated.toDate === 'function'
-              ? dashboardSummary.lastUpdated.toDate()
-              : new Date(dashboardSummary.lastUpdated.seconds ? dashboardSummary.lastUpdated.seconds * 1000 : dashboardSummary.lastUpdated);
-            return lastUpdatedDate.toISOString().slice(0, 10) === todayUTCStr;
-          } catch (e) {
-            return false;
-          }
-        })()
-      : false;
+    const isSummaryToday = (() => {
+      if (!dashboardSummary?.financials?.lastPaymentAt) return false;
+      try {
+        const lastPaymentAt = dashboardSummary.financials.lastPaymentAt;
+        const lastPaymentDate = typeof lastPaymentAt.toDate === 'function'
+          ? lastPaymentAt.toDate()
+          : new Date(lastPaymentAt.seconds ? lastPaymentAt.seconds * 1000 : lastPaymentAt);
+        const todayUTCStr = new Date().toISOString().slice(0, 10);
+        const lastPaymentUTCStr = lastPaymentDate.toISOString().slice(0, 10);
+        
+        const todayLocalStr = format(new Date(), 'yyyy-MM-dd');
+        const lastPaymentLocalStr = format(lastPaymentDate, 'yyyy-MM-dd');
+        
+        return lastPaymentUTCStr === todayUTCStr || lastPaymentLocalStr === todayLocalStr;
+      } catch (e) {
+        return false;
+      }
+    })();
     const finalSummaryToday = isSummaryToday ? (summaryCollectedToday ?? 0) : 0;
     return Math.max(clientTotal, finalSummaryToday);
-  }, [payments, summaryCollectedToday, dashboardSummary?.lastUpdated]);
+  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
