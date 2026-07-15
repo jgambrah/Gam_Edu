@@ -981,8 +981,7 @@ function AdminDashboard({
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
           {/* Custom Tab Bar */}
           <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'academics', 'attendance', 'students', 'staff', 'financials', 'canteen', 'satisfaction', 'system'] as const).map((tab) => {
-              if (tab === 'financials' && !hasFinanceAccess) return null;
+            {(['overview', 'academics', 'attendance', 'students', 'staff', 'canteen', 'satisfaction', 'system'] as const).map((tab) => {
               return (
                 <button
                   key={tab}
@@ -1064,26 +1063,6 @@ function AdminDashboard({
                 glowColor="rgba(14, 165, 233, 0.08)"
               />
               <DirectorStatCard 
-                title="Collection Rate" 
-                value={hasFinanceAccess ? `${financials.collectionRate}%` : "Restricted"} 
-                icon={TrendingUp} 
-                link={hasFinanceAccess ? "/dashboard/accounts" : "#"} 
-                isLoading={isLoading}
-                subtitle="Collection Progress" 
-                color="text-emerald-600"
-                glowColor="rgba(16, 185, 129, 0.08)"
-              />
-              <DirectorStatCard 
-                title="Outstanding Fees" 
-                value={hasFinanceAccess ? `GH₵ ${Math.round(financials.totalOutstanding).toLocaleString()}` : "Restricted"} 
-                icon={Banknote} 
-                link={hasFinanceAccess ? "/dashboard/accounts" : "#"} 
-                isLoading={isLoading}
-                subtitle="Gross Outstanding" 
-                color="text-rose-600"
-                glowColor="rgba(244, 63, 94, 0.08)"
-              />
-              <DirectorStatCard 
                 title="Academic API" 
                 value={`${academicTidbits.avgScore}%`} 
                 icon={BookOpenCheck} 
@@ -1122,16 +1101,6 @@ function AdminDashboard({
                 subtitle="Term Intake" 
                 color="text-indigo-600"
                 glowColor="rgba(99, 102, 241, 0.08)"
-              />
-              <DirectorStatCard 
-                title="Collected Today" 
-                value={`GH₵ ${Math.round(collectedToday).toLocaleString()}`} 
-                icon={HandCoins} 
-                link={hasFinanceAccess ? "/dashboard/accounts" : "#"} 
-                isLoading={isLoading}
-                subtitle="Today's Collections" 
-                color="text-emerald-600"
-                glowColor="rgba(16, 185, 129, 0.08)"
               />
             </div>
             
@@ -1219,7 +1188,7 @@ function AdminDashboard({
               </Card>
             </div>
 
-            {/* Decision Intelligence Panel - The 5 Critical Questions */}
+            {/* Decision Intelligence Panel - The 4 Critical Questions */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Question 1: Academic Performance */}
               <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-300">
@@ -1338,112 +1307,21 @@ function AdminDashboard({
                 </CardContent>
               </Card>
 
-              {/* Question 4: Financial Health (CONSOLIDATED) */}
+              {/* Question 4: Risks & Alert Desk */}
               <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-300">
-                <CardHeader className="p-8 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl"><Banknote className="h-6 w-6" /></div>
-                    <div>
-                      <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Financial Solvency</span>
-                      <CardTitle className="text-xl font-black text-slate-800">Q4: Is the school financially healthy?</CardTitle>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8 pt-4">
-                  {hasFinanceAccess ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                      {/* Left side: Collections Ring progress & details */}
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <div className="relative w-24 h-24 flex items-center justify-center shrink-0">
-                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                              <circle cx="50" cy="50" r="40" stroke="#f1f5f9" strokeWidth="8" fill="transparent" />
-                              <circle 
-                                cx="50" 
-                                cy="50" 
-                                r="40" 
-                                stroke="#10b981" 
-                                strokeWidth="8" 
-                                fill="transparent" 
-                                strokeDasharray={2 * Math.PI * 40}
-                                strokeDashoffset={2 * Math.PI * 40 * (1 - financials.collectionRate / 100)}
-                                strokeLinecap="round"
-                              />
-                            </svg>
-                            <span className="absolute text-base font-black text-slate-900">{financials.collectionRate}%</span>
-                          </div>
-                          <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tuition Collection Target</p>
-                            <p className="text-xs font-bold text-slate-700 leading-normal">
-                              GH₵ {Math.round(financials.totalRevenue).toLocaleString()} receipted out of GH₵ {Math.round(financials.totalBilled).toLocaleString()} total billed.
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="p-3 bg-emerald-50/30 border border-emerald-100/50 rounded-xl">
-                          <div className="flex justify-between items-center text-xs font-bold">
-                            <span className="text-slate-500">Cleared Collections</span>
-                            <span className="text-emerald-700">GH₵ {Math.round(financials.totalRevenue).toLocaleString()}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-xs font-bold mt-1.5">
-                            <span className="text-slate-500">Outstanding Receivables</span>
-                            <span className="text-rose-600">GH₵ {Math.round(financials.totalOutstanding).toLocaleString()}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right side: Debt Aging Breakdown */}
-                      <div className="space-y-3">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Receivables Debt Aging</p>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center p-2 rounded-xl bg-slate-50/70 border border-slate-100 text-xs font-bold">
-                            <span className="text-slate-500 uppercase tracking-tight text-[10px]">Current Dues</span>
-                            <span className="text-slate-700">GH₵ {Math.round(debtAgingStats.current).toLocaleString()}</span>
-                          </div>
-                          <div className="flex justify-between items-center p-2 rounded-xl bg-slate-50/70 border border-slate-100 text-xs font-bold">
-                            <span className="text-slate-500 uppercase tracking-tight text-[10px]">1 - 30 Days Overdue</span>
-                            <span className="text-amber-600">GH₵ {Math.round(debtAgingStats.age30).toLocaleString()}</span>
-                          </div>
-                          <div className="flex justify-between items-center p-2 rounded-xl bg-slate-50/70 border border-slate-100 text-xs font-bold">
-                            <span className="text-slate-500 uppercase tracking-tight text-[10px]">31 - 60 Days Overdue</span>
-                            <span className="text-orange-600">GH₵ {Math.round(debtAgingStats.age60).toLocaleString()}</span>
-                          </div>
-                          <div className="flex justify-between items-center p-2 rounded-xl bg-slate-50/70 border border-slate-100 text-xs font-bold">
-                            <span className="text-slate-500 uppercase tracking-tight text-[10px]">61+ Days Overdue</span>
-                            <span className="text-rose-600">GH₵ {Math.round(debtAgingStats.age90).toLocaleString()}</span>
-                          </div>
-                          {debtAgingStats.overpayments > 0 && (
-                            <div className="flex justify-between items-center p-2 rounded-xl bg-slate-50/70 border border-slate-100 text-xs font-bold">
-                              <span className="text-slate-500 uppercase tracking-tight text-[10px]">Less: Overpayments</span>
-                              <span className="text-emerald-600">-GH₵ {Math.round(debtAgingStats.overpayments).toLocaleString()}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center text-xs font-bold text-slate-500 uppercase">
-                      Financial information is restricted for this administrative role.
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Question 5: Risks & Alert Desk */}
-              <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-300">
                 <CardHeader className="p-8 pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl"><ShieldAlert className="h-6 w-6" /></div>
                       <div>
                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Operations Security</span>
-                        <CardTitle className="text-xl font-black text-slate-800">Q5: Are there risks requiring immediate attention? (Alert Desk)</CardTitle>
+                        <CardTitle className="text-xl font-black text-slate-800">Q4: Are there risks requiring immediate attention? (Alert Desk)</CardTitle>
                       </div>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-8 pt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Pantry Inventory Stock Alert */}
                     <div className={cn(
                       "p-4 rounded-2xl border flex flex-col justify-between",
@@ -1491,27 +1369,6 @@ function AdminDashboard({
                         {hasTodayAttendance && todayAttendanceRate < 85 ? "Investigation Open" : "Operational"}
                       </Badge>
                     </div>
-
-                     {/* Tuition Debt Alert */}
-                     <div className={cn(
-                       "p-4 rounded-2xl border flex flex-col justify-between",
-                       financials.totalOutstanding > arrearsThreshold 
-                         ? "bg-rose-50/40 border-rose-100 text-rose-800" 
-                         : "bg-slate-50/80 border-slate-100 text-slate-700"
-                     )}>
-                       <div>
-                         <p className="text-[9px] font-black uppercase tracking-widest mb-1.5 opacity-60">Receivables Alert</p>
-                         <h4 className="text-sm font-black uppercase">
-                           {financials.totalOutstanding > arrearsThreshold ? "High Arrears Level" : "Debt Level Stable"}
-                         </h4>
-                         <p className="text-[9px] font-bold mt-1 opacity-70">
-                           Total outstanding balance exceeds GH₵ {arrearsThreshold.toLocaleString()} threshold.
-                         </p>
-                       </div>
-                       <Badge className={cn("mt-4 w-fit border-none font-black text-[9px] uppercase", financials.totalOutstanding > arrearsThreshold ? "bg-rose-100 text-rose-700" : "bg-slate-100 text-slate-700")}>
-                         {financials.totalOutstanding > arrearsThreshold ? "Reminders Triggered" : "Operational"}
-                       </Badge>
-                     </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1872,20 +1729,7 @@ function AdminDashboard({
           </div>
         )}
 
-        {activeTab === 'financials' && hasFinanceAccess && (
-          <FinancialDashboardView 
-            students={students || []}
-            classes={classes || []}
-            financialRecords={financialRecords || []}
-            payments={payments}
-            accounts={accounts || []}
-            budgets={budgets || []}
-            budgetItems={budgetItems || []}
-            journals={journals || []}
-            schoolSettings={schoolSettings}
-            arrearsThreshold={arrearsThreshold}
-          />
-        )}
+
 
         {activeTab === 'system' && (
           <div className="space-y-8 animate-in fade-in duration-300">
