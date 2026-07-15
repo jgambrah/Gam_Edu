@@ -533,14 +533,50 @@ function AdminDashboard({
     return { positive, infractions, recent };
   }, [behavioralRecords, students]);
 
-  const startOfToday = useMemo(() => startOfDay(new Date()), []);
+  const startOfToday = useMemo(() => {
+    const termStartStr = schoolData?.termStartDate;
+    const termEndStr = schoolData?.termEndDate;
+    const now = startOfDay(new Date());
+
+    if (termStartStr && termEndStr) {
+      const partsStart = termStartStr.split('-');
+      const partsEnd = termEndStr.split('-');
+      if (partsStart.length === 3 && partsEnd.length === 3) {
+        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
+        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
+        
+        if (now < termStart) {
+          return termStart;
+        } else if (now > termEnd) {
+          return termEnd;
+        }
+      }
+    } else if (termEndStr) {
+      const partsEnd = termEndStr.split('-');
+      if (partsEnd.length === 3) {
+        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
+        if (now > termEnd) {
+          return termEnd;
+        }
+      }
+    } else if (termStartStr) {
+      const partsStart = termStartStr.split('-');
+      if (partsStart.length === 3) {
+        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
+        if (now < termStart) {
+          return termStart;
+        }
+      }
+    }
+    return now;
+  }, [schoolData?.termStartDate, schoolData?.termEndDate]);
 
   const todayStudentAbsences = useMemo(() => {
     if (!attendance || !students) return [];
     const todayRecs = attendance.filter((r: any) => {
       if (!r.date) return false;
       const dateObj = r.date.toDate ? r.date.toDate() : new Date(r.date);
-      return dateObj >= startOfToday;
+      return startOfDay(dateObj).getTime() === startOfToday.getTime();
     });
     const absentRecs = todayRecs.filter((r: any) => r.status === 'Absent');
     return absentRecs.map((r: any) => {
@@ -559,13 +595,13 @@ function AdminDashboard({
     const todayRecs = staffAttendance.filter((r: any) => {
       if (!r.timestamp) return false;
       const dateObj = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
-      return dateObj >= startOfToday;
+      return startOfDay(dateObj).getTime() === startOfToday.getTime();
     });
     const checkIns = todayRecs.filter((r: any) => r.type === 'In');
     const presentIds = new Set(checkIns.map((r: any) => r.staffId));
     const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
 
-    const today = new Date();
+    const today = startOfToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     const isVacation = schoolData?.vacationMode === true;
     const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && checkIns.length === 0;
@@ -795,37 +831,34 @@ function AdminDashboard({
   // If summary data is available (Director path), use it directly.
   // Otherwise fall back to in-memory array derivation (Administrator path).
   const todayPresentCount = useMemo(() => {
-    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const todayUTCStr = format(startOfToday, 'yyyy-MM-dd');
     const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
     if (isAttendanceToday && summaryPresentCount !== undefined) return summaryPresentCount;
     if (!attendance || !activeStudents || activeStudents.length === 0) return 0;
-    const today = startOfDay(new Date());
     return attendance.filter((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
-      return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
+      return startOfDay(d).getTime() === startOfToday.getTime() && (r.status === 'Present' || r.status === 'Late');
     }).length;
-  }, [attendance, activeStudents, summaryPresentCount, dashboardSummary?.attendance?.date]);
+  }, [attendance, activeStudents, summaryPresentCount, dashboardSummary?.attendance?.date, startOfToday]);
 
   const hasTodayAttendance = useMemo(() => {
     if (!attendance || attendance.length === 0) return false;
-    const today = startOfDay(new Date());
     return attendance.some((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
-      return startOfDay(d).getTime() === today.getTime();
+      return startOfDay(d).getTime() === startOfToday.getTime();
     });
-  }, [attendance]);
+  }, [attendance, startOfToday]);
 
   const todayAttendanceRate = useMemo(() => {
-    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const todayUTCStr = format(startOfToday, 'yyyy-MM-dd');
     const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
     if (isAttendanceToday && summaryAttendanceRate !== undefined) return summaryAttendanceRate;
     if (activeStudents.length === 0) return 0;
     return Math.round((todayPresentCount / activeStudents.length) * 100);
-  }, [todayPresentCount, activeStudents, summaryAttendanceRate, dashboardSummary?.attendance?.date]);
+  }, [todayPresentCount, activeStudents, summaryAttendanceRate, dashboardSummary?.attendance?.date, startOfToday]);
 
   const collectedToday = useMemo(() => {
     if (!payments) return 0;
-    const today = startOfDay(new Date());
     let total = 0;
     payments.forEach((p: any) => {
       const amount = Number(p.amount) || 0;
@@ -834,12 +867,12 @@ function AdminDashboard({
       if (!dateVal) return;
       const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
       if (isNaN(d.getTime())) return;
-      if (startOfDay(d).getTime() === today.getTime()) {
+      if (startOfDay(d).getTime() === startOfToday.getTime()) {
         total += amount;
       }
     });
     return total;
-  }, [payments]);
+  }, [payments, startOfToday]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -3871,14 +3904,50 @@ function DirectorDashboard({
     return { positive, infractions, recent };
   }, [behavioralRecords, students]);
 
-  const startOfToday = useMemo(() => startOfDay(new Date()), []);
+  const startOfToday = useMemo(() => {
+    const termStartStr = schoolData?.termStartDate;
+    const termEndStr = schoolData?.termEndDate;
+    const now = startOfDay(new Date());
+
+    if (termStartStr && termEndStr) {
+      const partsStart = termStartStr.split('-');
+      const partsEnd = termEndStr.split('-');
+      if (partsStart.length === 3 && partsEnd.length === 3) {
+        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
+        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
+        
+        if (now < termStart) {
+          return termStart;
+        } else if (now > termEnd) {
+          return termEnd;
+        }
+      }
+    } else if (termEndStr) {
+      const partsEnd = termEndStr.split('-');
+      if (partsEnd.length === 3) {
+        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
+        if (now > termEnd) {
+          return termEnd;
+        }
+      }
+    } else if (termStartStr) {
+      const partsStart = termStartStr.split('-');
+      if (partsStart.length === 3) {
+        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
+        if (now < termStart) {
+          return termStart;
+        }
+      }
+    }
+    return now;
+  }, [schoolData?.termStartDate, schoolData?.termEndDate]);
 
   const todayStudentAbsences = useMemo(() => {
     if (!attendance || !students) return [];
     const todayRecs = attendance.filter((r: any) => {
       if (!r.date) return false;
       const dateObj = r.date.toDate ? r.date.toDate() : new Date(r.date);
-      return dateObj >= startOfToday;
+      return startOfDay(dateObj).getTime() === startOfToday.getTime();
     });
     const absentRecs = todayRecs.filter((r: any) => r.status === 'Absent');
     return absentRecs.map((r: any) => {
@@ -3897,13 +3966,13 @@ function DirectorDashboard({
     const todayRecs = staffAttendance.filter((r: any) => {
       if (!r.timestamp) return false;
       const dateObj = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
-      return dateObj >= startOfToday;
+      return startOfDay(dateObj).getTime() === startOfToday.getTime();
     });
     const checkIns = todayRecs.filter((r: any) => r.type === 'In');
     const presentIds = new Set(checkIns.map((r: any) => r.staffId));
     const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
 
-    const today = new Date();
+    const today = startOfToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     const isVacation = schoolData?.vacationMode === true;
     const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && checkIns.length === 0;
@@ -4479,22 +4548,21 @@ function DirectorDashboard({
 
 
   const todayPresentCount = useMemo(() => {
-    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const todayUTCStr = format(startOfToday, 'yyyy-MM-dd');
     const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
     if (isAttendanceToday && summaryPresentCount !== undefined) return summaryPresentCount;
     if (!attendance || !activeStudents || activeStudents.length === 0) return 0;
-    const today = startOfDay(new Date());
     return attendance.filter((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
-      return startOfDay(d).getTime() === today.getTime() && (r.status === 'Present' || r.status === 'Late');
+      return startOfDay(d).getTime() === startOfToday.getTime() && (r.status === 'Present' || r.status === 'Late');
     }).length;
-  }, [attendance, activeStudents, summaryPresentCount, dashboardSummary?.attendance?.date]);
+  }, [attendance, activeStudents, summaryPresentCount, dashboardSummary?.attendance?.date, startOfToday]);
 
   const hasTodayAttendance = useMemo(() => {
     if (dashboardSummary?.attendance?.date !== undefined) {
       const summaryDate = dashboardSummary.attendance.date;
-      const today = new Date().toISOString().slice(0, 10);
-      return summaryDate === today && (
+      const todayStr = format(startOfToday, 'yyyy-MM-dd');
+      return summaryDate === todayStr && (
         (dashboardSummary.attendance.totalPresent ?? 0) + 
         (dashboardSummary.attendance.totalAbsent ?? 0) + 
         (dashboardSummary.attendance.totalLate ?? 0) > 0
@@ -4502,23 +4570,21 @@ function DirectorDashboard({
     }
 
     if (!attendance || attendance.length === 0) return false;
-    const today = startOfDay(new Date());
     return attendance.some((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
-      return startOfDay(d).getTime() === today.getTime();
+      return startOfDay(d).getTime() === startOfToday.getTime();
     });
-  }, [attendance, dashboardSummary]);
+  }, [attendance, dashboardSummary, startOfToday]);
 
   const todayAttendanceRate = useMemo(() => {
-    const todayUTCStr = new Date().toISOString().slice(0, 10);
+    const todayUTCStr = format(startOfToday, 'yyyy-MM-dd');
     const isAttendanceToday = dashboardSummary?.attendance?.date === todayUTCStr;
     if (isAttendanceToday && summaryAttendanceRate !== undefined) return summaryAttendanceRate;
     if (activeStudents.length === 0) return 0;
     return Math.round((todayPresentCount / activeStudents.length) * 100);
-  }, [todayPresentCount, activeStudents, summaryAttendanceRate, dashboardSummary?.attendance?.date]);
+  }, [todayPresentCount, activeStudents, summaryAttendanceRate, dashboardSummary?.attendance?.date, startOfToday]);
 
   const collectedToday = useMemo(() => {
-    const today = startOfDay(new Date());
     let clientTotal = 0;
     if (payments) {
       payments.forEach((p: any) => {
@@ -4528,7 +4594,7 @@ function DirectorDashboard({
         if (!dateVal) return;
         const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
         if (isNaN(d.getTime())) return;
-        if (startOfDay(d).getTime() === today.getTime()) {
+        if (startOfDay(d).getTime() === startOfToday.getTime()) {
           clientTotal += amount;
         }
       });
@@ -4540,10 +4606,10 @@ function DirectorDashboard({
         const lastPaymentDate = typeof lastPaymentAt.toDate === 'function'
           ? lastPaymentAt.toDate()
           : new Date(lastPaymentAt.seconds ? lastPaymentAt.seconds * 1000 : lastPaymentAt);
-        const todayUTCStr = new Date().toISOString().slice(0, 10);
+        const todayUTCStr = format(startOfToday, 'yyyy-MM-dd');
         const lastPaymentUTCStr = lastPaymentDate.toISOString().slice(0, 10);
         
-        const todayLocalStr = format(new Date(), 'yyyy-MM-dd');
+        const todayLocalStr = format(startOfToday, 'yyyy-MM-dd');
         const lastPaymentLocalStr = format(lastPaymentDate, 'yyyy-MM-dd');
         
         return lastPaymentUTCStr === todayUTCStr || lastPaymentLocalStr === todayLocalStr;
@@ -4553,7 +4619,7 @@ function DirectorDashboard({
     })();
     const finalSummaryToday = isSummaryToday ? (summaryCollectedToday ?? 0) : 0;
     return Math.max(clientTotal, finalSummaryToday);
-  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt]);
+  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, startOfToday]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
