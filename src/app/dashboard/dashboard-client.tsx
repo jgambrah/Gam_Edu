@@ -13053,8 +13053,9 @@ export default function DashboardClient() {
   // Administrator is restricted to overview/attendance tabs.
   const attendanceQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
-    const isNeeded = (role === 'Director' && directorActiveTab === 'attendance') || 
+    const isNeeded = (role === 'Director' && (directorActiveTab === 'overview' || directorActiveTab === 'attendance')) || 
                      (role === 'Administrator' && (adminActiveTab === 'overview' || adminActiveTab === 'attendance')) || 
+                     role === 'Teacher' ||
                      isReceptionist || isSecretary;
     return isNeeded ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId)) : null;
   }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab]);
