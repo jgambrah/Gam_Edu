@@ -244,9 +244,16 @@ export default function AttendanceReportsPage() {
     const { data: classes } = useCollection(classesQuery);
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
-        return query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess]);
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !dateRange?.from) return null;
+        const fromDate = startOfDay(dateRange.from);
+        const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+        return query(
+            collection(firestore, 'attendance'), 
+            where('schoolId', '==', schoolId),
+            where('date', '>=', Timestamp.fromDate(fromDate)),
+            where('date', '<=', Timestamp.fromDate(toDate))
+        );
+    }, [firestore, schoolId, isRoleLoading, canAccess, dateRange]);
     const { data: rawAttendance, isLoading: isLoadingAttendance, forceRefetch } = useCollection(attendanceQuery);
     
     const studentsQuery = useMemoFirebase(() => {

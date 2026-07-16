@@ -3834,6 +3834,8 @@ function DirectorDashboard({
   parentSatisfactionRecords = [],
   loadingSatisfaction = false,
   dashboardSummary,
+  activeTab: passedActiveTab,
+  setActiveTab: passedSetActiveTab,
 }: any) {
   // ─── Summary-aware KPI helpers: prefer pre-computed values, fall back to arrays ───
   const summaryStudentTotal   = dashboardSummary?.studentCount?.total;
@@ -3850,7 +3852,9 @@ function DirectorDashboard({
 
 
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general' | 'satisfaction'>('overview');
+  const [localActiveTab, localSetActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general' | 'satisfaction'>('overview');
+  const activeTab = passedActiveTab || localActiveTab;
+  const setActiveTab = passedSetActiveTab || localSetActiveTab;
 
   const [studentSubTab, setStudentSubTab] = useState<'registry' | 'discipline' | 'admissions' | 'health'>('registry');
   const [staffSubTab, setStaffSubTab] = useState<'directory' | 'performance'>('directory');
@@ -12991,6 +12995,7 @@ export default function DashboardClient() {
   const { user } = useUser();
   const { schoolId, loading: schoolLoading } = useCurrentSchool();
   const [adminActiveTab, setAdminActiveTab] = useState<any>('overview');
+  const [directorActiveTab, setDirectorActiveTab] = useState<any>('overview');
 
   const isStaff = ['Administrator', 'Director', 'Teacher', 'Accountant', 'Transport Staff', 'Librarian', 'Cook', 'Transport Staff', 'Cleaner', 'Security Officer', 'Secretary', 'Receptionist'].includes(role || '');
   const isParent = role === 'Parent';
@@ -13035,21 +13040,22 @@ export default function DashboardClient() {
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
-  // collectionGroup scan restored for Director for detail tabs.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
+  // collectionGroup scan restored for Director for detail tabs (limited to recent 100 payments to avoid full scans).
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(100)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
 
-  // Director gets attendance from summary (today's snapshot) but needs full list for Chronic Absenteeism calculation. Admin, Receptionist, Secretary still need full list (for Admin we restrict to when overview or attendance tab is active).
+  // Director gets attendance from summary (today's snapshot) and only needs raw logs when active tab is attendance.
+  // Administrator is restricted to overview/attendance tabs.
   const attendanceQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
-    const isNeeded = (role === 'Director') || 
+    const isNeeded = (role === 'Director' && directorActiveTab === 'attendance') || 
                      (role === 'Administrator' && (adminActiveTab === 'overview' || adminActiveTab === 'attendance')) || 
                      isReceptionist || isSecretary;
     return isNeeded ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId)) : null;
-  }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab]);
+  }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab]);
   const { data: attendance } = useCollection(attendanceQuery);
 
   const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
@@ -13316,6 +13322,8 @@ export default function DashboardClient() {
       // ─── Summary replaces all raw collection arrays ───
       dashboardSummary={dashboardSummary}
       isLoading={dashboardSummaryLoading}
+      activeTab={directorActiveTab}
+      setActiveTab={setDirectorActiveTab}
       // ─── Legacy props with safe empty defaults (drill-down still possible via navigation) ───
       students={students ?? []}
       staff={staff ?? []}

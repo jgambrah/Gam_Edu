@@ -121,14 +121,25 @@ export default function AcademicReportsPage() {
         return rawStudents.filter(s => s.enrollmentStatus !== 'Inactive');
     }, [rawStudents]);
 
-    // Query ALL Assessments for the selected class (so we can compile multi-subject aggregates in-memory)
+    // Query Assessments for the selected class, filtered by academic year and term to reduce database reads
     const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !selectedYear || !selectedTerm) return null;
         if (selectedClassId === 'all') {
-            return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId));
+            return query(
+                collection(firestore, 'assessments'), 
+                where('schoolId', '==', schoolId),
+                where('academicYear', '==', selectedYear),
+                where('term', '==', selectedTerm)
+            );
         }
-        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId));
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
+        return query(
+            collection(firestore, 'assessments'), 
+            where('schoolId', '==', schoolId), 
+            where('classId', '==', selectedClassId),
+            where('academicYear', '==', selectedYear),
+            where('term', '==', selectedTerm)
+        );
+    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, selectedYear, selectedTerm]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Fetch School Settings for standard weighting overrides
