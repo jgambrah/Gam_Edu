@@ -124,7 +124,7 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-      allow get, list: if (isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId)) || resource.data.showOnWebsite == true;
+      allow get, list: if (isSignedIn() && (isSuperAdmin() || isOwner(staffId) || getUserSchoolId() == resource.data.schoolId)) || resource.data.showOnWebsite == true;
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == getUserSchoolId()); // Or enforce school settings check
@@ -132,7 +132,7 @@ service cloud.firestore {
     }
 
     match /students/{studentId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn() && (isSuperAdmin() || isOwner(studentId) || getUserSchoolId() == resource.data.schoolId);
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(studentId);
 
       match /timeline/{eventId} {
@@ -157,7 +157,7 @@ service cloud.firestore {
     }
 
     match /parents/{parentId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn() && (isSuperAdmin() || isOwner(parentId) || getUserSchoolId() == resource.data.schoolId);
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(parentId);
     }
 
