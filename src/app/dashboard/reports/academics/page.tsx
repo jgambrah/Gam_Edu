@@ -254,21 +254,21 @@ export default function AcademicReportsPage() {
                 const activeCaCount = caTypesForSubject.size || 1;
                 const caCategoryWeight = currentCaWeight / activeCaCount;
 
-                const hasClassEx = subData.classEx.maxScore > 0;
-                const hasHw = subData.hw.maxScore > 0;
-                const hasMidSem = subData.midSem.maxScore > 0;
-                const hasProj = subData.proj.maxScore > 0;
+                const caObtained = subData.classEx.score + subData.hw.score + subData.midSem.score + subData.proj.score;
+                const caMax = subData.classEx.maxScore + subData.hw.maxScore + subData.midSem.maxScore + subData.proj.maxScore;
+                const hasCa = caMax > 0;
                 const hasExam = subData.exam.maxScore > 0;
 
-                if (hasClassEx || hasHw || hasMidSem || hasProj || hasExam) {
-                    const classExVal = hasClassEx ? (subData.classEx.score / subData.classEx.maxScore) * caCategoryWeight : 0;
-                    const hwVal = hasHw ? (subData.hw.score / subData.hw.maxScore) * caCategoryWeight : 0;
-                    const midSemVal = hasMidSem ? (subData.midSem.score / subData.midSem.maxScore) * caCategoryWeight : 0;
-                    const projVal = hasProj ? (subData.proj.score / subData.proj.maxScore) * caCategoryWeight : 0;
-                    const examVal = hasExam ? (subData.exam.score / subData.exam.maxScore) * currentExamWeight : 0;
-
-                    const final = classExVal + hwVal + midSemVal + projVal + examVal;
+                if (hasCa || hasExam) {
+                    const caWeighted = hasCa ? (caObtained / caMax) * currentCaWeight : 0;
+                    const examWeighted = hasExam ? (subData.exam.score / subData.exam.maxScore) * currentExamWeight : 0;
+                    const final = caWeighted + examWeighted;
                     const finalRounded = parseFloat(final.toFixed(1));
+
+                    const classExVal = caMax > 0 ? (subData.classEx.score / caMax) * currentCaWeight : 0;
+                    const hwVal = caMax > 0 ? (subData.hw.score / caMax) * currentCaWeight : 0;
+                    const midSemVal = caMax > 0 ? (subData.midSem.score / caMax) * currentCaWeight : 0;
+                    const projVal = caMax > 0 ? (subData.proj.score / caMax) * currentCaWeight : 0;
 
                     scoresMap[subject.id] = finalRounded;
                     subScoresMap[subject.id] = {
@@ -276,7 +276,7 @@ export default function AcademicReportsPage() {
                         hw: parseFloat(hwVal.toFixed(1)),
                         midSem: parseFloat(midSemVal.toFixed(1)),
                         proj: parseFloat(projVal.toFixed(1)),
-                        exam: parseFloat(examVal.toFixed(1)),
+                        exam: parseFloat(examWeighted.toFixed(1)),
                         total: finalRounded
                     };
 
