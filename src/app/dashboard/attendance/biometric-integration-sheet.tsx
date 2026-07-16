@@ -105,7 +105,8 @@ export function BiometricIntegrationSheet() {
     if (!schoolId) return;
     setApiActionLoading(true);
     try {
-      const res = await generateBiometricApiKey(schoolId);
+      const idToken = await user?.getIdToken();
+      const res = await generateBiometricApiKey(schoolId, idToken);
       if (res.success) {
         toast({ title: 'API Key Generated', description: 'Your new biometric API integration key is ready.' });
       } else {
@@ -123,7 +124,8 @@ export function BiometricIntegrationSheet() {
     if (!confirm('Are you sure you want to revoke the biometric integration key? All active device sync connections will fail immediately.')) return;
     setApiActionLoading(true);
     try {
-      const res = await revokeBiometricApiKey(schoolId);
+      const idToken = await user?.getIdToken();
+      const res = await revokeBiometricApiKey(schoolId, idToken);
       if (res.success) {
         toast({ title: 'API Key Revoked', description: 'Biometric API access has been disabled.' });
       } else {
@@ -197,7 +199,8 @@ export function BiometricIntegrationSheet() {
             return;
           }
 
-          const res = await importBiometricCsvAction(schoolId, csvDate, formattedRecords);
+          const idToken = await user?.getIdToken();
+          const res = await importBiometricCsvAction(schoolId, csvDate, formattedRecords, idToken);
           if (res.success && 'processedCount' in res) {
             setUploadResult(res);
             toast({ title: 'Import Complete', description: `Processed ${res.processedCount} student scans successfully.` });
@@ -229,7 +232,8 @@ export function BiometricIntegrationSheet() {
     if (!schoolId) return;
     setIsSavingMapping(true);
     try {
-      const res = await updateStudentBiometricId(schoolId, studentId, tempBiometricId);
+      const idToken = await user?.getIdToken();
+      const res = await updateStudentBiometricId(schoolId, studentId, tempBiometricId, idToken);
       if (res.success) {
         toast({ title: 'Mapping Saved', description: 'Student Card ID mapped successfully.' });
         setEditingStudentId(null);

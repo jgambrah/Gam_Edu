@@ -6617,7 +6617,8 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             const msg = `Dear Parent, you have an outstanding balance of GHS ${balance.toFixed(2)} for ${studentName}. Please log in to your Parent Portal to view bills and pay online. - GAM Edu`;
             
             toast({ title: "Sending SMS Reminder...", description: `Sending to ${phone}` });
-            const result = await sendSchoolSMSAction(schoolId, phone, msg);
+            const idToken = await user?.getIdToken();
+            const result = await sendSchoolSMSAction(schoolId, phone, msg, idToken);
             
             if (result.success) {
                 toast({ title: "Reminder Sent!", description: "Parent has been notified successfully." });
@@ -9597,7 +9598,8 @@ function TeacherDashboard({ profile, classes, students, assessments, announcemen
         const text = `Hello parent, this is from ${student.firstName}'s class teacher. We wanted to touch base regarding their classroom performance and engagement. Please contact us when free.`;
         toast({ title: "Sending SMS...", description: "Connecting to SMS Gateway" });
         try {
-            const res = await sendSchoolSMSAction(student.schoolId || schoolId, student.parentPhone, text);
+            const idToken = await user?.getIdToken();
+            const res = await sendSchoolSMSAction(student.schoolId || schoolId, student.parentPhone, text, idToken);
             if (res.success) {
                 toast({ title: "SMS Sent", description: `Message delivered to ${student.firstName}'s parent.` });
             } else {

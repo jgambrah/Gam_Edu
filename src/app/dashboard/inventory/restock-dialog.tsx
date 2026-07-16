@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, writeBatch, serverTimestamp, collection } from 'firebase/firestore';
+import { doc, writeBatch, serverTimestamp, collection, runTransaction } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { InventoryItem } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -55,31 +55,35 @@ export function RestockDialog({ item, open, onOpenChange, onRestockComplete }: R
     setIsSubmitting(true);
 
     try {
-        const batch = writeBatch(firestore);
-
         const itemRef = doc(firestore, 'inventory', item.id);
-        const newQuantity = item.quantity + values.quantity;
-        
-        // If item status was Out of stock, restock sets it to Available
-        const newStatus = (item.status === 'Out of Stock') ? 'Available' : item.status;
-
-        batch.update(itemRef, {
-            quantity: newQuantity,
-            status: newStatus
-        });
-
         const invTransactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
-        batch.set(invTransactionRef, {
-            itemId: item.id,
-            transactionType: 'Restock',
-            quantityChange: values.quantity,
-            staffId: user.uid,
-            timestamp: serverTimestamp(),
-            notes: values.notes?.trim() || `Restocked ${values.quantity} unit(s).`,
-            schoolId,
-        });
 
-        await batch.commit();
+        await runTransaction(firestore, async (transaction) => {
+            const freshItemDoc = await transaction.get(itemRef);
+            if (!freshItemDoc.exists) {
+                throw new Error("Inventory item not found.");
+            }
+            
+            const freshItemData = freshItemDoc.data();
+            const currentQuantity = freshItemData?.quantity || 0;
+            const newQuantity = currentQuantity + values.quantity;
+            const newStatus = (freshItemData?.status === 'Out of Stock') ? 'Available' : freshItemData?.status;
+
+            transaction.update(itemRef, {
+                quantity: newQuantity,
+                status: newStatus
+            });
+
+            transaction.set(invTransactionRef, {
+                itemId: item.id,
+                transactionType: 'Restock',
+                quantityChange: values.quantity,
+                staffId: user.uid,
+                timestamp: serverTimestamp(),
+                notes: values.notes?.trim() || `Restocked ${values.quantity} unit(s).`,
+                schoolId,
+            });
+        });
 
         toast({ title: 'Stock Updated', description: `Successfully restocked ${values.quantity} x ${item.name}.` });
         onRestockComplete();

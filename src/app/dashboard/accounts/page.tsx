@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc, runTransaction } from 'firebase/firestore';
 import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
@@ -1812,7 +1812,6 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 throw new Error("You must have an OPEN TILL to accept cash.");
             }
 
-            const batch = writeBatch(firestore);
             const receiptId = await generateNextReceiptId(firestore, schoolId);
             const paymentDocRef = doc(firestore, 'financialRecords', record.id, 'payments', receiptId);
             const paymentDescription = values.customDescription?.trim() || record.description || 'School Fees Payment';
@@ -1831,22 +1830,31 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 tillId: activeTill ? activeTill.id : ''
             };
             const recordRef = doc(firestore, 'financialRecords', record.id);
-            const newAmountPaid = (record.amountPaid || 0) + values.amount;
-            const isFullyPaid = (record.billedAmount - newAmountPaid - (record.waiverAmount || 0)) <= 0.001;
-            batch.update(recordRef, { 
-                amountPaid: newAmountPaid, 
-                status: isFullyPaid ? 'Paid' : 'Unpaid', 
-                lastPaymentDate: serverTimestamp(),
-                paymentNarration: paymentDescription
-            });
             
-            if (values.method === 'Cash' && activeTill) {
-                const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
-                batch.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${paymentDescription} (Receipt: ${receiptId})`, status: 'Completed', schoolId: schoolId });
-                batch.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(values.amount) });
-            }
-            batch.set(paymentDocRef, paymentData);
-            await batch.commit();
+            await runTransaction(firestore, async (transaction) => {
+                const freshRecordDoc = await transaction.get(recordRef);
+                if (!freshRecordDoc.exists) {
+                    throw new Error("Financial record not found.");
+                }
+                const freshData = freshRecordDoc.data();
+                const currentAmountPaid = freshData?.amountPaid || 0;
+                const newAmountPaid = currentAmountPaid + values.amount;
+                const isFullyPaid = (record.billedAmount - newAmountPaid - (record.waiverAmount || 0)) <= 0.001;
+
+                transaction.update(recordRef, { 
+                    amountPaid: newAmountPaid, 
+                    status: isFullyPaid ? 'Paid' : 'Unpaid', 
+                    lastPaymentDate: serverTimestamp(),
+                    paymentNarration: paymentDescription
+                });
+                
+                if (values.method === 'Cash' && activeTill) {
+                    const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
+                    transaction.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${paymentDescription} (Receipt: ${receiptId})`, status: 'Completed', schoolId: schoolId });
+                    transaction.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(values.amount) });
+                }
+                transaction.set(paymentDocRef, paymentData);
+            });
 
             // Send DM payment notification to parent(s) asynchronously
             if (record.studentId) {
@@ -1995,6 +2003,7 @@ function PaymentHistory({ record }: { record: FinancialRecord }) {
 
 function StudentLedgerDetail({ student, records, globalDateRange, onRecordPayment, onApplyWaiver, onEditRecord, onReverseTransaction }: { student: Student; records: FinancialRecord[]; globalDateRange?: DateRange; onRecordPayment: (record: FinancialRecord) => void; onApplyWaiver: (record: FinancialRecord) => void; onEditRecord: (record: FinancialRecord) => void; onReverseTransaction: (record: FinancialRecord) => void; }) {
     const firestore = useFirestore();
+    const { user } = useUser();
     const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
     const [isBilling, setIsBilling] = useState(false);
@@ -2140,7 +2149,8 @@ function StudentLedgerDetail({ student, records, globalDateRange, onRecordPaymen
                                                               const msg = `Dear Parent, you have an outstanding bill of GHS ${balance.toFixed(2)} for ${rec.studentName} (${rec.description}). Please pay securely here: ${link} - GAM Edu`;
                                                               
                                                               toast({ title: "Sending SMS...", description: "Please wait." });
-                                                              const result = await sendSchoolSMSAction(schoolId!, phone, msg);
+                                                              const idToken = await user?.getIdToken();
+                                                              const result = await sendSchoolSMSAction(schoolId!, phone, msg, idToken);
                                                               
                                                               if (result.success) toast({ title: "Payment Link Sent!" });
                                                               else toast({ variant: 'destructive', title: "Failed to send SMS", description: result.error });
@@ -3599,7 +3609,8 @@ export default function AccountsPage() {
           const msg = `Dear Parent, you have an outstanding balance of GHS ${balance.toFixed(2)} for ${studentName}. Please log in to your Parent Portal to view bills and pay online. - GAM Edu`;
           
           toast({ title: "Sending SMS Reminder...", description: `Sending to ${phone}` });
-          const result = await sendSchoolSMSAction(schoolId, phone, msg);
+          const idToken = await user?.getIdToken();
+          const result = await sendSchoolSMSAction(schoolId, phone, msg, idToken);
           
           if (result.success) {
               toast({ title: "Reminder Sent!", description: "Parent has been notified successfully." });

@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, writeBatch, serverTimestamp, collection } from 'firebase/firestore';
+import { doc, writeBatch, serverTimestamp, collection, runTransaction } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { InventoryItem } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -58,38 +58,44 @@ export function AdjustmentDialog({ item, open, onOpenChange, onAdjustmentComplet
 
     const multiplier = values.type === 'Add' ? 1 : -1;
     const quantityChange = values.quantity * multiplier;
-    const newQuantity = item.quantity + quantityChange;
-
-    if (newQuantity < 0) {
-        form.setError("quantity", { message: `Cannot subtract more than current quantity (${item.quantity}).` });
-        return;
-    }
 
     setIsSubmitting(true);
 
     try {
-        const batch = writeBatch(firestore);
-
         const itemRef = doc(firestore, 'inventory', item.id);
-        const newStatus = newQuantity > 0 ? (item.status === 'Out of Stock' ? 'Available' : item.status) : 'Out of Stock';
-
-        batch.update(itemRef, {
-            quantity: newQuantity,
-            status: newStatus
-        });
-
         const invTransactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
-        batch.set(invTransactionRef, {
-            itemId: item.id,
-            transactionType: 'Adjustment',
-            quantityChange,
-            staffId: user.uid,
-            timestamp: serverTimestamp(),
-            notes: `${values.reason} adjustment: ${values.type === 'Add' ? '+' : '-'}${values.quantity} units. Notes: ${values.notes?.trim() || 'None'}`,
-            schoolId,
-        });
 
-        await batch.commit();
+        await runTransaction(firestore, async (transaction) => {
+            const freshItemDoc = await transaction.get(itemRef);
+            if (!freshItemDoc.exists) {
+                throw new Error("Inventory item not found.");
+            }
+            
+            const freshItemData = freshItemDoc.data();
+            const currentQuantity = freshItemData?.quantity || 0;
+            const newQuantity = currentQuantity + quantityChange;
+
+            if (newQuantity < 0) {
+                throw new Error(`Cannot subtract more than current quantity (${currentQuantity}).`);
+            }
+
+            const newStatus = newQuantity > 0 ? (freshItemData?.status === 'Out of Stock' ? 'Available' : freshItemData?.status) : 'Out of Stock';
+
+            transaction.update(itemRef, {
+                quantity: newQuantity,
+                status: newStatus
+            });
+
+            transaction.set(invTransactionRef, {
+                itemId: item.id,
+                transactionType: 'Adjustment',
+                quantityChange,
+                staffId: user.uid,
+                timestamp: serverTimestamp(),
+                notes: `${values.reason} adjustment: ${values.type === 'Add' ? '+' : '-'}${values.quantity} units. Notes: ${values.notes?.trim() || 'None'}`,
+                schoolId,
+            });
+        });
 
         toast({ title: 'Stock Adjusted', description: `Successfully adjusted stock for ${item.name}.` });
         onAdjustmentComplete();

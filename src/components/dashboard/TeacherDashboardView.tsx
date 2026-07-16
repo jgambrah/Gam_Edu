@@ -369,7 +369,8 @@ export function TeacherDashboardView({
         const text = `Hello parent, this is from ${student.firstName}'s class teacher. We wanted to touch base regarding their classroom performance and engagement. Please contact us when free.`;
         toast({ title: "Sending SMS...", description: "Connecting to SMS Gateway" });
         try {
-            const res = await sendSchoolSMSAction(student.schoolId || schoolId, student.parentPhone, text);
+            const idToken = await user?.getIdToken();
+            const res = await sendSchoolSMSAction(student.schoolId || schoolId, student.parentPhone, text, idToken);
             if (res.success) {
                 toast({ title: "SMS Sent", description: `Message delivered to ${student.firstName}'s parent.` });
             } else {

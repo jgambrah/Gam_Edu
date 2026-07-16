@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { collection, query, where, getDocs, doc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { sendSchoolSMSAction, sendSchoolBulkSMSAction } from '@/app/actions/sms'; 
@@ -63,6 +63,7 @@ const QUICK_SMS_TEMPLATES = [
 ];
 
 export default function BulkSMSPage() {
+  const { user } = useUser();
   const { schoolId } = useCurrentSchool();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -189,7 +190,8 @@ export default function BulkSMSPage() {
             const phones = validRecipients.map(p => p.phone);
             try {
                 setBroadcastStatusText(`Delivering bulk SMS to ${validRecipients.length} parents...`);
-                const res = await sendSchoolBulkSMSAction(schoolId, phones, message);
+                const idToken = await user?.getIdToken();
+                const res = await sendSchoolBulkSMSAction(schoolId, phones, message, idToken);
                 
                 if (res.success) {
                     count += validRecipients.length;

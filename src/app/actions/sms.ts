@@ -1,6 +1,7 @@
 'use server';
 
 import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 
 /**
@@ -28,13 +29,41 @@ function getAdminApp() {
  * @param phone - The recipient's phone number.
  * @param message - The SMS text content.
  */
-export async function sendSchoolSMSAction(schoolId: string, phone: string, message: string) {
+export async function sendSchoolSMSAction(schoolId: string, phone: string, message: string, idToken?: string) {
   if (!schoolId || !phone) {
     return { success: false, error: "Missing school or recipient information." };
   }
+  if (!idToken) {
+    return { success: false, error: "Authentication required." };
+  }
 
   try {
-    const db = getFirestore(getAdminApp());
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const auth = getAuth(adminApp);
+
+    // Verify token
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    
+    // Verify role is Staff/Admin, and schoolId matches
+    const userDoc = await db.collection('users').doc(callerUid).get();
+    if (!userDoc.exists) {
+      return { success: false, error: 'Unauthorized user context' };
+    }
+    const userData = userDoc.data();
+    const callerRole = userData?.role || '';
+    const callerSchoolId = userData?.schoolId || '';
+
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+    const isAuthorized = isSuperAdmin || (
+      ['Director', 'Administrator', 'Admin', 'Teacher', 'Accountant', 'Secretary', 'Receptionist'].includes(callerRole) && 
+      callerSchoolId === schoolId
+    );
+
+    if (!isAuthorized) {
+      return { success: false, error: 'Unauthorized role privileges.' };
+    }
     
     // 1. Fetch School Credentials from the secure settings path
     const schoolDoc = await db.collection('schoolSettings').doc(schoolId).get();
@@ -109,13 +138,41 @@ export async function sendSchoolSMSAction(schoolId: string, phone: string, messa
  * @param phones - An array of recipient phone numbers.
  * @param message - The SMS text content.
  */
-export async function sendSchoolBulkSMSAction(schoolId: string, phones: string[], message: string) {
+export async function sendSchoolBulkSMSAction(schoolId: string, phones: string[], message: string, idToken?: string) {
   if (!schoolId || !phones || phones.length === 0) {
     return { success: false, error: "Missing school or recipient information." };
   }
+  if (!idToken) {
+    return { success: false, error: "Authentication required." };
+  }
 
   try {
-    const db = getFirestore(getAdminApp());
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const auth = getAuth(adminApp);
+
+    // Verify token
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    
+    // Verify role is Staff/Admin, and schoolId matches
+    const userDoc = await db.collection('users').doc(callerUid).get();
+    if (!userDoc.exists) {
+      return { success: false, error: 'Unauthorized user context' };
+    }
+    const userData = userDoc.data();
+    const callerRole = userData?.role || '';
+    const callerSchoolId = userData?.schoolId || '';
+
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+    const isAuthorized = isSuperAdmin || (
+      ['Director', 'Administrator', 'Admin', 'Teacher', 'Accountant', 'Secretary', 'Receptionist'].includes(callerRole) && 
+      callerSchoolId === schoolId
+    );
+
+    if (!isAuthorized) {
+      return { success: false, error: 'Unauthorized role privileges.' };
+    }
     
     // 1. Fetch School Credentials from the secure settings path
     const schoolDoc = await db.collection('schoolSettings').doc(schoolId).get();

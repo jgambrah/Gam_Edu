@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, writeBatch, serverTimestamp, query, collection, where, getDocs } from 'firebase/firestore';
+import { doc, writeBatch, serverTimestamp, query, collection, where, getDocs, runTransaction } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { InventoryItem } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -66,37 +66,49 @@ export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDia
         }
         const activeTill = tillSnapshot.docs[0];
 
-        const batch = writeBatch(firestore);
-
         const itemRef = doc(firestore, 'inventory', item.id);
-        const newQuantity = item.quantity - values.quantity;
-        batch.update(itemRef, {
-            quantity: newQuantity,
-            status: newQuantity > 0 ? 'Available' : 'Out of Stock'
-        });
-
         const invTransactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
-        batch.set(invTransactionRef, {
-            itemId: item.id,
-            transactionType: 'Sale',
-            quantityChange: -values.quantity,
-            staffId: user.uid,
-            timestamp: serverTimestamp(),
-            notes: `Sold ${values.quantity} unit(s).`,
-            schoolId,
-        });
-
         const tillTransactionRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
-        batch.set(tillTransactionRef, {
-            tillId: activeTill.id,
-            financialRecordId: item.id,
-            amount: (item.unitPrice || 0) * values.quantity,
-            description: `Sale: ${values.quantity} x ${item.name}`,
-            timestamp: serverTimestamp(),
-            schoolId,
-        });
 
-        await batch.commit();
+        await runTransaction(firestore, async (transaction) => {
+            const freshItemDoc = await transaction.get(itemRef);
+            if (!freshItemDoc.exists) {
+                throw new Error("Inventory item not found.");
+            }
+            
+            const freshItemData = freshItemDoc.data();
+            const currentQuantity = freshItemData?.quantity || 0;
+            
+            if (values.quantity > currentQuantity) {
+                throw new Error(`Cannot sell more than available quantity (${currentQuantity}).`);
+            }
+
+            const newQuantity = currentQuantity - values.quantity;
+
+            transaction.update(itemRef, {
+                quantity: newQuantity,
+                status: newQuantity > 0 ? 'Available' : 'Out of Stock'
+            });
+
+            transaction.set(invTransactionRef, {
+                itemId: item.id,
+                transactionType: 'Sale',
+                quantityChange: -values.quantity,
+                staffId: user.uid,
+                timestamp: serverTimestamp(),
+                notes: `Sold ${values.quantity} unit(s).`,
+                schoolId,
+            });
+
+            transaction.set(tillTransactionRef, {
+                tillId: activeTill.id,
+                financialRecordId: item.id,
+                amount: (item.unitPrice || 0) * values.quantity,
+                description: `Sale: ${values.quantity} x ${item.name}`,
+                timestamp: serverTimestamp(),
+                schoolId,
+            });
+        });
 
         toast({ title: 'Sale Recorded', description: `${values.quantity} x ${item.name} sold. Till updated.` });
         onSaleComplete();

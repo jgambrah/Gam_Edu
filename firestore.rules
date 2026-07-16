@@ -168,8 +168,8 @@ service cloud.firestore {
     }
 
     match /auditLogs/{logId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
+      allow read, list: if isAdmin();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false;
     }
 
@@ -475,7 +475,7 @@ service cloud.firestore {
     }
 
     match /accounts/{accountId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isFinanceStaff() || isAdmin();
       allow write: if isFinanceStaff() || isAdmin();
     }
 
@@ -581,12 +581,12 @@ service cloud.firestore {
     }
 
     match /visitor_logs/{logId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isStaff() || isAdmin();
       allow write: if isAdmin() || getUserRole() == 'Security Officer';
     }
 
     match /security_incidents/{incidentId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isStaff() || isAdmin();
       allow write: if isAdmin() || getUserRole() == 'Security Officer';
     }
 
@@ -761,7 +761,8 @@ service cloud.firestore {
     }
 
     match /science_lab_questions/{id} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
     }
 
     match /science_lab_results/{id} {
@@ -796,14 +797,14 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid ||
         isTeacher() || isStaff() || isAdmin() || isDirector()
       );
-      allow list: if isSignedIn();
+      allow list: if isSignedIn() && (isTeacher() || isStaff() || isAdmin() || isDirector() || resource.data.userId == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow update: if isTeacher() || isStaff() || isAdmin() || isDirector();
     }
 
     match /ela_learning_history/{id} {
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() && (request.auth.uid == id || request.auth.uid == resource.data.userId || isTeacher() || isAdmin());
       allow delete: if request.auth.uid == resource.data.userId || isAdmin();
     }
 
@@ -886,7 +887,7 @@ service cloud.firestore {
       allow list: if isSignedIn();
       allow create: if isSignedIn();
       match /messages/{messageId} {
-        allow read, write: if isSignedIn();
+        allow read, write: if isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/direct_messages/$(chatId)).data.participants;
       }
     }
 
@@ -894,14 +895,16 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
       match /messages/{messageId} {
-        allow read, create: if isSignedIn();
+        allow read, create: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == get(/databases/$(database)/documents/lectures/$(lectureId)).data.schoolId);
       }
     }
 
     match /active_classes/{classId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow write: if isAdmin() || isTeacher();
       match /{document=**} {
-        allow read, write: if isSignedIn();
+        allow read: if isSignedIn();
+        allow write: if isAdmin() || isTeacher();
       }
     }
 
@@ -938,24 +941,23 @@ service cloud.firestore {
     }
 
     match /boarding_applications/{applicationId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow read, list: if isSignedIn() && (isStaff() || isAdmin() || resource.data.studentId == request.auth.uid || parentOwnsStudent(resource.data.studentId));
+      allow create: if isSignedIn() && (request.resource.data.studentId == request.auth.uid || parentOwnsStudent(request.resource.data.studentId) || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
     match /student_leaves/{leaveId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() && (isStaff() || isAdmin() || resource.data.studentId == request.auth.uid || parentOwnsStudent(resource.data.studentId));
       allow write: if isAdmin();
     }
 
     match /boarding_visitors/{visitorId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() && (isStaff() || isAdmin() || resource.data.studentId == request.auth.uid || parentOwnsStudent(resource.data.studentId));
       allow write: if isAdmin();
     }
 
     match /roll_calls/{rollCallId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() && (isStaff() || isAdmin() || resource.data.studentId == request.auth.uid || parentOwnsStudent(resource.data.studentId));
       allow write: if isAdmin();
     }
 
@@ -965,12 +967,12 @@ service cloud.firestore {
     }
 
     match /mess_attendance/{attendanceId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() && (isStaff() || isAdmin() || resource.data.studentId == request.auth.uid || parentOwnsStudent(resource.data.studentId));
       allow write: if isAdmin();
     }
 
     match /infirmary_logs/{logId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if isSignedIn() && (isStaff() || isAdmin() || resource.data.studentId == request.auth.uid || parentOwnsStudent(resource.data.studentId));
       allow write: if isAdmin();
     }
 
@@ -996,7 +998,7 @@ service cloud.firestore {
         isStaff() ||
         isAdmin()
       );
-      allow list: if isSignedIn();
+      allow list: if isSignedIn() && (isStaff() || isAdmin() || resource.data.studentId == request.auth.uid || parentOwnsStudent(resource.data.studentId));
       allow write: if isAdmin();
     }
 
@@ -1006,7 +1008,7 @@ service cloud.firestore {
     match /gallery/{postId} {
       allow read, list: if isSignedIn();
       allow create, delete: if isAdmin() || isTeacher();
-      allow update: if isSignedIn();
+      allow update: if isAdmin() || isTeacher();
     }
 
     // =========================================================

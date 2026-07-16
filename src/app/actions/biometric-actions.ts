@@ -2,6 +2,7 @@
 
 import crypto from 'crypto';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { format, startOfDay } from 'date-fns';
 import { notifyParents } from './notifications';
@@ -25,13 +26,39 @@ function getAdminApp() {
  * Generates a new secure API key for the school's biometric integration.
  * Stores it in the school's settings.
  */
-export async function generateBiometricApiKey(schoolId: string) {
+export async function generateBiometricApiKey(schoolId: string, idToken?: string) {
   if (!schoolId) {
     return { success: false, error: 'Missing school ID' };
   }
+  if (!idToken) {
+    return { success: false, error: 'Authentication required' };
+  }
 
   try {
-    const db = getFirestore(getAdminApp());
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const auth = getAuth(adminApp);
+
+    // Verify token
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    
+    // Verify role is Admin or Director, and schoolId matches
+    const userDoc = await db.collection('users').doc(callerUid).get();
+    if (!userDoc.exists) {
+      return { success: false, error: 'Unauthorized user context' };
+    }
+    const userData = userDoc.data();
+    const callerRole = userData?.role || '';
+    const callerSchoolId = userData?.schoolId || '';
+
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+    const isAuthorized = isSuperAdmin || (['Director', 'Administrator', 'Admin'].includes(callerRole) && callerSchoolId === schoolId);
+
+    if (!isAuthorized) {
+      return { success: false, error: 'Unauthorized role privileges.' };
+    }
+
     const apiKey = `sec_bio_${crypto.randomBytes(24).toString('hex')}`;
 
     await db.collection('schoolSettings').doc(schoolId).set({
@@ -50,13 +77,38 @@ export async function generateBiometricApiKey(schoolId: string) {
 /**
  * Revokes the school's biometric integration API key.
  */
-export async function revokeBiometricApiKey(schoolId: string) {
+export async function revokeBiometricApiKey(schoolId: string, idToken?: string) {
   if (!schoolId) {
     return { success: false, error: 'Missing school ID' };
   }
+  if (!idToken) {
+    return { success: false, error: 'Authentication required' };
+  }
 
   try {
-    const db = getFirestore(getAdminApp());
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const auth = getAuth(adminApp);
+
+    // Verify token
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    
+    // Verify role is Admin or Director, and schoolId matches
+    const userDoc = await db.collection('users').doc(callerUid).get();
+    if (!userDoc.exists) {
+      return { success: false, error: 'Unauthorized user context' };
+    }
+    const userData = userDoc.data();
+    const callerRole = userData?.role || '';
+    const callerSchoolId = userData?.schoolId || '';
+
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+    const isAuthorized = isSuperAdmin || (['Director', 'Administrator', 'Admin'].includes(callerRole) && callerSchoolId === schoolId);
+
+    if (!isAuthorized) {
+      return { success: false, error: 'Unauthorized role privileges.' };
+    }
 
     await db.collection('schoolSettings').doc(schoolId).set({
       biometricApiKey: null,
@@ -74,13 +126,38 @@ export async function revokeBiometricApiKey(schoolId: string) {
 /**
  * Maps a biometric/RFID Card ID to a specific student.
  */
-export async function updateStudentBiometricId(schoolId: string, studentId: string, biometricId: string) {
+export async function updateStudentBiometricId(schoolId: string, studentId: string, biometricId: string, idToken?: string) {
   if (!schoolId || !studentId) {
     return { success: false, error: 'Missing student or school parameter' };
   }
+  if (!idToken) {
+    return { success: false, error: 'Authentication required' };
+  }
 
   try {
-    const db = getFirestore(getAdminApp());
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const auth = getAuth(adminApp);
+
+    // Verify token
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    
+    // Verify role is Admin, Director, Secretary or Teacher, and schoolId matches
+    const userDoc = await db.collection('users').doc(callerUid).get();
+    if (!userDoc.exists) {
+      return { success: false, error: 'Unauthorized user context' };
+    }
+    const userData = userDoc.data();
+    const callerRole = userData?.role || '';
+    const callerSchoolId = userData?.schoolId || '';
+
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+    const isAuthorized = isSuperAdmin || (['Director', 'Administrator', 'Admin', 'Teacher', 'Secretary'].includes(callerRole) && callerSchoolId === schoolId);
+
+    if (!isAuthorized) {
+      return { success: false, error: 'Unauthorized role privileges.' };
+    }
 
     // Clean up biometric ID whitespace
     const cleanBiometricId = biometricId.trim();
@@ -262,14 +339,41 @@ export async function processBiometricScans(
 export async function importBiometricCsvAction(
   schoolId: string,
   targetDateVal: string, // ISO string or yyyy-MM-dd
-  records: { biometricId: string; timestamp: number }[]
+  records: { biometricId: string; timestamp: number }[],
+  idToken?: string
 ) {
   if (!schoolId || !targetDateVal || !records || records.length === 0) {
     return { success: false, error: 'Missing required validation data.' };
   }
+  if (!idToken) {
+    return { success: false, error: 'Authentication required' };
+  }
 
   try {
-    const db = getFirestore(getAdminApp());
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    const auth = getAuth(adminApp);
+
+    // Verify token
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const callerUid = decodedToken.uid;
+    
+    // Verify role is Admin or Director, and schoolId matches
+    const userDoc = await db.collection('users').doc(callerUid).get();
+    if (!userDoc.exists) {
+      return { success: false, error: 'Unauthorized user context' };
+    }
+    const userData = userDoc.data();
+    const callerRole = userData?.role || '';
+    const callerSchoolId = userData?.schoolId || '';
+
+    const isSuperAdmin = callerUid === "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || callerUid === "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+    const isAuthorized = isSuperAdmin || (['Director', 'Administrator', 'Admin', 'Teacher', 'Secretary'].includes(callerRole) && callerSchoolId === schoolId);
+
+    if (!isAuthorized) {
+      return { success: false, error: 'Unauthorized role privileges.' };
+    }
+
     const targetDate = new Date(targetDateVal);
 
     const result = await processBiometricScans(db, schoolId, targetDate, records);
