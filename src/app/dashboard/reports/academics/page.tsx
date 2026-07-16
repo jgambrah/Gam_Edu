@@ -538,6 +538,64 @@ export default function AcademicReportsPage() {
         });
     }, [academicData]);
 
+    const handleDownloadCSV = () => {
+        if (!rankedStudents || rankedStudents.length === 0 || !activeSubjects) return;
+
+        let csvContent = "";
+
+        // Row 1 Header
+        const row1 = ["Position", "Student Name"];
+        activeSubjects.forEach(sub => {
+            row1.push(`"${sub.name}"`, "", "", "", "", "", "");
+        });
+        row1.push("Total Marks", "Average (%)");
+        csvContent += row1.join(",") + "\n";
+
+        // Row 2 Header
+        const row2 = ["", ""];
+        activeSubjects.forEach(sub => {
+            row2.push("\"Class Ex\"", "\"H/W\"", "\"Mid Sem\"", "\"Proj\"", `\"C.A. (${currentCaWeight}%)\"`, `\"Exams (${currentExamWeight}%)\"`, "\"Total\"");
+        });
+        row2.push("", "");
+        csvContent += row2.join(",") + "\n";
+
+        // Student Data Rows
+        rankedStudents.forEach(s => {
+            const rowData = [s.rank.toString(), `"${s.studentName}"`];
+            activeSubjects.forEach(sub => {
+                const subScore = s.subjectSubScores?.[sub.id];
+                if (subScore) {
+                    const caTotal = parseFloat((subScore.classEx + subScore.hw + subScore.midSem + subScore.proj).toFixed(1));
+                    rowData.push(
+                        subScore.classEx > 0 ? subScore.classEx.toString() : "",
+                        subScore.hw > 0 ? subScore.hw.toString() : "",
+                        subScore.midSem > 0 ? subScore.midSem.toString() : "",
+                        subScore.proj > 0 ? subScore.proj.toString() : "",
+                        caTotal > 0 ? caTotal.toString() : "",
+                        subScore.exam > 0 ? subScore.exam.toString() : "",
+                        subScore.total > 0 ? subScore.total.toString() : ""
+                    );
+                } else {
+                    rowData.push("", "", "", "", "", "", "");
+                }
+            });
+            rowData.push(s.totalMarks.toString(), `${s.average}%`);
+            csvContent += rowData.join(",") + "\n";
+        });
+
+        // Trigger file download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const filename = `${selectedClass?.name || 'School'}_Master_Report_${selectedTerm}_${selectedYear}.csv`.replace(/\s+/g, '_');
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const isLoading = isSchoolLoading || isRoleLoading || isLoadingClasses || isLoadingSubjects;
 
     if (isLoading) {
@@ -775,8 +833,8 @@ export default function AcademicReportsPage() {
                             </button>
                         </div>
                         {viewMode === 'master_report' && (
-                            <Button onClick={() => window.print()} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 shadow-sm border-0">
-                                <Printer className="mr-1.5 h-4 w-4" /> Print Master Report
+                            <Button onClick={handleDownloadCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 shadow-sm border-0 flex items-center gap-1.5">
+                                <FileSpreadsheet className="h-4 w-4" /> Export Excel / CSV
                             </Button>
                         )}
                     </div>
