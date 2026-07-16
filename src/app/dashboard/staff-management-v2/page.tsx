@@ -52,6 +52,13 @@ type Subject = {
     teacherIds: string[];
 };
 
+type Class = {
+    id: string;
+    name: string;
+    teacherId?: string;
+    schoolId: string;
+};
+
 // ═════════════════════════════════════════════════════════════════════════════
 export default function StaffManagementPage() {
   const auth = useAuth();
@@ -87,6 +94,12 @@ export default function StaffManagementPage() {
     [firestore, adminSchoolId]
   );
   const { data: subjects } = useCollection<Subject>(subjectsQuery);
+
+  const classesQuery = useMemoFirebase(() => 
+    (firestore && adminSchoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', adminSchoolId)) : null, 
+    [firestore, adminSchoolId]
+  );
+  const { data: classes } = useCollection<Class>(classesQuery);
 
   const loadData = useCallback(async () => {
     if (!firestore || !adminSchoolId) return;
@@ -337,6 +350,7 @@ export default function StaffManagementPage() {
                 <TableBody>
                   {filteredStaff.map(member => {
                       const mySubjects = subjects?.filter(s => s.teacherIds?.includes(member.uid || member.id)) || [];
+                      const myClasses = classes?.filter(c => c.teacherId === (member.uid || member.id)) || [];
                       return (
                         <TableRow key={member.id} className="hover:bg-slate-50/40 transition-colors group">
                             <TableCell className="py-4">
@@ -358,11 +372,17 @@ export default function StaffManagementPage() {
                             <TableCell className="py-4">
                                 {member.role === 'Teacher' ? (
                                     <div className="flex flex-wrap gap-1 max-w-[240px]">
-                                        {mySubjects.length > 0 ? mySubjects.map(s => (
+                                        {mySubjects.map(s => (
                                             <Badge key={s.id} variant="outline" className="text-[9px] bg-emerald-50 text-emerald-700 border-emerald-100 font-black uppercase tracking-widest px-2 py-0.5 rounded">
                                                 {s.name}
                                             </Badge>
-                                        )) : (
+                                        ))}
+                                        {myClasses.map(c => (
+                                            <Badge key={c.id} variant="outline" className="text-[9px] bg-indigo-50 text-indigo-700 border-indigo-100 font-black uppercase tracking-widest px-2 py-0.5 rounded">
+                                                {c.name}
+                                            </Badge>
+                                        ))}
+                                        {mySubjects.length === 0 && myClasses.length === 0 && (
                                             <span className="text-xs text-amber-500 font-medium italic">Unassigned</span>
                                         )}
                                     </div>
