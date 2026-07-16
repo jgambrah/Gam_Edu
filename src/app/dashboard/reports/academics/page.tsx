@@ -1142,27 +1142,27 @@ export default function AcademicReportsPage() {
                                                     const caTotal = subScore ? parseFloat((subScore.classEx + subScore.hw + subScore.midSem + subScore.proj).toFixed(1)) : 0;
                                                     return (
                                                         <Fragment key={sub.id}>
-                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                            <TableCell className="text-center text-xs text-slate-500 italic font-medium border-r border-slate-200 px-1">
                                                                 {subScore !== undefined && subScore.classEx > 0 ? subScore.classEx : '—'}
                                                             </TableCell>
-                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                            <TableCell className="text-center text-xs text-slate-500 italic font-medium border-r border-slate-200 px-1">
                                                                 {subScore !== undefined && subScore.hw > 0 ? subScore.hw : '—'}
                                                             </TableCell>
-                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                            <TableCell className="text-center text-xs text-slate-500 italic font-medium border-r border-slate-200 px-1">
                                                                 {subScore !== undefined && subScore.midSem > 0 ? subScore.midSem : '—'}
                                                             </TableCell>
-                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                            <TableCell className="text-center text-xs text-slate-500 italic font-medium border-r border-slate-200 px-1">
                                                                 {subScore !== undefined && subScore.proj > 0 ? subScore.proj : '—'}
                                                             </TableCell>
-                                                            <TableCell className="text-center text-xs font-semibold border-r border-slate-200 px-1 bg-slate-50 text-slate-700">
+                                                            <TableCell className="text-center text-xs font-black border-r border-slate-200 px-1 bg-slate-50 text-slate-900">
                                                                 {subScore !== undefined && caTotal > 0 ? caTotal : '—'}
                                                             </TableCell>
-                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                            <TableCell className="text-center text-xs text-slate-500 italic font-medium border-r border-slate-200 px-1">
                                                                 {subScore !== undefined && subScore.exam > 0 ? subScore.exam : '—'}
                                                             </TableCell>
-                                                            <TableCell className="text-center text-xs font-black border-r border-slate-200 px-1 bg-slate-100/30">
+                                                            <TableCell className="text-center text-xs font-black border-r border-slate-200 px-1 bg-slate-100/60 text-slate-900">
                                                                 {subScore !== undefined && subScore.total > 0 ? (
-                                                                    <span className={subScore.total < 50 ? 'text-red-500' : 'text-slate-800'}>
+                                                                    <span className={subScore.total < 50 ? 'text-red-600' : 'text-slate-950'}>
                                                                         {subScore.total}
                                                                     </span>
                                                                 ) : '—'}
@@ -1170,8 +1170,8 @@ export default function AcademicReportsPage() {
                                                         </Fragment>
                                                     );
                                                 })}
-                                                <TableCell className="text-center font-extrabold text-slate-700 bg-slate-50/50 border-r border-slate-200">{s.totalMarks}</TableCell>
-                                                <TableCell className="text-center font-extrabold text-indigo-650">{s.average}%</TableCell>
+                                                <TableCell className="text-center font-black text-slate-950 bg-slate-100/50 border-r border-slate-200">{s.totalMarks}</TableCell>
+                                                <TableCell className="text-center font-black text-indigo-750">{s.average}%</TableCell>
                                             </TableRow>
                                         ))}
                                         {rankedStudents.length === 0 && (
