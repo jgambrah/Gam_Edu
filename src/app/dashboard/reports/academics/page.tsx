@@ -1055,7 +1055,7 @@ export default function AcademicReportsPage() {
                                             <TableHead rowSpan={2} className="w-16 text-center font-extrabold text-slate-800 border-r border-slate-200 uppercase">Position</TableHead>
                                             <TableHead rowSpan={2} className="min-w-[180px] font-extrabold text-slate-800 border-r border-slate-200 uppercase">Student Name</TableHead>
                                             {activeSubjects.map(sub => (
-                                                <TableHead key={sub.id} colSpan={6} className="text-center font-extrabold text-slate-800 border-r border-slate-200 uppercase bg-yellow-50/50">{sub.name}</TableHead>
+                                                <TableHead key={sub.id} colSpan={7} className="text-center font-extrabold text-slate-800 border-r border-slate-200 uppercase bg-yellow-50/50">{sub.name}</TableHead>
                                             ))}
                                             <TableHead rowSpan={2} className="text-center font-extrabold text-slate-800 w-28 bg-slate-50 border-r border-slate-200 uppercase">Total Marks</TableHead>
                                             <TableHead rowSpan={2} className="text-center font-extrabold text-slate-800 w-24 border-slate-200 uppercase">Average (%)</TableHead>
@@ -1067,7 +1067,8 @@ export default function AcademicReportsPage() {
                                                     <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[45px] uppercase">H/W</TableHead>
                                                     <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[55px] uppercase">Mid Sem</TableHead>
                                                     <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[45px] uppercase">Proj</TableHead>
-                                                    <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[55px] uppercase">Exams</TableHead>
+                                                    <TableHead className="text-[9px] font-black text-slate-700 border-r border-slate-200 px-1 text-center min-w-[55px] uppercase bg-slate-100/30">C.A. ({currentCaWeight}%)</TableHead>
+                                                    <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[55px] uppercase">Exams ({currentExamWeight}%)</TableHead>
                                                     <TableHead className="text-[9px] font-black text-slate-750 border-r border-slate-200 px-1 text-center min-w-[50px] uppercase bg-slate-100/50">Total</TableHead>
                                                 </Fragment>
                                             ))}
@@ -1080,6 +1081,7 @@ export default function AcademicReportsPage() {
                                                 <TableCell className="font-bold text-slate-700 border-r border-slate-200">{s.studentName}</TableCell>
                                                 {activeSubjects.map(sub => {
                                                     const subScore = s.subjectSubScores?.[sub.id];
+                                                    const caTotal = subScore ? parseFloat((subScore.classEx + subScore.hw + subScore.midSem + subScore.proj).toFixed(1)) : 0;
                                                     return (
                                                         <Fragment key={sub.id}>
                                                             <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
@@ -1093,6 +1095,9 @@ export default function AcademicReportsPage() {
                                                             </TableCell>
                                                             <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
                                                                 {subScore !== undefined && subScore.proj > 0 ? subScore.proj : '—'}
+                                                            </TableCell>
+                                                            <TableCell className="text-center text-xs font-semibold border-r border-slate-200 px-1 bg-slate-50 text-slate-700">
+                                                                {subScore !== undefined && caTotal > 0 ? caTotal : '—'}
                                                             </TableCell>
                                                             <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
                                                                 {subScore !== undefined && subScore.exam > 0 ? subScore.exam : '—'}
@@ -1113,7 +1118,7 @@ export default function AcademicReportsPage() {
                                         ))}
                                         {rankedStudents.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={(activeSubjects.length * 6) + 4} className="text-center py-10 text-slate-400 italic">
+                                                <TableCell colSpan={(activeSubjects.length * 7) + 4} className="text-center py-10 text-slate-400 italic">
                                                     No student records compiled for the selected parameters.
                                                 </TableCell>
                                             </TableRow>
