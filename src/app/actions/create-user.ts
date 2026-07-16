@@ -4,6 +4,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 import { sendSchoolCredentialsEmail } from '@/lib/email';
+import { sanitizeErrorMessage } from '@/lib/error-handler';
 
 // --- HELPER: Fixes Vercel Key Formatting Issues ---
 const formatPrivateKey = (key: string) => {
@@ -152,7 +153,7 @@ export async function createNewUser(
     return { uid: userRecord.uid, success: true };
 
   } catch (error: any) {
-    console.error("❌ FATAL SERVER ERROR:", error);
-    return { error: error.message || 'Internal Server Error' };
+    const errorMessage = sanitizeErrorMessage(error);
+    return { error: errorMessage };
   }
 }

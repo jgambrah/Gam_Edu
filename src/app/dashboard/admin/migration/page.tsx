@@ -6,6 +6,7 @@ import { useFirestore, useUser, useCollection, useMemoFirebase, useAuth } from '
 import { collection, query, where, doc, setDoc, serverTimestamp, getDocs, writeBatch, limit, arrayUnion, updateDoc, Timestamp } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { sanitizeErrorMessage } from '@/lib/error-handler';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -249,7 +250,8 @@ export default function MigrationHubPage() {
       toast({ title: "Migration Complete", description: `Success: ${successCount}, Failed: ${failCount}.` });
       if (successCount > 0) { setStudentCsvData([]); setClassMap({}); }
     } catch (e: any) {
-      toast({ variant: 'destructive', title: "Import Error", description: e.message });
+      const errorMessage = sanitizeErrorMessage(e);
+      toast({ variant: 'destructive', title: "Import Error", description: errorMessage });
     } finally {
       setIsImportingStudents(false);
       setStudentImportProgress(0);
@@ -305,7 +307,8 @@ export default function MigrationHubPage() {
       toast({ title: "Migration Complete", description: `Success: ${successCount}, Failed: ${failCount}.` });
       if (successCount > 0) setParentCsvData([]);
     } catch (e: any) {
-      toast({ variant: 'destructive', title: "Import Error", description: e.message });
+      const errorMessage = sanitizeErrorMessage(e);
+      toast({ variant: 'destructive', title: "Import Error", description: errorMessage });
     } finally {
       setIsImportingParents(false);
       setParentImportProgress(0);
@@ -367,7 +370,8 @@ export default function MigrationHubPage() {
       toast({ title: "Grades Imported", description: `Success: ${successCount}, Failed: ${failCount}.` });
       if (successCount > 0) { setGradeCsvData([]); setSubjectMap({}); }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: "Import Failed", description: error.message });
+      const errorMessage = sanitizeErrorMessage(error);
+      toast({ variant: 'destructive', title: "Import Failed", description: errorMessage });
     } finally {
       setIsImportingGrades(false);
       setGradeImportProgress(0);
@@ -478,8 +482,8 @@ export default function MigrationHubPage() {
       if (successCount > 0) setBalanceCsvData([]);
 
     } catch (error: any) {
-      console.error("Balance Migration Error:", error);
-      toast({ variant: 'destructive', title: "Migration Failed", description: error.message });
+      const errorMessage = sanitizeErrorMessage(error);
+      toast({ variant: 'destructive', title: "Migration Failed", description: errorMessage });
     } finally {
       setIsImportingBalances(false);
       setBalanceImportProgress(0);

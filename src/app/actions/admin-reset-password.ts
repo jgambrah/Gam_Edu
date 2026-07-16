@@ -3,6 +3,7 @@
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { sanitizeErrorMessage } from '@/lib/error-handler';
 
 // Initialize Admin App
 function getAdminApp() {
@@ -80,7 +81,7 @@ export async function adminResetUserPassword(
 
     return { success: true };
   } catch (error: any) {
-    console.error("Admin Password Reset Error:", error);
-    return { success: false, error: error.message };
+    const errorMessage = sanitizeErrorMessage(error);
+    return { success: false, error: errorMessage };
   }
 }

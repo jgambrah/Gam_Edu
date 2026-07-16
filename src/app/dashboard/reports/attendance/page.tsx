@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
-import { collection, query, where, getDocs, writeBatch, doc, Timestamp } from 'firebase/firestore'; 
+import { collection, query, where, getDocs, writeBatch, doc, Timestamp } from 'firebase/firestore';
+import { sanitizeErrorMessage } from '@/lib/error-handler'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -90,7 +91,8 @@ function AttendanceManagerDialog({ classes, schoolId, onRefresh }: { classes: an
                 toast({ title: "Records Located", description: `Found ${ids.length} records ready for maintenance.` });
             }
         } catch (error: any) {
-            toast({ variant: 'destructive', title: "Search Failed", description: error.message });
+            const errorMessage = sanitizeErrorMessage(error);
+            toast({ variant: 'destructive', title: "Search Failed", description: errorMessage });
         } finally {
             setIsLoading(false);
         }
@@ -116,7 +118,8 @@ function AttendanceManagerDialog({ classes, schoolId, onRefresh }: { classes: an
             setRecordsToDelete([]);
             onRefresh();
         } catch (error: any) {
-            toast({ variant: 'destructive', title: "Execution Failed", description: error.message });
+            const errorMessage = sanitizeErrorMessage(error);
+            toast({ variant: 'destructive', title: "Execution Failed", description: errorMessage });
         } finally {
             setIsDeleting(false);
         }
