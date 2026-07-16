@@ -110,10 +110,11 @@ export default function AcademicReportsPage() {
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
         if (selectedClassId === 'all') {
+            if (!isAdmin) return null;
             return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
         }
         return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
+    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isAdmin]);
     const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
     const students = useMemo(() => {
@@ -125,6 +126,7 @@ export default function AcademicReportsPage() {
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !selectedYear || !selectedTerm) return null;
         if (selectedClassId === 'all') {
+            if (!isAdmin) return null;
             return query(
                 collection(firestore, 'assessments'), 
                 where('schoolId', '==', schoolId),
@@ -139,7 +141,7 @@ export default function AcademicReportsPage() {
             where('academicYear', '==', selectedYear),
             where('term', '==', selectedTerm)
         );
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, selectedYear, selectedTerm]);
+    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, selectedYear, selectedTerm, isAdmin]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Fetch School Settings for standard weighting overrides
@@ -695,7 +697,7 @@ export default function AcademicReportsPage() {
                                 <SelectValue placeholder="Choose a Class..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">🏫 Entire School (All Classes)</SelectItem>
+                                {isAdmin && <SelectItem value="all">🏫 Entire School (All Classes)</SelectItem>}
                                 {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
@@ -732,7 +734,7 @@ export default function AcademicReportsPage() {
                             <BookOpen className="h-5 w-5 text-indigo-500" /> Active Classes Overview
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {classes && classes.length > 0 && (
+                            {isAdmin && classes && classes.length > 0 && (
                                 <Card className="hover:border-indigo-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group bg-gradient-to-br from-indigo-50/20 to-indigo-100/10 border-indigo-200">
                                     <CardHeader className="pb-2">
                                         <div className="flex items-center justify-between mb-2">
