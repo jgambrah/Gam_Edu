@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useRole } from '@/context/role-context';
@@ -160,16 +160,38 @@ export default function AcademicReportsPage() {
     }, [assessments, selectedYear, selectedTerm]);
 
     // Data Aggregation Engine (Aggregates assessments by student & subject)
+    const getCategoryKey = (type: string) => {
+        const t = (type || '').toLowerCase();
+        if (t.includes('class exercise') || t.includes('class ex')) return 'classEx';
+        if (t.includes('homework') || t.includes('h/w')) return 'hw';
+        if (t.includes('project') || t.includes('proj')) return 'proj';
+        if (t.includes('mid-term') || t.includes('mid sem') || t.includes('midterm')) return 'midSem';
+        return 'other';
+    };
+
+    // Data Aggregation Engine (Aggregates assessments by student & subject & category)
     const academicData = useMemo(() => {
         if (!students || students.length === 0 || !subjects || classAssessments.length === 0) return null;
 
-        // Group assessments by student and subject
-        const grouping: Record<string, Record<string, { ca: number; caMax: number; exam: number; examMax: number }>> = {};
+        // Group assessments by student, subject, and category
+        const grouping: Record<
+            string, 
+            Record<
+                string, 
+                Record<string, { score: number; maxScore: number }>
+            >
+        > = {};
 
         students.forEach(student => {
             grouping[student.uid] = {};
             subjects.forEach(subject => {
-                grouping[student.uid][subject.id] = { ca: 0, caMax: 0, exam: 0, examMax: 0 };
+                grouping[student.uid][subject.id] = {
+                    classEx: { score: 0, maxScore: 0 },
+                    hw: { score: 0, maxScore: 0 },
+                    midSem: { score: 0, maxScore: 0 },
+                    proj: { score: 0, maxScore: 0 },
+                    exam: { score: 0, maxScore: 0 }
+                };
             });
         });
 
@@ -181,13 +203,17 @@ export default function AcademicReportsPage() {
             const type = (a.assessmentType || '').toLowerCase();
             const isExam = type.includes('exam') || type.includes('term');
 
-            if (isExam) {
-                grouping[studentId][subjectId].exam += (a.score || 0);
-                grouping[studentId][subjectId].examMax += (a.maxScore || 100);
-            } else {
-                grouping[studentId][subjectId].ca += (a.score || 0);
-                grouping[studentId][subjectId].caMax += (a.maxScore || 100);
+            let categoryKey = 'exam';
+            if (!isExam) {
+                categoryKey = getCategoryKey(a.assessmentType);
             }
+
+            if (categoryKey === 'other') {
+                categoryKey = 'classEx';
+            }
+
+            grouping[studentId][subjectId][categoryKey].score += (a.score || 0);
+            grouping[studentId][subjectId][categoryKey].maxScore += (a.maxScore || 100);
         });
 
         const studentSubjectScores: Record<string, Record<string, number>> = {};
@@ -196,29 +222,64 @@ export default function AcademicReportsPage() {
             studentName: string;
             average: number;
             subjectScores: Record<string, number>;
+            subjectSubScores: Record<string, { classEx: number; hw: number; midSem: number; proj: number; exam: number; total: number }>;
             passCount: number;
             totalTestedSubjects: number;
         }> = [];
 
         students.forEach(student => {
             const scoresMap: Record<string, number> = {};
+            const subScoresMap: Record<string, { classEx: number; hw: number; midSem: number; proj: number; exam: number; total: number }> = {};
             let sumPercentages = 0;
             let testedSubjectsCount = 0;
             let passCount = 0;
 
             subjects.forEach(subject => {
-                const data = grouping[student.uid]?.[subject.id];
-                if (!data) return;
+                const subData = grouping[student.uid]?.[subject.id];
+                if (!subData) return;
 
-                const hasCa = data.caMax > 0;
-                const hasExam = data.examMax > 0;
+                // Find active CA categories for this subject in the cohort
+                const caTypesForSubject = new Set<string>();
+                classAssessments.forEach((a: Assessment) => {
+                    if (a.subjectId !== subject.id) return;
+                    const type = (a.assessmentType || '').toLowerCase();
+                    const isExam = type.includes('exam') || type.includes('term');
+                    if (!isExam) {
+                        let cat = getCategoryKey(a.assessmentType);
+                        if (cat === 'other') cat = 'classEx';
+                        caTypesForSubject.add(cat);
+                    }
+                });
 
-                if (hasCa || hasExam) {
-                    const caPct = hasCa ? (data.ca / data.caMax) * currentCaWeight : 0;
-                    const examPct = hasExam ? (data.exam / data.examMax) * currentExamWeight : 0;
-                    const final = caPct + examPct;
+                const activeCaCount = caTypesForSubject.size || 1;
+                const caCategoryWeight = currentCaWeight / activeCaCount;
 
-                    scoresMap[subject.id] = parseFloat(final.toFixed(1));
+                const hasClassEx = subData.classEx.maxScore > 0;
+                const hasHw = subData.hw.maxScore > 0;
+                const hasMidSem = subData.midSem.maxScore > 0;
+                const hasProj = subData.proj.maxScore > 0;
+                const hasExam = subData.exam.maxScore > 0;
+
+                if (hasClassEx || hasHw || hasMidSem || hasProj || hasExam) {
+                    const classExVal = hasClassEx ? (subData.classEx.score / subData.classEx.maxScore) * caCategoryWeight : 0;
+                    const hwVal = hasHw ? (subData.hw.score / subData.hw.maxScore) * caCategoryWeight : 0;
+                    const midSemVal = hasMidSem ? (subData.midSem.score / subData.midSem.maxScore) * caCategoryWeight : 0;
+                    const projVal = hasProj ? (subData.proj.score / subData.proj.maxScore) * caCategoryWeight : 0;
+                    const examVal = hasExam ? (subData.exam.score / subData.exam.maxScore) * currentExamWeight : 0;
+
+                    const final = classExVal + hwVal + midSemVal + projVal + examVal;
+                    const finalRounded = parseFloat(final.toFixed(1));
+
+                    scoresMap[subject.id] = finalRounded;
+                    subScoresMap[subject.id] = {
+                        classEx: parseFloat(classExVal.toFixed(1)),
+                        hw: parseFloat(hwVal.toFixed(1)),
+                        midSem: parseFloat(midSemVal.toFixed(1)),
+                        proj: parseFloat(projVal.toFixed(1)),
+                        exam: parseFloat(examVal.toFixed(1)),
+                        total: finalRounded
+                    };
+
                     sumPercentages += final;
                     testedSubjectsCount++;
                     if (final >= 50) {
@@ -235,6 +296,7 @@ export default function AcademicReportsPage() {
                 studentName: `${student.firstName} ${student.lastName}`,
                 average: parseFloat(overallAvg.toFixed(1)),
                 subjectScores: scoresMap,
+                subjectSubScores: subScoresMap,
                 passCount,
                 totalTestedSubjects: testedSubjectsCount
             });
@@ -987,44 +1049,71 @@ export default function AcademicReportsPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="p-0 overflow-x-auto animate-in fade-in duration-300">
-                                <Table>
+                                <Table className="border-collapse border border-slate-200">
                                     <TableHeader>
                                         <TableRow className="bg-slate-100 hover:bg-slate-100 border-b border-slate-200">
-                                            <TableHead className="w-16 text-center font-bold text-slate-700">Position</TableHead>
-                                            <TableHead className="min-w-[180px] font-bold text-slate-700">Student Name</TableHead>
+                                            <TableHead rowSpan={2} className="w-16 text-center font-extrabold text-slate-800 border-r border-slate-200 uppercase">Position</TableHead>
+                                            <TableHead rowSpan={2} className="min-w-[180px] font-extrabold text-slate-800 border-r border-slate-200 uppercase">Student Name</TableHead>
                                             {activeSubjects.map(sub => (
-                                                <TableHead key={sub.id} className="text-center font-bold text-slate-700 min-w-[95px]">{sub.name}</TableHead>
+                                                <TableHead key={sub.id} colSpan={6} className="text-center font-extrabold text-slate-800 border-r border-slate-200 uppercase bg-yellow-50/50">{sub.name}</TableHead>
                                             ))}
-                                            <TableHead className="text-center font-bold text-slate-700 w-28 bg-slate-50">Total Marks</TableHead>
-                                            <TableHead className="text-center font-bold text-slate-700 w-24">Average (%)</TableHead>
+                                            <TableHead rowSpan={2} className="text-center font-extrabold text-slate-800 w-28 bg-slate-50 border-r border-slate-200 uppercase">Total Marks</TableHead>
+                                            <TableHead rowSpan={2} className="text-center font-extrabold text-slate-800 w-24 border-slate-200 uppercase">Average (%)</TableHead>
+                                        </TableRow>
+                                        <TableRow className="bg-slate-50 hover:bg-slate-50 border-b border-slate-200">
+                                            {activeSubjects.map(sub => (
+                                                <Fragment key={sub.id}>
+                                                    <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[55px] uppercase">Class Ex</TableHead>
+                                                    <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[45px] uppercase">H/W</TableHead>
+                                                    <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[55px] uppercase">Mid Sem</TableHead>
+                                                    <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[45px] uppercase">Proj</TableHead>
+                                                    <TableHead className="text-[9px] font-black text-slate-500 border-r border-slate-200 px-1 text-center min-w-[55px] uppercase">Exams</TableHead>
+                                                    <TableHead className="text-[9px] font-black text-slate-750 border-r border-slate-200 px-1 text-center min-w-[50px] uppercase bg-slate-100/50">Total</TableHead>
+                                                </Fragment>
+                                            ))}
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {rankedStudents.map((s) => (
-                                            <TableRow key={s.studentId} className="hover:bg-slate-50/55 transition-colors border-b">
-                                                <TableCell className="text-center font-bold text-slate-500">{s.rank}</TableCell>
-                                                <TableCell className="font-bold text-slate-700">{s.studentName}</TableCell>
+                                            <TableRow key={s.studentId} className="hover:bg-slate-50/55 transition-colors border-b border-slate-200">
+                                                <TableCell className="text-center font-bold text-slate-500 border-r border-slate-200">{s.rank}</TableCell>
+                                                <TableCell className="font-bold text-slate-700 border-r border-slate-200">{s.studentName}</TableCell>
                                                 {activeSubjects.map(sub => {
-                                                    const score = s.subjectScores[sub.id];
+                                                    const subScore = s.subjectSubScores?.[sub.id];
                                                     return (
-                                                        <TableCell key={sub.id} className="text-center font-medium">
-                                                            {score !== undefined ? (
-                                                                <span className={score < 50 ? 'text-red-500 font-bold' : 'text-slate-700'}>
-                                                                    {score}
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-slate-300">—</span>
-                                                            )}
-                                                        </TableCell>
+                                                        <Fragment key={sub.id}>
+                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                                {subScore !== undefined && subScore.classEx > 0 ? subScore.classEx : '—'}
+                                                            </TableCell>
+                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                                {subScore !== undefined && subScore.hw > 0 ? subScore.hw : '—'}
+                                                            </TableCell>
+                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                                {subScore !== undefined && subScore.midSem > 0 ? subScore.midSem : '—'}
+                                                            </TableCell>
+                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                                {subScore !== undefined && subScore.proj > 0 ? subScore.proj : '—'}
+                                                            </TableCell>
+                                                            <TableCell className="text-center text-xs text-slate-600 border-r border-slate-200 px-1">
+                                                                {subScore !== undefined && subScore.exam > 0 ? subScore.exam : '—'}
+                                                            </TableCell>
+                                                            <TableCell className="text-center text-xs font-black border-r border-slate-200 px-1 bg-slate-100/30">
+                                                                {subScore !== undefined && subScore.total > 0 ? (
+                                                                    <span className={subScore.total < 50 ? 'text-red-500' : 'text-slate-800'}>
+                                                                        {subScore.total}
+                                                                    </span>
+                                                                ) : '—'}
+                                                            </TableCell>
+                                                        </Fragment>
                                                     );
                                                 })}
-                                                <TableCell className="text-center font-extrabold text-slate-700 bg-slate-50/50">{s.totalMarks}</TableCell>
+                                                <TableCell className="text-center font-extrabold text-slate-700 bg-slate-50/50 border-r border-slate-200">{s.totalMarks}</TableCell>
                                                 <TableCell className="text-center font-extrabold text-indigo-650">{s.average}%</TableCell>
                                             </TableRow>
                                         ))}
                                         {rankedStudents.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={activeSubjects.length + 4} className="text-center py-10 text-slate-400 italic">
+                                                <TableCell colSpan={(activeSubjects.length * 6) + 4} className="text-center py-10 text-slate-400 italic">
                                                     No student records compiled for the selected parameters.
                                                 </TableCell>
                                             </TableRow>
