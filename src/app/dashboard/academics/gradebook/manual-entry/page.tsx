@@ -452,7 +452,7 @@ export default function GradebookPage() {
                                 <Button 
                                     onClick={handleSaveBatch} 
                                     disabled={isSaving || isGlobalLoading} 
-                                    className="bg-indigo-650 hover:bg-indigo-750 font-bold rounded-xl text-white shadow transition-all h-10 px-6 text-sm"
+                                    className="bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-white shadow transition-all h-10 px-6 text-sm"
                                 >
                                     {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
                                     {isGlobalLoading ? 'Authenticating...' : 'Save All Scores'}

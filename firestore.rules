@@ -148,7 +148,7 @@ service cloud.firestore {
         allow create, update: if isSignedIn() && (
           isSuperAdmin() ||
           (isAdmin() && getUserSchoolId() == get(/databases/$(database)/documents/students/$(studentId)).data.schoolId) ||
-          (isTeacher() && getUserSchoolId() == get(/databases/$(database)/documents/students/$(studentId)).data.schoolId && !(request.resource.data.category in ['health', 'financial'])) ||
+          (isTeacher() && getUserSchoolId() == request.resource.data.schoolId && !(request.resource.data.category in ['health', 'financial'])) ||
           (getUserRole() in ['Nurse', 'Doctor', 'Warden', 'Boarding Staff'] && getUserSchoolId() == get(/databases/$(database)/documents/students/$(studentId)).data.schoolId && request.resource.data.category == 'health')
         );
         
