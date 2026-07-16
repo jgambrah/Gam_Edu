@@ -13042,8 +13042,8 @@ export default function DashboardClient() {
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
-  // collectionGroup scan restored for Director for detail tabs (limited to recent 100 payments to avoid full scans).
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(100)) : null, [firestore, schoolId, isAccountant, role]);
+  // collectionGroup scan restored for Director for detail tabs.
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
