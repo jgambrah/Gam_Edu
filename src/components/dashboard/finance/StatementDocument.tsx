@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 interface StatementDocumentProps {
   student?: Student;
   records: FinancialRecord[];
+  payments: any[];
   dateRange?: DateRange;
   summary: { 
     totalBilled: number;
@@ -20,18 +21,92 @@ interface StatementDocumentProps {
   schoolProfile: any;
 }
 
-export function StatementDocument({ student, records, dateRange, summary, schoolProfile }: StatementDocumentProps) {
+export function StatementDocument({ student, records, payments, dateRange, summary, schoolProfile }: StatementDocumentProps) {
   
   const primaryTheme = schoolProfile?.brandColor || '#1e293b';
   const secondaryTheme = schoolProfile?.secondaryColor || primaryTheme;
 
-  // Calculate summary for the PERIOD being displayed
+  // Compile all transaction entries chronologically
+  const ledgerEntries = useMemo(() => {
+    const entries: Array<{
+      id: string;
+      date: Date;
+      description: string;
+      debit: number;
+      credit: number;
+      type: 'Charge' | 'Payment' | 'Reversal' | 'Waiver';
+      originalRecord?: any;
+    }> = [];
+
+    // 1. Process Charges (Debits) and Waivers (Credits)
+    (records || []).forEach(rec => {
+      const recDate = rec.createdAt?.toDate ? rec.createdAt.toDate() : new Date();
+      entries.push({
+        id: `charge-${rec.id}`,
+        date: recDate,
+        description: rec.description || 'Service Charge',
+        debit: rec.billedAmount || 0,
+        credit: 0,
+        type: 'Charge',
+        originalRecord: rec
+      });
+
+      if (rec.waiverAmount && rec.waiverAmount > 0) {
+        entries.push({
+          id: `waiver-${rec.id}`,
+          date: recDate,
+          description: `Waiver Applied for ${rec.description || 'Charge'}`,
+          debit: 0,
+          credit: rec.waiverAmount,
+          type: 'Waiver',
+          originalRecord: rec
+        });
+      }
+    });
+
+    // 2. Process Payments (Credits) and Reversals (Negative Credits)
+    (payments || []).forEach(pay => {
+      const payDate = pay.paidAt?.toDate ? pay.paidAt.toDate() : (pay.paidAt?.seconds ? new Date(pay.paidAt.seconds * 1000) : new Date());
+      
+      // Filter payments by dateRange if present
+      if (dateRange?.from || dateRange?.to) {
+        if (dateRange.from && payDate < dateRange.from) return;
+        if (dateRange.to && payDate > dateRange.to) return;
+      }
+
+      if (pay.amount > 0) {
+        entries.push({
+          id: pay.id,
+          date: payDate,
+          description: `${pay.description || 'Payment Received'} (Receipt #${pay.id})` + (pay.status === 'Reversed' ? ' - [REVERSED]' : ''),
+          debit: 0,
+          credit: pay.amount,
+          type: 'Payment',
+          originalRecord: pay
+        });
+      } else if (pay.amount < 0) {
+        entries.push({
+          id: pay.id,
+          date: payDate,
+          description: `${pay.notes || pay.description || 'Reversal of Payment'} (${pay.processedByName ? `by ${pay.processedByName}` : ''})`,
+          debit: 0,
+          credit: pay.amount,
+          type: 'Reversal',
+          originalRecord: pay
+        });
+      }
+    });
+
+    // Sort entries oldest first (ascending chronological order)
+    return entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [records, payments, dateRange]);
+
+  // Calculate summary for the PERIOD being displayed based on compiled entries
   const periodSummary = useMemo(() => {
-    if (!records) return { totalBilled: 0, totalPaid: 0 };
-    const totalBilled = records.reduce((acc, r) => acc + r.billedAmount, 0);
-    const totalPaid = records.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+    const totalBilled = ledgerEntries.reduce((acc, r) => acc + r.debit, 0);
+    const totalPaid = ledgerEntries.reduce((acc, r) => acc + r.credit, 0);
     return { totalBilled, totalPaid };
-  }, [records]);
+  }, [ledgerEntries]);
   
   // Running balance calculation needs to account for the starting balance of the period
   const balanceBroughtForward = useMemo(() => {
@@ -143,22 +218,29 @@ export function StatementDocument({ student, records, dateRange, summary, school
                         <td colSpan={3} className="p-4 font-black text-slate-450 uppercase tracking-widest text-[8px] pl-6">Opening Balance brought forward</td>
                         <td className="text-right p-4 font-black text-xs font-mono">GH₵ {balanceBroughtForward.toFixed(2)}</td>
                     </tr>
-                    {records.map((rec, i) => {
-                        const debit = rec.billedAmount;
-                        const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
-                        runningBalance += (debit - credit);
-                        return (
-                            <tr key={rec.id} className={cn("border-b hover:bg-slate-50/30 transition-colors", i % 2 === 0 ? "bg-white" : "bg-slate-50/20")} style={{ borderBottomColor: `${secondaryTheme}10` }}>
-                                <td className="p-4 border-r pl-6" style={{ borderRightColor: `${secondaryTheme}10` }}>
-                                    <p className="font-bold text-slate-800 text-xs">{rec.description}</p>
-                                    <p className="text-[8px] text-indigo-500 font-black uppercase tracking-wider mt-1">{rec.type || 'Charges'} • {format(rec.createdAt.toDate(), 'dd MMM yyyy')}</p>
-                                </td>
-                                <td className="text-right p-4 font-bold text-slate-700 border-r font-mono" style={{ borderRightColor: `${secondaryTheme}10` }}>{debit > 0 ? `GH₵ ${debit.toFixed(2)}` : '—'}</td>
-                                <td className="text-right p-4 font-bold text-emerald-600 border-r font-mono" style={{ borderRightColor: `${secondaryTheme}10` }}>{credit > 0 ? `GH₵ ${credit.toFixed(2)}` : '—'}</td>
-                                <td className="text-right p-4 font-black text-slate-800 font-mono" style={{ color: primaryTheme }}>GH₵ {runningBalance.toFixed(2)}</td>
-                            </tr>
-                        )
-                    })}
+                    {(() => {
+                        let currentBal = balanceBroughtForward;
+                        return ledgerEntries.map((entry, i) => {
+                            currentBal += (entry.debit - entry.credit);
+                            return (
+                                <tr key={entry.id} className={cn("border-b hover:bg-slate-50/30 transition-colors", i % 2 === 0 ? "bg-white" : "bg-slate-50/20")} style={{ borderBottomColor: `${secondaryTheme}10` }}>
+                                    <td className="p-4 border-r pl-6" style={{ borderRightColor: `${secondaryTheme}10` }}>
+                                        <p className="font-bold text-slate-800 text-xs">{entry.description}</p>
+                                        <p className="text-[8px] text-indigo-500 font-black uppercase tracking-wider mt-1">{entry.type} • {format(entry.date, 'dd MMM yyyy')}</p>
+                                    </td>
+                                    <td className="text-right p-4 font-bold text-slate-700 border-r font-mono" style={{ borderRightColor: `${secondaryTheme}10` }}>
+                                        {entry.debit > 0 ? `GH₵ ${entry.debit.toFixed(2)}` : '—'}
+                                    </td>
+                                    <td className="text-right p-4 font-bold text-emerald-600 border-r font-mono" style={{ borderRightColor: `${secondaryTheme}10` }}>
+                                        {entry.credit !== 0 ? (entry.credit < 0 ? `-GH₵ ${Math.abs(entry.credit).toFixed(2)}` : `GH₵ ${entry.credit.toFixed(2)}`) : '—'}
+                                    </td>
+                                    <td className="text-right p-4 font-black text-slate-800 font-mono" style={{ color: primaryTheme }}>
+                                        GH₵ {currentBal.toFixed(2)}
+                                    </td>
+                                </tr>
+                            );
+                        });
+                    })()}
                 </tbody>
             </table>
         </section>
