@@ -6,8 +6,8 @@ import jsPDF from 'jspdf';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Download, Loader2, Printer } from 'lucide-react';
-import { useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, collectionGroup, query, where } from 'firebase/firestore';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc, collection, getDocs } from 'firebase/firestore';
 import { FinancialRecord, Student } from '@/lib/types';
 import { StatementDocument } from './StatementDocument';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -62,16 +62,49 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
 
-    // FETCH STUDENT PAYMENTS FROM SUBCOLLECTION GROUP
-    const paymentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !student?.uid) return null;
-        return query(
-            collectionGroup(firestore, 'payments'),
-            where('schoolId', '==', schoolId),
-            where('studentId', '==', student.uid)
-        );
-    }, [firestore, schoolId, student?.uid]);
-    const { data: payments, isLoading: isLoadingPayments } = useCollection<any>(paymentsQuery);
+    // FETCH STUDENT PAYMENTS BY SUBCOLLECTIONS OF BILLS TO PREVENT INDEX & PERMISSION ERRORS
+    const [payments, setPayments] = useState<any[]>([]);
+    const [isLoadingPayments, setIsLoadingPayments] = useState(false);
+
+    useEffect(() => {
+        if (!firestore || !records || records.length === 0) {
+            setPayments([]);
+            return;
+        }
+
+        let active = true;
+        setIsLoadingPayments(true);
+
+        const fetchAllSubcollectionPayments = async () => {
+            try {
+                const promises = records.map(async (rec) => {
+                    if (!rec.id) return [];
+                    const q = collection(firestore, 'financialRecords', rec.id, 'payments');
+                    const snap = await getDocs(q);
+                    return snap.docs.map(d => ({
+                        ...d.data(),
+                        id: d.id,
+                        recordId: rec.id
+                    }));
+                });
+                const results = await Promise.all(promises);
+                if (active) {
+                    setPayments(results.flat());
+                }
+            } catch (err) {
+                console.error("Failed to load subcollection payments:", err);
+            } finally {
+                if (active) {
+                    setIsLoadingPayments(false);
+                }
+            }
+        };
+
+        fetchAllSubcollectionPayments();
+        return () => {
+            active = false;
+        };
+    }, [firestore, records]);
 
     // Convert logo to base64 when profile is loaded
     useEffect(() => {
