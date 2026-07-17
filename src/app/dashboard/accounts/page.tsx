@@ -251,6 +251,8 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
 function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: { record: FinancialRecord, activeTill: any, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [reason, setReason] = useState('');
     const [payments, setPayments] = useState<PaymentTransaction[]>([]);
@@ -315,10 +317,34 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
         try {
             const batch = writeBatch(firestore);
             
-            // 1. Delete all payments from subcollection
+            // 1. Mark payments as Reversed and write Reversal Payment Transactions
             for (const payment of payments) {
                 const paymentRef = doc(firestore, 'financialRecords', record.id, 'payments', payment.id);
-                batch.delete(paymentRef);
+                batch.update(paymentRef, {
+                    status: 'Reversed',
+                    reversedAt: serverTimestamp(),
+                    reversedBy: user?.displayName || user?.email || 'System'
+                });
+
+                // Write the reversal payment transaction
+                const revId = `${payment.id}-REV`;
+                const revPaymentRef = doc(firestore, 'financialRecords', record.id, 'payments', revId);
+                batch.set(revPaymentRef, {
+                    id: revId,
+                    amount: -payment.amount,
+                    method: payment.method,
+                    notes: `Immediate Reversal of Receipt #${payment.id}`,
+                    paidAt: serverTimestamp(),
+                    processedById: user?.uid || 'system',
+                    processedByName: user?.displayName || user?.email || 'System',
+                    studentId: record.studentId,
+                    description: `Reversal of Receipt #${payment.id}`,
+                    schoolId: schoolId || record.schoolId || '',
+                    tillId: activeTill ? activeTill.id : '',
+                    status: 'Completed',
+                    isReversal: true,
+                    reversedReceiptId: payment.id
+                });
                 
                 // 2. If Cash and activeTill, write negative reversal transaction and adjust drawer cash balance
                 if (payment.method === 'Cash' && activeTill) {
@@ -3633,12 +3659,35 @@ export default function AccountsPage() {
     try {
         const batch = writeBatch(firestore);
         
-        // 1. Fetch payments from subcollection and delete them
+        // 1. Fetch payments from subcollection, mark them reversed, and add negative reversal transactions
         const querySnap = await getDocs(collection(firestore, 'financialRecords', record.id, 'payments'));
         const paymentsList = querySnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PaymentTransaction));
         
         for (const p of paymentsList) {
-            batch.delete(doc(firestore, 'financialRecords', record.id, 'payments', p.id));
+            // Update original payment to mark as Reversed
+            batch.update(doc(firestore, 'financialRecords', record.id, 'payments', p.id), {
+                status: 'Reversed',
+                reversedAt: serverTimestamp(),
+                reversedBy: 'Director Approved'
+            });
+
+            // Write the negative reversal transaction
+            const revId = `${p.id}-REV`;
+            batch.set(doc(firestore, 'financialRecords', record.id, 'payments', revId), {
+                id: revId,
+                amount: -p.amount,
+                method: p.method,
+                notes: `Reversal of Receipt #${p.id}. Reason: ${(record as any).reversalReason || 'Director Approved Reversal'}`,
+                paidAt: serverTimestamp(),
+                processedById: user?.uid || 'system',
+                processedByName: 'Director',
+                studentId: record.studentId,
+                description: `Reversal of Receipt #${p.id}`,
+                schoolId: schoolId || record.schoolId || '',
+                status: 'Completed',
+                isReversal: true,
+                reversedReceiptId: p.id
+            });
         }
         
         // 2. Reset parent record charge status and amountPaid
