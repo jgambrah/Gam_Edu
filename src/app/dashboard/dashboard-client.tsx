@@ -4976,7 +4976,7 @@ function DirectorDashboard({
                                 </Button>
                                 <Button
                                   size="sm"
-                                  className="bg-indigo-650 hover:bg-indigo-700 text-white font-bold rounded-xl text-[10px] uppercase h-9 px-4.5 shadow-md shadow-indigo-100 border-0"
+                                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-[10px] uppercase h-9 px-4.5 shadow-md shadow-indigo-100 border-0"
                                   disabled={isProcessingWaiver}
                                   onClick={() => handleApproveWaiver(req)}
                                 >
