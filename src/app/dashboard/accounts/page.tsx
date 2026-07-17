@@ -59,6 +59,8 @@ const extendedFinancialRecordSchema = financialRecordSchema.extend({
 function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { role, profile } = useRole();
+    const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const form = useForm<z.infer<typeof applyWaiverSchema>>({
         resolver: zodResolver(applyWaiverSchema),
@@ -71,17 +73,41 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
         if (!firestore || !record.id) return;
         setIsSubmitting(true);
         try {
-            const recordRef = doc(firestore, 'financialRecords', record.id);
-            const newWaiverAmount = (record.waiverAmount || 0) + values.amount;
-            const isFullySettled = (record.billedAmount - (record.amountPaid || 0) - newWaiverAmount) <= 0.01;
-            
-            await updateDoc(recordRef, {
-                waiverAmount: newWaiverAmount,
-                waiverReason: values.reason,
-                status: isFullySettled ? 'Paid' : record.status
-            });
-            
-            toast({ title: 'Waiver Applied', description: `GH₵${values.amount.toFixed(2)} waived.` });
+            if (role === 'Director') {
+                const recordRef = doc(firestore, 'financialRecords', record.id);
+                const newWaiverAmount = (record.waiverAmount || 0) + values.amount;
+                const isFullySettled = (record.billedAmount - (record.amountPaid || 0) - newWaiverAmount) <= 0.01;
+                
+                await updateDoc(recordRef, {
+                    waiverAmount: newWaiverAmount,
+                    waiverReason: values.reason,
+                    status: isFullySettled ? 'Paid' : record.status
+                });
+                
+                toast({ title: 'Waiver Applied Directly', description: `GH₵${values.amount.toFixed(2)} waived.` });
+            } else {
+                await addDoc(collection(firestore, 'waiverRequests'), {
+                    studentId: record.studentId,
+                    studentName: record.studentName || 'Student',
+                    recordId: record.id,
+                    recordDescription: record.description || 'Fees Charge',
+                    billedAmount: record.billedAmount,
+                    amountPaid: record.amountPaid || 0,
+                    currentWaiverAmount: record.waiverAmount || 0,
+                    requestedAmount: values.amount,
+                    reason: values.reason,
+                    status: 'Pending',
+                    requestedBy: user?.uid || '',
+                    requestedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Accountant',
+                    schoolId: record.schoolId || '',
+                    createdAt: serverTimestamp()
+                });
+                
+                toast({ 
+                    title: 'Waiver Requested', 
+                    description: `Request for GH₵${values.amount.toFixed(2)} waiver has been submitted for Director approval.` 
+                });
+            }
             onUpdate();
             setOpen(false);
         } catch (e: any) {
@@ -3140,6 +3166,7 @@ export default function AccountsPage() {
   const [activeTab, setActiveTab] = useState('billing');
   const [analyticsTab, setAnalyticsTab] = useState('summary');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
+  const [isProcessingWaiver, setIsProcessingWaiver] = useState<string | null>(null);
   
   const [isSponsorDialogOpen, setIsSponsorDialogOpen] = useState(false);
   const [editingSponsor, setEditingSponsor] = useState<any>(null);
@@ -3198,6 +3225,14 @@ export default function AccountsPage() {
 
   const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
+
+  const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
+  const { data: pendingWaivers, forceRefetch: refetchWaivers } = useCollection<any>(waiverRequestsQuery);
+  
+  const combinedRefetch = useCallback(() => {
+      forceRefetch();
+      refetchWaivers();
+  }, [forceRefetch, refetchWaivers]);
   
   const rawStudentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(rawStudentsQuery);
@@ -3750,6 +3785,80 @@ export default function AccountsPage() {
     }
   };
 
+  const handleApproveWaiver = async (req: any) => {
+    if (!firestore || isProcessingWaiver) return;
+    setIsProcessingWaiver(req.id);
+    try {
+        const batch = writeBatch(firestore);
+
+        const requestRef = doc(firestore, 'waiverRequests', req.id);
+        batch.update(requestRef, {
+            status: 'Approved',
+            approvedBy: user?.uid || 'system',
+            approvedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
+            approvedAt: serverTimestamp()
+        });
+
+        const recordRef = doc(firestore, 'financialRecords', req.recordId);
+        const newWaiverAmount = (req.currentWaiverAmount || 0) + req.requestedAmount;
+        const isFullySettled = (req.billedAmount - (req.amountPaid || 0) - newWaiverAmount) <= 0.01;
+
+        batch.update(recordRef, {
+            waiverAmount: newWaiverAmount,
+            waiverReason: req.reason,
+            status: isFullySettled ? 'Paid' : 'Partially Paid'
+        });
+
+        const logRef = doc(collection(firestore, 'auditLogs'));
+        batch.set(logRef, {
+            schoolId: req.schoolId || schoolId || '',
+            userName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
+            action: 'APPROVE_WAIVER',
+            details: `Approved waiver of GH₵${req.requestedAmount.toFixed(2)} for student ${req.studentName} on invoice ${req.recordDescription}. Reason: ${req.reason}`,
+            timestamp: serverTimestamp(),
+            userId: user?.uid || null
+        });
+
+        await batch.commit();
+        toast({ title: "Waiver Approved", description: `GH₵${req.requestedAmount.toFixed(2)} waiver has been applied successfully.` });
+        combinedRefetch();
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Approval Failed", description: e.message });
+    } finally {
+        setIsProcessingWaiver(null);
+    }
+  };
+
+  const handleRejectWaiver = async (req: any) => {
+    if (!firestore || isProcessingWaiver) return;
+    setIsProcessingWaiver(req.id);
+    try {
+        const requestRef = doc(firestore, 'waiverRequests', req.id);
+        await updateDoc(requestRef, {
+            status: 'Rejected',
+            rejectedBy: user?.uid || 'system',
+            rejectedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
+            rejectedAt: serverTimestamp()
+        });
+        
+        await addDoc(collection(firestore, 'auditLogs'), {
+            schoolId: req.schoolId || schoolId || '',
+            userName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
+            action: 'REJECT_WAIVER',
+            details: `Rejected waiver request of GH₵${req.requestedAmount.toFixed(2)} for student ${req.studentName} on invoice ${req.recordDescription}.`,
+            timestamp: serverTimestamp(),
+            userId: user?.uid || null
+        });
+
+        toast({ title: "Waiver Rejected", description: `Waiver request of GH₵${req.requestedAmount.toFixed(2)} has been rejected.` });
+        combinedRefetch();
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Rejection Failed", description: e.message });
+    } finally {
+        setIsProcessingWaiver(null);
+    }
+  };
+
   if (!canAccess && !isLoading) {
     return (
         <div className="p-6">
@@ -3802,8 +3911,12 @@ export default function AccountsPage() {
             <TabsList className="bg-slate-100/80 p-1 rounded-xl mb-4 border border-slate-200/50 flex gap-1 w-fit">
                 <TabsTrigger value="billing" className="rounded-lg font-semibold px-4">Student Billing</TabsTrigger>
                 <TabsTrigger value="approval" className="rounded-lg font-semibold px-4">
-                    Reversal Requests 
-                    <Badge className="ml-2 bg-red-500 text-white border-0 hover:bg-red-600">{pendingReversals.length}</Badge>
+                    Approvals / Requests 
+                    {(pendingReversals.length + (pendingWaivers?.length || 0)) > 0 && (
+                        <Badge className="ml-2 bg-red-500 text-white border-0 hover:bg-red-600">
+                            {pendingReversals.length + (pendingWaivers?.length || 0)}
+                        </Badge>
+                    )}
                 </TabsTrigger>
                 <TabsTrigger value="sponsors" className="rounded-lg font-semibold px-4">Sponsors Registry</TabsTrigger>
             </TabsList>
@@ -4445,7 +4558,7 @@ export default function AccountsPage() {
                         <CardDescription>Review requests to reverse or cancel recorded student bills.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                         <Table>
+                          <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Student</TableHead>
@@ -4468,7 +4581,7 @@ export default function AccountsPage() {
                                                     size="sm" 
                                                     variant="outline" 
                                                     className="text-red-600" 
-                                                    disabled={isProcessingReversal === r.id}
+                                                    disabled={isProcessingReversal === r.id || role !== 'Director'}
                                                     onClick={() => handleRejectReversal(r)}
                                                 >
                                                     {isProcessingReversal === r.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Reject"}
@@ -4476,7 +4589,7 @@ export default function AccountsPage() {
                                                 <Button 
                                                     size="sm" 
                                                     className="bg-red-600 hover:bg-red-700"
-                                                    disabled={isProcessingReversal === r.id}
+                                                    disabled={isProcessingReversal === r.id || role !== 'Director'}
                                                     onClick={() => handleApproveReversal(r)}
                                                 >
                                                     {isProcessingReversal === r.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Confirm Delete"}
@@ -4487,7 +4600,70 @@ export default function AccountsPage() {
                                 ))}
 {pendingReversals.length === 0 && <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground italic">No pending reversal requests.</TableCell></TableRow>}
                             </TableBody>
-                         </Table>
+                          </Table>
+                    </CardContent>
+                 </Card>
+
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="text-slate-800">Fees Waiver Approvals</CardTitle>
+                        <CardDescription>
+                            Review and authorize waiver requests submitted by the Accountant.
+                            {role !== 'Director' && <span className="text-red-500 font-bold block mt-1 text-[11px] uppercase tracking-wider">⚠️ Action locked: Only the Director can approve waivers.</span>}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                          <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Student</TableHead>
+                                    <TableHead>Description</TableHead>
+                                    <TableHead>Requested Waiver</TableHead>
+                                    <TableHead>Reason</TableHead>
+                                    <TableHead>Requested By</TableHead>
+                                    <TableHead className="text-right">Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pendingWaivers && pendingWaivers.map((w: any) => (
+                                    <TableRow key={w.id}>
+                                        <TableCell className="font-bold">{w.studentName}</TableCell>
+                                        <TableCell className="text-sm">{w.recordDescription}</TableCell>
+                                        <TableCell className="font-mono font-bold text-indigo-650">GH₵{w.requestedAmount.toFixed(2)}</TableCell>
+                                        <TableCell className="max-w-xs italic text-xs">{w.reason}</TableCell>
+                                        <TableCell className="text-xs">{w.requestedByName || 'Accountant'}</TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline" 
+                                                    className="text-red-650 hover:bg-red-50" 
+                                                    disabled={isProcessingWaiver === w.id || role !== 'Director'}
+                                                    onClick={() => handleRejectWaiver(w)}
+                                                >
+                                                    {isProcessingWaiver === w.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Reject"}
+                                                </Button>
+                                                <Button 
+                                                    size="sm" 
+                                                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold"
+                                                    disabled={isProcessingWaiver === w.id || role !== 'Director'}
+                                                    onClick={() => handleApproveWaiver(w)}
+                                                >
+                                                    {isProcessingWaiver === w.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Approve"}
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {(!pendingWaivers || pendingWaivers.length === 0) && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-10 text-muted-foreground italic">
+                                            No pending waiver requests.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                          </Table>
                     </CardContent>
                  </Card>
              </TabsContent>
