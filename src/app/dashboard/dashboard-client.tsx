@@ -1110,7 +1110,7 @@ function AdminDashboard({
                 title="Active Classes" 
                 value={classes?.length || 0} 
                 icon={School} 
-                link="/dashboard/classes" 
+                link="/dashboard/academics" 
                 isLoading={isLoading}
                 subtitle="Academic Streams" 
                 color="text-amber-600"
@@ -1619,7 +1619,7 @@ function AdminDashboard({
                       <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review sizes and class details</CardDescription>
                     </div>
                     <Button asChild size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
-                      <Link href="/dashboard/classes">Manage Classes</Link>
+                      <Link href="/dashboard/academics">Manage Classes</Link>
                     </Button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -4802,7 +4802,7 @@ function DirectorDashboard({
                 title="Active Classes" 
                 value={classes?.length || 0} 
                 icon={School} 
-                link="/dashboard/classes" 
+                link="/dashboard/academics" 
                 isLoading={isLoading}
                 subtitle="Academic Streams" 
                 color="text-amber-600"
@@ -5807,7 +5807,7 @@ function DirectorDashboard({
                       <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review sizes and class details</CardDescription>
                     </div>
                     <Button asChild size="sm" className="bg-indigo-650 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
-                      <Link href="/dashboard/classes">Manage Classes</Link>
+                      <Link href="/dashboard/academics">Manage Classes</Link>
                     </Button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

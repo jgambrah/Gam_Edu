@@ -490,7 +490,7 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                                         <p>Payment #{idx + 1}: {p.id} - GH₵{p.amount}</p>
                                         <p>Payment Till ID: {p.tillId || 'none'}</p>
                                         <p>Paid At: {p.paidAt?.toDate ? p.paidAt.toDate().toLocaleString() : p.paidAt?.seconds ? new Date(p.paidAt.seconds * 1000).toLocaleString() : 'N/A'}</p>
-                                        <p>Eligible: {String((p.tillId && p.tillId === activeTill.id) || (p.paidAt && activeTill.dateOpened && (p.paidAt.toDate ? p.paidAt.toDate().getTime() : p.paidAt.seconds * 1000) >= (activeTill.dateOpened.toDate ? activeTill.dateOpened.toDate().getTime() : activeTill.dateOpened.seconds * 1000)))}</p>
+                                        <p>Eligible: {String((p.tillId && activeTill && p.tillId === activeTill.id) || (p.paidAt && activeTill?.dateOpened && (p.paidAt.toDate ? p.paidAt.toDate().getTime() : p.paidAt.seconds * 1000) >= (activeTill.dateOpened.toDate ? activeTill.dateOpened.toDate().getTime() : activeTill.dateOpened.seconds * 1000)))}</p>
                                     </div>
                                 ))}
                             </div>
@@ -1082,7 +1082,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded 
                             <SelectContent>
                                 <SelectItem value="all" className="font-bold text-indigo-600 italic">All Active Students (Whole School)</SelectItem>
                                 <Separator className="my-1" />
-                                {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                {classes?.map(c => c && <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -1402,8 +1402,8 @@ function TermlyTransportForm({ setOpen, classes, students, schoolId, onRecordsAd
                                 <FormControl><SelectTrigger><SelectValue placeholder="Choose..." /></SelectTrigger></FormControl>
                                 <SelectContent>
                                     {targetType === 'class' 
-                                      ? classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)
-                                      : (routes || []).map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)
+                                      ? classes?.map(c => c && <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)
+                                      : (routes || []).map(r => r && <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)
                                     }
                                 </SelectContent>
                             </Select>
@@ -1706,7 +1706,7 @@ function TermlyCanteenForm({ setOpen, classes, students, schoolId, onRecordsAdde
                             <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl><SelectTrigger><SelectValue placeholder="Choose..." /></SelectTrigger></FormControl>
                                 <SelectContent>
-                                    {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                    {classes?.map(c => c && <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                             <FormMessage />
@@ -2273,7 +2273,7 @@ function PrintDebtorsDialog({
                   <SelectValue placeholder="Choose a class..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {classes.map(c => (
+                  {classes?.map(c => c && (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
                     </SelectItem>
@@ -3061,7 +3061,7 @@ function ParentDemandLettersDialog({
           <div className="space-y-2">
             <Label className="font-bold text-xs uppercase text-slate-500">Select Parent</Label>
             <SearchableSelect
-              options={(parents || []).map(p => ({
+              options={(parents || []).filter(Boolean).map(p => ({
                 id: p.id || p.uid,
                 name: p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Unnamed Parent',
                 subtext: `Phone: ${p.phone || 'N/A'} | Linked Children: ${p.studentIds?.length || 0}`
@@ -3281,7 +3281,7 @@ export default function AccountsPage() {
           }
       });
       
-      return sponsorsList.map((sp: any) => {
+      return (sponsorsList || []).filter(Boolean).map((sp: any) => {
           const outstanding = sponsorBalances.get(sp.id) || 0;
           const sponsoredCount = students.filter(s => s.isSponsored && s.sponsorId === sp.id).length;
           
@@ -5111,7 +5111,8 @@ export default function AccountsPage() {
                 </div>
 
                 <div className="space-y-8">
-                  {classesToPrint.map(c => {
+                  {classesToPrint?.map(c => {
+                    if (!c) return null;
                     const classDebtors = classGroupedDebtors[c.id] || [];
                     if (classDebtors.length === 0) return null;
 
@@ -5168,7 +5169,8 @@ export default function AccountsPage() {
               </div>
             ) : (
               <div className="space-y-12">
-                {classesToPrint.map((c, index) => {
+                {classesToPrint?.map((c, index) => {
+                  if (!c) return null;
                   const classDebtors = classGroupedDebtors[c.id] || [];
                   if (classDebtors.length === 0) return null;
 
