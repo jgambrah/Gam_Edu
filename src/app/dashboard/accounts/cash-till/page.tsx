@@ -259,7 +259,7 @@ function CloseTillDialog({ open, onOpenChange, expectedBalance, activeTill, onSu
 }
 
 // --- Accountant's Till View ---
-function AccountantTillView({ students, classes, setSelectedTill }: { students: Student[] | null, classes: Class[] | null, setSelectedTill: (till: Till) => void }) {
+function AccountantTillView({ students, classes, setSelectedTill, schoolName }: { students: Student[] | null, classes: Class[] | null, setSelectedTill: (till: Till) => void, schoolName: string }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -351,7 +351,7 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
             </head>
             <body>
                 <div class="text-center">
-                    <div class="header-title">GAM SCHOOLS CASH DESK</div>
+                    <div class="header-title">${schoolName.toUpperCase()} CASH DESK</div>
                     <div class="header-subtitle">Till Closure Audit Report Summary</div>
                 </div>
                 
@@ -681,13 +681,14 @@ function AccountantTillView({ students, classes, setSelectedTill }: { students: 
 }
 
 // --- Detail Audit Review Dialog ---
-function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classes }: { 
+function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classes, schoolName }: { 
     till: Till | null, 
     open: boolean, 
     onOpenChange: (open: boolean) => void, 
     onUpdate: () => void,
     students: Student[] | null,
-    classes: Class[] | null
+    classes: Class[] | null,
+    schoolName: string
 }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -814,7 +815,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
             </head>
             <body>
                 <div class="text-center">
-                    <div class="header-title">GAM SCHOOLS CASH DESK</div>
+                    <div class="header-title">${schoolName.toUpperCase()} CASH DESK</div>
                     <div class="header-subtitle">Till Closure Audit Report Summary</div>
                 </div>
                 
@@ -1088,7 +1089,7 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
 }
 
 // --- Director's View: Approve/Reject Tills ---
-function DirectorTillView({ setSelectedTill }: { setSelectedTill: (till: Till) => void }) {
+function DirectorTillView({ setSelectedTill, schoolName }: { setSelectedTill: (till: Till) => void, schoolName: string }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
 
@@ -1218,6 +1219,7 @@ function DirectorTillView({ setSelectedTill }: { setSelectedTill: (till: Till) =
                     onUpdate={forceRefetchPending}
                     students={students}
                     classes={classes}
+                    schoolName={schoolName}
                 />
             )}
         </>
@@ -1229,6 +1231,10 @@ export default function CashTillPage() {
     const { role } = useRole();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
+
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolData } = useDoc<any>(schoolRef);
+    const schoolName = schoolData?.name || 'GAM SCHOOLS';
 
     const [selectedTill, setSelectedTill] = useState<Till | null>(null);
 
@@ -1274,8 +1280,8 @@ export default function CashTillPage() {
 
             {isLoading && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-emerald-650"/></div>}
             
-            {!isLoading && isDirector && <DirectorTillView setSelectedTill={setSelectedTill} />}
-            {!isLoading && isAccountant && <AccountantTillView students={students} classes={classes} setSelectedTill={setSelectedTill} />}
+            {!isLoading && isDirector && <DirectorTillView setSelectedTill={setSelectedTill} schoolName={schoolName} />}
+            {!isLoading && isAccountant && <AccountantTillView students={students} classes={classes} setSelectedTill={setSelectedTill} schoolName={schoolName} />}
             
             <TillDetailDialog
                 till={selectedTill}
@@ -1284,6 +1290,7 @@ export default function CashTillPage() {
                 onUpdate={forceRefetchPending}
                 students={students}
                 classes={classes}
+                schoolName={schoolName}
             />
         </div>
     );
