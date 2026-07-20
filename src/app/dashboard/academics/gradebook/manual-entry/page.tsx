@@ -55,6 +55,7 @@ export default function GradebookPage() {
     const [academicYear, setAcademicYear] = useState(MOCK_ACADEMIC_YEARS[4] || '2024-2025'); 
     const [assessmentType, setAssessmentType] = useState(ASSESSMENT_TYPES[0]);
     const [maxScore, setMaxScore] = useState(100);
+    const [assessmentName, setAssessmentName] = useState(ASSESSMENT_TYPES[0]);
 
     // State for scores and remarks
     const [scores, setScores] = useState<Record<string, number | ''>>({});
@@ -79,6 +80,10 @@ export default function GradebookPage() {
             }
         }
     }, [schoolSettings]);
+
+    useEffect(() => {
+        setAssessmentName(assessmentType);
+    }, [assessmentType]);
 
     // Data Fetching
     const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -175,8 +180,9 @@ export default function GradebookPage() {
         try {
             const batch = writeBatch(firestore);
             
-            // Purge existing assessments of this same type to avoid duplicate accumulative values
-            const existingDocs = rawAssessments?.filter((a: any) => a.assessmentType === assessmentType) || [];
+            // Purge existing assessments of this same specific name to avoid duplicate values for that test/exam
+            const targetName = assessmentName || assessmentType;
+            const existingDocs = rawAssessments?.filter((a: any) => (a.assessmentName || a.assessmentType) === targetName) || [];
             existingDocs.forEach((docData: any) => {
                 const ref = doc(firestore, 'assessments', docData.id);
                 batch.delete(ref);
@@ -203,6 +209,7 @@ export default function GradebookPage() {
                         term,
                         academicYear,
                         assessmentType,
+                        assessmentName: assessmentName || assessmentType,
                         score: Number(score),
                         maxScore: Number(maxScore),
                         teacherRemark: remarks[studentId] || "", 
@@ -367,7 +374,7 @@ export default function GradebookPage() {
                     <CardTitle className="text-lg font-black text-slate-800">Roster Filters</CardTitle>
                     <CardDescription className="text-slate-400">Specify details to retrieve the correct grading roster.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 p-6 bg-white">
+                <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 p-6 bg-white">
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear} disabled={role === 'Teacher'}>
@@ -426,6 +433,16 @@ export default function GradebookPage() {
                                 {ASSESSMENT_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Assessment Title</Label>
+                        <Input 
+                            type="text" 
+                            value={assessmentName} 
+                            onChange={e => setAssessmentName(e.target.value)} 
+                            placeholder="e.g. Test 1, Theory Exam"
+                            className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm font-semibold" 
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Max Score</Label>
