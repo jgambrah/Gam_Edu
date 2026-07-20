@@ -120,6 +120,25 @@ export default function GradebookPage() {
     const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
+    const visibleSubjects = useMemo(() => {
+        if (!subjects) return [];
+        if (role !== 'Teacher') return subjects;
+        if (!classId) return [];
+        
+        const assignedSubjectIds = timetable?.filter((t: any) => t.teacherId === user?.uid && t.classId === classId).map((t: any) => t.subjectId) || [];
+        return subjects.filter((s: any) => assignedSubjectIds.includes(s.id));
+    }, [subjects, timetable, role, user?.uid, classId]);
+
+    // Subject selection auto-reset for teachers
+    useEffect(() => {
+        if (role === 'Teacher' && classId && visibleSubjects.length > 0) {
+            const isValid = visibleSubjects.some((s: any) => s.id === subjectId);
+            if (!isValid) {
+                setSubjectId(visibleSubjects[0]?.id || '');
+            }
+        }
+    }, [classId, visibleSubjects, subjectId, role]);
+
     // Fetch the entire class roster
     const studentsQuery = useMemoFirebase(() => 
         (firestore && schoolId && classId) 
@@ -353,7 +372,7 @@ export default function GradebookPage() {
                         <Select value={subjectId} onValueChange={setSubjectId}>
                             <SelectTrigger className="bg-white border-2"><SelectValue placeholder="Select Subject"/></SelectTrigger>
                             <SelectContent>
-                                {subjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                {visibleSubjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
