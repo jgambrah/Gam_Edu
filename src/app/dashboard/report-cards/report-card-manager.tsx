@@ -1094,7 +1094,6 @@ export default function ReportCardManager() {
                             )}
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50/50 border-t border-slate-100 p-4">
-                            <Button variant="outline" onClick={() => window.print()} className="rounded-xl font-bold h-10"><Printer className="mr-2 h-4 w-4"/> Print Document</Button>
                             <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary" className="rounded-xl font-bold h-10">{isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} Download PDF</Button>
                             <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 rounded-xl font-bold h-10 text-white"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
                             {isAdminOrDirector && (
