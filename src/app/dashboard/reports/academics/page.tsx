@@ -264,22 +264,23 @@ export default function AcademicReportsPage() {
                 if (hasCa || hasExam) {
                     const caWeighted = hasCa ? (caObtained / caMax) * currentCaWeight : 0;
                     const examWeighted = hasExam ? (subData.exam.score / subData.exam.maxScore) * currentExamWeight : 0;
-                    const final = caWeighted + examWeighted;
-                    const finalRounded = parseFloat(final.toFixed(1));
+                    const finalCA = Math.round(caWeighted);
+                    const finalExam = Math.round(examWeighted);
+                    const final = finalCA + finalExam;
 
                     const classExVal = caMax > 0 ? (subData.classEx.score / caMax) * currentCaWeight : 0;
                     const hwVal = caMax > 0 ? (subData.hw.score / caMax) * currentCaWeight : 0;
                     const midSemVal = caMax > 0 ? (subData.midSem.score / caMax) * currentCaWeight : 0;
                     const projVal = caMax > 0 ? (subData.proj.score / caMax) * currentCaWeight : 0;
 
-                    scoresMap[subject.id] = finalRounded;
+                    scoresMap[subject.id] = final;
                     subScoresMap[subject.id] = {
                         classEx: parseFloat(classExVal.toFixed(1)),
                         hw: parseFloat(hwVal.toFixed(1)),
                         midSem: parseFloat(midSemVal.toFixed(1)),
                         proj: parseFloat(projVal.toFixed(1)),
-                        exam: parseFloat(examWeighted.toFixed(1)),
-                        total: finalRounded
+                        exam: finalExam,
+                        total: final
                     };
 
                     sumPercentages += final;
@@ -296,7 +297,7 @@ export default function AcademicReportsPage() {
             studentAverages.push({
                 studentId: student.uid,
                 studentName: `${student.firstName} ${student.lastName}`,
-                average: parseFloat(overallAvg.toFixed(1)),
+                average: Math.round(overallAvg),
                 subjectScores: scoresMap,
                 subjectSubScores: subScoresMap,
                 passCount,
@@ -434,14 +435,17 @@ export default function AcademicReportsPage() {
 
             const weightedCA = caMax > 0 ? (caScore / caMax) * currentCaWeight : 0;
             const weightedExam = examMax > 0 ? (examScore / examMax) * currentExamWeight : 0;
+            const finalCA = Math.round(weightedCA);
+            const finalExam = Math.round(weightedExam);
+            const finalScore = finalCA + finalExam;
 
             return {
                 studentId: student.uid,
                 studentName: `${student.firstName} ${student.lastName}`,
-                score,
-                grade,
-                weightedCA: parseFloat(weightedCA.toFixed(1)),
-                weightedExam: parseFloat(weightedExam.toFixed(1)),
+                score: finalScore,
+                grade: getGradeForScore(finalScore),
+                weightedCA: finalCA,
+                weightedExam: finalExam,
                 caRaw: `${caScore}/${caMax}`,
                 examRaw: `${examScore}/${examMax}`
             };
@@ -522,7 +526,7 @@ export default function AcademicReportsPage() {
             const totalMarks = Object.values(s.subjectScores).reduce((sum, val) => sum + val, 0);
             return {
                 ...s,
-                totalMarks: parseFloat(totalMarks.toFixed(1))
+                totalMarks: Math.round(totalMarks)
             };
         });
 
