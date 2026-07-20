@@ -92,6 +92,7 @@ export default function ReportCardManager() {
     const [isBulkPublishing, setIsBulkPublishing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isPrintingAll, setIsPrintingAll] = useState(false);
+    const [exportProgress, setExportProgress] = useState(0);
     const [isGeneratingTeacherComment, setIsGeneratingTeacherComment] = useState(false);
     const [isGeneratingHeadmasterComment, setIsGeneratingHeadmasterComment] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
@@ -601,16 +602,83 @@ export default function ReportCardManager() {
         }
     };
 
-    const handlePrintAll = async () => {
+    const handleDownloadAllPDF = async () => {
         if (!classReportCards || classReportCards.length === 0) {
             toast({ variant: 'destructive', title: "No Reports", description: "There are no compiled report cards to print for this class." });
             return;
         }
+        setIsExporting(true);
         setIsPrintingAll(true);
-        setTimeout(() => {
-            window.print();
+        setExportProgress(1);
+
+        try {
+            // Give DOM time to render all report cards
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const printArea = printRef.current;
+            if (!printArea) throw new Error("Print area not found");
+
+            // Make print area temporarily visible to the capture engine
+            printArea.style.visibility = 'visible';
+            printArea.style.position = 'fixed';
+            printArea.style.top = '0';
+            printArea.style.left = '0';
+            printArea.style.zIndex = '-1000';
+            printArea.style.display = 'block';
+
+            const cardElements = printArea.getElementsByClassName('print-page-break');
+            if (cardElements.length === 0) {
+                printArea.style.visibility = 'hidden';
+                printArea.style.position = 'absolute';
+                printArea.style.display = 'none';
+                throw new Error("No reports found to compile");
+            }
+
+            const pdf = new jsPDF('p', 'mm', 'a4');
+
+            for (let i = 0; i < cardElements.length; i++) {
+                setExportProgress(i + 1);
+                const element = cardElements[i] as HTMLElement;
+                
+                const canvas = await html2canvas(element, {
+                    scale: 1.5,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    windowWidth: 794,
+                    windowHeight: 1123,
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                
+                if (i > 0) {
+                    pdf.addPage();
+                }
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            }
+
+            // Cleanup visibility
+            printArea.style.visibility = 'hidden';
+            printArea.style.position = 'absolute';
+            printArea.style.display = 'none';
+
+            const className = classes?.find((c: any) => c.id === classId)?.name || 'Class';
+            pdf.save(`All_Reports_${className}_${term}.pdf`);
+            toast({ title: "Class PDF Compilation Complete 📥", description: `Successfully generated a ${cardElements.length}-page report card document.` });
+        } catch (error: any) {
+            console.error(error);
+            const printArea = printRef.current;
+            if (printArea) {
+                printArea.style.visibility = 'hidden';
+                printArea.style.position = 'absolute';
+                printArea.style.display = 'none';
+            }
+            toast({ variant: 'destructive', title: "PDF Generation Failed", description: error.message || "An error occurred during combined PDF rendering." });
+        } finally {
+            setIsExporting(false);
             setIsPrintingAll(false);
-        }, 1500);
+            setExportProgress(0);
+        }
     };
 
     const handleGenerateComment = async (type: 'Teacher' | 'Headmaster') => {
@@ -746,12 +814,14 @@ export default function ReportCardManager() {
                         <div className="flex flex-wrap gap-2 items-center">
                             {classReportCards && classReportCards.length > 0 && (
                                 <Button 
-                                    onClick={handlePrintAll} 
-                                    disabled={isPrintingAll} 
+                                    onClick={handleDownloadAllPDF} 
+                                    disabled={isExporting} 
                                     className="bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs flex items-center"
                                 >
-                                    {isPrintingAll ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Printer className="mr-2 h-4 w-4"/>}
-                                    Print All Class Reports ({classReportCards.length})
+                                    {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
+                                    {isExporting && exportProgress > 0 
+                                        ? `Compiling ${exportProgress} / ${classReportCards.length}...` 
+                                        : `Download Combined PDF (${classReportCards.length})`}
                                 </Button>
                             )}
                             {isAdminOrDirector && (
