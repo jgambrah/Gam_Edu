@@ -176,19 +176,19 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     const showSubjectPosition = (data.reportCardPositionMode || 'both') !== 'none';
                     const subjectWidth = showSubjectPosition ? 'w-[25%]' : 'w-[33%]';
                     return (
-                        <table className="w-full text-[10px] mb-5 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `1.5px solid ${secondaryTheme}` }}>
+                        <table className="w-full text-[11.5px] mb-5 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `1.5px solid ${secondaryTheme}` }}>
                             <thead>
                                 <tr style={{ backgroundColor: secondaryTheme, color: '#ffffff' }}>
-                                    <th className={`p-2.5 text-left ${subjectWidth} uppercase font-black text-[9px] tracking-widest`}>Subject</th>
-                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[9px] tracking-widest">CA ({caWeight})</th>
-                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[9px] tracking-widest">Exam ({examWeight})</th>
-                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[9px] tracking-widest bg-black/10">Total</th>
-                                    <th className="p-2.5 text-center w-[8%] uppercase font-black text-[9px] tracking-widest">Avg</th>
+                                    <th className={`p-2.5 text-left ${subjectWidth} uppercase font-black text-[10.5px] tracking-widest`}>Subject</th>
+                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[10.5px] tracking-widest">CA ({caWeight})</th>
+                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[10.5px] tracking-widest">Exam ({examWeight})</th>
+                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[10.5px] tracking-widest bg-black/10">Total</th>
+                                    <th className="p-2.5 text-center w-[8%] uppercase font-black text-[10.5px] tracking-widest">Avg</th>
                                     {showSubjectPosition && (
-                                        <th className="p-2.5 text-center w-[8%] uppercase font-black text-[9px] tracking-widest">Pos</th>
+                                        <th className="p-2.5 text-center w-[8%] uppercase font-black text-[10.5px] tracking-widest">Pos</th>
                                     )}
-                                    <th className="p-2.5 text-center w-[8%] uppercase font-black text-[9px] tracking-widest">Grade</th>
-                                    <th className="p-2.5 text-left w-[21%] uppercase font-black text-[9px] tracking-widest">Remarks</th>
+                                    <th className="p-2.5 text-center w-[8%] uppercase font-black text-[10.5px] tracking-widest">Grade</th>
+                                    <th className="p-2.5 text-left w-[21%] uppercase font-black text-[10.5px] tracking-widest">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -199,23 +199,23 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                     
                                     return (
                                         <tr key={i} className={`border-b border-slate-300 last:border-0 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
-                                            <td className="p-2.5 font-extrabold uppercase border-r text-black flex items-center gap-1.5" style={{ borderRightColor: `${secondaryTheme}35` }}>
+                                            <td className="p-2.5 font-extrabold uppercase border-r text-black flex items-center gap-1.5 text-[11.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>
                                                 <BookOpen className="h-3 w-3 text-slate-800" />
                                                 {row.subjectName}
                                             </td>
-                                            <td className="p-2.5 text-center border-r text-black font-bold" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
-                                            <td className="p-2.5 text-center border-r text-black font-bold" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
-                                            <td className="p-2.5 text-center font-black bg-slate-100/50 border-r text-black" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
-                                            <td className="p-2.5 text-center text-slate-900 border-r font-black text-[9px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.classAverage}</td>
+                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
+                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
+                                            <td className="p-2.5 text-center font-black bg-slate-100/50 border-r text-black text-[13px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
+                                            <td className="p-2.5 text-center text-slate-900 border-r font-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.classAverage}</td>
                                             {showSubjectPosition && (
-                                                <td className="p-2.5 text-center font-black border-r text-black text-[9px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.position}</td>
+                                                <td className="p-2.5 text-center font-black border-r text-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.position}</td>
                                             )}
-                                            <td className={`p-2.5 text-center font-black border-r ${
+                                            <td className={`p-2.5 text-center font-black border-r text-[13px] ${
                                                 isExcellent ? 'text-emerald-800' : isFail ? 'text-rose-700' : 'text-amber-800'
                                             }`} style={{ borderRightColor: `${secondaryTheme}35` }}>
                                                 {row.grade}
                                             </td>
-                                            <td className="p-2.5 italic text-slate-950 font-bold text-[9px] leading-snug">{row.autoRemark}</td>
+                                            <td className="p-2.5 italic text-slate-955 font-bold text-[10px] leading-snug">{row.autoRemark}</td>
                                         </tr>
                                     );
                                 })}
