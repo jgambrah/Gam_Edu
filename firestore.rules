@@ -352,7 +352,7 @@ service cloud.firestore {
 
       match /transactions/{transactionId} {
         allow read, list: if isSuperAdmin() || 
-          resource.data.schoolId == getUserSchoolId();
+          get(/databases/$(database)/documents/tills/$(tillId)).data.schoolId == getUserSchoolId();
         allow create: if isSuperAdmin() || 
           request.resource.data.schoolId == getUserSchoolId();
         allow update: if isSuperAdmin() || 
@@ -383,7 +383,7 @@ service cloud.firestore {
       allow delete: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher()) && getUserSchoolId() == resource.data.schoolId);
       match /payments/{paymentId} {
         allow read: if isSuperAdmin() || 
-          resource.data.schoolId == getUserSchoolId();
+          get(/databases/$(database)/documents/financialRecords/$(recordId)).data.schoolId == getUserSchoolId();
         allow create: if isSuperAdmin() || 
           request.resource.data.schoolId == getUserSchoolId();
         allow update: if isSuperAdmin() || 
