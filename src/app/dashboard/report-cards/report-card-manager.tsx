@@ -91,6 +91,7 @@ export default function ReportCardManager() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [isBulkPublishing, setIsBulkPublishing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+    const [isPrintingAll, setIsPrintingAll] = useState(false);
     const [isGeneratingTeacherComment, setIsGeneratingTeacherComment] = useState(false);
     const [isGeneratingHeadmasterComment, setIsGeneratingHeadmasterComment] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
@@ -600,6 +601,18 @@ export default function ReportCardManager() {
         }
     };
 
+    const handlePrintAll = async () => {
+        if (!classReportCards || classReportCards.length === 0) {
+            toast({ variant: 'destructive', title: "No Reports", description: "There are no compiled report cards to print for this class." });
+            return;
+        }
+        setIsPrintingAll(true);
+        setTimeout(() => {
+            window.print();
+            setIsPrintingAll(false);
+        }, 1500);
+    };
+
     const handleGenerateComment = async (type: 'Teacher' | 'Headmaster') => {
         if (!processedReport || !schoolId) return;
         
@@ -730,40 +743,52 @@ export default function ReportCardManager() {
                                 Overview of terminal report cards draft status for this class.
                             </CardDescription>
                         </div>
-                        {isAdminOrDirector && (
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button 
-                                        disabled={classSummary.drafts.length === 0 || isBulkPublishing} 
-                                        className="bg-emerald-600 hover:bg-emerald-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs"
-                                    >
-                                        {isBulkPublishing ? (
-                                            <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                                        ) : (
-                                            <ShieldCheck className="mr-2 h-4 w-4" />
-                                        )}
-                                        Bulk Publish Drafts ({classSummary.drafts.length})
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle className="font-black text-slate-800">Bulk Publish Report Cards?</AlertDialogTitle>
-                                        <AlertDialogDescription className="text-slate-400 text-sm leading-relaxed">
-                                            This will officially sign and publish all **{classSummary.drafts.length}** draft report cards. Parents and students will be notified in-app and can download the files immediately.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter className="gap-2 mt-4">
-                                        <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
-                                        <AlertDialogAction 
-                                            onClick={handleBulkPublish} 
-                                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl"
+                        <div className="flex flex-wrap gap-2 items-center">
+                            {classReportCards && classReportCards.length > 0 && (
+                                <Button 
+                                    onClick={handlePrintAll} 
+                                    disabled={isPrintingAll} 
+                                    className="bg-indigo-650 hover:bg-indigo-750 font-bold rounded-xl text-white shadow h-10 px-6 text-xs flex items-center"
+                                >
+                                    {isPrintingAll ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Printer className="mr-2 h-4 w-4"/>}
+                                    Print All Class Reports ({classReportCards.length})
+                                </Button>
+                            )}
+                            {isAdminOrDirector && (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button 
+                                            disabled={classSummary.drafts.length === 0 || isBulkPublishing} 
+                                            className="bg-emerald-600 hover:bg-emerald-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs"
                                         >
-                                            Publish All Drafts
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        )}
+                                            {isBulkPublishing ? (
+                                                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                                            ) : (
+                                                <ShieldCheck className="mr-2 h-4 w-4" />
+                                            )}
+                                            Bulk Publish Drafts ({classSummary.drafts.length})
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle className="font-black text-slate-800">Bulk Publish Report Cards?</AlertDialogTitle>
+                                            <AlertDialogDescription className="text-slate-400 text-sm leading-relaxed">
+                                                This will officially sign and publish all **{classSummary.drafts.length}** draft report cards. Parents and students will be notified in-app and can download the files immediately.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter className="gap-2 mt-4">
+                                            <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
+                                            <AlertDialogAction 
+                                                onClick={handleBulkPublish} 
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl"
+                                            >
+                                                Publish All Drafts
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            )}
+                        </div>
                     </CardHeader>
                     <CardContent className="space-y-6 p-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1001,31 +1026,58 @@ export default function ReportCardManager() {
 
             <div
                 ref={printRef}
+                id="print-area"
                 style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px', display: 'none' }}
             >
-                {processedReport && (
-                    <ReportCardTemplate
-                        data={{
-                            ...processedReport,
-                            promotionDecision,
-                            promotedToClassId,
-                            promotedToClassName: promotionDecision === 'Promoted'
-                                ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
-                                : (promotionDecision === 'Repeated' ? processedReport?.className : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
-                        }}
-                        classTeacherComment={classTeacherComment}
-                        headmasterComment={headmasterComment}
-                        caWeight={processedReport?.caWeight ?? CA_WEIGHT}
-                        examWeight={processedReport?.examWeight ?? EXAM_WEIGHT}
-                    />
+                {isPrintingAll && classReportCards && classReportCards.length > 0 ? (
+                    classReportCards.map((report: any) => (
+                        <div key={report.id} className="print-page-break">
+                            <ReportCardTemplate
+                                data={report}
+                                classTeacherComment={report.classTeacherComment}
+                                headmasterComment={report.headmasterComment}
+                                caWeight={report.caWeight ?? CA_WEIGHT}
+                                examWeight={report.examWeight ?? EXAM_WEIGHT}
+                            />
+                        </div>
+                    ))
+                ) : (
+                    processedReport && (
+                        <div className="print-page-break">
+                            <ReportCardTemplate
+                                data={{
+                                    ...processedReport,
+                                    promotionDecision,
+                                    promotedToClassId,
+                                    promotedToClassName: promotionDecision === 'Promoted'
+                                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
+                                        : (promotionDecision === 'Repeated' ? processedReport?.className : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
+                                }}
+                                classTeacherComment={classTeacherComment}
+                                headmasterComment={headmasterComment}
+                                caWeight={processedReport?.caWeight ?? CA_WEIGHT}
+                                examWeight={processedReport?.examWeight ?? EXAM_WEIGHT}
+                            />
+                        </div>
+                    )
                 )}
             </div>
 
             <style jsx global>{`
                 @media print {
                     body * { visibility: hidden !important; }
-                    #pdf-content, #pdf-content * { visibility: visible !important; }
-                    #pdf-content { position: fixed !important; left: 0 !important; top: 0 !important; width: 210mm !important; height: auto !important; margin: 0 !important; padding: 40px !important; border: none !important; box-shadow: none !important; }
+                    #print-area, #print-area * { visibility: visible !important; }
+                    #print-area { position: absolute !important; left: 0 !important; top: 0 !important; width: 210mm !important; height: auto !important; display: block !important; }
+                    .print-page-break {
+                        page-break-after: always;
+                        break-after: page;
+                        display: block !important;
+                        width: 210mm !important;
+                        height: 297mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-sizing: border-box !important;
+                    }
                 }
             `}</style>
         </div>
