@@ -748,7 +748,7 @@ export default function ReportCardManager() {
                                 <Button 
                                     onClick={handlePrintAll} 
                                     disabled={isPrintingAll} 
-                                    className="bg-indigo-650 hover:bg-indigo-750 font-bold rounded-xl text-white shadow h-10 px-6 text-xs flex items-center"
+                                    className="bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs flex items-center"
                                 >
                                     {isPrintingAll ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Printer className="mr-2 h-4 w-4"/>}
                                     Print All Class Reports ({classReportCards.length})
