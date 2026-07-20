@@ -262,6 +262,16 @@ export default function BulkDailyReceiptsPage() {
             }
             
             const activeTill = tillSnap.docs[0];
+            const dateOpened = activeTill.data()?.dateOpened?.toDate();
+            if (dateOpened) {
+                const todayMidnight = new Date();
+                todayMidnight.setHours(0, 0, 0, 0);
+                if (dateOpened < todayMidnight) {
+                    toast({ variant: 'destructive', title: "Till Opened Previous Day", description: "Your active cash till was opened on a previous day. You must submit that till's report first on the Cash Till page before starting today's work." });
+                    setIsProcessing(false);
+                    return;
+                }
+            }
             const batch = writeBatch(firestore);
             let totalCollected = 0;
             let processedCount = 0;

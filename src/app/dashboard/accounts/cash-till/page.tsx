@@ -278,6 +278,14 @@ function AccountantTillView({ students, classes, setSelectedTill, schoolName }: 
     const { data: openTills, isLoading: isLoadingTills, forceRefetch } = useCollection<Till>(tillQuery);
     const activeTill = openTills?.[0];
 
+    const isTillFromPreviousDay = useMemo(() => {
+        if (!activeTill || !activeTill.dateOpened) return false;
+        const dateOpenedObj = activeTill.dateOpened.toDate ? activeTill.dateOpened.toDate() : new Date(activeTill.dateOpened);
+        const todayMidnight = new Date();
+        todayMidnight.setHours(0, 0, 0, 0);
+        return dateOpenedObj < todayMidnight;
+    }, [activeTill]);
+
     const transactionsQuery = useMemoFirebase(() => (activeTill && firestore) ? query(collection(firestore!, `tills/${activeTill.id}/transactions`), orderBy('timestamp', 'desc')) : null, [firestore, activeTill]);
     const { data: transactions, isLoading: isLoadingTransactions } = useCollection<TillTransaction>(transactionsQuery);
 
@@ -475,44 +483,64 @@ function AccountantTillView({ students, classes, setSelectedTill, schoolName }: 
                     </Card>
                 ) : (
                     <>
-                    {/* Active Till Details */}
-                    {activeTill.directorApproval?.rejectionReason && (
-                        <div className="bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3 text-red-800 text-xs shadow-sm mb-4">
-                            <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 animate-pulse mt-0.5"/>
+                     {/* Active Till Details */}
+                     {isTillFromPreviousDay && (
+                        <div className="bg-amber-50 border border-amber-250 p-4 rounded-xl flex items-start gap-3 text-amber-800 text-xs shadow-sm mb-4 animate-in slide-in-from-top duration-300">
+                            <AlertTriangle className="h-5.5 w-5.5 text-amber-600 flex-shrink-0 animate-bounce mt-0.5"/>
                             <div>
-                                <span className="font-extrabold block text-sm mb-0.5">Till Closing Rejected by Auditor</span>
-                                <span className="text-slate-600 font-semibold">{activeTill.directorApproval.rejectionReason}</span>
-                                <span className="block text-slate-500 text-[10px] mt-1">Please review the logs, adjust cash balances, and re-submit.</span>
+                                <span className="font-extrabold block text-sm mb-0.5 text-amber-900">Unsubmitted Till Alert (Opened on Previous Day)</span>
+                                <span className="text-amber-800/90 font-semibold">
+                                    This cash till was opened on {activeTill.dateOpened ? formatDateSafe(activeTill.dateOpened) : 'N/A'}. 
+                                    You are blocked from accepting new payments or making manual adjustments today until you submit yesterday's till audit report.
+                                </span>
                             </div>
                         </div>
-                    )}
+                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <Card className="md:col-span-2 border-emerald-100 shadow-sm flex flex-col justify-between p-5 bg-gradient-to-r from-slate-900 to-slate-850 text-white">
-                            <div>
-                                <Badge className="bg-emerald-500 text-white font-bold mb-2">ACTIVE CASH DESK</Badge>
-                                <h3 className="text-lg font-bold text-slate-100">Till Registry: #{activeTill.id.substring(0, 8).toUpperCase()}</h3>
-                                <p className="text-xs text-slate-400 mt-1">Session opened: {activeTill.dateOpened ? formatDateSafe(activeTill.dateOpened) : 'N/A'}</p>
-                            </div>
-                            <div className="flex gap-2 mt-6">
-                                <Button variant="ghost" onClick={() => setIsAdjustmentOpen(true)} className="border border-white/20 text-white hover:bg-white/10 hover:text-white h-9 text-xs font-bold bg-transparent">
-                                    Manual Cash Adjustment
-                                </Button>
-                                <Button 
-                                    onClick={() => handlePrintReport(activeTill, transactions || [])}
-                                    variant="ghost"
-                                    className="border border-white/20 text-white hover:bg-white/10 hover:text-white h-9 text-xs font-bold bg-transparent"
-                                >
-                                    <Printer className="h-3.5 w-3.5 mr-1"/> Print Audit
-                                </Button>
-                                <Button 
-                                    onClick={() => setIsCloseTillOpen(true)} 
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold flex-1 h-9 text-xs"
-                                >
-                                    Submit Till Audit Reports
-                                </Button>
-                            </div>
-                        </Card>
+                     {activeTill.directorApproval?.rejectionReason && (
+                         <div className="bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3 text-red-800 text-xs shadow-sm mb-4">
+                             <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 animate-pulse mt-0.5"/>
+                             <div>
+                                 <span className="font-extrabold block text-sm mb-0.5">Till Closing Rejected by Auditor</span>
+                                 <span className="text-slate-600 font-semibold">{activeTill.directorApproval.rejectionReason}</span>
+                                 <span className="block text-slate-500 text-[10px] mt-1">Please review the logs, adjust cash balances, and re-submit.</span>
+                             </div>
+                         </div>
+                     )}
+
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                         <Card className={`md:col-span-2 border shadow-sm flex flex-col justify-between p-5 bg-gradient-to-r ${isTillFromPreviousDay ? 'from-amber-900 to-amber-950 border-amber-200 text-white' : 'from-slate-900 to-slate-850 border-emerald-100 text-white'}`}>
+                             <div>
+                                 <Badge className={`${isTillFromPreviousDay ? 'bg-amber-500' : 'bg-emerald-500'} text-white font-bold mb-2`}>
+                                     {isTillFromPreviousDay ? 'UNSUBMITTED REGISTER' : 'ACTIVE CASH DESK'}
+                                 </Badge>
+                                 <h3 className="text-lg font-bold text-slate-100">Till Registry: #{activeTill.id.substring(0, 8).toUpperCase()}</h3>
+                                 <p className="text-xs text-slate-300 mt-1">Session opened: {activeTill.dateOpened ? formatDateSafe(activeTill.dateOpened) : 'N/A'}</p>
+                             </div>
+                             <div className="flex gap-2 mt-6">
+                                 <Button 
+                                     variant="ghost" 
+                                     onClick={() => setIsAdjustmentOpen(true)} 
+                                     disabled={isTillFromPreviousDay}
+                                     className="border border-white/20 text-white hover:bg-white/10 hover:text-white h-9 text-xs font-bold bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                                 >
+                                     Manual Cash Adjustment
+                                 </Button>
+                                 <Button 
+                                     onClick={() => handlePrintReport(activeTill, transactions || [])}
+                                     variant="ghost"
+                                     className="border border-white/20 text-white hover:bg-white/10 hover:text-white h-9 text-xs font-bold bg-transparent"
+                                 >
+                                     <Printer className="h-3.5 w-3.5 mr-1"/> Print Audit
+                                 </Button>
+                                 <Button 
+                                     onClick={() => setIsCloseTillOpen(true)} 
+                                     className={`${isTillFromPreviousDay ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'} font-extrabold flex-1 h-9 text-xs`}
+                                 >
+                                     {isTillFromPreviousDay ? "Submit Yesterday's Audit Report" : "Submit Till Audit Reports"}
+                                 </Button>
+                             </div>
+                         </Card>
 
                         <Card className="border-emerald-100 shadow-md bg-emerald-50/50 flex flex-col justify-center items-center p-6 text-center border-l-4 border-l-emerald-600">
                             <span className="text-xs uppercase font-extrabold text-slate-400 tracking-wider">Estimated Cash In Till</span>

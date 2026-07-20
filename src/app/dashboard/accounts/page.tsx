@@ -1860,8 +1860,18 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             const tillSnap = await getDocs(tillQuery);
             const activeTill = !tillSnap.empty ? tillSnap.docs[0] : null;
 
-            if (values.method === 'Cash' && !activeTill) {
-                throw new Error("You must have an OPEN TILL to accept cash.");
+            if (values.method === 'Cash') {
+                if (!activeTill) {
+                    throw new Error("You must have an OPEN TILL to accept cash.");
+                }
+                const dateOpened = activeTill.data()?.dateOpened?.toDate();
+                if (dateOpened) {
+                    const todayMidnight = new Date();
+                    todayMidnight.setHours(0, 0, 0, 0);
+                    if (dateOpened < todayMidnight) {
+                        throw new Error("Your active cash till was opened on a previous day. You must submit that till's report first on the Cash Till page before starting today's work.");
+                    }
+                }
             }
 
             const receiptId = await generateNextReceiptId(firestore, schoolId);
@@ -3196,6 +3206,14 @@ export default function AccountsPage() {
   const { data: activeTills, isLoading: isLoadingTills, forceRefetch: refetchActiveTill } = useCollection<any>(activeTillQuery);
   const activeTill = activeTills?.[0];
 
+  const isTillFromPreviousDay = useMemo(() => {
+    if (!activeTill || !activeTill.dateOpened) return false;
+    const dateOpenedObj = activeTill.dateOpened.toDate ? activeTill.dateOpened.toDate() : new Date(activeTill.dateOpened);
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
+    return dateOpenedObj < todayMidnight;
+  }, [activeTill]);
+
   const handleOpenTill = useCallback(async () => {
     if (!user || !schoolId || !firestore) return;
     setIsOpeningTill(true);
@@ -4274,29 +4292,49 @@ export default function AccountsPage() {
                                     {isLoadingTills ? (
                                         <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
                                     ) : activeTill ? (
-                                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold flex items-center gap-1.5 py-0.5">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" /> Open
-                                        </Badge>
+                                        isTillFromPreviousDay ? (
+                                            <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-extrabold flex items-center gap-1.5 py-0.5 animate-pulse">
+                                                Unsubmitted
+                                            </Badge>
+                                        ) : (
+                                            <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold flex items-center gap-1.5 py-0.5">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" /> Open
+                                            </Badge>
+                                        )
                                     ) : (
                                         <Badge variant="destructive" className="font-extrabold py-0.5">Closed</Badge>
                                     )}
                                 </div>
                                 
                                 {activeTill ? (
-                                    <div className="space-y-4">
-                                        <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
-                                            <p className="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wide">Cash Balance in Till</p>
-                                            <p className="text-3xl font-black text-emerald-800 tracking-tight mt-1">
-                                                GH₵{activeTill.currentBalance?.toFixed(2) || "0.00"}
-                                            </p>
-                                            <p className="text-[9px] text-slate-500 mt-2 font-medium">
-                                                Session ID: #{activeTill.id.substring(0, 8).toUpperCase()}
+                                    isTillFromPreviousDay ? (
+                                        <div className="space-y-4 animate-in fade-in duration-300">
+                                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 shadow-sm">
+                                                <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5 animate-bounce" />
+                                                <div>
+                                                    <p className="text-xs font-bold text-amber-800">Unsubmitted Till Alert</p>
+                                                    <p className="text-[11px] text-amber-700 mt-1 leading-normal font-medium">
+                                                        This register till was opened on a previous day. You are blocked from accepting new payments until you submit yesterday's till audit report.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
+                                                <p className="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wide">Cash Balance in Till</p>
+                                                <p className="text-3xl font-black text-emerald-800 tracking-tight mt-1">
+                                                    GH₵{activeTill.currentBalance?.toFixed(2) || "0.00"}
+                                                </p>
+                                                <p className="text-[9px] text-slate-500 mt-2 font-medium">
+                                                    Session ID: #{activeTill.id.substring(0, 8).toUpperCase()}
+                                                </p>
+                                            </div>
+                                            <p className="text-xs text-slate-500 leading-relaxed">
+                                                You are authorized to log cash payments from students. Receipts will link to this register desk.
                                             </p>
                                         </div>
-                                        <p className="text-xs text-slate-500 leading-relaxed">
-                                            You are authorized to log cash payments from students. Receipts will link to this register desk.
-                                        </p>
-                                    </div>
+                                    )
                                 ) : (
                                     <div className="space-y-4">
                                         <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-xl flex items-start gap-2.5">
@@ -4318,7 +4356,7 @@ export default function AccountsPage() {
                                 {activeTill ? (
                                     <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 text-xs">
                                         <a href="/dashboard/accounts/cash-till" className="flex items-center justify-center gap-2 cursor-pointer">
-                                            Open Till Dashboard <ArrowUpRight className="h-4 w-4" />
+                                            {isTillFromPreviousDay ? "Resolve & Submit Till" : "Open Till Dashboard"} <ArrowUpRight className="h-4 w-4" />
                                         </a>
                                     </Button>
                                 ) : (
