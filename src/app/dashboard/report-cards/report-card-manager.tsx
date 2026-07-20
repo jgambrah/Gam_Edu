@@ -307,9 +307,16 @@ export default function ReportCardManager() {
                     const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
                     let total100 = 0;
                     if (stuSubjAssessments.length > 0) {
-                        const cas = stuSubjAssessments.filter(a => a.assessmentType.includes('CA'));
+                        const cas = stuSubjAssessments.filter(a => {
+                            const t = (a.assessmentType || '').toLowerCase();
+                            return !t.includes('exam') && !t.includes('term');
+                        });
                         const rawCA = Math.min(cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight, currentCaWeight);
-                        const exams = stuSubjAssessments.filter(a => a.assessmentType.includes('Exam'));
+                        
+                        const exams = stuSubjAssessments.filter(a => {
+                            const t = (a.assessmentType || '').toLowerCase();
+                            return t.includes('exam') || t.includes('term');
+                        });
                         const rawExam = Math.min(exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight, currentExamWeight);
                         
                         const finalCA = Math.round(rawCA);
@@ -335,9 +342,16 @@ export default function ReportCardManager() {
             subjects?.forEach((sub: any) => {
                 const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
                 if (myAssessments.length === 0) return;
-                const cas = myAssessments.filter(a => a.assessmentType.includes('CA'));
+                const cas = myAssessments.filter(a => {
+                    const t = (a.assessmentType || '').toLowerCase();
+                    return !t.includes('exam') && !t.includes('term');
+                });
                 const rawCA = Math.min(cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight, currentCaWeight);
-                const exams = myAssessments.filter(a => a.assessmentType.includes('Exam'));
+                
+                const exams = myAssessments.filter(a => {
+                    const t = (a.assessmentType || '').toLowerCase();
+                    return t.includes('exam') || t.includes('term');
+                });
                 const rawExam = Math.min(exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight, currentExamWeight);
                 
                 const finalCA = Math.round(rawCA);
