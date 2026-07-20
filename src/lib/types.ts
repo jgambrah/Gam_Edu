@@ -255,6 +255,9 @@ export type ReportCard = {
     headmasterSignatureUrl?: string;
     digitalFingerprint?: string;
     reportCardPositionMode?: 'both' | 'subject_only' | 'none';
+    promotionDecision?: 'Promoted' | 'Repeated' | 'Graduated' | '';
+    promotedToClassId?: string;
+    promotedToClassName?: string;
 }
 
 // Timetable Schemas

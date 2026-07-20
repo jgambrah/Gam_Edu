@@ -82,6 +82,10 @@ export default function ReportCardManager() {
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
 
+    // Promotion State
+    const [promotionDecision, setPromotionDecision] = useState<'Promoted' | 'Repeated' | 'Graduated' | ''>('');
+    const [promotedToClassId, setPromotedToClassId] = useState<string>('');
+
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
@@ -203,7 +207,13 @@ export default function ReportCardManager() {
     }, [activeStudents, classReportCards]);
 
     useEffect(() => {
-        if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) return;
+        if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) {
+            setClassTeacherComment('');
+            setHeadmasterComment('');
+            setPromotionDecision('');
+            setPromotedToClassId('');
+            return;
+        }
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
         const fetchExisting = async () => {
             const docRef = doc(firestore, 'report-cards', reportId);
@@ -212,10 +222,14 @@ export default function ReportCardManager() {
                 const data = snap.data();
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
+                setPromotionDecision(data.promotionDecision || '');
+                setPromotedToClassId(data.promotedToClassId || '');
                 setProcessedReport(data);
             } else {
                 setClassTeacherComment('');
                 setHeadmasterComment('');
+                setPromotionDecision('');
+                setPromotedToClassId('');
             }
         };
         fetchExisting();
@@ -418,6 +432,13 @@ export default function ReportCardManager() {
                 status: 'Draft', 
                 classTeacherComment, 
                 headmasterComment,
+                ...(term === 'Third Term' ? {
+                    promotionDecision: promotionDecision || null,
+                    promotedToClassId: promotionDecision === 'Promoted' ? promotedToClassId || null : null,
+                    promotedToClassName: promotionDecision === 'Promoted' 
+                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || null)
+                        : (promotionDecision === 'Repeated' ? processedReport.className : (promotionDecision === 'Graduated' ? 'Graduated' : null))
+                } : {}),
                 lastUpdatedBy: user?.uid, 
                 updatedAt: serverTimestamp()
             };
@@ -457,6 +478,13 @@ export default function ReportCardManager() {
                 publishedAt: serverTimestamp(),
                 classTeacherComment, 
                 headmasterComment,
+                ...(term === 'Third Term' ? {
+                    promotionDecision: promotionDecision || null,
+                    promotedToClassId: promotionDecision === 'Promoted' ? promotedToClassId || null : null,
+                    promotedToClassName: promotionDecision === 'Promoted' 
+                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || null)
+                        : (promotionDecision === 'Repeated' ? processedReport.className : (promotionDecision === 'Graduated' ? 'Graduated' : null))
+                } : {}),
                 headmasterName: schoolData?.headmasterName || 'Head of School',
                 headmasterSignatureUrl: schoolData?.headmasterSignatureUrl || null,
                 headmasterSignedAt: serverTimestamp(),
@@ -887,6 +915,52 @@ export default function ReportCardManager() {
                                   className="rounded-xl border border-slate-200 focus-visible:ring-indigo-500 shadow-sm text-sm"
                                 />
                             </div>
+                            {term === 'Third Term' && (
+                                <div className="col-span-1 md:col-span-2 border-t border-slate-100 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Promotion Decision</Label>
+                                        <Select 
+                                            value={promotionDecision} 
+                                            onValueChange={(val: any) => {
+                                                setPromotionDecision(val);
+                                                if (val !== 'Promoted') {
+                                                    setPromotedToClassId('');
+                                                }
+                                            }}
+                                            disabled={!isTeacher && !isAdminOrDirector}
+                                        >
+                                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-555 shadow-sm">
+                                                <SelectValue placeholder="Select Decision" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Promoted">Promoted</SelectItem>
+                                                <SelectItem value="Repeated">Repeated (Repeat Class)</SelectItem>
+                                                <SelectItem value="Graduated">Graduated</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    
+                                    {promotionDecision === 'Promoted' && (
+                                        <div className="space-y-2 animate-in slide-in-from-top-2">
+                                            <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Promote To Class</Label>
+                                            <Select 
+                                                value={promotedToClassId} 
+                                                onValueChange={setPromotedToClassId}
+                                                disabled={!isTeacher && !isAdminOrDirector}
+                                            >
+                                                <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-555 shadow-sm">
+                                                    <SelectValue placeholder="Select Target Class" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {classes?.filter((c: any) => c.id !== classId).sort((a: any, b: any) => a.name.localeCompare(b.name)).map((c: any) => (
+                                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50/50 border-t border-slate-100 p-4">
                             <Button variant="outline" onClick={() => window.print()} className="rounded-xl font-bold h-10"><Printer className="mr-2 h-4 w-4"/> Print Document</Button>
@@ -907,7 +981,14 @@ export default function ReportCardManager() {
                         </div>
                         <div className="shadow-2xl ring-4 ring-black/40 bg-white scale-[0.7] sm:scale-[0.8] origin-top md:scale-100 transition-all rounded-sm overflow-hidden" style={{ width: '794px' }}>
                             <ReportCardTemplate
-                                data={processedReport}
+                                data={{
+                                    ...processedReport,
+                                    promotionDecision,
+                                    promotedToClassId,
+                                    promotedToClassName: promotionDecision === 'Promoted'
+                                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
+                                        : (promotionDecision === 'Repeated' ? processedReport?.className : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
+                                }}
                                 classTeacherComment={classTeacherComment}
                                 headmasterComment={headmasterComment}
                                 caWeight={processedReport?.caWeight ?? CA_WEIGHT}
@@ -924,7 +1005,14 @@ export default function ReportCardManager() {
             >
                 {processedReport && (
                     <ReportCardTemplate
-                        data={processedReport}
+                        data={{
+                            ...processedReport,
+                            promotionDecision,
+                            promotedToClassId,
+                            promotedToClassName: promotionDecision === 'Promoted'
+                                ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
+                                : (promotionDecision === 'Repeated' ? processedReport?.className : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
+                        }}
                         classTeacherComment={classTeacherComment}
                         headmasterComment={headmasterComment}
                         caWeight={processedReport?.caWeight ?? CA_WEIGHT}

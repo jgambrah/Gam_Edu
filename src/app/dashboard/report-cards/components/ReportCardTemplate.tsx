@@ -145,6 +145,30 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             </span>
                         </div>
                     )}
+                    {data.term === 'Third Term' && data.promotionDecision && (
+                        <div className="flex justify-between items-center border-b border-slate-150 pb-1.5 col-span-2">
+                            <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
+                                <GraduationCap className="h-3 w-3 text-slate-400" /> Promotion Status
+                            </span>
+                            <span className="font-black uppercase text-[10px]">
+                                {data.promotionDecision === 'Promoted' && (
+                                    <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                        Promoted to {data.promotedToClassName || 'Next Class'}
+                                    </span>
+                                )}
+                                {data.promotionDecision === 'Repeated' && (
+                                    <span className="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-lg border border-rose-200">
+                                        Repeated in {data.className}
+                                    </span>
+                                )}
+                                {data.promotionDecision === 'Graduated' && (
+                                    <span className="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg border border-amber-200">
+                                        Graduated 🎓
+                                    </span>
+                                )}
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 {/* ── ACADEMIC TRANSCRIPT TABLE ── */}
