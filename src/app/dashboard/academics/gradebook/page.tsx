@@ -166,6 +166,14 @@ export default function GradebookPage() {
         setIsSaving(true);
         try {
             const batch = writeBatch(firestore);
+
+            // Purge existing assessments of this same type to avoid duplicate accumulative values
+            const existingDocs = rawAssessments?.filter((a: any) => a.assessmentType === assessmentType) || [];
+            existingDocs.forEach((docData: any) => {
+                const ref = doc(firestore, 'assessments', docData.id);
+                batch.delete(ref);
+            });
+
             let count = 0;
             const updatedStudentIds: string[] = []; 
 
