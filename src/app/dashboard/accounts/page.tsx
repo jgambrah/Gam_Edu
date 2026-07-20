@@ -1864,7 +1864,11 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 if (!activeTill) {
                     throw new Error("You must have an OPEN TILL to accept cash.");
                 }
-                const dateOpened = activeTill.data()?.dateOpened?.toDate();
+                const activeTillData = activeTill.data();
+                if (activeTillData?.directorApproval?.rejectionReason) {
+                    throw new Error(`Your active cash till was rejected by the Director: "${activeTillData.directorApproval.rejectionReason}". You must resolve this discrepancy and re-submit the till report first.`);
+                }
+                const dateOpened = activeTillData?.dateOpened?.toDate();
                 if (dateOpened) {
                     const todayMidnight = new Date();
                     todayMidnight.setHours(0, 0, 0, 0);
@@ -3214,6 +3218,10 @@ export default function AccountsPage() {
     return dateOpenedObj < todayMidnight;
   }, [activeTill]);
 
+  const isTillRejected = useMemo(() => {
+    return !!activeTill?.directorApproval?.rejectionReason;
+  }, [activeTill]);
+
   const handleOpenTill = useCallback(async () => {
     if (!user || !schoolId || !firestore) return;
     setIsOpeningTill(true);
@@ -4292,7 +4300,11 @@ export default function AccountsPage() {
                                     {isLoadingTills ? (
                                         <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
                                     ) : activeTill ? (
-                                        isTillFromPreviousDay ? (
+                                        isTillRejected ? (
+                                            <Badge className="bg-red-500 hover:bg-red-600 text-white font-extrabold flex items-center gap-1.5 py-0.5 animate-pulse">
+                                                Rejected
+                                            </Badge>
+                                        ) : isTillFromPreviousDay ? (
                                             <Badge className="bg-amber-500 hover:bg-amber-600 text-white font-extrabold flex items-center gap-1.5 py-0.5 animate-pulse">
                                                 Unsubmitted
                                             </Badge>
@@ -4307,7 +4319,19 @@ export default function AccountsPage() {
                                 </div>
                                 
                                 {activeTill ? (
-                                    isTillFromPreviousDay ? (
+                                    isTillRejected ? (
+                                        <div className="space-y-4 animate-in fade-in duration-300">
+                                            <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5 shadow-sm">
+                                                <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5 animate-bounce" />
+                                                <div>
+                                                    <p className="text-xs font-bold text-red-800">Till Rejected Alert</p>
+                                                    <p className="text-[11px] text-red-700 mt-1 leading-normal font-medium">
+                                                        Your cash till was rejected by the Director: "{activeTill.directorApproval?.rejectionReason}". You must resolve discrepancies and re-submit it before you can record any payments.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : isTillFromPreviousDay ? (
                                         <div className="space-y-4 animate-in fade-in duration-300">
                                             <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 shadow-sm">
                                                 <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5 animate-bounce" />
@@ -4356,7 +4380,7 @@ export default function AccountsPage() {
                                 {activeTill ? (
                                     <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 text-xs">
                                         <a href="/dashboard/accounts/cash-till" className="flex items-center justify-center gap-2 cursor-pointer">
-                                            {isTillFromPreviousDay ? "Resolve & Submit Till" : "Open Till Dashboard"} <ArrowUpRight className="h-4 w-4" />
+                                            {isTillRejected ? "Review & Re-submit Till" : isTillFromPreviousDay ? "Resolve & Submit Till" : "Open Till Dashboard"} <ArrowUpRight className="h-4 w-4" />
                                         </a>
                                     </Button>
                                 ) : (

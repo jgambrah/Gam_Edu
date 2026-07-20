@@ -262,6 +262,11 @@ export default function BulkDailyReceiptsPage() {
             }
             
             const activeTill = tillSnap.docs[0];
+            if (activeTill.data()?.directorApproval?.rejectionReason) {
+                toast({ variant: 'destructive', title: "Till Rejected", description: `Your active till has been rejected by the Director: "${activeTill.data().directorApproval.rejectionReason}". You must resolve discrepancies and re-submit first.` });
+                setIsProcessing(false);
+                return;
+            }
             const dateOpened = activeTill.data()?.dateOpened?.toDate();
             if (dateOpened) {
                 const todayMidnight = new Date();
