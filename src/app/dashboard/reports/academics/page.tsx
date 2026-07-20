@@ -262,16 +262,16 @@ export default function AcademicReportsPage() {
                 const hasExam = subData.exam.maxScore > 0;
 
                 if (hasCa || hasExam) {
-                    const caWeighted = hasCa ? (caObtained / caMax) * currentCaWeight : 0;
-                    const examWeighted = hasExam ? (subData.exam.score / subData.exam.maxScore) * currentExamWeight : 0;
+                    const caWeighted = hasCa ? Math.min((caObtained / caMax) * currentCaWeight, currentCaWeight) : 0;
+                    const examWeighted = hasExam ? Math.min((subData.exam.score / subData.exam.maxScore) * currentExamWeight, currentExamWeight) : 0;
                     const finalCA = Math.round(caWeighted);
                     const finalExam = Math.round(examWeighted);
-                    const final = finalCA + finalExam;
+                    const final = Math.min(finalCA + finalExam, 100);
 
-                    const classExVal = caMax > 0 ? (subData.classEx.score / caMax) * currentCaWeight : 0;
-                    const hwVal = caMax > 0 ? (subData.hw.score / caMax) * currentCaWeight : 0;
-                    const midSemVal = caMax > 0 ? (subData.midSem.score / caMax) * currentCaWeight : 0;
-                    const projVal = caMax > 0 ? (subData.proj.score / caMax) * currentCaWeight : 0;
+                    const classExVal = caMax > 0 ? Math.min((subData.classEx.score / caMax) * currentCaWeight, currentCaWeight) : 0;
+                    const hwVal = caMax > 0 ? Math.min((subData.hw.score / caMax) * currentCaWeight, currentCaWeight) : 0;
+                    const midSemVal = caMax > 0 ? Math.min((subData.midSem.score / caMax) * currentCaWeight, currentCaWeight) : 0;
+                    const projVal = caMax > 0 ? Math.min((subData.proj.score / caMax) * currentCaWeight, currentCaWeight) : 0;
 
                     scoresMap[subject.id] = final;
                     subScoresMap[subject.id] = {
@@ -433,11 +433,11 @@ export default function AcademicReportsPage() {
                 }
             });
 
-            const weightedCA = caMax > 0 ? (caScore / caMax) * currentCaWeight : 0;
-            const weightedExam = examMax > 0 ? (examScore / examMax) * currentExamWeight : 0;
+            const weightedCA = caMax > 0 ? Math.min((caScore / caMax) * currentCaWeight, currentCaWeight) : 0;
+            const weightedExam = examMax > 0 ? Math.min((examScore / examMax) * currentExamWeight, currentExamWeight) : 0;
             const finalCA = Math.round(weightedCA);
             const finalExam = Math.round(weightedExam);
-            const finalScore = finalCA + finalExam;
+            const finalScore = Math.min(finalCA + finalExam, 100);
 
             return {
                 studentId: student.uid,

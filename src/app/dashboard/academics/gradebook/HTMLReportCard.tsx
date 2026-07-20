@@ -63,9 +63,9 @@ export const HTMLReportCard = ({
             const scoresMap: Record<string, number> = {};
 
             Object.entries(studentsInSub).forEach(([uid, data]) => {
-                const caPct = data.caMax > 0 ? (data.ca / data.caMax) * currentCaWeight : 0;
-                const examPct = data.examMax > 0 ? (data.exam / data.examMax) * currentExamWeight : 0;
-                const final = caPct + examPct;
+                const caPct = data.caMax > 0 ? Math.min((data.ca / data.caMax) * currentCaWeight, currentCaWeight) : 0;
+                const examPct = data.examMax > 0 ? Math.min((data.exam / data.examMax) * currentExamWeight, currentExamWeight) : 0;
+                const final = Math.min(caPct + examPct, 100);
                 
                 scoresMap[uid] = final;
                 sumPercentages += final;
@@ -105,9 +105,9 @@ export const HTMLReportCard = ({
                 }
             });
 
-            const caWeighted = caMax > 0 ? (caObtained / caMax) * currentCaWeight : 0;
-            const examWeighted = examMax > 0 ? (examObtained / examMax) * currentExamWeight : 0;
-            const totalPercent = caWeighted + examWeighted;
+            const caWeighted = caMax > 0 ? Math.min((caObtained / caMax) * currentCaWeight, currentCaWeight) : 0;
+            const examWeighted = examMax > 0 ? Math.min((examObtained / examMax) * currentExamWeight, currentExamWeight) : 0;
+            const totalPercent = Math.min(caWeighted + examWeighted, 100);
 
             const subStats = globalSubjectStats[subId];
             let classAvg = subStats ? subStats.average : 0;
