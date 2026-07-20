@@ -103,66 +103,66 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 {/* ── PASSPORT-STYLE STUDENT CREDENTIALS GRID ── */}
                 <div 
                     className="grid grid-cols-2 gap-x-8 gap-y-2.5 mb-5 text-xs border p-5 font-semibold bg-slate-50/60 rounded-2xl" 
-                    style={{ borderColor: `${secondaryTheme}20` }}
+                    style={{ borderColor: `${secondaryTheme}35` }}
                 >
-                    <div className="flex justify-between items-center border-b border-slate-150 pb-1.5">
-                        <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
-                            <User className="h-3 w-3 text-slate-400" /> Student Name
+                    <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                        <span className="text-slate-950 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                            <User className="h-3 w-3 text-slate-800" /> Student Name
                         </span>
-                        <span className="font-black uppercase text-slate-900">{data.student?.firstName} {data.student?.lastName}</span>
+                        <span className="font-black uppercase text-black">{data.student?.firstName} {data.student?.lastName}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-slate-150 pb-1.5">
-                        <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
-                            <Calendar className="h-3 w-3 text-slate-400" /> Academic Term
+                    <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                        <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                            <Calendar className="h-3 w-3 text-slate-800" /> Academic Term
                         </span>
-                        <span className="font-bold text-slate-900">{data.term}</span>
+                        <span className="font-black text-black">{data.term}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-slate-150 pb-1.5">
-                        <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
-                            <GraduationCap className="h-3 w-3 text-slate-400" /> Target Class
+                    <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                        <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                            <GraduationCap className="h-3 w-3 text-slate-800" /> Target Class
                         </span>
-                        <span className="font-black uppercase text-slate-900">{data.className}</span>
+                        <span className="font-black uppercase text-black">{data.className}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-slate-150 pb-1.5">
-                        <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
-                            <Calendar className="h-3 w-3 text-slate-400" /> School Year
+                    <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                        <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                            <Calendar className="h-3 w-3 text-slate-800" /> School Year
                         </span>
-                        <span className="font-bold text-slate-900">{data.academicYear}</span>
+                        <span className="font-black text-black">{data.academicYear}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-slate-150 pb-1.5">
-                        <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
-                            <CheckCircle2 className="h-3 w-3 text-slate-400" /> Attendance
+                    <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                        <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                            <CheckCircle2 className="h-3 w-3 text-slate-800" /> Attendance
                         </span>
-                        <span className="font-bold text-slate-900">{data.studentPresentDays || 0} / {data.totalClassDays || 0} Days</span>
+                        <span className="font-black text-black">{data.studentPresentDays || 0} / {data.totalClassDays || 0} Days</span>
                     </div>
                     {(data.reportCardPositionMode || 'both') === 'both' && (
-                        <div className="flex justify-between items-center border-b border-slate-150 pb-1.5">
-                            <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
-                                <Award className="h-3 w-3 text-slate-400" /> Class Position
+                        <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                            <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                                <Award className="h-3 w-3 text-slate-800" /> Class Position
                             </span>
-                            <span className="font-black underline" style={{ color: primaryTheme }}>
+                            <span className="font-black underline text-black" style={{ textDecorationColor: primaryTheme }}>
                                 {data.classPosition || '-'} of {data.totalStudents || 0}
                             </span>
                         </div>
                     )}
                     {data.term === 'Third Term' && data.promotionDecision && (
-                        <div className="flex justify-between items-center border-b border-slate-150 pb-1.5 col-span-2">
-                            <span className="text-slate-400 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1.5">
-                                <GraduationCap className="h-3 w-3 text-slate-400" /> Promotion Status
+                        <div className="flex justify-between items-center border-b border-slate-300 pb-1.5 col-span-2">
+                            <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                                <GraduationCap className="h-3 w-3 text-slate-800" /> Promotion Status
                             </span>
                             <span className="font-black uppercase text-[10px]">
                                 {data.promotionDecision === 'Promoted' && (
-                                    <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                    <span className="bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border-2 border-emerald-300 font-black">
                                         Promoted to {data.promotedToClassName || 'Next Class'}
                                     </span>
                                 )}
                                 {data.promotionDecision === 'Repeated' && (
-                                    <span className="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-lg border border-rose-200">
+                                    <span className="bg-rose-50 text-rose-800 px-2.5 py-1 rounded-lg border-2 border-rose-300 font-black">
                                         Repeated in {data.className}
                                     </span>
                                 )}
                                 {data.promotionDecision === 'Graduated' && (
-                                    <span className="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg border border-amber-200">
+                                    <span className="bg-amber-50 text-amber-800 px-2.5 py-1 rounded-lg border-2 border-amber-300 font-black">
                                         Graduated 🎓
                                     </span>
                                 )}
@@ -198,24 +198,24 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                     const isExcellent = gradeVal.includes('A') || gradeVal.includes('*');
                                     
                                     return (
-                                        <tr key={i} className={`border-b border-slate-100 last:border-0 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
-                                            <td className="p-2.5 font-bold uppercase border-r text-slate-800 flex items-center gap-1.5" style={{ borderRightColor: `${secondaryTheme}20` }}>
-                                                <BookOpen className="h-3 w-3 text-slate-400" />
+                                        <tr key={i} className={`border-b border-slate-300 last:border-0 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
+                                            <td className="p-2.5 font-extrabold uppercase border-r text-black flex items-center gap-1.5" style={{ borderRightColor: `${secondaryTheme}35` }}>
+                                                <BookOpen className="h-3 w-3 text-slate-800" />
                                                 {row.subjectName}
                                             </td>
-                                            <td className="p-2.5 text-center border-r text-slate-700" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.ca}</td>
-                                            <td className="p-2.5 text-center border-r text-slate-700" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.exam}</td>
-                                            <td className="p-2.5 text-center font-black bg-slate-100/30 border-r text-slate-900" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.total}</td>
-                                            <td className="p-2.5 text-center text-slate-400 border-r font-mono text-[9px]" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.classAverage}</td>
+                                            <td className="p-2.5 text-center border-r text-black font-bold" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
+                                            <td className="p-2.5 text-center border-r text-black font-bold" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
+                                            <td className="p-2.5 text-center font-black bg-slate-100/50 border-r text-black" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
+                                            <td className="p-2.5 text-center text-slate-900 border-r font-black text-[9px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.classAverage}</td>
                                             {showSubjectPosition && (
-                                                <td className="p-2.5 text-center font-bold border-r text-slate-700 font-mono text-[9px]" style={{ borderRightColor: `${secondaryTheme}20` }}>{row.position}</td>
+                                                <td className="p-2.5 text-center font-black border-r text-black text-[9px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.position}</td>
                                             )}
                                             <td className={`p-2.5 text-center font-black border-r ${
-                                                isExcellent ? 'text-emerald-700' : isFail ? 'text-rose-600' : 'text-amber-600'
-                                            }`} style={{ borderRightColor: `${secondaryTheme}20` }}>
+                                                isExcellent ? 'text-emerald-800' : isFail ? 'text-rose-700' : 'text-amber-800'
+                                            }`} style={{ borderRightColor: `${secondaryTheme}35` }}>
                                                 {row.grade}
                                             </td>
-                                            <td className="p-2.5 italic text-slate-500 text-[9px] leading-snug">{row.autoRemark}</td>
+                                            <td className="p-2.5 italic text-slate-950 font-bold text-[9px] leading-snug">{row.autoRemark}</td>
                                         </tr>
                                     );
                                 })}
@@ -253,9 +253,9 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                     const isFail = bracket.grade.toUpperCase().includes('F');
                                     return (
                                         <div key={index} className={`p-1.5 text-center flex flex-col justify-center ${isFail ? 'bg-rose-50/20' : ''}`}>
-                                            <span className="font-extrabold text-slate-700">{bracket.minScore} - {bracket.maxScore}%</span>
+                                            <span className="font-black text-slate-950">{bracket.minScore} - {bracket.maxScore}%</span>
                                             <span className={`font-black text-[9px] mt-0.5 ${getGradeColorClass(bracket.grade)}`}>{bracket.grade}</span>
-                                            <span className="italic text-[7.5px] text-slate-400 mt-0.5 truncate">{bracket.remark}</span>
+                                            <span className="italic text-[7.5px] text-slate-900 font-bold mt-0.5 truncate">{bracket.remark}</span>
                                         </div>
                                     );
                                 })}
@@ -266,22 +266,22 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
                 {/* ── NEXT TERM REOPENING DETAILS BANNER ── */}
                 <div 
-                    className="border p-3 text-center mb-5 rounded-xl shadow-sm"
-                    style={{ borderColor: `${secondaryTheme}40`, backgroundColor: `${secondaryTheme}05` }}
+                    className="border-2 p-3 text-center mb-5 rounded-xl shadow-sm"
+                    style={{ borderColor: `${secondaryTheme}70`, backgroundColor: `${secondaryTheme}08` }}
                 >
-                    <span className="text-[9px] font-black uppercase tracking-wider mr-2" style={{ color: primaryTheme }}>Next Term Reopening Date:</span>
+                    <span className="text-[9.5px] font-black uppercase tracking-wider mr-2" style={{ color: primaryTheme }}>Next Term Reopening Date:</span>
                     <span className="text-sm font-black" style={{ color: primaryTheme }}>{nextTermReopening}</span>
                 </div>
 
                 {/* ── COMMENTS & REMARKS CARD PANELS ── */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="p-4 border border-slate-150 rounded-2xl bg-slate-50/30">
-                        <h4 className="text-[9px] font-black uppercase text-slate-400 mb-1.5 tracking-wider">Class Teacher's Remark</h4>
-                        <p className="text-xs italic text-slate-800 leading-relaxed">"{classTeacherComment || 'Progress satisfactory.'}"</p>
+                    <div className="p-4 border border-slate-300 rounded-2xl bg-slate-50/50">
+                        <h4 className="text-[9.5px] font-black uppercase text-slate-950 mb-1.5 tracking-wider">Class Teacher's Remark</h4>
+                        <p className="text-xs italic text-black font-extrabold leading-relaxed">"{classTeacherComment || 'Progress satisfactory.'}"</p>
                     </div>
-                    <div className="p-4 border border-slate-150 rounded-2xl bg-slate-50/30">
-                        <h4 className="text-[9px] font-black uppercase text-slate-400 mb-1.5 tracking-wider">Headmaster's Remark</h4>
-                        <p className="text-xs italic text-slate-800 leading-relaxed">"{headmasterComment || 'Pending official review.'}"</p>
+                    <div className="p-4 border border-slate-300 rounded-2xl bg-slate-50/50">
+                        <h4 className="text-[9.5px] font-black uppercase text-slate-950 mb-1.5 tracking-wider">Headmaster's Remark</h4>
+                        <p className="text-xs italic text-black font-extrabold leading-relaxed">"{headmasterComment || 'Pending official review.'}"</p>
                     </div>
                 </div>
 
@@ -299,12 +299,12 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                     className="max-h-12 object-contain mix-blend-multiply contrast-125" 
                                 />
                             ) : (
-                                <span className="text-slate-300 uppercase font-bold text-[8px] mb-3">Awaiting Signature</span>
+                                <span className="text-slate-400 uppercase font-black text-[8px] mb-3">Awaiting Signature</span>
                             )}
                         </div>
                         <div className="w-full border-t border-slate-300 pt-1.5">
-                            <p className="font-black text-[10px] uppercase text-slate-900">{data.classTeacherName || 'Class Teacher'}</p>
-                            <p className="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">E-Signature Verified</p>
+                            <p className="font-black text-[10px] uppercase text-black">{data.classTeacherName || 'Class Teacher'}</p>
+                            <p className="text-[7.5px] font-black text-slate-900 uppercase tracking-widest mt-0.5">E-Signature Verified</p>
                         </div>
                     </div>
 
@@ -317,25 +317,25 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                     className="max-h-12 max-w-full object-contain mix-blend-multiply contrast-125" 
                                 />
                             ) : (
-                                <span className="text-slate-300 uppercase font-bold text-[8px] mb-3">Awaiting Approval</span>
+                                <span className="text-slate-400 uppercase font-black text-[8px] mb-3">Awaiting Approval</span>
                             )}
                         </div>
                         <div className="w-full border-t border-slate-300 pt-1.5">
-                            <p className="font-black text-[10px] uppercase text-slate-900">{data.headmasterName || 'Head of School'}</p>
-                            <p className="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Authorized Official Stamp</p>
+                            <p className="font-black text-[10px] uppercase text-black">{data.headmasterName || 'Head of School'}</p>
+                            <p className="text-[7.5px] font-black text-slate-900 uppercase tracking-widest mt-0.5">Authorized Official Stamp</p>
                         </div>
                     </div>
                 </div>
 
                 {/* ── SECURITY FOOTER ── */}
-                <div className="mt-8 flex items-center justify-between opacity-35">
+                <div className="mt-8 flex items-center justify-between opacity-75">
                     <div className="flex items-center gap-1.5">
                         <ShieldCheck size={11} style={{ color: primaryTheme }} className="text-indigo-650 animate-pulse" />
-                        <span className="text-[7.5px] font-black uppercase tracking-widest text-slate-500">
+                        <span className="text-[7.5px] font-black uppercase tracking-widest text-slate-800">
                             Secured Transcript Fingerprint: {data.digitalFingerprint || 'GAM-EDU-AUTHENTIC'}
                         </span>
                     </div>
-                    <p className="text-[7.5px] font-bold italic text-slate-400 uppercase">Verified by GAM Edu Cloud Systems</p>
+                    <p className="text-[7.5px] font-black italic text-slate-700 uppercase">Verified by GAM Edu Cloud Systems</p>
                 </div>
             </div>
         </div>
