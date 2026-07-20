@@ -93,6 +93,9 @@ export default function ReportCardManager() {
     const [isExporting, setIsExporting] = useState(false);
     const [isPrintingAll, setIsPrintingAll] = useState(false);
     const [exportProgress, setExportProgress] = useState(0);
+    const [batchLogoBase64, setBatchLogoBase64] = useState('');
+    const [batchHeadmasterSigBase64, setBatchHeadmasterSigBase64] = useState('');
+    const [batchTeacherSigBase64, setBatchTeacherSigBase64] = useState('');
     const [isGeneratingTeacherComment, setIsGeneratingTeacherComment] = useState(false);
     const [isGeneratingHeadmasterComment, setIsGeneratingHeadmasterComment] = useState(false);
     const [processedReport, setProcessedReport] = useState<any>(null);
@@ -603,17 +606,47 @@ export default function ReportCardManager() {
     };
 
     const handleDownloadAllPDF = async () => {
-        if (!classReportCards || classReportCards.length === 0) {
+        if (!classReportCards || classReportCards.length === 0 || !schoolId || !schoolProfile) {
             toast({ variant: 'destructive', title: "No Reports", description: "There are no compiled report cards to print for this class." });
             return;
         }
         setIsExporting(true);
-        setIsPrintingAll(true);
         setExportProgress(1);
 
         try {
-            // Give DOM time to render all report cards
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // 1. Pre-fetch school logo and signatures in base64 format once
+            const schoolDoc = await getDoc(doc(firestore!, 'schools', schoolId));
+            const schoolData = schoolDoc?.data();
+
+            const [logoB64, headmasterSigB64] = await Promise.all([
+                schoolProfile.logoUrl ? getBase64ImageFromUrl(schoolProfile.logoUrl) : Promise.resolve(''),
+                schoolData?.headmasterSignatureUrl ? getBase64ImageFromUrl(schoolData.headmasterSignatureUrl) : Promise.resolve(''),
+            ]);
+
+            let classTeacherSignatureUrl = null;
+            const selectedClass = classes?.find((c: any) => c.id === classId);
+            const classTeacherId = selectedClass?.teacherId;
+
+            if (classTeacherId) {
+                const teacherDoc = await getDoc(doc(firestore!, 'staff', classTeacherId));
+                if (teacherDoc.exists()) {
+                    const tData = teacherDoc.data();
+                    classTeacherSignatureUrl = tData.signatureBase64 || tData.signatureUrl || null;
+                }
+            }
+
+            const teacherSigB64 = classTeacherSignatureUrl 
+                ? await getBase64ImageFromUrl(classTeacherSignatureUrl) 
+                : '';
+
+            setBatchLogoBase64(logoB64);
+            setBatchHeadmasterSigBase64(headmasterSigB64);
+            setBatchTeacherSigBase64(teacherSigB64);
+            
+            setIsPrintingAll(true);
+
+            // Give DOM time to render all report cards with base64 images
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
             const printArea = printRef.current;
             if (!printArea) throw new Error("Print area not found");
@@ -678,6 +711,9 @@ export default function ReportCardManager() {
             setIsExporting(false);
             setIsPrintingAll(false);
             setExportProgress(0);
+            setBatchLogoBase64('');
+            setBatchHeadmasterSigBase64('');
+            setBatchTeacherSigBase64('');
         }
     };
 
@@ -1103,7 +1139,12 @@ export default function ReportCardManager() {
                     classReportCards.map((report: any) => (
                         <div key={report.id} className="print-page-break">
                             <ReportCardTemplate
-                                data={report}
+                                data={{
+                                    ...report,
+                                    logoBase64: batchLogoBase64 || report.logoBase64 || '',
+                                    headmasterSigBase64: batchHeadmasterSigBase64 || report.headmasterSigBase64 || '',
+                                    teacherSigBase64: batchTeacherSigBase64 || report.teacherSigBase64 || ''
+                                }}
                                 classTeacherComment={report.classTeacherComment}
                                 headmasterComment={report.headmasterComment}
                                 caWeight={report.caWeight ?? CA_WEIGHT}
