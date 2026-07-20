@@ -58,15 +58,15 @@ service cloud.firestore {
       );
     }
 
-    function isTeacher() { return isSignedIn() && getUserRole() == 'Teacher'; }
+    function isTeacher() { return isSignedIn() && (getUserRole() == 'Teacher' || getUserRole() == 'teacher'); }
     function isStudent() { return exists(/databases/$(database)/documents/students/$(request.auth.uid)); }
     function isStaff() { return exists(/databases/$(database)/documents/staff/$(request.auth.uid)); }
     function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
 
-    function isFinanceStaff() { return isAdmin() || getUserRole() == 'Accountant'; }
+    function isFinanceStaff() { return isAdmin() || getUserRole() == 'Accountant' || getUserRole() == 'accountant'; }
     function isDirector() { return isAdmin(); }
-    function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian'; }
-    function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff'; }
+    function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian' || getUserRole() == 'librarian'; }
+    function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff' || getUserRole() == 'transport staff'; }
 
     function parentOwnsStudent(studentId) {
       return isParent() && studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds;
@@ -352,13 +352,13 @@ service cloud.firestore {
 
       match /transactions/{transactionId} {
         allow read, list: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/tills/$(tillId)).data.schoolId == getUserSchoolId();
+          resource.data.schoolId == getUserSchoolId();
         allow create: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/tills/$(tillId)).data.schoolId == getUserSchoolId();
+          request.resource.data.schoolId == getUserSchoolId();
         allow update: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/tills/$(tillId)).data.schoolId == getUserSchoolId();
+          request.resource.data.schoolId == getUserSchoolId();
         allow delete: if isSuperAdmin() || (isAdmin() && 
-          get(/databases/$(database)/documents/tills/$(tillId)).data.schoolId == getUserSchoolId());
+          resource.data.schoolId == getUserSchoolId());
       }
     }
 
@@ -383,13 +383,13 @@ service cloud.firestore {
       allow delete: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher()) && getUserSchoolId() == resource.data.schoolId);
       match /payments/{paymentId} {
         allow read: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/financialRecords/$(recordId)).data.schoolId == getUserSchoolId();
+          resource.data.schoolId == getUserSchoolId();
         allow create: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/financialRecords/$(recordId)).data.schoolId == getUserSchoolId();
+          request.resource.data.schoolId == getUserSchoolId();
         allow update: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/financialRecords/$(recordId)).data.schoolId == getUserSchoolId();
+          request.resource.data.schoolId == getUserSchoolId();
         allow delete: if isSuperAdmin() || (isAdmin() && 
-          get(/databases/$(database)/documents/financialRecords/$(recordId)).data.schoolId == getUserSchoolId());
+          resource.data.schoolId == getUserSchoolId());
         allow read: if isSignedIn() && (isSuperAdmin() || (getUserSchoolId() == resource.data.schoolId && (
           exists(/databases/$(database)/documents/financialRecords/$(recordId)) &&
           (get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId == request.auth.uid ||
