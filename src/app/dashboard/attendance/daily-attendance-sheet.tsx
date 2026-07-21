@@ -314,22 +314,30 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 .filter((s): s is Student => s !== undefined);
 
             if (studentsToBill.length > 0) {
-                const billingResult = await billMultipleStudents(
-                    firestore,
-                    studentsToBill,
-                    selectedDate,
-                    schoolId,
-                    (current, total, name) => {
-                        setBillingProgress(`Billing: ${current}/${total} (${name})`);
-                    }
-                );
-                
-                toast({
-                    title: 'Daily Billing Complete',
-                    description: `✅ ${billingResult.successful} billed. ❌ ${billingResult.failed} failed. Total today: GH₵${billingResult.totalBilled.toFixed(2)}`
-                });
+                try {
+                    const billingResult = await billMultipleStudents(
+                        firestore,
+                        studentsToBill,
+                        selectedDate,
+                        schoolId,
+                        (current, total, name) => {
+                            setBillingProgress(`Billing: ${current}/${total} (${name})`);
+                        }
+                    );
+                    
+                    toast({
+                        title: 'Attendance Saved 📅',
+                        description: `Attendance updated successfully. ${billingResult.successful} billed for daily services.`
+                    });
+                } catch (billingErr: any) {
+                    console.error("Billing post-processing failed:", billingErr);
+                    toast({
+                        title: 'Attendance Saved 📅',
+                        description: 'Student attendance status has been updated successfully.'
+                    });
+                }
             } else {
-                toast({ title: 'Billing Skipped', description: 'No students were marked as present or late.'});
+                toast({ title: 'Attendance Saved 📅', description: 'Attendance status updated successfully.' });
             }
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Error', description: error.message });

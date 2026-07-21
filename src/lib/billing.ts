@@ -159,36 +159,53 @@ export async function billMultipleStudents(
 }> {
   
   // 1. Fetch Canteen Settings (Dynamic Model)
-  const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-  const canteenData = canteenSettingsSnap.data();
-  const canteenModel = canteenData?.pricingModel || 'Flat';
-  const globalCanteenRate = canteenData?.dailyRate || 0;
-  const classCanteenRates = canteenData?.classRates || {};
+  let canteenModel = 'Flat';
+  let globalCanteenRate = 0;
+  let classCanteenRates: Record<string, number> = {};
+  try {
+      const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+      if (canteenSettingsSnap.exists()) {
+          const canteenData = canteenSettingsSnap.data();
+          canteenModel = canteenData?.pricingModel || 'Flat';
+          globalCanteenRate = Number(canteenData?.dailyRate) || 0;
+          classCanteenRates = canteenData?.classRates || {};
+      }
+  } catch (err) {
+      console.warn("Could not fetch canteen rates:", err);
+  }
 
   // 2. Fetch ALL Transport Routes for this school and build a Student -> Rate Map
-  const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
-  const routesSnap = await getDocs(routesQuery);
   const studentToTransportRateMap = new Map<string, number>();
-
-  routesSnap.docs.forEach(d => {
-      const data = d.data();
-      const dailyRate = Number(data.dailyRate) || 0;
-      data.stops?.forEach((stop: any) => {
-          stop.assignedStudentIds?.forEach((sid: string) => {
-              studentToTransportRateMap.set(sid, dailyRate);
+  try {
+      const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
+      const routesSnap = await getDocs(routesQuery);
+      routesSnap.docs.forEach(d => {
+          const data = d.data();
+          const dailyRate = Number(data.dailyRate) || 0;
+          data.stops?.forEach((stop: any) => {
+              stop.assignedStudentIds?.forEach((sid: string) => {
+                  studentToTransportRateMap.set(sid, dailyRate);
+              });
           });
       });
-  });
+  } catch (err) {
+      console.warn("Could not fetch transport routes:", err);
+  }
 
-  // Fetch existing bills for this date and school to avoid overwriting them
+  // 3. Fetch existing bills for this date and school to avoid overwriting them
   const normalizedDate = startOfDay(attendanceDate);
-  const billsQuery = query(
-      collection(firestore, 'financialRecords'),
-      where('schoolId', '==', schoolId),
-      where('dueDate', '==', Timestamp.fromDate(normalizedDate))
-  );
-  const billsSnap = await getDocs(billsQuery);
-  const existingBillIds = new Set(billsSnap.docs.map(d => d.id));
+  const existingBillIds = new Set<string>();
+  try {
+      const billsQuery = query(
+          collection(firestore, 'financialRecords'),
+          where('schoolId', '==', schoolId),
+          where('dueDate', '==', Timestamp.fromDate(normalizedDate))
+      );
+      const billsSnap = await getDocs(billsQuery);
+      billsSnap.docs.forEach(d => existingBillIds.add(d.id));
+  } catch (err) {
+      console.warn("Could not fetch existing daily bills:", err);
+  }
 
   let successful = 0;
   let failed = 0;
@@ -197,34 +214,37 @@ export async function billMultipleStudents(
 
   for (let i = 0; i < students.length; i++) {
     const student = students[i];
-    if (onProgress) onProgress(i + 1, students.length, `${student.firstName} ${student.lastName}`);
+    if (onProgress) onProgress(i + 1, students.length, `${student.firstName || ''} ${student.lastName || ''}`);
 
-    // A. Resolve Canteen Rate
-    let studentCanteenRate = 0;
-    if (canteenModel === 'Flat') {
-        studentCanteenRate = globalCanteenRate;
-    } else {
-        studentCanteenRate = classCanteenRates[student.classId] || 0;
-    }
+    try {
+        let studentCanteenRate = 0;
+        if (canteenModel === 'Flat') {
+            studentCanteenRate = globalCanteenRate;
+        } else {
+            studentCanteenRate = classCanteenRates[student.classId] || 0;
+        }
 
-    // B. Resolve Transport Rate (Look up in our generated map)
-    const transportRate = studentToTransportRateMap.get(student.uid) || 0;
+        const transportRate = studentToTransportRateMap.get(student.uid) || 0;
 
-    const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
-        canteen: studentCanteenRate, 
-        transport: transportRate 
-    }, existingBillIds);
-    
-    if (result.success) {
-      if (result.amountBilled > 0) {
-        successful++;
-        totalBilled += result.amountBilled;
-      } else {
-        successful++; 
-      }
-    } else {
-      failed++;
-      errors.push(`${student.firstName}: ${result.message}`);
+        const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
+            canteen: studentCanteenRate, 
+            transport: transportRate 
+        }, existingBillIds);
+        
+        if (result.success) {
+          if (result.amountBilled > 0) {
+            successful++;
+            totalBilled += result.amountBilled;
+          } else {
+            successful++; 
+          }
+        } else {
+          failed++;
+          errors.push(`${student.firstName || 'Student'}: ${result.message}`);
+        }
+    } catch (err: any) {
+        failed++;
+        errors.push(`${student.firstName || 'Student'}: ${err.message || 'Billing error'}`);
     }
   }
 
