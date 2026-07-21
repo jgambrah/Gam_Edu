@@ -50,7 +50,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { generateSchoolExecutiveBriefingAction } from '@/app/actions/insights-ai';
-import { format, startOfDay, formatDistanceToNow } from 'date-fns';
+import { format, startOfDay, endOfDay, formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -13210,7 +13210,15 @@ export default function DashboardClient() {
                      (role === 'Administrator' && (adminActiveTab === 'overview' || adminActiveTab === 'attendance')) || 
                      role === 'Teacher' ||
                      isReceptionist || isSecretary;
-    return isNeeded ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId), limit(300)) : null;
+    if (!isNeeded) return null;
+    const dayStart = startOfDay(new Date());
+    const dayEnd = endOfDay(new Date());
+    return query(
+      collection(firestore, 'attendance'), 
+      where('schoolId', '==', schoolId),
+      where('date', '>=', Timestamp.fromDate(dayStart)),
+      where('date', '<=', Timestamp.fromDate(dayEnd))
+    );
   }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab]);
   const { data: attendance } = useCollection(attendanceQuery);
 
