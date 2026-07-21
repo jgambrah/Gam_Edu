@@ -23,6 +23,12 @@ service cloud.firestore {
     // 1. HELPER FUNCTIONS
     // =========================================================
 
+    // Audit logs for system actions
+    match /auditLogs/{logId} {
+      allow read, list: if isSignedIn() && (isSuperAdmin() || ((isStaff() || isAdmin()) && getUserSchoolId() == resource.data.schoolId));
+      allow create: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == request.resource.data.schoolId);
+    }
+
     function isSignedIn() { return request.auth != null; }
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
 
@@ -248,7 +254,7 @@ service cloud.firestore {
         ))
       );
       allow list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
-      allow write: if isSuperAdmin() || ((isTeacher() || isAdmin() || isDirector()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow write: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin() || isDirector()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 
     match /staff_attendance/{attendanceId} {
