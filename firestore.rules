@@ -173,12 +173,6 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    match /auditLogs/{logId} {
-      allow read, list: if isAdmin();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if false;
-    }
-
     match /counters/{counterId} {
       allow read: if isSignedIn();
       allow write: if isAdmin() || isFinanceStaff();
@@ -396,7 +390,7 @@ service cloud.firestore {
       );
       allow list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
       allow create: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher() || isStaff()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow update: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher() || isStaff()) && getUserSchoolId() == resource.data.schoolId && getUserSchoolId() == request.resource.data.schoolId);
+      allow update: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher() || isStaff()) && getUserSchoolId() == request.resource.data.schoolId && (resource == null || getUserSchoolId() == resource.data.schoolId));
       allow delete: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher() || isStaff()) && (resource == null || getUserSchoolId() == resource.data.schoolId));
       match /payments/{paymentId} {
         allow read: if isSuperAdmin() || 
