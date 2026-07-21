@@ -309,13 +309,15 @@ export default function ReportCardManager() {
                     if (stuSubjAssessments.length > 0) {
                         const cas = stuSubjAssessments.filter(a => {
                             const t = (a.assessmentType || '').toLowerCase();
-                            return !t.includes('exam') && !t.includes('term');
+                            const isMid = t.includes('mid');
+                            return isMid || (!t.includes('exam') && !t.includes('term'));
                         });
                         const rawCA = Math.min(cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight, currentCaWeight);
                         
                         const exams = stuSubjAssessments.filter(a => {
                             const t = (a.assessmentType || '').toLowerCase();
-                            return t.includes('exam') || t.includes('term');
+                            const isMid = t.includes('mid');
+                            return !isMid && (t.includes('exam') || t.includes('term'));
                         });
                         const rawExam = Math.min(exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight, currentExamWeight);
                         
@@ -344,13 +346,15 @@ export default function ReportCardManager() {
                 if (myAssessments.length === 0) return;
                 const cas = myAssessments.filter(a => {
                     const t = (a.assessmentType || '').toLowerCase();
-                    return !t.includes('exam') && !t.includes('term');
+                    const isMid = t.includes('mid');
+                    return isMid || (!t.includes('exam') && !t.includes('term'));
                 });
                 const rawCA = Math.min(cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight, currentCaWeight);
                 
                 const exams = myAssessments.filter(a => {
                     const t = (a.assessmentType || '').toLowerCase();
-                    return t.includes('exam') || t.includes('term');
+                    const isMid = t.includes('mid');
+                    return !isMid && (t.includes('exam') || t.includes('term'));
                 });
                 const rawExam = Math.min(exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight, currentExamWeight);
                 

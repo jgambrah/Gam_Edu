@@ -43,7 +43,8 @@ export const HTMLReportCard = ({
              if (!grouping[subId][uId]) grouping[subId][uId] = { ca: 0, caMax: 0, exam: 0, examMax: 0 };
 
              const type = (a.assessmentType || '').toLowerCase();
-             const isExam = type.includes('exam') || type.includes('term');
+             const isMidSem = type.includes('mid');
+             const isExam = !isMidSem && (type.includes('exam') || type.includes('term'));
 
              if (isExam) {
                  grouping[subId][uId].exam += (a.score || 0);
@@ -95,7 +96,8 @@ export const HTMLReportCard = ({
 
             studentAssessments.forEach((a: Assessment) => {
                 const type = (a.assessmentType || '').toLowerCase();
-                const isExam = type.includes('exam') || type.includes('term');
+                const isMidSem = type.includes('mid');
+                const isExam = !isMidSem && (type.includes('exam') || type.includes('term'));
                 if (isExam) {
                     examObtained += (a.score || 0);
                     examMax += (a.maxScore || 0);

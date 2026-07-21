@@ -203,7 +203,8 @@ export default function AcademicReportsPage() {
             if (!grouping[studentId] || !grouping[studentId][subjectId]) return;
 
             const type = (a.assessmentType || '').toLowerCase();
-            const isExam = type.includes('exam') || type.includes('term');
+            const isMidSem = type.includes('mid');
+            const isExam = !isMidSem && (type.includes('exam') || type.includes('term'));
 
             let categoryKey = 'exam';
             if (!isExam) {
@@ -245,7 +246,8 @@ export default function AcademicReportsPage() {
                 classAssessments.forEach((a: Assessment) => {
                     if (a.subjectId !== subject.id) return;
                     const type = (a.assessmentType || '').toLowerCase();
-                    const isExam = type.includes('exam') || type.includes('term');
+                    const isMidSem = type.includes('mid');
+                    const isExam = !isMidSem && (type.includes('exam') || type.includes('term'));
                     if (!isExam) {
                         let cat = getCategoryKey(a.assessmentType);
                         if (cat === 'other') cat = 'classEx';
@@ -423,7 +425,8 @@ export default function AcademicReportsPage() {
             let caScore = 0, caMax = 0, examScore = 0, examMax = 0;
             myAssessments.forEach(a => {
                 const type = (a.assessmentType || '').toLowerCase();
-                const isExam = type.includes('exam') || type.includes('term');
+                const isMidSem = type.includes('mid');
+                const isExam = !isMidSem && (type.includes('exam') || type.includes('term'));
                 if (isExam) {
                     examScore += (a.score || 0);
                     examMax += (a.maxScore || 100);
