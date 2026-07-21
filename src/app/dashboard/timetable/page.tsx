@@ -17,6 +17,9 @@ import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -41,7 +44,79 @@ import CreditBalance from '@/components/CreditBalance';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
-// --- SUB-COMPONENT: LESSON ASSIGNMENT DIALOG ---
+function SearchableSelect({
+    label,
+    placeholder,
+    searchPlaceholder,
+    value,
+    onChange,
+    options,
+    disabled = false
+}: {
+    label: string;
+    placeholder: string;
+    searchPlaceholder: string;
+    value: string;
+    onChange: (val: string) => void;
+    options: Array<{ id: string; label: string; searchValue?: string }>;
+    disabled?: boolean;
+}) {
+    const [open, setOpen] = useState(false);
+    const selectedOption = options.find(o => o.id === value);
+
+    return (
+        <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-slate-700">{label}</Label>
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        disabled={disabled}
+                        className="w-full justify-between bg-white text-left font-medium h-10 px-3 border-slate-200 shadow-sm text-xs hover:bg-slate-50"
+                    >
+                        <span className="truncate text-slate-800">
+                            {selectedOption ? selectedOption.label : placeholder}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 text-slate-400" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0 shadow-xl border-slate-200 z-[100]" align="start">
+                    <Command>
+                        <CommandInput placeholder={searchPlaceholder} className="h-9 text-xs" />
+                        <CommandList className="max-h-56 overflow-y-auto">
+                            <CommandEmpty className="py-3 text-center text-xs text-slate-500">No matching item found.</CommandEmpty>
+                            <CommandGroup>
+                                {options.map((opt) => (
+                                    <CommandItem
+                                        key={opt.id}
+                                        value={opt.searchValue || opt.label}
+                                        onSelect={() => {
+                                            onChange(opt.id);
+                                            setOpen(false);
+                                        }}
+                                        className="text-xs flex items-center justify-between cursor-pointer py-2 px-3"
+                                    >
+                                        <span className="truncate">{opt.label}</span>
+                                        <Check
+                                            className={cn(
+                                                "ml-2 h-3.5 w-3.5 text-teal-600 shrink-0",
+                                                value === opt.id ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+        </div>
+    );
+}
+
+// --- SUB-COMPONENT: MANUAL LESSON ASSIGNMENT DIALOG ---
 function LessonAssignmentDialog({ 
     open, 
     setOpen, 
@@ -73,57 +148,53 @@ function LessonAssignmentDialog({
         timeSlotId: '',
         subjectId: '',
         teacherId: '',
-        roomId: ''
+        roomId: '',
     });
 
     useEffect(() => {
-        if (open) {
-            if (editingEntry) {
-                setForm({
-                    timeSlotId: editingEntry.timeSlotId || '',
-                    subjectId: editingEntry.subjectId || '',
-                    teacherId: editingEntry.teacherId || '',
-                    roomId: editingEntry.roomId || ''
-                });
-            } else {
-                setForm({ timeSlotId: '', subjectId: '', teacherId: '', roomId: '' });
-            }
+        if (editingEntry) {
+            setForm({
+                timeSlotId: editingEntry.timeSlotId || '',
+                subjectId: editingEntry.subjectId || '',
+                teacherId: editingEntry.teacherId || '',
+                roomId: editingEntry.roomId || '',
+            });
+        } else {
+            setForm({ timeSlotId: '', subjectId: '', teacherId: '', roomId: '' });
         }
-    }, [open, editingEntry]);
+    }, [editingEntry, open]);
 
     const handleSubmit = async () => {
         if (!firestore || !schoolId || !classId) return;
-        if (!form.timeSlotId || !form.subjectId || !form.teacherId || !form.roomId) {
-            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all assignment details." });
+        if (!form.timeSlotId || !form.subjectId || !form.teacherId) {
+            toast({ variant: 'destructive', title: "Missing Fields", description: "Slot, Subject, and Teacher are required." });
             return;
         }
 
         setIsSubmitting(true);
         try {
-            const slot = timeSlots.find(ts => ts.id === form.timeSlotId);
-            const data = {
-                timeSlotId: form.timeSlotId,
-                subjectId: form.subjectId || null,
-                teacherId: form.teacherId || null,
-                roomId: form.roomId || null,
-                classId: classId || null,
-                schoolId,
-                day: slot?.day || '',
-                startTime: slot?.startTime || '',
-                endTime: slot?.endTime || '',
-                updatedAt: serverTimestamp()
-            };
+            const entryId = editingEntry ? editingEntry.id : `${schoolId}-${classId}-${form.timeSlotId}`;
+            const ref = doc(firestore, 'timetables', entryId);
 
-            if (editingEntry) {
-                updateDocumentNonBlocking(doc(firestore, 'timetables', editingEntry.id), data);
-                toast({ title: "Assignment Updated" });
-            } else {
-                await addDoc(collection(firestore, 'timetables'), {
-                    ...data,
-                    createdAt: serverTimestamp()
-                });
-                toast({ title: "Entry Added", description: "The lesson has been assigned to the timetable." });
-            }
+            const selectedSubject = subjects.find(s => s.id === form.subjectId);
+            const selectedTeacher = teachers.find(t => t.uid === form.teacherId);
+            const selectedRoom = rooms.find(r => r.id === form.roomId);
+
+            await setDoc(ref, {
+                id: entryId,
+                schoolId,
+                classId,
+                timeSlotId: form.timeSlotId,
+                subjectId: form.subjectId,
+                subjectName: selectedSubject?.name || '',
+                teacherId: form.teacherId,
+                teacherName: `${selectedTeacher?.firstName || ''} ${selectedTeacher?.lastName || ''}`.trim() || 'Teacher',
+                roomId: form.roomId || '',
+                roomName: selectedRoom?.name || '',
+                updatedAt: serverTimestamp(),
+            }, { merge: true });
+
+            toast({ title: editingEntry ? "Lesson Updated" : "Lesson Assigned", description: "Timetable has been updated." });
             onSuccess();
             setOpen(false);
         } catch (e: any) {
@@ -158,48 +229,62 @@ function LessonAssignmentDialog({
                     <DialogDescription>Assign a subject, teacher, and room to a specific time slot.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                        <Label>Time Slot</Label>
-                        <Select onValueChange={(v) => setForm({...form, timeSlotId: v})} value={form.timeSlotId} disabled={!!editingEntry}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Slot..." /></SelectTrigger>
-                            <SelectContent>
-                                {lessonTimeSlots.sort((a,b) => {
-                                    const dayMap: any = { 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5 };
-                                    if (dayMap[a.day] !== dayMap[b.day]) return dayMap[a.day] - dayMap[b.day];
-                                    return a.startTime.localeCompare(b.startTime);
-                                }).map(ts => (
-                                    <SelectItem key={ts.id} value={ts.id}>{ts.day} @ {ts.startTime}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Subject</Label>
-                        <Select onValueChange={(v) => setForm({...form, subjectId: v})} value={form.subjectId}>
-                            <SelectTrigger><SelectValue placeholder="Select Subject..." /></SelectTrigger>
-                            <SelectContent>
-                                {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Teacher</Label>
-                        <Select onValueChange={(v) => setForm({...form, teacherId: v})} value={form.teacherId}>
-                            <SelectTrigger><SelectValue placeholder="Select Teacher..." /></SelectTrigger>
-                            <SelectContent>
-                                {teachers.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Room</Label>
-                        <Select onValueChange={(v) => setForm({...form, roomId: v})} value={form.roomId}>
-                            <SelectTrigger><SelectValue placeholder="Select Room..." /></SelectTrigger>
-                            <SelectContent>
-                                {rooms.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <SearchableSelect
+                        label="Time Slot"
+                        placeholder="Select Slot..."
+                        searchPlaceholder="Search slot by day or time..."
+                        value={form.timeSlotId}
+                        onChange={(v) => setForm({...form, timeSlotId: v})}
+                        disabled={!!editingEntry}
+                        options={lessonTimeSlots.sort((a,b) => {
+                            const dayMap: any = { 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5 };
+                            if (dayMap[a.day] !== dayMap[b.day]) return dayMap[a.day] - dayMap[b.day];
+                            return a.startTime.localeCompare(b.startTime);
+                        }).map(ts => ({
+                            id: ts.id,
+                            label: `${ts.day} @ ${ts.startTime} - ${ts.endTime}`,
+                            searchValue: `${ts.day} ${ts.startTime} ${ts.endTime}`
+                        }))}
+                    />
+
+                    <SearchableSelect
+                        label="Subject"
+                        placeholder="Select Subject..."
+                        searchPlaceholder="Search subject by name..."
+                        value={form.subjectId}
+                        onChange={(v) => setForm({...form, subjectId: v})}
+                        options={subjects.map(s => ({
+                            id: s.id,
+                            label: s.name,
+                            searchValue: s.name
+                        }))}
+                    />
+
+                    <SearchableSelect
+                        label="Teacher"
+                        placeholder="Select Teacher..."
+                        searchPlaceholder="Search teacher by name..."
+                        value={form.teacherId}
+                        onChange={(v) => setForm({...form, teacherId: v})}
+                        options={teachers.map(t => ({
+                            id: t.uid,
+                            label: `${t.firstName || ''} ${t.lastName || ''}`.trim() || t.email || 'Teacher',
+                            searchValue: `${t.firstName || ''} ${t.lastName || ''} ${t.email || ''}`
+                        }))}
+                    />
+
+                    <SearchableSelect
+                        label="Room"
+                        placeholder="Select Room..."
+                        searchPlaceholder="Search room by name..."
+                        value={form.roomId}
+                        onChange={(v) => setForm({...form, roomId: v})}
+                        options={rooms.map(r => ({
+                            id: r.id,
+                            label: r.name,
+                            searchValue: r.name
+                        }))}
+                    />
                 </div>
                 <DialogFooter className="flex flex-col sm:flex-row gap-2">
                     {editingEntry && (
