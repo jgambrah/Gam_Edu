@@ -13211,13 +13211,11 @@ export default function DashboardClient() {
                      role === 'Teacher' ||
                      isReceptionist || isSecretary;
     if (!isNeeded) return null;
-    const dayStart = startOfDay(new Date());
-    const dayEnd = endOfDay(new Date());
+    const todayNormalized = startOfDay(new Date());
     return query(
       collection(firestore, 'attendance'), 
       where('schoolId', '==', schoolId),
-      where('date', '>=', Timestamp.fromDate(dayStart)),
-      where('date', '<=', Timestamp.fromDate(dayEnd))
+      where('date', '==', Timestamp.fromDate(todayNormalized))
     );
   }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab]);
   const { data: attendance } = useCollection(attendanceQuery);
