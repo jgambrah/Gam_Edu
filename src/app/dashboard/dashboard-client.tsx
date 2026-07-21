@@ -534,42 +534,8 @@ function AdminDashboard({
   }, [behavioralRecords, students]);
 
   const startOfToday = useMemo(() => {
-    const termStartStr = schoolData?.termStartDate;
-    const termEndStr = schoolData?.termEndDate;
-    const now = startOfDay(new Date());
-
-    if (termStartStr && termEndStr) {
-      const partsStart = termStartStr.split('-');
-      const partsEnd = termEndStr.split('-');
-      if (partsStart.length === 3 && partsEnd.length === 3) {
-        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
-        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
-        
-        if (now < termStart) {
-          return termStart;
-        } else if (now > termEnd) {
-          return termEnd;
-        }
-      }
-    } else if (termEndStr) {
-      const partsEnd = termEndStr.split('-');
-      if (partsEnd.length === 3) {
-        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
-        if (now > termEnd) {
-          return termEnd;
-        }
-      }
-    } else if (termStartStr) {
-      const partsStart = termStartStr.split('-');
-      if (partsStart.length === 3) {
-        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
-        if (now < termStart) {
-          return termStart;
-        }
-      }
-    }
-    return now;
-  }, [schoolData?.termStartDate, schoolData?.termEndDate]);
+    return startOfDay(new Date());
+  }, []);
 
   const todayStudentAbsences = useMemo(() => {
     if (!attendance || !students) return [];
