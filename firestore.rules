@@ -154,7 +154,7 @@ service cloud.firestore {
         allow create, update: if isSignedIn() && (
           isSuperAdmin() ||
           (isAdmin() && getUserSchoolId() == get(/databases/$(database)/documents/students/$(studentId)).data.schoolId) ||
-          (isTeacher() && getUserSchoolId() == request.resource.data.schoolId && !(request.resource.data.category in ['health', 'financial'])) ||
+          ((isTeacher() || isStaff()) && !(request.resource.data.category in ['health', 'financial'])) ||
           (getUserRole() in ['Nurse', 'Doctor', 'Warden', 'Boarding Staff'] && getUserSchoolId() == get(/databases/$(database)/documents/students/$(studentId)).data.schoolId && request.resource.data.category == 'health')
         );
         
@@ -237,6 +237,14 @@ service cloud.firestore {
     match /timeSlots/{timeSlotId} {
       allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
       allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+    }
+
+    match /routes/{routeId} {
+      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow write: if isSuperAdmin() || ((isAdmin() || isTransportStaff() || isStaff() || isTeacher()) && (
+        (request.resource != null && getUserSchoolId() == request.resource.data.schoolId) ||
+        (resource != null && getUserSchoolId() == resource.data.schoolId)
+      ));
     }
 
     match /school_calendar/{eventId} {
