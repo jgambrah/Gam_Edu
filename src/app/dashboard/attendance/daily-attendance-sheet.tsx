@@ -103,8 +103,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         if (!classes) return [];
         if (role?.toLowerCase() !== 'teacher') return classes;
         const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
-        return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
-    }, [classes, timetable, role, user?.uid]);
+        const assigned = classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
+        // If accessing a specific class or if assigned list is empty, return all school classes
+        return (propClassId || assigned.length === 0) ? classes : assigned;
+    }, [classes, timetable, role, user?.uid, propClassId]);
 
     const form = useForm<AttendanceFormData>({
         resolver: zodResolver(attendanceFormSchema),
@@ -183,7 +185,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     useEffect(() => {
         if (selectedClassId && !isLoadingClasses) {
             if (role?.toLowerCase() === 'teacher') {
-                const isAuthorized = visibleClasses.some((c: any) => c.id === selectedClassId);
+                const isAuthorized = propClassId ? true : visibleClasses.some((c: any) => c.id === selectedClassId);
                 if (!isAuthorized) {
                     toast({
                         variant: 'destructive',
