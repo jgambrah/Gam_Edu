@@ -254,7 +254,10 @@ service cloud.firestore {
         ))
       );
       allow list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
-      allow write: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin() || isDirector()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow write: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin() || isDirector()) && (
+        (request.resource != null && getUserSchoolId() == request.resource.data.schoolId) ||
+        (resource != null && getUserSchoolId() == resource.data.schoolId)
+      ));
     }
 
     match /staff_attendance/{attendanceId} {
@@ -378,15 +381,15 @@ service cloud.firestore {
       allow get: if isSignedIn() && (
         isSuperAdmin() ||
         (getUserSchoolId() == resource.data.schoolId && (
-          isFinanceStaff() || isAdmin() || isTeacher() ||
+          isFinanceStaff() || isAdmin() || isTeacher() || isStaff() ||
           resource.data.studentId == request.auth.uid ||
           parentOwnsStudent(resource.data.studentId)
         ))
       );
       allow list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
-      allow create: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow update: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher()) && getUserSchoolId() == resource.data.schoolId && getUserSchoolId() == request.resource.data.schoolId);
-      allow delete: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher()) && getUserSchoolId() == resource.data.schoolId);
+      allow create: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher() || isStaff()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow update: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher() || isStaff()) && getUserSchoolId() == resource.data.schoolId && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || ((isFinanceStaff() || isAdmin() || isTeacher() || isStaff()) && (resource == null || getUserSchoolId() == resource.data.schoolId));
       match /payments/{paymentId} {
         allow read: if isSuperAdmin() || 
           get(/databases/$(database)/documents/financialRecords/$(recordId)).data.schoolId == getUserSchoolId();
