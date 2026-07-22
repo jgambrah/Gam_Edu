@@ -55,8 +55,8 @@ export function BehavioralRecordForm() {
   const sortedStudents = useMemo(() => {
     if (!students) return [];
     return [...students].sort((a, b) => {
-      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
-      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      const nameA = `${a.firstName || ''} ${a.lastName || ''}`.trim().toLowerCase();
+      const nameB = `${b.firstName || ''} ${b.lastName || ''}`.trim().toLowerCase();
       return nameA.localeCompare(nameB);
     });
   }, [students]);

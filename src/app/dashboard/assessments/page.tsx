@@ -139,26 +139,34 @@ export default function AssessmentsPage() {
     // Filtered Assessments List
     const filteredAssessments = useMemo(() => {
         if (!assessments) return [];
+        const search = (assessmentSearch || '').toLowerCase();
         return assessments.filter(item => {
-            const studentName = studentMap.get(item.studentId) || item.studentId;
-            const matchesSearch = assessmentSearch === '' ||
-                studentName.toLowerCase().includes(assessmentSearch.toLowerCase()) ||
-                item.assessmentName.toLowerCase().includes(assessmentSearch.toLowerCase()) ||
-                item.assessmentType.toLowerCase().includes(assessmentSearch.toLowerCase());
-            return matchesSearch;
+            if (!item) return false;
+            const studentName = String(studentMap.get(item.studentId) || item.studentId || '');
+            const assessmentName = String(item.assessmentName || '');
+            const assessmentType = String(item.assessmentType || '');
+
+            return search === '' ||
+                studentName.toLowerCase().includes(search) ||
+                assessmentName.toLowerCase().includes(search) ||
+                assessmentType.toLowerCase().includes(search);
         });
     }, [assessments, assessmentSearch, studentMap]);
 
     // Filtered Behavior Records List
     const filteredBehavior = useMemo(() => {
         if (!records) return [];
+        const search = (behaviorSearch || '').toLowerCase();
         return records.filter(item => {
-            const studentName = item.studentName || studentMap.get(item.studentId) || item.studentId;
-            const matchesSearch = behaviorSearch === '' ||
-                studentName.toLowerCase().includes(behaviorSearch.toLowerCase()) ||
-                item.incidentType.toLowerCase().includes(behaviorSearch.toLowerCase()) ||
-                item.description.toLowerCase().includes(behaviorSearch.toLowerCase());
-            return matchesSearch;
+            if (!item) return false;
+            const studentName = String(item.studentName || studentMap.get(item.studentId) || item.studentId || '');
+            const incidentType = String(item.incidentType || '');
+            const description = String(item.description || '');
+
+            return search === '' ||
+                studentName.toLowerCase().includes(search) ||
+                incidentType.toLowerCase().includes(search) ||
+                description.toLowerCase().includes(search);
         });
     }, [records, behaviorSearch, studentMap]);
 
