@@ -13158,11 +13158,11 @@ export default function DashboardClient() {
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
   // Director gets financial KPIs from summary doc but needs raw records for detail tabs. Accountant and Director fetch raw records (Admin doesn't need them on the dashboard anymore).
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(300)) : null, [firestore, schoolId, isAccountant, role]);
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
   // collectionGroup scan restored for Director for detail tabs.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(200)) : null, [firestore, schoolId, isAccountant, role]);
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && (isAccountant || role === 'Director')) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isAccountant, role]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
