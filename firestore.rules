@@ -318,7 +318,7 @@ service cloud.firestore {
     }
 
     match /assessments/{assessmentId} {
-      allow read: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow create, update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
       allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId);
     }
@@ -335,12 +335,7 @@ service cloud.firestore {
     }
 
     match /behavioral_records/{recordId} {
-      allow get: if isSignedIn() && (isSuperAdmin() || (getUserSchoolId() == resource.data.schoolId && (
-        resource.data.studentId == request.auth.uid ||
-        isTeacher() || isStaff() || isAdmin() || isDirector() ||
-        parentOwnsStudent(resource.data.studentId)
-      )));
-      allow list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow create, update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
       allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId);
     }
