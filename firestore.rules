@@ -214,8 +214,18 @@ service cloud.firestore {
     }
 
     match /subjects/{subjectId}/assessments/{assessmentId} {
-        allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+        allow read, list: if isSignedIn();
         allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+    }
+
+    match /assessments/{assessmentId} {
+        allow read, list: if isSignedIn();
+        allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+    }
+
+    match /{path=**}/assessments/{assessmentId} {
+        allow read, list: if isSignedIn();
+        allow write: if isSuperAdmin() || isAdmin() || isTeacher();
     }
 
     match /timetables/{timetableId} {
