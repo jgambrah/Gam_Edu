@@ -223,14 +223,35 @@ export default function SchoolProfilePage() {
         setEnableTransflow(profile.enableTransflow === true);
         setShopTillMode(profile.shopTillMode || 'cashier');
         
+        const parseSafeLocalDate = (val: any): Date | undefined => {
+            if (!val) return undefined;
+            if (typeof val === 'string') {
+                const parts = val.split('-');
+                if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1;
+                    const d = parseInt(parts[2], 10);
+                    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                        return new Date(y, m, d, 12, 0, 0);
+                    }
+                }
+                return parseISO(val);
+            }
+            if (typeof val.toDate === 'function') {
+                const d = val.toDate();
+                return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
+            }
+            return undefined;
+        };
+
         if (profile.termStartDate) {
-            setTermStartDate(typeof profile.termStartDate === 'string' ? parseISO(profile.termStartDate) : profile.termStartDate.toDate());
+            setTermStartDate(parseSafeLocalDate(profile.termStartDate));
         }
         if (profile.termEndDate) {
-            setTermEndDate(typeof profile.termEndDate === 'string' ? parseISO(profile.termEndDate) : profile.termEndDate.toDate());
+            setTermEndDate(parseSafeLocalDate(profile.termEndDate));
         }
         if (profile.nextTermDate) {
-            setNextTermDate(typeof profile.nextTermDate === 'string' ? parseISO(profile.nextTermDate) : profile.nextTermDate.toDate());
+            setNextTermDate(parseSafeLocalDate(profile.nextTermDate));
         }
         setReportCardPositionMode(profile.reportCardPositionMode || 'both');
         setGradingSystem(profile.gradingSystem || DEFAULT_GRADING_SYSTEM);
