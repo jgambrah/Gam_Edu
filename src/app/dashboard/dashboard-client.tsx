@@ -13170,6 +13170,7 @@ export default function DashboardClient() {
 
   // Director gets attendance from summary (today's snapshot) and only needs raw logs when active tab is attendance.
   // Administrator is restricted to overview/attendance tabs.
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
   const attendanceQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     const isNeeded = (role === 'Director' && (directorActiveTab === 'overview' || directorActiveTab === 'attendance')) || 
@@ -13183,7 +13184,7 @@ export default function DashboardClient() {
       where('schoolId', '==', schoolId),
       where('date', '==', Timestamp.fromDate(todayNormalized))
     );
-  }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab]);
+  }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab, todayStr]);
   const { data: attendance } = useCollection(attendanceQuery);
 
   const routesQuery = useMemoFirebase(() => (firestore && schoolId && isTransportStaff) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isTransportStaff]);
