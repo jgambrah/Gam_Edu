@@ -407,7 +407,7 @@ function MaterialForm({
                     <Button 
                       type="button" 
                       onClick={handleAskAIQuiz} 
-                      disabled={isGeneratingQuiz || !topicTitle}
+                      disabled={isGeneratingQuiz}
                       className="bg-violet-600 hover:bg-violet-500 text-white rounded-full font-bold text-xs px-4 py-2 flex items-center gap-1.5 shadow-md shadow-violet-500/20 active:scale-95 transition-all shrink-0"
                     >
                       {isGeneratingQuiz ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 fill-current" />}
