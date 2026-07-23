@@ -268,12 +268,31 @@ export default function GradebookPage() {
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
-        if (typeof num === 'number' && num > maxScore) return; 
         setScores(prev => ({ ...prev, [studentId]: num }));
     };
 
     const handleSaveBatch = async () => {
         if (!firestore || !user || !schoolId || !classId || !subjectId) return;
+
+        // Validate maxScore
+        const parsedMaxScore = Number(maxScore);
+        if (isNaN(parsedMaxScore) || parsedMaxScore <= 0) {
+            toast({ variant: 'destructive', title: "Invalid Max Score", description: "Please enter a valid Maximum Score greater than 0." });
+            return;
+        }
+
+        // Validate that no student score exceeds maxScore
+        const invalidEntry = Object.entries(scores).find(([_, score]) => score !== '' && score !== null && !isNaN(Number(score)) && Number(score) > parsedMaxScore);
+        if (invalidEntry) {
+            const invalidStudent = students?.find(s => s.uid === invalidEntry[0]);
+            const studentName = invalidStudent ? `${invalidStudent.firstName} ${invalidStudent.lastName}`.trim() : 'A student';
+            toast({ 
+                variant: 'destructive', 
+                title: "Score Exceeds Maximum", 
+                description: `${studentName}'s score (${invalidEntry[1]}) exceeds the Maximum Score (${parsedMaxScore}). Please correct it before saving.` 
+            });
+            return;
+        }
 
         setIsSaving(true);
         try {

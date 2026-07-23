@@ -277,9 +277,21 @@ export default function GradebookPage() {
         if (!firestore || !user || !schoolId || !classId || !subjectId) return;
 
         // Validation for values exceeding max score
-        const invalidEntry = Object.entries(scores).find(([_, score]) => score !== '' && Number(score) > maxScore);
+        const parsedMaxScore = Number(maxScore);
+        if (isNaN(parsedMaxScore) || parsedMaxScore <= 0) {
+            toast({ variant: 'destructive', title: "Invalid Max Score", description: "Please enter a valid Maximum Score greater than 0." });
+            return;
+        }
+
+        const invalidEntry = Object.entries(scores).find(([_, score]) => score !== '' && score !== null && !isNaN(Number(score)) && Number(score) > parsedMaxScore);
         if (invalidEntry) {
-            toast({ variant: 'destructive', title: "Validation Error", description: "One or more student scores exceed the set Max Score." });
+            const invalidStudent = students?.find(s => s.uid === invalidEntry[0]);
+            const studentName = invalidStudent ? `${invalidStudent.firstName} ${invalidStudent.lastName}`.trim() : 'A student';
+            toast({ 
+                variant: 'destructive', 
+                title: "Score Exceeds Maximum", 
+                description: `${studentName}'s score (${invalidEntry[1]}) exceeds the Maximum Score (${parsedMaxScore}). Please correct it before saving.` 
+            });
             return;
         }
 
