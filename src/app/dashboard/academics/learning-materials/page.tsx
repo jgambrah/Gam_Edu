@@ -399,20 +399,32 @@ function MaterialForm({
 
                 {/* 3. Quiz Editor Tab */}
                 <TabsContent value="quiz" className="space-y-4 m-0 focus:outline-none">
-                  <div className="flex justify-between items-center bg-violet-50/50 border border-violet-100 p-3.5 rounded-xl dark:bg-violet-950/10 dark:border-violet-900/30">
-                    <div className="space-y-0.5">
-                      <h4 className="text-xs font-extrabold text-violet-800 dark:text-violet-400">AI Practice Quiz Generator</h4>
-                      <p className="text-[10px] text-slate-500">Auto-create 5 pedagogical questions based on your topic title.</p>
+                  <div className="bg-violet-50/50 border border-violet-100 p-4 rounded-xl dark:bg-violet-950/10 dark:border-violet-900/30 space-y-3">
+                    <div className="flex justify-between items-center gap-2">
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-extrabold text-violet-800 dark:text-violet-400">AI Practice Quiz Generator</h4>
+                        <p className="text-[10px] text-slate-500">Auto-create 5 pedagogical questions based on your topic title.</p>
+                      </div>
+                      <Button 
+                        type="button" 
+                        onClick={handleAskAIQuiz} 
+                        disabled={isGeneratingQuiz}
+                        className="bg-violet-600 hover:bg-violet-500 text-white rounded-full font-bold text-xs px-4 py-2 flex items-center gap-1.5 shadow-md shadow-violet-500/20 active:scale-95 transition-all shrink-0"
+                      >
+                        {isGeneratingQuiz ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 fill-current" />}
+                        Generate AI Questions (-3 Credits)
+                      </Button>
                     </div>
-                    <Button 
-                      type="button" 
-                      onClick={handleAskAIQuiz} 
-                      disabled={isGeneratingQuiz}
-                      className="bg-violet-600 hover:bg-violet-500 text-white rounded-full font-bold text-xs px-4 py-2 flex items-center gap-1.5 shadow-md shadow-violet-500/20 active:scale-95 transition-all shrink-0"
-                    >
-                      {isGeneratingQuiz ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 fill-current" />}
-                      Generate AI Questions (-3 Credits)
-                    </Button>
+
+                    <div className="space-y-1 pt-1 border-t border-violet-100 dark:border-violet-900/40">
+                      <Label className="text-[11px] font-extrabold text-violet-900 dark:text-violet-300 uppercase tracking-wider">Quiz Topic Title *</Label>
+                      <Input 
+                        value={topicTitle}
+                        onChange={e => setTopicTitle(e.target.value)}
+                        placeholder="e.g. Photosynthesis & Plant Cells"
+                        className="bg-white dark:bg-slate-900 border-violet-200 focus:border-violet-500 rounded-lg text-xs h-9"
+                      />
+                    </div>
                   </div>
 
                   {/* Practice Questions List */}
