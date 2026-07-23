@@ -859,9 +859,11 @@ export default function SchoolProfilePage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Active Academic Year</Label>
-                                    <Select value={academicYear} onValueChange={setAcademicYear}>
-                                        <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
-                                            <SelectValue placeholder="Select Academic Year..." />
+                                    <Select key={`year-select-${academicYear}`} value={academicYear} onValueChange={setAcademicYear}>
+                                        <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold text-slate-900">
+                                            <SelectValue placeholder="Select Academic Year...">
+                                                {academicYear}
+                                            </SelectValue>
                                         </SelectTrigger>
                                         <SelectContent>
                                             {MOCK_ACADEMIC_YEARS.map(y => (
@@ -872,9 +874,11 @@ export default function SchoolProfilePage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Active Term</Label>
-                                    <Select value={term} onValueChange={setTerm}>
-                                        <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
-                                            <SelectValue placeholder="Select Active Term..." />
+                                    <Select key={`term-select-${term}`} value={term} onValueChange={setTerm}>
+                                        <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold text-slate-900">
+                                            <SelectValue placeholder="Select Active Term...">
+                                                {term}
+                                            </SelectValue>
                                         </SelectTrigger>
                                         <SelectContent>
                                             {MOCK_TERMS.map(t => (
