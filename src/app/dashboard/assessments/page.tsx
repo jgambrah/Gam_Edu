@@ -118,7 +118,17 @@ export default function AssessmentsPage() {
     );
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-    // 4. Fetch students roster
+    // 4. Fetch subjects
+    const subjectsQuery = useMemoFirebase(() => 
+      (firestore && schoolId && isStaffRole) ? query(
+          collection(firestore, 'subjects'), 
+          where('schoolId', '==', schoolId)
+      ) : null, 
+      [firestore, schoolId, isStaffRole]
+    );
+    const { data: subjects, isLoading: isLoadingSubjects } = useCollection<any>(subjectsQuery);
+
+    // 5. Fetch students roster
     const studentsQuery = useMemoFirebase(
         () => (firestore && schoolId && isStaffRole) ? query(
             collection(firestore, 'students'),
@@ -129,12 +139,27 @@ export default function AssessmentsPage() {
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
     
     const studentMap = useMemo(() => {
-        if (!students) return new Map();
+        if (!students) return new Map<string, string>();
         return new Map(students.map(s => [s.uid, `${s.firstName} ${s.lastName}`]));
     }, [students]);
 
+    const classMap = useMemo(() => {
+        if (!classes) return new Map<string, string>();
+        return new Map(classes.map(c => [c.id, c.name]));
+    }, [classes]);
+
+    const subjectMap = useMemo(() => {
+        if (!subjects) return new Map<string, string>();
+        return new Map(subjects.map(sub => [sub.id, sub.name]));
+    }, [subjects]);
+
+    const studentClassMap = useMemo(() => {
+        if (!students || !classMap) return new Map<string, string>();
+        return new Map(students.map(s => [s.uid, classMap.get(s.classId) || '']));
+    }, [students, classMap]);
+
     // Active loading status
-    const isLogsLoading = isLoadingAssessments || isLoadingRecords || isLoadingStudents || isLoadingClasses;
+    const isLogsLoading = isLoadingAssessments || isLoadingRecords || isLoadingStudents || isLoadingClasses || isLoadingSubjects;
 
     // Filtered Assessments List
     const filteredAssessments = useMemo(() => {
@@ -143,15 +168,19 @@ export default function AssessmentsPage() {
         return assessments.filter(item => {
             if (!item) return false;
             const studentName = String(studentMap.get(item.studentId) || item.studentId || '');
+            const className = String((item as any).className || classMap.get(item.classId) || studentClassMap.get(item.studentId) || '');
+            const subjectName = String((item as any).subjectName || (item as any).subject || subjectMap.get(item.subjectId) || '');
             const assessmentName = String(item.assessmentName || '');
             const assessmentType = String(item.assessmentType || '');
 
             return search === '' ||
                 studentName.toLowerCase().includes(search) ||
+                className.toLowerCase().includes(search) ||
+                subjectName.toLowerCase().includes(search) ||
                 assessmentName.toLowerCase().includes(search) ||
                 assessmentType.toLowerCase().includes(search);
         });
-    }, [assessments, assessmentSearch, studentMap]);
+    }, [assessments, assessmentSearch, studentMap, classMap, subjectMap, studentClassMap]);
 
     // Filtered Behavior Records List
     const filteredBehavior = useMemo(() => {
@@ -362,94 +391,111 @@ export default function AssessmentsPage() {
               </div>
             </div>
 
-            {/* Logs Navigation Tabs */}
+            {/* Main Tabs Container */}
             <Card className="border-slate-200/80 shadow-sm dark:border-slate-800 bg-white dark:bg-slate-950">
               <Tabs defaultValue="assessments" className="w-full p-6">
                 <TabsList className="grid w-full max-w-[400px] grid-cols-2 bg-slate-100/80 dark:bg-slate-900 rounded-xl p-1 mb-6">
                   <TabsTrigger value="assessments" className="rounded-lg font-bold text-xs md:text-sm py-2">
-                    <Calculator className="h-4 w-4 mr-1.5" /> Gradebook Log
+                    <Calculator className="h-4 w-4 mr-1.5" /> Gradebook Log ({filteredAssessments.length})
                   </TabsTrigger>
                   <TabsTrigger value="behavior" className="rounded-lg font-bold text-xs md:text-sm py-2">
-                    <UserCog className="h-4 w-4 mr-1.5" /> Behavioral Log
+                    <UserCog className="h-4 w-4 mr-1.5" /> Behavioral Log ({filteredBehavior.length})
                   </TabsTrigger>
                 </TabsList>
 
-                {/* TAB 1: Assessment Logs */}
-                <TabsContent value="assessments" className="space-y-4 focus:outline-none">
-                  <div className="flex items-center gap-3 max-w-md">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                      <Input 
-                        placeholder="Search student or assessment..."
-                        value={assessmentSearch}
-                        onChange={(e) => setAssessmentSearch(e.target.value)}
-                        className="pl-9 border-slate-200 focus:border-purple-500 rounded-xl"
-                      />
-                    </div>
-                  </div>
+                    {/* TAB 1: Assessments Log */}
+                    <TabsContent value="assessments" className="space-y-4 focus:outline-none">
+                        <div className="flex items-center gap-3 max-w-md">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input 
+                                    placeholder="Search student, class, subject, or assessment..."
+                                    value={assessmentSearch}
+                                    onChange={(e) => setAssessmentSearch(e.target.value)}
+                                    className="pl-9 border-slate-200 focus:border-purple-500 rounded-xl"
+                                />
+                            </div>
+                        </div>
 
-                  <div className="border rounded-2xl overflow-hidden shadow-sm">
-                    <Table>
-                      <TableHeader className="bg-slate-50 dark:bg-slate-900">
-                        <TableRow>
-                          <TableHead className="font-extrabold">Date</TableHead>
-                          <TableHead className="font-extrabold">Student</TableHead>
-                          <TableHead className="font-extrabold">Assessment Name</TableHead>
-                          <TableHead className="font-extrabold">Category</TableHead>
-                          <TableHead className="font-extrabold text-right">Score</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {isLogsLoading ? Array.from({ length: 3 }).map((_, i) => (
-                          <TableRow key={`skl-assess-${i}`}>
-                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
-                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                            <TableCell className="text-right"><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
-                          </TableRow>
-                        )) : filteredAssessments.length === 0 ? (
-                          <TableRow>
-                            <TableCell colSpan={5} className="text-center py-12 text-slate-400 italic text-xs">
-                              <Calculator className="h-8 w-8 mx-auto text-slate-300 mb-2" />
-                              No assessment log entries found matching criteria.
-                            </TableCell>
-                          </TableRow>
-                        ) : filteredAssessments.map((item) => {
-                          const assessmentDate = toDateSafe(item.assessmentDate);
-                          const percentage = item.score !== undefined && item.maxScore ? (item.score / item.maxScore) * 100 : 0;
-                          
-                          // Score highlighting logic
-                          let scoreColor = "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200";
-                          if (percentage >= 80) scoreColor = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200";
-                          else if (percentage >= 50) scoreColor = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200";
-                          
-                          return (
-                            <TableRow key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors">
-                              <TableCell className="text-xs font-semibold text-slate-600 dark:text-slate-400">{format(assessmentDate, 'PPP')}</TableCell>
-                              <TableCell className="font-bold text-slate-800 dark:text-slate-200">{studentMap.get(item.studentId) || item.studentId}</TableCell>
-                              <TableCell className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.assessmentName}</TableCell>
-                              <TableCell>
-                                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider bg-slate-50 text-slate-600 dark:bg-slate-900 border-slate-200">
-                                  {item.assessmentType}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {item.score !== undefined && item.maxScore !== undefined ? (
-                                  <Badge className={cn("font-mono text-xs font-bold px-2 py-0.5 border shadow-sm", scoreColor)}>
-                                    {item.score}/{item.maxScore}
-                                  </Badge>
-                                ) : (
-                                  <span className="text-slate-400 italic text-xs">N/A</span>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </TabsContent>
+                        <div className="border rounded-2xl overflow-hidden shadow-sm">
+                            <Table>
+                                <TableHeader className="bg-slate-50 dark:bg-slate-900">
+                                    <TableRow>
+                                        <TableHead className="font-extrabold">Date</TableHead>
+                                        <TableHead className="font-extrabold">Student</TableHead>
+                                        <TableHead className="font-extrabold">Class</TableHead>
+                                        <TableHead className="font-extrabold">Subject</TableHead>
+                                        <TableHead className="font-extrabold">Assessment Name</TableHead>
+                                        <TableHead className="font-extrabold">Category</TableHead>
+                                        <TableHead className="font-extrabold text-right">Score</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {isLogsLoading ? Array.from({ length: 3 }).map((_, i) => (
+                                        <TableRow key={`skl-assess-${i}`}>
+                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                                            <TableCell className="text-right"><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
+                                        </TableRow>
+                                    )) : filteredAssessments.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={7} className="text-center py-12 text-slate-400 italic text-xs">
+                                                <Calculator className="h-8 w-8 mx-auto text-slate-300 mb-2" />
+                                                No assessment log entries found matching criteria.
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : filteredAssessments.map((item) => {
+                                        const assessmentDate = toDateSafe(item.assessmentDate);
+                                        const studentName = studentMap.get(item.studentId) || item.studentId;
+                                        const className = (item as any).className || classMap.get(item.classId) || studentClassMap.get(item.studentId) || '—';
+                                        const subjectName = (item as any).subjectName || (item as any).subject || subjectMap.get(item.subjectId) || '—';
+                                        const percentage = item.score !== undefined && item.maxScore ? (item.score / item.maxScore) * 100 : 0;
+                                        
+                                        // Score highlighting logic
+                                        let scoreColor = "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200";
+                                        if (percentage >= 80) scoreColor = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200";
+                                        else if (percentage >= 50) scoreColor = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200";
+                                        
+                                        return (
+                                            <TableRow key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors">
+                                                <TableCell className="text-xs font-semibold text-slate-600 dark:text-slate-400">{format(assessmentDate, 'PPP')}</TableCell>
+                                                <TableCell className="font-bold text-slate-800 dark:text-slate-200">{studentName}</TableCell>
+                                                <TableCell className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                                    <Badge variant="outline" className="bg-slate-50 text-slate-700 dark:bg-slate-900 border-slate-200">
+                                                        {className}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                                    <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-200/60 font-bold">
+                                                        {subjectName}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.assessmentName}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider bg-slate-50 text-slate-600 dark:bg-slate-900 border-slate-200">
+                                                        {item.assessmentType}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {item.score !== undefined && item.maxScore !== undefined ? (
+                                                        <Badge className={cn("font-mono text-xs font-bold px-2 py-0.5 border shadow-sm", scoreColor)}>
+                                                            {item.score}/{item.maxScore}
+                                                        </Badge>
+                                                    ) : (
+                                                        <span className="text-slate-400 italic text-xs">N/A</span>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </TabsContent>
 
                 {/* TAB 2: Behavioral Incident Logs */}
                 <TabsContent value="behavior" className="space-y-4 focus:outline-none">
