@@ -59,20 +59,18 @@ export default function AssessmentsPage() {
 
     // Filter contexts
     const [selectedClassId, setSelectedClassId] = useState<string>('');
-    const [academicYear, setAcademicYear] = useState<string>('2024-2025');
-    const [term, setTerm] = useState<string>('First Term');
+    const [academicYear, setAcademicYear] = useState<string>('2025-2026');
+    const [term, setTerm] = useState<string>('Third Term');
 
     const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
 
     useEffect(() => {
         if (schoolSettings) {
-            if (schoolSettings.academicYear) {
-                setAcademicYear(schoolSettings.academicYear);
-            }
-            if (schoolSettings.term) {
-                setTerm(schoolSettings.term);
-            }
+            const savedYear = schoolSettings.academicYear || schoolSettings.activeAcademicYear;
+            const savedTerm = schoolSettings.term || schoolSettings.activeTerm || schoolSettings.currentTerm;
+            if (savedYear) setAcademicYear(savedYear);
+            if (savedTerm) setTerm(savedTerm);
         }
     }, [schoolSettings]);
 

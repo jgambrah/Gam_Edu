@@ -164,12 +164,10 @@ export default function ReportCardManager() {
 
     useEffect(() => {
         if (schoolProfile) {
-            if (schoolProfile.academicYear) {
-                setAcademicYear(schoolProfile.academicYear);
-            }
-            if (schoolProfile.term) {
-                setTerm(schoolProfile.term);
-            }
+            const savedYear = schoolProfile.academicYear || schoolProfile.activeAcademicYear;
+            const savedTerm = schoolProfile.term || schoolProfile.activeTerm || schoolProfile.currentTerm;
+            if (savedYear) setAcademicYear(savedYear);
+            if (savedTerm) setTerm(savedTerm);
         }
     }, [schoolProfile]);
 

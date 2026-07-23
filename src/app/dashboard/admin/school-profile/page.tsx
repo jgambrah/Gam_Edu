@@ -256,8 +256,10 @@ export default function SchoolProfilePage() {
         setReportCardPositionMode(profile.reportCardPositionMode || 'both');
         setGradingSystem(profile.gradingSystem || DEFAULT_GRADING_SYSTEM);
         setCustomCostCenters(profile.customCostCenters || []);
-        setAcademicYear(profile.academicYear || '2024-2025');
-        setTerm(profile.term || 'First Term');
+        const savedYear = profile.academicYear || profile.activeAcademicYear || '2025-2026';
+        const savedTerm = profile.term || profile.activeTerm || profile.currentTerm || 'Third Term';
+        setAcademicYear(savedYear);
+        setTerm(savedTerm);
     }
   }, [profile]);
 
@@ -335,6 +337,9 @@ export default function SchoolProfilePage() {
             nextTermDate: nextTermDate ? format(nextTermDate, 'yyyy-MM-dd') : null,
             academicYear,
             term,
+            activeTerm: term,
+            currentTerm: term,
+            activeAcademicYear: academicYear,
             allowAdminFinanceAccess,
             allowAdminBillingToggles,
             autoLockDebtors,
