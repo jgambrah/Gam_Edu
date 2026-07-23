@@ -254,12 +254,25 @@ export default function SchoolProfilePage() {
             setNextTermDate(parseSafeLocalDate(profile.nextTermDate));
         }
         setReportCardPositionMode(profile.reportCardPositionMode || 'both');
-        setGradingSystem(profile.gradingSystem || DEFAULT_GRADING_SYSTEM);
-        setCustomCostCenters(profile.customCostCenters || []);
-        const savedYear = profile.academicYear || profile.activeAcademicYear || '2025-2026';
-        const savedTerm = profile.term || profile.activeTerm || profile.currentTerm || 'Third Term';
-        setAcademicYear(savedYear);
-        setTerm(savedTerm);
+        const normalizeTermStr = (val: any): string => {
+            if (!val || typeof val !== 'string') return 'Third Term';
+            const clean = val.trim().toLowerCase();
+            if (clean.includes('1') || clean.includes('first')) return 'First Term';
+            if (clean.includes('2') || clean.includes('second')) return 'Second Term';
+            if (clean.includes('3') || clean.includes('third')) return 'Third Term';
+            return 'Third Term';
+        };
+
+        const normalizeYearStr = (val: any): string => {
+            if (!val || typeof val !== 'string') return '2025-2026';
+            return val.trim().replace('/', '-');
+        };
+
+        const rawYear = profile.academicYear || profile.activeAcademicYear || '2025-2026';
+        const rawTerm = profile.term || profile.activeTerm || profile.currentTerm || 'Third Term';
+
+        setAcademicYear(normalizeYearStr(rawYear));
+        setTerm(normalizeTermStr(rawTerm));
     }
   }, [profile]);
 
@@ -848,7 +861,7 @@ export default function SchoolProfilePage() {
                                     <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Active Academic Year</Label>
                                     <Select value={academicYear} onValueChange={setAcademicYear}>
                                         <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
-                                            <SelectValue />
+                                            <SelectValue placeholder="Select Academic Year..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {MOCK_ACADEMIC_YEARS.map(y => (
@@ -861,7 +874,7 @@ export default function SchoolProfilePage() {
                                     <Label className="font-black text-slate-700 text-[10px] uppercase tracking-widest">Active Term</Label>
                                     <Select value={term} onValueChange={setTerm}>
                                         <SelectTrigger className="bg-white border-2 h-12 rounded-xl font-bold">
-                                            <SelectValue />
+                                            <SelectValue placeholder="Select Active Term..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {MOCK_TERMS.map(t => (
