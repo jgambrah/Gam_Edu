@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History, Sparkles, CheckCircle2, AlertCircle, Edit3 } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { TimelineService } from '@/lib/timeline-service';
@@ -228,6 +228,45 @@ export default function GradebookPage() {
         });
         return groups;
     }, [rawAssessments]);
+
+    // Auto-populate existing scores and remarks when rawAssessments, assessmentType, or assessmentName changes
+    useEffect(() => {
+        if (!rawAssessments || rawAssessments.length === 0) {
+            setScores({});
+            setRemarks({});
+            return;
+        }
+
+        const targetName = assessmentName || assessmentType;
+        const matchingDocs = rawAssessments.filter((a: any) => 
+            (a.assessmentName || a.assessmentType) === targetName
+        );
+
+        if (matchingDocs.length > 0) {
+            const loadedScores: Record<string, number | ''> = {};
+            const loadedRemarks: Record<string, string> = {};
+            let loadedMax = maxScore;
+
+            matchingDocs.forEach((a: any) => {
+                if (a.studentId) {
+                    loadedScores[a.studentId] = a.score !== undefined && a.score !== null ? Number(a.score) : '';
+                    if (a.teacherRemark) {
+                        loadedRemarks[a.studentId] = a.teacherRemark;
+                    }
+                }
+                if (a.maxScore) {
+                    loadedMax = Number(a.maxScore);
+                }
+            });
+
+            setScores(loadedScores);
+            setRemarks(loadedRemarks);
+            if (loadedMax) setMaxScore(loadedMax);
+        } else {
+            setScores({});
+            setRemarks({});
+        }
+    }, [rawAssessments, assessmentType, assessmentName]);
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
@@ -641,7 +680,7 @@ export default function GradebookPage() {
                                 <CardTitle className="text-orange-900 flex items-center gap-2 font-black text-lg">
                                     <History className="h-5 w-5 text-orange-650"/> Existing Batches for Context
                                 </CardTitle>
-                                <CardDescription className="text-orange-950/40">These assessment scores have already been recorded. Use the delete button to clear records if needed.</CardDescription>
+                                <CardDescription className="text-orange-950/40">Select an existing entry below to edit individual student marks or delete the batch if needed.</CardDescription>
                             </CardHeader>
                             <CardContent className="p-6">
                                 {loadingAssessments ? (
@@ -661,32 +700,51 @@ export default function GradebookPage() {
                                                         Recorded by: {records[0]?.teacherId === user?.uid ? "You (Class Teacher)" : "Teaching Staff"}
                                                     </p>
                                                 </div>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button 
-                                                            variant="destructive" 
-                                                            size="sm" 
-                                                            disabled={isSaving}
-                                                            className="w-full rounded-xl font-bold bg-rose-500 hover:bg-rose-600 transition-colors shadow-sm text-xs h-9"
-                                                        >
-                                                            <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle className="font-black text-slate-800">Permanently Delete Batch?</AlertDialogTitle>
-                                                            <AlertDialogDescription className="text-slate-400 text-sm">
-                                                                This will erase all {records.length} recorded student marks for category <strong>{type}</strong>. This operational action is irreversible.
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter className="gap-2 mt-4">
-                                                            <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl">
-                                                                Confirm Delete
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
+                                                <div className="flex gap-2">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        disabled={isSaving}
+                                                        className="flex-1 rounded-xl font-bold border-blue-200 text-blue-700 bg-white hover:bg-blue-50 transition-colors shadow-sm text-xs h-9"
+                                                        onClick={() => {
+                                                            setAssessmentType(type);
+                                                            setAssessmentName(type);
+                                                            window.scrollTo({ top: 350, behavior: 'smooth' });
+                                                            toast({
+                                                                title: `Loaded ${type}`,
+                                                                description: "Modifications ready! Edit individual student scores above and click 'Save All Scores'."
+                                                            });
+                                                        }}
+                                                    >
+                                                        <Edit3 className="h-4 w-4 mr-1 text-blue-600" /> Edit Batch
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button 
+                                                                variant="destructive" 
+                                                                size="sm" 
+                                                                disabled={isSaving}
+                                                                className="flex-1 rounded-xl font-bold bg-rose-500 hover:bg-rose-600 transition-colors shadow-sm text-xs h-9"
+                                                            >
+                                                                <Trash2 className="h-4 w-4 mr-1" /> Delete
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle className="font-black text-slate-800">Permanently Delete Batch?</AlertDialogTitle>
+                                                                <AlertDialogDescription className="text-slate-400 text-sm">
+                                                                    This will erase all {records.length} recorded student marks for category <strong>{type}</strong>. This operational action is irreversible.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter className="gap-2 mt-4">
+                                                                <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl">
+                                                                    Confirm Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>

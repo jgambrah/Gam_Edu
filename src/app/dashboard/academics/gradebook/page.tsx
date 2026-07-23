@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, FileSpreadsheet, Trash2, History, Sparkles } from 'lucide-react';
+import { Loader2, Save, FileSpreadsheet, Trash2, History, Sparkles, Edit3 } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
@@ -226,6 +226,45 @@ export default function GradebookPage() {
         });
         return groups;
     }, [rawAssessments]);
+
+    // Auto-populate existing scores and remarks when rawAssessments, assessmentType, or assessmentName changes
+    useEffect(() => {
+        if (!rawAssessments || rawAssessments.length === 0) {
+            setScores({});
+            setRemarks({});
+            return;
+        }
+
+        const targetName = assessmentName || assessmentType;
+        const matchingDocs = rawAssessments.filter((a: any) => 
+            (a.assessmentName || a.assessmentType) === targetName
+        );
+
+        if (matchingDocs.length > 0) {
+            const loadedScores: Record<string, number | ''> = {};
+            const loadedRemarks: Record<string, string> = {};
+            let loadedMax = maxScore;
+
+            matchingDocs.forEach((a: any) => {
+                if (a.studentId) {
+                    loadedScores[a.studentId] = a.score !== undefined && a.score !== null ? Number(a.score) : '';
+                    if (a.teacherRemark) {
+                        loadedRemarks[a.studentId] = a.teacherRemark;
+                    }
+                }
+                if (a.maxScore) {
+                    loadedMax = Number(a.maxScore);
+                }
+            });
+
+            setScores(loadedScores);
+            setRemarks(loadedRemarks);
+            if (loadedMax) setMaxScore(loadedMax);
+        } else {
+            setScores({});
+            setRemarks({});
+        }
+    }, [rawAssessments, assessmentType, assessmentName]);
 
     const handleScoreChange = (studentId: string, val: string) => {
         const num = val === '' ? '' : Number(val);
@@ -528,7 +567,7 @@ export default function GradebookPage() {
                                 <CardTitle className="text-orange-800 flex items-center gap-2">
                                     <History className="h-5 w-5"/> Existing Entries for this Class
                                 </CardTitle>
-                                <CardDescription>If you made a mistake, delete the batch here and re-enter the scores above.</CardDescription>
+                                <CardDescription>Select an existing entry below to edit individual student marks or delete the batch.</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {loadingAssessments ? <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-orange-500"/></div> : (
@@ -543,32 +582,51 @@ export default function GradebookPage() {
                                                         {records.length} students graded.
                                                     </p>
                                                 </div>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button 
-                                                            variant="destructive" 
-                                                            size="sm" 
-                                                            disabled={isSaving}
-                                                            className="w-full rounded-xl"
-                                                        >
-                                                            <Trash2 className="h-4 w-4 mr-2" /> Delete Batch
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Delete Batch: {type}?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                This will permanently delete the scores for all {records.length} students in this category. This action cannot be undone.
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-red-600 hover:bg-red-700">
-                                                                Yes, Delete All
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
+                                                <div className="flex gap-2">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        disabled={isSaving}
+                                                        className="flex-1 rounded-xl border-blue-200 text-blue-700 bg-white hover:bg-blue-50 font-bold"
+                                                        onClick={() => {
+                                                            setAssessmentType(type);
+                                                            setAssessmentName(type);
+                                                            window.scrollTo({ top: 350, behavior: 'smooth' });
+                                                            toast({
+                                                                title: `Loaded ${type}`,
+                                                                description: "Modifications ready! Edit individual student scores above and click 'Save All Scores'."
+                                                            });
+                                                        }}
+                                                    >
+                                                        <Edit3 className="h-4 w-4 mr-1 text-blue-600" /> Edit Batch
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button 
+                                                                variant="destructive" 
+                                                                size="sm" 
+                                                                disabled={isSaving}
+                                                                className="flex-1 rounded-xl"
+                                                            >
+                                                                <Trash2 className="h-4 w-4 mr-1" /> Delete
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Delete Batch: {type}?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This will permanently delete the scores for all {records.length} students in this category. This action cannot be undone.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteBatch(type)} className="bg-red-600 hover:bg-red-700">
+                                                                    Yes, Delete All
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
