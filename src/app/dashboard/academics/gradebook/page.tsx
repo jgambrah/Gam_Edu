@@ -87,10 +87,10 @@ export default function GradebookPage() {
     const { data: classes, isLoading: isLoadingClasses } = useCollection<any>(classesQuery);
 
     const timetableQuery = useMemoFirebase(() => 
-      (firestore && schoolId && role === 'Teacher')
+      (firestore && schoolId)
         ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
         : null, 
-    [firestore, schoolId, role]);
+    [firestore, schoolId]);
     const { data: timetable } = useCollection<any>(timetableQuery);
 
     const visibleClasses = useMemo(() => {
@@ -122,22 +122,71 @@ export default function GradebookPage() {
 
     const visibleSubjects = useMemo(() => {
         if (!subjects) return [];
-        if (role !== 'Teacher') return subjects;
-        if (!classId) return [];
-        
-        const assignedSubjectIds = timetable?.filter((t: any) => t.teacherId === user?.uid && t.classId === classId).map((t: any) => t.subjectId) || [];
-        return subjects.filter((s: any) => assignedSubjectIds.includes(s.id));
-    }, [subjects, timetable, role, user?.uid, classId]);
+        if (!classId) return subjects;
 
-    // Subject selection auto-reset for teachers
+        const selectedClass = classes?.find((c: any) => c.id === classId);
+        const className = selectedClass?.name?.toLowerCase() || '';
+
+        // 1. Check timetables for this class
+        let classTimetable = timetable?.filter((t: any) => t.classId === classId) || [];
+        if (role === 'Teacher') {
+            classTimetable = classTimetable.filter((t: any) => t.teacherId === user?.uid);
+        }
+        const timetableSubjectIds = classTimetable.map((t: any) => t.subjectId);
+
+        // 2. Filter subjects that match timetable, targetClasses, classId, or classIds
+        const classSpecificSubjects = subjects.filter((s: any) => {
+            // Timetable match
+            if (timetableSubjectIds.includes(s.id)) return true;
+
+            // Teacher constraint
+            if (role === 'Teacher') {
+                if (Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid)) {
+                    if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
+                        return s.targetClasses.some((tc: string) => 
+                            tc === classId || tc.toLowerCase() === className
+                        );
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            // Admin / Director / Headmaster: check targetClasses or classId
+            if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
+                return s.targetClasses.some((tc: string) => 
+                    tc === classId || tc.toLowerCase() === className
+                );
+            }
+            if (s.classId === classId || (Array.isArray(s.classIds) && s.classIds.includes(classId))) {
+                return true;
+            }
+            return false;
+        });
+
+        // 3. Fallback: if class-specific filter yields subjects, return them; otherwise fallback to all subjects
+        if (classSpecificSubjects.length > 0) {
+            return classSpecificSubjects;
+        }
+
+        if (role === 'Teacher') {
+            return subjects.filter((s: any) => Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid));
+        }
+
+        return subjects;
+    }, [subjects, classes, timetable, role, user?.uid, classId]);
+
+    // Subject selection auto-reset for all roles
     useEffect(() => {
-        if (role === 'Teacher' && classId && visibleSubjects.length > 0) {
+        if (classId && visibleSubjects && visibleSubjects.length > 0) {
             const isValid = visibleSubjects.some((s: any) => s.id === subjectId);
             if (!isValid) {
                 setSubjectId(visibleSubjects[0]?.id || '');
             }
+        } else if (!classId) {
+            setSubjectId('');
         }
-    }, [classId, visibleSubjects, subjectId, role]);
+    }, [classId, visibleSubjects, subjectId]);
 
     // Fetch the entire class roster
     const studentsQuery = useMemoFirebase(() => 
