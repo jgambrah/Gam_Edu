@@ -121,60 +121,44 @@ export default function GradebookPage() {
     const { data: subjects } = useCollection<any>(subjectsQuery);
 
     const visibleSubjects = useMemo(() => {
-        if (!subjects) return [];
+        if (!subjects || subjects.length === 0) return [];
         if (!classId) return subjects;
 
         const selectedClass = classes?.find((c: any) => c.id === classId);
         const className = selectedClass?.name?.toLowerCase() || '';
 
-        // 1. Check timetables for this class
-        let classTimetable = timetable?.filter((t: any) => t.classId === classId) || [];
-        if (role === 'Teacher') {
-            classTimetable = classTimetable.filter((t: any) => t.teacherId === user?.uid);
-        }
+        // 1. Timetable subjects for this class
+        const classTimetable = timetable?.filter((t: any) => t.classId === classId) || [];
         const timetableSubjectIds = classTimetable.map((t: any) => t.subjectId);
 
         // 2. Filter subjects that match timetable, targetClasses, classId, or classIds
         const classSpecificSubjects = subjects.filter((s: any) => {
             // Timetable match
-            if (timetableSubjectIds.includes(s.id)) return true;
+            if (s.id && timetableSubjectIds.includes(s.id)) return true;
 
-            // Teacher constraint
-            if (role === 'Teacher') {
-                if (Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid)) {
-                    if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
-                        return s.targetClasses.some((tc: string) => 
-                            tc === classId || tc.toLowerCase() === className
-                        );
-                    }
-                    return true;
-                }
-                return false;
-            }
-
-            // Admin / Director / Headmaster: check targetClasses or classId
+            // Target classes match
             if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
                 return s.targetClasses.some((tc: string) => 
-                    tc === classId || tc.toLowerCase() === className
+                    tc === classId || (typeof tc === 'string' && tc.toLowerCase() === className)
                 );
             }
+
+            // Direct classId / classIds match
             if (s.classId === classId || (Array.isArray(s.classIds) && s.classIds.includes(classId))) {
                 return true;
             }
+
             return false;
         });
 
-        // 3. Fallback: if class-specific filter yields subjects, return them; otherwise fallback to all subjects
+        // 3. If class-specific subjects exist for this class, return them
         if (classSpecificSubjects.length > 0) {
             return classSpecificSubjects;
         }
 
-        if (role === 'Teacher') {
-            return subjects.filter((s: any) => Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid));
-        }
-
+        // 4. Fallback: return all school subjects so teachers never see an empty dropdown
         return subjects;
-    }, [subjects, classes, timetable, role, user?.uid, classId]);
+    }, [subjects, classes, timetable, classId]);
 
     // Subject selection auto-reset for all roles
     useEffect(() => {
