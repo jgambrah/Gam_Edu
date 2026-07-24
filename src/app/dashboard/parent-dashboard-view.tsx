@@ -287,6 +287,108 @@ export function ParentDashboard({
         return { position, total, ordinal: getOrdinal(position) };
     }, [activeClassId, classAssessments, students, activeChildId]);
 
+    // Dynamic Longitudinal Position Tracking across Terms
+    const positionTrackingData = useMemo(() => {
+        const getOrdinal = (n: number) => {
+            const s = ["th", "st", "nd", "rd"];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        };
+
+        if (!activeClassId || !classAssessments || classAssessments.length === 0 || !students || students.length === 0) {
+            const pos = classRankInfo.position || 1;
+            return {
+                currentOrdinal: getOrdinal(pos),
+                previousOrdinal: 'N/A',
+                termDiffText: 'N/A',
+                annualDiffText: 'No position history available yet',
+                history: [
+                    { term: "Current Term", position: pos, ordinal: getOrdinal(pos) }
+                ]
+            };
+        }
+
+        const classmates = students.filter((s: any) => s.classId === activeClassId);
+        const termsFound = Array.from(new Set(classAssessments.map((a: any) => a.term).filter(Boolean)));
+        
+        if (termsFound.length <= 1) {
+            const currentPos = classRankInfo.position || 1;
+            return {
+                currentOrdinal: getOrdinal(currentPos),
+                previousOrdinal: 'N/A',
+                termDiffText: 'Initial term',
+                annualDiffText: `Current Rank: ${getOrdinal(currentPos)} in class of ${classmates.length || 1}`,
+                history: [
+                    { term: termsFound[0] || "Current Term", position: currentPos, ordinal: getOrdinal(currentPos) }
+                ]
+            };
+        }
+
+        const termRankings = termsFound.map(termName => {
+            const termAssessments = classAssessments.filter((a: any) => a.term === termName);
+            const studentAverages = classmates.map((student: any) => {
+                const studentId = student.uid;
+                const studentAss = termAssessments.filter((a: any) => a.studentId === studentId);
+                let average = 0;
+                if (studentAss.length > 0) {
+                    const sumPct = studentAss.reduce((sum: number, a: any) => {
+                        const score = Number(a.score) || 0;
+                        const max = Number(a.maxScore) || 100;
+                        return sum + (max > 0 ? (score / max) * 100 : 0);
+                    }, 0);
+                    average = sumPct / studentAss.length;
+                }
+                return { studentId, average };
+            });
+
+            studentAverages.sort((a: any, b: any) => b.average - a.average);
+            const rankIndex = studentAverages.findIndex((x: any) => x.studentId === activeChildId);
+            const position = rankIndex !== -1 ? rankIndex + 1 : studentAverages.length;
+
+            return {
+                term: termName,
+                position,
+                ordinal: getOrdinal(position)
+            };
+        });
+
+        const currentTermObj = termRankings[termRankings.length - 1];
+        const previousTermObj = termRankings.length > 1 ? termRankings[termRankings.length - 2] : null;
+        const firstTermObj = termRankings[0];
+
+        const currentPos = currentTermObj.position;
+        const previousPos = previousTermObj ? previousTermObj.position : currentPos;
+        const firstPos = firstTermObj.position;
+
+        const termDiff = previousPos - currentPos;
+        let termDiffText = 'No change';
+        if (previousTermObj) {
+            if (termDiff > 0) {
+                termDiffText = `⬆ ${termDiff} place${termDiff > 1 ? 's' : ''}`;
+            } else if (termDiff < 0) {
+                termDiffText = `⬇ ${Math.abs(termDiff)} place${Math.abs(termDiff) > 1 ? 's' : ''}`;
+            }
+        }
+
+        const annualDiff = firstPos - currentPos;
+        let annualDiffText = `Maintained ${getOrdinal(currentPos)} Position this academic year`;
+        if (termRankings.length > 1) {
+            if (annualDiff > 0) {
+                annualDiffText = `⬆ Improved by ${annualDiff} place${annualDiff > 1 ? 's' : ''} (${firstTermObj.ordinal} → ${currentTermObj.ordinal})`;
+            } else if (annualDiff < 0) {
+                annualDiffText = `⬇ Dropped by ${Math.abs(annualDiff)} place${Math.abs(annualDiff) > 1 ? 's' : ''} (${firstTermObj.ordinal} → ${currentTermObj.ordinal})`;
+            }
+        }
+
+        return {
+            currentOrdinal: currentTermObj.ordinal,
+            previousOrdinal: previousTermObj ? previousTermObj.ordinal : 'N/A',
+            termDiffText,
+            annualDiffText,
+            history: termRankings
+        };
+    }, [activeClassId, classAssessments, students, activeChildId, classRankInfo]);
+
     // Class subject averages lookup
     const classSubjectAverages = useMemo(() => {
         if (!classAssessments) return {};
@@ -1721,43 +1823,54 @@ export function ParentDashboard({
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                 <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl">
                                                     <span className="text-[9px] font-black text-indigo-650 uppercase tracking-widest block">Current Position</span>
-                                                    <span className="text-xl font-black text-slate-805 mt-1 block">{classRankInfo.ordinal || '5th'} Position</span>
+                                                    <span className="text-xl font-black text-slate-805 mt-1 block">{positionTrackingData.currentOrdinal} Position</span>
                                                 </div>
                                                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
                                                     <span className="text-[9px] font-black text-slate-450 uppercase tracking-widest block">Previous Position</span>
-                                                    <span className="text-xl font-black text-slate-700 mt-1 block">8th Position</span>
+                                                    <span className="text-xl font-black text-slate-700 mt-1 block">{positionTrackingData.previousOrdinal} {positionTrackingData.previousOrdinal !== 'N/A' ? 'Position' : ''}</span>
                                                 </div>
-                                                <div className="p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl">
-                                                    <span className="text-[9px] font-black text-emerald-805 uppercase tracking-widest block">Improvement Rate</span>
-                                                    <span className="text-xl font-black text-emerald-705 mt-1 block flex items-center gap-1">
-                                                        ⬆ 3 places
+                                                <div className={cn(
+                                                    "p-4 rounded-2xl border",
+                                                    positionTrackingData.termDiffText.includes('⬇') ? "bg-rose-50/60 border-rose-100" : "bg-emerald-50/60 border-emerald-100"
+                                                )}>
+                                                    <span className={cn(
+                                                        "text-[9px] font-black uppercase tracking-widest block",
+                                                        positionTrackingData.termDiffText.includes('⬇') ? "text-rose-600" : "text-emerald-805"
+                                                    )}>Improvement Rate</span>
+                                                    <span className={cn(
+                                                        "text-xl font-black mt-1 block flex items-center gap-1",
+                                                        positionTrackingData.termDiffText.includes('⬇') ? "text-rose-600" : "text-emerald-705"
+                                                    )}>
+                                                        {positionTrackingData.termDiffText}
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <div className="space-y-4">
-                                                {[
-                                                    { term: "First Term", position: 12 },
-                                                    { term: "Second Term", position: 8 },
-                                                    { term: "Third Term", position: classRankInfo.position || 5 }
-                                                ].map((item, idx) => (
+                                                {positionTrackingData.history.map((item: any, idx: number) => (
                                                     <div key={idx} className="flex justify-between items-center p-4 bg-slate-50 border border-slate-105 rounded-2xl">
                                                         <span className="text-xs font-black text-slate-700 uppercase tracking-tight">{item.term}</span>
                                                         <Badge className="bg-indigo-50 text-indigo-700 font-black border-none text-[11px] tracking-wide px-3.5 py-1.5 rounded-xl uppercase">
-                                                            {item.position}{item.position === 1 ? 'st' : item.position === 2 ? 'nd' : item.position === 3 ? 'rd' : 'th'} Position
+                                                            {item.ordinal} Position
                                                         </Badge>
                                                     </div>
                                                 ))}
                                             </div>
 
-                                            <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3">
-                                                <span className="p-2 bg-emerald-500/10 text-emerald-600 rounded-xl shrink-0">
-                                                    <ArrowUpRight className="h-5 w-5" />
+                                            <div className={cn(
+                                                "p-4 border rounded-2xl flex items-center gap-3",
+                                                positionTrackingData.annualDiffText.includes('⬇') ? "bg-rose-50 border-rose-100" : "bg-emerald-50 border-emerald-100"
+                                            )}>
+                                                <span className={cn(
+                                                    "p-2 rounded-xl shrink-0",
+                                                    positionTrackingData.annualDiffText.includes('⬇') ? "bg-rose-500/10 text-rose-600" : "bg-emerald-500/10 text-emerald-600"
+                                                )}>
+                                                    {positionTrackingData.annualDiffText.includes('⬇') ? <TrendingDown className="h-5 w-5" /> : <ArrowUpRight className="h-5 w-5" />}
                                                 </span>
                                                 <div className="space-y-0.5">
-                                                    <p className="text-[10px] font-black text-emerald-805 uppercase tracking-widest">Improvement Summary</p>
-                                                    <p className="text-xs font-bold text-emerald-700 leading-snug">
-                                                        ⬆ Improved by 7 places from First Term (12th → {classRankInfo.ordinal || '5th'})
+                                                    <p className={cn("text-[10px] font-black uppercase tracking-widest", positionTrackingData.annualDiffText.includes('⬇') ? "text-rose-800" : "text-emerald-805")}>Performance Summary</p>
+                                                    <p className={cn("text-xs font-bold leading-snug", positionTrackingData.annualDiffText.includes('⬇') ? "text-rose-700" : "text-emerald-700")}>
+                                                        {positionTrackingData.annualDiffText}
                                                     </p>
                                                 </div>
                                             </div>
