@@ -122,8 +122,36 @@ export default function GradebookPage() {
 
     const visibleSubjects = useMemo(() => {
         if (!subjects || subjects.length === 0) return [];
-        return subjects;
-    }, [subjects]);
+        if (!classId) return subjects;
+
+        // Admins, Directors, and non-teachers see all subjects
+        if (role !== 'Teacher') {
+            return subjects;
+        }
+
+        // Check if teacher is the Class Teacher of the currently selected class
+        const selectedClass = classes?.find((c: any) => c.id === classId);
+        const isClassTeacherOfThisClass = selectedClass?.teacherId === user?.uid;
+
+        // RULE 1: Class Teacher of this class sees ALL subjects
+        if (isClassTeacherOfThisClass) {
+            return subjects;
+        }
+
+        // RULE 2: Subject Teacher (not Class Teacher) sees ONLY assigned subjects for this class
+        const teacherTimetableSubjectIds = timetable
+            ?.filter((t: any) => t.classId === classId && t.teacherId === user?.uid)
+            .map((t: any) => t.subjectId) || [];
+
+        const assignedSubjects = subjects.filter((s: any) => {
+            if (s.id && teacherTimetableSubjectIds.includes(s.id)) return true;
+            if (Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid)) return true;
+            return false;
+        });
+
+        // Fallback: If no explicit assignment mapping exists, return all subjects
+        return assignedSubjects.length > 0 ? assignedSubjects : subjects;
+    }, [subjects, classes, timetable, role, user?.uid, classId]);
 
     // Subject selection auto-reset for all roles
     useEffect(() => {
