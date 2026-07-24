@@ -226,7 +226,9 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
                 {/* ── OFFICIAL GRADING SYSTEM SCALE KEY ── */}
                 {(() => {
-                    const gradingScale: GradeBracket[] = data.gradingSystem || DEFAULT_GRADING_SYSTEM;
+                    const gradingScale: GradeBracket[] = (Array.isArray(data?.gradingSystem) && data.gradingSystem.length > 0)
+                        ? data.gradingSystem
+                        : DEFAULT_GRADING_SYSTEM;
                     const sortedScale = [...gradingScale].sort((a, b) => b.minScore - a.minScore);
                     
                     const getGradeColorClass = (grade: string) => {

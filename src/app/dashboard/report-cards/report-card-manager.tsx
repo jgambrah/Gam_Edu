@@ -1160,6 +1160,9 @@ export default function ReportCardManager() {
                                     ...report,
                                     schoolWebsite: report.schoolWebsite || report.website || schoolProfile?.website || schoolProfile?.schoolWebsite || '',
                                     website: report.website || report.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || '',
+                                    gradingSystem: (report.gradingSystem && Array.isArray(report.gradingSystem) && report.gradingSystem.length > 0)
+                                        ? report.gradingSystem
+                                        : ((schoolProfile?.gradingSystem && Array.isArray(schoolProfile.gradingSystem) && schoolProfile.gradingSystem.length > 0) ? schoolProfile.gradingSystem : null),
                                     logoBase64: batchLogoBase64 || report.logoBase64 || '',
                                     headmasterSigBase64: batchHeadmasterSigBase64 || report.headmasterSigBase64 || '',
                                     teacherSigBase64: batchTeacherSigBase64 || report.teacherSigBase64 || ''

@@ -35,6 +35,9 @@ export function StudentReportCard({ student, term, year, savedReport }: { studen
             schoolEmail: savedReport.schoolEmail || schoolProfile?.email || null,
             schoolWebsite: savedReport.schoolWebsite || savedReport.website || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
             website: savedReport.website || savedReport.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
+            gradingSystem: (savedReport.gradingSystem && Array.isArray(savedReport.gradingSystem) && savedReport.gradingSystem.length > 0)
+                ? savedReport.gradingSystem
+                : (schoolProfile?.gradingSystem && Array.isArray(schoolProfile.gradingSystem) && schoolProfile.gradingSystem.length > 0 ? schoolProfile.gradingSystem : null),
         };
     }, [savedReport, schoolProfile]);
 

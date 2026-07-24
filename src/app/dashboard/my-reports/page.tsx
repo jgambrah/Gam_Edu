@@ -160,6 +160,9 @@ export default function MyReportsPage() {
             website: selectedReport.website || selectedReport.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
             logoUrl: selectedReport.logoUrl || schoolProfile?.logoUrl || null,
             brandColor: selectedReport.brandColor || schoolProfile?.brandColor || '#1e293b',
+            gradingSystem: (selectedReport.gradingSystem && Array.isArray(selectedReport.gradingSystem) && selectedReport.gradingSystem.length > 0)
+                ? selectedReport.gradingSystem
+                : (schoolProfile?.gradingSystem && Array.isArray(schoolProfile.gradingSystem) && schoolProfile.gradingSystem.length > 0 ? schoolProfile.gradingSystem : null),
         };
     }, [selectedReport, schoolProfile]);
 
