@@ -150,7 +150,20 @@ export default function MyReportsPage() {
         );
     }
 
-    if (selectedReport) {
+    const displayReport = useMemo(() => {
+        if (!selectedReport) return null;
+        return {
+            ...selectedReport,
+            schoolPhone: selectedReport.schoolPhone || schoolProfile?.phone || null,
+            schoolEmail: selectedReport.schoolEmail || schoolProfile?.email || null,
+            schoolWebsite: selectedReport.schoolWebsite || selectedReport.website || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
+            website: selectedReport.website || selectedReport.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
+            logoUrl: selectedReport.logoUrl || schoolProfile?.logoUrl || null,
+            brandColor: selectedReport.brandColor || schoolProfile?.brandColor || '#1e293b',
+        };
+    }, [selectedReport, schoolProfile]);
+
+    if (selectedReport && displayReport) {
         return (
             <div className="space-y-6 max-w-5xl mx-auto pb-20 p-4 md:p-6">
                 <div className="flex justify-between items-center print:hidden bg-slate-50/40 p-4 rounded-2xl border border-slate-100/50 backdrop-blur-md">
@@ -169,11 +182,11 @@ export default function MyReportsPage() {
                 <div className="flex justify-center bg-slate-950/95 p-6 rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-auto">
                     <div className="shadow-2xl border border-slate-900 rounded-3xl overflow-hidden bg-white scale-[0.8] origin-top md:scale-100">
                         <ReportCardTemplate
-                            data={selectedReport}
-                            classTeacherComment={selectedReport.classTeacherComment}
-                            headmasterComment={selectedReport.headmasterComment}
-                            caWeight={selectedReport.caWeight ?? CA_WEIGHT}
-                            examWeight={selectedReport.examWeight ?? EXAM_WEIGHT}
+                            data={displayReport}
+                            classTeacherComment={displayReport.classTeacherComment}
+                            headmasterComment={displayReport.headmasterComment}
+                            caWeight={displayReport.caWeight ?? CA_WEIGHT}
+                            examWeight={displayReport.examWeight ?? EXAM_WEIGHT}
                         />
                     </div>
                 </div>
@@ -183,11 +196,11 @@ export default function MyReportsPage() {
                     style={{ display: 'none', visibility: 'hidden', position: 'absolute', top: 0, left: 0, zIndex: -1, width: '794px' }}
                 >
                     <ReportCardTemplate
-                        data={selectedReport}
-                        classTeacherComment={selectedReport.classTeacherComment}
-                        headmasterComment={selectedReport.headmasterComment}
-                        caWeight={selectedReport.caWeight ?? CA_WEIGHT}
-                        examWeight={selectedReport.examWeight ?? EXAM_WEIGHT}
+                        data={displayReport}
+                        classTeacherComment={displayReport.classTeacherComment}
+                        headmasterComment={displayReport.headmasterComment}
+                        caWeight={displayReport.caWeight ?? CA_WEIGHT}
+                        examWeight={displayReport.examWeight ?? EXAM_WEIGHT}
                     />
                 </div>
             </div>

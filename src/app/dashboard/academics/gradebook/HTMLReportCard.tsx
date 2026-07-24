@@ -176,7 +176,9 @@ export const HTMLReportCard = ({
                     <span>{schoolProfile?.phone || ""}</span>
                     <span>{schoolProfile?.email || ""}</span>
                 </div>
-                {schoolProfile?.website && <p className="text-sm text-gray-600">{schoolProfile.website}</p>}
+                {(schoolProfile?.website || schoolProfile?.schoolWebsite) && (
+                    <p className="text-sm text-gray-600">{schoolProfile.website || schoolProfile.schoolWebsite}</p>
+                )}
                 
                 <p className="text-sm italic mt-2 font-semibold">"{schoolProfile?.motto || 'Excellence'}"</p>
                 <h2 className="text-xl font-bold mt-4 underline decoration-2 underline-offset-4">TERMINAL REPORT CARD</h2>

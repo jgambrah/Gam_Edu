@@ -416,6 +416,8 @@ export default function ReportCardManager() {
                 schoolAddress: schoolProfile?.address,
                 schoolPhone: schoolProfile?.phone,
                 schoolEmail: schoolProfile?.email,
+                schoolWebsite: schoolProfile?.website || schoolProfile?.schoolWebsite || null,
+                website: schoolProfile?.website || schoolProfile?.schoolWebsite || null,
                 brandColor: schoolProfile?.brandColor || '#1e293b',
                 logoUrl: schoolProfile?.logoUrl || null, // Stored to assist parent view loading
                 nextTermDate: schoolProfile?.nextTermDate || null,
@@ -1156,6 +1158,8 @@ export default function ReportCardManager() {
                             <ReportCardTemplate
                                 data={{
                                     ...report,
+                                    schoolWebsite: report.schoolWebsite || report.website || schoolProfile?.website || schoolProfile?.schoolWebsite || '',
+                                    website: report.website || report.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || '',
                                     logoBase64: batchLogoBase64 || report.logoBase64 || '',
                                     headmasterSigBase64: batchHeadmasterSigBase64 || report.headmasterSigBase64 || '',
                                     teacherSigBase64: batchTeacherSigBase64 || report.teacherSigBase64 || ''

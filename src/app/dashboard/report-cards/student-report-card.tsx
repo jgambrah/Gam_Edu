@@ -31,6 +31,10 @@ export function StudentReportCard({ student, term, year, savedReport }: { studen
             logoUrl: savedReport.logoUrl || schoolProfile?.logoUrl || null,
             headmasterSignatureUrl: savedReport.headmasterSignatureUrl || schoolProfile?.headmasterSignatureUrl || null,
             brandColor: savedReport.brandColor || schoolProfile?.brandColor || '#1e293b',
+            schoolPhone: savedReport.schoolPhone || schoolProfile?.phone || null,
+            schoolEmail: savedReport.schoolEmail || schoolProfile?.email || null,
+            schoolWebsite: savedReport.schoolWebsite || savedReport.website || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
+            website: savedReport.website || savedReport.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
         };
     }, [savedReport, schoolProfile]);
 
