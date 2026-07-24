@@ -142,7 +142,19 @@ export default function LearningAnalyticsPage() {
       return { studentStats: [], scatterData: [], classMetrics: { size: 0, averageGrade: 0, averageAttendance: 0, safetyRate: 0 } };
     }
 
-    const stats = students.map(student => {
+    const activeStudents = students.filter((s: any) => {
+      const status = s.enrollmentStatus || s.status;
+      if (status === 'Inactive' || status === 'Withdrawn' || status === 'Graduated' || s.isInactive === true || s.active === false) {
+        return false;
+      }
+      return true;
+    });
+
+    if (activeStudents.length === 0) {
+      return { studentStats: [], scatterData: [], classMetrics: { size: 0, averageGrade: 0, averageAttendance: 0, safetyRate: 0 } };
+    }
+
+    const stats = activeStudents.map(student => {
         const myAssessments = assessments.filter(a => a.studentId === student.uid);
         const totalScore = myAssessments.reduce((sum, a) => sum + (a.score || 0), 0);
         const maxScore = myAssessments.reduce((sum, a) => sum + (a.maxScore || 100), 0);

@@ -173,7 +173,13 @@ export default function ReportCardManager() {
 
     const activeStudents = useMemo(() => {
         if (!students) return [];
-        return students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+        return students.filter((s: any) => {
+            const status = s.enrollmentStatus || s.status;
+            if (status === 'Inactive' || status === 'Withdrawn' || status === 'Graduated' || s.isInactive === true || s.active === false) {
+                return false;
+            }
+            return true;
+        });
     }, [students]);
 
     const reportCardsQuery = useMemoFirebase(() => {

@@ -119,7 +119,13 @@ export default function AcademicReportsPage() {
 
     const students = useMemo(() => {
         if (!rawStudents) return [];
-        return rawStudents.filter(s => s.enrollmentStatus !== 'Inactive');
+        return rawStudents.filter((s: any) => {
+            const status = s.enrollmentStatus || s.status;
+            if (status === 'Inactive' || status === 'Withdrawn' || status === 'Graduated' || s.isInactive === true || s.active === false) {
+                return false;
+            }
+            return true;
+        });
     }, [rawStudents]);
 
     // Query Assessments for the selected class, filtered by academic year and term to reduce database reads
