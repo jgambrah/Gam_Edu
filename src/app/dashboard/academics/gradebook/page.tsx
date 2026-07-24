@@ -122,43 +122,8 @@ export default function GradebookPage() {
 
     const visibleSubjects = useMemo(() => {
         if (!subjects || subjects.length === 0) return [];
-        if (!classId) return subjects;
-
-        const selectedClass = classes?.find((c: any) => c.id === classId);
-        const className = selectedClass?.name?.toLowerCase() || '';
-
-        // 1. Timetable subjects for this class
-        const classTimetable = timetable?.filter((t: any) => t.classId === classId) || [];
-        const timetableSubjectIds = classTimetable.map((t: any) => t.subjectId);
-
-        // 2. Filter subjects that match timetable, targetClasses, classId, or classIds
-        const classSpecificSubjects = subjects.filter((s: any) => {
-            // Timetable match
-            if (s.id && timetableSubjectIds.includes(s.id)) return true;
-
-            // Target classes match
-            if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
-                return s.targetClasses.some((tc: string) => 
-                    tc === classId || (typeof tc === 'string' && tc.toLowerCase() === className)
-                );
-            }
-
-            // Direct classId / classIds match
-            if (s.classId === classId || (Array.isArray(s.classIds) && s.classIds.includes(classId))) {
-                return true;
-            }
-
-            return false;
-        });
-
-        // 3. If class-specific subjects exist for this class, return them
-        if (classSpecificSubjects.length > 0) {
-            return classSpecificSubjects;
-        }
-
-        // 4. Fallback: return all school subjects so teachers never see an empty dropdown
         return subjects;
-    }, [subjects, classes, timetable, classId]);
+    }, [subjects]);
 
     // Subject selection auto-reset for all roles
     useEffect(() => {
@@ -460,8 +425,12 @@ export default function GradebookPage() {
                     </div>
                     <div className="space-y-2">
                         <Label>Subject</Label>
-                        <Select value={subjectId} onValueChange={setSubjectId}>
-                            <SelectTrigger className="bg-white border-2"><SelectValue placeholder="Select Subject"/></SelectTrigger>
+                        <Select key={`subject-select-${classId}-${subjectId}`} value={subjectId} onValueChange={setSubjectId}>
+                            <SelectTrigger className="bg-white border-2">
+                                <SelectValue placeholder="Select Subject">
+                                    {visibleSubjects?.find((s: any) => s.id === subjectId)?.name}
+                                </SelectValue>
+                            </SelectTrigger>
                             <SelectContent>
                                 {visibleSubjects?.map((s:any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                             </SelectContent>
