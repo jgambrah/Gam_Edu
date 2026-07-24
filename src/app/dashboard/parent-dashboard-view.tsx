@@ -1721,7 +1721,7 @@ export function ParentDashboard({
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                 <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl">
                                                     <span className="text-[9px] font-black text-indigo-650 uppercase tracking-widest block">Current Position</span>
-                                                    <span className="text-xl font-black text-slate-805 mt-1 block">5th Position</span>
+                                                    <span className="text-xl font-black text-slate-805 mt-1 block">{classRankInfo.ordinal || '5th'} Position</span>
                                                 </div>
                                                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
                                                     <span className="text-[9px] font-black text-slate-450 uppercase tracking-widest block">Previous Position</span>
@@ -1730,21 +1730,21 @@ export function ParentDashboard({
                                                 <div className="p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl">
                                                     <span className="text-[9px] font-black text-emerald-805 uppercase tracking-widest block">Improvement Rate</span>
                                                     <span className="text-xl font-black text-emerald-705 mt-1 block flex items-center gap-1">
-                                                        ⬆ 7 places
+                                                        ⬆ 3 places
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <div className="space-y-4">
                                                 {[
-                                                    { term: "Term 1", position: 12 },
-                                                    { term: "Term 2", position: 8 },
-                                                    { term: "Term 3", position: 5 }
+                                                    { term: "First Term", position: 12 },
+                                                    { term: "Second Term", position: 8 },
+                                                    { term: "Third Term", position: classRankInfo.position || 5 }
                                                 ].map((item, idx) => (
                                                     <div key={idx} className="flex justify-between items-center p-4 bg-slate-50 border border-slate-105 rounded-2xl">
                                                         <span className="text-xs font-black text-slate-700 uppercase tracking-tight">{item.term}</span>
                                                         <Badge className="bg-indigo-50 text-indigo-700 font-black border-none text-[11px] tracking-wide px-3.5 py-1.5 rounded-xl uppercase">
-                                                            {item.position}th Position
+                                                            {item.position}{item.position === 1 ? 'st' : item.position === 2 ? 'nd' : item.position === 3 ? 'rd' : 'th'} Position
                                                         </Badge>
                                                     </div>
                                                 ))}
@@ -1757,7 +1757,7 @@ export function ParentDashboard({
                                                 <div className="space-y-0.5">
                                                     <p className="text-[10px] font-black text-emerald-805 uppercase tracking-widest">Improvement Summary</p>
                                                     <p className="text-xs font-bold text-emerald-700 leading-snug">
-                                                        ⬆ Improved by 7 places this academic year
+                                                        ⬆ Improved by 7 places from First Term (12th → {classRankInfo.ordinal || '5th'})
                                                     </p>
                                                 </div>
                                             </div>
