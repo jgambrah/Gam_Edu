@@ -85,7 +85,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         )}
                         <div className="text-[8px] font-bold uppercase tracking-widest space-y-0.5 opacity-70">
                             <p>{data.schoolAddress}</p>
-                            <p>{[data.schoolPhone, data.schoolEmail].filter(Boolean).join(' | ')}</p>
+                            <p>{[data.schoolPhone, data.schoolEmail, data.schoolWebsite || data.website].filter(Boolean).join(' | ')}</p>
                         </div>
                     </div>
                 </div>

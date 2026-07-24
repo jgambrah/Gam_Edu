@@ -51,9 +51,9 @@ export function PaymentReceipt({
               {schoolProfile?.address && (
                   <p className="text-[9px] font-medium">{schoolProfile.address}</p>
               )}
-              {(schoolProfile?.phone || schoolProfile?.email) && (
+              {(schoolProfile?.phone || schoolProfile?.email || schoolProfile?.website || schoolProfile?.schoolWebsite) && (
                   <p className="text-[9px] font-medium">
-                      {schoolProfile?.phone || ""} {schoolProfile?.phone && schoolProfile?.email ? " | " : ""} {schoolProfile?.email || ""}
+                      {[schoolProfile?.phone, schoolProfile?.email, schoolProfile?.website || schoolProfile?.schoolWebsite].filter(Boolean).join(" | ")}
                   </p>
               )}
           </div>
@@ -139,9 +139,9 @@ export function PaymentReceipt({
                   {schoolProfile?.address && (
                       <p className="text-[8px] font-bold uppercase tracking-wider">{schoolProfile.address}</p>
                   )}
-                  {(schoolProfile?.phone || schoolProfile?.email) && (
+                  {(schoolProfile?.phone || schoolProfile?.email || schoolProfile?.website || schoolProfile?.schoolWebsite) && (
                       <p className="text-[8px] font-bold uppercase tracking-wider">
-                          {schoolProfile?.phone || ""} {schoolProfile?.phone && schoolProfile?.email ? " • " : ""} {schoolProfile?.email || ""}
+                          {[schoolProfile?.phone, schoolProfile?.email, schoolProfile?.website || schoolProfile?.schoolWebsite].filter(Boolean).join(" • ")}
                       </p>
                   )}
               </div>
@@ -174,8 +174,8 @@ export function PaymentReceipt({
               <div className="space-y-0.5 text-slate-700 text-[8px] font-bold uppercase tracking-wider">
                 {schoolProfile?.motto && <p className="italic text-slate-650">"{schoolProfile.motto}"</p>}
                 {schoolProfile?.address && <p>{schoolProfile.address}</p>}
-                {(schoolProfile?.phone || schoolProfile?.email) && (
-                  <p>{schoolProfile?.phone} {schoolProfile?.phone && schoolProfile?.email ? " • " : ""} {schoolProfile?.email}</p>
+                {(schoolProfile?.phone || schoolProfile?.email || schoolProfile?.website || schoolProfile?.schoolWebsite) && (
+                  <p>{[schoolProfile?.phone, schoolProfile?.email, schoolProfile?.website || schoolProfile?.schoolWebsite].filter(Boolean).join(" • ")}</p>
                 )}
               </div>
             </div>
