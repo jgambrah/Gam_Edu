@@ -309,7 +309,20 @@ export function ParentDashboard({
         }
 
         const classmates = students.filter((s: any) => s.classId === activeClassId);
-        const termsFound = Array.from(new Set(classAssessments.map((a: any) => a.term).filter(Boolean)));
+
+        // Sort terms chronologically (First Term -> Second Term -> Third Term)
+        const termSortOrder: Record<string, number> = {
+            'First Term': 1, '1st Term': 1, 'Term 1': 1,
+            'Second Term': 2, '2nd Term': 2, 'Term 2': 2,
+            'Third Term': 3, '3rd Term': 3, 'Term 3': 3
+        };
+
+        const rawTerms = Array.from(new Set(classAssessments.map((a: any) => a.term).filter(Boolean)));
+        const termsFound = rawTerms.sort((a: any, b: any) => {
+            const orderA = termSortOrder[String(a)] || 99;
+            const orderB = termSortOrder[String(b)] || 99;
+            return orderA - orderB;
+        });
         
         if (termsFound.length <= 1) {
             const currentPos = classRankInfo.position || 1;
@@ -324,7 +337,16 @@ export function ParentDashboard({
             };
         }
 
-        const termRankings = termsFound.map(termName => {
+        const termRankings = termsFound.map((termName, idx) => {
+            // For active current term, synchronize with classRankInfo for 100% position consistency across all desks
+            if (idx === termsFound.length - 1 && classRankInfo?.position) {
+                return {
+                    term: termName,
+                    position: classRankInfo.position,
+                    ordinal: classRankInfo.ordinal
+                };
+            }
+
             const termAssessments = classAssessments.filter((a: any) => a.term === termName);
             const studentAverages = classmates.map((student: any) => {
                 const studentId = student.uid;
