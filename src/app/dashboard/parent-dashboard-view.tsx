@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import { useFirestore, useMemoFirebase, useUser, useCollection } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, orderBy, limit } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
@@ -72,7 +72,8 @@ export function ParentDashboard({
         return query(
             collection(firestore, 'staff'),
             where('schoolId', '==', schoolId),
-            where('role', '==', 'Teacher')
+            where('role', '==', 'Teacher'),
+            limit(50)
         );
     }, [firestore, schoolId]);
 

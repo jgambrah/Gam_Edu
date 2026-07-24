@@ -11632,9 +11632,13 @@ function StudentDashboard({ profile }: any) {
 
     // 12. Fetch learning materials
     const materialsQuery = useMemoFirebase(() => {
-        if (!firestore) return null;
-        return query(collection(firestore, 'learning_materials'));
-    }, [firestore]);
+        if (!firestore || !schoolId) return null;
+        return query(
+            collection(firestore, 'learning_materials'),
+            where('schoolId', '==', schoolId),
+            limit(50)
+        );
+    }, [firestore, schoolId]);
     const { data: dbMaterials } = useCollection<any>(materialsQuery);
 
     const behaviorRating = useMemo(() => {
@@ -13148,7 +13152,7 @@ export default function DashboardClient() {
 
   // Director skips the full students sweep — uses summary doc counts instead.
   // Other roles (Admin, Teacher, Parent) still fetch the full list for their features.
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && (isStaff || isParent)) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isParent]);
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && (isStaff || isParent)) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(300)) : null, [firestore, schoolId, isStaff, isParent]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
