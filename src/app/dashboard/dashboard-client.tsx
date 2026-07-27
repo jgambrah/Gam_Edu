@@ -3699,6 +3699,74 @@ function AttendanceAnalyticsView({
   staffAttendance,
   schoolData,
 }: any) {
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isSyncingAttendance, setIsSyncingAttendance] = useState(false);
+
+  const handleSyncAttendanceSummary = async () => {
+    const sId = schoolData?.id || schoolData?.schoolId;
+    if (!firestore || !sId) return;
+    setIsSyncingAttendance(true);
+    try {
+      const todayNormalized = startOfDay(new Date());
+      const q = query(
+        collection(firestore, 'attendance'),
+        where('schoolId', '==', sId),
+        where('date', '==', Timestamp.fromDate(todayNormalized))
+      );
+      const snap = await getDocs(q);
+
+      let presentCount = 0;
+      let totalRecorded = 0;
+      const absentList: any[] = [];
+      const activeStudentIds = new Set(students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).map((s: any) => s.uid || s.id) || []);
+
+      snap.docs.forEach((d) => {
+        const data = d.data();
+        const records = data.records || {};
+        const className = data.className || "Class";
+
+        if (records && typeof records === 'object') {
+          Object.entries(records).forEach(([sId, status]: [string, any]) => {
+            if (activeStudentIds.size > 0 && !activeStudentIds.has(sId)) return;
+            totalRecorded++;
+            if (status === 'Present' || status === 'Late') {
+              presentCount++;
+            } else if (status === 'Absent') {
+              const stud = students?.find((s: any) => (s.uid || s.id) === sId);
+              absentList.push({
+                id: sId,
+                name: stud ? `${stud.firstName || ""} ${stud.lastName || ""}`.trim() : "Student",
+                className: className
+              });
+            }
+          });
+        }
+      });
+
+      const totalStudents = activeStudentIds.size || 1;
+      const rate = totalRecorded > 0 ? Math.round((presentCount / totalStudents) * 100) : 95;
+
+      await setDoc(doc(firestore, 'dashboard_summaries', sId), {
+        attendance: {
+          presentCount,
+          totalStudents,
+          attendanceRate: rate,
+          absentStudents: absentList.slice(0, 15),
+          lastAttendanceDate: format(new Date(), 'yyyy-MM-dd')
+        },
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+
+      toast({ title: "Attendance Analytics Synced", description: `Updated today's attendance summary (${presentCount} present).` });
+    } catch (err) {
+      console.error("Error syncing attendance summary:", err);
+      toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync attendance data." });
+    } finally {
+      setIsSyncingAttendance(false);
+    }
+  };
+
   const startOfToday = useMemo(() => startOfDay(new Date()), []);
 
   const stats = useMemo(() => {
@@ -3874,6 +3942,27 @@ function AttendanceAnalyticsView({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-350">
+      {/* Action Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] gap-4">
+        <div>
+          <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+            <CalendarCheck className="h-5 w-5 text-sky-600" />
+            Attendance & Punctuality Intelligence
+          </h3>
+          <p className="text-xs font-bold text-slate-400 mt-0.5">Daily student attendance pulse, chronic absenteeism tracking, and staff punctuality logs.</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleSyncAttendanceSummary}
+          disabled={isSyncingAttendance}
+          className="rounded-xl font-bold text-xs border-sky-200 text-sky-700 hover:bg-sky-50 gap-1.5 shadow-sm shrink-0"
+        >
+          {isSyncingAttendance ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+          {isSyncingAttendance ? 'Syncing...' : 'Sync Attendance Analytics'}
+        </Button>
+      </div>
+
       {/* 1. Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {metrics.map((m: any, idx: number) => {
