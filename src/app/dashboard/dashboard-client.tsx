@@ -14008,8 +14008,20 @@ export default function DashboardClient() {
   const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
 
   // Director skips the full students sweep — uses summary doc counts instead.
-  // Other roles (Admin, Teacher, Parent) still fetch the full list for their features.
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && (isStaff || isParent)) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(300)) : null, [firestore, schoolId, isStaff, isParent]);
+  // Parent fetches only their linked children. Staff fetches up to 300 for feature operations.
+  const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
+
+  const studentsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    if (isParent) {
+      if (parentStudentIds.length === 0) return null;
+      return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', parentStudentIds.slice(0, 30)));
+    }
+    if (isStaff) {
+      return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(300));
+    }
+    return null;
+  }, [firestore, schoolId, isStaff, isParent, parentStudentIds]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
   const staffQuery = useMemoFirebase(() => (firestore && schoolId && canListStaff) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canListStaff]);
@@ -14083,9 +14095,9 @@ export default function DashboardClient() {
   const activeClassId = activeChild?.classId || '';
 
   const parentStickersQuery = useMemoFirebase(() => {
-    if (!firestore || parentStudentIds.length === 0) return null;
-    return query(collection(firestore, 'junior_stickers'), where('userId', 'in', parentStudentIds));
-  }, [firestore, parentStudentIds]);
+    if (!firestore || !isParent || parentStudentIds.length === 0) return null;
+    return query(collection(firestore, 'junior_stickers'), where('userId', 'in', parentStudentIds.slice(0, 30)));
+  }, [firestore, isParent, parentStudentIds]);
   const { data: parentStickers, isLoading: loadingStickers } = useCollection(parentStickersQuery);
 
   const parentAssessmentsQuery = useMemoFirebase(() => {

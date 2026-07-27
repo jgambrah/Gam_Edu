@@ -66,29 +66,29 @@ export function ParentDashboard({
     const [selectedService, setSelectedService] = useState('Canteen');
     const [urgency, setUrgency] = useState<'Low' | 'Medium' | 'High'>('Medium');
 
-    // Fetch teachers list for teacher ratings
+    // Fetch teachers list for teacher ratings (gated to satisfaction tab)
     const teachersQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId) return null;
+        if (!firestore || !schoolId || activeTab !== 'satisfaction') return null;
         return query(
             collection(firestore, 'staff'),
             where('schoolId', '==', schoolId),
             where('role', '==', 'Teacher'),
             limit(50)
         );
-    }, [firestore, schoolId]);
+    }, [firestore, schoolId, activeTab]);
 
     const { data: teachersData } = useCollection<any>(teachersQuery);
     const teachers = teachersData || [];
 
-    // Fetch past submissions for this parent
+    // Fetch past submissions for this parent (gated to satisfaction tab)
     const satisfactionQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !user?.uid) return null;
+        if (!firestore || !schoolId || !user?.uid || activeTab !== 'satisfaction') return null;
         return query(
             collection(firestore, 'parent_satisfaction'),
             where('parentId', '==', user.uid),
             orderBy('createdAt', 'desc')
         );
-    }, [firestore, schoolId, user?.uid]);
+    }, [firestore, schoolId, user?.uid, activeTab]);
 
     const { data: satisfactionData, isLoading: loadingSatisfaction } = useCollection<any>(satisfactionQuery);
     const pastSubmissions = satisfactionData || [];
