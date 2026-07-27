@@ -50,7 +50,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { generateSchoolExecutiveBriefingAction } from '@/app/actions/insights-ai';
-import { format, startOfDay, endOfDay, formatDistanceToNow } from 'date-fns';
+import { format, startOfDay, endOfDay, formatDistanceToNow, subDays } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -10424,13 +10424,16 @@ function TeacherDashboard({ profile, classes, students, assessments, announcemen
     const firestore = useFirestore();
     const schoolId = profile?.schoolId || '';
 
-    // Query live attendance records for the class
+    // Query live attendance records for the class (bounded to 30 days & limit 60)
     const classAttendanceQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !activeClassId || !user) return null;
+        const thirtyDaysAgo = Timestamp.fromDate(subDays(new Date(), 30));
         return query(
             collection(firestore, 'attendance'),
             where('schoolId', '==', schoolId),
-            where('classId', '==', activeClassId)
+            where('classId', '==', activeClassId),
+            where('date', '>=', thirtyDaysAgo),
+            limit(60)
         );
     }, [firestore, schoolId, activeClassId, user]);
 
@@ -14238,10 +14241,10 @@ export default function DashboardClient() {
   const { data: rooms, isLoading: loadingRooms } = useCollection<any>(roomsQuery);
 
   const timetableQuery = useMemoFirebase(() => 
-    (firestore && schoolId && role === 'Teacher')
-      ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
+    (firestore && schoolId && role === 'Teacher' && user?.uid)
+      ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId), where('teacherId', '==', user.uid)) 
       : null, 
-  [firestore, schoolId, role]);
+  [firestore, schoolId, role, user?.uid]);
   const { data: timetable, isLoading: loadingTimetable } = useCollection(timetableQuery);
 
   const teacherClasses = useMemo(() => {
