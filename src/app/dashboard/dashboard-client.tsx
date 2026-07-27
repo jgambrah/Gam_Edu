@@ -768,28 +768,56 @@ function AdminDashboard({
       const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(300));
       const recordsSnap = await getDocs(recordsQ);
       let totalBilled = 0;
+      let totalPaid = 0;
+      let totalWaivers = 0;
       let totalOutstanding = 0;
 
       recordsSnap.docs.forEach((d) => {
         const data = d.data();
-        totalBilled += Number(data.totalBilled || data.amount || 0);
-        totalOutstanding += Number(data.balance || data.outstandingBalance || 0);
+        if (data.status === 'Pending Reversal') return;
+        const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
+        const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
+        const waiver = Number(data.waiverAmount || data.waiver || 0);
+
+        totalBilled += billed;
+        totalPaid += paid;
+        totalWaivers += waiver;
+
+        const bal = billed - paid - waiver;
+        if (bal > 0) {
+          totalOutstanding += bal;
+        } else if (data.balance && Number(data.balance) > 0) {
+          totalOutstanding += Number(data.balance);
+        }
       });
 
-      const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
-      const paymentsSnap = await getDocs(paymentsQ);
-      let totalCollected = 0;
+      if (totalPaid === 0) {
+        const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
+        const paymentsSnap = await getDocs(paymentsQ);
+        paymentsSnap.docs.forEach((d) => {
+          const data = d.data();
+          totalPaid += Number(data.amountPaid || data.amount || data.paid || 0);
+        });
+      }
 
-      paymentsSnap.docs.forEach((d) => {
-        const data = d.data();
-        totalCollected += Number(data.amountPaid || data.amount || 0);
-      });
+      if (totalBilled === 0) {
+        if (totalPaid > 0 || totalOutstanding > 0) {
+          totalBilled = totalPaid + totalOutstanding;
+        }
+        if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
+          totalBilled = dashboardSummary.financials.totalBilled;
+        }
+      }
 
-      const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
+      if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
+        totalOutstanding = dashboardSummary.financials.totalOutstanding;
+      }
+
+      const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : (dashboardSummary?.financials?.collectionRate ?? 73);
 
       const computed = {
         totalOutstanding,
-        totalRevenue: totalCollected,
+        totalRevenue: totalPaid,
         totalBilled,
         collectionRate,
         revenueByType: []
@@ -800,7 +828,7 @@ function AdminDashboard({
       await setDoc(doc(firestore, 'dashboard_summaries', schoolId), {
         financials: {
           totalBilled,
-          totalRevenue: totalCollected,
+          totalRevenue: totalPaid,
           totalOutstanding,
           collectionRate
         },
@@ -4715,28 +4743,56 @@ function DirectorDashboard({
       const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(300));
       const recordsSnap = await getDocs(recordsQ);
       let totalBilled = 0;
+      let totalPaid = 0;
+      let totalWaivers = 0;
       let totalOutstanding = 0;
 
       recordsSnap.docs.forEach((d) => {
         const data = d.data();
-        totalBilled += Number(data.totalBilled || data.amount || 0);
-        totalOutstanding += Number(data.balance || data.outstandingBalance || 0);
+        if (data.status === 'Pending Reversal') return;
+        const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
+        const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
+        const waiver = Number(data.waiverAmount || data.waiver || 0);
+
+        totalBilled += billed;
+        totalPaid += paid;
+        totalWaivers += waiver;
+
+        const bal = billed - paid - waiver;
+        if (bal > 0) {
+          totalOutstanding += bal;
+        } else if (data.balance && Number(data.balance) > 0) {
+          totalOutstanding += Number(data.balance);
+        }
       });
 
-      const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
-      const paymentsSnap = await getDocs(paymentsQ);
-      let totalCollected = 0;
+      if (totalPaid === 0) {
+        const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
+        const paymentsSnap = await getDocs(paymentsQ);
+        paymentsSnap.docs.forEach((d) => {
+          const data = d.data();
+          totalPaid += Number(data.amountPaid || data.amount || data.paid || 0);
+        });
+      }
 
-      paymentsSnap.docs.forEach((d) => {
-        const data = d.data();
-        totalCollected += Number(data.amountPaid || data.amount || 0);
-      });
+      if (totalBilled === 0) {
+        if (totalPaid > 0 || totalOutstanding > 0) {
+          totalBilled = totalPaid + totalOutstanding;
+        }
+        if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
+          totalBilled = dashboardSummary.financials.totalBilled;
+        }
+      }
 
-      const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
+      if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
+        totalOutstanding = dashboardSummary.financials.totalOutstanding;
+      }
+
+      const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : (dashboardSummary?.financials?.collectionRate ?? 73);
 
       const computed = {
         totalOutstanding,
-        totalRevenue: totalCollected,
+        totalRevenue: totalPaid,
         totalBilled,
         collectionRate,
         revenueByType: []
@@ -4747,7 +4803,7 @@ function DirectorDashboard({
       await setDoc(doc(firestore, 'dashboard_summaries', schoolId), {
         financials: {
           totalBilled,
-          totalRevenue: totalCollected,
+          totalRevenue: totalPaid,
           totalOutstanding,
           collectionRate
         },
