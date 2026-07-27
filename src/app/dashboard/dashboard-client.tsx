@@ -758,7 +758,66 @@ function AdminDashboard({
     return parseFloat((effectiveActiveCount / teachers).toFixed(1));
   }, [effectiveActiveCount, staff]);
 
+  const [isSyncingFinancials, setIsSyncingFinancials] = useState(false);
+  const [syncedFinancialData, setSyncedFinancialData] = useState<any>(null);
+
+  const handleSyncFinancialSummary = async () => {
+    if (!firestore || !schoolId) return;
+    setIsSyncingFinancials(true);
+    try {
+      const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(300));
+      const recordsSnap = await getDocs(recordsQ);
+      let totalBilled = 0;
+      let totalOutstanding = 0;
+
+      recordsSnap.docs.forEach((d) => {
+        const data = d.data();
+        totalBilled += Number(data.totalBilled || data.amount || 0);
+        totalOutstanding += Number(data.balance || data.outstandingBalance || 0);
+      });
+
+      const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
+      const paymentsSnap = await getDocs(paymentsQ);
+      let totalCollected = 0;
+
+      paymentsSnap.docs.forEach((d) => {
+        const data = d.data();
+        totalCollected += Number(data.amountPaid || data.amount || 0);
+      });
+
+      const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
+
+      const computed = {
+        totalOutstanding,
+        totalRevenue: totalCollected,
+        totalBilled,
+        collectionRate,
+        revenueByType: []
+      };
+
+      setSyncedFinancialData(computed);
+
+      await setDoc(doc(firestore, 'dashboard_summaries', schoolId), {
+        financials: {
+          totalBilled,
+          totalRevenue: totalCollected,
+          totalOutstanding,
+          collectionRate
+        },
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+
+      toast({ title: "Financial Summary Synced", description: "Updated overview with live collection totals." });
+    } catch (err) {
+      console.error("Error syncing financial summary:", err);
+      toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync financial records." });
+    } finally {
+      setIsSyncingFinancials(false);
+    }
+  };
+
   const financials = useMemo(() => {
+    if (syncedFinancialData) return syncedFinancialData;
     if (dashboardSummary?.financials?.totalBilled !== undefined) {
       return {
         totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
@@ -5352,7 +5411,7 @@ function DirectorDashboard({
 
               {/* Question 4: Financial Health (CONSOLIDATED) */}
               <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-300">
-                <CardHeader className="p-8 pb-4">
+                <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl"><Banknote className="h-6 w-6" /></div>
                     <div>
@@ -5360,6 +5419,16 @@ function DirectorDashboard({
                       <CardTitle className="text-xl font-black text-slate-800">Q4: Is the school financially healthy?</CardTitle>
                     </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSyncFinancialSummary}
+                    disabled={isSyncingFinancials}
+                    className="rounded-xl font-bold text-xs border-emerald-200 text-emerald-700 hover:bg-emerald-50 gap-1.5 shadow-sm"
+                  >
+                    {isSyncingFinancials ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                    {isSyncingFinancials ? 'Syncing...' : 'Sync Financials'}
+                  </Button>
                 </CardHeader>
                 <CardContent className="p-8 pt-4">
                   {hasFinanceAccess ? (
