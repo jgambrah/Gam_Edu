@@ -2688,7 +2688,7 @@ function AcademicPerformanceDashboardView({
   financialRecords,
   schoolData,
 }: any) {
-  const { firestore } = useFirebase();
+  const firestore = useFirestore();
   const { toast } = useToast();
   const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
 
