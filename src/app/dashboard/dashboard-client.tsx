@@ -765,51 +765,68 @@ function AdminDashboard({
     if (!firestore || !schoolId) return;
     setIsSyncingFinancials(true);
     try {
+      const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
+      const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
+      const recordsSnap = await getDocs(recordsQ);
+
       let totalBilled = 0;
       let totalPaid = 0;
       let totalWaivers = 0;
+      let overpayments = 0;
 
-      // 1. Calculate from active students array if available
-      if (activeStudents && activeStudents.length > 0) {
-        activeStudents.forEach((s: any) => {
-          const b = Number(s.totalBilled || s.billedAmount || s.billing?.totalBilled || 0);
-          const p = Number(s.amountPaid || s.totalPaid || s.billing?.amountPaid || 0);
-          const w = Number(s.waiverAmount || s.billing?.waiverAmount || 0);
-          totalBilled += b;
-          totalPaid += p;
-          totalWaivers += w;
-        });
-      }
+      let current = 0;
+      let age30 = 0;
+      let age60 = 0;
+      let age90 = 0;
+      const today = startOfDay(new Date());
 
-      // 2. Fetch all financial records for the school if student objects don't store aggregate billing
-      if (totalBilled === 0 || totalPaid === 0) {
-        const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
-        const recordsSnap = await getDocs(recordsQ);
+      recordsSnap.docs.forEach((d) => {
+        const r = d.data();
+        if (r.status === 'Pending Reversal') return;
+        
+        // Exclude inactive / withdrawn / graduated students
+        if (r.studentId && activeStudentIds.size > 0 && !activeStudentIds.has(r.studentId)) {
+          return;
+        }
 
-        recordsSnap.docs.forEach((d) => {
-          const data = d.data();
-          if (data.status === 'Pending Reversal') return;
-          const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
-          const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
-          const waiver = Number(data.waiverAmount || data.waiver || 0);
+        const billed = Number(r.billedAmount || r.totalBilled || r.amount || 0);
+        const paid = Number(r.amountPaid || r.totalPaid || r.paid || 0);
+        const waiver = Number(r.waiverAmount || r.waiver || 0);
 
-          totalBilled += billed;
-          totalPaid += paid;
-          totalWaivers += waiver;
-        });
-      }
+        totalBilled += billed;
+        totalPaid += paid;
+        totalWaivers += waiver;
 
-      // 3. Fallback to dashboardSummary pre-calculated figures if raw records are unseeded
+        const balance = billed - paid - waiver;
+
+        if (balance < 0) {
+          overpayments += Math.abs(balance);
+        } else if (balance > 0.01) {
+          const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : (r.dueDate ? new Date(r.dueDate) : today);
+          const diffTime = today.getTime() - startOfDay(dueDate).getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays <= 0) {
+            current += balance;
+          } else if (diffDays <= 30) {
+            age30 += balance;
+          } else if (diffDays <= 60) {
+            age60 += balance;
+          } else {
+            age90 += balance;
+          }
+        }
+      });
+
+      const grossOutstanding = current + age30 + age60 + age90;
+      const netOutstanding = Math.max(0, grossOutstanding - overpayments);
+      const totalOutstanding = grossOutstanding || netOutstanding;
+
       if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
         totalBilled = dashboardSummary.financials.totalBilled;
       }
       if (totalPaid === 0 && dashboardSummary?.financials?.totalRevenue) {
         totalPaid = dashboardSummary.financials.totalRevenue;
-      }
-
-      let totalOutstanding = Math.max(0, totalBilled - totalPaid - totalWaivers);
-      if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
-        totalOutstanding = dashboardSummary.financials.totalOutstanding;
       }
 
       const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : (dashboardSummary?.financials?.collectionRate ?? 73);
@@ -831,10 +848,17 @@ function AdminDashboard({
           totalOutstanding,
           collectionRate
         },
+        debtAging: {
+          current,
+          age30,
+          age60,
+          age90,
+          overpayments
+        },
         lastUpdated: serverTimestamp()
       }, { merge: true });
 
-      toast({ title: "Financial Summary Synced", description: "Updated overview with complete collection totals." });
+      toast({ title: "Financial Summary Synced", description: "Updated active student financial ledger totals." });
     } catch (err) {
       console.error("Error syncing financial summary:", err);
       toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync financial records." });
@@ -4739,51 +4763,68 @@ function DirectorDashboard({
     if (!firestore || !schoolId) return;
     setIsSyncingFinancials(true);
     try {
+      const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
+      const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
+      const recordsSnap = await getDocs(recordsQ);
+
       let totalBilled = 0;
       let totalPaid = 0;
       let totalWaivers = 0;
+      let overpayments = 0;
 
-      // 1. Calculate from active students array if available
-      if (activeStudents && activeStudents.length > 0) {
-        activeStudents.forEach((s: any) => {
-          const b = Number(s.totalBilled || s.billedAmount || s.billing?.totalBilled || 0);
-          const p = Number(s.amountPaid || s.totalPaid || s.billing?.amountPaid || 0);
-          const w = Number(s.waiverAmount || s.billing?.waiverAmount || 0);
-          totalBilled += b;
-          totalPaid += p;
-          totalWaivers += w;
-        });
-      }
+      let current = 0;
+      let age30 = 0;
+      let age60 = 0;
+      let age90 = 0;
+      const today = startOfDay(new Date());
 
-      // 2. Fetch all financial records for the school if student objects don't store aggregate billing
-      if (totalBilled === 0 || totalPaid === 0) {
-        const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
-        const recordsSnap = await getDocs(recordsQ);
+      recordsSnap.docs.forEach((d) => {
+        const r = d.data();
+        if (r.status === 'Pending Reversal') return;
+        
+        // Exclude inactive / withdrawn / graduated students
+        if (r.studentId && activeStudentIds.size > 0 && !activeStudentIds.has(r.studentId)) {
+          return;
+        }
 
-        recordsSnap.docs.forEach((d) => {
-          const data = d.data();
-          if (data.status === 'Pending Reversal') return;
-          const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
-          const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
-          const waiver = Number(data.waiverAmount || data.waiver || 0);
+        const billed = Number(r.billedAmount || r.totalBilled || r.amount || 0);
+        const paid = Number(r.amountPaid || r.totalPaid || r.paid || 0);
+        const waiver = Number(r.waiverAmount || r.waiver || 0);
 
-          totalBilled += billed;
-          totalPaid += paid;
-          totalWaivers += waiver;
-        });
-      }
+        totalBilled += billed;
+        totalPaid += paid;
+        totalWaivers += waiver;
 
-      // 3. Fallback to dashboardSummary pre-calculated figures if raw records are unseeded
+        const balance = billed - paid - waiver;
+
+        if (balance < 0) {
+          overpayments += Math.abs(balance);
+        } else if (balance > 0.01) {
+          const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : (r.dueDate ? new Date(r.dueDate) : today);
+          const diffTime = today.getTime() - startOfDay(dueDate).getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays <= 0) {
+            current += balance;
+          } else if (diffDays <= 30) {
+            age30 += balance;
+          } else if (diffDays <= 60) {
+            age60 += balance;
+          } else {
+            age90 += balance;
+          }
+        }
+      });
+
+      const grossOutstanding = current + age30 + age60 + age90;
+      const netOutstanding = Math.max(0, grossOutstanding - overpayments);
+      const totalOutstanding = grossOutstanding || netOutstanding;
+
       if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
         totalBilled = dashboardSummary.financials.totalBilled;
       }
       if (totalPaid === 0 && dashboardSummary?.financials?.totalRevenue) {
         totalPaid = dashboardSummary.financials.totalRevenue;
-      }
-
-      let totalOutstanding = Math.max(0, totalBilled - totalPaid - totalWaivers);
-      if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
-        totalOutstanding = dashboardSummary.financials.totalOutstanding;
       }
 
       const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : (dashboardSummary?.financials?.collectionRate ?? 73);
@@ -4805,10 +4846,17 @@ function DirectorDashboard({
           totalOutstanding,
           collectionRate
         },
+        debtAging: {
+          current,
+          age30,
+          age60,
+          age90,
+          overpayments
+        },
         lastUpdated: serverTimestamp()
       }, { merge: true });
 
-      toast({ title: "Financial Summary Synced", description: "Updated overview with complete collection totals." });
+      toast({ title: "Financial Summary Synced", description: "Updated active student financial ledger totals." });
     } catch (err) {
       console.error("Error syncing financial summary:", err);
       toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync financial records." });
