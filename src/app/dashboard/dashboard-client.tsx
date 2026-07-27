@@ -765,50 +765,53 @@ function AdminDashboard({
     if (!firestore || !schoolId) return;
     setIsSyncingFinancials(true);
     try {
-      const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(300));
-      const recordsSnap = await getDocs(recordsQ);
       let totalBilled = 0;
       let totalPaid = 0;
-      let totalWaivers = 0;
       let totalOutstanding = 0;
 
-      recordsSnap.docs.forEach((d) => {
-        const data = d.data();
-        if (data.status === 'Pending Reversal') return;
-        const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
-        const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
-        const waiver = Number(data.waiverAmount || data.waiver || 0);
-
-        totalBilled += billed;
-        totalPaid += paid;
-        totalWaivers += waiver;
-
-        const bal = billed - paid - waiver;
-        if (bal > 0) {
-          totalOutstanding += bal;
-        } else if (data.balance && Number(data.balance) > 0) {
-          totalOutstanding += Number(data.balance);
-        }
-      });
-
-      if (totalPaid === 0) {
-        const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
-        const paymentsSnap = await getDocs(paymentsQ);
-        paymentsSnap.docs.forEach((d) => {
-          const data = d.data();
-          totalPaid += Number(data.amountPaid || data.amount || data.paid || 0);
+      // 1. Calculate from active students array if available
+      if (activeStudents && activeStudents.length > 0) {
+        activeStudents.forEach((s: any) => {
+          const b = Number(s.totalBilled || s.billedAmount || s.billing?.totalBilled || 0);
+          const p = Number(s.amountPaid || s.totalPaid || s.billing?.amountPaid || 0);
+          const bal = Number(s.balance || s.outstandingBalance || s.billing?.outstandingBalance || 0);
+          totalBilled += b;
+          totalPaid += p;
+          if (bal > 0) totalOutstanding += bal;
         });
       }
 
-      if (totalBilled === 0) {
-        if (totalPaid > 0 || totalOutstanding > 0) {
-          totalBilled = totalPaid + totalOutstanding;
-        }
-        if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
-          totalBilled = dashboardSummary.financials.totalBilled;
-        }
+      // 2. Fetch all financial records for the school (on-demand 1-time sync without limit truncation)
+      if (totalBilled === 0 || totalPaid === 0) {
+        const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
+        const recordsSnap = await getDocs(recordsQ);
+
+        recordsSnap.docs.forEach((d) => {
+          const data = d.data();
+          if (data.status === 'Pending Reversal') return;
+          const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
+          const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
+          const waiver = Number(data.waiverAmount || data.waiver || 0);
+
+          totalBilled += billed;
+          totalPaid += paid;
+
+          const bal = billed - paid - waiver;
+          if (bal > 0) {
+            totalOutstanding += bal;
+          } else if (data.balance && Number(data.balance) > 0) {
+            totalOutstanding += Number(data.balance);
+          }
+        });
       }
 
+      // 3. Fallback to dashboardSummary pre-calculated figures if raw records are unseeded
+      if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
+        totalBilled = dashboardSummary.financials.totalBilled;
+      }
+      if (totalPaid === 0 && dashboardSummary?.financials?.totalRevenue) {
+        totalPaid = dashboardSummary.financials.totalRevenue;
+      }
       if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
         totalOutstanding = dashboardSummary.financials.totalOutstanding;
       }
@@ -835,7 +838,7 @@ function AdminDashboard({
         lastUpdated: serverTimestamp()
       }, { merge: true });
 
-      toast({ title: "Financial Summary Synced", description: "Updated overview with live collection totals." });
+      toast({ title: "Financial Summary Synced", description: "Updated overview with complete collection totals." });
     } catch (err) {
       console.error("Error syncing financial summary:", err);
       toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync financial records." });
@@ -4740,50 +4743,53 @@ function DirectorDashboard({
     if (!firestore || !schoolId) return;
     setIsSyncingFinancials(true);
     try {
-      const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(300));
-      const recordsSnap = await getDocs(recordsQ);
       let totalBilled = 0;
       let totalPaid = 0;
-      let totalWaivers = 0;
       let totalOutstanding = 0;
 
-      recordsSnap.docs.forEach((d) => {
-        const data = d.data();
-        if (data.status === 'Pending Reversal') return;
-        const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
-        const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
-        const waiver = Number(data.waiverAmount || data.waiver || 0);
-
-        totalBilled += billed;
-        totalPaid += paid;
-        totalWaivers += waiver;
-
-        const bal = billed - paid - waiver;
-        if (bal > 0) {
-          totalOutstanding += bal;
-        } else if (data.balance && Number(data.balance) > 0) {
-          totalOutstanding += Number(data.balance);
-        }
-      });
-
-      if (totalPaid === 0) {
-        const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
-        const paymentsSnap = await getDocs(paymentsQ);
-        paymentsSnap.docs.forEach((d) => {
-          const data = d.data();
-          totalPaid += Number(data.amountPaid || data.amount || data.paid || 0);
+      // 1. Calculate from active students array if available
+      if (activeStudents && activeStudents.length > 0) {
+        activeStudents.forEach((s: any) => {
+          const b = Number(s.totalBilled || s.billedAmount || s.billing?.totalBilled || 0);
+          const p = Number(s.amountPaid || s.totalPaid || s.billing?.amountPaid || 0);
+          const bal = Number(s.balance || s.outstandingBalance || s.billing?.outstandingBalance || 0);
+          totalBilled += b;
+          totalPaid += p;
+          if (bal > 0) totalOutstanding += bal;
         });
       }
 
-      if (totalBilled === 0) {
-        if (totalPaid > 0 || totalOutstanding > 0) {
-          totalBilled = totalPaid + totalOutstanding;
-        }
-        if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
-          totalBilled = dashboardSummary.financials.totalBilled;
-        }
+      // 2. Fetch all financial records for the school (on-demand 1-time sync without limit truncation)
+      if (totalBilled === 0 || totalPaid === 0) {
+        const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
+        const recordsSnap = await getDocs(recordsQ);
+
+        recordsSnap.docs.forEach((d) => {
+          const data = d.data();
+          if (data.status === 'Pending Reversal') return;
+          const billed = Number(data.billedAmount || data.totalBilled || data.amount || 0);
+          const paid = Number(data.amountPaid || data.totalPaid || data.paid || 0);
+          const waiver = Number(data.waiverAmount || data.waiver || 0);
+
+          totalBilled += billed;
+          totalPaid += paid;
+
+          const bal = billed - paid - waiver;
+          if (bal > 0) {
+            totalOutstanding += bal;
+          } else if (data.balance && Number(data.balance) > 0) {
+            totalOutstanding += Number(data.balance);
+          }
+        });
       }
 
+      // 3. Fallback to dashboardSummary pre-calculated figures if raw records are unseeded
+      if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
+        totalBilled = dashboardSummary.financials.totalBilled;
+      }
+      if (totalPaid === 0 && dashboardSummary?.financials?.totalRevenue) {
+        totalPaid = dashboardSummary.financials.totalRevenue;
+      }
       if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
         totalOutstanding = dashboardSummary.financials.totalOutstanding;
       }
@@ -4810,7 +4816,7 @@ function DirectorDashboard({
         lastUpdated: serverTimestamp()
       }, { merge: true });
 
-      toast({ title: "Financial Summary Synced", description: "Updated overview with live collection totals." });
+      toast({ title: "Financial Summary Synced", description: "Updated overview with complete collection totals." });
     } catch (err) {
       console.error("Error syncing financial summary:", err);
       toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync financial records." });
