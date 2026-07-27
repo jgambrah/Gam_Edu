@@ -557,41 +557,76 @@ function AdminDashboard({
   }, [attendance, students, classes, startOfToday]);
 
   const todayTeacherAttendance = useMemo(() => {
-    if (!staffAttendance || !staff) return { present: [], absent: [], late: [] };
-    const todayRecs = staffAttendance.filter((r: any) => {
-      if (!r.timestamp) return false;
-      const dateObj = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
-      return startOfDay(dateObj).getTime() === startOfToday.getTime();
-    });
-    const checkIns = todayRecs.filter((r: any) => r.type === 'In');
-    const presentIds = new Set(checkIns.map((r: any) => r.staffId));
+    if (!staff) return { present: [], absent: [], late: [] };
+    
+    const presentIds = new Set<string>();
+    const lates: any[] = [];
+
+    // 1. Process staff_attendance records for today
+    if (staffAttendance && staffAttendance.length > 0) {
+      const todayRecs = staffAttendance.filter((r: any) => {
+        if (!r.timestamp && !r.date && !r.createdAt) return false;
+        const ts = r.timestamp || r.date || r.createdAt;
+        const dateObj = ts.toDate ? ts.toDate() : new Date(ts);
+        return startOfDay(dateObj).getTime() === startOfToday.getTime();
+      });
+
+      todayRecs.forEach((r: any) => {
+        const isPresentOrLate = r.type === 'In' || r.type === 'check-in' || r.status === 'Present' || r.status === 'Late' || r.status === 'On Time' || !r.type;
+        if (isPresentOrLate) {
+          if (r.staffId) presentIds.add(r.staffId);
+          if (r.uid) presentIds.add(r.uid);
+          if (r.userId) presentIds.add(r.userId);
+          if (r.email) presentIds.add(r.email.toLowerCase());
+
+          if (r.status === 'Late') {
+            const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : (r.timestamp ? format(new Date(r.timestamp), 'hh:mm a') : 'Today');
+            lates.push({
+              id: r.staffId || r.uid,
+              name: r.staffName || "Staff Member",
+              time: timeStr
+            });
+          }
+        }
+      });
+    }
+
+    // 2. Cross-reference student class attendance taken today by teachers
+    if (attendance && attendance.length > 0) {
+      attendance.forEach((r: any) => {
+        if (!r.date) return;
+        const dObj = r.date.toDate ? r.date.toDate() : new Date(r.date);
+        if (startOfDay(dObj).getTime() === startOfToday.getTime()) {
+          const tId = r.teacherId || r.staffId || r.createdBy || r.updatedBy;
+          if (tId) presentIds.add(tId);
+        }
+      });
+    }
+
     const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
 
     const today = startOfToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     const isVacation = schoolData?.vacationMode === true;
-    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && checkIns.length === 0;
+    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && presentIds.size === 0;
 
     const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
 
     const absentTeachers = shouldFlagAbsences
-      ? teachersList.filter((t: any) => !presentIds.has(t.uid || t.id)).map((t: any) => ({
+      ? teachersList.filter((t: any) => {
+          const tid = t.uid || t.id;
+          const temail = t.email?.toLowerCase();
+          const isPresent = (tid && presentIds.has(tid)) || (temail && presentIds.has(temail));
+          return !isPresent;
+        }).map((t: any) => ({
           id: t.uid || t.id,
-          name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
+          name: `${t.firstName || ""} ${t.lastName || ""}`.trim() || t.name || "Teacher",
           email: t.email || "No Email"
         }))
       : [];
 
-    const lates = checkIns.filter((r: any) => r.status === 'Late').map((r: any) => {
-      const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : format(new Date(r.timestamp), 'hh:mm a');
-      return {
-        id: r.staffId,
-        name: r.staffName || "Unknown Staff",
-        time: timeStr
-      };
-    });
     return { present: Array.from(presentIds), absent: absentTeachers, late: lates };
-  }, [staffAttendance, staff, startOfToday, schoolData]);
+  }, [staffAttendance, attendance, staff, startOfToday, schoolData]);
 
   const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
   const [syncedAcademicData, setSyncedAcademicData] = useState<any>(null);
@@ -4402,41 +4437,76 @@ function DirectorDashboard({
   }, [attendance, students, classes, startOfToday]);
 
   const todayTeacherAttendance = useMemo(() => {
-    if (!staffAttendance || !staff) return { present: [], absent: [], late: [] };
-    const todayRecs = staffAttendance.filter((r: any) => {
-      if (!r.timestamp) return false;
-      const dateObj = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
-      return startOfDay(dateObj).getTime() === startOfToday.getTime();
-    });
-    const checkIns = todayRecs.filter((r: any) => r.type === 'In');
-    const presentIds = new Set(checkIns.map((r: any) => r.staffId));
+    if (!staff) return { present: [], absent: [], late: [] };
+    
+    const presentIds = new Set<string>();
+    const lates: any[] = [];
+
+    // 1. Process staff_attendance records for today
+    if (staffAttendance && staffAttendance.length > 0) {
+      const todayRecs = staffAttendance.filter((r: any) => {
+        if (!r.timestamp && !r.date && !r.createdAt) return false;
+        const ts = r.timestamp || r.date || r.createdAt;
+        const dateObj = ts.toDate ? ts.toDate() : new Date(ts);
+        return startOfDay(dateObj).getTime() === startOfToday.getTime();
+      });
+
+      todayRecs.forEach((r: any) => {
+        const isPresentOrLate = r.type === 'In' || r.type === 'check-in' || r.status === 'Present' || r.status === 'Late' || r.status === 'On Time' || !r.type;
+        if (isPresentOrLate) {
+          if (r.staffId) presentIds.add(r.staffId);
+          if (r.uid) presentIds.add(r.uid);
+          if (r.userId) presentIds.add(r.userId);
+          if (r.email) presentIds.add(r.email.toLowerCase());
+
+          if (r.status === 'Late') {
+            const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : (r.timestamp ? format(new Date(r.timestamp), 'hh:mm a') : 'Today');
+            lates.push({
+              id: r.staffId || r.uid,
+              name: r.staffName || "Staff Member",
+              time: timeStr
+            });
+          }
+        }
+      });
+    }
+
+    // 2. Cross-reference student class attendance taken today by teachers
+    if (attendance && attendance.length > 0) {
+      attendance.forEach((r: any) => {
+        if (!r.date) return;
+        const dObj = r.date.toDate ? r.date.toDate() : new Date(r.date);
+        if (startOfDay(dObj).getTime() === startOfToday.getTime()) {
+          const tId = r.teacherId || r.staffId || r.createdBy || r.updatedBy;
+          if (tId) presentIds.add(tId);
+        }
+      });
+    }
+
     const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
 
     const today = startOfToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     const isVacation = schoolData?.vacationMode === true;
-    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && checkIns.length === 0;
+    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && presentIds.size === 0;
 
     const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
 
     const absentTeachers = shouldFlagAbsences
-      ? teachersList.filter((t: any) => !presentIds.has(t.uid || t.id)).map((t: any) => ({
+      ? teachersList.filter((t: any) => {
+          const tid = t.uid || t.id;
+          const temail = t.email?.toLowerCase();
+          const isPresent = (tid && presentIds.has(tid)) || (temail && presentIds.has(temail));
+          return !isPresent;
+        }).map((t: any) => ({
           id: t.uid || t.id,
-          name: `${t.firstName || ""} ${t.lastName || ""}`.trim(),
+          name: `${t.firstName || ""} ${t.lastName || ""}`.trim() || t.name || "Teacher",
           email: t.email || "No Email"
         }))
       : [];
 
-    const lates = checkIns.filter((r: any) => r.status === 'Late').map((r: any) => {
-      const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : format(new Date(r.timestamp), 'hh:mm a');
-      return {
-        id: r.staffId,
-        name: r.staffName || "Unknown Staff",
-        time: timeStr
-      };
-    });
     return { present: Array.from(presentIds), absent: absentTeachers, late: lates };
-  }, [staffAttendance, staff, startOfToday, schoolData]);
+  }, [staffAttendance, attendance, staff, startOfToday, schoolData]);
 
   // Canteen Inventory & Requisitions
   const canteenInventoryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'kitchen_inventory'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -14119,8 +14189,9 @@ export default function DashboardClient() {
 
   const staffAttendanceQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
-    const isNeeded = (role === 'Director') || (role === 'Administrator' && (adminActiveTab === 'attendance' || adminActiveTab === 'staff'));
-    return isNeeded ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), limit(150)) : null;
+    const isNeeded = (role === 'Director') || 
+                     (role === 'Administrator' && (adminActiveTab === 'overview' || adminActiveTab === 'attendance' || adminActiveTab === 'staff'));
+    return isNeeded ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), limit(250)) : null;
   }, [firestore, schoolId, role, adminActiveTab]);
   const { data: staffAttendance, isLoading: loadingStaffAttendance } = useCollection<any>(staffAttendanceQuery);
 
