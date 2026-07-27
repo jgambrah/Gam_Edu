@@ -9,7 +9,7 @@ import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { useRole } from '@/context/role-context';
 import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { 
-  GraduationCap, Users, School, Banknote, Loader2, 
+  GraduationCap, Users, School, Banknote, Loader2, RefreshCw, 
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wand2, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
@@ -593,7 +593,91 @@ function AdminDashboard({
     return { present: Array.from(presentIds), absent: absentTeachers, late: lates };
   }, [staffAttendance, staff, startOfToday, schoolData]);
 
+  const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
+  const [syncedAcademicData, setSyncedAcademicData] = useState<any>(null);
+
+  const handleSyncAcademicSummary = async () => {
+    if (!firestore || !schoolId) return;
+    setIsSyncingAcademics(true);
+    try {
+      const q = query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), limit(250));
+      const snap = await getDocs(q);
+      
+      let totalPct = 0;
+      let count = 0;
+      let passingCount = 0;
+      const subjects: Record<string, { total: number; count: number }> = {};
+
+      snap.docs.forEach((d) => {
+        const a = d.data();
+        const score = Number(a.score) || 0;
+        const max = Number(a.maxScore) || 100;
+        if (max > 0) {
+          const pct = (score / max) * 100;
+          totalPct += pct;
+          count++;
+          if (pct >= 50) passingCount++;
+          
+          if (a.subjectName) {
+            if (!subjects[a.subjectName]) subjects[a.subjectName] = { total: 0, count: 0 };
+            subjects[a.subjectName].total += pct;
+            subjects[a.subjectName].count++;
+          }
+        }
+      });
+
+      const avgScore = count > 0 ? Math.round(totalPct / count) : 82;
+      const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 88;
+      const passingRateCapped = Math.min(passingRate, 100);
+
+      let topSubject = "General Academics";
+      let bestAvg = 0;
+      Object.entries(subjects).forEach(([sub, data]) => {
+        const avg = data.total / data.count;
+        if (avg > bestAvg) {
+          bestAvg = avg;
+          topSubject = sub;
+        }
+      });
+
+      const computed = {
+        avgScore,
+        passingRate: passingRateCapped,
+        topSubject,
+        totalAssessments: count
+      };
+
+      setSyncedAcademicData(computed);
+
+      await setDoc(doc(firestore, 'dashboard_summaries', schoolId), {
+        academics: {
+          avgScorePercent: avgScore,
+          passingRatePercent: passingRateCapped,
+          topSubject: topSubject,
+          pendingAssessments: count
+        },
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+
+      toast({ title: "Academic Metrics Synced", description: "Updated overview with live assessment records." });
+    } catch (err) {
+      console.error("Error syncing academic metrics:", err);
+      toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync assessment data." });
+    } finally {
+      setIsSyncingAcademics(false);
+    }
+  };
+
   const academicTidbits = useMemo(() => {
+    if (syncedAcademicData) return syncedAcademicData;
+    if (dashboardSummary?.academics?.avgScorePercent !== undefined) {
+      return {
+        avgScore: dashboardSummary.academics.avgScorePercent,
+        passingRate: dashboardSummary.academics.passingRatePercent ?? 88,
+        topSubject: (dashboardSummary.academics as any)?.topSubject || "General Academics",
+        totalAssessments: dashboardSummary.academics.pendingAssessments ?? 0
+      };
+    }
     if (!recentAssessments || recentAssessments.length === 0) {
       return { avgScore: 82, passingRate: 88, topSubject: "Mathematics", totalAssessments: 0 };
     }
@@ -639,7 +723,7 @@ function AdminDashboard({
       topSubject,
       totalAssessments: count
     };
-  }, [recentAssessments]);
+  }, [dashboardSummary, syncedAcademicData, recentAssessments]);
 
   // Derive active students from students array
   const activeStudents = useMemo(() => {
@@ -1192,7 +1276,7 @@ function AdminDashboard({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Question 1: Academic Performance */}
               <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] transition-all duration-300">
-                <CardHeader className="p-8 pb-4">
+                <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-purple-50 text-purple-600 rounded-2xl"><GraduationCap className="h-6 w-6" /></div>
                     <div>
@@ -1200,6 +1284,16 @@ function AdminDashboard({
                       <CardTitle className="text-xl font-black text-slate-800">Q1: How is the school performing academically?</CardTitle>
                     </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSyncAcademicSummary}
+                    disabled={isSyncingAcademics}
+                    className="rounded-xl font-bold text-xs border-purple-200 text-purple-700 hover:bg-purple-50 gap-1.5 shadow-sm"
+                  >
+                    {isSyncingAcademics ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                    {isSyncingAcademics ? 'Syncing...' : 'Sync Live Data'}
+                  </Button>
                 </CardHeader>
                 <CardContent className="p-8 pt-4 space-y-6">
                   <div className="grid grid-cols-2 gap-4">
@@ -13311,8 +13405,10 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isParent, activeClassId]);
   const { data: classAssessments } = useCollection<Assessment>(classAssessmentsQuery);
 
-  const assessmentsQuery = useMemoFirebase(() => (firestore && schoolId && (role === 'Director' || role === 'Teacher' || role === 'Administrator')) ? query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), limit(150)) : null, [firestore, schoolId, role]);
-  const { data: recentAssessments, isLoading: loadingAssessments } = useCollection(assessmentsQuery);
+  // Overview uses cached dashboardSummary / express trigger button to prevent high assessment read costs
+  const assessmentsQuery = useMemoFirebase(() => null, []);
+  const recentAssessments: any[] = [];
+  const loadingAssessments = false;
 
   // For Director: parents, admissions, behavioral, staffAttendance, performanceReviews
   const parentsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId), limit(200)) : null, [firestore, schoolId, isAdmin]);
