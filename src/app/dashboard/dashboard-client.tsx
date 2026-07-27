@@ -13164,11 +13164,11 @@ export default function DashboardClient() {
   // Director gets financial KPIs from summary doc on Overview tab. Raw records are only loaded when opening the Financials tab or for Accountant.
   const isFinancialNeeded = isAccountant || (role === 'Director' && directorActiveTab === 'financials');
 
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isFinancialNeeded]);
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(250)) : null, [firestore, schoolId, isFinancialNeeded]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
   // collectionGroup scan only loaded when viewing Financials tab or for Accountant.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isFinancialNeeded]);
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(250)) : null, [firestore, schoolId, isFinancialNeeded]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);

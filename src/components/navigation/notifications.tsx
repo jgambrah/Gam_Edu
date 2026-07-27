@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, doc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Bell, Mail } from 'lucide-react';
@@ -24,7 +24,7 @@ export default function NotificationBell() {
     const [isOpen, setIsOpen] = useState(false);
 
     const notificationsQuery = useMemoFirebase(
-        () => (user && firestore) ? query(collection(firestore, 'notifications'), where('userId', '==', user.uid), orderBy('createdAt', 'desc')) : null,
+        () => (user && firestore) ? query(collection(firestore, 'notifications'), where('userId', '==', user.uid), orderBy('createdAt', 'desc'), limit(25)) : null,
         [firestore, user]
     );
     const { data: notifications } = useCollection<Notification>(notificationsQuery);
