@@ -4705,7 +4705,66 @@ function DirectorDashboard({
     return parseFloat((effectiveActiveCount / teachers).toFixed(1));
   }, [effectiveActiveCount, staff]);
 
+  const [isSyncingFinancials, setIsSyncingFinancials] = useState(false);
+  const [syncedFinancialData, setSyncedFinancialData] = useState<any>(null);
+
+  const handleSyncFinancialSummary = async () => {
+    if (!firestore || !schoolId) return;
+    setIsSyncingFinancials(true);
+    try {
+      const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(300));
+      const recordsSnap = await getDocs(recordsQ);
+      let totalBilled = 0;
+      let totalOutstanding = 0;
+
+      recordsSnap.docs.forEach((d) => {
+        const data = d.data();
+        totalBilled += Number(data.totalBilled || data.amount || 0);
+        totalOutstanding += Number(data.balance || data.outstandingBalance || 0);
+      });
+
+      const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(300));
+      const paymentsSnap = await getDocs(paymentsQ);
+      let totalCollected = 0;
+
+      paymentsSnap.docs.forEach((d) => {
+        const data = d.data();
+        totalCollected += Number(data.amountPaid || data.amount || 0);
+      });
+
+      const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
+
+      const computed = {
+        totalOutstanding,
+        totalRevenue: totalCollected,
+        totalBilled,
+        collectionRate,
+        revenueByType: []
+      };
+
+      setSyncedFinancialData(computed);
+
+      await setDoc(doc(firestore, 'dashboard_summaries', schoolId), {
+        financials: {
+          totalBilled,
+          totalRevenue: totalCollected,
+          totalOutstanding,
+          collectionRate
+        },
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+
+      toast({ title: "Financial Summary Synced", description: "Updated overview with live collection totals." });
+    } catch (err) {
+      console.error("Error syncing financial summary:", err);
+      toast({ variant: "destructive", title: "Sync Error", description: "Failed to sync financial records." });
+    } finally {
+      setIsSyncingFinancials(false);
+    }
+  };
+
   const financials = useMemo(() => {
+    if (syncedFinancialData) return syncedFinancialData;
     if (dashboardSummary?.financials?.totalBilled !== undefined) {
       return {
         totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
