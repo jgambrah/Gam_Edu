@@ -14072,7 +14072,6 @@ export default function DashboardClient() {
   const { data: leaveRequests, isLoading: loadingLeaves } = useCollection(leaveQuery);
 
   const [selectedChildId, setSelectedChildId] = useState<string>('');
-  const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
 
   const parentRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
