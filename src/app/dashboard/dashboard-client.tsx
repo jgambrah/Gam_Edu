@@ -767,21 +767,21 @@ function AdminDashboard({
     try {
       let totalBilled = 0;
       let totalPaid = 0;
-      let totalOutstanding = 0;
+      let totalWaivers = 0;
 
       // 1. Calculate from active students array if available
       if (activeStudents && activeStudents.length > 0) {
         activeStudents.forEach((s: any) => {
           const b = Number(s.totalBilled || s.billedAmount || s.billing?.totalBilled || 0);
           const p = Number(s.amountPaid || s.totalPaid || s.billing?.amountPaid || 0);
-          const bal = Number(s.balance || s.outstandingBalance || s.billing?.outstandingBalance || 0);
+          const w = Number(s.waiverAmount || s.billing?.waiverAmount || 0);
           totalBilled += b;
           totalPaid += p;
-          if (bal > 0) totalOutstanding += bal;
+          totalWaivers += w;
         });
       }
 
-      // 2. Fetch all financial records for the school (on-demand 1-time sync without limit truncation)
+      // 2. Fetch all financial records for the school if student objects don't store aggregate billing
       if (totalBilled === 0 || totalPaid === 0) {
         const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
         const recordsSnap = await getDocs(recordsQ);
@@ -795,13 +795,7 @@ function AdminDashboard({
 
           totalBilled += billed;
           totalPaid += paid;
-
-          const bal = billed - paid - waiver;
-          if (bal > 0) {
-            totalOutstanding += bal;
-          } else if (data.balance && Number(data.balance) > 0) {
-            totalOutstanding += Number(data.balance);
-          }
+          totalWaivers += waiver;
         });
       }
 
@@ -812,6 +806,8 @@ function AdminDashboard({
       if (totalPaid === 0 && dashboardSummary?.financials?.totalRevenue) {
         totalPaid = dashboardSummary.financials.totalRevenue;
       }
+
+      let totalOutstanding = Math.max(0, totalBilled - totalPaid - totalWaivers);
       if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
         totalOutstanding = dashboardSummary.financials.totalOutstanding;
       }
@@ -4745,21 +4741,21 @@ function DirectorDashboard({
     try {
       let totalBilled = 0;
       let totalPaid = 0;
-      let totalOutstanding = 0;
+      let totalWaivers = 0;
 
       // 1. Calculate from active students array if available
       if (activeStudents && activeStudents.length > 0) {
         activeStudents.forEach((s: any) => {
           const b = Number(s.totalBilled || s.billedAmount || s.billing?.totalBilled || 0);
           const p = Number(s.amountPaid || s.totalPaid || s.billing?.amountPaid || 0);
-          const bal = Number(s.balance || s.outstandingBalance || s.billing?.outstandingBalance || 0);
+          const w = Number(s.waiverAmount || s.billing?.waiverAmount || 0);
           totalBilled += b;
           totalPaid += p;
-          if (bal > 0) totalOutstanding += bal;
+          totalWaivers += w;
         });
       }
 
-      // 2. Fetch all financial records for the school (on-demand 1-time sync without limit truncation)
+      // 2. Fetch all financial records for the school if student objects don't store aggregate billing
       if (totalBilled === 0 || totalPaid === 0) {
         const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
         const recordsSnap = await getDocs(recordsQ);
@@ -4773,13 +4769,7 @@ function DirectorDashboard({
 
           totalBilled += billed;
           totalPaid += paid;
-
-          const bal = billed - paid - waiver;
-          if (bal > 0) {
-            totalOutstanding += bal;
-          } else if (data.balance && Number(data.balance) > 0) {
-            totalOutstanding += Number(data.balance);
-          }
+          totalWaivers += waiver;
         });
       }
 
@@ -4790,6 +4780,8 @@ function DirectorDashboard({
       if (totalPaid === 0 && dashboardSummary?.financials?.totalRevenue) {
         totalPaid = dashboardSummary.financials.totalRevenue;
       }
+
+      let totalOutstanding = Math.max(0, totalBilled - totalPaid - totalWaivers);
       if (totalOutstanding === 0 && dashboardSummary?.financials?.totalOutstanding) {
         totalOutstanding = dashboardSummary.financials.totalOutstanding;
       }
