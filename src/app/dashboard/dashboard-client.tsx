@@ -5840,7 +5840,7 @@ function DirectorDashboard({
               {/* Question 2: Student Behavior & Progress */}
               <Link href="/dashboard/assessments" className="block group">
                 <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white hover:shadow-[0_30px_60px_-15px_rgba(99,102,241,0.05)] hover:border-sky-100 transition-all duration-300 cursor-pointer">
-                  <CardHeader className="p-8 pb-4">
+                  <CardHeader className="p-8 pb-4 flex flex-row items-center justify-between space-y-0">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-sky-50 text-sky-600 rounded-2xl group-hover:scale-105 transition-transform"><Activity className="h-6 w-6" /></div>
                       <div>
@@ -5851,6 +5851,20 @@ function DirectorDashboard({
                         </CardTitle>
                       </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSyncAttendanceSummary();
+                      }}
+                      disabled={isSyncingAttendance}
+                      className="rounded-xl font-bold text-xs border-sky-200 text-sky-700 hover:bg-sky-50 gap-1.5 shadow-sm"
+                    >
+                      {isSyncingAttendance ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                      {isSyncingAttendance ? 'Syncing...' : 'Sync Attendance'}
+                    </Button>
                   </CardHeader>
                   <CardContent className="p-8 pt-4 space-y-6">
                     <div className="grid grid-cols-2 gap-4">
