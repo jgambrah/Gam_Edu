@@ -19,6 +19,7 @@ export async function generateScienceFactAction(schoolId: string, topic?: string
       prompt: promptText,
       config: {
         temperature: 0.7,
+        maxOutputTokens: 256,
       },
     });
 

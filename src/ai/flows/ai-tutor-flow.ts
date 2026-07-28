@@ -73,6 +73,7 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
       prompt: prompt,
       config: { 
         temperature: 0.4, 
+        maxOutputTokens: 1024,
       }, 
     });
 

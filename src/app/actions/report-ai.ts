@@ -69,7 +69,7 @@ export async function generateReportCommentAction(
     const response = await ai.generate({
       model: 'googleai/gemini-3-flash-preview', 
       prompt: prompt,
-      config: { temperature: 0.7 }
+      config: { temperature: 0.7, maxOutputTokens: 512 }
     });
 
     const text = response.text;
