@@ -873,7 +873,7 @@ export default function AcademicReportsPage() {
                             </Button>
                         </div>
                     </div>
-                ))
+                )
             ) : selectedSubjectId === 'all' ? (
                 /* ========================================================================= */
                 /* CLASS OVERVIEW DASHBOARD (ALL SUBJECTS SUMMARY)                          */
