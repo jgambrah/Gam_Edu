@@ -2,8 +2,19 @@
 
 import { useState, useMemo } from 'react';
 import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, orderBy } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, getDoc } from 'firebase/firestore';
 import { ReportCard, Student } from '@/lib/types';
+
+/** On-demand single fetch for archived term report cards (NO onSnapshot real-time listener) */
+export async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string) {
+  const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+  const docRef = doc(firestore, 'term_report_cards', docId);
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    return { id: snap.id, ...snap.data() };
+  }
+  return null;
+}
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, AlertTriangle, ShieldAlert, Users, Award, GraduationCap, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';

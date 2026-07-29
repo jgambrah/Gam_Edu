@@ -259,7 +259,11 @@ function AdminApplicationDashboard() {
 
     useEffect(() => {
         if (!firestore || !schoolId) return;
-        const q = query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId));
+        const q = query(
+            collection(firestore, 'admissionApplications'),
+            where('schoolId', '==', schoolId),
+            where('isArchived', '!=', true)
+        );
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             apps.sort((a: any, b: any) => {
@@ -275,7 +279,11 @@ function AdminApplicationDashboard() {
 
     useEffect(() => {
         if (!firestore || !schoolId) return;
-        const q = query(collection(firestore, 'admissionEnquiries'), where('schoolId', '==', schoolId));
+        const q = query(
+            collection(firestore, 'admissionEnquiries'),
+            where('schoolId', '==', schoolId),
+            where('isArchived', '!=', true)
+        );
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const enqs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             enqs.sort((a: any, b: any) => {

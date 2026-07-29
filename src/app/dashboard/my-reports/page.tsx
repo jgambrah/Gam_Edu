@@ -4,7 +4,18 @@ import { useState, useMemo, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, orderBy, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, getDoc } from 'firebase/firestore';
+
+/** On-demand single fetch for archived term report cards (NO onSnapshot real-time listener) */
+export async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string) {
+  const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+  const docRef = doc(firestore, 'term_report_cards', docId);
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    return { id: snap.id, ...snap.data() };
+  }
+  return null;
+}
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

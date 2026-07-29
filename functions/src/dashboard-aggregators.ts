@@ -37,11 +37,13 @@ function getYYYYMMDD(val: any): string {
 }
 
 /** Helper to recalculate financial metrics for a school considering active students */
-async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
-  // Fetch active students first
-  const studentsSnap = await db.collection('students')
+async function recalculateSchoolFinancials(schoolId: string, eventTermId?: string): Promise<void> {
+  // Fetch active students first (excluding archived students)
+  let studentsQuery = db.collection('students')
     .where('schoolId', '==', schoolId)
-    .get();
+    .where('isArchived', '!=', true);
+  
+  const studentsSnap = await studentsQuery.get();
   
   const activeStudentIds = new Set<string>();
   studentsSnap.forEach(sDoc => {
@@ -51,15 +53,27 @@ async function recalculateSchoolFinancials(schoolId: string): Promise<void> {
     }
   });
 
-  // Fetch all financial records for this school to calculate full, accurate aggregates
-  const snap = await db.collection('financialRecords')
+  // Build scoped query for active financial records
+  let recordsQuery = db.collection('financialRecords')
     .where('schoolId', '==', schoolId)
-    .get();
+    .where('isArchived', '!=', true);
 
-  // Fetch all payments for this school via collectionGroup to calculate collections today/this month
-  const paymentsSnap = await db.collectionGroup('payments')
+  if (eventTermId) {
+    recordsQuery = recordsQuery.where('termId', '==', eventTermId);
+  }
+
+  const snap = await recordsQuery.get();
+
+  // Build scoped query for active payments via collectionGroup
+  let paymentsQuery = db.collectionGroup('payments')
     .where('schoolId', '==', schoolId)
-    .get();
+    .where('isArchived', '!=', true);
+
+  if (eventTermId) {
+    paymentsQuery = paymentsQuery.where('termId', '==', eventTermId);
+  }
+
+  const paymentsSnap = await paymentsQuery.get();
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -273,7 +287,8 @@ export const onFinancialRecordWrite = onDocumentWritten(
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
 
-    await recalculateSchoolFinancials(schoolId);
+    const termId: string | undefined = after?.termId ?? before?.termId;
+    await recalculateSchoolFinancials(schoolId, termId);
   }
 );
 
@@ -286,7 +301,8 @@ export const onPaymentSubcollectionWrite = onDocumentWritten(
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
 
-    await recalculateSchoolFinancials(schoolId);
+    const termId: string | undefined = after?.termId ?? before?.termId;
+    await recalculateSchoolFinancials(schoolId, termId);
   }
 );
 
@@ -415,6 +431,101 @@ export const onParentWrite = onDocumentWritten(
     }, { merge: true });
   }
 );
+
+// ── PHASE 2: ATTENDANCE SUMMARIZATION ENGINE ─────────────────────────────────
+export async function summarizeTermAttendance(schoolId: string, termId: string): Promise<void> {
+  const snap = await db.collection('attendance')
+    .where('schoolId', '==', schoolId)
+    .where('termId', '==', termId)
+    .get();
+
+  const studentStats: Record<string, { present: number; absent: number; late: number; total: number }> = {};
+  const batch = db.batch();
+
+  snap.forEach(d => {
+    const data = d.data();
+    const studentId = data.studentId as string;
+    if (!studentId) return;
+
+    if (!studentStats[studentId]) {
+      studentStats[studentId] = { present: 0, absent: 0, late: 0, total: 0 };
+    }
+
+    studentStats[studentId].total++;
+    if (data.status === 'Present') studentStats[studentId].present++;
+    else if (data.status === 'Absent') studentStats[studentId].absent++;
+    else if (data.status === 'Late') studentStats[studentId].late++;
+
+    // Mark raw daily attendance doc as archived (idempotent)
+    batch.update(d.ref, { isArchived: true });
+  });
+
+  // Write deterministic summary doc per student: att_summary_${schoolId}_${studentId}_${termId}
+  for (const [studentId, stats] of Object.entries(studentStats)) {
+    const docId = `att_summary_${schoolId}_${studentId}_${termId}`;
+    const rate = stats.total > 0 ? Math.round((stats.present / stats.total) * 100) : 0;
+
+    const summaryRef = db.collection('attendance_summaries').doc(docId);
+    batch.set(summaryRef, {
+      schoolId,
+      studentId,
+      termId,
+      totalPresent: stats.present,
+      totalAbsent: stats.absent,
+      totalLate: stats.late,
+      totalDays: stats.total,
+      attendanceRate: rate,
+      isArchived: true,
+      updatedAt: FieldValue.serverTimestamp(),
+    }, { merge: true });
+  }
+
+  await batch.commit();
+}
+
+// ── PHASE 2: ACADEMIC REPORT CARD & GRADEBOOK LOCKING ────────────────────────
+export async function lockTermReportCards(schoolId: string, termId: string): Promise<void> {
+  const reportsSnap = await db.collection('report-cards')
+    .where('schoolId', '==', schoolId)
+    .where('termId', '==', termId)
+    .get();
+
+  const batch = db.batch();
+
+  reportsSnap.forEach(docSnap => {
+    const data = docSnap.data();
+    const studentId = data.studentId as string;
+    if (!studentId) return;
+
+    // Deterministic frozen summary doc ID: term_report_card_${schoolId}_${studentId}_${termId}
+    const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+    const lockedRef = db.collection('term_report_cards').doc(docId);
+
+    batch.set(lockedRef, {
+      ...data,
+      id: docId,
+      schoolId,
+      studentId,
+      termId,
+      isLocked: true,
+      isArchived: true,
+      lockedAt: FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    batch.update(docSnap.ref, { isArchived: true });
+  });
+
+  const assessmentsSnap = await db.collection('assessments')
+    .where('schoolId', '==', schoolId)
+    .where('termId', '==', termId)
+    .get();
+
+  assessmentsSnap.forEach(aDoc => {
+    batch.update(aDoc.ref, { isArchived: true });
+  });
+
+  await batch.commit();
+}
 
 
 

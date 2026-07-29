@@ -33,7 +33,8 @@ export default function ReportSigningPortal() {
     const q = query(
       collection(firestore, "report-cards"),
       where("schoolId", "==", schoolId),
-      where("status", "==", "Draft")
+      where("status", "==", "Draft"),
+      where("isArchived", "!=", true)
     );
 
     const unsubscribe = onSnapshot(q, (snap) => {
