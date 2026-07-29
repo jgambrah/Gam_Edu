@@ -160,6 +160,21 @@ export async function executeTermFinancialRollover(
     }
   });
 
+  // 4b. Flag raw academic & attendance records for ending term as archived
+  const academicCols = ['assessments', 'attendance', 'behavioral_records', 'reportCards'];
+  for (const colName of academicCols) {
+    const colSnap = await db.collection(colName)
+      .where('schoolId', '==', schoolId)
+      .get();
+
+    colSnap.forEach(cDoc => {
+      const cData = cDoc.data();
+      if (cData.isArchived !== true && (cData.termId === currentTermId || !cData.termId)) {
+        batch.update(cDoc.ref, { isArchived: true });
+      }
+    });
+  }
+
   // 5. Update school settings term pointers
   const schoolRef = db.collection('schoolSettings').doc(schoolId);
   batch.set(schoolRef, {

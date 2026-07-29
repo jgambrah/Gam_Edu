@@ -165,6 +165,7 @@ export default function AssessmentsPage() {
         const search = (assessmentSearch || '').toLowerCase();
         return assessments.filter(item => {
             if (!item) return false;
+            if ((item as any).isArchived === true) return false;
             const studentName = String(studentMap.get(item.studentId) || item.studentId || '');
             const className = String((item as any).className || classMap.get(item.classId) || studentClassMap.get(item.studentId) || '');
             const subjectName = String((item as any).subjectName || (item as any).subject || subjectMap.get(item.subjectId) || '');
@@ -186,6 +187,7 @@ export default function AssessmentsPage() {
         const search = (behaviorSearch || '').toLowerCase();
         return records.filter(item => {
             if (!item) return false;
+            if ((item as any).isArchived === true) return false;
             const studentName = String(item.studentName || studentMap.get(item.studentId) || item.studentId || '');
             const incidentType = String(item.incidentType || '');
             const description = String(item.description || '');

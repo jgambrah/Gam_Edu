@@ -159,13 +159,26 @@ export function TermRolloverModal({
         processedCount++;
       }
 
-      // Flag raw term records as archived
+      // Flag raw term financial records as archived
       recSnap.forEach((rDoc) => {
         const rData = rDoc.data();
         if (rData.isArchived !== true) {
           batch.update(rDoc.ref, { isArchived: true });
         }
       });
+
+      // Flag raw academic & attendance records for ending term as archived
+      const academicCols = ['assessments', 'attendance', 'behavioral_records', 'reportCards'];
+      for (const colName of academicCols) {
+        const colQuery = query(collection(firestore, colName), where('schoolId', '==', schoolId));
+        const colSnap = await getDocs(colQuery);
+        colSnap.forEach((cDoc) => {
+          const cData = cDoc.data();
+          if (cData.isArchived !== true && (cData.termId === currentTermId || !cData.termId)) {
+            batch.update(cDoc.ref, { isArchived: true });
+          }
+        });
+      }
 
       // Update schoolSettings term pointer
       const schoolRef = doc(firestore, 'schoolSettings', schoolId);
