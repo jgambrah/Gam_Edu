@@ -5,6 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Button } from '@/components/ui/button';
 import { Loader2, Archive, ArrowRight, ShieldCheck, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useFirestore } from '@/firebase';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 
 interface TermRolloverModalProps {
   schoolId: string;
@@ -22,9 +24,12 @@ export function TermRolloverModal({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const firestore = useFirestore();
 
   const handleConfirmRollover = async () => {
     setLoading(true);
+
+    // 1. Attempt Server API Route execution first
     try {
       const res = await fetch('/api/terms/rollover', {
         method: 'POST',
@@ -36,21 +41,155 @@ export function TermRolloverModal({
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Rollover failed');
+      if (res.ok) {
+        const data = await res.json();
+        toast({
+          title: 'Term Rollover Completed',
+          description: `Successfully processed ${data.processedStudents} student balances. Total arrears carried forward: GH₵${data.totalArrearsCarried?.toFixed(2) || '0.00'}.`,
+        });
+        setOpen(false);
+        onSuccess?.();
+        setLoading(false);
+        return;
+      }
+    } catch (apiErr) {
+      console.warn('API route call failed, switching to direct client-side rollover:', apiErr);
+    }
+
+    // 2. Direct Client-Side Firestore Batch Execution Fallback
+    try {
+      if (!firestore) throw new Error('Firestore connection unavailable');
+
+      // Fetch active students
+      const stQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+      const stSnap = await getDocs(stQuery);
+      const studentMap = new Map<string, string>();
+      stSnap.forEach((sDoc) => {
+        const s = sDoc.data();
+        if (s.isArchived === true) return;
+        if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
+          studentMap.set(sDoc.id, `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Student');
+        }
+      });
+
+      // Fetch financial records for current term
+      const recQuery = query(
+        collection(firestore, 'financialRecords'),
+        where('schoolId', '==', schoolId),
+        where('termId', '==', currentTermId)
+      );
+      const recSnap = await getDocs(recQuery);
+      const studentBalances: Record<string, any> = {};
+
+      recSnap.forEach((rDoc) => {
+        const r = rDoc.data();
+        if (r.isArchived === true) return;
+        const studentId = r.studentId;
+        if (!studentId || !studentMap.has(studentId)) return;
+
+        if (!studentBalances[studentId]) {
+          studentBalances[studentId] = {
+            tuitionArrears: 0,
+            busArrears: 0,
+            canteenArrears: 0,
+            examArrears: 0,
+            otherArrears: 0,
+            totalArrears: 0,
+          };
+        }
+
+        const billed = Number(r.billedAmount ?? r.amount ?? 0);
+        const paid = Number(r.amountPaid ?? 0);
+        const waiver = Number(r.waiverAmount ?? 0);
+        const balance = billed - paid - waiver;
+
+        if (balance <= 0.01) return;
+
+        const category = (r.category || r.type || 'tuition').toLowerCase();
+        if (category.includes('bus') || category.includes('transport')) {
+          studentBalances[studentId].busArrears += balance;
+        } else if (category.includes('canteen') || category.includes('feeding') || category.includes('mess')) {
+          studentBalances[studentId].canteenArrears += balance;
+        } else if (category.includes('exam') || category.includes('test')) {
+          studentBalances[studentId].examArrears += balance;
+        } else if (category.includes('tuition') || category.includes('fee')) {
+          studentBalances[studentId].tuitionArrears += balance;
+        } else {
+          studentBalances[studentId].otherArrears += balance;
+        }
+
+        studentBalances[studentId].totalArrears += balance;
+      });
+
+      // Execute batch writes with deterministic IDs
+      const batch = writeBatch(firestore);
+      let totalArrearsCarried = 0;
+      let processedCount = 0;
+
+      for (const [studentId, arrears] of Object.entries(studentBalances)) {
+        if (arrears.totalArrears <= 0.01) continue;
+
+        const docId = `arrears_${schoolId}_${studentId}_${nextTermId}`;
+        const arrearsRef = doc(firestore, 'financialRecords', docId);
+
+        batch.set(arrearsRef, {
+          id: docId,
+          schoolId,
+          studentId,
+          studentName: studentMap.get(studentId) || 'Student',
+          termId: nextTermId,
+          title: 'Arrears Brought Forward',
+          category: 'Arrears',
+          billedAmount: arrears.totalArrears,
+          amountPaid: 0,
+          waiverAmount: 0,
+          itemizedArrears: {
+            tuitionArrears: arrears.tuitionArrears,
+            busArrears: arrears.busArrears,
+            canteenArrears: arrears.canteenArrears,
+            examArrears: arrears.examArrears,
+            otherArrears: arrears.otherArrears,
+          },
+          status: 'Pending',
+          isArchived: false,
+          createdAt: serverTimestamp(),
+        }, { merge: true });
+
+        totalArrearsCarried += arrears.totalArrears;
+        processedCount++;
+      }
+
+      // Flag raw term records as archived
+      recSnap.forEach((rDoc) => {
+        const rData = rDoc.data();
+        if (rData.isArchived !== true) {
+          batch.update(rDoc.ref, { isArchived: true });
+        }
+      });
+
+      // Update schoolSettings term pointer
+      const schoolRef = doc(firestore, 'schoolSettings', schoolId);
+      batch.set(schoolRef, {
+        currentTermId: nextTermId,
+        lastTermRolloverAt: serverTimestamp(),
+        termStatus: 'Active',
+      }, { merge: true });
+
+      await batch.commit();
 
       toast({
         title: 'Term Rollover Completed',
-        description: `Successfully processed ${data.processedStudents} student balances. Total arrears carried forward: GH₵${data.totalArrearsCarried?.toFixed(2) || '0.00'}.`,
+        description: `Successfully processed ${processedCount} student balances. Total arrears carried forward: GH₵${totalArrearsCarried.toFixed(2)}.`,
       });
 
       setOpen(false);
       onSuccess?.();
-    } catch (err: any) {
+    } catch (clientErr: any) {
+      console.error('Rollover error:', clientErr);
       toast({
         variant: 'destructive',
         title: 'Rollover Failed',
-        description: err.message || 'An error occurred during term financial rollover.',
+        description: clientErr?.message || 'An error occurred during term financial rollover.',
       });
     } finally {
       setLoading(false);

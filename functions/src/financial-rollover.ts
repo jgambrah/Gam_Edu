@@ -50,31 +50,32 @@ export async function executeTermFinancialRollover(
 ): Promise<{ success: boolean; processedStudents: number; totalArrearsCarried: number }> {
   const db = getAdminDb();
 
-  // 1. Fetch active students for this school
+  // 1. Fetch active students for this school (in-memory filtering avoids unbuilt index errors)
   const studentsSnap = await db.collection('students')
     .where('schoolId', '==', schoolId)
-    .where('isArchived', '!=', true)
     .get();
 
   const studentMap = new Map<string, string>();
   studentsSnap.forEach(sDoc => {
     const s = sDoc.data();
+    if (s.isArchived === true) return;
     if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
       studentMap.set(sDoc.id, `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Student');
     }
   });
 
-  // 2. Fetch current term financial records for this school
+  // 2. Fetch current term financial records for this school (in-memory filtering avoids unbuilt index errors)
   const recordsSnap = await db.collection('financialRecords')
     .where('schoolId', '==', schoolId)
     .where('termId', '==', currentTermId)
-    .where('isArchived', '!=', true)
     .get();
 
   const studentBalances: Record<string, ItemizedArrears> = {};
 
   recordsSnap.forEach(doc => {
     const r = doc.data();
+    if (r.isArchived === true) return;
+
     const studentId = r.studentId as string;
     if (!studentId || !studentMap.has(studentId)) return;
 
@@ -153,7 +154,10 @@ export async function executeTermFinancialRollover(
 
   // 4. Flag raw financial records for ending term as archived (non-destructive)
   recordsSnap.forEach(rDoc => {
-    batch.update(rDoc.ref, { isArchived: true });
+    const rData = rDoc.data();
+    if (rData.isArchived !== true) {
+      batch.update(rDoc.ref, { isArchived: true });
+    }
   });
 
   // 5. Update school settings term pointers
