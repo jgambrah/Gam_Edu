@@ -816,64 +816,62 @@ export default function AcademicReportsPage() {
                      <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600 mb-3"/>
                      <p className="text-slate-500 font-medium text-sm">Loading and calculating student gradebook data...</p>
                  </div>
-            ) : !academicData ? (
-                hasArchivedAssessments ? (
-                    <div className="text-center py-12 px-6 bg-gradient-to-b from-indigo-50/50 via-white to-white border-2 border-indigo-200 rounded-3xl shadow-md max-w-2xl mx-auto space-y-5 my-6">
-                        <div className="p-4 bg-indigo-600 text-white rounded-2xl w-fit mx-auto shadow-lg shadow-indigo-200">
-                            <Archive className="h-8 w-8" />
-                        </div>
-                        <div className="space-y-1.5">
-                            <Badge className="bg-indigo-100 text-indigo-900 border-indigo-200 font-extrabold uppercase text-[10px] tracking-wider px-3 py-1">
-                                Term Data Archived
-                            </Badge>
-                            <h3 className="text-xl font-black text-slate-900 pt-2">
-                                Academic Marks for {selectedTerm} ({selectedYear}) Have Been Archived
-                            </h3>
-                            <p className="text-slate-600 text-sm max-w-lg mx-auto leading-relaxed pt-1">
-                                Continuous assessments and terminal exam records for this term were frozen during end-of-term archiving to optimize system performance and freeze historical grades.
-                            </p>
-                        </div>
-
-                        <div className="bg-white border border-indigo-100 rounded-2xl p-4 text-left space-y-3 shadow-inner">
-                            <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                                <Info className="h-4 w-4 text-indigo-600" />
-                                How to Access or Edit Archived Term Data:
-                            </h4>
-                            <ul className="text-xs text-slate-600 space-y-2 list-disc pl-5">
-                                <li>
-                                    <strong>To View Frozen Report Cards:</strong> Go to <Link href="/dashboard/my-reports" className="text-indigo-600 font-bold underline">My Reports</Link> or <Link href="/dashboard/report-cards/student-parent-view" className="text-indigo-600 font-bold underline">Report Cards</Link> to inspect historical term summaries.
-                                </li>
-                                <li>
-                                    <strong>To Edit / Re-Sync Marks:</strong> Click the button below to temporarily unlock this term for a 24-hour correction window.
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div className="pt-2 flex flex-wrap justify-center items-center gap-3">
-                            <TermManagementModal
-                                schoolId={schoolId || 'default'}
-                                currentTermId={selectedTerm}
-                            />
-                            <Button variant="outline" size="sm" onClick={() => setSelectedClassId(null)} className="rounded-xl">
-                                Change Class
-                            </Button>
-                        </div>
+            ) : !academicData && hasArchivedAssessments ? (
+                <div className="text-center py-12 px-6 bg-gradient-to-b from-indigo-50/50 via-white to-white border-2 border-indigo-200 rounded-3xl shadow-md max-w-2xl mx-auto space-y-5 my-6">
+                    <div className="p-4 bg-indigo-600 text-white rounded-2xl w-fit mx-auto shadow-lg shadow-indigo-200">
+                        <Archive className="h-8 w-8" />
                     </div>
-                ) : (
-                    <div className="text-center py-20 bg-white border border-slate-200 rounded-xl shadow-sm">
-                        <AlertTriangle className="mx-auto h-12 w-12 text-amber-500 mb-3"/>
-                        <h3 className="text-lg font-semibold text-slate-800">No Assessment Records Found</h3>
-                        <p className="text-slate-500 text-sm max-w-sm mx-auto mt-1">
-                            No continuous assessments or terminal exam marks have been posted for this class in term: <strong className="text-slate-700">{selectedTerm}</strong> ({selectedYear}).
+                    <div className="space-y-1.5">
+                        <Badge className="bg-indigo-100 text-indigo-900 border-indigo-200 font-extrabold uppercase text-[10px] tracking-wider px-3 py-1">
+                            Term Data Archived
+                        </Badge>
+                        <h3 className="text-xl font-black text-slate-900 pt-2">
+                            Academic Marks for {selectedTerm} ({selectedYear}) Have Been Archived
+                        </h3>
+                        <p className="text-slate-600 text-sm max-w-lg mx-auto leading-relaxed pt-1">
+                            Continuous assessments and terminal exam records for this term were frozen during end-of-term archiving to optimize system performance and freeze historical grades.
                         </p>
-                        <div className="mt-4 gap-2 flex justify-center print:hidden">
-                            <Button variant="outline" size="sm" onClick={() => setSelectedClassId(null)}>Change Class</Button>
-                            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" asChild>
-                                <Link href="/dashboard/academics/gradebook">Go to Gradebook</Link>
-                            </Button>
-                        </div>
                     </div>
-                )
+
+                    <div className="bg-white border border-indigo-100 rounded-2xl p-4 text-left space-y-3 shadow-inner">
+                        <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                            <Info className="h-4 w-4 text-indigo-600" />
+                            How to Access or Edit Archived Term Data:
+                        </h4>
+                        <ul className="text-xs text-slate-600 space-y-2 list-disc pl-5">
+                            <li>
+                                <strong>To View Frozen Report Cards:</strong> Go to <Link href="/dashboard/my-reports" className="text-indigo-600 font-bold underline">My Reports</Link> or <Link href="/dashboard/report-cards/student-parent-view" className="text-indigo-600 font-bold underline">Report Cards</Link> to inspect historical term summaries.
+                            </li>
+                            <li>
+                                <strong>To Edit / Re-Sync Marks:</strong> Click the button below to temporarily unlock this term for a 24-hour correction window.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div className="pt-2 flex flex-wrap justify-center items-center gap-3">
+                        <TermManagementModal
+                            schoolId={schoolId || 'default'}
+                            currentTermId={selectedTerm}
+                        />
+                        <Button variant="outline" size="sm" onClick={() => setSelectedClassId(null)} className="rounded-xl">
+                            Change Class
+                        </Button>
+                    </div>
+                </div>
+            ) : !academicData ? (
+                <div className="text-center py-20 bg-white border border-slate-200 rounded-xl shadow-sm">
+                    <AlertTriangle className="mx-auto h-12 w-12 text-amber-500 mb-3"/>
+                    <h3 className="text-lg font-semibold text-slate-800">No Assessment Records Found</h3>
+                    <p className="text-slate-500 text-sm max-w-sm mx-auto mt-1">
+                        No continuous assessments or terminal exam marks have been posted for this class in term: <strong className="text-slate-700">{selectedTerm}</strong> ({selectedYear}).
+                    </p>
+                    <div className="mt-4 gap-2 flex justify-center print:hidden">
+                        <Button variant="outline" size="sm" onClick={() => setSelectedClassId(null)}>Change Class</Button>
+                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" asChild>
+                            <Link href="/dashboard/academics/gradebook">Go to Gradebook</Link>
+                        </Button>
+                    </div>
+                </div>
             ) : selectedSubjectId === 'all' ? (
                 /* ========================================================================= */
                 /* CLASS OVERVIEW DASHBOARD (ALL SUBJECTS SUMMARY)                          */
