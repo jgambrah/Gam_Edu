@@ -35,6 +35,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Class, Student } from '@/lib/types';
+import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
 
 const canteenRateSchema = z.object({
     pricingModel: z.enum(['Flat', 'Class-Based']),
@@ -805,6 +806,14 @@ export default function FinancialSettingsPage() {
                <div className="text-xs space-y-1">
                   <span className="text-indigo-200/60 block uppercase font-extrabold tracking-wider text-[9px]">Default Bus Fee</span>
                   <span className="font-extrabold block text-xs text-indigo-100">GH₵{Number(transportSettings?.dailyRate || 0).toFixed(2)}</span>
+               </div>
+               <div className="h-8 w-px bg-white/10 hidden sm:block"></div>
+               <div>
+                 <TermRolloverModal
+                   schoolId={schoolId}
+                   currentTermId={canteenSettings?.termId || 'Current Term'}
+                   nextTermId={canteenSettings?.nextTermId || 'Next Term'}
+                 />
                </div>
             </div>
           </div>
