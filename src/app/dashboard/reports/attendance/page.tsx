@@ -285,6 +285,7 @@ export default function AttendanceReportsPage() {
 
         const filtered = rawAttendance
             .filter(record => {
+                if (!record || (record as any).isArchived === true) return false;
                 if (!record.date) return false;
                 const recordDate = record.date?.toDate ? record.date.toDate() : new Date(record.date);
                 if (recordDate < fromDate || recordDate > toDate) return false;
