@@ -125,6 +125,7 @@ export function AttendanceAuditLogs() {
             const groupedRecords: { [key: string]: any[] } = {};
             attendanceSnap.docs.forEach(docSnap => {
                 const data = docSnap.data();
+                if (data.isArchived === true) return;
                 const classId = data.classId;
                 const timestampDate = data.date;
                 let dateStr = '';

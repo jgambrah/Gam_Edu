@@ -152,7 +152,9 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 where('date', '==', startOfDay(selectedDate))
             );
             const attendanceSnapshot = await getDocs(attendanceQuery);
-            const existingRecords = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AttendanceRecord[];
+            const existingRecords = attendanceSnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter((r: any) => r.isArchived !== true) as AttendanceRecord[];
 
             setHasExistingRecords(existingRecords.length > 0);
 
