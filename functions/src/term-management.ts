@@ -1,8 +1,31 @@
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
 
-if (!getApps().length) initializeApp();
-const db = getFirestore();
+function getAdminDb() {
+  const existingApps = getApps();
+  const adminApp = existingApps.find(app => app.name === 'admin');
+  if (adminApp) return getFirestore(adminApp);
+  if (existingApps.length > 0) return getFirestore(existingApps[0]);
+
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (projectId && clientEmail && privateKeyRaw) {
+    const formattedKey = privateKeyRaw.replace(/\\n/g, '\n').replace(/"/g, '');
+    const app = initializeApp({
+      credential: cert({
+        projectId,
+        clientEmail,
+        privateKey: formattedKey,
+      }),
+    }, 'admin');
+    return getFirestore(app);
+  }
+
+  const defaultApp = initializeApp();
+  return getFirestore(defaultApp);
+}
 
 export interface TermUnlockParams {
   schoolId: string;
@@ -30,6 +53,7 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
     throw new Error('Missing required params: schoolId, termId, and reason are required.');
   }
 
+  const db = getAdminDb();
   const durationHours = Math.max(1, Math.min(requestedDurationHours, 72));
   const nowMs = Date.now();
   const unlockExpiresAtMs = nowMs + durationHours * 60 * 60 * 1000;

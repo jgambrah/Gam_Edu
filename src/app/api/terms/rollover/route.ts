@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('API /api/terms/rollover Error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Failed to execute financial rollover' },
+      { error: error?.message || 'Failed to execute financial rollover', details: String(error) },
       { status: 500 }
     );
   }

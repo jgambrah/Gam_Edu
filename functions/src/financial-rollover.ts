@@ -1,8 +1,31 @@
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
-if (!getApps().length) initializeApp();
-const db = getFirestore();
+function getAdminDb() {
+  const existingApps = getApps();
+  const adminApp = existingApps.find(app => app.name === 'admin');
+  if (adminApp) return getFirestore(adminApp);
+  if (existingApps.length > 0) return getFirestore(existingApps[0]);
+
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (projectId && clientEmail && privateKeyRaw) {
+    const formattedKey = privateKeyRaw.replace(/\\n/g, '\n').replace(/"/g, '');
+    const app = initializeApp({
+      credential: cert({
+        projectId,
+        clientEmail,
+        privateKey: formattedKey,
+      }),
+    }, 'admin');
+    return getFirestore(app);
+  }
+
+  const defaultApp = initializeApp();
+  return getFirestore(defaultApp);
+}
 
 export interface ItemizedArrears {
   tuitionArrears: number;
@@ -25,6 +48,8 @@ export async function executeTermFinancialRollover(
   currentTermId: string,
   nextTermId: string
 ): Promise<{ success: boolean; processedStudents: number; totalArrearsCarried: number }> {
+  const db = getAdminDb();
+
   // 1. Fetch active students for this school
   const studentsSnap = await db.collection('students')
     .where('schoolId', '==', schoolId)
