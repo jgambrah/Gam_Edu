@@ -7,7 +7,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, orderBy, doc, getDoc } from 'firebase/firestore';
 
 /** On-demand single fetch for archived term report cards (NO onSnapshot real-time listener) */
-export async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string) {
+async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string) {
   const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
   const docRef = doc(firestore, 'term_report_cards', docId);
   const snap = await getDoc(docRef);
