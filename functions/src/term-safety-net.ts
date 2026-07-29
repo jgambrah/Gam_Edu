@@ -2,6 +2,7 @@ import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { executeTermFinancialRollover } from './financial-rollover';
+import { summarizeTermAttendance, lockTermReportCards } from './dashboard-aggregators';
 
 if (!getApps().length) initializeApp();
 const db = getFirestore();
@@ -9,10 +10,9 @@ const db = getFirestore();
 /**
  * enforceTermRolloverSafetyNet
  *
- * Daily Cloud Scheduler task (runs at 00:00 UTC) implementing the 21-Day Safety Net:
- * - Day 0 (Vacation Date): Soft-scopes active query pointers to nextTermId.
- * - Day +7 & Day +14: Sends in-app reminder alerts to School Admins.
- * - Day +21 (Hard Stop): Automatically executes term financial rollover & archiving.
+ * Daily Cloud Scheduler task (runs at 00:00 UTC) implementing:
+ * 1. 21-Day Safety Net for term rollovers.
+ * 2. Automated Re-Lock & Re-Summarization when 24h correction unlock windows expire.
  */
 export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => {
   const now = new Date();
@@ -27,6 +27,60 @@ export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => 
     const nextTermId = s.nextTermId || `${currentTermId}-next`;
     const vacationDateVal = s.vacationDate || s.termEndDate;
 
+    // ── CHECK 1: EXPIRED UNLOCKED TERMS (Automated Re-Lock & Re-Summarization) ──
+    try {
+      const unlockedTermsSnap = await db.collection('schoolSettings').doc(schoolId)
+        .collection('terms')
+        .where('isUnlockedForCorrection', '==', true)
+        .get();
+
+      for (const tDoc of unlockedTermsSnap.docs) {
+        const termData = tDoc.data();
+        const unlockedTermId = tDoc.id;
+        const expiresVal = termData.unlockExpiresAt;
+        const expiresMs = expiresVal?.toMillis?.() ?? (expiresVal ? new Date(expiresVal).getTime() : 0);
+
+        if (expiresMs > 0 && todayMs >= expiresMs) {
+          console.log(`[TERM RE-LOCK] Correction window expired for school ${schoolId}, term ${unlockedTermId}. Re-locking & re-summarizing...`);
+
+          // 1. Re-run attendance summarization
+          await summarizeTermAttendance(schoolId, unlockedTermId);
+
+          // 2. Re-run academic report card locking
+          await lockTermReportCards(schoolId, unlockedTermId);
+
+          // 3. Re-run financial rollover to update itemized arrears deterministically
+          await executeTermFinancialRollover(schoolId, unlockedTermId, nextTermId);
+
+          // 4. Update term metadata to re-locked status
+          await tDoc.ref.set({
+            isArchived: true,
+            isUnlockedForCorrection: false,
+            relockedAt: FieldValue.serverTimestamp(),
+          }, { merge: true });
+
+          if (s.activeUnlockedTermId === unlockedTermId) {
+            await db.collection('schoolSettings').doc(schoolId).set({
+              isTermCorrectionActive: false,
+              activeUnlockedTermId: null,
+            }, { merge: true });
+          }
+
+          // Audit log for automated re-lock
+          await db.collection('auditLogs').add({
+            action: 'TERM_AUTOMATED_RELOCK',
+            schoolId,
+            termId: unlockedTermId,
+            relockedAt: FieldValue.serverTimestamp(),
+            reason: 'Correction window expired (auto re-locked & re-summarized)',
+          });
+        }
+      }
+    } catch (unlockedErr) {
+      console.warn(`[TERM RE-LOCK CHECK WARNING] Error processing unlocked terms for school ${schoolId}:`, unlockedErr);
+    }
+
+    // ── CHECK 2: 21-DAY AUTO-SAFETY NET ROLLOVER ──
     if (!vacationDateVal || !currentTermId) continue;
 
     let vacationMs = 0;

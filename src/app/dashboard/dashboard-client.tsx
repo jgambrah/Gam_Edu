@@ -49,6 +49,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
+import { TermManagementModal, TermUnlockCountdownBanner } from '@/components/dashboard/term-management-modal';
 import { Input } from '@/components/ui/input';
 import { generateSchoolExecutiveBriefingAction } from '@/app/actions/insights-ai';
 import { format, startOfDay, endOfDay, formatDistanceToNow, subDays } from 'date-fns';
@@ -6242,11 +6243,15 @@ function DirectorDashboard({
                     <CardTitle className="text-sm font-black uppercase tracking-[0.2em] text-indigo-400">Director Command Bar</CardTitle>
                   </CardHeader>
                   <CardContent className="p-8 pt-0 space-y-3.5 relative z-10">
-                    <div className="pb-2">
+                    <div className="pb-2 flex flex-col gap-2">
                       <TermRolloverModal
                         schoolId={schoolId || profile?.schoolId || 'default'}
                         currentTermId={schoolData?.term || 'Current Term'}
                         nextTermId={`${schoolData?.term || 'Current Term'}-Next`}
+                      />
+                      <TermManagementModal
+                        schoolId={schoolId || profile?.schoolId || 'default'}
+                        currentTermId={schoolData?.term || 'Current Term'}
                       />
                     </div>
                     <Link href="/dashboard/finance/budget" className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all duration-350 group/item hover:-translate-y-0.5">
