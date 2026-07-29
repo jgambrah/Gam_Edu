@@ -128,31 +128,28 @@ export default function AcademicReportsPage() {
         });
     }, [rawStudents]);
 
-    // Query Assessments for the selected class, filtered by academic year and term to reduce database reads
+    // Query Assessments for the selected school
     const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !selectedYear || !selectedTerm) return null;
-        if (selectedClassId === 'all') {
-            if (!isAdmin) return null;
-            return query(
-                collection(firestore, 'assessments'), 
-                where('schoolId', '==', schoolId),
-                where('academicYear', '==', selectedYear),
-                where('term', '==', selectedTerm)
-            );
-        }
+        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
         return query(
             collection(firestore, 'assessments'), 
-            where('schoolId', '==', schoolId), 
-            where('classId', '==', selectedClassId),
-            where('academicYear', '==', selectedYear),
-            where('term', '==', selectedTerm)
+            where('schoolId', '==', schoolId)
         );
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, selectedYear, selectedTerm, isAdmin]);
+    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Fetch School Settings for standard weighting overrides
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+
+    useEffect(() => {
+        if (schoolProfile) {
+            const savedYear = schoolProfile.academicYear || schoolProfile.activeAcademicYear;
+            const savedTerm = schoolProfile.term || schoolProfile.activeTerm || schoolProfile.currentTermId;
+            if (savedYear) setSelectedYear(savedYear);
+            if (savedTerm) setSelectedTerm(savedTerm);
+        }
+    }, [schoolProfile]);
 
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
@@ -161,11 +158,18 @@ export default function AcademicReportsPage() {
     const currentCaWeight = selectedClass?.caWeight ?? CA_WEIGHT;
     const currentExamWeight = selectedClass?.examWeight ?? EXAM_WEIGHT;
 
-    // Filter assessments by Selected Term and Academic Year
+    // Filter assessments by Selected Term, Academic Year, Class, and isArchived
     const classAssessments = useMemo(() => {
         if (!assessments) return [];
-        return assessments.filter(a => a.academicYear === selectedYear && a.term === selectedTerm);
-    }, [assessments, selectedYear, selectedTerm]);
+        return assessments.filter(a => {
+            if (!a) return false;
+            if ((a as any).isArchived === true) return false;
+            if (selectedClassId && selectedClassId !== 'all' && a.classId !== selectedClassId) return false;
+            if (selectedYear && a.academicYear && a.academicYear !== selectedYear) return false;
+            if (selectedTerm && a.term && a.term.toLowerCase() !== selectedTerm.toLowerCase() && !a.term.toLowerCase().includes(selectedTerm.toLowerCase())) return false;
+            return true;
+        });
+    }, [assessments, selectedClassId, selectedYear, selectedTerm]);
 
     // Data Aggregation Engine (Aggregates assessments by student & subject)
     const getCategoryKey = (type: string) => {
