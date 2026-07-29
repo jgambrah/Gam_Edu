@@ -6244,9 +6244,9 @@ function DirectorDashboard({
                   <CardContent className="p-8 pt-0 space-y-3.5 relative z-10">
                     <div className="pb-2">
                       <TermRolloverModal
-                        schoolId={adminSchoolId || 'default'}
-                        currentTermId={schoolSettings?.term || 'Current Term'}
-                        nextTermId={`${schoolSettings?.term || 'Current Term'}-Next`}
+                        schoolId={schoolId || profile?.schoolId || 'default'}
+                        currentTermId={schoolData?.term || 'Current Term'}
+                        nextTermId={`${schoolData?.term || 'Current Term'}-Next`}
                       />
                     </div>
                     <Link href="/dashboard/finance/budget" className="flex items-center justify-between p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all duration-350 group/item hover:-translate-y-0.5">
