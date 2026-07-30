@@ -227,8 +227,9 @@ export default function AttendanceReportsPage() {
         from: startOfDay(new Date(new Date().setDate(new Date().getDate() - 30))),
         to: endOfDay(new Date()),
     });
-    const [selectedClassId, setSelectedClassId] = useState<string>('all');
+    const [selectedClassId, setSelectedClassId] = useState<string>('');
     const [searchStudentTerm, setSearchStudentTerm] = useState('');
+    const [isReportRequested, setIsReportRequested] = useState<boolean>(false);
 
     const isAdmin = ['Administrator', 'Director'].includes(role || '');
     const isTeacher = role === 'Teacher';
@@ -247,8 +248,8 @@ export default function AttendanceReportsPage() {
     const { data: classes } = useCollection(classesQuery);
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !dateRange?.from) return null;
-        if (selectedClassId && selectedClassId !== 'all') {
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !dateRange?.from || !selectedClassId || !isReportRequested) return null;
+        if (selectedClassId !== 'all') {
             return query(
                 collection(firestore, 'attendance'), 
                 where('schoolId', '==', schoolId),
@@ -259,7 +260,7 @@ export default function AttendanceReportsPage() {
             collection(firestore, 'attendance'), 
             where('schoolId', '==', schoolId)
         );
-    }, [firestore, schoolId, isRoleLoading, canAccess, selectedClassId, dateRange]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, selectedClassId, dateRange, isReportRequested]);
     const { data: rawAttendance, isLoading: isLoadingAttendance, forceRefetch } = useCollection(attendanceQuery);
     
     const studentsQuery = useMemoFirebase(() => {
@@ -456,9 +457,9 @@ export default function AttendanceReportsPage() {
 
                     <div className="space-y-2">
                         <Label className="text-xs font-bold text-slate-500 uppercase">Class</Label>
-                        <Select onValueChange={setSelectedClassId} value={selectedClassId}>
+                        <Select onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); }} value={selectedClassId}>
                             <SelectTrigger className="w-full md:w-[200px] border-2 h-11">
-                                <SelectValue placeholder="All Classes" />
+                                <SelectValue placeholder="Select Class..." />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Classes</SelectItem>
@@ -469,7 +470,7 @@ export default function AttendanceReportsPage() {
                         </Select>
                     </div>
 
-                    <div className="space-y-2 flex-1 min-w-[250px]">
+                    <div className="space-y-2 flex-1 min-w-[200px]">
                         <Label className="text-xs font-bold text-slate-500 uppercase">Search Student</Label>
                         <StudentSearchInput 
                             value={searchStudentTerm} 
@@ -477,8 +478,38 @@ export default function AttendanceReportsPage() {
                             className="h-11 border-2" 
                         />
                     </div>
+
+                    <Button 
+                        onClick={() => setIsReportRequested(true)} 
+                        disabled={!selectedClassId || !dateRange?.from} 
+                        className="h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 gap-2 rounded-xl shrink-0"
+                    >
+                        <Search className="h-4 w-4" />
+                        Generate Report
+                    </Button>
                 </CardContent>
             </Card>
+
+            {(!isReportRequested || !selectedClassId) && (
+                <Card className="border-2 border-dashed border-teal-200 bg-teal-50/30 p-12 text-center rounded-3xl shadow-sm my-8 max-w-xl mx-auto space-y-4">
+                    <div className="p-4 bg-teal-600 text-white rounded-2xl w-fit mx-auto shadow-md shadow-teal-200">
+                        <CalendarIcon className="h-8 w-8" />
+                    </div>
+                    <div className="space-y-1.5">
+                        <h3 className="text-lg font-black text-slate-900">On-Demand Attendance Reporting</h3>
+                        <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                            Select a <strong>Class</strong> and <strong>Date Range</strong> above, then click <strong>"Generate Report"</strong> to load records on-demand without auto-querying database reads.
+                        </p>
+                    </div>
+                    <Button 
+                        onClick={() => setIsReportRequested(true)} 
+                        disabled={!selectedClassId || !dateRange?.from} 
+                        className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs px-6 py-2.5 shadow-sm"
+                    >
+                        Load Attendance Data
+                    </Button>
+                </Card>
+            )}
 
             {summaryStats && (
                 <>
