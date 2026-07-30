@@ -258,14 +258,18 @@ function AdminApplicationDashboard() {
                       selectedApp?.interviewScore !== undefined && selectedApp?.interviewScore !== null;
 
     useEffect(() => {
-        if (!firestore || !schoolId) return;
+        if (!firestore || !schoolId) {
+            setLoading(false);
+            return;
+        }
         const q = query(
             collection(firestore, 'admissionApplications'),
-            where('schoolId', '==', schoolId),
-            where('isArchived', '!=', true)
+            where('schoolId', '==', schoolId)
         );
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const apps = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter((a: any) => a.isArchived !== true);
             apps.sort((a: any, b: any) => {
                 const timeA = a.submittedAt?.seconds || 0;
                 const timeB = b.submittedAt?.seconds || 0;
@@ -273,25 +277,35 @@ function AdminApplicationDashboard() {
             });
             setApplications(apps);
             setLoading(false);
+        }, (error) => {
+            console.error("Admission Applications query error:", error);
+            setLoading(false);
         });
         return () => unsubscribe();
     }, [firestore, schoolId]);
 
     useEffect(() => {
-        if (!firestore || !schoolId) return;
+        if (!firestore || !schoolId) {
+            setLoadingEnquiries(false);
+            return;
+        }
         const q = query(
             collection(firestore, 'admissionEnquiries'),
-            where('schoolId', '==', schoolId),
-            where('isArchived', '!=', true)
+            where('schoolId', '==', schoolId)
         );
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const enqs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const enqs = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter((e: any) => e.isArchived !== true);
             enqs.sort((a: any, b: any) => {
                 const timeA = a.createdAt?.seconds || 0;
                 const timeB = b.createdAt?.seconds || 0;
                 return timeB - timeA;
             });
             setEnquiries(enqs);
+            setLoadingEnquiries(false);
+        }, (error) => {
+            console.error("Admission Enquiries query error:", error);
             setLoadingEnquiries(false);
         });
         return () => unsubscribe();
