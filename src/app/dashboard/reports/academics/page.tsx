@@ -129,9 +129,16 @@ export default function AcademicReportsPage() {
         });
     }, [rawStudents]);
 
-    // Query Assessments for the selected school
+    // Query Assessments for the selected school and class
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+        if (selectedClassId !== 'all') {
+            return query(
+                collection(firestore, 'assessments'),
+                where('schoolId', '==', schoolId),
+                where('classId', '==', selectedClassId)
+            );
+        }
         return query(
             collection(firestore, 'assessments'), 
             where('schoolId', '==', schoolId)
