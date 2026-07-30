@@ -102,11 +102,19 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
   for (const colName of collectionsToUnlock) {
     const snap = await db.collection(colName)
       .where('schoolId', '==', schoolId)
-      .where('termId', '==', termId)
       .get();
 
     snap.forEach(docSnap => {
-      batch.update(docSnap.ref, { isArchived: false, unlockedForCorrection: true });
+      const data = docSnap.data();
+      const docTerm = data.termId || data.term || '';
+      if (
+        docTerm === termId ||
+        docTerm.toLowerCase() === termId.toLowerCase() ||
+        docTerm.toLowerCase().includes(termId.toLowerCase()) ||
+        termId.toLowerCase().includes(docTerm.toLowerCase())
+      ) {
+        batch.update(docSnap.ref, { isArchived: false, unlockedForCorrection: true });
+      }
     });
   }
 

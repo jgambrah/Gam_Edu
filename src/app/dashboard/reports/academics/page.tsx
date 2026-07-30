@@ -159,30 +159,27 @@ export default function AcademicReportsPage() {
     const currentCaWeight = selectedClass?.caWeight ?? CA_WEIGHT;
     const currentExamWeight = selectedClass?.examWeight ?? EXAM_WEIGHT;
 
-    // Filter assessments by Selected Term, Academic Year, Class, and isArchived
+    // Filter assessments by Selected Term, Academic Year, and Class
     const classAssessments = useMemo(() => {
         if (!assessments) return [];
         return assessments.filter(a => {
             if (!a) return false;
-            if ((a as any).isArchived === true) return false;
             if (selectedClassId && selectedClassId !== 'all' && a.classId !== selectedClassId) return false;
             if (selectedYear && a.academicYear && a.academicYear !== selectedYear) return false;
-            if (selectedTerm && a.term && a.term.toLowerCase() !== selectedTerm.toLowerCase() && !a.term.toLowerCase().includes(selectedTerm.toLowerCase())) return false;
+            if (selectedTerm && a.term) {
+                const aTerm = a.term.toLowerCase();
+                const sTerm = selectedTerm.toLowerCase();
+                if (aTerm !== sTerm && !aTerm.includes(sTerm) && !sTerm.includes(aTerm)) return false;
+            }
             return true;
         });
     }, [assessments, selectedClassId, selectedYear, selectedTerm]);
-    // Check if archived assessment records exist for this term/school
-    const hasArchivedAssessments = useMemo(() => {
-        if (!assessments || assessments.length === 0) return false;
-        return assessments.some(a => {
-            if (!a) return false;
-            if ((a as any).isArchived !== true) return false;
-            if (selectedClassId && selectedClassId !== 'all' && a.classId !== selectedClassId) return false;
-            if (selectedYear && a.academicYear && a.academicYear !== selectedYear) return false;
-            if (selectedTerm && a.term && a.term.toLowerCase() !== selectedTerm.toLowerCase() && !a.term.toLowerCase().includes(selectedTerm.toLowerCase())) return false;
-            return true;
-        });
-    }, [assessments, selectedClassId, selectedYear, selectedTerm]);
+
+    // Check if current term data is archived
+    const isTermArchived = useMemo(() => {
+        if (!classAssessments || classAssessments.length === 0) return false;
+        return classAssessments.every(a => (a as any).isArchived === true);
+    }, [classAssessments]);
 
     // Data Aggregation Engine (Aggregates assessments by student & subject)
     const getCategoryKey = (type: string) => {
@@ -659,7 +656,7 @@ export default function AcademicReportsPage() {
     }
 
     const renderEmptyOrArchivedCard = () => {
-        if (hasArchivedAssessments) {
+        if (isTermArchived) {
             return (
                 <div className="text-center py-12 px-6 bg-gradient-to-b from-indigo-50/50 via-white to-white border-2 border-indigo-200 rounded-3xl shadow-md max-w-2xl mx-auto space-y-5 my-6">
                     <div className="p-4 bg-indigo-600 text-white rounded-2xl w-fit mx-auto shadow-lg shadow-indigo-200">
