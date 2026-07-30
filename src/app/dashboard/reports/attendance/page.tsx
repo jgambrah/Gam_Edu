@@ -248,15 +248,18 @@ export default function AttendanceReportsPage() {
 
     const attendanceQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !dateRange?.from) return null;
-        const fromDate = startOfDay(dateRange.from);
-        const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+        if (selectedClassId && selectedClassId !== 'all') {
+            return query(
+                collection(firestore, 'attendance'), 
+                where('schoolId', '==', schoolId),
+                where('classId', '==', selectedClassId)
+            );
+        }
         return query(
             collection(firestore, 'attendance'), 
-            where('schoolId', '==', schoolId),
-            where('date', '>=', Timestamp.fromDate(fromDate)),
-            where('date', '<=', Timestamp.fromDate(toDate))
+            where('schoolId', '==', schoolId)
         );
-    }, [firestore, schoolId, isRoleLoading, canAccess, dateRange]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, selectedClassId, dateRange]);
     const { data: rawAttendance, isLoading: isLoadingAttendance, forceRefetch } = useCollection(attendanceQuery);
     
     const studentsQuery = useMemoFirebase(() => {
@@ -267,7 +270,7 @@ export default function AttendanceReportsPage() {
 
     const students = useMemo(() => {
         if (!rawStudents) return [];
-        return rawStudents.filter((s: any) => s.enrollmentStatus !== 'Inactive');
+        return rawStudents;
     }, [rawStudents]);
 
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
@@ -285,18 +288,23 @@ export default function AttendanceReportsPage() {
 
         const filtered = rawAttendance
             .filter(record => {
-                if (!record || (record as any).isArchived === true) return false;
-                if (!record.date) return false;
-                const recordDate = record.date?.toDate ? record.date.toDate() : new Date(record.date);
-                if (recordDate < fromDate || recordDate > toDate) return false;
+                if (!record) return false;
+                
+                let recordDate: Date | null = null;
+                if (record.date?.toDate) {
+                    recordDate = record.date.toDate();
+                } else if (record.date) {
+                    recordDate = new Date(record.date);
+                }
+
+                if (recordDate && (recordDate < fromDate || recordDate > toDate)) return false;
                 if (selectedClassId !== 'all' && record.classId !== selectedClassId) return false;
                 
                 const student = studentMap.get(record.studentId);
-                if (!student) return false;
+                const studentName = student ? `${student.firstName || ''} ${student.lastName || ''}`.trim() : (record.studentName || 'Student');
 
                 if (searchStudentTerm.trim()) {
-                    const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
-                    if (!fullName.includes(searchStudentTerm.toLowerCase().trim())) return false;
+                    if (!studentName.toLowerCase().includes(searchStudentTerm.toLowerCase().trim())) return false;
                 }
                 return true;
             })
