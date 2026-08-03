@@ -56,7 +56,10 @@ const attendanceFormSchema = z.object({
 
 type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
 
+import { useOfflineSync } from '@/hooks/use-offline-sync';
+
 export function DailyAttendanceSheet({ classId: propClassId }: { classId?: string }) {
+    const { saveOfflineAttendance, isOnline } = useOfflineSync();
     const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
@@ -207,6 +210,26 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             toast({ variant: 'destructive', title: 'Error', description: 'Cannot proceed without school context.' });
             return;
         }
+
+        const dateStr = format(selectedDate, 'yyyy-MM-dd');
+
+        if (!isOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+            saveOfflineAttendance({
+                schoolId,
+                classId: selectedClassId,
+                dateStr,
+                records: data.records.map(r => ({
+                    studentId: r.studentId,
+                    studentName: r.studentName,
+                    status: r.status,
+                    notes: r.notes
+                }))
+            });
+            setIsLoading(false);
+            setBillingProgress(null);
+            return;
+        }
+
         setIsLoading(true);
         setBillingProgress("Saving attendance...");
         

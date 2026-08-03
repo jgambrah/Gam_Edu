@@ -38,7 +38,10 @@ const ASSESSMENT_TYPES = [
     'End of Term Exam (Exam)'
 ];
 
+import { useOfflineSync } from '@/hooks/use-offline-sync';
+
 export default function GradebookPage() {
+    const { saveOfflineGrade, isOnline } = useOfflineSync();
     const { user, isUserLoading } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
@@ -267,6 +270,35 @@ export default function GradebookPage() {
                 variant: 'destructive', 
                 title: "Score Exceeds Maximum", 
                 description: `${studentName}'s score (${invalidEntry[1]}) exceeds the Maximum Score (${parsedMaxScore}). Please correct it before saving.` 
+            });
+            return;
+        }
+
+        if (!isOnline || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+            const validGrades = Object.entries(scores)
+                .filter(([_, score]) => score !== '' && score !== null && !isNaN(Number(score)))
+                .map(([studentId, score]) => {
+                    const student = students?.find(s => s.uid === studentId);
+                    return {
+                        studentId,
+                        studentName: `${student?.firstName || ''} ${student?.lastName || ''}`.trim(),
+                        score: Number(score),
+                        remarks: remarks[studentId] || ''
+                    };
+                });
+
+            if (validGrades.length === 0) {
+                toast({ variant: 'destructive', title: "No Data", description: "You have not entered any valid scores to save." });
+                return;
+            }
+
+            saveOfflineGrade({
+                schoolId: schoolId!,
+                classId,
+                subjectId,
+                assessmentName: assessmentName || assessmentType,
+                maxScore: Number(maxScore),
+                grades: validGrades
             });
             return;
         }

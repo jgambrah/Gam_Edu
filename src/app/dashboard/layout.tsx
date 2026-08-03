@@ -17,6 +17,8 @@ import { PushNotificationManager } from '@/components/PushNotificationManager';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+import { OfflineSyncBanner } from '@/components/navigation/offline-sync-banner';
+
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
@@ -125,6 +127,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-slate-800">
       <AppSidebar />
       <div className="flex flex-1 flex-col overflow-hidden md:ml-64 relative">
+        <OfflineSyncBanner />
         <TrialBanner />
         <Header />
         <main className="relative flex-1 overflow-y-auto scroll-smooth">
