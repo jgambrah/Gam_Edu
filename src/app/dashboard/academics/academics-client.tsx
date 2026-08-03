@@ -408,6 +408,10 @@ export default function AcademicsPageContent() {
       }
   };
 
+  const selectedClass = useMemo(() => {
+      return visibleClasses?.find(c => c.id === selectedClassId) || null;
+  }, [visibleClasses, selectedClassId]);
+
   if (!isRoleLoading && !isStaff) {
     return (
       <div className="p-6">
@@ -422,10 +426,6 @@ export default function AcademicsPageContent() {
   }
 
   const isLoading = isLoadingSchool || isRoleLoading || isLoadingClasses || (canListStaff && isLoadingTeachers) || isLoadingStudents || isLoadingTimetable || isLoadingSubjects || isLoadingSlots;
-
-  const selectedClass = useMemo(() => {
-      return visibleClasses?.find(c => c.id === selectedClassId) || null;
-  }, [visibleClasses, selectedClassId]);
 
   if (selectedClass) {
       return (

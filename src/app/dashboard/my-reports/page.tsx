@@ -77,6 +77,22 @@ export default function MyReportsPage() {
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
+    const displayReport = useMemo(() => {
+        if (!selectedReport) return null;
+        return {
+            ...selectedReport,
+            schoolPhone: selectedReport.schoolPhone || schoolProfile?.phone || null,
+            schoolEmail: selectedReport.schoolEmail || schoolProfile?.email || null,
+            schoolWebsite: selectedReport.schoolWebsite || selectedReport.website || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
+            website: selectedReport.website || selectedReport.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
+            logoUrl: selectedReport.logoUrl || schoolProfile?.logoUrl || null,
+            brandColor: selectedReport.brandColor || schoolProfile?.brandColor || '#1e293b',
+            gradingSystem: (selectedReport.gradingSystem && Array.isArray(selectedReport.gradingSystem) && selectedReport.gradingSystem.length > 0)
+                ? selectedReport.gradingSystem
+                : (schoolProfile?.gradingSystem && Array.isArray(schoolProfile.gradingSystem) && schoolProfile.gradingSystem.length > 0 ? schoolProfile.gradingSystem : null),
+        };
+    }, [selectedReport, schoolProfile]);
+
     const CA_WEIGHT = schoolProfile?.caWeight ?? 30;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 70;
 
@@ -160,22 +176,6 @@ export default function MyReportsPage() {
             </div>
         );
     }
-
-    const displayReport = useMemo(() => {
-        if (!selectedReport) return null;
-        return {
-            ...selectedReport,
-            schoolPhone: selectedReport.schoolPhone || schoolProfile?.phone || null,
-            schoolEmail: selectedReport.schoolEmail || schoolProfile?.email || null,
-            schoolWebsite: selectedReport.schoolWebsite || selectedReport.website || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
-            website: selectedReport.website || selectedReport.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || null,
-            logoUrl: selectedReport.logoUrl || schoolProfile?.logoUrl || null,
-            brandColor: selectedReport.brandColor || schoolProfile?.brandColor || '#1e293b',
-            gradingSystem: (selectedReport.gradingSystem && Array.isArray(selectedReport.gradingSystem) && selectedReport.gradingSystem.length > 0)
-                ? selectedReport.gradingSystem
-                : (schoolProfile?.gradingSystem && Array.isArray(schoolProfile.gradingSystem) && schoolProfile.gradingSystem.length > 0 ? schoolProfile.gradingSystem : null),
-        };
-    }, [selectedReport, schoolProfile]);
 
     if (selectedReport && displayReport) {
         return (

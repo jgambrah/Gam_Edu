@@ -10292,6 +10292,8 @@ function SecurityDashboard({ profile, announcements, leaveRequests, announcement
 // E. SUPPORT STAFF DASHBOARD ROUTER (Verified compile-ready)
 // =========================================================================
 function SupportStaffDashboard({ role, profile, leaveRequests, announcements, isLoading, announcementsLoading }: any) {
+    const { user } = useUser();
+
     if (role === 'Cook') {
         return <CookDashboard profile={profile} announcements={announcements} leaveRequests={leaveRequests} announcementsLoading={announcementsLoading} isLoadingLeaves={isLoading} />;
     }
@@ -10306,7 +10308,6 @@ function SupportStaffDashboard({ role, profile, leaveRequests, announcements, is
     }
 
     // Default Support Portal fallback (for other support roles)
-    const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Member';
 
     return (
