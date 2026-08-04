@@ -1574,3 +1574,55 @@ export type WalletTransaction = z.infer<typeof walletTransactionSchema> & {
     timestamp: any;
 };
 
+// --- Parent Forum & AI Pre-Moderation Types ---
+
+export type SchoolCommunicationMode = 'broadcast_only' | 'broadcast_comments' | 'direct_messaging' | 'premoderated_forum';
+
+export interface CommunicationSettings {
+  schoolId: string;
+  mode: SchoolCommunicationMode;
+  requirePreModeration: boolean;
+  enableAiShield: boolean;
+  officeHoursStart?: string;
+  officeHoursEnd?: string;
+  updatedAt?: any;
+}
+
+export interface ForumPost {
+  id: string;
+  schoolId: string;
+  classId?: string;
+  className?: string;
+  authorId: string;
+  authorName: string;
+  authorRole: 'parent' | 'teacher' | 'admin';
+  title: string;
+  content: string;
+  category: 'idea' | 'general' | 'event' | 'academic';
+  status: 'pending_approval' | 'approved' | 'rejected';
+  aiShieldStatus?: 'passed' | 'flagged';
+  aiShieldReason?: string;
+  moderatedBy?: string;
+  moderatedByName?: string;
+  moderatedAt?: any;
+  rejectionReason?: string;
+  commentsCount: number;
+  likesCount: number;
+  createdAt: any;
+}
+
+export interface ForumComment {
+  id: string;
+  postId: string;
+  schoolId: string;
+  authorId: string;
+  authorName: string;
+  authorRole: 'parent' | 'teacher' | 'admin';
+  content: string;
+  status: 'approved' | 'pending_approval' | 'rejected';
+  aiShieldStatus?: 'passed' | 'flagged';
+  aiShieldReason?: string;
+  createdAt: any;
+}
+
+
