@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, orderBy, doc, updateDoc, increment } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
