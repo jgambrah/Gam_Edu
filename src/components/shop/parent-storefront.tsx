@@ -67,7 +67,7 @@ export function ParentStorefront() {
 
   // Fetch store items from Firestore
   const itemsQuery = useMemoFirebase(
-    () => (firestore && schoolId ? query(collection(firestore, `schools/${schoolId}/shopItems`), orderBy('name')) : null),
+    () => (firestore && schoolId ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId), orderBy('name')) : null),
     [firestore, schoolId]
   );
   const { data: rawItems, isLoading } = useCollection<ShopItem>(itemsQuery);
@@ -138,6 +138,7 @@ export function ParentStorefront() {
         : user.displayName || user.email || 'Parent';
 
       const orderData = {
+        schoolId,
         pickupPin: randomPin,
         parentName,
         parentId: user.uid,
@@ -159,11 +160,11 @@ export function ParentStorefront() {
         createdAt: serverTimestamp(),
       };
 
-      const docRef = await addDoc(orderDataRef(firestore, schoolId), orderData);
+      const docRef = await addDoc(collection(firestore, 'school_shop_orders'), orderData);
 
       // Decrement stock for purchased items
       for (const cartEntry of cart) {
-        const itemRef = doc(firestore, `schools/${schoolId}/shopItems`, cartEntry.item.id);
+        const itemRef = doc(firestore, 'school_shop_items', cartEntry.item.id);
         await updateDoc(itemRef, {
           stock: increment(-cartEntry.quantity),
         });
