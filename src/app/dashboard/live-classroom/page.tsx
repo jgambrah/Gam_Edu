@@ -8,11 +8,13 @@ import { generateLessonImage, createLiveAuthToken } from './services/gemini';
 import { saasService } from './services/saas';
 import { AI_COSTS } from './types';
 import { Button } from '@/components/ui/button';
-import { Loader2, X, Bot, Sparkles, Play, ArrowLeft, MicOff, AlertTriangle } from 'lucide-react';
+import { Loader2, X, Bot, Sparkles, Play, ArrowLeft, MicOff, AlertTriangle, Video } from 'lucide-react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { VirtualClassroomHub } from '@/components/live-classroom/virtual-classroom-hub';
 
 const StartScreen: React.FC<{ title: string; icon: React.ElementType; color: string; onStart: () => void }> = ({ title, icon: Icon, color, onStart }) => (
   <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-black flex flex-col items-center justify-center min-h-[500px] animate-in zoom-in font-black text-center">
@@ -381,11 +383,46 @@ const TutorSession: React.FC = () => {
   );
 };
 
-
 export default function LiveClassroomPage() {
-    return (
-        <div className="p-4 sm:p-6 md:p-8">
-            <TutorSession />
+  return (
+    <div className="p-4 sm:p-6 md:p-8 space-y-6">
+      <Tabs defaultValue="virtual-hub" className="w-full space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black uppercase text-slate-900 tracking-tight">
+              Virtual Learning Hub
+            </h1>
+            <p className="text-xs text-slate-500 font-semibold mt-0.5">
+              Access Zoom & Google Meet virtual classes or interact with AI Buddy Dr. GAM.
+            </p>
+          </div>
+
+          <TabsList className="bg-slate-100 p-1 rounded-2xl h-12 border border-slate-200">
+            <TabsTrigger 
+              value="virtual-hub" 
+              className="rounded-xl px-5 h-10 font-bold text-xs data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm flex items-center gap-2"
+            >
+              <Video className="w-4 h-4 text-blue-600" />
+              <span>Zoom & Meet Classes</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="ai-tutor" 
+              className="rounded-xl px-5 h-10 font-bold text-xs data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm flex items-center gap-2"
+            >
+              <Bot className="w-4 h-4 text-purple-600" />
+              <span>AI Buddy Dr. GAM</span>
+            </TabsTrigger>
+          </TabsList>
         </div>
-    )
+
+        <TabsContent value="virtual-hub" className="mt-0">
+          <VirtualClassroomHub />
+        </TabsContent>
+
+        <TabsContent value="ai-tutor" className="mt-0">
+          <TutorSession />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }
