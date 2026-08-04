@@ -9,6 +9,7 @@ import {
   Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2, ArchiveRestore, Edit, Loader2,
   Check, Printer, RefreshCw, BarChart2, DollarSign, ArrowRight, History, Wallet, CreditCard, Coins, X, Plus, Minus
 } from 'lucide-react';
+import { ParentStorefront } from '@/components/shop/parent-storefront';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
@@ -1389,6 +1390,14 @@ export default function SchoolShopPage() {
     const firestore = useFirestore();
     const { user } = useUser();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+
+    if (role === 'Parent') {
+        return (
+            <div className="p-4 sm:p-6 md:p-8">
+                <ParentStorefront />
+            </div>
+        );
+    }
     
     const [restockItem, setRestockItem] = useState<ShopItem | null>(null);
     const [editingItem, setEditingItem] = useState<ShopItem | null>(null);

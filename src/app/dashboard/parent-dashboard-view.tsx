@@ -13,7 +13,7 @@ import {
   CheckCircle, XCircle, AlertCircle, Clock, Wallet, MessageSquare, ChevronRight,
   TrendingDown, ArrowUpRight, CheckSquare, Info, ShieldAlert, BookOpen, AlertTriangle,
   User, Activity, CalendarDays, FlaskConical, Utensils, MapPin,
-  Star, Frown, Smile, HeartHandshake, ThumbsUp, ChevronDown, Loader2
+  Star, Frown, Smile, HeartHandshake, ThumbsUp, ChevronDown, Loader2, ShoppingBag
 } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import { useFirestore, useMemoFirebase, useUser, useCollection } from '@/firebase';
@@ -940,6 +940,14 @@ export function ParentDashboard({
                             </button>
                         ))}
                     </div>
+
+                    <Link
+                        href="/dashboard/finance/shop"
+                        className="flex items-center gap-2 px-4 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-2xl bg-purple-600 hover:bg-purple-700 text-white shadow-md transition-all hover:scale-[1.02] shrink-0"
+                    >
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                        <span>Uniform & Book Store</span>
+                    </Link>
 
                     <Link
                         href="/dashboard/forum"
