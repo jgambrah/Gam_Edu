@@ -24,6 +24,9 @@ import { AppSidebarContent } from './sidebar';
 import { GlobalSearch } from './global-search';
 import { useRole } from '@/context/role-context';
 import { cn } from '@/lib/utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 export default function Header() {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -32,6 +35,14 @@ export default function Header() {
   const { auth: authInstance } = useFirebase();
   const { user } = useUser();
   const { role, profile } = useRole();
+  const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
+
+  const schoolSettingsRef = useMemoFirebase(
+    () => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null,
+    [firestore, schoolId]
+  );
+  const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
   
   const pageTitle = useMemo(() => {
     // Find item with correct role

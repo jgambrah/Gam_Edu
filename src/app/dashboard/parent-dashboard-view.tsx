@@ -952,7 +952,10 @@ export function ParentDashboard({
             </div>
 
             {/* Banner Header Display */}
-            <div className={cn("relative p-8 xl:p-10 rounded-[2.5rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r transition-all duration-500", banners[activeTab].gradient)}>
+            <div 
+                style={schoolSettings?.brandColor ? { backgroundColor: schoolSettings.brandColor } : undefined}
+                className={cn("relative p-8 xl:p-10 rounded-[2.5rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r transition-all duration-500", banners[activeTab].gradient)}
+            >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
                 <div className="space-y-3 relative z-10 max-w-xl">
                     <span className={cn("text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase", banners[activeTab].badgeColor)}>

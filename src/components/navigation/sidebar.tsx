@@ -37,22 +37,23 @@ import { doc } from 'firebase/firestore';
  * NavLink Component
  * Handles individual link rendering with active state logic.
  */
-function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boolean }) {
+function NavLink({ item, isSubItem = false, brandColor }: { item: NavItem, isSubItem?: boolean, brandColor?: string }) {
   const pathname = usePathname();
   const isActive = pathname === item.path;
   
   return (
     <Link
       href={item.path}
+      style={isActive && brandColor ? { backgroundColor: brandColor } : undefined}
       className={cn(
         'flex w-full items-center gap-2 rounded-xl p-2.5 text-left text-sm transition-all duration-200',
         isActive 
-          ? 'bg-white/10 text-white font-bold shadow-sm' 
+          ? 'bg-indigo-600 text-white font-bold shadow-md' 
           : 'text-slate-400 hover:text-slate-100 hover:bg-white/5',
         isSubItem && 'py-1.5 h-8 text-xs'
       )}
     >
-      <item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-indigo-400' : 'text-slate-500')} />
+      <item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-white' : 'text-slate-500')} />
       <span className="truncate">{item.title}</span>
     </Link>
   );
@@ -213,7 +214,7 @@ export function AppSidebarContent() {
                             (subItem, subIndex) =>
                               isNavItemVisible(subItem, role, hasFinanceAccess) && (
                                 <li key={`subnav-${subItem.path}-${subIndex}`} className="list-none">
-                                  <NavLink item={subItem} isSubItem />
+                                  <NavLink item={subItem} isSubItem brandColor={schoolSettings?.brandColor} />
                                 </li>
                               )
                           )}
@@ -221,7 +222,7 @@ export function AppSidebarContent() {
                       </CollapsibleContent>
                     </Collapsible>
                   ) : (
-                    <NavLink item={item} />
+                    <NavLink item={item} brandColor={schoolSettings?.brandColor} />
                   )}
                 </SidebarMenuItem>
               ) : null
