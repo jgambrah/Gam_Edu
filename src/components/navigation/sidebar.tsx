@@ -152,10 +152,22 @@ export function AppSidebarContent() {
     <>
       <SidebarHeader className="border-indigo-900/30">
         <Link href="/dashboard" className="flex items-center gap-3 p-2 group transition-all">
-          <AppLogo className="h-9 w-9 shadow-lg shadow-indigo-50/20 rounded-xl group-hover:scale-105 transition-transform" />
-          <div className="flex flex-col">
-            <span className="text-lg font-black text-white leading-none tracking-tighter">GAM EDU</span>
-            <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">Management</span>
+          {schoolSettings?.logoUrl ? (
+            <img 
+              src={schoolSettings.logoUrl} 
+              alt={schoolSettings.name || "School Crest"} 
+              className="h-9 w-9 shadow-lg rounded-xl object-cover border border-white/30 group-hover:scale-105 transition-transform shrink-0" 
+            />
+          ) : (
+            <AppLogo className="h-9 w-9 shadow-lg shadow-indigo-50/20 rounded-xl group-hover:scale-105 transition-transform shrink-0" />
+          )}
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-black text-white leading-none tracking-tighter truncate uppercase">
+              {schoolSettings?.name || "GAM EDU"}
+            </span>
+            <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5 truncate">
+              {schoolSettings?.motto || "Management System"}
+            </span>
           </div>
         </Link>
       </SidebarHeader>

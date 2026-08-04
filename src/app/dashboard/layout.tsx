@@ -29,20 +29,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   
   const [isLocked, setIsLocked] = useState(false);
   const [studentDebtLocked, setStudentDebtLocked] = useState(false);
+  const [activeBrandColor, setActiveBrandColor] = useState<string | null>(null);
+  const [activeSecondaryColor, setActiveSecondaryColor] = useState<string | null>(null);
 
   useEffect(() => {
     async function checkSecurityAndStatus() {
       if (!user || !firestore || !schoolId || !profile) return;
-      if (user.email === 'jamesgambrah@gmail.com') return;
       
-      // Parents trial check skipped as per existing logic
-      if (profile.role === 'Parent') return;
-
       try {
         const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
         if (schoolDoc.exists()) {
           const data = schoolDoc.data();
-          
+          if (data.brandColor) setActiveBrandColor(data.brandColor);
+          if (data.secondaryColor) setActiveSecondaryColor(data.secondaryColor);
+
+          if (user.email === 'jamesgambrah@gmail.com') return;
+          if (profile.role === 'Parent') return;
+
           // 1. Subscription Check
           if (data.plan === 'Trial' && data.trialEndsAt) {
             const expiryDate = data.trialEndsAt.toDate();
@@ -125,6 +128,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-slate-800">
+      {activeBrandColor && (
+        <style>{`
+          :root {
+            --school-brand-color: ${activeBrandColor};
+            --school-secondary-color: ${activeSecondaryColor || activeBrandColor};
+          }
+          .bg-brand-primary {
+            background-color: ${activeBrandColor} !important;
+          }
+          .border-brand-primary {
+            border-color: ${activeBrandColor} !important;
+          }
+          .text-brand-primary {
+            color: ${activeBrandColor} !important;
+          }
+        `}</style>
+      )}
       <AppSidebar />
       <div className="flex flex-1 flex-col overflow-hidden md:ml-64 relative">
         <OfflineSyncBanner />
