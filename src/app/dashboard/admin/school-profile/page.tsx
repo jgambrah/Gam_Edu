@@ -450,12 +450,87 @@ export default function SchoolProfilePage() {
                             </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <Label className="text-sm font-bold text-slate-700">Institutional Branding</Label>
-                            <div className="space-y-6">
+                        <div className="space-y-4 bg-slate-50/80 p-6 rounded-3xl border border-slate-200">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-sm font-black text-slate-800 uppercase tracking-tight flex items-center space-x-2">
+                                <Palette className="w-4 h-4 text-indigo-600" />
+                                <span>1-Click White-Label Theme Customizer</span>
+                              </Label>
+                              <span className="text-[10px] bg-indigo-100 text-indigo-800 font-mono font-bold px-2.5 py-0.5 rounded-full">
+                                Dynamic Branding Active
+                              </span>
+                            </div>
+
+                            {/* Preset Theme Palettes */}
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Quick Theme Presets</Label>
+                              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => { setBrandColor('#1e3a8a'); setSecondaryColor('#d97706'); }}
+                                  className="p-2 bg-white border border-slate-200 rounded-xl text-left hover:border-indigo-500 transition-all cursor-pointer space-y-1"
+                                >
+                                  <div className="flex space-x-1">
+                                    <div className="w-4 h-4 rounded-full bg-[#1e3a8a]" />
+                                    <div className="w-4 h-4 rounded-full bg-[#d97706]" />
+                                  </div>
+                                  <span className="block text-[9px] font-black text-slate-700">Royal Gold</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => { setBrandColor('#065f46'); setSecondaryColor('#10b981'); }}
+                                  className="p-2 bg-white border border-slate-200 rounded-xl text-left hover:border-indigo-500 transition-all cursor-pointer space-y-1"
+                                >
+                                  <div className="flex space-x-1">
+                                    <div className="w-4 h-4 rounded-full bg-[#065f46]" />
+                                    <div className="w-4 h-4 rounded-full bg-[#10b981]" />
+                                  </div>
+                                  <span className="block text-[9px] font-black text-slate-700">Emerald Green</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => { setBrandColor('#881337'); setSecondaryColor('#f59e0b'); }}
+                                  className="p-2 bg-white border border-slate-200 rounded-xl text-left hover:border-indigo-500 transition-all cursor-pointer space-y-1"
+                                >
+                                  <div className="flex space-x-1">
+                                    <div className="w-4 h-4 rounded-full bg-[#881337]" />
+                                    <div className="w-4 h-4 rounded-full bg-[#f59e0b]" />
+                                  </div>
+                                  <span className="block text-[9px] font-black text-slate-700">Burgundy</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => { setBrandColor('#0e7490'); setSecondaryColor('#4f46e5'); }}
+                                  className="p-2 bg-white border border-slate-200 rounded-xl text-left hover:border-indigo-500 transition-all cursor-pointer space-y-1"
+                                >
+                                  <div className="flex space-x-1">
+                                    <div className="w-4 h-4 rounded-full bg-[#0e7490]" />
+                                    <div className="w-4 h-4 rounded-full bg-[#4f46e5]" />
+                                  </div>
+                                  <span className="block text-[9px] font-black text-slate-700">Cyan Indigo</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => { setBrandColor('#581c87'); setSecondaryColor('#c084fc'); }}
+                                  className="p-2 bg-white border border-slate-200 rounded-xl text-left hover:border-indigo-500 transition-all cursor-pointer space-y-1"
+                                >
+                                  <div className="flex space-x-1">
+                                    <div className="w-4 h-4 rounded-full bg-[#581c87]" />
+                                    <div className="w-4 h-4 rounded-full bg-[#c084fc]" />
+                                  </div>
+                                  <span className="block text-[9px] font-black text-slate-700">Royal Purple</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="space-y-6 pt-2">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-slate-500">Primary Color</Label>
+                                        <Label className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-slate-500">Primary Theme Color</Label>
                                         <div className="flex gap-2 items-center">
                                             <input 
                                                 type="color" 
@@ -467,7 +542,7 @@ export default function SchoolProfilePage() {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-slate-500">Secondary Color</Label>
+                                        <Label className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest text-slate-500">Secondary Accent Color</Label>
                                         <div className="flex gap-2 items-center">
                                             <input 
                                                 type="color" 
@@ -480,26 +555,36 @@ export default function SchoolProfilePage() {
                                         </div>
                                     </div>
                                 </div>
-                                <p className="text-[10px] text-slate-500 font-bold uppercase leading-tight">Primary: Backgrounds/Titles. Secondary: Table borders/Accents.</p>
 
-                                <div className="space-y-2">
-                                    <Label className="font-bold">Digital Signature (Headmaster)</Label>
-                                    <div className="relative h-20 w-full border-2 border-dashed rounded-xl bg-white flex items-center justify-center overflow-hidden">
-                                        {headmasterSignature ? (
-                                            <>
-                                                <img src={headmasterSignature} alt="Signature Preview" className="h-full w-auto object-contain mix-blend-multiply" />
-                                                <button type="button" className="absolute top-1 right-1 bg-red-50 text-red-500 rounded-full p-1" onClick={() => setHeadmasterSignature('')}><X className="h-3 w-3"/></button>
-                                            </>
+                                {/* Live Interactive Portal Preview Box */}
+                                <div className="p-4 rounded-2xl border border-slate-300 bg-white space-y-3 shadow-inner">
+                                  <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-2">
+                                    <span>🖥️ Live Portal Preview for Parents & Staff</span>
+                                    <span>Brand Theme Active</span>
+                                  </div>
+
+                                  <div 
+                                    className="p-4 rounded-xl text-white space-y-2 shadow-md transition-all"
+                                    style={{ backgroundColor: brandColor }}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center space-x-2">
+                                        {logoUrl ? (
+                                          <img src={logoUrl} alt="Crest" className="w-7 h-7 rounded-md object-cover border border-white/40" />
                                         ) : (
-                                            <PenTool className="h-8 w-8 text-slate-200" />
+                                          <GraduationCap className="w-6 h-6 text-white" />
                                         )}
+                                        <span className="font-black text-sm uppercase tracking-tight">{name || 'School Name'}</span>
+                                      </div>
+                                      <span 
+                                        className="text-[9px] font-bold px-2 py-0.5 rounded-full text-slate-900 font-mono"
+                                        style={{ backgroundColor: secondaryColor || '#ffffff' }}
+                                      >
+                                        Parent Portal
+                                      </span>
                                     </div>
-                                    <div className="flex gap-2 mt-2">
-                                        <input id="sig-upload" type="file" accept="image/png, image/jpeg" onChange={handleSignatureUpload} className="hidden" />
-                                        <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('sig-upload')?.click()} className="text-xs h-8 border-2 font-bold w-full">
-                                            <Upload className="mr-1 h-3 w-3"/> Upload Signature
-                                        </Button>
-                                    </div>
+                                    <p className="text-[11px] opacity-90 italic">{motto || 'Excellence in Education'}</p>
+                                  </div>
                                 </div>
                             </div>
                         </div>
