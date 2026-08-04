@@ -75,21 +75,47 @@ export function VirtualClassroomHub() {
 
     setIsCreating(true);
     try {
-      let finalMeetingUrl = customLink.trim();
+      let rawInput = customLink.trim();
+      let finalMeetingUrl = '';
       let meetingId = '';
       let passcode = '';
 
-      if (!finalMeetingUrl) {
-        if (platform === 'zoom') {
-          const randomId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-          passcode = Math.floor(100000 + Math.random() * 900000).toString();
-          finalMeetingUrl = `https://zoom.us/j/${randomId}?pwd=${passcode}`;
-          meetingId = `${randomId.slice(0, 3)} ${randomId.slice(3, 7)} ${randomId.slice(7)}`;
+      if (platform === 'zoom') {
+        if (!rawInput) {
+          // Official Zoom Instant Launcher - guarantees valid room provision on Zoom
+          finalMeetingUrl = 'https://zoom.us/start/videomeet';
+          meetingId = 'Instant Zoom Room';
+        } else if (rawInput.startsWith('http://') || rawInput.startsWith('https://')) {
+          finalMeetingUrl = rawInput;
+          // Extract meeting ID if present in URL
+          const match = rawInput.match(/\/j\/(\d+)/);
+          if (match && match[1]) {
+            meetingId = match[1];
+          }
         } else {
-          const randStr = () => Math.random().toString(36).substring(2, 6);
-          const meetCode = `${randStr()}-${randStr()}-${randStr()}`;
-          finalMeetingUrl = `https://meet.google.com/${meetCode}`;
-          meetingId = meetCode;
+          // Sanitize raw numeric input e.g. "812 3456 7890" or "81234567890"
+          const digitsOnly = rawInput.replace(/\D/g, '');
+          if (digitsOnly.length >= 9) {
+            finalMeetingUrl = `https://zoom.us/j/${digitsOnly}`;
+            meetingId = `${digitsOnly.slice(0, 3)} ${digitsOnly.slice(3, 7)} ${digitsOnly.slice(7)}`;
+          } else {
+            finalMeetingUrl = `https://zoom.us/j/${rawInput}`;
+            meetingId = rawInput;
+          }
+        }
+      } else {
+        if (!rawInput) {
+          // Official Google Meet Instant Launcher
+          finalMeetingUrl = 'https://meet.google.com/new';
+          meetingId = 'New Google Meet Room';
+        } else if (rawInput.startsWith('http://') || rawInput.startsWith('https://')) {
+          finalMeetingUrl = rawInput;
+          const parts = rawInput.split('/');
+          meetingId = parts[parts.length - 1] || 'Google Meet';
+        } else {
+          const cleanCode = rawInput.replace(/[^a-z0-9-]/gi, '');
+          finalMeetingUrl = `https://meet.google.com/${cleanCode}`;
+          meetingId = cleanCode;
         }
       }
 
@@ -281,14 +307,30 @@ export function VirtualClassroomHub() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5 pt-1">
-                  <Label className="text-xs font-bold text-slate-700 uppercase">Custom URL (Optional)</Label>
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-bold text-slate-700 uppercase">Meeting Link / ID</Label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const targetUrl = platform === 'zoom' ? 'https://zoom.us/start/videomeet' : 'https://meet.google.com/new';
+                        window.open(targetUrl, '_blank');
+                      }}
+                      className="text-[10px] font-bold text-blue-600 hover:text-blue-700 underline flex items-center gap-1"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      <span>Create Real {platform === 'zoom' ? 'Zoom' : 'Meet'} Room</span>
+                    </button>
+                  </div>
                   <Input 
                     value={customLink} 
                     onChange={(e) => setCustomLink(e.target.value)} 
-                    placeholder="Paste existing Zoom or Meet link (or leave blank to auto-generate)" 
+                    placeholder={platform === 'zoom' ? "Paste Zoom link or Meeting ID (e.g. 812 3456 7890)" : "Paste Google Meet link or code (e.g. abc-defg-hij)"} 
                     className="h-11 rounded-xl font-medium border-slate-200 text-xs"
                   />
+                  <p className="text-[10px] text-slate-500 font-medium">
+                    💡 Paste your Zoom/Meet link above or leave blank to use the official instant room launcher.
+                  </p>
                 </div>
 
                 <Button 
