@@ -82,7 +82,14 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b border-slate-200/50 bg-white/70 backdrop-blur-lg px-4 md:px-6 shadow-sm">
+    <header className="sticky top-0 z-40 flex flex-col justify-center border-b border-slate-200/60 bg-white/90 backdrop-blur-md shadow-xs">
+      {schoolSettings?.brandColor && (
+        <div 
+          className="h-1.5 w-full shrink-0 shadow-xs" 
+          style={{ backgroundColor: schoolSettings.brandColor }} 
+        />
+      )}
+      <div className="flex h-14 items-center justify-between gap-4 px-4 md:px-6">
       <div className="flex items-center gap-2">
         <Sheet>
           <SheetTrigger asChild>
@@ -158,6 +165,7 @@ export default function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
       </div>
     </header>
   );

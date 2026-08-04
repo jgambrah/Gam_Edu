@@ -953,8 +953,8 @@ export function ParentDashboard({
 
             {/* Banner Header Display */}
             <div 
-                style={schoolSettings?.brandColor ? { backgroundColor: schoolSettings.brandColor } : undefined}
-                className={cn("relative p-8 xl:p-10 rounded-[2.5rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r transition-all duration-500", banners[activeTab].gradient)}
+                style={schoolSettings?.brandColor ? { background: `linear-gradient(135deg, ${schoolSettings.brandColor} 0%, ${schoolSettings.secondaryColor || '#0f172a'} 100%)` } : undefined}
+                className={cn("relative p-8 xl:p-10 rounded-[2.5rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border transition-all duration-500", !schoolSettings?.brandColor && banners[activeTab].gradient)}
             >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
                 <div className="space-y-3 relative z-10 max-w-xl">
