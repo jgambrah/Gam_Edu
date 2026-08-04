@@ -346,9 +346,9 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/live-classroom',
-            title: 'Live Classroom',
+            title: 'Virtual Classroom',
             icon: Clapperboard,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+            roles: 'all',
         },
     ]
   },
