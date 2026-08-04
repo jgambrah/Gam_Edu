@@ -940,6 +940,14 @@ export function ParentDashboard({
                             </button>
                         ))}
                     </div>
+
+                    <Link
+                        href="/dashboard/forum"
+                        className="flex items-center gap-2 px-4 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-2xl bg-teal-600 hover:bg-teal-700 text-white shadow-md transition-all hover:scale-[1.02] shrink-0"
+                    >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>Community Forum</span>
+                    </Link>
                 </div>
             </div>
 

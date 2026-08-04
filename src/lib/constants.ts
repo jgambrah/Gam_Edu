@@ -112,7 +112,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/forum',
             title: 'Forum',
             icon: MessageSquare,
-            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+            roles: 'all',
         },
         {
             path: '/dashboard/messages',
