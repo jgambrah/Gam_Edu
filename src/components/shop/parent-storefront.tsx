@@ -169,15 +169,24 @@ export function ParentStorefront() {
     });
     setTailoredItemsMap(initialMap);
 
-    // Auto-select child matching this bundle's grade level if available
-    if (parentWards && parentWards.length > 0) {
-      const matchedChild = parentWards.find(
-        (s: any) => s.className === bundle.gradeLevel || s.gradeLevel === bundle.gradeLevel || s.classId === (bundle as any).classId
-      );
-      if (matchedChild) {
-        const fullName = `${matchedChild.firstName || ''} ${matchedChild.lastName || ''}`.trim();
-        setSelectedChild(`${fullName}${matchedChild.className ? ` (${matchedChild.className})` : ''}`);
-      }
+    // Auto-prefill student name matching this bundle's grade level (e.g. KG 2)
+    const bGrade = (bundle.gradeLevel || '').toLowerCase().trim();
+    const bClassId = (bundle as any).classId;
+    const matchingWards = (parentWards || []).filter((s: any) => {
+      if (bClassId && s.classId === bClassId) return true;
+      const sClass = (s.className || s.gradeLevel || '').toLowerCase().trim();
+      if (!sClass || !bGrade) return false;
+      return sClass === bGrade || sClass.includes(bGrade) || bGrade.includes(sClass);
+    });
+
+    if (matchingWards.length > 0) {
+      const first = matchingWards[0];
+      const fullName = `${first.firstName || ''} ${first.lastName || ''}`.trim();
+      setSelectedChild(`${fullName}${first.className ? ` (${first.className})` : ''}`);
+    } else if (parentWards && parentWards.length > 0) {
+      const first = parentWards[0];
+      const fullName = `${first.firstName || ''} ${first.lastName || ''}`.trim();
+      setSelectedChild(`${fullName}${first.className ? ` (${first.className})` : ''}`);
     }
   };
 
@@ -394,20 +403,42 @@ export function ParentStorefront() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {academicBundles.map((bundle) => (
-              <Card key={bundle.id} className="rounded-3xl border-2 border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-purple-50/30 shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col justify-between">
-                <CardHeader className="p-5 pb-3 border-b border-amber-100/70">
-                  <div className="flex justify-between items-start">
-                    <Badge className="bg-amber-500 text-slate-950 font-extrabold text-[10px] uppercase">
-                      {bundle.gradeLevel} • {bundle.term}
-                    </Badge>
-                    {bundle.badgeText && (
-                      <Badge variant="outline" className="border-purple-300 text-purple-700 bg-purple-50 font-bold text-[10px]">
-                        {bundle.badgeText}
-                      </Badge>
-                    )}
-                  </div>
-                  <CardTitle className="text-base font-black text-slate-900 pt-1">{bundle.name}</CardTitle>
+            {academicBundles.map((bundle) => {
+              const bGrade = (bundle.gradeLevel || '').toLowerCase().trim();
+              const bClassId = (bundle as any).classId;
+              const matchingWards = (parentWards || []).filter((s: any) => {
+                if (bClassId && s.classId === bClassId) return true;
+                const sClass = (s.className || s.gradeLevel || '').toLowerCase().trim();
+                if (!sClass || !bGrade) return false;
+                return sClass === bGrade || sClass.includes(bGrade) || bGrade.includes(sClass);
+              });
+
+              return (
+                <Card key={bundle.id} className="rounded-3xl border-2 border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-purple-50/30 shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col justify-between">
+                  <CardHeader className="p-5 pb-3 border-b border-amber-100/70">
+                    <div className="flex justify-between items-start gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge className="bg-amber-500 text-slate-950 font-extrabold text-[10px] uppercase">
+                          {bundle.gradeLevel} • {bundle.term}
+                        </Badge>
+                        {matchingWards.length === 1 && (
+                          <Badge className="bg-emerald-600 text-white font-bold text-[10px]">
+                            🎯 Child: {matchingWards[0].firstName} {matchingWards[0].lastName}
+                          </Badge>
+                        )}
+                        {matchingWards.length > 1 && (
+                          <Badge className="bg-purple-600 text-white font-bold text-[10px]">
+                            👥 {matchingWards.length} Wards in Class ({matchingWards.map((w: any) => w.firstName).join(', ')})
+                          </Badge>
+                        )}
+                      </div>
+                      {bundle.badgeText && (
+                        <Badge variant="outline" className="border-purple-300 text-purple-700 bg-purple-50 font-bold text-[10px]">
+                          {bundle.badgeText}
+                        </Badge>
+                      )}
+                    </div>
+                    <CardTitle className="text-base font-black text-slate-900 pt-1">{bundle.name}</CardTitle>
                   {bundle.description && (
                     <CardDescription className="text-xs text-slate-500 font-medium line-clamp-2">
                       {bundle.description}
