@@ -3,12 +3,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, query, where, serverTimestamp, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, PlusCircle, Trash2, Search, RefreshCw, UserCheck } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Search, RefreshCw, UserCheck, Edit } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,32 +23,45 @@ import Link from 'next/link';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
-function VendorForm({ setOpen, onVendorAdded, schoolId }: { setOpen: (open: boolean) => void; onVendorAdded: () => void; schoolId: string }) {
+function VendorForm({ setOpen, onVendorAdded, schoolId, vendorToEdit }: { setOpen: (open: boolean) => void; onVendorAdded: () => void; schoolId: string; vendorToEdit?: Vendor | null }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof vendorSchema>>({
         resolver: zodResolver(vendorSchema),
-        defaultValues: { name: '', category: 'Office Supplies', email: '', phone: '' },
+        defaultValues: { 
+            name: vendorToEdit?.name || '', 
+            category: vendorToEdit?.category || 'Office Supplies', 
+            email: vendorToEdit?.email || '', 
+            phone: vendorToEdit?.phone || '' 
+        },
     });
 
     async function onSubmit(values: z.infer<typeof vendorSchema>) {
         if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'vendors'), {
-                ...values,
-                schoolId: schoolId,
-                createdAt: serverTimestamp(),
-            });
-            toast({ title: 'Success', description: `Vendor '${values.name}' has been created.` });
+            if (vendorToEdit) {
+                await updateDoc(doc(firestore, 'vendors', vendorToEdit.id), {
+                    ...values,
+                    updatedAt: serverTimestamp()
+                });
+                toast({ title: 'Vendor Updated', description: `Vendor '${values.name}' updated successfully.` });
+            } else {
+                await addDoc(collection(firestore, 'vendors'), {
+                    ...values,
+                    schoolId: schoolId,
+                    createdAt: serverTimestamp(),
+                });
+                toast({ title: 'Success', description: `Vendor '${values.name}' has been created.` });
+            }
             onVendorAdded();
             form.reset();
             setOpen(false);
         } catch (error) {
             console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to add vendor.' });
+            toast({ variant: 'destructive', title: 'Error', description: vendorToEdit ? 'Failed to update vendor.' : 'Failed to add vendor.' });
         } finally {
             setIsSubmitting(false);
         }
@@ -69,9 +82,9 @@ function VendorForm({ setOpen, onVendorAdded, schoolId }: { setOpen: (open: bool
                 <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem><FormLabel>Contact Phone</FormLabel><FormControl><Input placeholder="024-xxx-xxxx" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
-                <Button type="submit" disabled={isSubmitting} className="w-full">
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 font-bold">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
-                    Add Vendor
+                    {vendorToEdit ? 'Update Vendor Profile' : 'Add Vendor'}
                 </Button>
             </form>
         </Form>
@@ -85,6 +98,7 @@ export default function VendorsPage() {
     const { toast } = useToast();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const [isFormOpen, setFormOpen] = useState(false);
+    const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
@@ -176,8 +190,11 @@ export default function VendorsPage() {
                                                     <span>{vendor.phone}</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-600" onClick={() => handleDelete(vendor.id)}>
+                                            <TableCell className="text-right space-x-2">
+                                                <Button variant="outline" size="sm" className="h-8 border-slate-200 text-slate-700 hover:bg-slate-100 font-bold" onClick={() => setEditingVendor(vendor)}>
+                                                    <Edit className="h-3.5 w-3.5 mr-1 text-indigo-600" /> Edit
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-600" onClick={() => handleDelete(vendor.id)}>
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </TableCell>
@@ -195,6 +212,25 @@ export default function VendorsPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {editingVendor && (
+                <Dialog open={!!editingVendor} onOpenChange={(open) => !open && setEditingVendor(null)}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Edit Vendor Profile</DialogTitle>
+                            <DialogDescription>Update supplier contact details or category.</DialogDescription>
+                        </DialogHeader>
+                        {schoolId && (
+                            <VendorForm 
+                                setOpen={(open) => !open && setEditingVendor(null)} 
+                                onVendorAdded={forceRefetch} 
+                                schoolId={schoolId} 
+                                vendorToEdit={editingVendor}
+                            />
+                        )}
+                    </DialogContent>
+                </Dialog>
+            )}
         </div>
     );
 }

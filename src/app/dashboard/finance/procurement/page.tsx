@@ -143,7 +143,7 @@ const DEFAULT_TAX_BRACKETS = [
 ];
 
 // --- SUB-COMPONENT: SUPPLIER FORM ---
-function SupplierForm({ setOpen, onSupplierAdded, schoolId }: { setOpen: (open: boolean) => void; onSupplierAdded: () => void; schoolId: string }) {
+function SupplierForm({ setOpen, onSupplierAdded, schoolId, supplierToEdit }: { setOpen: (open: boolean) => void; onSupplierAdded: () => void; schoolId: string; supplierToEdit?: Vendor | null }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,10 +151,10 @@ function SupplierForm({ setOpen, onSupplierAdded, schoolId }: { setOpen: (open: 
     const form = useForm<z.infer<typeof vendorSchema>>({
         resolver: zodResolver(vendorSchema),
         defaultValues: {
-            name: '',
-            category: 'Office Supplies',
-            email: '',
-            phone: '',
+            name: supplierToEdit?.name || '',
+            category: supplierToEdit?.category || 'Office Supplies',
+            email: supplierToEdit?.email || '',
+            phone: supplierToEdit?.phone || '',
         }
     });
 
@@ -162,18 +162,26 @@ function SupplierForm({ setOpen, onSupplierAdded, schoolId }: { setOpen: (open: 
         if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'vendors'), {
-                ...values,
-                schoolId: schoolId,
-                createdAt: serverTimestamp(),
-            });
-            toast({ title: 'Supplier Added', description: `${values.name} has been added to the directory.` });
+            if (supplierToEdit) {
+                await updateDoc(doc(firestore, 'vendors', supplierToEdit.id), {
+                    ...values,
+                    updatedAt: serverTimestamp()
+                });
+                toast({ title: 'Supplier Updated', description: `${values.name} details have been updated.` });
+            } else {
+                await addDoc(collection(firestore, 'vendors'), {
+                    ...values,
+                    schoolId: schoolId,
+                    createdAt: serverTimestamp(),
+                });
+                toast({ title: 'Supplier Added', description: `${values.name} has been added to the directory.` });
+            }
             onSupplierAdded();
             form.reset();
             setOpen(false);
         } catch (error) {
             console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to add supplier.' });
+            toast({ variant: 'destructive', title: 'Error', description: supplierToEdit ? 'Failed to update supplier.' : 'Failed to add supplier.' });
         } finally {
             setIsSubmitting(false);
         }
@@ -224,8 +232,8 @@ function SupplierForm({ setOpen, onSupplierAdded, schoolId }: { setOpen: (open: 
                     )}/>
                 </div>
                 <Button type="submit" disabled={isSubmitting} className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl mt-2">
-                    {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                    Add Supplier
+                    {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+                    {supplierToEdit ? 'Update Supplier Profile' : 'Add Supplier'}
                 </Button>
             </form>
         </Form>
@@ -1062,9 +1070,21 @@ export default function AccountsPayablePage() {
     
     const [isBillFormOpen, setBillFormOpen] = useState(false);
     const [isSupplierFormOpen, setSupplierFormOpen] = useState(false);
+    const [editingSupplier, setEditingSupplier] = useState<Vendor | null>(null);
     const [isPOFormOpen, setPOFormOpen] = useState(false);
     const [payingBill, setPayingBill] = useState<AccountsPayableRecord | null>(null);
     const [viewingPO, setViewingPO] = useState<PurchaseOrder | null>(null);
+
+    const handleDeleteSupplier = async (id: string) => {
+        if (!firestore || !confirm("Are you sure you want to remove this supplier profile?")) return;
+        try {
+            await deleteDoc(doc(firestore, 'vendors', id));
+            toast({ title: 'Deleted', description: 'Supplier profile removed.' });
+            refetchVendors();
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not remove supplier.' });
+        }
+    };
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role || '');
 
@@ -1471,7 +1491,8 @@ export default function AccountsPayablePage() {
                                         <TableHead className="pl-6 font-bold">Supplier Name</TableHead>
                                         <TableHead className="font-bold">Category</TableHead>
                                         <TableHead className="font-bold">Phone Number</TableHead>
-                                        <TableHead className="font-bold pr-6">Email Address</TableHead>
+                                        <TableHead className="font-bold">Email Address</TableHead>
+                                        <TableHead className="text-right pr-6 font-bold">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -1491,11 +1512,29 @@ export default function AccountsPayablePage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="py-4 font-mono text-xs text-slate-500 font-semibold">{vendor.phone || '-'}</TableCell>
-                                            <TableCell className="py-4 pr-6 text-xs font-mono text-slate-500">{vendor.email || '-'}</TableCell>
+                                            <TableCell className="py-4 text-xs font-mono text-slate-500">{vendor.email || '-'}</TableCell>
+                                            <TableCell className="py-4 pr-6 text-right space-x-2">
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm" 
+                                                    onClick={() => setEditingSupplier(vendor)} 
+                                                    className="h-8 border-slate-200 text-slate-700 hover:bg-slate-100 font-bold"
+                                                >
+                                                    <Edit className="h-3.5 w-3.5 mr-1 text-emerald-600" /> Edit
+                                                </Button>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    onClick={() => handleDeleteSupplier(vendor.id)} 
+                                                    className="h-8 w-8 text-rose-500 hover:text-rose-700 hover:bg-rose-50"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
                                         </TableRow>
                                     )) : (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="text-center py-12 text-slate-400">
+                                            <TableCell colSpan={5} className="text-center py-12 text-slate-400">
                                                 <Landmark className="h-8 w-8 mx-auto mb-2 opacity-20" />
                                                 <p className="text-xs font-bold uppercase tracking-wider">No suppliers found</p>
                                             </TableCell>
@@ -1507,6 +1546,25 @@ export default function AccountsPayablePage() {
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            {editingSupplier && (
+                <Dialog open={!!editingSupplier} onOpenChange={(open) => !open && setEditingSupplier(null)}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="text-lg font-bold text-slate-800">Edit Supplier Profile</DialogTitle>
+                            <DialogDescription>Update supplier contact details or category.</DialogDescription>
+                        </DialogHeader>
+                        {schoolId && (
+                            <SupplierForm 
+                                setOpen={(open) => !open && setEditingSupplier(null)} 
+                                onSupplierAdded={refetchVendors} 
+                                schoolId={schoolId} 
+                                supplierToEdit={editingSupplier}
+                            />
+                        )}
+                    </DialogContent>
+                </Dialog>
+            )}
         </div>
     );
 }
