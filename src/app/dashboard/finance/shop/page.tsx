@@ -1427,10 +1427,15 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
     const [selectedItemsMap, setSelectedItemsMap] = useState<Record<string, { selected: boolean; quantity: number; defaultSize: string }>>({});
 
     const bundlesQuery = useMemoFirebase(
-        () => (firestore && schoolId ? query(collection(firestore, 'school_academic_bundles'), where('schoolId', '==', schoolId), orderBy('gradeLevel')) : null),
+        () => (firestore && schoolId ? query(collection(firestore, 'school_academic_bundles'), where('schoolId', '==', schoolId)) : null),
         [firestore, schoolId]
     );
-    const { data: bundles, isLoading, forceRefetch } = useCollection<AcademicBundle>(bundlesQuery);
+    const { data: rawBundles, isLoading, forceRefetch } = useCollection<AcademicBundle>(bundlesQuery);
+
+    const bundles = useMemo(() => {
+        if (!rawBundles) return [];
+        return [...rawBundles].sort((a, b) => (a.gradeLevel || '').localeCompare(b.gradeLevel || ''));
+    }, [rawBundles]);
 
     const toggleItemSelection = (itemId: string) => {
         setSelectedItemsMap(prev => {

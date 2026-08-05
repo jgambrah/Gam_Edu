@@ -499,6 +499,17 @@ service cloud.firestore {
       allow read, write, list: if isFinanceStaff() || isAdmin();
     }
 
+    match /school_academic_bundles/{bundleId} {
+      allow read, list: if isSignedIn();
+      allow write: if isFinanceStaff() || isAdmin();
+    }
+
+    match /school_shop_orders/{orderId} {
+      allow read, list: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if isFinanceStaff() || isAdmin();
+    }
+
     match /accounts/{accountId} {
       allow read, list: if isFinanceStaff() || isAdmin();
       allow write: if isFinanceStaff() || isAdmin();
