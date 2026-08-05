@@ -38,6 +38,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { notifyParents } from '@/app/actions/notifications';
 import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
 import { logAuditEvent } from '@/lib/audit';
+import { triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 
 const attendanceRecordSchema = z.object({
   id: z.string().optional(),
@@ -261,6 +262,15 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
             await batch.commit();
             setHasExistingRecords(true);
+
+            // Trigger gamification badge updates (0 extra reads)
+            data.records.forEach(record => {
+                if (record.status === 'Present') {
+                    triggerStudentBadgeEvent(firestore, record.studentId, { type: 'ATTENDANCE_PRESENT' });
+                } else if (record.status === 'Absent' || record.status === 'Late') {
+                    triggerStudentBadgeEvent(firestore, record.studentId, { type: 'ATTENDANCE_TARDY' });
+                }
+            });
 
             try {
                 const className = visibleClasses?.find((c: any) => c.id === selectedClassId)?.name || selectedClassId;

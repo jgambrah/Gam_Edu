@@ -28,6 +28,7 @@ import {
   CalendarCheck,
   Shield,
   Code,
+  Trophy,
   Sigma,
   FlaskConical,
   BookOpenCheck,
@@ -257,6 +258,12 @@ export const navItems: NavItem[] = [
             title: 'Gradebook',
             icon: SquarePen,
             roles: ['Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/achievements',
+            title: 'Achievements & Badges',
+            icon: Trophy,
+            roles: 'all',
         },
         {
             path: '/dashboard/academics/analytics',

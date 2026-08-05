@@ -34,6 +34,7 @@ const toDateSafe = (d: any): Date => {
 };
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
+import { StudentBadgeShowcase } from '@/components/achievements/StudentBadgeShowcase';
 
 function AttendanceHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
@@ -669,6 +670,12 @@ function StudentDetailView({ student }: { student: Student }) {
 
     return (
         <div className="space-y-6">
+            <StudentBadgeShowcase 
+                studentName={`${student.firstName} ${student.lastName}`}
+                totalPoints={(student as any).totalPoints || 0}
+                earnedBadges={(student as any).earnedBadges || []}
+            />
+
             <Tabs defaultValue="attendance" className="w-full">
                 <TabsList className="grid w-full grid-cols-5 bg-slate-100 p-1 rounded-xl">
                     <TabsTrigger value="attendance" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">

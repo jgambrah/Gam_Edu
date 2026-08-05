@@ -26,8 +26,8 @@ import { Badge } from '@/components/ui/badge';
 import { format, addDays, isPast } from 'date-fns';
 import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
+import { triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 
 // --- Form Zod schema supporting HTML5 standard controls ---
 const libraryFormSchema = z.object({
@@ -357,12 +357,18 @@ export default function LibraryPage() {
   const handleConfirmReturn = async (item: LibraryItem) => {
     if (!firestore) return;
     try {
+        const studentHolderId = item.currentHolderId;
         await updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
             status: 'Available',
             currentHolderId: '',
             currentHolderName: '',
             dueDate: null,
         });
+
+        if (studentHolderId) {
+            triggerStudentBadgeEvent(firestore, studentHolderId, { type: 'LIBRARY_BOOK_RETURNED' });
+        }
+
         toast({ title: 'Return Confirmed', description: `"${item.name}" is now available in the catalog.` });
     } catch (e) {
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to confirm return.' });

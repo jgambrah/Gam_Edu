@@ -23,6 +23,7 @@ import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
 import confetti from 'canvas-confetti';
+import { triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { BlockMath, InlineMath } from 'react-katex';
@@ -196,6 +197,13 @@ export default function QuizPage() {
             schoolId: schoolId,
         };
         await addDoc(collection(firestore, 'quizAttempts'), attemptData);
+
+        // Trigger gamification badge updates (0 extra reads)
+        const quizPct = quiz.questions.length > 0 ? Math.round((currentScore / quiz.questions.length) * 100) : 0;
+        triggerStudentBadgeEvent(firestore, student?.id || user.uid, {
+            type: 'QUIZ_SUBMITTED',
+            quizScorePercent: quizPct
+        });
 
         // Auto Gradebook integration entry!
         if ((quiz as any).gradable && (quiz as any).subjectId) {
