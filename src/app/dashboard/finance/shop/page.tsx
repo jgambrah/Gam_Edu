@@ -1525,14 +1525,17 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
             if (conf.selected) {
                 const shopItem = items.find(i => i.id === itemId);
                 if (shopItem) {
-                    bundleItems.push({
+                    const itemData: any = {
                         itemId: shopItem.id,
                         name: shopItem.name,
                         category: shopItem.category,
-                        price: shopItem.price,
-                        quantity: conf.quantity,
-                        defaultSize: shopItem.category === 'Uniform' || shopItem.category === 'Clothing' ? conf.defaultSize : undefined
-                    });
+                        price: Number(shopItem.price || 0),
+                        quantity: Number(conf.quantity || 1),
+                    };
+                    if (shopItem.category === 'Uniform' || shopItem.category === 'Clothing') {
+                        itemData.defaultSize = conf.defaultSize || 'Medium';
+                    }
+                    bundleItems.push(itemData);
                 }
             }
         });
@@ -1547,19 +1550,21 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
 
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'school_academic_bundles'), {
+            const bundlePayload: any = {
                 name: name.trim() || `${gradeLevel} ${term} Starter Pack`,
-                gradeLevel,
+                gradeLevel: gradeLevel || 'Grade 4',
                 classId: matchedClass?.id || null,
-                term,
+                term: term || 'Term 1',
                 description: desc.trim() || `Complete textbook, uniform, and stationery pack for ${gradeLevel} ${term}.`,
-                bundlePrice: bPrice,
-                originalPrice: calculatedOriginalPrice,
-                badgeText,
+                bundlePrice: Number(bPrice || 0),
+                originalPrice: Number(calculatedOriginalPrice || 0),
+                badgeText: badgeText ? badgeText.trim() : 'Save 10%',
                 items: bundleItems,
-                schoolId,
+                schoolId: schoolId,
                 createdAt: serverTimestamp()
-            });
+            };
+
+            await addDoc(collection(firestore, 'school_academic_bundles'), bundlePayload);
 
             toast({ title: 'Bundle Created', description: `${name || gradeLevel} starter kit is now active for parents.` });
             forceRefetch();
