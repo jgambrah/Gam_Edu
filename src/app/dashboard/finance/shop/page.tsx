@@ -1840,6 +1840,7 @@ export default function SchoolShopPage() {
     
     const [restockItem, setRestockItem] = useState<ShopItem | null>(null);
     const [editingItem, setEditingItem] = useState<ShopItem | null>(null);
+    const [poItem, setPoItem] = useState<ShopItem | null>(null);
     const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
     const [isClearDrawerOpen, setIsClearDrawerOpen] = useState(false);
 
@@ -1852,6 +1853,10 @@ export default function SchoolShopPage() {
 
     const salesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_transactions'), where('schoolId', '==', schoolId), orderBy('date', 'desc')) : null, [firestore, schoolId]);
     const { data: sales, isLoading: isLoadingSales, forceRefetch: forceRefetchSales } = useCollection<SaleTransaction>(salesQuery);
+
+    const vendorsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'vendors'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: rawVendors } = useCollection<any>(vendorsQuery);
+    const vendors = rawVendors || [];
 
     const tillQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !user) return null;
@@ -2003,15 +2008,24 @@ export default function SchoolShopPage() {
                         </div>
                         <div className="flex gap-2 flex-wrap self-end md:self-auto">
                             {lowStockItems.slice(0, 3).map(item => (
-                                <Button
-                                    key={item.id}
-                                    size="sm"
-                                    onClick={() => setRestockItem(item)}
-                                    className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-sm h-8"
-                                >
-                                    <ArchiveRestore className="h-3.5 w-3.5 mr-1" />
-                                    Restock {item.name.split(' ')[0]}
-                                </Button>
+                                <div key={item.id} className="flex items-center gap-1.5">
+                                    <Button
+                                        size="sm"
+                                        onClick={() => setPoItem(item)}
+                                        className="bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-sm h-8"
+                                    >
+                                        <Sparkles className="h-3.5 w-3.5 mr-1 text-amber-300" />
+                                        Dispatch PO ({item.name.split(' ')[0]})
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => setRestockItem(item)}
+                                        className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-sm h-8"
+                                    >
+                                        <ArchiveRestore className="h-3.5 w-3.5 mr-1" />
+                                        Restock
+                                    </Button>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -2087,6 +2101,10 @@ export default function SchoolShopPage() {
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right space-x-2 pr-6">
+                                                    <Button variant="outline" size="sm" onClick={() => setPoItem(item)} className="border-purple-300 text-purple-700 bg-purple-50 hover:bg-purple-100 h-8 font-bold">
+                                                        <Sparkles className="h-3.5 w-3.5 mr-1 text-purple-600"/>
+                                                        Dispatch PO
+                                                    </Button>
                                                     <Button variant="outline" size="sm" onClick={() => setEditingItem(item)} className="border-slate-350 hover:bg-slate-100 h-8">
                                                         <Edit className="h-3.5 w-3.5 mr-1 text-slate-500"/>
                                                         Edit
@@ -2138,6 +2156,18 @@ export default function SchoolShopPage() {
                     open={!!restockItem}
                     onOpenChange={() => setRestockItem(null)}
                     onRestockComplete={refreshDashboard}
+                />
+            )}
+
+            {poItem && (
+                <SupplierPODialog
+                    item={poItem}
+                    open={!!poItem}
+                    onOpenChange={(val) => !val && setPoItem(null)}
+                    vendors={vendors}
+                    schoolId={schoolId!}
+                    schoolProfile={schoolProfile}
+                    onPOSent={refreshDashboard}
                 />
             )}
 
@@ -2322,6 +2352,248 @@ function ClearShopDrawerDialog({
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : 'Confirm Cash Drop'}
                     </Button>
                 </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- COMPONENT: Supplier Purchase Order Dialog ---
+function SupplierPODialog({
+    item,
+    open,
+    onOpenChange,
+    vendors,
+    schoolId,
+    schoolProfile,
+    onPOSent
+}: {
+    item: ShopItem;
+    open: boolean;
+    onOpenChange: (val: boolean) => void;
+    vendors: any[];
+    schoolId: string;
+    schoolProfile: any;
+    onPOSent: () => void;
+}) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const { user } = useUser();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [selectedVendorId, setSelectedVendorId] = useState(item.vendorId || (vendors[0]?.id || ''));
+    const selectedVendor = useMemo(() => vendors.find(v => v.id === selectedVendorId) || null, [vendors, selectedVendorId]);
+
+    const [reorderQty, setReorderQty] = useState<number>(item.reorderQuantity || 50);
+    const [unitCost, setUnitCost] = useState<number>(item.unitCostPrice || Math.round((item.price || 0) * 0.7));
+    const [customNotes, setCustomNotes] = useState('');
+
+    const poNumber = useMemo(() => `PO-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${item.id.substring(0, 4).toUpperCase()}`, [item]);
+    const totalEstCost = useMemo(() => reorderQty * unitCost, [reorderQty, unitCost]);
+    const schoolName = schoolProfile?.name || 'School Administration';
+
+    // Formatted PO text for WhatsApp & Email
+    const poFormattedText = useMemo(() => {
+        return `OFFICIAL PURCHASE ORDER: ${poNumber}\n` +
+               `From: ${schoolName}\n` +
+               `To: ${selectedVendor?.name || item.vendorName || 'Supplier'}\n\n` +
+               `Please process and supply the following reorder items:\n` +
+               `• Item: ${item.name} (${item.category})\n` +
+               `• Current Stock: ${item.stock} units (Threshold: ${item.minStock})\n` +
+               `• Reorder Quantity: ${reorderQty} units\n` +
+               `• Estimated Unit Purchase Cost: GH₵ ${unitCost.toFixed(2)}\n` +
+               `• Estimated Total PO Value: GH₵ ${totalEstCost.toFixed(2)}\n\n` +
+               `Delivery Address: ${schoolName} Main Campus Store\n` +
+               `Authorized By: ${user?.displayName || user?.email || 'School Procurement Office'}\n` +
+               `${customNotes ? `Notes: ${customNotes}\n` : ''}` +
+               `Generated via GAM Edu Management Portal.`;
+    }, [poNumber, schoolName, selectedVendor, item, reorderQty, unitCost, totalEstCost, user, customNotes]);
+
+    const savePORecord = async (dispatchStatus: string) => {
+        if (!firestore || !schoolId) return;
+        setIsSubmitting(true);
+        try {
+            await addDoc(collection(firestore, 'school_purchase_orders'), {
+                poNumber,
+                schoolId,
+                itemId: item.id,
+                itemName: item.name,
+                category: item.category,
+                vendorId: selectedVendorId || null,
+                vendorName: selectedVendor?.name || item.vendorName || 'Supplier',
+                vendorPhone: selectedVendor?.phone || item.vendorPhone || null,
+                vendorEmail: selectedVendor?.email || item.vendorEmail || null,
+                reorderQty,
+                unitCost,
+                totalEstCost,
+                status: 'SENT',
+                dispatchStatus,
+                createdByName: user?.displayName || user?.email || 'Admin',
+                createdAt: serverTimestamp()
+            });
+
+            // Also update item's vendor preference if changed
+            await updateDoc(doc(firestore, 'school_shop_items', item.id), {
+                vendorId: selectedVendorId || null,
+                vendorName: selectedVendor?.name || item.vendorName || null,
+                vendorPhone: selectedVendor?.phone || item.vendorPhone || null,
+                vendorEmail: selectedVendor?.email || item.vendorEmail || null,
+                reorderQuantity: reorderQty,
+                unitCostPrice: unitCost
+            });
+
+            toast({ title: 'Purchase Order Saved', description: `PO ${poNumber} dispatched to ${selectedVendor?.name || 'Supplier'}.` });
+            onPOSent();
+            onOpenChange(false);
+        } catch (err) {
+            console.error('Error saving PO:', err);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save purchase order record.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleSendWhatsApp = async () => {
+        let phone = selectedVendor?.phone || item.vendorPhone || '';
+        phone = phone.replace(/[^0-9]/g, '');
+        if (phone.startsWith('0')) {
+            phone = '233' + phone.substring(1);
+        }
+        if (!phone) {
+            toast({ variant: 'destructive', title: 'Vendor Phone Missing', description: 'Please select a vendor with a valid contact number.' });
+            return;
+        }
+
+        await savePORecord('WHATSAPP_DISPATCHED');
+        const encoded = encodeURIComponent(poFormattedText);
+        window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
+    };
+
+    const handleSendEmail = async () => {
+        const email = selectedVendor?.email || item.vendorEmail || '';
+        if (!email) {
+            toast({ variant: 'destructive', title: 'Vendor Email Missing', description: 'Please select a vendor with a valid email address.' });
+            return;
+        }
+
+        await savePORecord('EMAIL_DISPATCHED');
+        const subject = encodeURIComponent(`PURCHASE ORDER: ${poNumber} - ${schoolName}`);
+        const body = encodeURIComponent(poFormattedText);
+        window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-purple-800 font-bold text-lg">
+                        <Sparkles className="h-5 w-5 text-amber-500" />
+                        Generate Purchase Order ({poNumber})
+                    </DialogTitle>
+                    <DialogDescription>
+                        Create an official Purchase Order (PO) and dispatch it directly to your preferred local supplier via WhatsApp, Email, or Print.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4 py-2 text-xs">
+                    <div className="bg-purple-50 p-3 rounded-xl border border-purple-200 flex justify-between items-center">
+                        <div>
+                            <span className="font-extrabold text-purple-900 block text-sm">{item.name}</span>
+                            <span className="text-[10px] text-purple-700 font-bold">Category: {item.category} • Current Stock: {item.stock} (Threshold: {item.minStock})</span>
+                        </div>
+                        <Badge className="bg-purple-700 text-white font-bold">{poNumber}</Badge>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="font-bold text-slate-700">Preferred Supplier / Vendor</Label>
+                        {vendors && vendors.length > 0 ? (
+                            <Select value={selectedVendorId} onValueChange={setSelectedVendorId}>
+                                <SelectTrigger className="bg-white border-slate-200 h-10 font-semibold">
+                                    <SelectValue placeholder="Select vendor..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {vendors.map((v: any) => (
+                                        <SelectItem key={v.id} value={v.id} className="font-bold text-xs">
+                                            {v.name} {v.phone ? `(${v.phone})` : ''}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        ) : (
+                            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs">
+                                No vendor profiles registered yet in system. You can still dispatch via custom phone/email.
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <Label className="font-bold text-slate-700">Reorder Quantity (Units)</Label>
+                            <Input 
+                                type="number" 
+                                value={reorderQty} 
+                                onChange={e => setReorderQty(Math.max(1, parseInt(e.target.value) || 1))} 
+                                className="h-10 border-slate-200 bg-white font-bold text-xs" 
+                            />
+                        </div>
+                        <div>
+                            <Label className="font-bold text-slate-700">Est. Unit Cost Price (GH₵)</Label>
+                            <Input 
+                                type="number" 
+                                step="0.01" 
+                                value={unitCost} 
+                                onChange={e => setUnitCost(parseFloat(e.target.value) || 0)} 
+                                className="h-10 border-slate-200 bg-white font-bold text-xs text-emerald-700" 
+                            />
+                        </div>
+                    </div>
+
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center font-bold">
+                        <span className="text-slate-600">Total PO Value:</span>
+                        <span className="text-base text-emerald-700 font-black">GH₵ {totalEstCost.toFixed(2)}</span>
+                    </div>
+
+                    <div>
+                        <Label className="font-bold text-slate-700">Special Notes for Supplier (Optional)</Label>
+                        <Input 
+                            value={customNotes} 
+                            onChange={e => setCustomNotes(e.target.value)} 
+                            placeholder="e.g. Urgent delivery needed before Monday morning." 
+                            className="h-9 border-slate-200 bg-white text-xs" 
+                        />
+                    </div>
+
+                    <div className="space-y-2 pt-2 border-t">
+                        <Label className="font-bold text-slate-700 uppercase tracking-wider text-[10px] block">Dispatch Purchase Order To Supplier:</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                                type="button" 
+                                onClick={handleSendWhatsApp} 
+                                disabled={isSubmitting} 
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 shadow-sm"
+                            >
+                                🟢 Dispatch via WhatsApp
+                            </Button>
+                            <Button 
+                                type="button" 
+                                onClick={handleSendEmail} 
+                                disabled={isSubmitting} 
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-10 shadow-sm"
+                            >
+                                ✉️ Dispatch via Email
+                            </Button>
+                        </div>
+                        <Button 
+                            type="button" 
+                            onClick={() => savePORecord('RECORD_SAVED')} 
+                            disabled={isSubmitting} 
+                            variant="outline" 
+                            className="w-full border-slate-300 text-slate-700 font-bold text-xs h-9"
+                        >
+                            {isSubmitting ? <Loader2 className="animate-spin h-4 w-4 mr-2"/> : null}
+                            Save PO Record Only (No Direct Dispatch)
+                        </Button>
+                    </div>
+                </div>
             </DialogContent>
         </Dialog>
     );
