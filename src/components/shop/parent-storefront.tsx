@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { PaystackButton } from 'react-paystack';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, orderBy, doc, updateDoc, increment } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
 import { Button } from '@/components/ui/button';
@@ -65,6 +66,16 @@ export function ParentStorefront() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedReceipt, setCompletedReceipt] = useState<any | null>(null);
 
+  // Fetch school settings for Paystack keys
+  const schoolRef = useMemoFirebase(
+    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+    [firestore, schoolId]
+  );
+  const { data: schoolSettings } = useDoc<any>(schoolRef);
+
+  const paystackEnabled = schoolSettings?.enablePaystack && schoolSettings?.paystackPubKey;
+  const paystackPubKey = schoolSettings?.paystackPubKey || process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '';
+
   // Fetch store items from Firestore
   const itemsQuery = useMemoFirebase(
     () => (firestore && schoolId ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId), orderBy('name')) : null),
@@ -119,19 +130,14 @@ export function ParentStorefront() {
 
   const totalAmount = cart.reduce((sum, c) => sum + c.item.price * c.quantity, 0);
 
-  const handleMomoCheckout = async () => {
+  const handleOrderSuccess = async (paystackRef?: string) => {
     if (!firestore || !schoolId || !user) return;
     if (cart.length === 0) return;
-    if (!momoNumber || momoNumber.length < 9) {
-      toast({ variant: 'destructive', title: 'Phone Required', description: 'Please enter a valid Mobile Money number.' });
-      return;
-    }
 
     setIsProcessing(true);
     try {
       // Auto-generate 6-Digit Pickup PIN e.g. 849-215
       const randomPin = `${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}`;
-      const orderRef = collection(firestore, `schools/${schoolId}/shopOrders`);
 
       const parentName = profile?.firstName && profile?.lastName 
         ? `${profile.firstName} ${profile.lastName}` 
@@ -143,8 +149,9 @@ export function ParentStorefront() {
         parentName,
         parentId: user.uid,
         childName: selectedChild,
-        momoNumber,
+        momoNumber: momoNumber || 'Paystack Direct',
         momoProvider,
+        paystackReference: paystackRef || null,
         items: cart.map((c) => ({
           itemId: c.item.id,
           name: c.item.name,
@@ -156,7 +163,7 @@ export function ParentStorefront() {
         totalAmount,
         status: 'Pending Collection',
         paymentStatus: 'PAID',
-        paymentMethod: momoProvider.toUpperCase(),
+        paymentMethod: paystackRef ? `PAYSTACK (${momoProvider.toUpperCase()})` : momoProvider.toUpperCase(),
         createdAt: serverTimestamp(),
       };
 
@@ -188,6 +195,37 @@ export function ParentStorefront() {
       setIsProcessing(false);
     }
   };
+
+  const handleMomoCheckout = async () => {
+    if (!momoNumber || momoNumber.length < 9) {
+      toast({ variant: 'destructive', title: 'Phone Required', description: 'Please enter a valid Mobile Money number.' });
+      return;
+    }
+    await handleOrderSuccess();
+  };
+
+  const paystackProps = {
+    email: user?.email || 'parent@gamedu.app',
+    amount: Math.round(totalAmount * 100),
+    currency: 'GHS',
+    publicKey: paystackPubKey,
+    text: `Confirm & Pay GH₵ ${totalAmount.toFixed(2)} via Paystack`,
+    metadata: {
+      type: 'school_merchandise_order',
+      schoolId,
+      childName: selectedChild,
+      parentId: user?.uid,
+      amount: totalAmount,
+    },
+    onSuccess: (res: any) => {
+      handleOrderSuccess(res.reference || res.trxref || 'PAYSTACK_REF');
+    },
+    onClose: () => {
+      toast({ variant: 'destructive', title: 'Payment Cancelled', description: 'The Paystack payment modal was closed.' });
+    },
+  };
+
+  const PaystackButtonComponent = PaystackButton as any;
 
   const orderDataRef = (fs: any, sId: string) => collection(fs, `schools/${sId}/shopOrders`);
 
@@ -478,14 +516,25 @@ export function ParentStorefront() {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button
-              onClick={handleMomoCheckout}
-              disabled={isProcessing}
-              className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md uppercase tracking-wider"
-            >
-              {isProcessing ? 'Processing MoMo Prompt...' : `Confirm & Pay GH₵ ${totalAmount.toFixed(2)}`}
-            </Button>
+          <DialogFooter className="flex flex-col gap-2 pt-2">
+            {paystackPubKey ? (
+              <PaystackButtonComponent
+                className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md uppercase tracking-wider cursor-pointer flex items-center justify-center transition-all active:scale-95"
+                {...paystackProps}
+              />
+            ) : (
+              <Button
+                onClick={handleMomoCheckout}
+                disabled={isProcessing}
+                className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md uppercase tracking-wider"
+              >
+                {isProcessing ? 'Processing MoMo Prompt...' : `Confirm & Pay GH₵ ${totalAmount.toFixed(2)}`}
+              </Button>
+            )}
+            <div className="flex items-center justify-center gap-1 text-[10px] text-slate-400 font-medium">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Secured by {paystackPubKey ? "School's Paystack Gateway" : 'School Store Settlement'}</span>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
