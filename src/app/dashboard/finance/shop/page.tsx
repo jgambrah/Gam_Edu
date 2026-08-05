@@ -1415,6 +1415,13 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Fetch existing school classes from Firestore
+    const classesQuery = useMemoFirebase(
+        () => (firestore && schoolId ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null),
+        [firestore, schoolId]
+    );
+    const { data: schoolClasses } = useCollection<any>(classesQuery);
+
     // Form state
     const [name, setName] = useState('');
     const [gradeLevel, setGradeLevel] = useState('Grade 4');
@@ -1436,6 +1443,24 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
         if (!rawBundles) return [];
         return [...rawBundles].sort((a, b) => (a.gradeLevel || '').localeCompare(b.gradeLevel || ''));
     }, [rawBundles]);
+
+    const availableGradeLevels = useMemo(() => {
+        const set = new Set<string>();
+        if (schoolClasses && schoolClasses.length > 0) {
+            schoolClasses.forEach((c: any) => {
+                if (c.name) set.add(c.name);
+                if (c.gradeLevel) set.add(c.gradeLevel);
+            });
+        }
+        // Fallback default grade levels
+        [
+            'Creche / Nursery', 'Kindergarten 1', 'Kindergarten 2',
+            'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6',
+            'JHS 1', 'JHS 2', 'JHS 3', 'SHS 1', 'SHS 2', 'SHS 3'
+        ].forEach(g => set.add(g));
+
+        return Array.from(set);
+    }, [schoolClasses]);
 
     const toggleItemSelection = (itemId: string) => {
         setSelectedItemsMap(prev => {
@@ -1507,6 +1532,7 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
             return;
         }
 
+        const matchedClass = schoolClasses?.find((c: any) => c.name === gradeLevel || c.gradeLevel === gradeLevel);
         const bPrice = parseFloat(bundlePrice) || calculatedOriginalPrice;
 
         setIsSubmitting(true);
@@ -1514,6 +1540,7 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
             await addDoc(collection(firestore, 'school_academic_bundles'), {
                 name: name.trim() || `${gradeLevel} ${term} Starter Pack`,
                 gradeLevel,
+                classId: matchedClass?.id || null,
                 term,
                 description: desc.trim() || `Complete textbook, uniform, and stationery pack for ${gradeLevel} ${term}.`,
                 bundlePrice: bPrice,
@@ -1548,12 +1575,6 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
         }
     };
 
-    const gradeLevelsList = [
-        'Creche / Nursery', 'Kindergarten 1', 'Kindergarten 2',
-        'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6',
-        'JHS 1', 'JHS 2', 'JHS 3', 'SHS 1', 'SHS 2', 'SHS 3'
-    ];
-
     return (
         <div className="space-y-6">
             <div className="flex flex-row justify-between items-center flex-wrap gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -1581,11 +1602,16 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
                         <form onSubmit={handleCreateBundle} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <Label>Grade Level</Label>
+                                    <Label>Grade Level / Class</Label>
                                     <Select value={gradeLevel} onValueChange={setGradeLevel}>
                                         <SelectTrigger className="mt-1"><SelectValue/></SelectTrigger>
                                         <SelectContent>
-                                            {gradeLevelsList.map(g => (
+                                            {schoolClasses && schoolClasses.length > 0 && (
+                                                <div className="px-2 py-1 text-[10px] font-black text-emerald-700 uppercase tracking-wider bg-emerald-50">
+                                                    School Active Classes ({schoolClasses.length})
+                                                </div>
+                                            )}
+                                            {availableGradeLevels.map(g => (
                                                 <SelectItem key={g} value={g}>{g}</SelectItem>
                                             ))}
                                         </SelectContent>
