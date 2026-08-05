@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Loader2, PlusCircle, CalendarIcon, Truck, Search, Plus, Trash2, 
-  Eye, FileText, CheckCircle2, AlertCircle, Printer, Landmark, Sparkles, Receipt, HelpCircle, Save, ShieldAlert
+  Eye, FileText, CheckCircle2, AlertCircle, Printer, Landmark, Sparkles, Receipt, HelpCircle, Save, ShieldAlert, Edit
 } from 'lucide-react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
