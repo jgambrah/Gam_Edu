@@ -116,6 +116,47 @@ export function ParentStorefront() {
   );
   const { data: academicBundles, isLoading: isLoadingBundles } = useCollection<AcademicBundle>(bundlesQuery);
 
+  // Fetch Parent's Wards / Students from Firestore
+  const parentStudentIds = React.useMemo(() => {
+    return (
+      profile?.studentIds ||
+      profile?.student_ids ||
+      profile?.students ||
+      profile?.linkedStudentIds ||
+      []
+    );
+  }, [profile]);
+
+  const studentsQuery = useMemoFirebase(
+    () => (firestore && schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null),
+    [firestore, schoolId]
+  );
+  const { data: allSchoolStudents } = useCollection<any>(studentsQuery);
+
+  const parentWards = React.useMemo(() => {
+    if (!allSchoolStudents || !user) return [];
+    const parentEmailLower = (user.email || '').toLowerCase();
+    const parentUid = user.uid;
+
+    return allSchoolStudents.filter((s: any) => {
+      if (parentStudentIds.includes(s.id)) return true;
+      if (s.parentId === parentUid) return true;
+      if (s.parentEmail && s.parentEmail.toLowerCase() === parentEmailLower) return true;
+      if (s.guardianEmail && s.guardianEmail.toLowerCase() === parentEmailLower) return true;
+      return false;
+    });
+  }, [allSchoolStudents, user, parentStudentIds]);
+
+  // Default selectedChild to parent's first ward when wards are loaded
+  React.useEffect(() => {
+    if (parentWards && parentWards.length > 0 && (selectedChild === 'Child 1' || !selectedChild)) {
+      const first = parentWards[0];
+      const fullName = `${first.firstName || ''} ${first.lastName || ''}`.trim();
+      const label = `${fullName}${first.className ? ` (${first.className})` : ''}`;
+      setSelectedChild(label);
+    }
+  }, [parentWards]);
+
   const handleOpenKitTailor = (bundle: AcademicBundle) => {
     setActiveBundleForTailor(bundle);
     const initialMap: Record<string, { checked: boolean; quantity: number; size: string }> = {};
@@ -127,6 +168,17 @@ export function ParentStorefront() {
       };
     });
     setTailoredItemsMap(initialMap);
+
+    // Auto-select child matching this bundle's grade level if available
+    if (parentWards && parentWards.length > 0) {
+      const matchedChild = parentWards.find(
+        (s: any) => s.className === bundle.gradeLevel || s.gradeLevel === bundle.gradeLevel || s.classId === (bundle as any).classId
+      );
+      if (matchedChild) {
+        const fullName = `${matchedChild.firstName || ''} ${matchedChild.lastName || ''}`.trim();
+        setSelectedChild(`${fullName}${matchedChild.className ? ` (${matchedChild.className})` : ''}`);
+      }
+    }
   };
 
   const handleAddTailoredKitToCart = () => {
@@ -689,6 +741,40 @@ export function ParentStorefront() {
                 </DialogHeader>
 
                 <div className="space-y-3 py-2">
+                  {/* Purchasing For Student Selector */}
+                  <div className="bg-purple-50/70 border border-purple-100 p-3 rounded-2xl space-y-1">
+                    <Label className="text-[10px] font-extrabold uppercase text-purple-700 tracking-wider">
+                      Purchasing For Student / Ward:
+                    </Label>
+                    {parentWards && parentWards.length > 0 ? (
+                      <Select value={selectedChild} onValueChange={setSelectedChild}>
+                        <SelectTrigger className="h-9 rounded-xl text-xs font-bold bg-white border-purple-200">
+                          <SelectValue placeholder="Select child / ward..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {parentWards.map((w: any) => {
+                            const name = `${w.firstName || ''} ${w.lastName || ''}`.trim();
+                            const classLabel = w.className || w.gradeLevel || 'Student';
+                            const val = `${name}${classLabel ? ` (${classLabel})` : ''}`;
+                            return (
+                              <SelectItem key={w.id} value={val} className="text-xs font-bold py-2">
+                                <span className="font-bold text-slate-900">{name}</span>
+                                <span className="text-[10px] text-purple-700 font-bold ml-2">[{classLabel}]</span>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        value={selectedChild}
+                        onChange={(e) => setSelectedChild(e.target.value)}
+                        placeholder="Student Name e.g. Kofi Mensah"
+                        className="h-9 rounded-xl text-xs font-semibold bg-white"
+                      />
+                    )}
+                  </div>
+
                   <div className="border border-slate-200 rounded-2xl p-3 max-h-64 overflow-y-auto space-y-2.5 bg-slate-50/50">
                     {activeBundleForTailor.items?.map((it) => {
                       const conf = tailoredItemsMap[it.itemId] || { checked: true, quantity: it.quantity || 1, size: it.defaultSize || 'Medium' };
@@ -823,12 +909,33 @@ export function ParentStorefront() {
 
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-slate-700 uppercase">Purchasing For Student</Label>
-              <Input
-                value={selectedChild}
-                onChange={(e) => setSelectedChild(e.target.value)}
-                placeholder="Student Name e.g. Kofi Mensah"
-                className="h-11 rounded-xl text-xs font-semibold"
-              />
+              {parentWards && parentWards.length > 0 ? (
+                <Select value={selectedChild} onValueChange={setSelectedChild}>
+                  <SelectTrigger className="h-11 rounded-xl text-xs font-semibold bg-white border-slate-200">
+                    <SelectValue placeholder="Select child / ward..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {parentWards.map((w: any) => {
+                      const name = `${w.firstName || ''} ${w.lastName || ''}`.trim();
+                      const classLabel = w.className || w.gradeLevel || 'Student';
+                      const val = `${name}${classLabel ? ` (${classLabel})` : ''}`;
+                      return (
+                        <SelectItem key={w.id} value={val} className="text-xs font-bold py-2">
+                          <span className="font-bold text-slate-900">{name}</span>
+                          <span className="text-[10px] text-purple-700 font-bold ml-2">[{classLabel}]</span>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  value={selectedChild}
+                  onChange={(e) => setSelectedChild(e.target.value)}
+                  placeholder="Student Name e.g. Kofi Mensah"
+                  className="h-11 rounded-xl text-xs font-semibold"
+                />
+              )}
             </div>
 
             <div className="space-y-2">
