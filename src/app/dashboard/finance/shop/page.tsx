@@ -2453,11 +2453,14 @@ function SupplierPODialog({
     };
 
     const handleSendWhatsApp = async () => {
-        let phone = selectedVendor?.phone || item.vendorPhone || '';
-        phone = phone.replace(/[^0-9]/g, '');
-        if (phone.startsWith('0')) {
+        let rawPhone = selectedVendor?.phone || item.vendorPhone || '';
+        let phone = rawPhone.replace(/\D/g, '');
+        if (phone.length === 10 && phone.startsWith('0')) {
             phone = '233' + phone.substring(1);
+        } else if (phone.length === 9 && !phone.startsWith('0')) {
+            phone = '233' + phone;
         }
+
         if (!phone) {
             toast({ variant: 'destructive', title: 'Vendor Phone Missing', description: 'Please select a vendor with a valid contact number.' });
             return;

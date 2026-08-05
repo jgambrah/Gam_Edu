@@ -795,6 +795,34 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
         }
     };
 
+    const handleSendPOWhatsApp = () => {
+        let rawPhone = vendor?.phone || '';
+        let phone = rawPhone.replace(/\D/g, '');
+        if (phone.length === 10 && phone.startsWith('0')) {
+            phone = '233' + phone.substring(1);
+        } else if (phone.length === 9 && !phone.startsWith('0')) {
+            phone = '233' + phone;
+        }
+
+        if (!phone) {
+            toast({ variant: 'destructive', title: 'Vendor Phone Missing', description: 'This supplier profile does not have a registered contact number.' });
+            return;
+        }
+
+        const itemsText = (po.items || []).map((it: any) => `• ${it.description} x${it.quantity} @ GH₵${(Number(it.unitPrice || it.price) || 0).toFixed(2)}`).join('\n');
+        const text = `OFFICIAL PURCHASE ORDER: ${po.poNumber}\n` +
+                     `From: ${schoolProfile?.name || 'School Administration'}\n` +
+                     `To: ${vendor?.name || po.vendorName}\n\n` +
+                     `Procured Items List:\n${itemsText}\n\n` +
+                     `Subtotal: GH₵ ${computedSubtotal.toFixed(2)}\n` +
+                     `Total Committed: GH₵ ${computedTotalAmount.toFixed(2)}\n\n` +
+                     `${po.notes ? `Notes: ${po.notes}\n` : ''}` +
+                     `Generated via GAM Edu Portal.`;
+
+        const encoded = encodeURIComponent(text);
+        window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');
+    };
+
     return (
         <DialogContent className="max-w-3xl print:max-w-full print:border-none print:shadow-none bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden p-0 flex flex-col h-[90vh]">
             <div className="overflow-y-auto flex-grow p-6 md:p-8" id="printable-po">
@@ -959,7 +987,10 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
             )}
 
             <div className="flex justify-between items-center px-6 py-4 bg-slate-50 border-t border-slate-100 print:hidden shrink-0">
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
+                    <Button onClick={handleSendPOWhatsApp} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9.5 rounded-xl border-0 shadow-sm">
+                        🟢 Dispatch via WhatsApp
+                    </Button>
                     {po.status === 'Draft' && (
                         <Button onClick={() => handleUpdateStatus('Approved')} disabled={updating} className="bg-indigo-600 hover:bg-indigo-700 font-bold text-xs h-9.5 rounded-xl border-0">
                             {updating ? <Loader2 className="animate-spin mr-1 h-3.5 w-3.5"/> : <CheckCircle2 className="mr-1.5 h-4 w-4"/>}
