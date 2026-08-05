@@ -474,7 +474,8 @@ export function ParentStorefront() {
                   </Button>
                 </CardFooter>
               </Card>
-            ))}
+            );
+          })}
           </div>
         </div>
       )}
