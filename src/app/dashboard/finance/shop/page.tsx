@@ -3,11 +3,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, updateDoc, getDocs, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, updateDoc, getDocs, getDoc, deleteDoc } from 'firebase/firestore';
 import { 
   ShoppingBag, Package, PlusCircle, ShoppingCart, 
   Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2, ArchiveRestore, Edit, Loader2,
-  Check, Printer, RefreshCw, BarChart2, DollarSign, ArrowRight, History, Wallet, CreditCard, Coins, X, Plus, Minus
+  Check, Printer, RefreshCw, BarChart2, DollarSign, ArrowRight, History, Wallet, CreditCard, Coins, X, Plus, Minus,
+  Sparkles, Layers, CheckCircle2
 } from 'lucide-react';
 import { ParentStorefront } from '@/components/shop/parent-storefront';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -1384,6 +1385,374 @@ function SalesAnalyticsTab({ sales, items, schoolId, onShowReceipt }: { sales: S
     );
 }
 
+// --- COMPONENT: Academic Bundles & Term Kits Manager ---
+interface AcademicBundleItem {
+    itemId: string;
+    name: string;
+    category: 'Uniform' | 'Book' | 'Clothing' | 'Stationery' | 'Other';
+    price: number;
+    quantity: number;
+    defaultSize?: string;
+}
+
+interface AcademicBundle {
+    id: string;
+    name: string;
+    gradeLevel: string;
+    term: string;
+    description?: string;
+    bundlePrice: number;
+    originalPrice: number;
+    badgeText?: string;
+    items: AcademicBundleItem[];
+    schoolId: string;
+    createdAt?: any;
+}
+
+function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[]; schoolId: string; onRefresh: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Form state
+    const [name, setName] = useState('');
+    const [gradeLevel, setGradeLevel] = useState('Grade 4');
+    const [term, setTerm] = useState('Term 1');
+    const [desc, setDesc] = useState('');
+    const [bundlePrice, setBundlePrice] = useState('');
+    const [badgeText, setBadgeText] = useState('Save 10%');
+
+    // Selection map: itemId -> { selected: boolean, quantity: number, defaultSize: string }
+    const [selectedItemsMap, setSelectedItemsMap] = useState<Record<string, { selected: boolean; quantity: number; defaultSize: string }>>({});
+
+    const bundlesQuery = useMemoFirebase(
+        () => (firestore && schoolId ? query(collection(firestore, 'school_academic_bundles'), where('schoolId', '==', schoolId), orderBy('gradeLevel')) : null),
+        [firestore, schoolId]
+    );
+    const { data: bundles, isLoading, forceRefetch } = useCollection<AcademicBundle>(bundlesQuery);
+
+    const toggleItemSelection = (itemId: string) => {
+        setSelectedItemsMap(prev => {
+            const current = prev[itemId] || { selected: false, quantity: 1, defaultSize: 'Medium' };
+            return {
+                ...prev,
+                [itemId]: { ...current, selected: !current.selected }
+            };
+        });
+    };
+
+    const updateItemQuantity = (itemId: string, quantity: number) => {
+        if (quantity < 1) return;
+        setSelectedItemsMap(prev => {
+            const current = prev[itemId] || { selected: true, quantity: 1, defaultSize: 'Medium' };
+            return {
+                ...prev,
+                [itemId]: { ...current, quantity }
+            };
+        });
+    };
+
+    const updateItemSize = (itemId: string, defaultSize: string) => {
+        setSelectedItemsMap(prev => {
+            const current = prev[itemId] || { selected: true, quantity: 1, defaultSize: 'Medium' };
+            return {
+                ...prev,
+                [itemId]: { ...current, defaultSize }
+            };
+        });
+    };
+
+    const calculatedOriginalPrice = useMemo(() => {
+        let sum = 0;
+        Object.entries(selectedItemsMap).forEach(([itemId, conf]) => {
+            if (conf.selected) {
+                const shopItem = items.find(i => i.id === itemId);
+                if (shopItem) {
+                    sum += shopItem.price * conf.quantity;
+                }
+            }
+        });
+        return sum;
+    }, [selectedItemsMap, items]);
+
+    const handleCreateBundle = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!firestore || !schoolId) return;
+
+        const bundleItems: AcademicBundleItem[] = [];
+        Object.entries(selectedItemsMap).forEach(([itemId, conf]) => {
+            if (conf.selected) {
+                const shopItem = items.find(i => i.id === itemId);
+                if (shopItem) {
+                    bundleItems.push({
+                        itemId: shopItem.id,
+                        name: shopItem.name,
+                        category: shopItem.category,
+                        price: shopItem.price,
+                        quantity: conf.quantity,
+                        defaultSize: shopItem.category === 'Uniform' || shopItem.category === 'Clothing' ? conf.defaultSize : undefined
+                    });
+                }
+            }
+        });
+
+        if (bundleItems.length === 0) {
+            toast({ variant: 'destructive', title: 'No Items Selected', description: 'Please select at least 1 inventory product to include in the bundle.' });
+            return;
+        }
+
+        const bPrice = parseFloat(bundlePrice) || calculatedOriginalPrice;
+
+        setIsSubmitting(true);
+        try {
+            await addDoc(collection(firestore, 'school_academic_bundles'), {
+                name: name.trim() || `${gradeLevel} ${term} Starter Pack`,
+                gradeLevel,
+                term,
+                description: desc.trim() || `Complete textbook, uniform, and stationery pack for ${gradeLevel} ${term}.`,
+                bundlePrice: bPrice,
+                originalPrice: calculatedOriginalPrice,
+                badgeText,
+                items: bundleItems,
+                schoolId,
+                createdAt: serverTimestamp()
+            });
+
+            toast({ title: 'Bundle Created', description: `${name || gradeLevel} starter kit is now active for parents.` });
+            forceRefetch();
+            setIsCreateOpen(false);
+            setName(''); setDesc(''); setBundlePrice(''); setSelectedItemsMap({});
+        } catch (err) {
+            console.error('Error creating bundle:', err);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to create academic bundle.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDeleteBundle = async (bundleId: string, bundleName: string) => {
+        if (!firestore) return;
+        if (!confirm(`Are you sure you want to delete "${bundleName}"?`)) return;
+        try {
+            await deleteDoc(doc(firestore, 'school_academic_bundles', bundleId));
+            toast({ title: 'Bundle Removed', description: `${bundleName} has been deleted.` });
+            forceRefetch();
+        } catch (err) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not delete bundle.' });
+        }
+    };
+
+    const gradeLevelsList = [
+        'Creche / Nursery', 'Kindergarten 1', 'Kindergarten 2',
+        'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6',
+        'JHS 1', 'JHS 2', 'JHS 3', 'SHS 1', 'SHS 2', 'SHS 3'
+    ];
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-row justify-between items-center flex-wrap gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div>
+                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-emerald-600"/>
+                        Grade Academic Bundles & Term Starter Kits
+                    </h3>
+                    <p className="text-xs text-slate-500">Create one-click bundles combining required textbooks, uniforms, and stationery per grade level.</p>
+                </div>
+                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <DialogTrigger asChild>
+                        <Button className="bg-emerald-600 hover:bg-emerald-700 font-bold shadow-md">
+                            <Plus className="mr-2 h-4 w-4"/> Create Starter Kit Bundle
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-emerald-700">
+                                <Sparkles className="h-5 w-5"/> Create Term Starter Kit Bundle
+                            </DialogTitle>
+                            <DialogDescription>Bundle required textbooks, uniforms, and stationery for a specific grade level into a 1-click pack.</DialogDescription>
+                        </DialogHeader>
+
+                        <form onSubmit={handleCreateBundle} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <Label>Grade Level</Label>
+                                    <Select value={gradeLevel} onValueChange={setGradeLevel}>
+                                        <SelectTrigger className="mt-1"><SelectValue/></SelectTrigger>
+                                        <SelectContent>
+                                            {gradeLevelsList.map(g => (
+                                                <SelectItem key={g} value={g}>{g}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Label>Academic Term</Label>
+                                    <Select value={term} onValueChange={setTerm}>
+                                        <SelectTrigger className="mt-1"><SelectValue/></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Term 1">Term 1</SelectItem>
+                                            <SelectItem value="Term 2">Term 2</SelectItem>
+                                            <SelectItem value="Term 3">Term 3</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label>Bundle Name</Label>
+                                <Input 
+                                    value={name} 
+                                    onChange={e => setName(e.target.value)} 
+                                    placeholder={`e.g. ${gradeLevel} ${term} Complete Starter Kit`} 
+                                    className="mt-1"
+                                />
+                            </div>
+
+                            <div>
+                                <Label>Description (Optional)</Label>
+                                <Textarea 
+                                    value={desc} 
+                                    onChange={e => setDesc(e.target.value)} 
+                                    placeholder="e.g. Includes all compulsory textbooks, exercise books, sportswear, and daily uniform set." 
+                                    className="mt-1 h-16 text-xs"
+                                />
+                            </div>
+
+                            <div>
+                                <Label className="font-bold text-slate-800 block mb-2">Select Products to Include in Kit:</Label>
+                                <div className="border rounded-xl p-3 max-h-56 overflow-y-auto space-y-2.5 bg-slate-50">
+                                    {items.length === 0 ? (
+                                        <p className="text-xs text-slate-400 text-center py-4">No shop products available. Add items in Stock Inventory tab first.</p>
+                                    ) : (
+                                        items.map(item => {
+                                            const conf = selectedItemsMap[item.id] || { selected: false, quantity: 1, defaultSize: 'Medium' };
+                                            return (
+                                                <div key={item.id} className={`p-2.5 rounded-lg border transition-all flex items-center justify-between gap-3 text-xs ${conf.selected ? 'bg-emerald-50/80 border-emerald-300' : 'bg-white border-slate-200'}`}>
+                                                    <div className="flex items-center gap-2.5 cursor-pointer flex-1" onClick={() => toggleItemSelection(item.id)}>
+                                                        <div className={`w-4 h-4 rounded border flex items-center justify-center ${conf.selected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300'}`}>
+                                                            {conf.selected && <Check className="w-3 h-3 stroke-[3]" />}
+                                                        </div>
+                                                        <div>
+                                                            <span className="font-bold text-slate-800">{item.name}</span>
+                                                            <span className="text-[10px] text-slate-500 block">GH₵{item.price.toFixed(2)} • Stock: {item.stock} • <span className="uppercase">{item.category}</span></span>
+                                                        </div>
+                                                    </div>
+
+                                                    {conf.selected && (
+                                                        <div className="flex items-center gap-2">
+                                                            {(item.category === 'Uniform' || item.category === 'Clothing') && (
+                                                                <Select value={conf.defaultSize} onValueChange={(sz) => updateItemSize(item.id, sz)}>
+                                                                    <SelectTrigger className="h-7 text-[10px] w-24 bg-white"><SelectValue/></SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectItem value="Small">Small</SelectItem>
+                                                                        <SelectItem value="Medium">Medium</SelectItem>
+                                                                        <SelectItem value="Large">Large</SelectItem>
+                                                                        <SelectItem value="X-Large">X-Large</SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            )}
+                                                            <div className="flex items-center border rounded bg-white">
+                                                                <button type="button" className="px-1.5 py-0.5 hover:bg-slate-100" onClick={() => updateItemQuantity(item.id, conf.quantity - 1)}>-</button>
+                                                                <span className="px-2 font-bold">{conf.quantity}</span>
+                                                                <button type="button" className="px-1.5 py-0.5 hover:bg-slate-100" onClick={() => updateItemQuantity(item.id, conf.quantity + 1)}>+</button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-2">
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-slate-600 font-medium">Calculated Individual Items Total:</span>
+                                    <span className="font-bold text-slate-800">GH₵{calculatedOriginalPrice.toFixed(2)}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-emerald-200/60">
+                                    <div>
+                                        <Label className="text-xs">Bundled Pack Price (GH₵)</Label>
+                                        <Input 
+                                            type="number" 
+                                            step="0.01" 
+                                            value={bundlePrice} 
+                                            onChange={e => setBundlePrice(e.target.value)} 
+                                            placeholder={`GH₵${calculatedOriginalPrice.toFixed(2)}`} 
+                                            className="mt-1 h-8 text-xs bg-white"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label className="text-xs">Discount Badge Text</Label>
+                                        <Input 
+                                            value={badgeText} 
+                                            onChange={e => setBadgeText(e.target.value)} 
+                                            placeholder="e.g. Save 10% or Recommended" 
+                                            className="mt-1 h-8 text-xs bg-white"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Button type="submit" disabled={isSubmitting} className="w-full bg-emerald-600 hover:bg-emerald-700 font-bold">
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                Save & Publish Academic Starter Kit
+                            </Button>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+            </div>
+
+            {/* List of active bundles */}
+            {isLoading ? (
+                <div className="flex justify-center py-12"><Loader2 className="animate-spin text-emerald-600 h-8 w-8"/></div>
+            ) : !bundles || bundles.length === 0 ? (
+                <Card className="border-dashed border-2 p-8 text-center bg-slate-50/50">
+                    <Sparkles className="h-10 w-10 text-emerald-500 mx-auto mb-3 opacity-60"/>
+                    <h4 className="font-bold text-slate-700">No Academic Starter Kits Created Yet</h4>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">Create grade-level bundles to enable 1-click MoMo purchases for parents during term registration.</p>
+                </Card>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {bundles.map(bundle => (
+                        <Card key={bundle.id} className="shadow-sm border-slate-200 hover:shadow-md transition-all flex flex-col justify-between">
+                            <CardHeader className="pb-3 border-b bg-slate-50/60">
+                                <div className="flex justify-between items-start">
+                                    <Badge className="bg-emerald-600 text-white text-[10px] font-extrabold uppercase">{bundle.gradeLevel} • {bundle.term}</Badge>
+                                    {bundle.badgeText && <Badge variant="outline" className="border-amber-400 text-amber-800 bg-amber-50 text-[10px] font-bold">{bundle.badgeText}</Badge>}
+                                </div>
+                                <CardTitle className="text-base font-bold text-slate-800 mt-2">{bundle.name}</CardTitle>
+                                {bundle.description && <CardDescription className="text-xs text-slate-500 line-clamp-2">{bundle.description}</CardDescription>}
+                            </CardHeader>
+                            <CardContent className="py-3 text-xs space-y-2">
+                                <span className="font-bold text-slate-700 block">Bundled Items ({bundle.items?.length || 0}):</span>
+                                <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                                    {bundle.items?.map((it, idx) => (
+                                        <div key={idx} className="flex justify-between items-center text-[11px] bg-slate-100/70 p-1.5 rounded">
+                                            <span className="font-medium text-slate-800">{it.name} {it.defaultSize ? `(${it.defaultSize})` : ''} x{it.quantity}</span>
+                                            <span className="font-bold text-slate-600">GH₵{(it.price * it.quantity).toFixed(2)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                            <CardFooter className="pt-3 border-t flex justify-between items-center bg-slate-50/30">
+                                <div>
+                                    <span className="text-[10px] text-slate-400 block line-through">GH₵{(bundle.originalPrice || 0).toFixed(2)}</span>
+                                    <span className="text-lg font-black text-emerald-700">GH₵{(bundle.bundlePrice || 0).toFixed(2)}</span>
+                                </div>
+                                <Button variant="ghost" size="sm" onClick={() => handleDeleteBundle(bundle.id, bundle.name)} className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-8">
+                                    <Trash2 className="h-4 w-4"/>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // --- MAIN PAGE ---
 export default function SchoolShopPage() {
     const { role } = useRole();
@@ -1561,11 +1930,24 @@ export default function SchoolShopPage() {
                 )}
 
                 <Tabs defaultValue="pos" className="flex-1 flex flex-col">
-                    <TabsList className="w-[450px] bg-slate-100 p-1 rounded-xl">
+                    <TabsList className="w-full sm:w-auto bg-slate-100 p-1 rounded-xl flex-wrap">
                         <TabsTrigger value="pos" className="rounded-lg font-bold"><ShoppingCart className="h-4 w-4 mr-2"/> POS Cashier</TabsTrigger>
                         <TabsTrigger value="list" className="rounded-lg font-bold"><Package className="h-4 w-4 mr-2"/> Stock Inventory</TabsTrigger>
+                        <TabsTrigger value="bundles" className="rounded-lg font-bold"><Sparkles className="h-4 w-4 mr-2 text-amber-500"/> Academic Bundles</TabsTrigger>
                         <TabsTrigger value="analytics" className="rounded-lg font-bold"><BarChart2 className="h-4 w-4 mr-2"/> Sales & Reports</TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="bundles" className="flex-1 mt-4">
+                        {isLoadingPage ? (
+                            <div className="flex justify-center py-20"><Loader2 className="animate-spin text-emerald-600 h-10 w-10"/></div>
+                        ) : (
+                            <AcademicBundlesTab 
+                                items={items || []} 
+                                schoolId={schoolId!} 
+                                onRefresh={refreshDashboard} 
+                            />
+                        )}
+                    </TabsContent>
 
                     <TabsContent value="pos" className="flex-1 mt-4">
                         {isLoadingPage ? (

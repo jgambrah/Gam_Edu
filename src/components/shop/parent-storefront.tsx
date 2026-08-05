@@ -49,6 +49,28 @@ interface CartEntry {
   size?: string;
 }
 
+interface AcademicBundleItem {
+  itemId: string;
+  name: string;
+  category: 'Uniform' | 'Book' | 'Clothing' | 'Stationery' | 'Other';
+  price: number;
+  quantity: number;
+  defaultSize?: string;
+}
+
+interface AcademicBundle {
+  id: string;
+  name: string;
+  gradeLevel: string;
+  term: string;
+  description?: string;
+  bundlePrice: number;
+  originalPrice: number;
+  badgeText?: string;
+  items: AcademicBundleItem[];
+  schoolId: string;
+}
+
 export function ParentStorefront() {
   const { schoolId } = useCurrentSchool();
   const { user } = useUser();
@@ -66,6 +88,10 @@ export function ParentStorefront() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedReceipt, setCompletedReceipt] = useState<any | null>(null);
 
+  // Bundle Tailor Dialog state
+  const [activeBundleForTailor, setActiveBundleForTailor] = useState<AcademicBundle | null>(null);
+  const [tailoredItemsMap, setTailoredItemsMap] = useState<Record<string, { checked: boolean; quantity: number; size: string }>>({});
+
   // Fetch school settings for Paystack keys
   const schoolRef = useMemoFirebase(
     () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
@@ -82,6 +108,62 @@ export function ParentStorefront() {
     [firestore, schoolId]
   );
   const { data: rawItems, isLoading } = useCollection<ShopItem>(itemsQuery);
+
+  // Fetch Academic Bundles from Firestore
+  const bundlesQuery = useMemoFirebase(
+    () => (firestore && schoolId ? query(collection(firestore, 'school_academic_bundles'), where('schoolId', '==', schoolId)) : null),
+    [firestore, schoolId]
+  );
+  const { data: academicBundles, isLoading: isLoadingBundles } = useCollection<AcademicBundle>(bundlesQuery);
+
+  const handleOpenKitTailor = (bundle: AcademicBundle) => {
+    setActiveBundleForTailor(bundle);
+    const initialMap: Record<string, { checked: boolean; quantity: number; size: string }> = {};
+    bundle.items?.forEach((it) => {
+      initialMap[it.itemId] = {
+        checked: true,
+        quantity: it.quantity || 1,
+        size: it.defaultSize || 'Medium'
+      };
+    });
+    setTailoredItemsMap(initialMap);
+  };
+
+  const handleAddTailoredKitToCart = () => {
+    if (!activeBundleForTailor || !rawItems) return;
+    let addedCount = 0;
+
+    activeBundleForTailor.items?.forEach((bItem) => {
+      const conf = tailoredItemsMap[bItem.itemId];
+      if (conf && conf.checked) {
+        const shopItem = rawItems.find((i) => i.id === bItem.itemId);
+        if (shopItem && shopItem.stock > 0) {
+          setCart((prev) => {
+            const existing = prev.find((c) => c.item.id === shopItem.id);
+            if (existing) {
+              return prev.map((c) => (c.item.id === shopItem.id ? { ...c, quantity: c.quantity + conf.quantity, size: conf.size || c.size } : c));
+            }
+            return [...prev, { item: shopItem, quantity: conf.quantity, size: conf.size || (shopItem.category === 'Uniform' || shopItem.category === 'Clothing' ? 'Medium' : undefined) }];
+          });
+          addedCount++;
+        }
+      }
+    });
+
+    if (addedCount > 0) {
+      toast({
+        title: '🎉 Starter Kit Added to Basket!',
+        description: `Customized items for ${activeBundleForTailor.name} added to your order basket.`,
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'No Items Selected',
+        description: 'Please check at least one item to add to your basket.',
+      });
+    }
+    setActiveBundleForTailor(null);
+  };
 
   const filteredItems = (rawItems || []).filter((item) => {
     const matchesCat = selectedCategory === 'all' || item.category.toLowerCase() === selectedCategory.toLowerCase();
@@ -247,6 +329,72 @@ export function ParentStorefront() {
           </p>
         </div>
       </div>
+
+      {/* Featured Academic Bundles / Term Starter Kits Banner */}
+      {academicBundles && academicBundles.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
+              <Sparkles className="w-5 h-5 text-amber-500" />
+              <span>Term Starter Kits (Bundled Academic Packs)</span>
+            </h3>
+            <Badge className="bg-amber-100 text-amber-800 border-amber-300 text-[10px] font-bold">1-Click MoMo Bundles</Badge>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {academicBundles.map((bundle) => (
+              <Card key={bundle.id} className="rounded-3xl border-2 border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-purple-50/30 shadow-md hover:shadow-xl transition-all overflow-hidden flex flex-col justify-between">
+                <CardHeader className="p-5 pb-3 border-b border-amber-100/70">
+                  <div className="flex justify-between items-start">
+                    <Badge className="bg-amber-500 text-slate-950 font-extrabold text-[10px] uppercase">
+                      {bundle.gradeLevel} • {bundle.term}
+                    </Badge>
+                    {bundle.badgeText && (
+                      <Badge variant="outline" className="border-purple-300 text-purple-700 bg-purple-50 font-bold text-[10px]">
+                        {bundle.badgeText}
+                      </Badge>
+                    )}
+                  </div>
+                  <CardTitle className="text-base font-black text-slate-900 pt-1">{bundle.name}</CardTitle>
+                  {bundle.description && (
+                    <CardDescription className="text-xs text-slate-500 font-medium line-clamp-2">
+                      {bundle.description}
+                    </CardDescription>
+                  )}
+                </CardHeader>
+
+                <CardContent className="p-5 py-3 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-700 block uppercase tracking-wider">Includes {bundle.items?.length || 0} Grade Essentials:</span>
+                  <div className="space-y-1 max-h-28 overflow-y-auto pr-1">
+                    {bundle.items?.map((it, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-[11px] bg-white/80 border border-slate-100 p-1.5 rounded-lg">
+                        <span className="font-semibold text-slate-800">
+                          {it.name} {it.defaultSize ? `(${it.defaultSize})` : ''} x{it.quantity}
+                        </span>
+                        <span className="font-bold text-slate-500">GH₵{(it.price * it.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+
+                <CardFooter className="p-5 pt-3 border-t border-amber-100/70 bg-amber-50/30 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] text-slate-400 font-bold block line-through">GH₵{(bundle.originalPrice || 0).toFixed(2)}</span>
+                    <span className="text-xl font-black text-emerald-700">GH₵{(bundle.bundlePrice || 0).toFixed(2)}</span>
+                  </div>
+                  <Button
+                    onClick={() => handleOpenKitTailor(bundle)}
+                    className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md transition-all uppercase flex items-center gap-1.5"
+                  >
+                    <Sparkles className="w-4 h-4 text-slate-950" />
+                    <span>Customize & Buy Kit</span>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Grid: Products + Cart Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -434,6 +582,222 @@ export function ParentStorefront() {
           </Card>
         </div>
       </div>
+
+      {/* Kit Customizer Dialog */}
+      <Dialog open={!!activeBundleForTailor} onOpenChange={(open) => !open && setActiveBundleForTailor(null)}>
+        <DialogContent className="rounded-[2.5rem] sm:max-w-xl p-6 border-slate-200 max-h-[90vh] overflow-y-auto">
+          {activeBundleForTailor && (() => {
+            let sumSelectedOriginal = 0;
+            let totalCheckedItemsCount = 0;
+
+            activeBundleForTailor.items?.forEach((it) => {
+              const conf = tailoredItemsMap[it.itemId];
+              if (conf?.checked) {
+                sumSelectedOriginal += (it.price * conf.quantity);
+                totalCheckedItemsCount += conf.quantity;
+              }
+            });
+
+            const discountRatio = activeBundleForTailor.originalPrice > 0 
+              ? (activeBundleForTailor.bundlePrice / activeBundleForTailor.originalPrice) 
+              : 1;
+            const customTotal = Math.round(sumSelectedOriginal * discountRatio * 100) / 100;
+            const totalSavings = Math.round((sumSelectedOriginal - customTotal) * 100) / 100;
+
+            const toggleCheck = (itemId: string) => {
+              setTailoredItemsMap(prev => {
+                const current = prev[itemId] || { checked: true, quantity: 1, size: 'Medium' };
+                return {
+                  ...prev,
+                  [itemId]: { ...current, checked: !current.checked }
+                };
+              });
+            };
+
+            const updateQty = (itemId: string, delta: number) => {
+              setTailoredItemsMap(prev => {
+                const current = prev[itemId] || { checked: true, quantity: 1, size: 'Medium' };
+                const newQty = Math.max(1, current.quantity + delta);
+                return {
+                  ...prev,
+                  [itemId]: { ...current, quantity: newQty }
+                };
+              });
+            };
+
+            const updateSize = (itemId: string, size: string) => {
+              setTailoredItemsMap(prev => {
+                const current = prev[itemId] || { checked: true, quantity: 1, size: 'Medium' };
+                return {
+                  ...prev,
+                  [itemId]: { ...current, size }
+                };
+              });
+            };
+
+            const handleDirectCheckout = () => {
+              if (!rawItems) return;
+              const newCart: CartEntry[] = [];
+              activeBundleForTailor.items?.forEach((bItem) => {
+                const conf = tailoredItemsMap[bItem.itemId];
+                if (conf && conf.checked) {
+                  const shopItem = rawItems.find((i) => i.id === bItem.itemId);
+                  if (shopItem && shopItem.stock > 0) {
+                    newCart.push({
+                      item: shopItem,
+                      quantity: Math.min(conf.quantity, shopItem.stock),
+                      size: conf.size || (shopItem.category === 'Uniform' || shopItem.category === 'Clothing' ? 'Medium' : undefined)
+                    });
+                  }
+                }
+              });
+
+              if (newCart.length === 0) {
+                toast({
+                  variant: 'destructive',
+                  title: 'No Items Selected',
+                  description: 'Please check at least one in-stock item to proceed with checkout.',
+                });
+                return;
+              }
+
+              setCart(newCart);
+              setActiveBundleForTailor(null);
+              setIsCheckoutOpen(true);
+            };
+
+            return (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-amber-500 text-slate-950 font-extrabold text-[10px] uppercase">
+                      {activeBundleForTailor.gradeLevel} • {activeBundleForTailor.term}
+                    </Badge>
+                    {activeBundleForTailor.badgeText && (
+                      <Badge variant="outline" className="border-purple-300 text-purple-700 bg-purple-50 font-bold text-[10px]">
+                        {activeBundleForTailor.badgeText}
+                      </Badge>
+                    )}
+                  </div>
+                  <DialogTitle className="text-xl font-black uppercase text-slate-900 pt-1 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-amber-500" />
+                    <span>Customize Your Term Starter Pack</span>
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-slate-500 font-medium">
+                    Uncheck items you already own (e.g. uniform if last year's fits). Proportional bundle discounts apply automatically!
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-3 py-2">
+                  <div className="border border-slate-200 rounded-2xl p-3 max-h-64 overflow-y-auto space-y-2.5 bg-slate-50/50">
+                    {activeBundleForTailor.items?.map((it) => {
+                      const conf = tailoredItemsMap[it.itemId] || { checked: true, quantity: it.quantity || 1, size: it.defaultSize || 'Medium' };
+                      const shopItem = rawItems?.find(i => i.id === it.itemId);
+                      const isOutOfStock = shopItem && shopItem.stock <= 0;
+
+                      return (
+                        <div 
+                          key={it.itemId} 
+                          className={`p-3 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+                            conf.checked ? 'bg-white border-purple-200 shadow-sm' : 'bg-slate-100/60 border-slate-200 opacity-60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => toggleCheck(it.itemId)}>
+                            <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
+                              conf.checked ? 'bg-purple-600 border-purple-600 text-white' : 'border-slate-300 bg-white'
+                            }`}>
+                              {conf.checked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            </div>
+                            <div>
+                              <span className="font-bold text-slate-900 block">{it.name}</span>
+                              <span className="text-[10px] text-slate-500 block">
+                                GH₵{it.price.toFixed(2)} each • <span className="uppercase font-bold">{it.category}</span>
+                                {isOutOfStock && <span className="text-red-600 font-bold ml-1.5">(Out of Stock)</span>}
+                              </span>
+                            </div>
+                          </div>
+
+                          {conf.checked && (
+                            <div className="flex items-center gap-2 self-end sm:self-auto">
+                              {(it.category === 'Uniform' || it.category === 'Clothing') && (
+                                <select
+                                  value={conf.size}
+                                  onChange={(e) => updateSize(it.itemId, e.target.value)}
+                                  className="h-8 rounded-lg border border-slate-200 text-[11px] font-bold px-2 bg-white"
+                                >
+                                  <option value="Small">Small (S)</option>
+                                  <option value="Medium">Medium (M)</option>
+                                  <option value="Large">Large (L)</option>
+                                  <option value="X-Large">X-Large (XL)</option>
+                                </select>
+                              )}
+                              
+                              <div className="flex items-center border border-slate-200 rounded-lg bg-white overflow-hidden">
+                                <button 
+                                  type="button" 
+                                  className="px-2 py-1 hover:bg-slate-100 font-bold text-slate-600"
+                                  onClick={() => updateQty(it.itemId, -1)}
+                                >
+                                  -
+                                </button>
+                                <span className="px-2.5 font-bold text-slate-800">{conf.quantity}</span>
+                                <button 
+                                  type="button" 
+                                  className="px-2 py-1 hover:bg-slate-100 font-bold text-slate-600"
+                                  onClick={() => updateQty(it.itemId, 1)}
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Pricing Summary Card */}
+                  <div className="bg-gradient-to-br from-amber-50 to-purple-50 border border-amber-200/80 p-4 rounded-2xl space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-600 font-medium">Selected Items Original Price:</span>
+                      <span className="font-bold text-slate-700 line-through">GH₵ {sumSelectedOriginal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm font-black text-slate-900 border-t border-amber-200/60 pt-2">
+                      <span className="flex items-center gap-1.5 text-purple-900">
+                        <span>Custom Kit Total:</span>
+                        {totalSavings > 0 && (
+                          <Badge className="bg-emerald-600 text-white text-[9px] font-bold">
+                            Save GH₵ {totalSavings.toFixed(2)}
+                          </Badge>
+                        )}
+                      </span>
+                      <span className="text-2xl font-black text-emerald-700">GH₵ {customTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <DialogFooter className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                  <Button
+                    onClick={handleAddTailoredKitToCart}
+                    variant="outline"
+                    className="h-11 rounded-xl border-purple-300 hover:bg-purple-50 text-purple-700 font-bold text-xs uppercase"
+                  >
+                    <Plus className="w-4 h-4 mr-1.5" />
+                    <span>Add to Basket</span>
+                  </Button>
+                  <Button
+                    onClick={handleDirectCheckout}
+                    className="h-11 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs uppercase shadow-md"
+                  >
+                    <Smartphone className="w-4 h-4 mr-1.5" />
+                    <span>1-Click MoMo Checkout</span>
+                  </Button>
+                </DialogFooter>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
 
       {/* MoMo Checkout Modal */}
       <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
