@@ -500,7 +500,7 @@ service cloud.firestore {
     }
 
     match /school_academic_bundles/{bundleId} {
-      allow read, list: if isSignedIn();
+      allow read, list: if true;
       allow write: if isFinanceStaff() || isAdmin();
     }
 
