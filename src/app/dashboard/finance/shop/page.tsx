@@ -1445,22 +1445,32 @@ function AcademicBundlesTab({ items, schoolId, onRefresh }: { items: ShopItem[];
     }, [rawBundles]);
 
     const availableGradeLevels = useMemo(() => {
-        const set = new Set<string>();
         if (schoolClasses && schoolClasses.length > 0) {
+            const customList: string[] = [];
             schoolClasses.forEach((c: any) => {
-                if (c.name) set.add(c.name);
-                if (c.gradeLevel) set.add(c.gradeLevel);
+                const name = c.name || c.gradeLevel;
+                if (name && !customList.includes(name)) {
+                    customList.push(name);
+                }
             });
+            if (customList.length > 0) {
+                return customList.sort((a, b) => a.localeCompare(b));
+            }
         }
-        // Fallback default grade levels
-        [
+        // Fallback default grade levels only if no system classes are created yet
+        return [
             'Creche / Nursery', 'Kindergarten 1', 'Kindergarten 2',
             'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6',
             'JHS 1', 'JHS 2', 'JHS 3', 'SHS 1', 'SHS 2', 'SHS 3'
-        ].forEach(g => set.add(g));
-
-        return Array.from(set);
+        ];
     }, [schoolClasses]);
+
+    // Ensure selected gradeLevel defaults to first valid option when modal opens or classes load
+    useEffect(() => {
+        if (availableGradeLevels.length > 0 && !availableGradeLevels.includes(gradeLevel)) {
+            setGradeLevel(availableGradeLevels[0]);
+        }
+    }, [availableGradeLevels]);
 
     const toggleItemSelection = (itemId: string) => {
         setSelectedItemsMap(prev => {
