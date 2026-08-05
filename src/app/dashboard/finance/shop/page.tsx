@@ -884,7 +884,31 @@ function PointOfSale({ items, schoolId, activeTill, onSaleSuccess, onShowReceipt
 
             cart.forEach(item => {
                 const itemRef = doc(firestore!, 'school_shop_items', item.id);
+                const currentStock = Number(item.stock || 0);
+                const newStock = Math.max(0, currentStock - item.quantity);
+                const threshold = item.minStock ?? 10;
+
                 batch.update(itemRef, { stock: increment(-item.quantity) });
+
+                // Trigger automated low stock notification if item hits or drops below threshold
+                if (newStock <= threshold) {
+                    try {
+                        addDoc(collection(firestore!, 'notifications'), {
+                            schoolId,
+                            title: `⚠️ Low Stock Alert: ${item.name}`,
+                            message: `Stock level for "${item.name}" has dropped to ${newStock} unit(s) (reorder threshold: ${threshold}). Please reorder soon.`,
+                            type: 'inventory_low_stock',
+                            targetRoles: ['Director', 'Administrator', 'Finance'],
+                            itemId: item.id,
+                            currentStock: newStock,
+                            threshold,
+                            createdAt: serverTimestamp(),
+                            read: false,
+                        }).catch(console.error);
+                    } catch (err) {
+                        console.error('Failed to log low stock notification:', err);
+                    }
+                }
             });
 
             const receiptItems = cart.map(i => ({
@@ -1966,11 +1990,29 @@ export default function SchoolShopPage() {
                 </div>
 
                 {lowStockItems.length > 0 && (
-                    <div className="bg-amber-50 border border-amber-200 p-3.5 rounded-xl flex items-center gap-3 text-amber-800 text-xs shadow-sm">
-                        <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 animate-bounce"/>
-                        <div>
-                            <span className="font-extrabold mr-1">Alert: Low stock item warning!</span>
-                            The following inventory lines need immediate replenishment: <span className="font-semibold">{lowStockItems.map(i => i.name).join(', ')}</span>.
+                    <div className="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-amber-900 text-xs shadow-md">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-xl bg-amber-200/80 text-amber-900">
+                                <AlertTriangle className="h-5 w-5 text-amber-700 animate-bounce"/>
+                            </div>
+                            <div>
+                                <span className="font-black text-sm block">⚠️ Low Stock Threshold Alert ({lowStockItems.length} Products)</span>
+                                <span className="text-amber-800 font-medium">The following inventory items are below reorder thresholds: </span>
+                                <span className="font-bold underline">{lowStockItems.map(i => `${i.name} (${i.stock} left)`).join(', ')}</span>
+                            </div>
+                        </div>
+                        <div className="flex gap-2 flex-wrap self-end md:self-auto">
+                            {lowStockItems.slice(0, 3).map(item => (
+                                <Button
+                                    key={item.id}
+                                    size="sm"
+                                    onClick={() => setRestockItem(item)}
+                                    className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-sm h-8"
+                                >
+                                    <ArchiveRestore className="h-3.5 w-3.5 mr-1" />
+                                    Restock {item.name.split(' ')[0]}
+                                </Button>
+                            ))}
                         </div>
                     </div>
                 )}

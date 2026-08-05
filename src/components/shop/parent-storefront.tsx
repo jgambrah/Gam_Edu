@@ -312,12 +312,36 @@ export function ParentStorefront() {
 
       const docRef = await addDoc(collection(firestore, 'school_shop_orders'), orderData);
 
-      // Decrement stock for purchased items
+      // Decrement stock for purchased items & check for automated low stock alerts
       for (const cartEntry of cart) {
         const itemRef = doc(firestore, 'school_shop_items', cartEntry.item.id);
+        const currentStock = Number(cartEntry.item.stock || 0);
+        const newStock = Math.max(0, currentStock - cartEntry.quantity);
+        const threshold = cartEntry.item.minStock ?? 10;
+
         await updateDoc(itemRef, {
           stock: increment(-cartEntry.quantity),
         });
+
+        // Trigger automated low stock notification if item hits or drops below threshold
+        if (newStock <= threshold) {
+          try {
+            await addDoc(collection(firestore, 'notifications'), {
+              schoolId,
+              title: `⚠️ Low Stock Alert: ${cartEntry.item.name}`,
+              message: `Stock level for "${cartEntry.item.name}" has dropped to ${newStock} unit(s) (reorder threshold: ${threshold}). Please reorder soon.`,
+              type: 'inventory_low_stock',
+              targetRoles: ['Director', 'Administrator', 'Finance'],
+              itemId: cartEntry.item.id,
+              currentStock: newStock,
+              threshold,
+              createdAt: serverTimestamp(),
+              read: false,
+            });
+          } catch (notifErr) {
+            console.error('Error creating low stock notification:', notifErr);
+          }
+        }
       }
 
       setCompletedReceipt({ ...orderData, id: docRef.id, pickupPin: randomPin });
