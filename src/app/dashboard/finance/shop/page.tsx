@@ -14,7 +14,7 @@ import { ParentStorefront } from '@/components/shop/parent-storefront';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
