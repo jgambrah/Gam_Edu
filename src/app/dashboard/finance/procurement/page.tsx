@@ -448,8 +448,13 @@ function PurchaseOrderForm({ setOpen, onPOCreated, schoolId, vendors }: POFormPr
     const watchTax = form.watch('taxRate') || 0;
 
     const summary = useMemo(() => {
-        const subtotal = watchItems.reduce((acc, curr) => acc + ((curr.quantity || 0) * (curr.unitPrice || 0)), 0);
-        const taxAmount = subtotal * (watchTax / 100);
+        const subtotal = watchItems.reduce((acc, curr) => {
+            const q = Number(curr.quantity) || 0;
+            const p = Number(curr.unitPrice) || 0;
+            return acc + (q * p);
+        }, 0);
+        const tRate = Number(watchTax) || 0;
+        const taxAmount = subtotal * (tRate / 100);
         const totalAmount = subtotal + taxAmount;
         return { subtotal, taxAmount, totalAmount };
     }, [watchItems, watchTax]);
@@ -719,6 +724,21 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
 
     const vendor = vendors.find(v => v.id === po.vendorId);
 
+    const computedSubtotal = useMemo(() => {
+        if (!po?.items || !Array.isArray(po.items) || po.items.length === 0) {
+            return Number(po?.subtotal || 0);
+        }
+        return po.items.reduce((acc: number, it: any) => {
+            const q = Number(it.quantity) || 0;
+            const p = Number(it.unitPrice ?? it.price) || 0;
+            return acc + (q * p);
+        }, 0);
+    }, [po]);
+
+    const taxRate = Number(po?.taxRate || 0);
+    const computedTaxAmount = computedSubtotal * (taxRate / 100);
+    const computedTotalAmount = computedSubtotal + computedTaxAmount;
+
     const handleUpdateStatus = async (newStatus: string) => {
         if (!firestore) return;
         setUpdating(true);
@@ -747,7 +767,7 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
             const billRef = await addDoc(collection(firestore, 'accountsPayable'), {
                 vendorId: po.vendorId,
                 description: `PO Conversion ref: ${po.poNumber} - ${po.notes || 'Procured items delivery'}`,
-                amount: po.totalAmount,
+                amount: computedTotalAmount,
                 dueDate: new Date(convDueDate),
                 invoiceNumber: convInvoiceNumber || po.poNumber,
                 expenseAccountId: convExpenseAccount,
@@ -864,22 +884,22 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
                             </div>
                         </div>
 
-                        <div className="md:col-span-5 bg-slate-905 text-white bg-slate-900 p-4.5 rounded-2xl shadow-md space-y-2 font-medium">
+                        <div className="md:col-span-5 bg-slate-900 text-white p-4.5 rounded-2xl shadow-md space-y-2 font-medium">
                             <div className="flex justify-between items-center text-xs text-slate-400">
                                 <span>Subtotal:</span>
-                                <span className="font-mono">GH₵{po.subtotal?.toFixed(2)}</span>
+                                <span className="font-mono">GH₵{computedSubtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between items-center text-xs text-slate-400">
                                 <span>Tax Rate:</span>
-                                <span className="font-mono">({po.taxRate || 0}%)</span>
+                                <span className="font-mono">({taxRate}%)</span>
                             </div>
                             <div className="flex justify-between items-center text-xs text-slate-400">
                                 <span>Tax Calculated:</span>
-                                <span className="font-mono">GH₵{po.taxAmount?.toFixed(2)}</span>
+                                <span className="font-mono">GH₵{computedTaxAmount.toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between items-center border-t border-slate-805 pt-2 text-sm font-black uppercase text-emerald-450 border-slate-800 text-emerald-400">
+                            <div className="flex justify-between items-center border-t border-slate-800 pt-2 text-sm font-black uppercase text-emerald-400">
                                 <span>Total Committed:</span>
-                                <span className="font-mono text-base">GH₵{po.totalAmount?.toFixed(2)}</span>
+                                <span className="font-mono text-base">GH₵{computedTotalAmount.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
