@@ -112,6 +112,12 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Parent'],
   },
   {
+    path: '/dashboard/achievements',
+    title: 'Badges & Achievements',
+    icon: Trophy,
+    roles: 'all',
+  },
+  {
     path: '/dashboard/communication',
     title: 'Communication',
     icon: MessageSquare,
