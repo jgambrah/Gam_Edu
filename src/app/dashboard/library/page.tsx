@@ -596,6 +596,9 @@ export default function LibraryPage() {
                                 <TabsTrigger value="digital" className="rounded-xl font-bold uppercase text-[11px] tracking-wider px-5 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm flex items-center gap-1.5">
                                     <FileDown className="h-3.5 w-3.5 text-emerald-600" /> Digital E-Books
                                 </TabsTrigger>
+                                <TabsTrigger value="reviews" className="rounded-xl font-bold uppercase text-[11px] tracking-wider px-5 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm flex items-center gap-1.5">
+                                    <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> Reading Hub & Reviews
+                                </TabsTrigger>
                             </TabsList>
                         </Tabs>
 
@@ -1147,6 +1150,70 @@ export default function LibraryPage() {
                                     <p className="font-extrabold text-xs uppercase tracking-widest">No digital PDF e-books uploaded yet</p>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                ) : activeTab === 'reviews' ? (
+                    <div className="p-8 space-y-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
+                            <div>
+                                <h3 className="text-base font-extrabold text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                    <Star className="h-5 w-5 text-amber-500 fill-amber-500" /> Student Reading Hub & Peer Book Reviews
+                                </h3>
+                                <p className="text-xs text-slate-500 font-medium">Discover top-rated books, read peer reviews, and track school-wide reading streaks.</p>
+                            </div>
+                            <Badge className="bg-amber-50 text-amber-800 border-amber-200 font-black text-xs px-3 py-1.5 self-start md:self-auto rounded-xl">
+                                ⭐ 4.8 / 5.0 Average School Book Rating
+                            </Badge>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Student Reading Streak Spotlight */}
+                            <Card className="p-6 bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 text-white rounded-3xl space-y-4 shadow-xl border border-white/10">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-3 bg-amber-500/20 text-amber-400 rounded-2xl border border-amber-500/30">
+                                        <Sparkles className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <span className="text-[10px] font-black uppercase text-indigo-300 tracking-wider">Reading Habit Streak</span>
+                                        <h4 className="text-lg font-black uppercase tracking-tight">Active Scholar Readers</h4>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2">
+                                    <div className="flex justify-between text-xs font-bold">
+                                        <span className="text-indigo-200">Term Reading Goal:</span>
+                                        <span className="text-amber-400 font-mono">150 / 200 Books</span>
+                                    </div>
+                                    <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                                        <div className="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full w-[75%]" />
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-indigo-200 font-medium">Returning books unlocks XP, levels up your avatar, and earns reading badges on the student leaderboard!</p>
+                            </Card>
+
+                            {/* Book Ratings List */}
+                            <div className="md:col-span-2 space-y-4">
+                                <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Recent Peer Book Reviews</h4>
+                                <div className="space-y-3">
+                                    {[
+                                        { id: '1', book: 'The Great Gatsby', student: 'Kofi Mensah (BS 6)', rating: 5, review: 'An amazing story! Hard to put down once you start reading.' },
+                                        { id: '2', book: 'Things Fall Apart', student: 'Ama Serwaa (JHS 2)', rating: 5, review: 'Powerful classic literature. Helped me score top marks in English!' },
+                                        { id: '3', book: 'Animal Farm', student: 'Kwame Owusu (SHS 1)', rating: 4, review: 'Great allegory and political satire. Highly recommended for history students.' },
+                                    ].map(rev => (
+                                        <div key={rev.id} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2 hover:bg-slate-50 transition-colors">
+                                            <div className="flex justify-between items-center">
+                                                <span className="font-extrabold text-slate-900 text-sm">{rev.book}</span>
+                                                <div className="flex items-center gap-1">
+                                                    {Array.from({ length: 5 }).map((_, i) => (
+                                                        <Star key={i} className={cn("h-3.5 w-3.5", i < rev.rating ? "text-amber-500 fill-amber-500" : "text-slate-300")} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-slate-600 italic">"{rev.review}"</p>
+                                            <span className="text-[10px] font-bold text-indigo-600 block uppercase">— {rev.student}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ) : null}
