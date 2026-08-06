@@ -206,6 +206,15 @@ export default function AchievementsPage() {
   );
   const { data: rawStudents, isLoading: loadingStudents, forceRefetch } = useCollection<Student>(studentsQuery);
 
+  const isStudentRole = role === 'Student' || role === 'student';
+
+  const currentStudent = useMemo(() => {
+    if (!rawStudents || !user) return null;
+    return rawStudents.find(
+      (s: any) => s.id === user.uid || s.uid === user.uid || (user.email && s.email?.toLowerCase() === user.email.toLowerCase())
+    ) || null;
+  }, [rawStudents, user]);
+
   const leaderboardStudents = useMemo(() => {
     if (!rawStudents) return [];
     let filtered = [...rawStudents];
@@ -525,10 +534,14 @@ export default function AchievementsPage() {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Trophy className="h-7 w-7 text-amber-400" />
-            <h1 className="text-2xl font-black tracking-tight">Gamification & Achievement Hub</h1>
+            <h1 className="text-2xl font-black tracking-tight">
+              {isStudentRole ? 'My Badges & Achievements' : 'Gamification & Achievement Hub'}
+            </h1>
           </div>
           <p className="text-xs text-indigo-200 font-medium">
-            Recognize and motivate students with automated badges, XP points, and official PDF certificates.
+            {isStudentRole 
+              ? 'Track your level progress, XP points, and unlocked achievement badges.' 
+              : 'Recognize and motivate students with automated badges, XP points, and official PDF certificates.'}
           </p>
         </div>
 
@@ -686,6 +699,16 @@ export default function AchievementsPage() {
         </Dialog>
       </div>
 
+      {/* Student Personal Showcase (If student role) */}
+      {isStudentRole && currentStudent && (
+        <StudentBadgeShowcase
+          studentName={`${currentStudent.firstName} ${currentStudent.lastName}`}
+          gradeLevel={getStudentClassName(currentStudent)}
+          totalPoints={currentStudent.totalPoints || 0}
+          earnedBadges={(currentStudent.earnedBadges || []) as any[]}
+        />
+      )}
+
       {/* Leaderboard Table */}
       <Card className="border border-slate-200 shadow-md rounded-2xl bg-white overflow-hidden">
         <CardHeader className="p-6 pb-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -811,14 +834,16 @@ export default function AchievementsPage() {
                                 <ShieldAlert className="h-3.5 w-3.5 mr-1 text-purple-600" /> Manage Badges
                               </Button>
                             )}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleOpenCertificateModal(student)}
-                              className="h-8 text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-100"
-                            >
-                              <FileText className="h-3.5 w-3.5 mr-1 text-indigo-600" /> Certificate
-                            </Button>
+                            {!isStudentRole && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleOpenCertificateModal(student)}
+                                className="h-8 text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-100"
+                              >
+                                <FileText className="h-3.5 w-3.5 mr-1 text-indigo-600" /> Certificate
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
