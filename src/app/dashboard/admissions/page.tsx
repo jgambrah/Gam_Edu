@@ -42,7 +42,7 @@ import { AdmissionApplication, Class, Student, studentRegistrationSchema, Studen
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format, differenceInYears } from 'date-fns';
-import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle, GraduationCap } from 'lucide-react';
+import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle, GraduationCap, MessageCircle, PhoneCall, Mail, UserCheck } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
@@ -311,18 +311,70 @@ function AdminApplicationDashboard() {
         return () => unsubscribe();
     }, [firestore, schoolId]);
 
+    const [enquiryStageFilter, setEnquiryStageFilter] = useState<string>('ALL');
+
     const handleToggleEnquiryStatus = async (enquiryId: string, currentStatus: string) => {
         if (!firestore) return;
         try {
             const newStatus = currentStatus === 'Responded' ? 'Pending Response' : 'Responded';
             await updateDoc(doc(firestore, 'admissionEnquiries', enquiryId), {
-                status: newStatus
+                status: newStatus,
+                stage: newStatus === 'Responded' ? 'Contacted / Engaged' : 'Pending Response'
             });
             toast({ title: "Status Updated", description: `Enquiry status updated to ${newStatus}.` });
         } catch (e) {
             console.error(e);
             toast({ variant: 'destructive', title: "Error", description: "Failed to update status." });
         }
+    };
+
+    const handleUpdateEnquiryStage = async (enquiryId: string, newStage: string) => {
+        if (!firestore) return;
+        try {
+            const isConverted = newStage === 'Converted / Enrolled';
+            const isPending = newStage === 'Pending Response';
+            await updateDoc(doc(firestore, 'admissionEnquiries', enquiryId), {
+                stage: newStage,
+                status: isConverted ? 'Converted' : isPending ? 'Pending Response' : 'Responded',
+                lastFollowedUpAt: serverTimestamp()
+            });
+            toast({ title: "Lead Stage Updated 📈", description: `Enquiry moved to ${newStage}.` });
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to update lead stage." });
+        }
+    };
+
+    const handleConvertEnquiryToApp = async (enq: any) => {
+        const appId = `APP-${Date.now()}`;
+        setSelectedApp({
+            id: `TEMP-${Date.now()}`,
+            applicationId: appId,
+            status: 'Pending Review',
+            submittedAt: enq.createdAt || new Date(),
+            student: {
+                fullName: `Child of ${enq.parentName}`,
+                desiredGrade: enq.interest || 'Grade 1',
+                gender: 'Male',
+                address: 'Storefront Lead Enquiry',
+                dateOfBirth: null
+            },
+            parent1: {
+                name: enq.parentName || '',
+                relationship: 'Parent/Guardian',
+                phone: enq.parentPhone || '',
+                email: enq.parentEmail || '',
+                addressSameAsStudent: true,
+                address: ''
+            },
+            emergencyContact: {
+                name: enq.parentName || '',
+                relationship: 'Parent/Guardian',
+                phone: enq.parentPhone || ''
+            }
+        });
+        setDecision(null);
+        await handleUpdateEnquiryStage(enq.id, 'Converted / Enrolled');
     };
 
     useEffect(() => {
@@ -771,50 +823,164 @@ function AdminApplicationDashboard() {
                     <TabsContent value="rejected" className="mt-6 space-y-4">
                         {renderAppList(rejectedApps, 'No rejected applications', 'Unsuccessful applications will list here.')}
                     </TabsContent>
-                    <TabsContent value="enquiries" className="mt-6 space-y-4">
+                    <TabsContent value="enquiries" className="mt-6 space-y-6">
                         {loadingEnquiries ? (
                             <div className="flex justify-center py-12"><Loader2 className="animate-spin h-6 w-6 text-violet-650"/></div>
                         ) : enquiries.length === 0 ? (
                             <div className="py-16 text-center text-slate-400 border-2 border-dashed rounded-3xl bg-slate-50 flex flex-col items-center justify-center gap-4">
                                 <AlertCircle className="h-10 w-10 text-slate-350" />
-                                <p className="font-semibold text-slate-700">No enquiries submitted yet</p>
+                                <p className="font-semibold text-slate-700">No storefront enquiries received yet</p>
+                                <p className="text-xs text-slate-400 max-w-sm">When prospective parents fill out the enquiry form on your public storefront website, they will automatically appear here in your lead pipeline.</p>
                             </div>
                         ) : (
-                            <div className="grid gap-4">
-                                {enquiries.map((enq) => (
-                                    <div key={enq.id} className="p-5 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <h4 className="font-bold text-slate-800 text-lg">{enq.parentName}</h4>
-                                                    <Badge variant="outline" className="border-indigo-100 bg-indigo-50/50 text-indigo-700 font-semibold text-xs px-2 py-0.5 rounded-md">
-                                                        Interested in {enq.interest}
-                                                    </Badge>
+                            <div className="space-y-6">
+                                {/* Lead Pipeline Stage Filter Bar */}
+                                <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-200/60">
+                                    {[
+                                        { id: 'ALL', label: `All Leads (${enquiries.length})` },
+                                        { id: 'Pending Response', label: `⏳ Pending (${enquiries.filter(e => (!e.stage || e.stage === 'Pending Response') && e.status !== 'Converted').length})` },
+                                        { id: 'Contacted / Engaged', label: `💬 Engaged (${enquiries.filter(e => e.stage === 'Contacted / Engaged').length})` },
+                                        { id: 'Campus Tour Scheduled', label: `🏫 Campus Tour (${enquiries.filter(e => e.stage === 'Campus Tour Scheduled').length})` },
+                                        { id: 'Assessment Pending', label: `📝 Assessment (${enquiries.filter(e => e.stage === 'Assessment Pending').length})` },
+                                        { id: 'Converted / Enrolled', label: `🎓 Converted (${enquiries.filter(e => e.stage === 'Converted / Enrolled' || e.status === 'Converted').length})` }
+                                    ].map(stageBtn => (
+                                        <button
+                                            key={stageBtn.id}
+                                            onClick={() => setEnquiryStageFilter(stageBtn.id)}
+                                            className={cn(
+                                                "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all",
+                                                enquiryStageFilter === stageBtn.id
+                                                    ? "bg-white text-violet-900 shadow-sm border border-violet-100"
+                                                    : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                                            )}
+                                        >
+                                            {stageBtn.label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Leads Grid / List */}
+                                <div className="grid gap-4">
+                                    {enquiries
+                                        .filter(enq => {
+                                            if (enquiryStageFilter === 'ALL') return true;
+                                            const currentStage = enq.stage || (enq.status === 'Converted' ? 'Converted / Enrolled' : 'Pending Response');
+                                            return currentStage === enquiryStageFilter;
+                                        })
+                                        .map((enq) => {
+                                            const cleanPhone = enq.parentPhone ? enq.parentPhone.replace(/[^0-9]/g, '') : '';
+                                            const waMessage = encodeURIComponent(`Hello ${enq.parentName || 'Parent'}, thank you for inquiring about ${enq.interest || 'admissions'} at ${schoolData?.name || 'our school'}! We would love to answer your questions and invite you for a campus visit.`);
+                                            const waLink = cleanPhone ? `https://wa.me/${cleanPhone}?text=${waMessage}` : '#';
+                                            const currentStage = enq.stage || (enq.status === 'Converted' ? 'Converted / Enrolled' : enq.status === 'Responded' ? 'Contacted / Engaged' : 'Pending Response');
+
+                                            return (
+                                                <div key={enq.id} className="p-5 bg-white border border-slate-200/80 rounded-3xl shadow-sm hover:shadow-md transition-all space-y-4">
+                                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                        <div className="space-y-1">
+                                                            <div className="flex flex-wrap items-center gap-2">
+                                                                <h4 className="font-extrabold text-slate-900 text-lg">{enq.parentName}</h4>
+                                                                {enq.enquiryId && (
+                                                                    <Badge variant="outline" className="font-mono text-[10px] bg-slate-50 border-slate-200 text-slate-600">
+                                                                        {enq.enquiryId}
+                                                                    </Badge>
+                                                                )}
+                                                                <Badge className="bg-violet-100 text-violet-800 border-none font-bold text-xs px-2.5 py-0.5 rounded-lg">
+                                                                    Interested in {enq.interest}
+                                                                </Badge>
+                                                                {enq.preferredContact && (
+                                                                    <Badge variant="secondary" className="text-[10px] font-bold bg-amber-50 text-amber-700 border-amber-100">
+                                                                        Prefers: {enq.preferredContact}
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-xs text-slate-500 font-medium space-x-3 pt-0.5">
+                                                                <span>📞 {enq.parentPhone}</span>
+                                                                <span>✉️ {enq.parentEmail}</span>
+                                                                <span>📅 Submitted: {enq.createdAt?.toDate ? format(enq.createdAt.toDate(), 'PPP') : 'Recently'}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Stage Dropdown Selector */}
+                                                        <div className="flex items-center gap-2 self-start md:self-center">
+                                                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:inline">Pipeline Stage:</span>
+                                                            <select
+                                                                value={currentStage}
+                                                                onChange={(e) => handleUpdateEnquiryStage(enq.id, e.target.value)}
+                                                                className={cn(
+                                                                    "h-9 px-3 text-xs font-bold rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors cursor-pointer",
+                                                                    currentStage === 'Pending Response' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                                                                    currentStage === 'Contacted / Engaged' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+                                                                    currentStage === 'Campus Tour Scheduled' ? 'bg-purple-50 text-purple-800 border-purple-200' :
+                                                                    currentStage === 'Assessment Pending' ? 'bg-indigo-50 text-indigo-800 border-indigo-200' :
+                                                                    'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                                                )}
+                                                            >
+                                                                <option value="Pending Response">⏳ Pending Response</option>
+                                                                <option value="Contacted / Engaged">💬 Contacted / Engaged</option>
+                                                                <option value="Campus Tour Scheduled">🏫 Campus Tour Scheduled</option>
+                                                                <option value="Assessment Pending">📝 Assessment Pending</option>
+                                                                <option value="Converted / Enrolled">🎓 Converted / Enrolled</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Parent Inquiry Message */}
+                                                    <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                                                        <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Message from Storefront:</p>
+                                                        <p className="text-sm text-slate-700 font-medium leading-relaxed italic">
+                                                            "{enq.message || 'No additional message provided.'}"
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Communication & Conversion Toolbar */}
+                                                    <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-slate-100">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            {/* WhatsApp Quick Action */}
+                                                            {cleanPhone && (
+                                                                <a
+                                                                    href={waLink}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center h-8 px-3 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm transition-colors"
+                                                                >
+                                                                    <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> WhatsApp Parent
+                                                                </a>
+                                                            )}
+                                                            {/* Phone Call */}
+                                                            {enq.parentPhone && (
+                                                                <a
+                                                                    href={`tel:${enq.parentPhone}`}
+                                                                    className="inline-flex items-center h-8 px-3 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                                                                >
+                                                                    <PhoneCall className="h-3.5 w-3.5 mr-1.5 text-slate-600" /> Call
+                                                                </a>
+                                                            )}
+                                                            {/* Email */}
+                                                            {enq.parentEmail && (
+                                                                <a
+                                                                    href={`mailto:${enq.parentEmail}`}
+                                                                    className="inline-flex items-center h-8 px-3 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                                                                >
+                                                                    <Mail className="h-3.5 w-3.5 mr-1.5 text-slate-600" /> Email
+                                                                </a>
+                                                            )}
+                                                        </div>
+
+                                                        {/* 1-Click Convert Button */}
+                                                        {currentStage !== 'Converted / Enrolled' && (
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={() => handleConvertEnquiryToApp(enq)}
+                                                                className="h-8 text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white rounded-lg shadow-sm"
+                                                            >
+                                                                <UserCheck className="h-3.5 w-3.5 mr-1.5" /> Convert to Formal Application
+                                                            </Button>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <div className="text-xs text-slate-550 font-semibold space-x-3 mt-1">
-                                                    <span>📞 {enq.parentPhone}</span>
-                                                    <span>✉️ {enq.parentEmail}</span>
-                                                    <span>📅 Submitted: {enq.createdAt?.toDate ? format(enq.createdAt.toDate(), 'PP') : 'N/A'}</span>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                size="sm"
-                                                variant={enq.status === 'Responded' ? 'outline' : 'default'}
-                                                className={cn(
-                                                    "rounded-xl font-bold transition-all h-9 self-start sm:self-center",
-                                                    enq.status === 'Responded' ? 'text-slate-505 border-slate-200 hover:bg-slate-50' : 'bg-violet-600 hover:bg-violet-700 text-white shadow-sm'
-                                                )}
-                                                onClick={() => handleToggleEnquiryStatus(enq.id, enq.status)}
-                                            >
-                                                {enq.status === 'Responded' ? '✓ Responded' : 'Mark Responded'}
-                                            </Button>
-                                        </div>
-                                        <Separator className="my-3 opacity-60" />
-                                        <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-2xl border border-slate-100 font-medium leading-relaxed">
-                                            {enq.message}
-                                        </p>
-                                    </div>
-                                ))}
+                                            );
+                                        })}
+                                </div>
                             </div>
                         )}
                     </TabsContent>

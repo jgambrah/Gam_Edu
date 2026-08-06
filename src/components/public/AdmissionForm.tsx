@@ -107,19 +107,23 @@ export function AdmissionEnquiryForm({ schoolId, primaryColor }: { schoolId: str
         if (!firestore) return;
         setLoading(true);
         const formData = new FormData(e.currentTarget);
+        const enqId = `ENQ-${Date.now().toString().slice(-6)}`;
         
         try {
             await addDoc(collection(firestore, 'admissionEnquiries'), {
                 schoolId,
+                enquiryId: enqId,
                 status: 'Pending Response',
+                stage: 'Pending Response',
                 createdAt: serverTimestamp(),
                 parentName: formData.get('parentName') as string || '',
                 parentPhone: formData.get('phone') as string || '',
                 parentEmail: formData.get('email') as string || '',
                 interest: formData.get('interest') as string || '',
+                preferredContact: formData.get('preferredContact') as string || 'WhatsApp',
                 message: formData.get('message') as string || '',
             });
-            toast({ title: "Enquiry Submitted!", description: `The school admissions team will contact you shortly.` });
+            toast({ title: "Enquiry Submitted!", description: `The school admissions team will contact you shortly. Reference ID: ${enqId}` });
             (e.target as HTMLFormElement).reset();
         } catch (err: any) {
             console.error("Enquiry Submit Error:", err);
@@ -144,7 +148,7 @@ export function AdmissionEnquiryForm({ schoolId, primaryColor }: { schoolId: str
                     <Input name="phone" required placeholder="Contact Number" />
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                     <Label>Your Email *</Label>
                     <Input name="email" type="email" required placeholder="example@email.com" />
@@ -160,6 +164,18 @@ export function AdmissionEnquiryForm({ schoolId, primaryColor }: { schoolId: str
                         <option value="Primary School">Primary / Basic School</option>
                         <option value="JHS">Junior High School (JHS)</option>
                         <option value="SHS">Senior High School (SHS)</option>
+                    </select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Preferred Contact *</Label>
+                    <select 
+                        name="preferredContact" 
+                        required
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-semibold"
+                    >
+                        <option value="WhatsApp">WhatsApp</option>
+                        <option value="Phone Call">Phone Call</option>
+                        <option value="Email">Email</option>
                     </select>
                 </div>
             </div>
