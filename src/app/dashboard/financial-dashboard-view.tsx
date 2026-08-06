@@ -9,7 +9,8 @@ import { cn } from '@/lib/utils';
 import { format, startOfDay, startOfMonth, startOfYear } from 'date-fns';
 import { 
   Landmark, Banknote, TrendingUp, DollarSign, Wallet, Calculator, 
-  ArrowUpRight, AlertTriangle, Scale, Clock, Users, ArrowDownRight, Award
+  ArrowUpRight, AlertTriangle, Scale, Clock, Users, ArrowDownRight, Award,
+  Zap, Layers, Flame, Activity, CheckCircle2, ShieldAlert
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 
@@ -120,6 +121,108 @@ export function FinancialDashboardView({
       collectedThisYear,
     };
   }, [payments, termDates, today, students]);
+
+  // 2.5 Granular Revenue Stream Breakdown (In-Memory Aggregator: 0 extra Firestore reads)
+  const streamStats = useMemo(() => {
+    let tuition = 0;
+    let canteen = 0;
+    let transport = 0;
+    let boarding = 0;
+    let uniformsBooks = 0;
+    let other = 0;
+
+    if (payments) {
+      payments.forEach((p: any) => {
+        const amount = Number(p.amount) || 0;
+        if (amount <= 0) return;
+        const cat = (p.category || p.description || p.feeType || '').toLowerCase();
+
+        if (cat.includes('tuition') || cat.includes('school fee') || cat.includes('academic')) {
+          tuition += amount;
+        } else if (cat.includes('canteen') || cat.includes('feed') || cat.includes('lunch') || cat.includes('meal')) {
+          canteen += amount;
+        } else if (cat.includes('bus') || cat.includes('transport') || cat.includes('fare') || cat.includes('shuttle')) {
+          transport += amount;
+        } else if (cat.includes('boarding') || cat.includes('hostel') || cat.includes('dorm')) {
+          boarding += amount;
+        } else if (cat.includes('uniform') || cat.includes('book') || cat.includes('textbook') || cat.includes('stationery')) {
+          uniformsBooks += amount;
+        } else {
+          other += amount;
+        }
+      });
+    }
+
+    const total = tuition + canteen + transport + boarding + uniformsBooks + other;
+    return { tuition, canteen, transport, boarding, uniformsBooks, other, total };
+  }, [payments]);
+
+  // 2.6 Class Arrears Risk Heatmap (In-Memory Aggregator: 0 extra Firestore reads)
+  const classArrearsHeatmap = useMemo(() => {
+    if (!classes || !students || !financialRecords) return [];
+
+    const classMap = new Map<string, { id: string; name: string; billed: number; paid: number; balance: number; studentCount: number }>();
+
+    classes.forEach((c: any) => {
+      classMap.set(c.id, { id: c.id, name: c.name || 'Class', billed: 0, paid: 0, balance: 0, studentCount: 0 });
+    });
+
+    const recordsByStudent: Record<string, any[]> = {};
+    financialRecords.forEach((r: any) => {
+      if (r.status === 'Pending Reversal') return;
+      const key = r.studentId;
+      if (!recordsByStudent[key]) recordsByStudent[key] = [];
+      recordsByStudent[key].push(r);
+    });
+
+    students.forEach((s: any) => {
+      const isActive = s.enrollmentStatus === 'Active' || !s.enrollmentStatus;
+      if (!isActive) return;
+      const cId = s.classId;
+      const classData = classMap.get(cId);
+      if (!classData) return;
+
+      classData.studentCount++;
+      const sRecords = recordsByStudent[s.uid] || recordsByStudent[s.id] || [];
+      sRecords.forEach(r => {
+        const billed = Number(r.billedAmount) || 0;
+        const paid = (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0);
+        classData.billed += billed;
+        classData.paid += paid;
+        classData.balance += (billed - paid);
+      });
+    });
+
+    return Array.from(classMap.values())
+      .map(c => {
+        const rate = c.billed > 0 ? Math.round((c.paid / c.billed) * 100) : 100;
+        return { ...c, collectionRate: rate };
+      })
+      .sort((a, b) => b.balance - a.balance);
+  }, [classes, students, financialRecords]);
+
+  // 2.7 Live Real-Time Payment Stream Feed (In-Memory Filter: 0 extra Firestore reads)
+  const recentPaymentStream = useMemo(() => {
+    if (!payments) return [];
+    return payments
+      .map((p: any) => {
+        const studentObj = students?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
+        const classObj = classes?.find((c: any) => c.id === studentObj?.classId);
+        const dateVal = p.paidAt || p.createdAt || p.date;
+        const date = dateVal?.toDate ? dateVal.toDate() : new Date(dateVal);
+        return {
+          id: p.id || Math.random().toString(),
+          amount: Number(p.amount) || 0,
+          studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : 'Student',
+          className: classObj?.name || 'Class',
+          category: p.category || p.feeType || 'Tuition',
+          method: p.method || p.paymentMethod || 'Paystack / Cash',
+          date
+        };
+      })
+      .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0))
+      .slice(0, 5);
+  }, [payments, students, classes]);
 
   // 3. Expenditure Category Breakdown
   const expensesByCategory = useMemo(() => {
@@ -421,6 +524,163 @@ export function FinancialDashboardView({
             </div>
           </Card>
         </div>
+
+        {/* Granular Revenue Stream Breakdown Card */}
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <Layers className="h-5 w-5 text-indigo-600" />
+                <h3 className="text-base font-extrabold text-slate-900">Granular Revenue Stream Breakdown</h3>
+              </div>
+              <p className="text-xs text-slate-500 font-medium mt-1">Itemized distribution of collected funds across tuition, canteen, transport, and auxiliary services.</p>
+            </div>
+            <Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 font-bold text-xs px-3 py-1 self-start md:self-auto rounded-xl">
+              Total Stream Collection: GH₵ {streamStats.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+              <span className="text-[10px] font-black uppercase text-indigo-600 tracking-wider">Tuition Fees</span>
+              <p className="text-sm font-black text-slate-900">GH₵ {streamStats.tuition.toLocaleString()}</p>
+              <Progress value={streamStats.total > 0 ? (streamStats.tuition / streamStats.total) * 100 : 0} className="h-1 bg-slate-200" indicatorClassName="bg-indigo-600" />
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+              <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider">Canteen / Meals</span>
+              <p className="text-sm font-black text-slate-900">GH₵ {streamStats.canteen.toLocaleString()}</p>
+              <Progress value={streamStats.total > 0 ? (streamStats.canteen / streamStats.total) * 100 : 0} className="h-1 bg-slate-200" indicatorClassName="bg-amber-500" />
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+              <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Bus / Transport</span>
+              <p className="text-sm font-black text-slate-900">GH₵ {streamStats.transport.toLocaleString()}</p>
+              <Progress value={streamStats.total > 0 ? (streamStats.transport / streamStats.total) * 100 : 0} className="h-1 bg-slate-200" indicatorClassName="bg-blue-500" />
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+              <span className="text-[10px] font-black uppercase text-purple-600 tracking-wider">Boarding / Hostel</span>
+              <p className="text-sm font-black text-slate-900">GH₵ {streamStats.boarding.toLocaleString()}</p>
+              <Progress value={streamStats.total > 0 ? (streamStats.boarding / streamStats.total) * 100 : 0} className="h-1 bg-slate-200" indicatorClassName="bg-purple-600" />
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+              <span className="text-[10px] font-black uppercase text-pink-600 tracking-wider">Uniforms & Books</span>
+              <p className="text-sm font-black text-slate-900">GH₵ {streamStats.uniformsBooks.toLocaleString()}</p>
+              <Progress value={streamStats.total > 0 ? (streamStats.uniformsBooks / streamStats.total) * 100 : 0} className="h-1 bg-slate-200" indicatorClassName="bg-pink-500" />
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+              <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Other Auxiliary</span>
+              <p className="text-sm font-black text-slate-900">GH₵ {streamStats.other.toLocaleString()}</p>
+              <Progress value={streamStats.total > 0 ? (streamStats.other / streamStats.total) * 100 : 0} className="h-1 bg-slate-200" indicatorClassName="bg-slate-500" />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Class Arrears Risk Heatmap & Real-Time Payment Stream Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Class Arrears Heatmap (2 Columns) */}
+        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <Flame className="h-5 w-5 text-rose-500" />
+                <h3 className="text-base font-extrabold text-slate-900">Class Arrears Risk Heatmap</h3>
+              </div>
+              <p className="text-xs text-slate-500 font-medium mt-1">Class-by-class fee recovery ranking to pinpoint high-risk classes.</p>
+            </div>
+            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider text-rose-600 border-rose-100 bg-rose-50">
+              Sorted by Highest Arrears
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {classArrearsHeatmap.slice(0, 9).map((cls) => {
+              const isHighRisk = cls.collectionRate < 50;
+              const isMediumRisk = cls.collectionRate >= 50 && cls.collectionRate < 80;
+
+              return (
+                <div
+                  key={cls.id}
+                  className={cn(
+                    "p-4 rounded-2xl border transition-all space-y-2",
+                    isHighRisk ? "bg-rose-50/50 border-rose-100 hover:bg-rose-50" :
+                    isMediumRisk ? "bg-amber-50/50 border-amber-100 hover:bg-amber-50" :
+                    "bg-emerald-50/40 border-emerald-100 hover:bg-emerald-50"
+                  )}
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-extrabold text-slate-900 text-sm">{cls.name}</span>
+                    <Badge
+                      className={cn(
+                        "font-extrabold text-[10px] rounded-lg px-2 py-0.5 shadow-none border",
+                        isHighRisk ? "bg-rose-100 text-rose-800 border-rose-200" :
+                        isMediumRisk ? "bg-amber-100 text-amber-800 border-amber-200" :
+                        "bg-emerald-100 text-emerald-800 border-emerald-200"
+                      )}
+                    >
+                      {cls.collectionRate}% Paid
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-slate-600 space-y-0.5">
+                    <div className="flex justify-between">
+                      <span>Unpaid Balance:</span>
+                      <strong className="text-slate-900 font-black">GH₵ {cls.balance.toLocaleString()}</strong>
+                    </div>
+                    <div className="flex justify-between text-[10px] text-slate-400">
+                      <span>Enrolled Students:</span>
+                      <span>{cls.studentCount} students</span>
+                    </div>
+                  </div>
+                  <Progress value={cls.collectionRate} className="h-1.5 bg-white/80" indicatorClassName={isHighRisk ? 'bg-rose-500' : isMediumRisk ? 'bg-amber-500' : 'bg-emerald-500'} />
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* Live Real-Time Payment Feed (1 Column) */}
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4 border-b pb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-emerald-600 animate-pulse" />
+                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Live Payment Stream</h3>
+              </div>
+              <Badge className="bg-emerald-500 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase animate-pulse">
+                Real-Time
+              </Badge>
+            </div>
+
+            {recentPaymentStream.length > 0 ? (
+              <div className="space-y-3">
+                {recentPaymentStream.map((p: any) => (
+                  <div key={p.id} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">{p.studentName}</p>
+                      <p className="text-[10px] text-slate-500 font-medium">{p.className} • {p.category}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
+                      <span className="text-[9px] font-bold text-slate-400 block">{p.method}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 text-center text-xs text-slate-400 italic bg-slate-50 border border-dashed rounded-2xl">
+                No recent payment transactions recorded.
+              </div>
+            )}
+          </div>
+
+          <div className="pt-4 border-t border-slate-100 text-center">
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Zero Extra Firestore Read Cost</span>
+          </div>
+        </Card>
       </div>
 
       {/* 2. RECEIVABLES SECTION */}
