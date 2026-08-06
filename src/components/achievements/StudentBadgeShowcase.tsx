@@ -30,11 +30,23 @@ export function StudentBadgeShowcase({
     return Math.min(100, Math.max(0, Math.round((currentInRange / range) * 100)));
   }, [totalPoints, levelInfo]);
 
-  const earnedMap = useMemo(() => {
-    const map = new Map<string, EarnedBadge>();
-    (earnedBadges || []).forEach(b => map.set(b.id, b));
-    return map;
-  }, [earnedBadges]);
+  const isBadgeUnlocked = (catalogId: string, catalogTitle: string) => {
+    return (earnedBadges || []).some((eb: any) => {
+      if (!eb) return false;
+      if (eb.id && (eb.id === catalogId || eb.id.startsWith(`${catalogId}_`))) return true;
+      if (eb.title && eb.title.toLowerCase() === catalogTitle.toLowerCase()) return true;
+      return false;
+    });
+  };
+
+  const getEarnedBadge = (catalogId: string, catalogTitle: string) => {
+    return (earnedBadges || []).find((eb: any) => {
+      if (!eb) return false;
+      if (eb.id && (eb.id === catalogId || eb.id.startsWith(`${catalogId}_`))) return true;
+      if (eb.title && eb.title.toLowerCase() === catalogTitle.toLowerCase()) return true;
+      return false;
+    });
+  };
 
   if (compact) {
     return (
@@ -59,7 +71,7 @@ export function StudentBadgeShowcase({
 
         <div className="mt-3 pt-3 border-t border-indigo-800/60 flex items-center gap-2 overflow-x-auto pb-1">
           {BADGE_CATALOG.map(b => {
-            const isUnlocked = earnedMap.has(b.id);
+            const isUnlocked = isBadgeUnlocked(b.id, b.title);
             return (
               <TooltipProvider key={b.id}>
                 <Tooltip>
@@ -98,24 +110,18 @@ export function StudentBadgeShowcase({
               </CardTitle>
             </div>
             <CardDescription className="text-indigo-200 text-xs mt-1">
-              Earn XP points & digital achievement badges for attendance, quizzes, and reading!
+              Level up by attending class, taking quizzes, and completing library reading goals!
             </CardDescription>
           </div>
-          <div className="text-right flex items-center gap-3">
-            <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 text-center">
-              <span className="text-[10px] font-black uppercase text-indigo-300 block tracking-widest">Total Earned XP</span>
-              <span className="text-2xl font-black text-amber-400 font-mono">{totalPoints} XP</span>
-            </div>
-            <Badge className={`${levelInfo.badgeColor} text-white font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-md border-0`}>
-              Level {levelInfo.level}: {levelInfo.title}
-            </Badge>
-          </div>
+          <Badge className={`${levelInfo.badgeColor} text-white font-extrabold text-sm px-4 py-1.5 rounded-full shadow-md`}>
+            Level {levelInfo.level} • {levelInfo.title}
+          </Badge>
         </div>
 
-        <div className="mt-4 pt-3 border-t border-white/10">
-          <div className="flex justify-between text-xs font-bold mb-1.5">
-            <span className="text-indigo-200">Level Progress ({levelInfo.title})</span>
-            <span className="text-indigo-300 font-mono text-[11px]">{totalPoints} / {levelInfo.maxXp} XP to Level {levelInfo.level + 1}</span>
+        <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
+          <div className="flex justify-between text-xs font-bold">
+            <span className="text-indigo-200">Total Points Accumulation:</span>
+            <span className="text-amber-300 font-mono">{totalPoints} / {levelInfo.maxXp} XP</span>
           </div>
           <Progress value={xpProgress} className="h-2.5 bg-indigo-950/80" />
         </div>
@@ -125,13 +131,13 @@ export function StudentBadgeShowcase({
         <div>
           <div className="flex justify-between items-center mb-3">
             <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-              <Award className="h-4 w-4 text-purple-600" /> Digital Badges Catalog ({earnedBadges.length}/{BADGE_CATALOG.length} Unlocked)
+              <Award className="h-4 w-4 text-purple-600" /> Digital Badges Catalog ({(earnedBadges || []).length}/{BADGE_CATALOG.length} Unlocked)
             </h4>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {BADGE_CATALOG.map(badge => {
-              const earned = earnedMap.get(badge.id);
+              const earned = getEarnedBadge(badge.id, badge.title);
               const isUnlocked = !!earned;
 
               return (
