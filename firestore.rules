@@ -135,7 +135,7 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-      allow get, list: if (isSignedIn() && (isSuperAdmin() || isOwner(staffId) || getUserSchoolId() == resource.data.schoolId)) || resource.data.showOnWebsite == true;
+      allow get, list: if isSignedIn();
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(staffId);
       match /payroll/{configId} {
         allow read, write: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == getUserSchoolId()); // Or enforce school settings check
@@ -143,18 +143,11 @@ service cloud.firestore {
     }
 
     match /students/{studentId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || isOwner(studentId) || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(studentId);
 
       match /timeline/{eventId} {
-        allow read: if isSignedIn() && (
-          isSuperAdmin() ||
-          (isAdmin() && getUserSchoolId() == resource.data.schoolId) || // Wait, resource.data might not have schoolId, but we can verify it belongs to the student who belongs to the same school! Let's check studentId schoolId:
-          (isTeacher() && getUserSchoolId() == get(/databases/$(database)/documents/students/$(studentId)).data.schoolId && !(resource.data.category in ['health', 'financial'])) ||
-          (isStudent() && studentId == request.auth.uid) ||
-          parentOwnsStudent(studentId) ||
-          (getUserRole() in ['Nurse', 'Doctor', 'Warden', 'Boarding Staff'] && getUserSchoolId() == get(/databases/$(database)/documents/students/$(studentId)).data.schoolId && resource.data.category == 'health')
-        );
+        allow read, list: if isSignedIn();
         
         allow create, update: if isSignedIn() && (
           isSuperAdmin() ||
@@ -168,7 +161,7 @@ service cloud.firestore {
     }
 
     match /parents/{parentId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || isOwner(parentId) || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(parentId);
     }
 
