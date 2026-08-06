@@ -32,6 +32,15 @@ export function calculateLevelFromPercent(percent: number) {
   return { level: 1, title: 'Beginner' };
 }
 
+export function calculateSubjectProgress(
+  assignments: Assignment[] = [],
+  submissions: StudentSubmission[] = [],
+  quizzes: Quiz[] = [],
+  attempts: QuizAttempt[] = []
+): SubjectProgressSummary[] {
+  return calculateAllSubjectsProgress(assignments, quizzes, submissions, attempts);
+}
+
 /**
  * Derives subject-level progress breakdown dynamically in-memory.
  * 0 extra Firestore reads cost overhead.
