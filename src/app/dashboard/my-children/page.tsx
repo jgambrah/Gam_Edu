@@ -35,6 +35,8 @@ const toDateSafe = (d: any): Date => {
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
 import { StudentBadgeShowcase } from '@/components/achievements/StudentBadgeShowcase';
+import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
+import { Flame } from 'lucide-react';
 
 function AttendanceHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
@@ -665,6 +667,47 @@ function DigitalWalletTab({ student }: { student: Student }) {
     );
 }
 
+function ChildCurriculumRoadmapTab({ student }: { student: Student }) {
+    const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
+    const studentId = student.id || student.uid;
+    const studentClassId = student.classId;
+
+    const assignmentsQuery = useMemoFirebase(() => 
+        (studentClassId && firestore && schoolId) ? query(collection(firestore, 'assignments'), where('classId', '==', studentClassId), where('schoolId', '==', schoolId)) : null,
+        [studentClassId, firestore, schoolId]
+    );
+    const { data: assignments } = useCollection<any>(assignmentsQuery);
+
+    const quizzesQuery = useMemoFirebase(() => 
+        (studentClassId && firestore && schoolId) ? query(collection(firestore, 'quizzes'), where('classId', '==', studentClassId), where('schoolId', '==', schoolId)) : null,
+        [studentClassId, firestore, schoolId]
+    );
+    const { data: quizzes } = useCollection<any>(quizzesQuery);
+
+    const submissionsQuery = useMemoFirebase(() => 
+        (studentId && firestore && schoolId) ? query(collection(firestore, 'submissions'), where('studentId', '==', studentId), where('schoolId', '==', schoolId)) : null,
+        [studentId, firestore, schoolId]
+    );
+    const { data: submissions } = useCollection<any>(submissionsQuery);
+
+    const quizAttemptsQuery = useMemoFirebase(() => 
+        (studentId && firestore && schoolId) ? query(collection(firestore, 'quizAttempts'), where('studentId', '==', studentId), where('schoolId', '==', schoolId)) : null,
+        [studentId, firestore, schoolId]
+    );
+    const { data: quizAttempts } = useCollection<any>(quizAttemptsQuery);
+
+    return (
+        <StudentSubjectRoadmap
+            assignments={assignments || []}
+            quizzes={quizzes || []}
+            submissions={submissions || []}
+            quizAttempts={quizAttempts || []}
+            studentName={`${student.firstName} ${student.lastName}`}
+        />
+    );
+}
+
 function StudentDetailView({ student }: { student: Student }) {
     const studentId = student.id || student.uid;
 
@@ -676,8 +719,11 @@ function StudentDetailView({ student }: { student: Student }) {
                 earnedBadges={(student as any).earnedBadges || []}
             />
 
-            <Tabs defaultValue="attendance" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 bg-slate-100 p-1 rounded-xl">
+            <Tabs defaultValue="roadmap" className="w-full">
+                <TabsList className="grid w-full grid-cols-6 bg-slate-100 p-1 rounded-xl">
+                    <TabsTrigger value="roadmap" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm text-indigo-950">
+                        <Flame className="mr-2 h-4 w-4 text-amber-500" /> Roadmap
+                    </TabsTrigger>
                     <TabsTrigger value="attendance" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <CalendarCheck className="mr-2 h-4 w-4" /> Attendance Log
                     </TabsTrigger>
@@ -695,6 +741,10 @@ function StudentDetailView({ student }: { student: Student }) {
                     </TabsTrigger>
                 </TabsList>
                 
+                <TabsContent value="roadmap" className="mt-6">
+                    <ChildCurriculumRoadmapTab student={student} />
+                </TabsContent>
+
                 <TabsContent value="attendance" className="mt-6">
                     <AttendanceHistory studentId={studentId} />
                 </TabsContent>

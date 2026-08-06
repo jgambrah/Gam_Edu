@@ -18,6 +18,7 @@ import { useRole } from '@/context/role-context';
 import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
+import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
 
 const toDateSafe = (dateVal: any): Date => {
   if (!dateVal) return new Date();
@@ -210,6 +211,15 @@ export default function StudentAssignmentsView() {
           </div>
         </Card>
       </div>
+
+      {/* Curriculum Level-Up & Skill Roadmap */}
+      <StudentSubjectRoadmap 
+        assignments={assignments || []} 
+        quizzes={quizzes || []} 
+        submissions={submissions || []} 
+        quizAttempts={quizAttempts || []} 
+        studentName={student ? `${student.firstName} ${student.lastName}` : undefined} 
+      />
 
       {/* Main Roster List */}
       <div className="grid grid-cols-1 gap-6">

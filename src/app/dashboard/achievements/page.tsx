@@ -23,7 +23,8 @@ export default function AchievementsPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { schoolId, schoolName } = useCurrentSchool();
+  const { schoolId } = useCurrentSchool();
+  const schoolName = 'GAM EDU ACADEMY';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState<string>('All');

@@ -28,6 +28,7 @@ import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/no
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { triggerStudentBadgeEvent } from '@/lib/achievement-utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- Form Zod schema supporting HTML5 standard controls ---
 const libraryFormSchema = z.object({
