@@ -254,6 +254,49 @@ export default function LibraryPage() {
   const libraryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'library'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: libraryItems, isLoading: isLoadingItems } = useCollection<LibraryItem>(libraryQuery);
 
+  const reviewsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'book_reviews'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: bookReviews } = useCollection<BookReview>(reviewsQuery);
+
+  const [isReviewOpen, setReviewOpen] = useState(false);
+  const [selectedBookForReview, setSelectedBookForReview] = useState<LibraryItem | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId || !selectedBookForReview || !user || !reviewComment.trim()) return;
+    setIsSubmittingReview(true);
+
+    try {
+      const reviewRef = doc(collection(firestore, 'book_reviews'));
+      await setDocumentNonBlocking(reviewRef, {
+        schoolId,
+        bookId: selectedBookForReview.id,
+        bookTitle: selectedBookForReview.name,
+        studentId: user.uid,
+        studentName: user.displayName || user.email || 'Student',
+        rating: reviewRating,
+        comment: reviewComment.trim(),
+        createdAt: new Date()
+      }, {});
+
+      toast({
+        title: 'Review Submitted',
+        description: `Thank you for reviewing "${selectedBookForReview.name}"!`,
+      });
+
+      setReviewOpen(false);
+      setReviewComment('');
+      setSelectedBookForReview(null);
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to submit review.' });
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
   const isLoading = isLoadingItems || isLoadingSchool;
 
   const libraryStats = useMemo(() => {
@@ -1192,27 +1235,97 @@ export default function LibraryPage() {
 
                             {/* Book Ratings List */}
                             <div className="md:col-span-2 space-y-4">
-                                <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Recent Peer Book Reviews</h4>
-                                <div className="space-y-3">
-                                    {[
-                                        { id: '1', book: 'The Great Gatsby', student: 'Kofi Mensah (BS 6)', rating: 5, review: 'An amazing story! Hard to put down once you start reading.' },
-                                        { id: '2', book: 'Things Fall Apart', student: 'Ama Serwaa (JHS 2)', rating: 5, review: 'Powerful classic literature. Helped me score top marks in English!' },
-                                        { id: '3', book: 'Animal Farm', student: 'Kwame Owusu (SHS 1)', rating: 4, review: 'Great allegory and political satire. Highly recommended for history students.' },
-                                    ].map(rev => (
-                                        <div key={rev.id} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2 hover:bg-slate-50 transition-colors">
-                                            <div className="flex justify-between items-center">
-                                                <span className="font-extrabold text-slate-900 text-sm">{rev.book}</span>
-                                                <div className="flex items-center gap-1">
-                                                    {Array.from({ length: 5 }).map((_, i) => (
-                                                        <Star key={i} className={cn("h-3.5 w-3.5", i < rev.rating ? "text-amber-500 fill-amber-500" : "text-slate-300")} />
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <p className="text-xs text-slate-600 italic">"{rev.review}"</p>
-                                            <span className="text-[10px] font-bold text-indigo-600 block uppercase">— {rev.student}</span>
-                                        </div>
-                                    ))}
+                                <div className="flex justify-between items-center">
+                                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Recent Peer Book Reviews</h4>
+                                    {canBorrow && libraryItems && libraryItems.length > 0 && (
+                                        <Dialog open={isReviewOpen} onOpenChange={setReviewOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl h-8 px-3 gap-1">
+                                                    <Star className="h-3.5 w-3.5 fill-white" /> Submit Book Review
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[450px]">
+                                                <DialogHeader>
+                                                    <DialogTitle className="text-base font-black uppercase">Submit Book Review</DialogTitle>
+                                                    <DialogDescription className="text-xs">Share your thoughts on a book you read to inspire your peers.</DialogDescription>
+                                                </DialogHeader>
+                                                <form onSubmit={handleSubmitReview} className="space-y-4 pt-2">
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs font-black uppercase text-slate-400">Select Book</label>
+                                                        <Select onValueChange={(val) => {
+                                                            const found = libraryItems?.find(i => i.id === val);
+                                                            if (found) setSelectedBookForReview(found);
+                                                        }}>
+                                                            <SelectTrigger className="h-11 rounded-xl border-2">
+                                                                <SelectValue placeholder="Choose a book..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {libraryItems?.map(b => (
+                                                                    <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs font-black uppercase text-slate-400">Rating (1 - 5 Stars)</label>
+                                                        <div className="flex items-center gap-2">
+                                                            {[1, 2, 3, 4, 5].map(star => (
+                                                                <button
+                                                                    key={star}
+                                                                    type="button"
+                                                                    onClick={() => setReviewRating(star)}
+                                                                    className="p-1 text-amber-500 hover:scale-110 transition-transform"
+                                                                >
+                                                                    <Star className={cn("h-6 w-6", star <= reviewRating ? "fill-amber-500" : "text-slate-300")} />
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs font-black uppercase text-slate-400">Your Review / Summary</label>
+                                                        <Input 
+                                                            placeholder="What did you learn or enjoy about this book?"
+                                                            value={reviewComment}
+                                                            onChange={e => setReviewComment(e.target.value)}
+                                                            className="h-12 rounded-xl border-2"
+                                                        />
+                                                    </div>
+
+                                                    <Button type="submit" disabled={isSubmittingReview || !selectedBookForReview || !reviewComment.trim()} className="w-full bg-slate-900 hover:bg-emerald-600 text-white font-black uppercase h-11 rounded-xl">
+                                                        {isSubmittingReview ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null} Post Review
+                                                    </Button>
+                                                </form>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
                                 </div>
+
+                                {bookReviews && bookReviews.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {bookReviews.map(rev => (
+                                            <div key={rev.id} className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2 hover:bg-slate-50 transition-colors">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-extrabold text-slate-900 text-sm">{rev.bookTitle}</span>
+                                                    <div className="flex items-center gap-1">
+                                                        {Array.from({ length: 5 }).map((_, i) => (
+                                                            <Star key={i} className={cn("h-3.5 w-3.5", i < rev.rating ? "text-amber-500 fill-amber-500" : "text-slate-300")} />
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <p className="text-xs text-slate-600 italic">"{rev.comment}"</p>
+                                                <span className="text-[10px] font-bold text-indigo-600 block uppercase">— {rev.studentName}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="p-8 text-center bg-slate-50 border border-dashed border-slate-200 rounded-3xl space-y-2">
+                                        <Star className="h-10 w-10 mx-auto text-amber-400 opacity-40" />
+                                        <h5 className="font-black text-slate-800 text-sm uppercase">No Peer Book Reviews Submitted Yet</h5>
+                                        <p className="text-xs text-slate-500 font-medium max-w-md mx-auto">Encourage your enrolled students to review their borrowed books upon return to build the school's reading culture!</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
