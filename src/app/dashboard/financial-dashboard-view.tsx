@@ -27,6 +27,23 @@ interface FinancialDashboardViewProps {
   arrearsThreshold: number;
 }
 
+const safeParseDate = (dateVal: any): Date | null => {
+  if (!dateVal) return null;
+  try {
+    if (typeof dateVal.toDate === 'function') return dateVal.toDate();
+    if (dateVal instanceof Date) return isNaN(dateVal.getTime()) ? null : dateVal;
+    if (typeof dateVal === 'number') return new Date(dateVal.toString().length === 10 ? dateVal * 1000 : dateVal);
+    if (dateVal.seconds) return new Date(dateVal.seconds * 1000);
+    if (typeof dateVal === 'string') {
+      const parsed = new Date(dateVal);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+};
+
 export function FinancialDashboardView({
   students,
   classes,
@@ -84,32 +101,45 @@ export function FinancialDashboardView({
     let collectedThisTerm = 0;
     let collectedThisYear = 0;
 
-    if (payments) {
+    // 1. Process explicit payments array
+    if (payments && payments.length > 0) {
       payments.forEach((p: any) => {
-        const studentObj = students?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
-        if (!studentObj) return;
-        const isActive = studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
-        if (!isActive) return;
-
-        const amount = Number(p.amount) || 0;
+        const amount = Number(p.amount) || Number(p.amountPaid) || 0;
         if (amount <= 0) return;
 
-        const dateVal = p.paidAt || p.createdAt || p.date;
-        if (!dateVal) return;
-        const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
-        if (isNaN(d.getTime())) return;
-
-        if (d >= startOfToday) {
-          collectedToday += amount;
-        }
-        if (d >= startOfThisMonth) {
-          collectedThisMonth += amount;
-        }
-        if (d >= termDates.start && d <= termDates.end) {
+        const d = safeParseDate(p.paidAt || p.createdAt || p.date || p.timestamp);
+        if (!d) {
           collectedThisTerm += amount;
-        }
-        if (d >= startOfThisYear) {
           collectedThisYear += amount;
+          return;
+        }
+
+        if (d >= startOfToday) collectedToday += amount;
+        if (d >= startOfThisMonth) collectedThisMonth += amount;
+        if (d >= termDates.start && d <= termDates.end) collectedThisTerm += amount;
+        if (d >= startOfThisYear) collectedThisYear += amount;
+      });
+    }
+    
+    // 2. Process student financialRecords (amountPaid) if payments collection is empty or missing timestamps
+    if (financialRecords && financialRecords.length > 0) {
+      financialRecords.forEach((r: any) => {
+        if (r.status === 'Pending Reversal') return;
+        const amountPaid = Number(r.amountPaid) || 0;
+        if (amountPaid <= 0) return;
+
+        if (!payments || payments.length === 0) {
+          const d = safeParseDate(r.lastPaymentDate || r.paidAt || r.updatedAt || r.createdAt || r.date);
+          if (!d) {
+            collectedThisTerm += amountPaid;
+            collectedThisYear += amountPaid;
+            return;
+          }
+
+          if (d >= startOfToday) collectedToday += amountPaid;
+          if (d >= startOfThisMonth) collectedThisMonth += amountPaid;
+          if (d >= termDates.start && d <= termDates.end) collectedThisTerm += amountPaid;
+          if (d >= startOfThisYear) collectedThisYear += amountPaid;
         }
       });
     }
@@ -120,7 +150,7 @@ export function FinancialDashboardView({
       collectedThisTerm,
       collectedThisYear,
     };
-  }, [payments, termDates, today, students]);
+  }, [payments, financialRecords, termDates, today]);
 
   // 2.5 Granular Revenue Stream Breakdown (In-Memory Aggregator: 0 extra Firestore reads)
   const streamStats = useMemo(() => {
@@ -131,31 +161,31 @@ export function FinancialDashboardView({
     let uniformsBooks = 0;
     let other = 0;
 
-    if (payments) {
-      payments.forEach((p: any) => {
-        const amount = Number(p.amount) || 0;
-        if (amount <= 0) return;
-        const cat = (p.category || p.description || p.feeType || '').toLowerCase();
+    const itemsToProcess = (payments && payments.length > 0) ? payments : (financialRecords || []);
 
-        if (cat.includes('tuition') || cat.includes('school fee') || cat.includes('academic')) {
-          tuition += amount;
-        } else if (cat.includes('canteen') || cat.includes('feed') || cat.includes('lunch') || cat.includes('meal')) {
-          canteen += amount;
-        } else if (cat.includes('bus') || cat.includes('transport') || cat.includes('fare') || cat.includes('shuttle')) {
-          transport += amount;
-        } else if (cat.includes('boarding') || cat.includes('hostel') || cat.includes('dorm')) {
-          boarding += amount;
-        } else if (cat.includes('uniform') || cat.includes('book') || cat.includes('textbook') || cat.includes('stationery')) {
-          uniformsBooks += amount;
-        } else {
-          other += amount;
-        }
-      });
-    }
+    itemsToProcess.forEach((p: any) => {
+      const amount = Number(p.amount) || Number(p.amountPaid) || 0;
+      if (amount <= 0) return;
+      const cat = (p.category || p.description || p.feeType || '').toLowerCase();
+
+      if (cat.includes('tuition') || cat.includes('school fee') || cat.includes('academic') || !cat) {
+        tuition += amount;
+      } else if (cat.includes('canteen') || cat.includes('feed') || cat.includes('lunch') || cat.includes('meal')) {
+        canteen += amount;
+      } else if (cat.includes('bus') || cat.includes('transport') || cat.includes('fare') || cat.includes('shuttle')) {
+        transport += amount;
+      } else if (cat.includes('boarding') || cat.includes('hostel') || cat.includes('dorm')) {
+        boarding += amount;
+      } else if (cat.includes('uniform') || cat.includes('book') || cat.includes('textbook') || cat.includes('stationery')) {
+        uniformsBooks += amount;
+      } else {
+        other += amount;
+      }
+    });
 
     const total = tuition + canteen + transport + boarding + uniformsBooks + other;
     return { tuition, canteen, transport, boarding, uniformsBooks, other, total };
-  }, [payments]);
+  }, [payments, financialRecords]);
 
   // 2.6 Class Arrears Risk Heatmap (In-Memory Aggregator: 0 extra Firestore reads)
   const classArrearsHeatmap = useMemo(() => {
@@ -203,26 +233,46 @@ export function FinancialDashboardView({
 
   // 2.7 Live Real-Time Payment Stream Feed (In-Memory Filter: 0 extra Firestore reads)
   const recentPaymentStream = useMemo(() => {
-    if (!payments) return [];
-    return payments
-      .map((p: any) => {
+    const list: any[] = [];
+
+    if (payments && payments.length > 0) {
+      payments.forEach((p: any) => {
         const studentObj = students?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
         const classObj = classes?.find((c: any) => c.id === studentObj?.classId);
-        const dateVal = p.paidAt || p.createdAt || p.date;
-        const date = dateVal?.toDate ? dateVal.toDate() : new Date(dateVal);
-        return {
+        const date = safeParseDate(p.paidAt || p.createdAt || p.date) || new Date();
+        list.push({
           id: p.id || Math.random().toString(),
-          amount: Number(p.amount) || 0,
-          studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : 'Student',
-          className: classObj?.name || 'Class',
+          amount: Number(p.amount) || Number(p.amountPaid) || 0,
+          studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : (p.studentName || 'Student'),
+          className: classObj?.name || p.className || 'Class',
           category: p.category || p.feeType || 'Tuition',
           method: p.method || p.paymentMethod || 'Paystack / Cash',
           date
-        };
-      })
+        });
+      });
+    } else if (financialRecords && financialRecords.length > 0) {
+      financialRecords.forEach((r: any) => {
+        const amountPaid = Number(r.amountPaid) || 0;
+        if (amountPaid <= 0 || r.status === 'Pending Reversal') return;
+        const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
+        const classObj = classes?.find((c: any) => c.id === studentObj?.classId);
+        const date = safeParseDate(r.lastPaymentDate || r.paidAt || r.updatedAt || r.createdAt) || new Date();
+        list.push({
+          id: r.id || Math.random().toString(),
+          amount: amountPaid,
+          studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : 'Student',
+          className: classObj?.name || 'Class',
+          category: r.feeType || 'Tuition Fees',
+          method: 'Direct Receipt',
+          date
+        });
+      });
+    }
+
+    return list
       .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0))
       .slice(0, 5);
-  }, [payments, students, classes]);
+  }, [payments, financialRecords, students, classes]);
 
   // 3. Expenditure Category Breakdown
   const expensesByCategory = useMemo(() => {
