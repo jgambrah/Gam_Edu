@@ -233,6 +233,11 @@ service cloud.firestore {
         allow write: if isSuperAdmin() || isAdmin() || isTeacher();
     }
 
+    match /{path=**}/liveSessions/{sessionId} {
+        allow read, list: if isSignedIn();
+        allow write, create, update, delete: if isSignedIn();
+    }
+
     match /timetables/{timetableId} {
       allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
