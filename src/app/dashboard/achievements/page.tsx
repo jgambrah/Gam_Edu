@@ -63,6 +63,78 @@ export default function AchievementsPage() {
   const { data: rawClasses } = useCollection<any>(classesQuery);
   const classes = rawClasses || [];
 
+  const classNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    classes.forEach((c: any) => {
+      const name = c.name || c.className || c.title || c.gradeLevel;
+      if (c.id && name && name !== c.id) {
+        map.set(c.id, name);
+        map.set(c.id.toLowerCase(), name);
+      }
+      if (c.code && name) {
+        map.set(c.code, name);
+        map.set(c.code.toLowerCase(), name);
+      }
+    });
+    return map;
+  }, [classes]);
+
+  const getStudentClassName = (student: any) => {
+    if (!student) return 'Unassigned';
+
+    const isUid = (val: string) => /^[a-zA-Z0-9_-]{15,}$/.test(val.trim());
+
+    // 1. Check all candidate fields against classNameMap
+    const candidates = [
+      student.classId,
+      student.className,
+      student.gradeLevel,
+      student.currentClass,
+      student.class,
+      student.grade,
+    ].filter(Boolean);
+
+    for (const cand of candidates) {
+      if (typeof cand === 'string') {
+        const trimmed = cand.trim();
+        if (classNameMap.has(trimmed)) {
+          return classNameMap.get(trimmed)!;
+        }
+        if (classNameMap.has(trimmed.toLowerCase())) {
+          return classNameMap.get(trimmed.toLowerCase())!;
+        }
+      }
+    }
+
+    // 2. Look for human-readable string candidate (not a UID)
+    for (const cand of candidates) {
+      if (typeof cand === 'string' && cand.trim() && !isUid(cand)) {
+        const val = cand.trim();
+        if (/^bs-\d+$/i.test(val)) return `BS ${val.split('-')[1]}`;
+        if (/^bs\d+$/i.test(val)) return `BS ${val.replace(/^bs/i, '')}`;
+        if (/^kg-\d+$/i.test(val)) return `KG ${val.split('-')[1]}`;
+        if (/^kg\d+$/i.test(val)) return `KG ${val.replace(/^kg/i, '')}`;
+        if (/^jhs-\d+$/i.test(val)) return `JHS ${val.split('-')[1]}`;
+        if (/^jhs\d+$/i.test(val)) return `JHS ${val.replace(/^jhs/i, '')}`;
+        if (/^shs-\d+$/i.test(val)) return `SHS ${val.split('-')[1]}`;
+        if (/^primary-\d+$/i.test(val)) return `Primary ${val.split('-')[1]}`;
+        return val;
+      }
+    }
+
+    // 3. Fallback formatting if candidate string is a code pattern
+    for (const cand of candidates) {
+      if (typeof cand === 'string' && cand.trim()) {
+        const val = cand.trim();
+        if (/^bs-\d+$/i.test(val)) return `BS ${val.split('-')[1]}`;
+        if (/^kg-\d+$/i.test(val)) return `KG ${val.split('-')[1]}`;
+        if (/^jhs-\d+$/i.test(val)) return `JHS ${val.split('-')[1]}`;
+      }
+    }
+
+    return 'Assigned Class';
+  };
+
   const studentsQuery = useMemoFirebase(
     () => (firestore && schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null),
     [firestore, schoolId]
@@ -325,7 +397,7 @@ export default function AchievementsPage() {
                     <SelectContent>
                       {rawStudents?.map((s: any) => (
                         <SelectItem key={s.id || s.uid} value={s.id || s.uid}>
-                          {s.firstName} {s.lastName} ({s.gradeLevel || s.classId || 'Student'})
+                          {s.firstName} {s.lastName} ({getStudentClassName(s)})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -428,8 +500,8 @@ export default function AchievementsPage() {
                         <TableCell className="font-bold text-slate-800 text-sm">
                           {student.firstName} {student.lastName}
                         </TableCell>
-                        <TableCell className="text-xs font-medium text-slate-600">
-                          {student.gradeLevel || student.classId || 'N/A'}
+                        <TableCell className="text-xs font-bold text-indigo-950">
+                          {getStudentClassName(student)}
                         </TableCell>
                         <TableCell>
                           <Badge className={`${levelInfo.badgeColor} text-white font-bold text-[10px] px-2.5 py-0.5 rounded-md`}>
