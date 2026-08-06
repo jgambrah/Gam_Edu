@@ -17,6 +17,7 @@ import {
   CheckCircle2, Lock, Sparkles, Trophy, Flag, Play, 
   BookOpen, HelpCircle, ArrowRight, Star, Flame, Zap
 } from 'lucide-react';
+import Link from 'next/link';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where } from 'firebase/firestore';
