@@ -135,6 +135,65 @@ export default function AchievementsPage() {
     return 'Assigned Class';
   };
 
+  // Fetch Staff Members to resolve Class Teacher names and signatures
+  const staffQuery = useMemoFirebase(
+    () => (firestore && schoolId ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null),
+    [firestore, schoolId]
+  );
+  const { data: rawStaff } = useCollection<any>(staffQuery);
+  const staffList = rawStaff || [];
+
+  const getTeacherSignatureAndName = (student: any) => {
+    if (!student) return { signature: null, name: 'Class Teacher' };
+
+    const studentClassId = student.classId || student.gradeLevel;
+    const matchedClass = classes.find((c: any) => c.id === studentClassId || c.code === studentClassId);
+
+    let teacherStaff: any = null;
+
+    if (matchedClass?.teacherId || matchedClass?.classTeacherId) {
+      const tId = matchedClass.teacherId || matchedClass.classTeacherId;
+      teacherStaff = staffList.find((s: any) => s.id === tId || s.uid === tId);
+    }
+
+    if (!teacherStaff && studentClassId) {
+      teacherStaff = staffList.find(
+        (s: any) => s.classId === studentClassId || s.assignedClassId === studentClassId || s.homeRoomId === studentClassId
+      );
+    }
+
+    if (!teacherStaff && profile && (role === 'Teacher' || profile?.role === 'Teacher')) {
+      teacherStaff = profile;
+    }
+
+    if (!teacherStaff) {
+      teacherStaff = staffList.find(
+        (s: any) =>
+          (s.role === 'Teacher' || s.designation?.toLowerCase().includes('teacher')) &&
+          (s.signatureBase64 || s.signatureUrl || s.signature)
+      );
+    }
+
+    const signature =
+      teacherStaff?.signatureBase64 ||
+      teacherStaff?.signatureUrl ||
+      teacherStaff?.signature ||
+      profile?.signatureBase64 ||
+      profile?.signatureUrl ||
+      null;
+
+    const name = teacherStaff
+      ? teacherStaff.fullName ||
+        `${teacherStaff.firstName || ''} ${teacherStaff.lastName || ''}`.trim() ||
+        teacherStaff.name ||
+        'Class Teacher'
+      : profile?.firstName
+      ? `${profile.firstName} ${profile.lastName || ''}`.trim()
+      : 'Class Teacher';
+
+    return { signature, name: name || 'Class Teacher' };
+  };
+
   const studentsQuery = useMemoFirebase(
     () => (firestore && schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null),
     [firestore, schoolId]
@@ -309,38 +368,70 @@ export default function AchievementsPage() {
                 </div>
 
                 {/* Signature Blocks */}
-                <div className="grid grid-cols-2 gap-12 pt-8 border-t border-slate-200 text-center text-xs font-bold text-slate-700 mt-8">
-                  <div>
-                    <div className="border-b border-slate-400 h-10 max-w-[200px] mx-auto flex items-end justify-center pb-1">
-                      <span className="font-serif italic text-slate-500 text-xs">Certified Staff</span>
+                {(() => {
+                  const teacherInfo = getTeacherSignatureAndName(certStudent);
+                  const headmasterSig =
+                    schoolProfile?.headmasterSignature ||
+                    schoolProfile?.principalSignature ||
+                    schoolProfile?.headmasterSignatureUrl ||
+                    schoolProfile?.directorSignature;
+
+                  return (
+                    <div className="grid grid-cols-2 gap-12 pt-8 border-t border-slate-200 text-center text-xs font-bold text-slate-700 mt-8">
+                      <div>
+                        <div className="border-b border-slate-400 h-10 max-w-[200px] mx-auto flex items-end justify-center pb-1">
+                          {teacherInfo.signature ? (
+                            <img
+                              src={teacherInfo.signature}
+                              alt="Teacher Signature"
+                              className="h-8 max-w-[160px] object-contain mix-blend-multiply contrast-125"
+                            />
+                          ) : (
+                            <span className="font-serif italic font-extrabold text-slate-800 text-xs tracking-tight">
+                              {teacherInfo.name !== 'Class Teacher' ? teacherInfo.name : 'Certified Staff'}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-1.5 font-black text-[11px] text-slate-900 uppercase tracking-tight">
+                          {teacherInfo.name}
+                        </p>
+                        <p className="uppercase tracking-wider text-[9px] text-slate-500 font-medium">Class Teacher</p>
+                      </div>
+                      <div>
+                        <div className="border-b border-slate-400 h-10 max-w-[200px] mx-auto flex items-end justify-center pb-1">
+                          {headmasterSig ? (
+                            <img
+                              src={headmasterSig}
+                              alt="Principal Signature"
+                              className="h-8 max-w-[160px] object-contain mix-blend-multiply contrast-125"
+                            />
+                          ) : (
+                            <span className="font-serif italic text-slate-500 text-xs">Official Seal</span>
+                          )}
+                        </div>
+                        <p className="mt-1.5 font-black text-[11px] text-slate-900 uppercase tracking-tight">
+                          {schoolProfile?.principalName || schoolProfile?.headmasterName || 'School Principal / Director'}
+                        </p>
+                        <p className="uppercase tracking-wider text-[9px] text-slate-500 font-medium">School Principal / Director</p>
+                      </div>
                     </div>
-                    <p className="mt-2 uppercase tracking-wider text-[10px] text-slate-500">Class Teacher</p>
-                  </div>
-                  <div>
-                    <div className="border-b border-slate-400 h-10 max-w-[200px] mx-auto flex items-end justify-center pb-1">
-                      {schoolProfile?.headmasterSignature ? (
-                        <img src={schoolProfile.headmasterSignature} alt="Signature" className="h-8 max-w-[160px] object-contain" />
-                      ) : (
-                        <span className="font-serif italic text-slate-500 text-xs">Official Seal</span>
-                      )}
-                    </div>
-                    <p className="mt-2 uppercase tracking-wider text-[10px] text-slate-500">School Principal / Director</p>
-                  </div>
-                </div>
+                  );
+                })()}
               </div>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-slate-800">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-slate-800 print:hidden">
             <Button
-              variant="outline"
+              type="button"
               onClick={handleDirectPrint}
-              className="border-slate-700 text-white hover:bg-slate-800 text-xs font-bold h-11 px-5 rounded-xl"
+              className="bg-slate-800 hover:bg-slate-700 active:bg-slate-700 focus:bg-slate-700 text-white font-bold text-xs h-11 px-5 rounded-xl border border-slate-700 shadow-md transition-colors"
             >
-              <Printer className="h-4 w-4 mr-2" /> Direct Print
+              <Printer className="h-4 w-4 mr-2 text-amber-400" /> Direct Print
             </Button>
             <Button
+              type="button"
               onClick={handleDownloadCertificatePdf}
               disabled={isGeneratingPdf}
               className="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black h-11 px-6 rounded-xl shadow-lg border-0"
