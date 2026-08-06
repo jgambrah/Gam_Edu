@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef } from 'react';
 import { useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { Student } from '@/lib/types';
 import { BADGE_CATALOG, calculateStudentLevel, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { Trophy, Award, Star, Search, PlusCircle, Printer, Sparkles, Loader2, Landmark, CheckCircle2, Download, MapPin, Phone, Mail, FileText } from 'lucide-react';
+import { Trophy, Award, Star, Search, PlusCircle, Printer, Sparkles, Loader2, Landmark, CheckCircle2, Download, MapPin, Phone, Mail, FileText, Trash2, ShieldAlert } from 'lucide-react';
 import { StudentBadgeShowcase } from '@/components/achievements/StudentBadgeShowcase';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -33,6 +33,10 @@ export default function AchievementsPage() {
   const [awardSearchTerm, setAwardSearchTerm] = useState<string>('');
   const [awardBadgeId, setAwardBadgeId] = useState<string>(BADGE_CATALOG[0].id);
   const [isAwardOpen, setIsAwardOpen] = useState(false);
+
+  // Manage & Revoke Badges Modal State
+  const [manageStudent, setManageStudent] = useState<any | null>(null);
+  const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
 
   // Certificate Modal & PDF Generation State
   const [certStudent, setCertStudent] = useState<any | null>(null);
@@ -251,6 +255,53 @@ export default function AchievementsPage() {
       setAwardSearchTerm('');
     } catch (err) {
       toast({ variant: 'destructive', title: 'Error', description: 'Could not award badge.' });
+    }
+  };
+
+  const handleRevokeBadge = async (targetStudent: any, badgeToRemove: any) => {
+    if (!firestore || !targetStudent || !badgeToRemove) return;
+    const confirmMsg = `Are you sure you want to revoke "${badgeToRemove.title}" from ${targetStudent.firstName}? This will also deduct ${badgeToRemove.xpAwarded || badgeToRemove.xpReward || 0} XP.`;
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      const studentRef = doc(firestore, 'students', targetStudent.id || targetStudent.uid);
+      const currentBadges = (targetStudent.earnedBadges || []) as any[];
+
+      // Filter out target badge instance
+      const updatedBadges = currentBadges.filter(
+        b => (b.id ? b.id !== badgeToRemove.id : (b.title !== badgeToRemove.title || b.unlockedAt !== badgeToRemove.unlockedAt))
+      );
+      const xpDeduction = Number(badgeToRemove.xpAwarded) || Number(badgeToRemove.xpReward) || 0;
+
+      await updateDoc(studentRef, {
+        earnedBadges: updatedBadges,
+        totalPoints: increment(-xpDeduction),
+        lastGamificationUpdate: serverTimestamp()
+      });
+
+      toast({
+        title: 'Badge Revoked 🗑️',
+        description: `Removed "${badgeToRemove.title}" and deducted ${xpDeduction} XP from ${targetStudent.firstName}.`
+      });
+
+      forceRefetch();
+
+      // Update local state so dialog reflects real-time changes
+      setManageStudent((prev: any) =>
+        prev
+          ? {
+              ...prev,
+              earnedBadges: updatedBadges,
+              totalPoints: Math.max(0, (prev.totalPoints || 0) - xpDeduction)
+            }
+          : null
+      );
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not revoke badge.'
+      });
     }
   };
 
@@ -567,6 +618,71 @@ export default function AchievementsPage() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Manage & Revoke Student Badges Dialog */}
+        <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
+          <DialogContent className="sm:max-w-lg bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <ShieldAlert className="h-5 w-5 text-amber-600" /> Manage Badges for {manageStudent?.firstName} {manageStudent?.lastName}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                View and revoke badges awarded to this student. Revoking a badge automatically deducts the earned XP points.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div className="bg-slate-50 p-3 rounded-xl border flex justify-between items-center text-xs font-bold text-slate-700">
+                <span>Class: <strong className="text-indigo-900">{manageStudent ? getStudentClassName(manageStudent) : ''}</strong></span>
+                <span>Total Points: <strong className="text-amber-600 font-mono">{manageStudent?.totalPoints || 0} XP</strong></span>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Unlocked Badges ({((manageStudent?.earnedBadges || []) as any[]).length})</h4>
+                {((manageStudent?.earnedBadges || []) as any[]).length > 0 ? (
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    {((manageStudent?.earnedBadges || []) as any[]).map((b: any, idx: number) => {
+                      const catalogMatch = BADGE_CATALOG.find(c => c.id === b.id || c.title === b.title);
+                      const icon = catalogMatch?.icon || '🛡️';
+
+                      return (
+                        <div
+                          key={b.id || idx}
+                          className="flex items-center justify-between p-3 bg-purple-50/40 border border-purple-100 rounded-xl"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <span className="text-xl">{icon}</span>
+                            <div>
+                              <p className="text-xs font-bold text-slate-900">{b.title}</p>
+                              <p className="text-[10px] text-purple-700 font-medium font-mono">
+                                +{b.xpAwarded || catalogMatch?.xpReward || 0} XP • Awarded {b.unlockedAt ? new Date(b.unlockedAt).toLocaleDateString() : 'recently'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {canManageBadges && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleRevokeBadge(manageStudent, b)}
+                              className="h-8 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg font-bold"
+                            >
+                              <Trash2 className="h-3.5 w-3.5 mr-1" /> Revoke
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-6 text-center text-xs text-slate-400 italic bg-slate-50 border border-dashed rounded-xl">
+                    This student has not earned any badges yet.
+                  </div>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Leaderboard Table */}
@@ -654,9 +770,17 @@ export default function AchievementsPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-1 flex-wrap">
+                          <div
+                            className={cn("flex gap-1 flex-wrap", canManageBadges && "cursor-pointer")}
+                            onClick={() => {
+                              if (canManageBadges) {
+                                setManageStudent(student);
+                                setIsManageDialogOpen(true);
+                              }
+                            }}
+                          >
                             {badges.slice(0, 4).map((b, bIdx) => (
-                              <Badge key={bIdx} variant="secondary" className="text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-100">
+                              <Badge key={bIdx} variant="secondary" className="text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-100 hover:bg-purple-100 transition-colors">
                                 {b.title}
                               </Badge>
                             ))}
@@ -672,14 +796,29 @@ export default function AchievementsPage() {
                           {student.totalPoints || 0} XP
                         </TableCell>
                         <TableCell className="text-right pr-6">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleOpenCertificateModal(student)}
-                            className="h-8 text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-100"
-                          >
-                            <FileText className="h-3.5 w-3.5 mr-1 text-indigo-600" /> Certificate
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                            {canManageBadges && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setManageStudent(student);
+                                  setIsManageDialogOpen(true);
+                                }}
+                                className="h-8 text-xs font-bold border-purple-200 text-purple-800 hover:bg-purple-50"
+                              >
+                                <ShieldAlert className="h-3.5 w-3.5 mr-1 text-purple-600" /> Manage Badges
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenCertificateModal(student)}
+                              className="h-8 text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-100"
+                            >
+                              <FileText className="h-3.5 w-3.5 mr-1 text-indigo-600" /> Certificate
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
