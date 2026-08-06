@@ -111,11 +111,32 @@ export const BADGE_CATALOG: BadgeCatalogItem[] = [
   }
 ];
 
-export function calculateStudentLevel(totalXp: number = 0) {
-  if (totalXp >= 1000) return { level: 4, title: 'Master Scholar', minXp: 1000, maxXp: 2000, badgeColor: 'bg-purple-600', badgeText: 'text-purple-600' };
-  if (totalXp >= 500) return { level: 3, title: 'Honor Student', minXp: 500, maxXp: 999, badgeColor: 'bg-indigo-600', badgeText: 'text-indigo-600' };
-  if (totalXp >= 200) return { level: 2, title: 'Rising Scholar', minXp: 200, maxXp: 499, badgeColor: 'bg-blue-600', badgeText: 'text-blue-600' };
-  return { level: 1, title: 'Junior Explorer', minXp: 0, maxXp: 199, badgeColor: 'bg-emerald-600', badgeText: 'text-emerald-600' };
+export function getGradeTier(gradeLevel?: string): 'preschool' | 'lower_primary' | 'upper_primary' | 'secondary' {
+  if (!gradeLevel) return 'lower_primary';
+  const str = gradeLevel.toLowerCase();
+
+  if (/kg|nursery|creche|kindergarten/i.test(str)) return 'preschool';
+  if (/bs-[1-3]|bs[1-3]|year\s*[1-3]|grade\s*[1-3]|primary\s*[1-3]/i.test(str)) return 'lower_primary';
+  if (/bs-[4-6]|bs[4-6]|year\s*[4-6]|grade\s*[4-6]|primary\s*[4-6]/i.test(str)) return 'upper_primary';
+  if (/bs-[7-9]|bs[7-9]|jhs|shs|year\s*[7-9]|grade\s*[7-9]/i.test(str)) return 'secondary';
+
+  return 'lower_primary';
+}
+
+export function calculateStudentLevel(totalXp: number = 0, gradeLevel?: string) {
+  const tier = getGradeTier(gradeLevel);
+
+  const titles = {
+    preschool: ['Junior Explorer', 'Star Cadet', 'Bright Adventurer', 'Little Mastermind'],
+    lower_primary: ['Young Scholar', 'Rising Star', 'Academic Pathfinder', 'Primary Champion'],
+    upper_primary: ['Academic Pioneer', 'Knowledge Achiever', 'Honor Scholar', 'Grand Mastermind'],
+    secondary: ['Junior Fellow', 'Distinction Scholar', 'Honor Vanguard', 'Academic Laureate'],
+  }[tier];
+
+  if (totalXp >= 1000) return { level: 4, title: titles[3], minXp: 1000, maxXp: 2000, badgeColor: 'bg-purple-600', badgeText: 'text-purple-600' };
+  if (totalXp >= 500) return { level: 3, title: titles[2], minXp: 500, maxXp: 999, badgeColor: 'bg-indigo-600', badgeText: 'text-indigo-600' };
+  if (totalXp >= 200) return { level: 2, title: titles[1], minXp: 200, maxXp: 499, badgeColor: 'bg-blue-600', badgeText: 'text-blue-600' };
+  return { level: 1, title: titles[0], minXp: 0, maxXp: 199, badgeColor: 'bg-emerald-600', badgeText: 'text-emerald-600' };
 }
 
 /**
@@ -224,5 +245,44 @@ export async function triggerStudentBadgeEvent(
     }
   } catch (err) {
     console.error('Error triggering student badge event:', err);
+  }
+}
+
+/**
+ * Direct Activity XP Awarder
+ * Awards XP to a student for completing module-specific activities (Science Club, Maths Club, ELA, Think Tank, Senior Academy)
+ */
+export async function awardActivityXP(
+  firestore: any,
+  studentId: string,
+  xpAmount: number,
+  activityName?: string,
+  badgeId?: string
+) {
+  if (!firestore || !studentId || xpAmount <= 0) return;
+  try {
+    const studentRef = doc(firestore, 'students', studentId);
+    const updatePayload: Record<string, any> = {
+      totalPoints: increment(xpAmount),
+      lastGamificationUpdate: serverTimestamp(),
+    };
+
+    if (badgeId) {
+      const cat = BADGE_CATALOG.find(b => b.id === badgeId);
+      if (cat) {
+        const earned: EarnedBadge = {
+          id: cat.id,
+          title: cat.title,
+          category: cat.category,
+          unlockedAt: new Date().toISOString(),
+          xpAwarded: cat.xpReward || xpAmount,
+        };
+        updatePayload.earnedBadges = arrayUnion(earned);
+      }
+    }
+
+    await updateDoc(studentRef, updatePayload);
+  } catch (err) {
+    console.error('Error awarding activity XP:', err);
   }
 }

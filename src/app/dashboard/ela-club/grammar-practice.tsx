@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { awardActivityXP } from '@/lib/achievement-utils';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
@@ -63,6 +64,8 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
                         total_correct_answers: increment(1),
                         schoolId: schoolId
                     }, { merge: true });
+
+                    await awardActivityXP(firestore, user.uid, 35, 'Grammar Practice');
                 }
             } catch (e) {
                 console.error("Failed to save progress", e);

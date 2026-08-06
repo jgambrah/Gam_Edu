@@ -30,6 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, MathProblem, mathProblemSchema, GlobalLeaderboardEntry } from '@/lib/types';
+import { awardActivityXP } from '@/lib/achievement-utils';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from '@/lib/utils';
@@ -119,6 +120,7 @@ function MathExplorerTab() {
                         userId: user.uid,
                         timestamp: serverTimestamp()
                     });
+                    await awardActivityXP(firestore, user.uid, 40, 'Maths Exploration', 'stem_explorer');
                 }
             } else {
                 toast({ variant: 'destructive', title: "AI Error", description: result.error || "Could not generate lesson." });

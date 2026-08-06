@@ -30,6 +30,7 @@ import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-comp
 // Types and AI Functions
 import type { Paradox, DebateTopic, Student } from '@/lib/types';
 import { generateDailyParadox, generateDebateTopic, generateDetectiveCase } from '@/ai/flows/think-tank'; 
+import { awardActivityXP } from '@/lib/achievement-utils';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { formatDate } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -170,6 +171,9 @@ function DetectiveCard({ caseData, onDelete, isStaff, onSolve }: { caseData: any
                     timestamp: serverTimestamp(),
                     schoolId: schoolId,
                 });
+                if (correct) {
+                    await awardActivityXP(firestore, user.uid, 25, 'Think Tank Case', 'stem_explorer');
+                }
             } catch(e) { console.error("Failed to add case submission:", e); }
         }
     };

@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import * as LucideIcons from 'lucide-react';
+import { useUser, useFirestore } from '@/firebase';
+import { awardActivityXP } from '@/lib/achievement-utils';
 import confetti from 'canvas-confetti';
 
 const {
@@ -121,6 +123,8 @@ export const NumbersMainModule: React.FC<{ onSound: (t: string) => void, schoolI
   
 /* --- 2. COUNTING GAME --- */
 export const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: string }> = ({ onSound, schoolId }) => {
+    const { user } = useUser();
+    const firestore = useFirestore();
     const [data, setData] = useState(constants.COUNTING_TASK_DATA || []);
     const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -146,7 +150,14 @@ export const CountingGame: React.FC<{ onSound: (t: string) => void, schoolId: st
                     <p className="text-2xl font-black text-slate-500 mb-8 uppercase">Count the {current.theme}!</p>
                     <div className="grid grid-cols-3 gap-4">
                         {options.map(opt => (
-                            <Button key={opt} onClick={() => { setUserAnswer(opt); onSound(opt === current.count ? "Great job!" : "Try again!"); }} className={cn("w-20 h-20 rounded-3xl font-black text-4xl shadow-xl", userAnswer === opt ? (opt === current.count ? 'bg-green-500' : 'bg-red-500') : 'bg-emerald-50 text-emerald-600')}>{opt}</Button>
+                            <Button key={opt} onClick={() => { 
+                                setUserAnswer(opt); 
+                                const isRight = opt === current.count;
+                                onSound(isRight ? "Great job!" : "Try again!"); 
+                                if (isRight && user && firestore) {
+                                    awardActivityXP(firestore, user.uid, 20, 'Junior Counting');
+                                }
+                            }} className={cn("w-20 h-20 rounded-3xl font-black text-4xl shadow-xl", userAnswer === opt ? (opt === current.count ? 'bg-green-500' : 'bg-red-500') : 'bg-emerald-50 text-emerald-600')}>{opt}</Button>
                         ))}
                     </div>
                 </div>

@@ -580,7 +580,10 @@ export default function AchievementsPage() {
                 {leaderboardStudents.length > 0 ? (
                   leaderboardStudents.map((student: any, idx: number) => {
                     const rank = idx + 1;
-                    const levelInfo = calculateStudentLevel(student.totalPoints || 0);
+                    const levelInfo = calculateStudentLevel(
+                      student.totalPoints || 0,
+                      student.gradeLevel || student.classId || getStudentClassName(student)
+                    );
                     const badges = (student.earnedBadges || []) as any[];
 
                     return (
