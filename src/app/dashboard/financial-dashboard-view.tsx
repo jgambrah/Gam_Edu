@@ -359,17 +359,23 @@ export function FinancialDashboardView({
     let totalSponsoredOutstanding = 0;
     if (financialRecords) {
       financialRecords.forEach((r: any) => {
-        const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
-        if (!studentObj) return;
-        const isActive = studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
+        if (r.status === 'Pending Reversal') return;
+        const studentObj = students?.find((s: any) => 
+          s.uid === r.studentId || 
+          s.id === r.studentId || 
+          s.studentId === r.studentId || 
+          s.admissionNo === r.studentId
+        );
+        const isActive = !studentObj || studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
         if (!isActive) return;
 
         const billed = Number(r.billedAmount) || 0;
         const paid = Number(r.amountPaid) || 0;
         const waiver = Number(r.waiverAmount) || 0;
         const balance = billed - paid - waiver;
-        if (balance > 0 && r.status !== 'Pending Reversal') {
-          if (studentObj.isSponsored) {
+
+        if (balance > 0) {
+          if (studentObj && studentObj.isSponsored) {
             totalSponsoredOutstanding += balance;
           } else {
             totalOutstanding += balance;
@@ -432,7 +438,7 @@ export function FinancialDashboardView({
     const list = students
       .filter((student: any) => (student.enrollmentStatus === 'Active' || !student.enrollmentStatus) && !student.isSponsored)
       .map((student: any) => {
-        const studentRecords = recordsByStudent[student.uid] || recordsByStudent[student.id] || [];
+        const studentRecords = recordsByStudent[student.uid] || recordsByStudent[student.id] || recordsByStudent[student.studentId] || [];
         const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
         const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
         const outstanding = totalBilled - totalPaid;
@@ -475,11 +481,14 @@ export function FinancialDashboardView({
     financialRecords.forEach((r: any) => {
       if (r.status === 'Pending Reversal') return;
       
-      const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
-      if (!studentObj) return;
-      const isActive = studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
-      if (!isActive) return;
-      if (studentObj.isSponsored) return;
+      const studentObj = students?.find((s: any) => 
+        s.uid === r.studentId || 
+        s.id === r.studentId || 
+        s.studentId === r.studentId || 
+        s.admissionNo === r.studentId
+      );
+      if (studentObj && studentObj.enrollmentStatus && studentObj.enrollmentStatus !== 'Active') return;
+      if (studentObj && studentObj.isSponsored) return;
       
       const billed = Number(r.billedAmount) || 0;
       const paid = Number(r.amountPaid) || 0;
@@ -492,7 +501,13 @@ export function FinancialDashboardView({
       }
       if (balance <= 0.01) return;
 
-      const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
+      const dueDate = safeParseDate(r.dueDate || r.date || r.createdAt);
+      if (!dueDate) {
+        // Fallback: If no due date, categorize under 1-30 Days
+        age30 += balance;
+        return;
+      }
+
       const diffTime = todayVal.getTime() - startOfDay(dueDate).getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
