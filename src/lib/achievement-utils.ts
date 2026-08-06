@@ -115,10 +115,22 @@ export function getGradeTier(gradeLevel?: string): 'preschool' | 'lower_primary'
   if (!gradeLevel) return 'lower_primary';
   const str = gradeLevel.toLowerCase();
 
-  if (/kg|nursery|creche|kindergarten/i.test(str)) return 'preschool';
-  if (/bs-[1-3]|bs[1-3]|year\s*[1-3]|grade\s*[1-3]|primary\s*[1-3]/i.test(str)) return 'lower_primary';
-  if (/bs-[4-6]|bs[4-6]|year\s*[4-6]|grade\s*[4-6]|primary\s*[4-6]/i.test(str)) return 'upper_primary';
-  if (/bs-[7-9]|bs[7-9]|jhs|shs|year\s*[7-9]|grade\s*[7-9]/i.test(str)) return 'secondary';
+  // Guard against raw Firestore UIDs (15+ alphanumeric chars)
+  if (/^[a-zA-Z0-9_-]{15,}$/.test(str) && !str.includes('nursery') && !str.includes('class') && !str.includes('primary')) {
+    return 'lower_primary';
+  }
+
+  // Pre-school matching: Nursery, KG, Kindergarten, Creche, Reception, Pre-School
+  if (/kg|nursery|creche|kindergarten|reception|pre-school/i.test(str)) return 'preschool';
+
+  // Secondary / JHS / SHS matching: BS 7-9, JHS 1-3, SHS, Form, Year 7+
+  if (/bs-?[7-9]|bs\s*[7-9]|jhs|shs|form|year\s*(?:[7-9]|1[0-2])|grade\s*(?:[7-9]|1[0-2])/i.test(str)) return 'secondary';
+
+  // Upper Primary matching: BS 4-6, Class 4-6, Primary 4-6, Year 4-6, Grade 4-6, P4-6
+  if (/bs-?[4-6]|bs\s*[4-6]|class\s*[4-6]|primary\s*[4-6]|year\s*[4-6]|grade\s*[4-6]|\bp[4-6]\b/i.test(str)) return 'upper_primary';
+
+  // Lower Primary matching: BS 1-3, Class 1-3, Primary 1-3, Year 1-3, Grade 1-3, P1-3
+  if (/bs-?[1-3]|bs\s*[1-3]|class\s*[1-3]|primary\s*[1-3]|year\s*[1-3]|grade\s*[1-3]|\bp[1-3]\b/i.test(str)) return 'lower_primary';
 
   return 'lower_primary';
 }

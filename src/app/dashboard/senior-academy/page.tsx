@@ -30,6 +30,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 
 // Import AI actions
+import { awardActivityXP } from '@/lib/achievement-utils';
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -152,7 +153,13 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         activeStory.quiz.forEach((q: any, i: number) => {
             if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
         });
-        if (correct === activeStory.quiz.length) { confetti(); speak("Analysis complete! You have mastered this passage."); }
+        if (correct === activeStory.quiz.length) { 
+            confetti(); 
+            speak("Analysis complete! You have mastered this passage.");
+            if (user && firestore) {
+                awardActivityXP(firestore, user.uid, 50, 'Senior English Passage');
+            }
+        }
         else { speak(`Keep investigating. You found ${correct} insights.`); }
     };
 
@@ -364,6 +371,9 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
             setFeedback({ ok: true, msg: "Logical match confirmed! Well done." });
             confetti();
             speak("Correct solution.");
+            if (user && firestore) {
+                awardActivityXP(firestore, user.uid, 40, 'Senior Math Solution');
+            }
         } else {
             setFeedback({ ok: false, msg: `Correction required. Expected: ${problem.answer}` });
             speak("Review your derivation.");

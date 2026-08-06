@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 interface StudentBadgeShowcaseProps {
   studentName?: string;
+  gradeLevel?: string;
   totalPoints?: number;
   earnedBadges?: EarnedBadge[];
   compact?: boolean;
@@ -17,11 +18,12 @@ interface StudentBadgeShowcaseProps {
 
 export function StudentBadgeShowcase({
   studentName,
+  gradeLevel,
   totalPoints = 0,
   earnedBadges = [],
   compact = false
 }: StudentBadgeShowcaseProps) {
-  const levelInfo = useMemo(() => calculateStudentLevel(totalPoints), [totalPoints]);
+  const levelInfo = useMemo(() => calculateStudentLevel(totalPoints, gradeLevel), [totalPoints, gradeLevel]);
   const xpProgress = useMemo(() => {
     const range = levelInfo.maxXp - levelInfo.minXp;
     const currentInRange = totalPoints - levelInfo.minXp;
