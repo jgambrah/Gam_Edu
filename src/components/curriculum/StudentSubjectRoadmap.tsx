@@ -17,7 +17,8 @@ import {
   CheckCircle2, Lock, Sparkles, Trophy, Flag, Play, 
   BookOpen, HelpCircle, ArrowRight, Star, Flame, Zap
 } from 'lucide-react';
-import { useFirestore, useCollection, useMemoFirebase, useCurrentSchool } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where } from 'firebase/firestore';
 
 interface StudentSubjectRoadmapProps {
