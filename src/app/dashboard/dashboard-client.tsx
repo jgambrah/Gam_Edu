@@ -13002,54 +13002,56 @@ function StudentDashboard({ profile }: any) {
             </div>
 
             {activeSection === 'desk' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <StatCard 
-                        title="Academic Grade" 
-                        value={`${overallAvg}% (${averageGradeLetter})`} 
-                        icon={Award} 
-                        link="/dashboard/my-grades" 
-                        isLoading={false} 
-                        color="text-amber-500" 
-                        subtitle={`Based on ${studentAssessments?.length || 0} marks`}
-                    />
-                    <StatCard 
-                        title="Pending Tasks" 
-                        value={`${pendingTasks.length} Pending`} 
-                        icon={Clock} 
-                        link="/dashboard/assignments" 
-                        isLoading={false} 
-                        color="text-rose-500" 
-                        subtitle="Homeworks & Quizzes due"
-                    />
-                    <StatCard 
-                        title="Attendance Health" 
-                        value={`${attendanceRate}%`} 
-                        icon={CalendarCheck} 
-                        link="/dashboard/my-attendance" 
-                        isLoading={false} 
-                        color="text-emerald-500" 
-                        subtitle="Of school days logged"
-                    />
-                    <StatCard 
-                        title="Account Statement" 
-                        value={outstandingBalance === 0 ? "Good Standing" : `GH₵ ${outstandingBalance.toLocaleString()}`} 
-                        icon={Banknote} 
-                        link="/dashboard/my-bills" 
-                        isLoading={false} 
-                        color="text-indigo-500" 
-                        subtitle={outstandingBalance === 0 ? "All fees paid" : "Outstanding balance"}
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <StatCard 
+                            title="Academic Grade" 
+                            value={`${overallAvg}% (${averageGradeLetter})`} 
+                            icon={Award} 
+                            link="/dashboard/my-grades" 
+                            isLoading={false} 
+                            color="text-amber-500" 
+                            subtitle={`Based on ${studentAssessments?.length || 0} marks`}
+                        />
+                        <StatCard 
+                            title="Pending Tasks" 
+                            value={`${pendingTasks.length} Pending`} 
+                            icon={Clock} 
+                            link="/dashboard/assignments" 
+                            isLoading={false} 
+                            color="text-rose-500" 
+                            subtitle="Homeworks & Quizzes due"
+                        />
+                        <StatCard 
+                            title="Attendance Health" 
+                            value={`${attendanceRate}%`} 
+                            icon={CalendarCheck} 
+                            link="/dashboard/my-attendance" 
+                            isLoading={false} 
+                            color="text-emerald-500" 
+                            subtitle="Of school days logged"
+                        />
+                        <StatCard 
+                            title="Account Statement" 
+                            value={outstandingBalance === 0 ? "Good Standing" : `GH₵ ${outstandingBalance.toLocaleString()}`} 
+                            icon={Banknote} 
+                            link="/dashboard/my-bills" 
+                            isLoading={false} 
+                            color="text-indigo-500" 
+                            subtitle={outstandingBalance === 0 ? "All fees paid" : "Outstanding balance"}
+                        />
+                    </div>
+
+                    {/* Compact Term Goals Level-Up Widget */}
+                    <StudentSubjectRoadmap 
+                      assignments={classAssignments || []} 
+                      quizzes={classQuizzes || []} 
+                      submissions={studentSubmissions || []} 
+                      quizAttempts={studentQuizAttempts || []} 
+                      compact={true} 
+                      studentName={profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : undefined} 
                     />
                 </div>
-
-                {/* Compact Term Goals Level-Up Widget */}
-                <StudentSubjectRoadmap 
-                  assignments={classAssignments || []} 
-                  quizzes={classQuizzes || []} 
-                  submissions={studentSubmissions || []} 
-                  quizAttempts={studentQuizAttempts || []} 
-                  compact={true} 
-                  studentName={profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : undefined} 
-                />
             )}
 
             {/* 3. Main Split Columns Content */}
