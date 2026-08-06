@@ -331,9 +331,13 @@ export const libraryItemSchema = z.object({
     location: z.string().min(1, "Location is required."),
     author: z.string().optional(),
     isbn: z.string().optional(),
+    barcode: z.string().optional(),
     publisher: z.string().optional(),
     unitPrice: z.coerce.number().optional(),
     purchaseDate: z.date().optional(),
+    dailyFineRate: z.coerce.number().optional(),
+    digitalFileUrl: z.string().optional(),
+    description: z.string().optional(),
 });
 
 export type LibraryItem = z.infer<typeof libraryItemSchema> & {
@@ -343,6 +347,33 @@ export type LibraryItem = z.infer<typeof libraryItemSchema> & {
     currentHolderName?: string;
     dueDate?: any;
     createdAt: any;
+    rating?: number;
+    reviewCount?: number;
+    schoolId?: string;
+};
+
+export type BookReview = {
+    id: string;
+    bookId: string;
+    bookTitle: string;
+    studentId: string;
+    studentName: string;
+    rating: number; // 1-5 stars
+    comment: string;
+    createdAt: any;
+    schoolId: string;
+};
+
+export type ReadingLog = {
+    id: string;
+    studentId: string;
+    studentName: string;
+    bookId: string;
+    bookTitle: string;
+    pagesRead: number;
+    notes?: string;
+    date: any;
+    schoolId: string;
 };
 
 // Admission Schemas

@@ -7,12 +7,13 @@ import { collection, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { LibraryItem, libraryItemSchema } from '@/lib/types';
+import { LibraryItem, libraryItemSchema, BookReview, ReadingLog } from '@/lib/types';
 import { 
   Loader2, PlusCircle, BookCheck, AlertTriangle, Library as LibraryIcon, 
   Book, CheckCircle, BookOpen, Newspaper, 
   Film, FileText, Calendar, User, Clock, Search,
-  LayoutGrid, List as ListIcon, Info, Sparkles, BookOpenCheck, ShieldAlert
+  LayoutGrid, List as ListIcon, Info, Sparkles, BookOpenCheck, ShieldAlert,
+  QrCode, Scan, Star, MessageCircle, FileDown, Send, DollarSign
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,9 +39,13 @@ const libraryFormSchema = z.object({
   location: z.string().min(1, "Location is required."),
   author: z.string().optional(),
   isbn: z.string().optional(),
+  barcode: z.string().optional(),
   publisher: z.string().optional(),
   unitPrice: z.coerce.number().optional(),
   purchaseDate: z.string().optional(),
+  dailyFineRate: z.coerce.number().optional(),
+  digitalFileUrl: z.string().optional(),
+  description: z.string().optional(),
 });
 
 // --- Form for adding new library items ---
@@ -113,7 +118,7 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
           </FormItem>
         )} />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <FormField control={form.control} name="publisher" render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-black uppercase text-slate-400">Publisher</FormLabel>
@@ -125,6 +130,13 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
             <FormItem>
               <FormLabel className="text-xs font-black uppercase text-slate-400">ISBN</FormLabel>
               <FormControl><Input placeholder="e.g., 978-..." {...field} className="h-11 rounded-xl border-2" /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="barcode" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-black uppercase text-slate-400">Barcode / SKU</FormLabel>
+              <FormControl><Input placeholder="e.g., BK-1002" {...field} className="h-11 rounded-xl border-2" /></FormControl>
               <FormMessage />
             </FormItem>
           )} />
@@ -162,11 +174,18 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
           )} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+        <div className="grid grid-cols-3 gap-4 border-t border-slate-100 pt-4">
           <FormField control={form.control} name="unitPrice" render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-black uppercase text-slate-400">Unit Price (GH₵)</FormLabel>
               <FormControl><Input type="number" step="0.01" placeholder="0.00" {...field} className="h-11 rounded-xl border-2" /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="dailyFineRate" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-black uppercase text-slate-400">Late Fine / Day (GH₵)</FormLabel>
+              <FormControl><Input type="number" step="0.50" placeholder="1.00" {...field} className="h-11 rounded-xl border-2" /></FormControl>
               <FormMessage />
             </FormItem>
           )} />
@@ -178,6 +197,14 @@ function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => vo
             </FormItem>
           )} />
         </div>
+
+        <FormField control={form.control} name="digitalFileUrl" render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-xs font-black uppercase text-slate-400">Digital PDF / E-Book URL (Optional)</FormLabel>
+            <FormControl><Input placeholder="e.g., https://.../guide.pdf" {...field} className="h-11 rounded-xl border-2" /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
 
         <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-650 hover:bg-indigo-750 text-white h-12 rounded-xl font-black uppercase tracking-wider shadow-md shadow-indigo-100/50 mt-2">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -218,6 +245,7 @@ export default function LibraryPage() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('catalog');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [barcodeInput, setBarcodeInput] = useState('');
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const canManage = ['Librarian', 'Administrator', 'Director'].includes(role || '');
@@ -376,6 +404,48 @@ export default function LibraryPage() {
     }
   };
 
+  const handleSyncOverdueFineToLedger = async (item: LibraryItem) => {
+    if (!firestore || !schoolId || !item.currentHolderId) return;
+    const daysOverdue = Math.max(1, Math.abs(getDaysRemaining(item.dueDate)));
+    const fineRate = item.dailyFineRate || 1.00;
+    const fineAmount = Number((daysOverdue * fineRate).toFixed(2));
+
+    try {
+      const fineRef = doc(collection(firestore, 'financialRecords'));
+      await setDocumentNonBlocking(fineRef, {
+        schoolId,
+        studentId: item.currentHolderId,
+        studentName: item.currentHolderName || 'Student',
+        feeType: 'Library Overdue Fine',
+        description: `Overdue Library Fine (${daysOverdue} days) - ${item.name}`,
+        billedAmount: fineAmount,
+        amountPaid: 0,
+        waiverAmount: 0,
+        dueDate: new Date(),
+        status: 'Unpaid',
+        createdAt: new Date()
+      }, {});
+
+      toast({
+        title: 'Overdue Fine Posted',
+        description: `GH₵ ${fineAmount.toFixed(2)} fine posted to ${item.currentHolderName || 'student'}'s ledger.`,
+      });
+    } catch (err) {
+      console.error(err);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to post fine to billing ledger.' });
+    }
+  };
+
+  const handleSendOverdueReminderWhatsApp = (item: LibraryItem) => {
+    const daysOverdue = Math.max(1, Math.abs(getDaysRemaining(item.dueDate)));
+    const fineRate = item.dailyFineRate || 1.00;
+    const fineAmount = (daysOverdue * fineRate).toFixed(2);
+    
+    const message = `Hello Parent/Guardian, this is an overdue library notice. The book "${item.name}" borrowed by ${item.currentHolderName || 'your ward'} is ${daysOverdue} days overdue. Current fine accumulator: GH₵ ${fineAmount}. Please return the book to the library promptly. Thank you!`;
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
         {/* Premium Gradient Header Banner */}
@@ -518,6 +588,14 @@ export default function LibraryPage() {
                                         Outstanding Checkouts <Badge className="ml-2 bg-purple-105 text-purple-700 hover:bg-purple-105 border-none font-black">{outstandingCheckouts.length}</Badge>
                                     </TabsTrigger>
                                 )}
+                                {canManage && (
+                                    <TabsTrigger value="scanner" className="rounded-xl font-bold uppercase text-[11px] tracking-wider px-5 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm flex items-center gap-1.5">
+                                        <QrCode className="h-3.5 w-3.5 text-indigo-600" /> Barcode Station
+                                    </TabsTrigger>
+                                )}
+                                <TabsTrigger value="digital" className="rounded-xl font-bold uppercase text-[11px] tracking-wider px-5 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm flex items-center gap-1.5">
+                                    <FileDown className="h-3.5 w-3.5 text-emerald-600" /> Digital E-Books
+                                </TabsTrigger>
                             </TabsList>
                         </Tabs>
 
@@ -843,7 +921,7 @@ export default function LibraryPage() {
                             )}
                         </TableBody>
                     </Table>
-                ) : (
+                ) : activeTab === 'borrowed' ? (
                     <Table className="border-t border-slate-100">
                         <TableHeader>
                             <TableRow className="bg-slate-50/50">
@@ -898,13 +976,37 @@ export default function LibraryPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button 
-                                                size="sm" 
-                                                onClick={() => handleConfirmReturn(item)} 
-                                                className="bg-slate-800 hover:bg-emerald-600 text-white rounded-xl font-black uppercase text-[9px] tracking-widest h-9 px-4 transition-all"
-                                            >
-                                                {item.status === 'Pending Return' ? 'Confirm Return' : 'Return Book'}
-                                            </Button>
+                                            <div className="flex items-center justify-end gap-2">
+                                                {isOverdue && canManage && (
+                                                    <>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => handleSyncOverdueFineToLedger(item)}
+                                                            className="bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 rounded-xl font-bold uppercase text-[9px] h-9 px-3 gap-1"
+                                                            title="Post Overdue Fine to Student Billing Ledger"
+                                                        >
+                                                            <DollarSign className="h-3 w-3" /> Post Fine
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => handleSendOverdueReminderWhatsApp(item)}
+                                                            className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 rounded-xl font-bold uppercase text-[9px] h-9 px-3 gap-1"
+                                                            title="Send Parent WhatsApp Overdue Reminder"
+                                                        >
+                                                            <Send className="h-3 w-3" /> Remind Parent
+                                                        </Button>
+                                                    </>
+                                                )}
+                                                <Button 
+                                                    size="sm" 
+                                                    onClick={() => handleConfirmReturn(item)} 
+                                                    className="bg-slate-800 hover:bg-emerald-600 text-white rounded-xl font-black uppercase text-[9px] tracking-widest h-9 px-4 transition-all"
+                                                >
+                                                    {item.status === 'Pending Return' ? 'Confirm Return' : 'Return Book'}
+                                                </Button>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 );
@@ -919,7 +1021,135 @@ export default function LibraryPage() {
                             )}
                         </TableBody>
                     </Table>
-                )}
+                ) : activeTab === 'scanner' ? (
+                    <div className="p-8 space-y-6 max-w-3xl mx-auto">
+                        <div className="text-center space-y-2">
+                            <div className="inline-flex p-4 bg-indigo-50 text-indigo-600 rounded-3xl mb-2">
+                                <Scan className="h-10 w-10 animate-pulse" />
+                            </div>
+                            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Barcode & QR Circulation Station</h3>
+                            <p className="text-xs text-slate-500 font-medium">Scan or type ISBN / Barcode SKU to perform instant 2-second book checkouts and stock returns.</p>
+                        </div>
+
+                        <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-3xl space-y-4">
+                            <div className="flex gap-3">
+                                <div className="relative flex-1">
+                                    <QrCode className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                                    <Input 
+                                        placeholder="Scan or type barcode (e.g. BK-1002 or 978-3-16...)..." 
+                                        value={barcodeInput}
+                                        onChange={e => setBarcodeInput(e.target.value)}
+                                        className="pl-11 h-12 rounded-2xl border-2 text-sm font-bold bg-white focus-visible:ring-indigo-600"
+                                        autoFocus
+                                    />
+                                </div>
+                            </div>
+
+                            {barcodeInput.trim() && (
+                                <div className="space-y-3 pt-2">
+                                    {(() => {
+                                        const matchedItem = libraryItems?.find(item => 
+                                            item.barcode?.toLowerCase() === barcodeInput.trim().toLowerCase() ||
+                                            item.isbn?.toLowerCase() === barcodeInput.trim().toLowerCase() ||
+                                            item.name.toLowerCase().includes(barcodeInput.trim().toLowerCase())
+                                        );
+
+                                        if (!matchedItem) {
+                                            return (
+                                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-center text-xs font-bold text-amber-800 uppercase">
+                                                    No item matching barcode "{barcodeInput}" found in catalog.
+                                                </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <div className="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+                                                <div className="space-y-1">
+                                                    <Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 font-bold uppercase text-[9px] px-2.5 py-0.5">
+                                                        {matchedItem.category} • {matchedItem.location}
+                                                    </Badge>
+                                                    <h4 className="font-black text-slate-900 text-base">{matchedItem.name}</h4>
+                                                    <p className="text-xs text-slate-500 font-bold">Author: {matchedItem.author || 'N/A'} | Status: {matchedItem.status}</p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    {matchedItem.status === 'Available' ? (
+                                                        <Button 
+                                                            onClick={() => {
+                                                                handleRequestBorrow(matchedItem);
+                                                                setBarcodeInput('');
+                                                            }}
+                                                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-xs rounded-xl h-11 px-5"
+                                                        >
+                                                            Instant Borrow Issue
+                                                        </Button>
+                                                    ) : (
+                                                        <Button 
+                                                            onClick={() => {
+                                                                handleConfirmReturn(matchedItem);
+                                                                setBarcodeInput('');
+                                                            }}
+                                                            className="bg-slate-900 hover:bg-emerald-600 text-white font-black uppercase text-xs rounded-xl h-11 px-5"
+                                                        >
+                                                            Instant Restock Return
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ) : activeTab === 'digital' ? (
+                    <div className="p-8 space-y-6">
+                        <div className="flex items-center justify-between border-b pb-4">
+                            <div>
+                                <h3 className="text-base font-extrabold text-slate-900 uppercase tracking-tight flex items-center gap-2">
+                                    <FileDown className="h-5 w-5 text-emerald-600" /> Digital E-Books & Study Repository
+                                </h3>
+                                <p className="text-xs text-slate-500 font-medium">Access PDF study guides, revision past papers, and digital e-books 24/7.</p>
+                            </div>
+                            <Badge className="bg-emerald-50 text-emerald-800 border-emerald-200 font-black text-xs px-3 py-1">
+                                {libraryItems?.filter(i => i.digitalFileUrl).length || 0} Digital Resources
+                            </Badge>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {libraryItems?.filter(i => i.digitalFileUrl).map(item => (
+                                <Card key={item.id} className="border border-slate-100 shadow-md bg-white rounded-3xl overflow-hidden hover:shadow-lg transition-all p-6 space-y-4">
+                                    <div className="flex items-start gap-3">
+                                        <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl shrink-0 border border-emerald-100">
+                                            <FileText className="h-6 w-6" />
+                                        </div>
+                                        <div>
+                                            <Badge className="bg-slate-100 text-slate-700 font-bold uppercase text-[9px] mb-1">
+                                                {item.category}
+                                            </Badge>
+                                            <h4 className="font-black text-slate-900 text-sm line-clamp-1">{item.name}</h4>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase">By {item.author || 'School Faculty'}</p>
+                                        </div>
+                                    </div>
+                                    <Button 
+                                        asChild
+                                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase text-xs rounded-xl h-11 gap-2"
+                                    >
+                                        <a href={item.digitalFileUrl} target="_blank" rel="noopener noreferrer">
+                                            <FileDown className="h-4 w-4" /> Download / Open PDF
+                                        </a>
+                                    </Button>
+                                </Card>
+                            ))}
+
+                            {(libraryItems?.filter(i => i.digitalFileUrl).length === 0) && (
+                                <div className="col-span-full py-16 text-center text-slate-400 bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+                                    <FileText className="h-12 w-12 mx-auto mb-3 opacity-30 text-slate-400" />
+                                    <p className="font-extrabold text-xs uppercase tracking-widest">No digital PDF e-books uploaded yet</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ) : null}
             </CardContent>
         </Card>
     </div>
