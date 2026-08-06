@@ -715,6 +715,7 @@ function StudentDetailView({ student }: { student: Student }) {
         <div className="space-y-6">
             <StudentBadgeShowcase 
                 studentName={`${student.firstName} ${student.lastName}`}
+                gradeLevel={student.gradeLevel || student.classId}
                 totalPoints={(student as any).totalPoints || 0}
                 earnedBadges={(student as any).earnedBadges || []}
             />
