@@ -72,6 +72,7 @@ import { FinancialDashboardView } from './financial-dashboard-view';
 import { ParentDashboard } from './parent-dashboard-view';
 import { ParentSatisfactionDashboardView } from './parent-satisfaction-dashboard-view';
 import { TeacherDashboardView } from '@/components/dashboard/TeacherDashboardView';
+import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
@@ -13039,6 +13040,16 @@ function StudentDashboard({ profile }: any) {
                         subtitle={outstandingBalance === 0 ? "All fees paid" : "Outstanding balance"}
                     />
                 </div>
+
+                {/* Compact Term Goals Level-Up Widget */}
+                <StudentSubjectRoadmap 
+                  assignments={classAssignments || []} 
+                  quizzes={classQuizzes || []} 
+                  submissions={studentSubmissions || []} 
+                  quizAttempts={studentQuizAttempts || []} 
+                  compact={true} 
+                  studentName={profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : undefined} 
+                />
             )}
 
             {/* 3. Main Split Columns Content */}
