@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BADGE_CATALOG } from '@/lib/achievement-utils';
 
 export function ParentDashboard({ 
   profile, 
@@ -204,11 +205,39 @@ export function ParentDashboard({
         return matchedClass?.name || activeClassId;
     }, [activeClassId, classes]);
 
-    // Active Child Stickers
+    // Active Child Stickers & Digital Achievement Badges
     const activeChildStickers = useMemo(() => {
-        if (!stickers || !activeChildId) return [];
-        return stickers.filter((s: any) => s.userId === activeChildId);
-    }, [stickers, activeChildId]);
+        const list: any[] = [];
+
+        // 1. Digital Badges from student document (earnedBadges)
+        if (activeChild && Array.isArray((activeChild as any).earnedBadges)) {
+            (activeChild as any).earnedBadges.forEach((b: any, idx: number) => {
+                const catalogItem = BADGE_CATALOG.find(c => c.id === b.id || (b.id && b.id.startsWith(`${c.id}_`)) || c.title.toLowerCase() === b.title?.toLowerCase());
+                list.push({
+                    id: b.id || `earned_badge_${idx}`,
+                    name: b.title || catalogItem?.title || 'Achievement Badge',
+                    emoji: catalogItem?.icon || '⚡',
+                    category: b.category || catalogItem?.category || 'Achievement',
+                    earnedAt: b.unlockedAt ? new Date(b.unlockedAt) : null
+                });
+            });
+        }
+
+        // 2. Legacy reward stickers
+        if (stickers && activeChildId) {
+            stickers.filter((s: any) => s.userId === activeChildId).forEach((s: any) => {
+                list.push({
+                    id: s.id || s.uid,
+                    name: s.name || 'Reward Sticker',
+                    emoji: s.emoji || '🎓',
+                    category: s.category || 'Reward',
+                    earnedAt: s.earnedAt?.toDate ? s.earnedAt.toDate() : null
+                });
+            });
+        }
+
+        return list;
+    }, [activeChild, stickers, activeChildId]);
 
     // Active Child Assessments
     const activeChildAssessments = useMemo(() => {
@@ -821,9 +850,14 @@ export function ParentDashboard({
         if (activeChildStickers.length === 0) return null;
         // Sort newest first
         const sorted = [...activeChildStickers].sort((a: any, b: any) => {
-            const dateA = a.earnedAt?.toDate ? a.earnedAt.toDate().getTime() : 0;
-            const dateB = b.earnedAt?.toDate ? b.earnedAt.toDate().getTime() : 0;
-            return dateB - dateA;
+            const getTime = (val: any) => {
+                if (!val) return 0;
+                if (val instanceof Date) return val.getTime();
+                if (typeof val.toDate === 'function') return val.toDate().getTime();
+                if (typeof val === 'string' || typeof val === 'number') return new Date(val).getTime();
+                return 0;
+            };
+            return getTime(b.earnedAt) - getTime(a.earnedAt);
         });
         return sorted[0];
     }, [activeChildStickers]);
