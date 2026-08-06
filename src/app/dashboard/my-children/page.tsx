@@ -697,12 +697,19 @@ function ChildCurriculumRoadmapTab({ student }: { student: Student }) {
     );
     const { data: quizAttempts } = useCollection<any>(quizAttemptsQuery);
 
+    const subjectsQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null,
+        [firestore, schoolId]
+    );
+    const { data: subjects } = useCollection<any>(subjectsQuery);
+
     return (
         <StudentSubjectRoadmap
             assignments={assignments || []}
             quizzes={quizzes || []}
             submissions={submissions || []}
             quizAttempts={quizAttempts || []}
+            subjects={subjects || []}
             studentName={`${student.firstName} ${student.lastName}`}
         />
     );

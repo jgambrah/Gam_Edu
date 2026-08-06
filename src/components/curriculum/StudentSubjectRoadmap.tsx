@@ -17,13 +17,15 @@ import {
   CheckCircle2, Lock, Sparkles, Trophy, Flag, Play, 
   BookOpen, HelpCircle, ArrowRight, Star, Flame, Zap
 } from 'lucide-react';
-import Link from 'next/link';
+import { useFirestore, useCollection, useMemoFirebase, useCurrentSchool } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 
 interface StudentSubjectRoadmapProps {
   assignments?: Assignment[];
   quizzes?: Quiz[];
   submissions?: StudentSubmission[];
   quizAttempts?: QuizAttempt[];
+  subjects?: any[];
   studentName?: string;
   compact?: boolean;
 }
@@ -33,14 +35,25 @@ export function StudentSubjectRoadmap({
   quizzes = [],
   submissions = [],
   quizAttempts = [],
+  subjects: propSubjects,
   studentName,
   compact = false
 }: StudentSubjectRoadmapProps) {
   const [selectedSubject, setSelectedSubject] = useState<string>('All');
+  const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
+
+  const subjectsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: fetchedSubjects } = useCollection<any>(subjectsQuery);
+
+  const effectiveSubjects = propSubjects || fetchedSubjects || [];
 
   const subjectProgressList: SubjectProgressSummary[] = useMemo(() => {
-    return calculateAllSubjectsProgress(assignments, quizzes, submissions, quizAttempts);
-  }, [assignments, quizzes, submissions, quizAttempts]);
+    return calculateAllSubjectsProgress(assignments, quizzes, submissions, quizAttempts, effectiveSubjects);
+  }, [assignments, quizzes, submissions, quizAttempts, effectiveSubjects]);
 
   const roadmapNodes: RoadmapNode[] = useMemo(() => {
     return buildSubjectRoadmapNodes(assignments, quizzes, submissions, quizAttempts, selectedSubject);

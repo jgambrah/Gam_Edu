@@ -49,15 +49,39 @@ export function calculateAllSubjectsProgress(
   assignments: Assignment[] = [],
   quizzes: Quiz[] = [],
   submissions: StudentSubmission[] = [],
-  quizAttempts: QuizAttempt[] = []
+  quizAttempts: QuizAttempt[] = [],
+  subjects: any[] = []
 ): SubjectProgressSummary[] {
   const subjectMap = new Map<string, { name: string; completed: number; total: number; xp: number }>();
+  const subjectsNameMap = new Map<string, string>();
 
-  const getOrInitSubject = (subjectId: string, subjectName: string = 'General') => {
-    if (!subjectMap.has(subjectId)) {
-      subjectMap.set(subjectId, { name: subjectName, completed: 0, total: 0, xp: 0 });
+  (subjects || []).forEach(s => {
+    const id = s.id || s.uid || s.subjectId;
+    const name = s.name || s.subjectName || s.title;
+    if (id && name) subjectsNameMap.set(id, name);
+  });
+
+  const isRawUid = (val?: string) => {
+    if (!val) return true;
+    return /^[a-zA-Z0-9_-]{15,35}$/.test(val.trim());
+  };
+
+  const resolveSubjectName = (subId: string, docSubName?: string) => {
+    if (subjectsNameMap.has(subId)) return subjectsNameMap.get(subId)!;
+    if (docSubName && subjectsNameMap.has(docSubName)) return subjectsNameMap.get(docSubName)!;
+    if (docSubName && !isRawUid(docSubName)) return docSubName;
+    if (subId && !isRawUid(subId)) return subId;
+    return 'General';
+  };
+
+  const getOrInitSubject = (subjectId: string, docSubjectName?: string) => {
+    const resolvedName = resolveSubjectName(subjectId, docSubjectName);
+    // Group by resolvedName or subjectId
+    const key = subjectsNameMap.has(subjectId) ? subjectId : resolvedName;
+    if (!subjectMap.has(key)) {
+      subjectMap.set(key, { name: resolvedName, completed: 0, total: 0, xp: 0 });
     }
-    return subjectMap.get(subjectId)!;
+    return subjectMap.get(key)!;
   };
 
   const completedSubmissionSet = new Set<string>();
@@ -79,7 +103,7 @@ export function calculateAllSubjectsProgress(
   // Process Assignments
   assignments.forEach(a => {
     const subId = a.subjectId || 'general';
-    const subName = (a as any).subjectName || a.subjectId || 'General';
+    const subName = (a as any).subjectName;
     const entry = getOrInitSubject(subId, subName);
     entry.total += 1;
     if (completedSubmissionSet.has(a.id)) {
@@ -91,7 +115,7 @@ export function calculateAllSubjectsProgress(
   // Process Quizzes
   quizzes.forEach(q => {
     const subId = (q as any).subjectId || 'general';
-    const subName = (q as any).subjectName || (q as any).subjectId || 'General';
+    const subName = (q as any).subjectName;
     const entry = getOrInitSubject(subId, subName);
     entry.total += 1;
     if (completedQuizSet.has(q.id)) {
