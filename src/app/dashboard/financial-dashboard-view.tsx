@@ -347,6 +347,24 @@ export function FinancialDashboardView({
     };
   }, [accounts, financialRecords, activeBudget, expensesByCategory, students]);
 
+  // 4.5 30-Day Cash Flow Forecast (In-Memory Calculator: 0 extra Firestore reads)
+  const cashFlowForecast = useMemo(() => {
+    const liquidCash = cashPosition.cashBalance + cashPosition.bankBalance;
+    const expectedMonthlyReceipts = Math.round(cashPosition.totalReceivables * 0.35); // 35% estimated monthly collection
+    const upcomingMonthlyCommitments = expensesByCategory.total > 0 ? expensesByCategory.total : (cashPosition.budgetedExpenses / 3 || 5000);
+    const projectedLiquidity = (liquidCash + expectedMonthlyReceipts) - upcomingMonthlyCommitments;
+    const coverageRatio = upcomingMonthlyCommitments > 0 ? Math.round(((liquidCash + expectedMonthlyReceipts) / upcomingMonthlyCommitments) * 100) : 100;
+
+    return {
+      liquidCash,
+      expectedMonthlyReceipts,
+      upcomingMonthlyCommitments,
+      projectedLiquidity,
+      coverageRatio,
+      isHealthy: projectedLiquidity >= 0
+    };
+  }, [cashPosition, expensesByCategory]);
+
   // 5. Top Debtors
   const topDebtors = useMemo(() => {
     if (!financialRecords || !students) return [];
@@ -928,62 +946,103 @@ export function FinancialDashboardView({
         </Card>
       </div>
 
-      {/* 4. CASH POSITION SECTION */}
+      {/* 4. CASH POSITION & 30-DAY CASH FLOW FORECAST SECTION */}
       <div className="space-y-4">
         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 font-bold">
-          <Scale className="h-4 w-4 text-indigo-500" /> Cash Position
+          <Scale className="h-4 w-4 text-indigo-500" /> Cash Position & 30-Day Liquidity Forecast
         </h2>
-        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
-          <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow>
-                <TableHead className="font-black text-xs uppercase tracking-wider text-slate-500 py-4 pl-8">Indicator</TableHead>
-                <TableHead className="font-black text-xs uppercase tracking-wider text-slate-500 py-4 pr-8 text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
-                <TableCell className="font-bold text-slate-700 py-4 pl-8">Cash Balance</TableCell>
-                <TableCell className="font-mono text-slate-900 font-bold py-4 pr-8 text-right">
-                  GH₵ {cashPosition.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </TableCell>
-              </TableRow>
-              <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
-                <TableCell className="font-bold text-slate-700 py-4 pl-8">Bank Balance</TableCell>
-                <TableCell className="font-mono text-slate-900 font-bold py-4 pr-8 text-right">
-                  GH₵ {cashPosition.bankBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </TableCell>
-              </TableRow>
-              <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
-                <TableCell className="font-bold text-slate-700 py-4 pl-8">Total Receivables</TableCell>
-                <TableCell className="font-mono text-rose-600 font-bold py-4 pr-8 text-right">
-                  GH₵ {cashPosition.totalReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </TableCell>
-              </TableRow>
-              <TableRow className="hover:bg-slate-50/30">
-                <TableCell className="font-bold text-slate-700 py-4 pl-8">Budget Utilization</TableCell>
-                <TableCell className="font-bold py-4 pr-8 text-right">
-                  <div className="flex items-center justify-end gap-3">
-                    <span className="font-mono text-slate-900 font-bold">{cashPosition.budgetUtilization}%</span>
-                    <div className="w-32 bg-slate-100 rounded-full h-2 overflow-hidden border">
-                      <div 
-                        className={cn(
-                          "h-full rounded-full",
-                          cashPosition.budgetUtilization > 100 
-                            ? "bg-rose-500" 
-                            : cashPosition.budgetUtilization > 85 
-                              ? "bg-amber-500" 
-                              : "bg-indigo-600"
-                        )}
-                        style={{ width: `${Math.min(cashPosition.budgetUtilization, 100)}%` }}
-                      />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Indicator Table (2 Cols) */}
+          <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
+            <Table>
+              <TableHeader className="bg-slate-50/50">
+                <TableRow>
+                  <TableHead className="font-black text-xs uppercase tracking-wider text-slate-500 py-4 pl-8">Indicator</TableHead>
+                  <TableHead className="font-black text-xs uppercase tracking-wider text-slate-500 py-4 pr-8 text-right">Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
+                  <TableCell className="font-bold text-slate-700 py-4 pl-8">Cash Balance</TableCell>
+                  <TableCell className="font-mono text-slate-900 font-bold py-4 pr-8 text-right">
+                    GH₵ {cashPosition.cashBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
+                  <TableCell className="font-bold text-slate-700 py-4 pl-8">Bank Balance</TableCell>
+                  <TableCell className="font-mono text-slate-900 font-bold py-4 pr-8 text-right">
+                    GH₵ {cashPosition.bankBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
+                  <TableCell className="font-bold text-slate-700 py-4 pl-8">Total Receivables</TableCell>
+                  <TableCell className="font-mono text-rose-600 font-bold py-4 pr-8 text-right">
+                    GH₵ {cashPosition.totalReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="hover:bg-slate-50/30">
+                  <TableCell className="font-bold text-slate-700 py-4 pl-8">Budget Utilization</TableCell>
+                  <TableCell className="font-bold py-4 pr-8 text-right">
+                    <div className="flex items-center justify-end gap-3">
+                      <span className="font-mono text-slate-900 font-bold">{cashPosition.budgetUtilization}%</span>
+                      <div className="w-32 bg-slate-100 rounded-full h-2 overflow-hidden border">
+                        <div 
+                          className={cn(
+                            "h-full rounded-full",
+                            cashPosition.budgetUtilization > 100 
+                              ? "bg-rose-500" 
+                              : cashPosition.budgetUtilization > 85 
+                                ? "bg-amber-500" 
+                                : "bg-indigo-600"
+                          )}
+                          style={{ width: `${Math.min(cashPosition.budgetUtilization, 100)}%` }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </Card>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Card>
+
+          {/* 30-Day Cash Flow Health Gauge Card (1 Col) */}
+          <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b pb-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-amber-500" />
+                  <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">30-Day Cash Flow Forecast</h3>
+                </div>
+                <Badge className={cn("font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase", cashFlowForecast.isHealthy ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800')}>
+                  {cashFlowForecast.isHealthy ? 'Healthy Liquidity' : 'Budget Warning'}
+                </Badge>
+              </div>
+
+              <div className="space-y-3">
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex justify-between items-center text-xs">
+                  <span className="text-slate-500 font-bold">Liquid Cash Available:</span>
+                  <span className="font-mono font-black text-slate-900">GH₵ {cashFlowForecast.liquidCash.toLocaleString()}</span>
+                </div>
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex justify-between items-center text-xs">
+                  <span className="text-slate-500 font-bold">+ Est. Monthly Collections (35%):</span>
+                  <span className="font-mono font-black text-emerald-600">+GH₵ {cashFlowForecast.expectedMonthlyReceipts.toLocaleString()}</span>
+                </div>
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex justify-between items-center text-xs">
+                  <span className="text-slate-500 font-bold">- Upcoming Monthly Expenses:</span>
+                  <span className="font-mono font-black text-rose-600">-GH₵ {cashFlowForecast.upcomingMonthlyCommitments.toLocaleString()}</span>
+                </div>
+              </div>
+
+              <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-1 text-center">
+                <span className="text-[10px] font-black uppercase text-indigo-700 tracking-wider">Projected 30-Day Liquidity Buffer</span>
+                <h4 className={cn("text-xl font-black font-mono", cashFlowForecast.projectedLiquidity >= 0 ? "text-emerald-700" : "text-rose-600")}>
+                  {cashFlowForecast.projectedLiquidity >= 0 ? '+' : ''}GH₵ {cashFlowForecast.projectedLiquidity.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </h4>
+                <p className="text-[10px] text-slate-500 font-medium">Coverage Ratio: <strong className="text-slate-800">{cashFlowForecast.coverageRatio}%</strong> of monthly obligations covered.</p>
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
 
     </div>
