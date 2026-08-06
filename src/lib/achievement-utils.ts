@@ -225,10 +225,10 @@ export async function triggerStudentBadgeEvent(
       }
     }
 
-    // 4. MANUAL TEACHER AWARD
+    // 4. MANUAL TEACHER AWARD (Always cumulative)
     if (event.type === 'MANUAL_TEACHER_AWARD' && event.customBadgeId) {
       const cat = BADGE_CATALOG.find(b => b.id === event.customBadgeId);
-      if (cat && !hasBadge(cat.id)) {
+      if (cat) {
         newBadgesToAward.push(cat);
       }
     }
@@ -236,10 +236,11 @@ export async function triggerStudentBadgeEvent(
     // Apply unlocks and atomic field updates
     if (newBadgesToAward.length > 0) {
       let extraXp = 0;
-      const formattedEarned: EarnedBadge[] = newBadgesToAward.map(b => {
+      const now = Date.now();
+      const formattedEarned: EarnedBadge[] = newBadgesToAward.map((b, idx) => {
         extraXp += b.xpReward;
         return {
-          id: b.id,
+          id: `${b.id}_${now}_${idx}`,
           title: b.title,
           category: b.category,
           unlockedAt: new Date().toISOString(),
@@ -283,7 +284,7 @@ export async function awardActivityXP(
       const cat = BADGE_CATALOG.find(b => b.id === badgeId);
       if (cat) {
         const earned: EarnedBadge = {
-          id: cat.id,
+          id: `${cat.id}_${Date.now()}`,
           title: cat.title,
           category: cat.category,
           unlockedAt: new Date().toISOString(),
