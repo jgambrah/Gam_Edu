@@ -86,6 +86,11 @@ service cloud.firestore {
       allow get, list: if true;
       allow write: if isSuperAdmin();
       allow update: if isSignedIn() && (isSuperAdmin() || (isDirector() && getUserSchoolId() == schoolId));
+
+      match /liveSessions/{sessionId} {
+        allow read, list: if isSignedIn();
+        allow write, create, update, delete: if isSignedIn();
+      }
     }
 
     // ─── DASHBOARD SUMMARY (aggregation cache) ────────────────────────────────

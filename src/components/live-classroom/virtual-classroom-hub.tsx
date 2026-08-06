@@ -62,8 +62,8 @@ export function VirtualClassroomHub() {
 
   // Fetch active sessions from Firestore
   const sessionsQuery = useMemoFirebase(
-    () => (firestore && schoolId ? query(collection(firestore, `schools/${schoolId}/liveSessions`), orderBy('createdAt', 'desc')) : null),
-    [firestore, schoolId]
+    () => (firestore && schoolId && user ? query(collection(firestore, `schools/${schoolId}/liveSessions`), orderBy('createdAt', 'desc')) : null),
+    [firestore, schoolId, user]
   );
   const { data: rawSessions, isLoading } = useCollection<LiveSession>(sessionsQuery);
 
