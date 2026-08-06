@@ -377,6 +377,32 @@ function AdminApplicationDashboard() {
         await handleUpdateEnquiryStage(enq.id, 'Converted / Enrolled');
     };
 
+    const handleSendEmailToParent = (enq: any) => {
+        if (!enq.parentEmail) {
+            toast({ variant: 'destructive', title: 'No Email Found', description: 'This parent did not provide an email address.' });
+            return;
+        }
+
+        const cleanEmail = enq.parentEmail.trim();
+        const schoolName = schoolData?.name || 'School';
+        const subject = encodeURIComponent(`Admissions Enquiry Follow-Up - ${schoolName}`);
+        const body = encodeURIComponent(
+            `Hello ${enq.parentName || 'Parent'},\n\nThank you for reaching out to ${schoolName} regarding admissions for ${enq.interest || 'your child'}.\n\nWe received your enquiry and would love to answer your questions or schedule a campus tour.\n\nPlease let us know a convenient date and time!\n\nBest regards,\nAdmissions Team\n${schoolName}`
+        );
+
+        const mailtoUrl = `mailto:${cleanEmail}?subject=${subject}&body=${body}`;
+
+        try {
+            const link = document.createElement('a');
+            link.href = mailtoUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}&su=${subject}&body=${body}`, '_blank');
+        }
+    };
+
     useEffect(() => {
         if (!firestore || !schoolId) return;
         const fetchClasses = async () => {
@@ -957,12 +983,14 @@ function AdminApplicationDashboard() {
                                                             )}
                                                             {/* Email */}
                                                             {enq.parentEmail && (
-                                                                <a
-                                                                    href={`mailto:${enq.parentEmail}`}
-                                                                    className="inline-flex items-center h-8 px-3 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    onClick={() => handleSendEmailToParent(enq)}
+                                                                    className="h-8 px-3 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                                                                 >
-                                                                    <Mail className="h-3.5 w-3.5 mr-1.5 text-slate-600" /> Email
-                                                                </a>
+                                                                    <Mail className="h-3.5 w-3.5 mr-1.5 text-slate-600" /> Email Parent
+                                                                </Button>
                                                             )}
                                                         </div>
 
