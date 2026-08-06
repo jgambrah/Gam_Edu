@@ -30,6 +30,7 @@ export default function AchievementsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClass, setSelectedClass] = useState<string>('All');
   const [awardStudentId, setAwardStudentId] = useState<string>('');
+  const [awardSearchTerm, setAwardSearchTerm] = useState<string>('');
   const [awardBadgeId, setAwardBadgeId] = useState<string>(BADGE_CATALOG[0].id);
   const [isAwardOpen, setIsAwardOpen] = useState(false);
 
@@ -219,6 +220,21 @@ export default function AchievementsPage() {
     return filtered.sort((a: any, b: any) => (Number(b.totalPoints) || 0) - (Number(a.totalPoints) || 0));
   }, [rawStudents, selectedClass, searchTerm]);
 
+  const modalStudents = useMemo(() => {
+    if (!rawStudents) return [];
+    let list = [...rawStudents];
+    if (awardSearchTerm.trim()) {
+      const q = awardSearchTerm.toLowerCase();
+      list = list.filter((s: any) => {
+        const name = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
+        const cls = getStudentClassName(s).toLowerCase();
+        const stId = (s.studentId || s.id || s.uid || '').toLowerCase();
+        return name.includes(q) || cls.includes(q) || stId.includes(q);
+      });
+    }
+    return list.sort((a: any, b: any) => (a.lastName || '').localeCompare(b.lastName || ''));
+  }, [rawStudents, awardSearchTerm]);
+
   const canManageBadges = ['Administrator', 'Director', 'Teacher'].includes(role || '');
 
   const handleManualAward = async () => {
@@ -231,6 +247,8 @@ export default function AchievementsPage() {
       toast({ title: 'Badge Awarded! 🎉', description: 'Student has been awarded the achievement badge and XP.' });
       forceRefetch();
       setIsAwardOpen(false);
+      setAwardStudentId('');
+      setAwardSearchTerm('');
     } catch (err) {
       toast({ variant: 'destructive', title: 'Error', description: 'Could not award badge.' });
     }
@@ -479,29 +497,57 @@ export default function AchievementsPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-3">
+                {/* Search Engine for Student List */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                    <span>Search Student</span>
+                    {awardSearchTerm && (
+                      <span className="text-[10px] text-purple-600 font-semibold">
+                        {modalStudents.length} student{modalStudents.length === 1 ? '' : 's'} found
+                      </span>
+                    )}
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                    <Input
+                      placeholder="Search student by name, ID or class..."
+                      value={awardSearchTerm}
+                      onChange={(e) => setAwardSearchTerm(e.target.value)}
+                      className="pl-9 h-10 text-xs rounded-xl border-slate-300 focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Filtered Student Selection Dropdown */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700">Select Student</label>
                   <Select value={awardStudentId} onValueChange={setAwardStudentId}>
                     <SelectTrigger className="h-10 rounded-xl">
-                      <SelectValue placeholder="Choose student..." />
+                      <SelectValue placeholder={modalStudents.length > 0 ? "Choose student..." : "No matching students"} />
                     </SelectTrigger>
-                    <SelectContent>
-                      {rawStudents?.map((s: any) => (
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {modalStudents.map((s: any) => (
                         <SelectItem key={s.id || s.uid} value={s.id || s.uid}>
                           {s.firstName} {s.lastName} ({getStudentClassName(s)})
                         </SelectItem>
                       ))}
+                      {modalStudents.length === 0 && (
+                        <div className="p-3 text-center text-xs text-slate-400 font-medium">
+                          No student matches "{awardSearchTerm}"
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
 
+                {/* Badge Selection */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700">Select Badge</label>
                   <Select value={awardBadgeId} onValueChange={setAwardBadgeId}>
                     <SelectTrigger className="h-10 rounded-xl">
                       <SelectValue placeholder="Choose badge..." />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-60 overflow-y-auto">
                       {BADGE_CATALOG.map(b => (
                         <SelectItem key={b.id} value={b.id}>
                           {b.icon} {b.title} (+{b.xpReward} XP)
@@ -511,7 +557,11 @@ export default function AchievementsPage() {
                   </Select>
                 </div>
               </div>
-              <Button onClick={handleManualAward} className="w-full bg-indigo-900 hover:bg-indigo-950 text-white font-bold h-11 rounded-xl">
+              <Button
+                onClick={handleManualAward}
+                disabled={!awardStudentId}
+                className="w-full bg-indigo-900 hover:bg-indigo-950 text-white font-bold h-11 rounded-xl shadow-lg transition-colors"
+              >
                 Confirm & Award Badge
               </Button>
             </DialogContent>
