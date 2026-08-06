@@ -28,6 +28,7 @@ import {
   CalendarCheck,
   Shield,
   Code,
+  Trophy,
   Sigma,
   FlaskConical,
   BookOpenCheck,
@@ -101,6 +102,12 @@ export const navItems: NavItem[] = [
     title: 'My Report Cards',
     icon: FileText,
     roles: ['Student', 'Parent'],
+  },
+  {
+    path: '/dashboard/achievements',
+    title: 'Badges & Achievements',
+    icon: Trophy,
+    roles: 'all',
   },
   {
     path: '/dashboard/communication',
