@@ -368,7 +368,7 @@ export default function AchievementsPage() {
                   </h2>
                   <p className="text-sm text-slate-700 max-w-xl mx-auto leading-relaxed">
                     For outstanding academic dedication, active school participation, and earning{' '}
-                    <strong className="text-amber-600 font-mono">{certStudent.totalPoints || 0} XP Points</strong> in the GAM Edu League.
+                    <strong className="text-amber-600 font-mono">{certStudent.totalPoints || 0} XP Points</strong> in the {schoolName} Gamification League.
                   </p>
 
                   {/* Badges Earned List */}
