@@ -120,6 +120,7 @@ const juniorStyles = {
 
 // --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
+    const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [activeStory, setActiveStory] = useState<any>(null);
@@ -334,6 +335,7 @@ function CounterDisplay({ count }: { count: number }) {
 }
 
 function MathLab({ canEdit }: { canEdit: boolean }) {
+    const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [problem, setProblem] = useState<any>(null);

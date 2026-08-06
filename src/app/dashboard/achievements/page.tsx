@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
+import { cn } from '@/lib/utils';
 import { useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
@@ -21,7 +22,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 export default function AchievementsPage() {
-  const { role } = useRole();
+  const { role, profile } = useRole();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
