@@ -948,11 +948,17 @@ service cloud.firestore {
     }
 
     match /library/{itemId} {
-      allow read: if isSignedIn();
+      allow read, list: if isSignedIn();
       allow create: if isLibrarian() || isAdmin() || isTeacher();
       allow update: if isLibrarian() || isAdmin() || isTeacher() ||
                     (isStudent() && request.resource.data.status == 'Requested' && request.resource.data.currentHolderId == request.auth.uid) ||
                     (isStudent() && resource.data.currentHolderId == request.auth.uid && request.resource.data.status == 'Pending Return');
+    }
+
+    match /book_reviews/{reviewId} {
+      allow read, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isSuperAdmin() || isAdmin() || (isSignedIn() && resource.data.studentId == request.auth.uid);
     }
 
     // =========================================================
