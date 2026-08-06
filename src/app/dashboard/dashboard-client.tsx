@@ -12711,16 +12711,23 @@ function StudentDashboard({ profile }: any) {
                 console.error("Seeding calendar events failed: ", err);
             }
         }
-        seed();
-    }, [firestore, schoolId, calendarEvents]);
+        if (['Director', 'Administrator', 'Admin'].includes(role || '')) {
+            seed();
+        }
+    }, [firestore, schoolId, calendarEvents, role]);
 
     const todayEvents = useMemo(() => {
         if (!calendarEvents) return [];
         const todayStr = format(new Date(), 'yyyy-MM-dd');
         return calendarEvents.filter((ev: any) => {
             if (!ev.date) return false;
-            const evDateStr = format(ev.date.toDate(), 'yyyy-MM-dd');
-            return evDateStr === todayStr;
+            try {
+                const d = typeof ev.date.toDate === 'function' ? ev.date.toDate() : new Date(ev.date);
+                if (isNaN(d.getTime())) return false;
+                return format(d, 'yyyy-MM-dd') === todayStr;
+            } catch {
+                return false;
+            }
         });
     }, [calendarEvents]);
 
@@ -13733,7 +13740,15 @@ function StudentDashboard({ profile }: any) {
                                                                         <div className="space-y-1">
                                                                             <div className="flex items-center gap-2 flex-wrap">
                                                                                 <span className="text-xs font-extrabold text-slate-800 uppercase">{a.subjectName || 'General'}</span>
-                                                                                <span className="text-[10px] text-slate-400 font-bold">• {format(a.assessmentDate?.toDate(), 'MMM dd, yyyy')}</span>
+                                                                                <span className="text-[10px] text-slate-400 font-bold">• {(() => {
+                                                                                     try {
+                                                                                         const d = a.assessmentDate?.toDate ? a.assessmentDate.toDate() : (a.assessmentDate ? new Date(a.assessmentDate) : null);
+                                                                                         if (!d || isNaN(d.getTime())) return 'Recently';
+                                                                                         return format(d, 'MMM dd, yyyy');
+                                                                                     } catch {
+                                                                                         return 'Recently';
+                                                                                     }
+                                                                                 })()}</span>
                                                                             </div>
                                                                             <p className="text-xs text-slate-655 font-medium">Topic: <span className="font-semibold text-slate-855">{a.assessmentName}</span></p>
                                                                             {a.teacherRemark && (
@@ -13793,7 +13808,15 @@ function StudentDashboard({ profile }: any) {
                                                     {latestReport.academicYear} - {latestReport.term}
                                                 </h4>
                                                 <p className="text-xs text-slate-550">
-                                                    Published by Head of School on {format(latestReport.publishedAt?.toDate(), 'MMM dd, yyyy')}.
+                                                    Published by Head of School on {(() => {
+                                                         try {
+                                                             const d = latestReport.publishedAt?.toDate ? latestReport.publishedAt.toDate() : (latestReport.publishedAt ? new Date(latestReport.publishedAt) : null);
+                                                             if (!d || isNaN(d.getTime())) return 'Recently';
+                                                             return format(d, 'MMM dd, yyyy');
+                                                         } catch {
+                                                             return 'Recently';
+                                                         }
+                                                     })()}.
                                                 </p>
                                             </div>
                                             <Button asChild variant="outline" className="rounded-xl font-black text-xs uppercase text-slate-700 bg-white shadow-sm border-slate-200">
