@@ -195,6 +195,17 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
     }
   };
 
+  const allMedia = useMemo(() => {
+    const list = [...(story.mediaUrls || [])];
+    const urlRegex = /(https?:\/\/[^\s<]+)/g;
+    const matches = (story.content || '').match(urlRegex) || [];
+    matches.forEach(m => {
+      const clean = m.replace(/[.,;!?)]+$/, '');
+      if (!list.includes(clean)) list.push(clean);
+    });
+    return list;
+  }, [story.mediaUrls, story.content]);
+
   return (
     <Card className="rounded-[2.5rem] border border-slate-100 shadow-xl bg-white overflow-hidden hover:shadow-2xl transition-all duration-300">
       <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900">
@@ -231,10 +242,10 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
           <p className="text-xs text-slate-700 font-medium leading-relaxed whitespace-pre-line">{story.content}</p>
         </div>
 
-        {/* Media Gallery */}
-        {story.mediaUrls && story.mediaUrls.length > 0 && (
+        {/* Media Gallery (Uploaded + Auto-Extracted Video/Image URLs) */}
+        {allMedia.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-            {story.mediaUrls.map((url, idx) => (
+            {allMedia.map((url, idx) => (
               <MediaElement key={idx} url={url} onOpenImage={setSelectedImage} />
             ))}
           </div>

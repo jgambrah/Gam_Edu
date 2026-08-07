@@ -106,6 +106,18 @@ export function ClassStoryComposer({ schoolId, classes, open, onOpenChange, onSt
       const selectedClass = classes.find(c => c.id === classId);
       const className = classId === 'ALL_SCHOOL' ? 'Whole School Community' : selectedClass?.name || 'Class';
 
+      // Gather all media URLs (explicit attachments + unsubmitted input + URLs typed in content)
+      const finalMediaUrls = [...mediaUrls];
+      if (mediaUrlInput.trim() && !finalMediaUrls.includes(mediaUrlInput.trim())) {
+        finalMediaUrls.push(mediaUrlInput.trim());
+      }
+      const urlRegex = /(https?:\/\/[^\s<]+)/g;
+      const matches = content.trim().match(urlRegex) || [];
+      matches.forEach(m => {
+        const clean = m.replace(/[.,;!?)]+$/, '');
+        if (!finalMediaUrls.includes(clean)) finalMediaUrls.push(clean);
+      });
+
       await addDocumentNonBlocking(collection(firestore, 'class_stories'), {
         schoolId,
         classId,
@@ -117,7 +129,7 @@ export function ClassStoryComposer({ schoolId, classes, open, onOpenChange, onSt
         title: title.trim(),
         content: content.trim(),
         category,
-        mediaUrls,
+        mediaUrls: finalMediaUrls,
         taggedStudentIds,
         likes: [],
         commentsCount: 0,
