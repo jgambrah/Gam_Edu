@@ -1095,6 +1095,19 @@ service cloud.firestore {
     }
 
     // =========================================================
+    // 8.12. STUDENT TIMELINE & PUBLIC PORTFOLIO SECURITY
+    // =========================================================
+    match /students/{studentId} {
+      allow read, get, list: if true; // Public verified portfolio view
+      allow write: if isSignedIn();
+
+      match /timeline/{eventId} {
+        allow read, get, list: if true; // Public verified timeline view
+        allow write: if isSignedIn();
+      }
+    }
+
+    // =========================================================
     // 9. CATCH-ALL (Admin only — keep at bottom)
     // =========================================================
     match /{document=**} {
