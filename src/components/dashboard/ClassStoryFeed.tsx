@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useRole } from '@/context/role-context';
 import { collection, query, where, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { ClassStoryPost, ClassStoryComment, Student } from '@/lib/types';
@@ -534,7 +535,9 @@ function StoryCard({ story, students, userRole }: { story: ClassStoryPost; stude
   );
 }
 
-export function ClassStoryFeed({ schoolId, classId, studentIdFilter }: ClassStoryFeedProps) {
+export function ClassStoryFeed({ schoolId, classId, studentIdFilter, userRole }: ClassStoryFeedProps) {
+  const { role: contextRole } = useRole();
+  const effectiveRole = userRole || contextRole || undefined;
   const firestore = useFirestore();
   const [feedFilter, setFeedFilter] = useState<'all' | 'ward' | 'class' | 'school'>('all');
 
@@ -626,7 +629,7 @@ export function ClassStoryFeed({ schoolId, classId, studentIdFilter }: ClassStor
 
       {filteredStories.length > 0 ? (
         filteredStories.map(story => (
-          <StoryCard key={story.id} story={story} students={students || []} userRole={userRole} />
+          <StoryCard key={story.id} story={story} students={students || []} userRole={effectiveRole} />
         ))
       ) : (
         <Card className="rounded-[2.5rem] border border-slate-100 shadow-md bg-white p-12 text-center space-y-3">
