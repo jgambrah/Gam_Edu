@@ -30,7 +30,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 
 // Import AI actions
-import { awardActivityXP } from '@/lib/achievement-utils';
+import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
+import { Student } from '@/lib/types';
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -149,7 +150,11 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         }, {} as Record<string, Record<string, any[]>>);
     }, [library, selectedGrade]);
 
-    const checkAnswers = () => {
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
+    );
+
+    const checkAnswers = async () => {
         let correct = 0;
         activeStory.quiz.forEach((q: any, i: number) => {
             if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
@@ -158,7 +163,11 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             confetti(); 
             speak("Analysis complete! You have mastered this passage.");
             if (user && firestore) {
-                awardActivityXP(firestore, user.uid, 50, 'Senior English Passage');
+                const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+                await awardActivityXP(firestore, targetStudentId, 50, 'Senior English Passage', 'stem_explorer');
+                await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'LIBRARY_BOOK_RETURNED' });
+                await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+                toast({ title: 'Passage Mastered! 📚', description: '+50 XP saved to your profile! STEM Pioneer & Avid Reader badges evaluated.' });
             }
         }
         else { speak(`Keep investigating. You found ${correct} insights.`); }
@@ -368,13 +377,20 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
         }, {} as Record<string, Record<string, any[]>>);
     }, [dbProblems, selectedGrade]);
 
-    const checkAnswer = () => {
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
+    );
+
+    const checkAnswer = async () => {
         if (userInput.trim().toLowerCase() === problem.answer.toLowerCase().trim()) {
             setFeedback({ ok: true, msg: "Logical match confirmed! Well done." });
             confetti();
             speak("Correct solution.");
             if (user && firestore) {
-                awardActivityXP(firestore, user.uid, 40, 'Senior Math Solution');
+                const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+                await awardActivityXP(firestore, targetStudentId, 40, 'Senior Math Solution', 'stem_explorer');
+                await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+                toast({ title: 'Math Solution Confirmed! 📐', description: '+40 XP saved to your profile! STEM Pioneer badge evaluated.' });
             }
         } else {
             setFeedback({ ok: false, msg: `Correction required. Expected: ${problem.answer}` });
@@ -550,12 +566,29 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 // --- 3. DISCOVERY LAB (FOLDER ORGANIZED) ---
 function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
 
     const isJunior = isJuniorLevel(selectedGrade);
     const theme = isJunior ? juniorStyles : null;
+
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
+    );
+
+    const handleCompleteMission = async () => {
+        setLab(null);
+        confetti();
+        if (user && firestore) {
+            const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+            await awardActivityXP(firestore, targetStudentId, 60, 'Discovery Lab Mission', 'stem_explorer');
+            await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+            toast({ title: 'Discovery Mission Complete! 🔬', description: '+60 XP saved to your profile! STEM Pioneer badge evaluated.' });
+        }
+    };
 
     const labQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
@@ -774,7 +807,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                             <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-base text-slate-300'}`}>{lab.explanation}</p>
                                         </div>
                                         <Button 
-                                            onClick={() => { setLab(null); confetti(); }} 
+                                            onClick={handleCompleteMission} 
                                             className={isJunior 
                                                 ? juniorStyles.button 
                                                 : "w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_#047857] hover:shadow-[0_2px_0_#047857] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
