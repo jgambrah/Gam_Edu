@@ -75,7 +75,7 @@ export default function PublicStudentPortfolioPage({ params }: { params: Promise
   }
 
   return (
-    <div className="min-h-screen h-full w-full overflow-y-auto bg-slate-950 text-slate-100 font-sans pb-24 relative selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen w-full bg-slate-950 text-slate-100 font-sans pb-32 relative selection:bg-indigo-500 selection:text-white">
       {/* Sticky Navigation & Print Control Header */}
       <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/10 px-6 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
