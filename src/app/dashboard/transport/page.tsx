@@ -928,7 +928,7 @@ export default function TransportPage() {
             </TabsList>
             <div className="flex items-center gap-2 px-2">
               <span className="text-xs font-black uppercase text-slate-400">Route:</span>
-              <Select onValueChange={setSelectedRouteId} value={selectedRouteId || undefined}>
+              <Select onValueChange={setSelectedRouteId} value={selectedRouteId || ''}>
                 <SelectTrigger className="h-10 w-64 bg-white border-2 rounded-xl text-xs font-bold"><SelectValue placeholder="Choose route..." /></SelectTrigger>
                 <SelectContent>
                   {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
