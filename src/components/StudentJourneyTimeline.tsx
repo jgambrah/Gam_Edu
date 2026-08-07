@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useCollection, useDocument, useMemoFirebase } from '@/firebase';
 import { collection, query, where, orderBy, addDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
@@ -136,6 +136,59 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
   const { data: stickersData, isLoading: isLoadingStickers } = useCollection<any>(stickersQuery);
 
   const isLoading = isLoadingManual || isLoadingAssessments || isLoadingBehavior || isLoadingStickers;
+
+  const studentDocRef = useMemoFirebase(
+    () => (firestore && studentId ? doc(firestore, 'students', studentId) : null),
+    [firestore, studentId]
+  );
+  const { data: studentDoc } = useDocument<any>(studentDocRef);
+
+  // Dynamically calculate skill competency scores based on actual student events and earned badges
+  const dynamicSkills = useMemo(() => {
+    const categories = [
+      { key: 'STEM', label: 'STEM & Coding' },
+      { key: 'Literacy', label: 'Literacy & ELA' },
+      { key: 'Arts', label: 'Arts & Creative' },
+      { key: 'Sports', label: 'Sports & Fitness' },
+      { key: 'Leadership', label: 'Leadership & Civic' },
+      { key: 'Character', label: 'Character & Conduct' }
+    ];
+
+    const earnedBadges = studentDoc?.earnedBadges || [];
+
+    return categories.map(cat => {
+      const matchingEvents = (manualEvents || []).filter((e: any) => 
+        e.metadata?.skillCategory === cat.key || 
+        (cat.key === 'STEM' && (e.category === 'project' || e.category === 'academic')) ||
+        (cat.key === 'Arts' && e.category === 'activity') ||
+        (cat.key === 'Sports' && e.category === 'activity') ||
+        (cat.key === 'Leadership' && (e.category === 'leadership' || e.category === 'awards')) ||
+        (cat.key === 'Character' && (e.category === 'behavior' || e.category === 'attendance'))
+      );
+
+      const matchingBadges = earnedBadges.filter((b: any) => {
+        const bId = (b.id || b.title || '').toLowerCase();
+        if (cat.key === 'STEM' && (bId.includes('stem') || bId.includes('math') || bId.includes('quiz') || bId.includes('code'))) return true;
+        if (cat.key === 'Literacy' && (bId.includes('book') || bId.includes('read') || bId.includes('ela') || bId.includes('author'))) return true;
+        if (cat.key === 'Sports' && (bId.includes('sport') || bId.includes('fit') || bId.includes('athletic'))) return true;
+        if (cat.key === 'Arts' && (bId.includes('art') || bId.includes('craft') || bId.includes('music'))) return true;
+        if (cat.key === 'Leadership' && (bId.includes('leader') || bId.includes('star') || bId.includes('prefect'))) return true;
+        if (cat.key === 'Character' && (bId.includes('streak') || bId.includes('attendance') || bId.includes('conduct'))) return true;
+        return false;
+      });
+
+      const totalCount = matchingEvents.length + matchingBadges.length;
+      // Calculate dynamic mastery: 15% base level + 20% per badge/milestone (capped at 100%)
+      const score = Math.min(100, Math.max(15, totalCount * 20 + (totalCount > 0 ? 25 : 15)));
+
+      return {
+        category: cat.key,
+        label: cat.label,
+        totalCount,
+        score
+      };
+    });
+  }, [manualEvents, studentDoc?.earnedBadges]);
 
   const rawEvents = useMemo(() => {
     const list: any[] = [];
@@ -401,16 +454,21 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
 
           {/* Skill Competency Breakdown */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {['STEM', 'Literacy', 'Arts', 'Sports', 'Leadership', 'Character'].map(skillCat => (
-              <Card key={skillCat} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-3 bg-white dark:bg-slate-900 shadow-sm">
+            {dynamicSkills.map(skill => (
+              <Card key={skill.category} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-3 bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-400/50 transition-all">
                 <div className="flex justify-between items-center text-xs font-extrabold">
-                  <span className="uppercase text-slate-700 dark:text-slate-200">{skillCat} Competency</span>
-                  <Badge variant="outline" className="text-indigo-600 font-black text-[9px] border-indigo-200">
-                    Verified Level
+                  <span className="uppercase text-slate-800 dark:text-slate-200">{skill.label}</span>
+                  <Badge variant="outline" className="text-indigo-600 dark:text-indigo-400 font-black text-[9px] border-indigo-200 dark:border-indigo-900">
+                    {skill.totalCount} Milestones
                   </Badge>
                 </div>
-                <Progress value={75} className="h-2.5 bg-slate-100 dark:bg-slate-800" />
-                <p className="text-[10px] font-bold text-slate-400 text-right">Mastery Progress: 75%</p>
+                <Progress value={skill.score} className="h-2.5 bg-slate-100 dark:bg-slate-800" />
+                <div className="flex justify-between items-center text-[10px] font-bold">
+                  <span className="text-slate-400 font-mono">{skill.totalCount > 0 ? `${skill.totalCount} Verified Badges` : 'Baseline'}</span>
+                  <span className={cn("font-extrabold", skill.score > 50 ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500")}>
+                    Mastery Progress: {skill.score}%
+                  </span>
+                </div>
               </Card>
             ))}
           </div>
@@ -429,23 +487,46 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {BADGE_CATALOG.slice(0, 6).map(badge => (
-                <div key={badge.id} className="p-4 rounded-2xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 flex items-start gap-4">
-                  <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900 rounded-2xl text-indigo-600 shrink-0">
-                    <Award className="h-6 w-6" />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{badge.title}</h4>
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+              {BADGE_CATALOG.slice(0, 6).map(badge => {
+                const isEarned = (studentDoc?.earnedBadges || []).some((eb: any) => 
+                  eb.id === badge.id || (eb.title && eb.title.toLowerCase() === badge.title.toLowerCase())
+                );
+                return (
+                  <div key={badge.id} className={cn(
+                    "p-4 rounded-2xl border flex items-start gap-4 transition-all",
+                    isEarned 
+                      ? "border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20" 
+                      : "border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 opacity-75"
+                  )}>
+                    <div className={cn(
+                      "p-3 rounded-2xl shrink-0 border",
+                      isEarned 
+                        ? "bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400"
+                        : "bg-indigo-50 dark:bg-indigo-950/50 border-indigo-100 dark:border-indigo-900 text-indigo-600"
+                    )}>
+                      <Award className="h-6 w-6" />
                     </div>
-                    <p className="text-[11px] text-slate-500 font-medium">{badge.description}</p>
-                    <span className="inline-block text-[9px] font-black uppercase text-amber-600 tracking-wider pt-1">
-                      +{badge.xpAward} XP Awarded
-                    </span>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{badge.title}</h4>
+                        {isEarned ? (
+                          <Badge className="bg-emerald-500 text-white text-[8px] font-black uppercase px-2 py-0.2 rounded-full">
+                            Unlocked
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-slate-400 text-[8px] font-black uppercase px-2 py-0.2 rounded-full">
+                            In Progress
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500 font-medium">{badge.description}</p>
+                      <span className="inline-block text-[9px] font-black uppercase text-amber-600 tracking-wider pt-1">
+                        +{badge.xpAward} XP Awarded
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </Card>
         </div>
