@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Award, ShieldCheck, Sparkles, CheckCircle2, GraduationCap, Star, BookOpen, Briefcase, Trophy, QrCode, ExternalLink, Loader2 } from 'lucide-react';
+import { Award, ShieldCheck, Sparkles, CheckCircle2, GraduationCap, Star, BookOpen, Briefcase, Trophy, QrCode, ExternalLink, Loader2, ChevronUp } from 'lucide-react';
 import { BADGE_CATALOG, calculateStudentLevel } from '@/lib/achievement-utils';
 import { format } from 'date-fns';
 
@@ -75,7 +75,32 @@ export default function PublicStudentPortfolioPage({ params }: { params: Promise
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
+    <div className="min-h-screen h-full w-full overflow-y-auto bg-slate-950 text-slate-100 font-sans pb-24 relative selection:bg-indigo-500 selection:text-white">
+      {/* Sticky Navigation & Print Control Header */}
+      <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/10 px-6 py-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <GraduationCap className="h-5 w-5 text-indigo-400" />
+          <span className="text-xs font-black uppercase tracking-widest text-slate-200">GAM Edu Digital Portfolio</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.print()}
+            className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5"
+          >
+            🖨️ Print / Save PDF
+          </button>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              alert('Portfolio link copied to clipboard!');
+            }}
+            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md"
+          >
+            📋 Copy Share Link
+          </button>
+        </div>
+      </div>
+
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 border-b border-white/10 p-6 xl:p-12 relative overflow-hidden">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
@@ -203,6 +228,15 @@ export default function PublicStudentPortfolioPage({ params }: { params: Promise
           </p>
         </div>
       </div>
+
+      {/* Floating Scroll To Top Button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-6 right-6 z-50 p-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 border border-white/20 flex items-center justify-center group"
+        title="Scroll to Top"
+      >
+        <ChevronUp className="h-5 w-5 group-hover:-translate-y-0.5 transition-transform" />
+      </button>
     </div>
   );
 }
