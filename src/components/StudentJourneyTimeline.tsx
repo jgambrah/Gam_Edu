@@ -25,6 +25,7 @@ import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { TimelineCategory, TimelineService } from '@/lib/timeline-service';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { BADGE_CATALOG } from '@/lib/achievement-utils';
 
 const CATEGORY_META: Record<TimelineCategory, { label: string, color: string, bg: string, border: string, icon: any }> = {
   admission: { label: 'Admission & Intake', color: 'text-emerald-700 dark:text-emerald-450', bg: 'bg-emerald-50 dark:bg-emerald-950/20', border: 'border-emerald-100 dark:border-emerald-900/30', icon: GraduationCap },
