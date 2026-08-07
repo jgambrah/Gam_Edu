@@ -30,7 +30,7 @@ import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-comp
 // Types and AI Functions
 import type { Paradox, DebateTopic, Student } from '@/lib/types';
 import { generateDailyParadox, generateDebateTopic, generateDetectiveCase } from '@/ai/flows/think-tank'; 
-import { awardActivityXP } from '@/lib/achievement-utils';
+import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { formatDate } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -516,7 +516,7 @@ function DailyParadoxTab({ schoolId, onSolve }: { schoolId: string | null; onSol
                 {canManage && <Select value={adminSelectedGroup} onValueChange={(val) => { setAdminSelectedGroup(val); setSelectedParadoxId(null); }}><SelectTrigger className="w-[180px] h-8 text-xs bg-slate-900 border-slate-800 text-slate-350 rounded-xl"><SelectValue /></SelectTrigger><SelectContent className="bg-slate-950 border-slate-900 text-slate-350">{TARGET_GROUPS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent></Select>}
             </div>
             {activeParadox ? (
-                <ParadoxCard key={activeParadox.id} paradox={activeParadox} onComplete={() => {}} onAttempt={handleAttempt} onDelete={() => handleDeleteParadox(activeParadox.id)} isStaff={canManage}/>
+                <ParadoxCard key={activeParadox.id} paradox={activeParadox} onComplete={() => onSolve && activeParadox && onSolve(30, activeParadox.id)} onAttempt={handleAttempt} onDelete={() => handleDeleteParadox(activeParadox.id)} isStaff={canManage}/>
             ) : (
                 <Card className="text-center py-12 border-2 border-dashed border-slate-800 bg-slate-950/20 rounded-3xl"><CardTitle className="text-white font-bold text-md">No Paradox Puzzles Available</CardTitle><CardDescription className="text-slate-500 mt-1">For {activeGroup}</CardDescription></Card>
             )}
@@ -682,6 +682,10 @@ export default function ThinkTankPage() {
     fetchProgress();
   }, [user, firestore]);
 
+  const { data: studentRecord } = useCollection<Student>(
+    useMemoFirebase(() => (role === 'Student' && user && schoolId) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, schoolId])
+  );
+
   // Solver points callback
   const handleSolve = async (points: number, activityId: string) => {
     if (!user || !firestore || canManage) return;
@@ -699,7 +703,16 @@ export default function ThinkTankPage() {
             thinkTankCompleted: nextSolved,
             thinkTankScore: nextPoints
         }, { merge: true });
-        
+
+        // Resolve student document ID (support custom ID or UID)
+        const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+
+        // Save XP directly to student profile (totalPoints)
+        await awardActivityXP(firestore, targetStudentId, points, 'Think Tank Logic Module');
+
+        // Trigger STEM Pioneer badge unlock evaluation
+        await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+
         confetti({ particleCount: 120, spread: 60, colors: ['#6366f1', '#a855f7', '#ec4899'] });
     } catch (e) {
         console.error("Failed to save progress:", e);
