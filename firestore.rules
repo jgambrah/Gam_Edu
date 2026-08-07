@@ -1081,6 +1081,20 @@ service cloud.firestore {
     }
 
     // =========================================================
+    // 8.11. CLASS STORIES SECURITY
+    // =========================================================
+    match /class_stories/{storyId} {
+      allow read, list, get: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn();
+
+      match /comments/{commentId} {
+        allow read, list, get: if isSignedIn();
+        allow create, update, delete: if isSignedIn();
+      }
+    }
+
+    // =========================================================
     // 9. CATCH-ALL (Admin only — keep at bottom)
     // =========================================================
     match /{document=**} {

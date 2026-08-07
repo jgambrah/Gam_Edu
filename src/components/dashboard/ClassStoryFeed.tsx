@@ -11,7 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Heart, MessageCircle, Share2, Tag, Sparkles, Award, Camera, Image as ImageIcon, Video, Send, Loader2, Pin, UserCheck, Trash2, Building, Sparkle, BookOpen, Play, Maximize2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { Heart, MessageCircle, Share2, Tag, Sparkles, Award, Camera, Image as ImageIcon, Video, Send, Loader2, Pin, UserCheck, Trash2, Building, Sparkle, BookOpen, Play, Maximize2, Pencil, X, Plus } from 'lucide-react';
 import { StudentDisplay } from '@/components/student-display';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -103,12 +106,71 @@ function MediaElement({ url, onOpenImage }: { url: string; onOpenImage: (url: st
   );
 }
 
-function StoryCard({ story, students }: { story: ClassStoryPost; students: Student[] }) {
+function StoryCard({ story, students, userRole }: { story: ClassStoryPost; students: Student[]; userRole?: string }) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   const [commentInput, setCommentInput] = useState('');
   const [showComments, setShowComments] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Edit / Delete State
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [editTitle, setEditTitle] = useState(story.title);
+  const [editContent, setEditContent] = useState(story.content);
+  const [editCategory, setEditCategory] = useState<any>(story.category);
+  const [editMediaUrls, setEditMediaUrls] = useState<string[]>(story.mediaUrls || []);
+  const [editMediaInput, setEditMediaInput] = useState('');
+
+  const canManageStory = useMemo(() => {
+    if (!user) return false;
+    return user.uid === story.authorId || userRole === 'Admin' || userRole === 'SuperAdmin' || userRole === 'Teacher';
+  }, [user, story.authorId, userRole]);
+
+  const handleDeleteStory = async () => {
+    if (!firestore || !story.id) return;
+    if (!window.confirm('Are you sure you want to pull down/delete this class story?')) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteDoc(doc(firestore, 'class_stories', story.id));
+      toast({ title: 'Class Story pulled down successfully. 🗑️' });
+    } catch (err) {
+      console.error('Error deleting story:', err);
+      toast({ title: 'Failed to pull down story.', variant: 'destructive' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editTitle.trim() || !editContent.trim() || !firestore || !story.id) {
+      toast({ title: 'Please provide both title and content.', variant: 'destructive' });
+      return;
+    }
+
+    try {
+      const finalMedia = [...editMediaUrls];
+      if (editMediaInput.trim() && !finalMedia.includes(editMediaInput.trim())) {
+        finalMedia.push(editMediaInput.trim());
+      }
+
+      await updateDoc(doc(firestore, 'class_stories', story.id), {
+        title: editTitle.trim(),
+        content: editContent.trim(),
+        category: editCategory,
+        mediaUrls: finalMedia,
+      });
+
+      setIsEditing(false);
+      toast({ title: 'Class Story updated successfully! ✨' });
+    } catch (err) {
+      console.error('Error updating story:', err);
+      toast({ title: 'Failed to update story.', variant: 'destructive' });
+    }
+  };
 
   // Fetch story comments subcollection
   const commentsQuery = useMemoFirebase(
@@ -229,9 +291,35 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
               </p>
             </div>
           </div>
-          <Badge className={`border font-black text-[10px] uppercase px-3 py-1 rounded-full ${categoryInfo.color}`}>
-            {categoryInfo.label}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className={`border font-black text-[10px] uppercase px-3 py-1 rounded-full ${categoryInfo.color}`}>
+              {categoryInfo.label}
+            </Badge>
+
+            {canManageStory && (
+              <div className="flex items-center gap-1 bg-white/10 p-1 rounded-xl border border-white/10 ml-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                  className="h-7 w-7 p-0 text-slate-300 hover:text-white hover:bg-white/20 rounded-lg"
+                  title="Edit Story"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDeleteStory}
+                  disabled={isDeleting}
+                  className="h-7 w-7 p-0 text-rose-300 hover:text-rose-100 hover:bg-rose-500/20 rounded-lg"
+                  title="Pull Down / Delete Story"
+                >
+                  {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </CardHeader>
 
@@ -348,6 +436,95 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
               className="max-h-[85vh] w-auto object-contain rounded-2xl mx-auto shadow-2xl"
             />
           )}
+      {/* Edit Story Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-xl p-6 bg-white rounded-3xl space-y-4">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-black uppercase text-slate-900 tracking-tight">Edit Class Story</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSaveEdit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-black uppercase text-slate-500 tracking-wider">Category Tag</label>
+              <Select value={editCategory} onValueChange={(val: any) => setEditCategory(val)}>
+                <SelectTrigger className="h-10 rounded-xl border-2 font-bold text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(CATEGORY_STYLES).map(([catKey, catVal]) => (
+                    <SelectItem key={catKey} value={catKey}>{catVal.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-black uppercase text-slate-500 tracking-wider">Story Title</label>
+              <Input
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                className="h-10 rounded-xl border-2 text-xs font-semibold"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-black uppercase text-slate-500 tracking-wider">Story Content / Details</label>
+              <Textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                rows={4}
+                className="rounded-xl border-2 text-xs font-medium resize-none p-3"
+              />
+            </div>
+
+            <div className="space-y-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <label className="text-xs font-black uppercase text-slate-600 tracking-wider">Photo / Video Attachments</label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Paste YouTube or photo URL..."
+                  value={editMediaInput}
+                  onChange={(e) => setEditMediaInput(e.target.value)}
+                  className="h-9 rounded-lg border-2 text-xs bg-white"
+                />
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (editMediaInput.trim()) {
+                      setEditMediaUrls(prev => [...prev, editMediaInput.trim()]);
+                      setEditMediaInput('');
+                    }
+                  }}
+                  variant="outline"
+                  className="h-9 px-3 text-xs font-extrabold uppercase border-2"
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" /> Add
+                </Button>
+              </div>
+
+              {editMediaUrls.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {editMediaUrls.map((url, idx) => (
+                    <Badge key={idx} variant="secondary" className="bg-white border text-[10px] font-bold py-1 px-2 rounded-lg flex items-center gap-1">
+                      <span className="truncate max-w-[120px]">Media #{idx + 1}</span>
+                      <X
+                        className="h-3 w-3 cursor-pointer hover:text-rose-600"
+                        onClick={() => setEditMediaUrls(prev => prev.filter((_, i) => i !== idx))}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="rounded-xl text-xs font-extrabold uppercase">
+                Cancel
+              </Button>
+              <Button type="submit" className="rounded-xl text-xs font-extrabold uppercase bg-indigo-600 hover:bg-indigo-700 text-white">
+                Save Changes
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </Card>
@@ -446,7 +623,7 @@ export function ClassStoryFeed({ schoolId, classId, studentIdFilter }: ClassStor
 
       {filteredStories.length > 0 ? (
         filteredStories.map(story => (
-          <StoryCard key={story.id} story={story} students={students || []} />
+          <StoryCard key={story.id} story={story} students={students || []} userRole={userRole} />
         ))
       ) : (
         <Card className="rounded-[2.5rem] border border-slate-100 shadow-md bg-white p-12 text-center space-y-3">
