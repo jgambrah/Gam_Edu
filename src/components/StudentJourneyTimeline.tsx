@@ -10,12 +10,14 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Calendar, Search, Filter, Plus, FileText, Image, Download, Loader2, 
   GraduationCap, Award, ShieldAlert, Sparkles, BookOpen, Star, 
-  MapPin, HeartHandshake, User, Users, Lock, Milestone, Briefcase, FileBadge
+  MapPin, HeartHandshake, User, Users, Lock, Milestone, Briefcase, FileBadge,
+  Share2, QrCode, CheckCircle2
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -53,6 +55,9 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [yearFilter, setYearFilter] = useState<string>('all');
   const [termFilter, setTermFilter] = useState<string>('all');
+
+  const [activeTab, setActiveTab] = useState<'timeline' | 'portfolio'>('timeline');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Manual Logger State
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -334,26 +339,138 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Search and Filters Deck */}
-      <div className="bg-slate-50/50 dark:bg-slate-900/20 border border-slate-100 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="relative flex-grow max-w-md">
-            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-            <Input 
-              placeholder="Search timeline by title or keywords..." 
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 rounded-xl border-slate-200 dark:border-slate-800 bg-white"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {canAddEvent && (
-              <Button onClick={() => setIsAddOpen(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl h-10 shadow-md">
-                <Plus className="h-4.5 w-4.5 mr-2" /> Log Milestone
-              </Button>
+      {/* Primary 2-Tab Switcher */}
+      <div className="flex flex-wrap items-center justify-between gap-4 p-2 bg-slate-100 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-inner">
+        <div className="flex p-1 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm gap-1">
+          <button
+            onClick={() => setActiveTab('timeline')}
+            className={cn(
+              "px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center gap-2",
+              activeTab === 'timeline'
+                ? "bg-indigo-600 text-white shadow-md font-black scale-[1.02]"
+                : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             )}
-          </div>
+          >
+            <Milestone className="h-4 w-4" />
+            <span>📜 Journey Activity Feed</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('portfolio')}
+            className={cn(
+              "px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300 flex items-center gap-2",
+              activeTab === 'portfolio'
+                ? "bg-indigo-600 text-white shadow-md font-black scale-[1.02]"
+                : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
+            )}
+          >
+            <Award className="h-4 w-4" />
+            <span>🎓 Certified Portfolio & Badges</span>
+          </button>
         </div>
+
+        {activeTab === 'portfolio' && (
+          <Button
+            onClick={() => setIsShareModalOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase px-4 py-2.5 rounded-2xl shadow-md gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            <span>Public Link & QR Code</span>
+          </Button>
+        )}
+      </div>
+
+      {activeTab === 'portfolio' ? (
+        /* PORTFOLIO & MICRO-CREDENTIAL SHOWCASE TAB */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <div className="p-6 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl text-white border border-indigo-500/20 shadow-xl flex justify-between items-center">
+            <div className="space-y-1">
+              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full">
+                Verified Micro-Credentials
+              </span>
+              <h2 className="text-xl font-black uppercase italic tracking-tight">Lifetime Digital Portfolio Showcase</h2>
+              <p className="text-xs text-slate-300 font-medium">
+                Granular skill competencies, verified digital badges, and practical project artifacts.
+              </p>
+            </div>
+            <div className="hidden sm:block p-4 bg-white/5 border border-white/10 rounded-2xl">
+              <Award className="h-10 w-10 text-amber-400" />
+            </div>
+          </div>
+
+          {/* Skill Competency Breakdown */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {['STEM', 'Literacy', 'Arts', 'Sports', 'Leadership', 'Character'].map(skillCat => (
+              <Card key={skillCat} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-3 bg-white dark:bg-slate-900 shadow-sm">
+                <div className="flex justify-between items-center text-xs font-extrabold">
+                  <span className="uppercase text-slate-700 dark:text-slate-200">{skillCat} Competency</span>
+                  <Badge variant="outline" className="text-indigo-600 font-black text-[9px] border-indigo-200">
+                    Verified Level
+                  </Badge>
+                </div>
+                <Progress value={75} className="h-2.5 bg-slate-100 dark:bg-slate-800" />
+                <p className="text-[10px] font-bold text-slate-400 text-right">Mastery Progress: 75%</p>
+              </Card>
+            ))}
+          </div>
+
+          {/* Micro-Credentials Grid */}
+          <Card className="rounded-3xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 bg-white dark:bg-slate-900">
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <CardTitle className="text-base font-black uppercase tracking-tight text-slate-900 dark:text-white">
+                  Earned Digital Badges & Micro-Credentials
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-500 font-medium mt-0.5">
+                  Verified achievements minted from quizzes, Class Stories, and faculty endorsements.
+                </CardDescription>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {BADGE_CATALOG.slice(0, 6).map(badge => (
+                <div key={badge.id} className="p-4 rounded-2xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 flex items-start gap-4">
+                  <div className="p-3 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900 rounded-2xl text-indigo-600 shrink-0">
+                    <Award className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">{badge.title}</h4>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    </div>
+                    <p className="text-[11px] text-slate-500 font-medium">{badge.description}</p>
+                    <span className="inline-block text-[9px] font-black uppercase text-amber-600 tracking-wider pt-1">
+                      +{badge.xpAward} XP Awarded
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      ) : (
+        /* JOURNEY ACTIVITY FEED TAB */
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* Search and Filters Deck */}
+          <div className="bg-slate-50/50 dark:bg-slate-900/20 border border-slate-100 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="relative flex-grow max-w-md">
+                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                <Input 
+                  placeholder="Search timeline by title or keywords..." 
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 rounded-xl border-slate-200 dark:border-slate-800 bg-white"
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {canAddEvent && (
+                  <Button onClick={() => setIsAddOpen(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl h-10 shadow-md">
+                    <Plus className="h-4.5 w-4.5 mr-2" /> Log Milestone
+                  </Button>
+                )}
+              </div>
+            </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-100/50 dark:border-slate-850">
           <div className="space-y-1">
@@ -503,6 +620,8 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
           })}
         </div>
       )}
+    </div>
+  )}
 
       {/* MANUALLY LOG NEW EVENT DIALOG */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
@@ -626,6 +745,45 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Public Share & QR Code Modal */}
+      <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
+        <DialogContent className="max-w-md p-6 bg-white rounded-3xl space-y-4 text-center">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black uppercase tracking-tight text-slate-900 flex items-center justify-center gap-2">
+              <Share2 className="h-5 w-5 text-indigo-600" /> Share Student Digital Portfolio
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            <p className="text-xs text-slate-600 font-medium">
+              Anyone with this verified public link can view certified micro-credentials, skill badges, and project artifacts.
+            </p>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center gap-3">
+              <QrCode className="h-28 w-28 text-indigo-600" />
+              <p className="text-[10px] font-black uppercase text-indigo-700 tracking-wider">
+                Official Verification QR Code
+              </p>
+            </div>
+
+            <div className="p-3 bg-slate-100 rounded-xl font-mono text-[11px] text-slate-700 truncate border border-slate-200">
+              {typeof window !== 'undefined' ? `${window.location.origin}/p/${studentId}` : `/p/${studentId}`}
+            </div>
+
+            <Button
+              onClick={() => {
+                const url = `${window.location.origin}/p/${studentId}`;
+                navigator.clipboard.writeText(url);
+                toast({ title: 'Portfolio link copied to clipboard! 📋' });
+              }}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase rounded-xl h-11"
+            >
+              Copy Public Verification Link
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

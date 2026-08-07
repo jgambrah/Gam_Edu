@@ -112,5 +112,36 @@ export class TimelineService {
     };
     
     batch.set(docRef, eventData);
+    return docRef.id;
+  }
+
+  /**
+   * Logs a verified micro-credential badge to the student's timeline & portfolio.
+   */
+  public static async logMicroCredential(
+    firestore: any,
+    studentId: string,
+    schoolId: string,
+    title: string,
+    description: string,
+    skillCategory: 'STEM' | 'Literacy' | 'Arts' | 'Sports' | 'Leadership' | 'Character',
+    issuedBy: string,
+    evidenceUrl?: string
+  ) {
+    return this.logEvent(firestore, {
+      studentId,
+      schoolId,
+      title: `🎖️ Micro-Credential: ${title}`,
+      description,
+      category: 'certificate',
+      attachments: evidenceUrl ? [evidenceUrl] : [],
+      metadata: {
+        isMicroCredential: true,
+        skillCategory,
+        issuedBy,
+        evidenceUrl: evidenceUrl || '',
+        verified: true
+      }
+    });
   }
 }

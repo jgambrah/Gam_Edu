@@ -1698,4 +1698,38 @@ export interface ClassStoryComment {
   createdAt: any;
 }
 
+export type SkillCategory = 'STEM' | 'Literacy' | 'Arts' | 'Sports' | 'Leadership' | 'Character';
+
+export interface MicroCredential {
+  id: string;
+  title: string;
+  description: string;
+  category: SkillCategory;
+  badgeIcon: string;
+  issuedBy: string;
+  issuedAt: any;
+  evidenceUrl?: string;
+  verified: boolean;
+  score?: number;
+}
+
+export interface PortfolioSkill {
+  category: SkillCategory;
+  score: number; // 0 - 100
+  totalBadges: number;
+}
+
+export interface StudentPortfolio {
+  studentId: string;
+  schoolId: string;
+  studentName: string;
+  avatarUrl?: string;
+  gradeLevel?: string;
+  bio?: string;
+  skills: PortfolioSkill[];
+  microCredentials: MicroCredential[];
+  isPublic: boolean;
+  publicToken?: string;
+}
+
 
