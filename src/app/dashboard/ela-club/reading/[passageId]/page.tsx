@@ -4,9 +4,9 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useUser, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { ElaReadingPassage } from '@/lib/types';
-import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
+import { ElaReadingPassage, Student } from '@/lib/types';
+import { doc, collection, addDoc, serverTimestamp, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -15,6 +15,9 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
+import confetti from 'canvas-confetti';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function ReadingTestComponent() {
     const { passageId } = useParams();
@@ -31,6 +34,12 @@ function ReadingTestComponent() {
     const [isFinished, setIsFinished] = useState(false);
     const [score, setScore] = useState(0);
 
+    const { schoolId } = useCurrentSchool();
+
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && schoolId && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [user, schoolId, firestore])
+    );
+
     const handleAnswerChange = (questionIndex: number, answer: string) => {
         setAnswers(prev => ({ ...prev, [questionIndex]: answer }));
     };
@@ -42,7 +51,7 @@ function ReadingTestComponent() {
     };
 
     const handleSubmit = async () => {
-        if (!passage || !user) return;
+        if (!passage || !user || !firestore) return;
     
         let correctCount = 0;
         passage.question_set.forEach((q, index) => {
@@ -55,11 +64,30 @@ function ReadingTestComponent() {
         setScore(finalScore);
         setIsFinished(true);
     
-        // TODO: Save submission/result to Firestore
-        // await addDoc(collection(firestore, 'ela_submissions'), { ... });
-    
-        toast({ title: 'Test Complete!', description: `You scored ${finalScore.toFixed(0)}%.` });
-      };
+        try {
+            await addDoc(collection(firestore, 'ela_user_submissions'), {
+                userId: user.uid,
+                challenge_id: passage.id,
+                challenge_title: passage.title,
+                type: 'Reading Comprehension',
+                score: finalScore,
+                date_submitted: serverTimestamp(),
+                schoolId: schoolId || '',
+            });
+
+            const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+            const pointsAwarded = Math.max(30, Math.round(finalScore * 0.4));
+            
+            await awardActivityXP(firestore, targetStudentId, pointsAwarded, 'Reading Comprehension Passage');
+            await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'LIBRARY_BOOK_RETURNED' });
+            await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+
+            confetti({ particleCount: 120, spread: 70, colors: ['#3b82f6', '#10b981'] });
+            toast({ title: 'Reading Test Complete! 📚', description: `Scored ${finalScore.toFixed(0)}%! +${pointsAwarded} XP saved to your profile.` });
+        } catch (err) {
+            console.error("Failed to submit reading test:", err);
+        }
+    };
 
     if (isLoading) return <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin" />;
     if (!passage) return <p>Reading passage not found.</p>;

@@ -16,9 +16,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
-import { awardActivityXP } from '@/lib/achievement-utils';
+import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import confetti from 'canvas-confetti';
 
 // --- SUB-COMPONENT: The Actual Drill Modal ---
 function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | null, open: boolean, setOpen: (o: boolean) => void }) {
@@ -28,6 +29,11 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
     const { user } = useUser();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
+    const { toast } = useToast();
+
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && schoolId && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [user, schoolId, firestore])
+    );
 
     if (!drill) return null;
 
@@ -65,7 +71,15 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
                         schoolId: schoolId
                     }, { merge: true });
 
-                    await awardActivityXP(firestore, user.uid, 35, 'Grammar Practice');
+                    const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+                    await awardActivityXP(firestore, targetStudentId, 35, 'Grammar Practice');
+                    await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+
+                    confetti({ particleCount: 100, spread: 60, colors: ['#10b981', '#3b82f6'] });
+                    toast({
+                        title: "Grammar Drill Correct! 🎯",
+                        description: "+35 XP saved to your profile! STEM Pioneer badge evaluated."
+                    });
                 }
             } catch (e) {
                 console.error("Failed to save progress", e);
@@ -197,7 +211,7 @@ export function GrammarPractice() {
     if (studentClassId) {
       return query(q, where('classId', '==', studentClassId));
     }
-    return null;
+    return q;
   }, [firestore, studentClassId, isStaff, schoolId]);
 
   const { data: drills, isLoading: isLoadingDrills } = useCollection<ElaGrammarDrill>(drillsQuery);
