@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useFirestore, useUser, useCollection, useDocument, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, query, where, orderBy, addDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
@@ -141,7 +141,7 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
     () => (firestore && studentId ? doc(firestore, 'students', studentId) : null),
     [firestore, studentId]
   );
-  const { data: studentDoc } = useDocument<any>(studentDocRef);
+  const { data: studentDoc } = useDoc<any>(studentDocRef);
 
   // Dynamically calculate skill competency scores based on actual student events and earned badges
   const dynamicSkills = useMemo(() => {

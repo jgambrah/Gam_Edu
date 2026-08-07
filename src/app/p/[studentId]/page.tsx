@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useMemo } from 'react';
-import { useFirestore, useDocument, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useDoc, useCollection, useMemoFirebase } from '@/firebase';
 import { doc, collection, query } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +21,7 @@ export default function PublicStudentPortfolioPage({ params }: { params: Promise
     () => (firestore && studentId ? doc(firestore, 'students', studentId) : null),
     [firestore, studentId]
   );
-  const { data: student, isLoading: isStudentLoading } = useDocument<any>(studentDocRef);
+  const { data: student, isLoading: isStudentLoading } = useDoc<any>(studentDocRef);
 
   // Fetch timeline events for micro-credentials and portfolio artifacts
   const timelineQuery = useMemoFirebase(
