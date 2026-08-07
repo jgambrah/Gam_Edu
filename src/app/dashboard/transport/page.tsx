@@ -603,6 +603,7 @@ function DailyTransportManifest({
 
     if (firestore && schoolId && route) {
       try {
+        const exactTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
         await addDocumentNonBlocking(collection(firestore, 'vehicle_logs'), {
           schoolId,
           routeId: route.id,
@@ -611,6 +612,7 @@ function DailyTransportManifest({
           studentId,
           shift,
           status,
+          checkInTime: exactTime,
           timestamp: serverTimestamp()
         });
 

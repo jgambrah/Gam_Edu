@@ -31,6 +31,23 @@ export function StudentTransportCard({ student }: StudentTransportCardProps) {
     })[0];
   }, [latestLogs]);
 
+  const checkInTimeString = useMemo(() => {
+    if (!latestCheckIn) return '';
+    if (latestCheckIn.checkInTime) return latestCheckIn.checkInTime;
+    let dt: Date | null = null;
+    if (latestCheckIn.timestamp?.seconds) {
+      dt = new Date(latestCheckIn.timestamp.seconds * 1000);
+    } else if (latestCheckIn.timestamp?.toDate) {
+      dt = latestCheckIn.timestamp.toDate();
+    } else if (latestCheckIn.timestamp instanceof Date) {
+      dt = latestCheckIn.timestamp;
+    }
+    if (dt) {
+      return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+    return '';
+  }, [latestCheckIn]);
+
   const routesQuery = useMemoFirebase(
     () => (firestore && student.schoolId ? query(collection(firestore, 'routes'), where('schoolId', '==', student.schoolId)) : null),
     [firestore, student.schoolId]
@@ -176,7 +193,7 @@ export function StudentTransportCard({ student }: StudentTransportCardProps) {
               <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Live Bus Status & Check-In Log</p>
               <p className="text-xs font-extrabold text-slate-200">
                 {latestCheckIn
-                  ? `Marked as ${latestCheckIn.status} on ${latestCheckIn.shift || 'Transit'}`
+                  ? `Marked as ${latestCheckIn.status}${checkInTimeString ? ` at ${checkInTimeString}` : ''} (${latestCheckIn.shift || 'Transit'})`
                   : 'Bus in Service - Scheduled Stops Operating Normal'}
               </p>
             </div>
