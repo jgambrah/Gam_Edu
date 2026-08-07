@@ -1677,7 +1677,7 @@ export interface ClassStoryPost {
   authorAvatar?: string;
   title: string;
   content: string;
-  category: 'Activity' | 'Achievement' | 'Field Trip' | 'Project' | 'Kudos' | 'Announcements';
+  category: 'Science Project' | 'Art & Craft' | 'Sports & Fitness' | 'Academic Kudos' | 'Field Trip' | 'Class Activity' | 'Class Bulletin';
   mediaUrls?: string[];
   taggedStudentIds?: string[];
   likes?: string[];

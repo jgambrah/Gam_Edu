@@ -24,12 +24,13 @@ interface ClassStoryComposerProps {
 }
 
 const CATEGORIES = [
-  { id: 'Activity', label: 'Class Activity', icon: Sparkles, color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  { id: 'Achievement', label: 'Student Achievement', icon: Award, color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  { id: 'Project', label: 'Science / Art Project', icon: Camera, color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  { id: 'Field Trip', label: 'Field Trip & Excursion', icon: ImageIcon, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  { id: 'Kudos', label: 'Academic Kudos', icon: Tag, color: 'bg-rose-50 text-rose-700 border-rose-200' },
-  { id: 'Announcements', label: 'Class Bulletin', icon: Video, color: 'bg-sky-50 text-sky-700 border-sky-200' },
+  { id: 'Science Project', label: '🧪 Science Project', icon: Camera, color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  { id: 'Art & Craft', label: '🎨 Art & Craft', icon: ImageIcon, color: 'bg-pink-50 text-pink-700 border-pink-200' },
+  { id: 'Sports & Fitness', label: '⚽ Sports & Fitness', icon: Sparkles, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'Academic Kudos', label: '🏆 Academic Kudos', icon: Award, color: 'bg-amber-50 text-amber-700 border-amber-200' },
+  { id: 'Field Trip', label: '🚌 Field Trip & Excursion', icon: Tag, color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  { id: 'Class Activity', label: '🌟 Class Activity', icon: Sparkles, color: 'bg-sky-50 text-sky-700 border-sky-200' },
+  { id: 'Class Bulletin', label: '📢 Class Bulletin', icon: Video, color: 'bg-slate-100 text-slate-700 border-slate-200' },
 ] as const;
 
 export function ClassStoryComposer({ schoolId, classes, open, onOpenChange, onStoryCreated }: ClassStoryComposerProps) {

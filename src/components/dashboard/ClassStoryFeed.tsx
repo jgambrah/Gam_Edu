@@ -22,12 +22,13 @@ interface ClassStoryFeedProps {
 }
 
 const CATEGORY_STYLES: Record<string, { label: string; color: string }> = {
-  Activity: { label: 'Class Activity', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  Achievement: { label: 'Student Achievement', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  Project: { label: 'Science / Art Project', color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  'Field Trip': { label: 'Field Trip & Excursion', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  Kudos: { label: 'Academic Kudos', color: 'bg-rose-50 text-rose-700 border-rose-200' },
-  Announcements: { label: 'Class Bulletin', color: 'bg-sky-50 text-sky-700 border-sky-200' },
+  'Science Project': { label: '🧪 Science Project', color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  'Art & Craft': { label: '🎨 Art & Craft', color: 'bg-pink-50 text-pink-700 border-pink-200' },
+  'Sports & Fitness': { label: '⚽ Sports & Fitness', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  'Academic Kudos': { label: '🏆 Academic Kudos', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+  'Field Trip': { label: '🚌 Field Trip & Excursion', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  'Class Activity': { label: '🌟 Class Activity', color: 'bg-sky-50 text-sky-700 border-sky-200' },
+  'Class Bulletin': { label: '📢 Class Bulletin', color: 'bg-slate-100 text-slate-700 border-slate-200' },
 };
 
 function StoryCard({ story, students }: { story: ClassStoryPost; students: Student[] }) {
