@@ -144,7 +144,7 @@ service cloud.firestore {
 
     match /students/{studentId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(studentId);
+      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(studentId) || (isSignedIn() && (resource.data.uid == request.auth.uid || request.resource.data.uid == request.auth.uid));
 
       match /timeline/{eventId} {
         allow read, list: if isSignedIn();
@@ -316,13 +316,13 @@ service cloud.firestore {
         resource.data.studentId == request.auth.uid || isTeacher() || isStaff() || isAdmin() || parentOwnsStudent(resource.data.studentId)
       )));
       allow list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
-      allow create: if isStudent() && getUserSchoolId() == request.resource.data.schoolId;
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
       allow update, delete: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 
     match /assessments/{assessmentId} {
       allow read, list: if isSignedIn();
-      allow create, update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId) || (isSignedIn() && request.resource.data.studentId == request.auth.uid);
       allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId);
     }
 

@@ -199,49 +199,57 @@ export default function QuizPage() {
         await addDoc(collection(firestore, 'quizAttempts'), attemptData);
 
         // Trigger gamification badge updates (0 extra reads)
-        const quizPct = quiz.questions.length > 0 ? Math.round((currentScore / quiz.questions.length) * 100) : 0;
-        triggerStudentBadgeEvent(firestore, student?.id || user.uid, {
-            type: 'QUIZ_SUBMITTED',
-            quizScorePercent: quizPct
-        });
+        try {
+          const quizPct = quiz.questions.length > 0 ? Math.round((currentScore / quiz.questions.length) * 100) : 0;
+          await triggerStudentBadgeEvent(firestore, student?.id || user.uid, {
+              type: 'QUIZ_SUBMITTED',
+              quizScorePercent: quizPct
+          });
+        } catch (badgeErr) {
+          console.error("Error triggering student badge event:", badgeErr);
+        }
 
         // Auto Gradebook integration entry!
         if ((quiz as any).gradable && (quiz as any).subjectId) {
-          let term = 'First Term';
-          let academicYear = '2024-2025';
           try {
-            const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId));
-            if (settingsSnap.exists()) {
-              const settingsData = settingsSnap.data();
-              if (settingsData.term) term = settingsData.term;
-              if (settingsData.academicYear) academicYear = settingsData.academicYear;
+            let term = 'First Term';
+            let academicYear = '2024-2025';
+            try {
+              const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId));
+              if (settingsSnap.exists()) {
+                const settingsData = settingsSnap.data();
+                if (settingsData.term) term = settingsData.term;
+                if (settingsData.academicYear) academicYear = settingsData.academicYear;
+              }
+            } catch (err) {
+              console.error("Error fetching schoolSettings:", err);
             }
-          } catch (err) {
-            console.error("Error fetching schoolSettings:", err);
+
+            const studentName = student ? `${student.firstName} ${student.lastName}`.trim() : user.displayName || 'Student';
+            const maxScoreBasis = 100;
+            const pctScore = quiz.questions.length > 0 ? Math.round((currentScore / quiz.questions.length) * 100) : 0;
+
+            const assessmentRef = doc(collection(firestore, 'assessments'));
+            await setDoc(assessmentRef, {
+              studentId: user.uid,
+              studentName: studentName,
+              classId: quiz.classId,
+              subjectId: (quiz as any).subjectId,
+              schoolId: schoolId,
+              teacherId: quiz.teacherId || '',
+              term: term,
+              academicYear: academicYear,
+              assessmentType: (quiz as any).assessmentType || 'Class Exercise (CA)',
+              score: pctScore, 
+              maxScore: maxScoreBasis,
+              teacherRemark: `AI Quiz completed: ${currentScore}/${quiz.questions.length} questions correct.`,
+              createdAt: serverTimestamp(),
+              assessmentDate: serverTimestamp(),
+              quizId: quiz.id
+            });
+          } catch (assessErr) {
+            console.error("Error writing gradebook assessment entry:", assessErr);
           }
-
-          const studentName = student ? `${student.firstName} ${student.lastName}`.trim() : user.displayName || 'Student';
-          const maxScoreBasis = 100;
-          const pctScore = quiz.questions.length > 0 ? Math.round((currentScore / quiz.questions.length) * 100) : 0;
-
-          const assessmentRef = doc(collection(firestore, 'assessments'));
-          await setDoc(assessmentRef, {
-            studentId: user.uid,
-            studentName: studentName,
-            classId: quiz.classId,
-            subjectId: (quiz as any).subjectId,
-            schoolId: schoolId,
-            teacherId: quiz.teacherId || '',
-            term: term,
-            academicYear: academicYear,
-            assessmentType: (quiz as any).assessmentType || 'Class Exercise (CA)',
-            score: pctScore, 
-            maxScore: maxScoreBasis,
-            teacherRemark: `AI Quiz completed: ${currentScore}/${quiz.questions.length} questions correct.`,
-            createdAt: serverTimestamp(),
-            assessmentDate: serverTimestamp(),
-            quizId: quiz.id
-          });
         }
 
         confetti({
@@ -463,7 +471,7 @@ export default function QuizPage() {
                     <RadioGroup
                       onValueChange={(value) => handleAnswerChange(index, value)}
                       disabled={submitted}
-                      value={answers[index]}
+                      value={answers[index] || ''}
                       className="space-y-3"
                     >
                       {q.options?.map((option, i) => {
