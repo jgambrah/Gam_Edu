@@ -151,12 +151,16 @@ function DetectiveCard({ caseData, onDelete, isStaff, onSolve }: { caseData: any
     const [isSolved, setIsSolved] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
 
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && schoolId && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [user, schoolId, firestore])
+    );
+
     const handleCheck = async () => {
         setIsSolved(true);
         const correct = selectedOption === caseData.correctAnswer;
         setIsCorrect(correct);
         if (correct && onSolve) {
-            onSolve(20, caseData.id); // 20 points for case
+            onSolve(25, caseData.id); // 25 points for case
         }
         
         if (user && firestore && schoolId) {
@@ -172,7 +176,9 @@ function DetectiveCard({ caseData, onDelete, isStaff, onSolve }: { caseData: any
                     schoolId: schoolId,
                 });
                 if (correct) {
-                    await awardActivityXP(firestore, user.uid, 25, 'Think Tank Case', 'stem_explorer');
+                    const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+                    await awardActivityXP(firestore, targetStudentId, 25, 'Think Tank Case', 'stem_explorer');
+                    await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
                 }
             } catch(e) { console.error("Failed to add case submission:", e); }
         }
