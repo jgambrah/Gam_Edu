@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, CheckCircle2, RotateCcw, Swords, ToggleLeft, Cpu, Activity, Award } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useToast } from '@/hooks/use-toast';
 
 interface GameProps {
   onSolve: (points: number, id: string) => void;
@@ -36,6 +37,8 @@ export function BinaryCodeBreaker({ onSolve, targetGroup }: GameProps) {
     generateNewPuzzle();
   }, [targetGroup]);
 
+  const { toast } = useToast();
+
   const toggleBit = (index: number) => {
     if (isSolved) return;
     const newBits = [...bits];
@@ -47,6 +50,10 @@ export function BinaryCodeBreaker({ onSolve, targetGroup }: GameProps) {
     if (currentSum === target) {
       setIsSolved(true);
       confetti({ particleCount: 80, spread: 50, colors: ['#10b981', '#3b82f6'] });
+      toast({
+        title: "Binary Target Breached! ⚡",
+        description: "+15 XP saved to your profile! STEM Pioneer badge evaluated."
+      });
       onSolve(15, `binary-breaker-${target}-${attempts}`);
     }
   };
@@ -286,6 +293,8 @@ export function BooleanGates({ onSolve, targetGroup }: GameProps) {
     loadPuzzle();
   }, [targetGroup]);
 
+  const { toast } = useToast();
+
   const handleAnswerSubmit = (ans: boolean) => {
     if (isAnswered || !activePuzzle) return;
     setSelectedAnswer(ans);
@@ -295,6 +304,10 @@ export function BooleanGates({ onSolve, targetGroup }: GameProps) {
 
     if (correct) {
       confetti({ particleCount: 80, spread: 50, colors: ['#a855f7', '#ec4899'] });
+      toast({
+        title: "Logic Gate Resolved! 🧠",
+        description: "+15 XP saved to your profile! STEM Pioneer badge evaluated."
+      });
       onSolve(15, activePuzzle.id);
     }
   };
