@@ -981,7 +981,7 @@ function AdminDashboard({
 
   const financials = useMemo(() => {
     if (syncedFinancialData) return syncedFinancialData;
-    if (dashboardSummary?.financials?.totalBilled !== undefined) {
+    if ((!financialRecords || financialRecords.length === 0) && dashboardSummary?.financials?.totalBilled !== undefined) {
       return {
         totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
         totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
@@ -993,9 +993,9 @@ function AdminDashboard({
 
     if (!financialRecords || activeStudents.length === 0) return { totalOutstanding: 0, totalRevenue: 0, collectionRate: 0, totalBilled: 0, revenueByType: [] };
     
-    const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
+    const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid || s.id));
     const activeRecords = financialRecords.filter((r: any) => 
-      activeStudentIds.has(r.studentId) && 
+      (activeStudentIds.has(r.studentId) || activeStudentIds.has(r.userId)) && 
       r.status !== 'Pending Reversal'
     );
 
@@ -1038,10 +1038,10 @@ function AdminDashboard({
       collectionRate, 
       revenueByType 
     };
-  }, [financialRecords, activeStudents, dashboardSummary]);
+  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData]);
 
   const debtAgingStats = useMemo(() => {
-    if (dashboardSummary?.debtAging !== undefined) {
+    if ((!financialRecords || financialRecords.length === 0) && dashboardSummary?.debtAging !== undefined) {
       return {
         current: dashboardSummary.debtAging.current ?? 0,
         age30: dashboardSummary.debtAging.age30 ?? 0,
