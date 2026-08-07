@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, doc, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { ClassStoryPost, ClassStoryComment, Student } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,9 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Tag, Sparkles, Award, Camera, Image as ImageIcon, Video, Send, Loader2, Pin, UserCheck } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Tag, Sparkles, Award, Camera, Image as ImageIcon, Video, Send, Loader2, Pin, UserCheck, Trash2, Building, Sparkle, BookOpen } from 'lucide-react';
 import { StudentDisplay } from '@/components/student-display';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface ClassStoryFeedProps {
   schoolId: string;
@@ -110,9 +111,21 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
     return students.filter(s => story.taggedStudentIds?.includes(s.uid || s.id));
   }, [story.taggedStudentIds, students]);
 
+  const handleDeleteComment = async (commentId: string) => {
+    if (!firestore || !story.id || !commentId) return;
+    try {
+      await deleteDoc(doc(firestore, 'class_stories', story.id, 'comments', commentId));
+      await updateDoc(doc(firestore, 'class_stories', story.id), {
+        commentsCount: Math.max(0, (story.commentsCount || 1) - 1)
+      });
+    } catch (err) {
+      console.error('Error moderating comment:', err);
+    }
+  };
+
   return (
     <Card className="rounded-[2.5rem] border border-slate-100 shadow-xl bg-white overflow-hidden hover:shadow-2xl transition-all duration-300">
-      <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-indigo-50/20">
+      <CardHeader className="p-6 pb-4 border-b border-slate-100 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
             <Avatar className="h-11 w-11 border-2 border-indigo-200 shadow-sm">
@@ -123,12 +136,12 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
             </Avatar>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-sm text-slate-800 tracking-tight">{story.authorName}</h3>
-                <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 font-extrabold text-[9px] uppercase px-2 py-0.5 rounded-full">
+                <h3 className="font-extrabold text-sm text-white tracking-tight">{story.authorName}</h3>
+                <Badge variant="outline" className="bg-indigo-500/20 text-indigo-100 border-indigo-400 font-extrabold text-[9px] uppercase px-2 py-0.5 rounded-full">
                   {story.authorRole || 'Faculty'}
                 </Badge>
               </div>
-              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+              <p className="text-[11px] text-slate-300 font-bold uppercase tracking-wider mt-0.5">
                 {story.className || 'Whole School'} • {postTimeDisplay}
               </p>
             </div>
@@ -226,10 +239,19 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
             <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
               {comments && comments.length > 0 ? (
                 comments.map(c => (
-                  <div key={c.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-150 text-xs space-y-1">
+                  <div key={c.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-150 text-xs space-y-1 relative group">
                     <div className="flex justify-between items-center">
                       <span className="font-extrabold text-slate-800">{c.authorName}</span>
-                      <span className="text-[9px] font-bold uppercase text-slate-400">Parent / Faculty</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-bold uppercase text-slate-400">Parent / Faculty</span>
+                        {(user?.uid === c.authorId || user?.uid === story.authorId) && (
+                          <Trash2
+                            className="h-3.5 w-3.5 text-slate-400 hover:text-rose-600 cursor-pointer transition-colors"
+                            onClick={() => handleDeleteComment(c.id)}
+                            title="Moderate / Delete comment"
+                          />
+                        )}
+                      </div>
                     </div>
                     <p className="text-slate-600 font-medium">{c.content}</p>
                   </div>
@@ -247,6 +269,7 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
 
 export function ClassStoryFeed({ schoolId, classId, studentIdFilter }: ClassStoryFeedProps) {
   const firestore = useFirestore();
+  const [feedFilter, setFeedFilter] = useState<'all' | 'ward' | 'class' | 'school'>('all');
 
   const storiesQuery = useMemoFirebase(
     () => (firestore && schoolId ? query(collection(firestore, 'class_stories'), where('schoolId', '==', schoolId)) : null),
@@ -264,21 +287,22 @@ export function ClassStoryFeed({ schoolId, classId, studentIdFilter }: ClassStor
     if (!rawStories) return [];
     let list = [...rawStories];
 
-    if (classId && classId !== 'ALL_SCHOOL') {
+    if (feedFilter === 'ward' && studentIdFilter) {
+      list = list.filter(s => s.taggedStudentIds && s.taggedStudentIds.includes(studentIdFilter));
+    } else if (feedFilter === 'class' && classId && classId !== 'ALL_SCHOOL') {
+      list = list.filter(s => s.classId === classId);
+    } else if (feedFilter === 'school') {
+      list = list.filter(s => s.classId === 'ALL_SCHOOL');
+    } else if (classId && classId !== 'ALL_SCHOOL') {
       list = list.filter(s => s.classId === classId || s.classId === 'ALL_SCHOOL');
     }
 
-    if (studentIdFilter) {
-      list = list.filter(s => s.taggedStudentIds && s.taggedStudentIds.includes(studentIdFilter));
-    }
-
-    // Sort newest first
     return list.sort((a, b) => {
       const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : (a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0);
       const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0);
       return timeB - timeA;
     });
-  }, [rawStories, classId, studentIdFilter]);
+  }, [rawStories, classId, studentIdFilter, feedFilter]);
 
   if (isLoading) {
     return (
@@ -289,23 +313,65 @@ export function ClassStoryFeed({ schoolId, classId, studentIdFilter }: ClassStor
     );
   }
 
-  if (filteredStories.length === 0) {
-    return (
-      <Card className="rounded-[2.5rem] border border-slate-100 shadow-md bg-white p-12 text-center space-y-3">
-        <Camera className="h-12 w-12 text-slate-300 mx-auto" />
-        <CardTitle className="text-base font-black uppercase text-slate-700 tracking-tight">No Class Stories Published Yet</CardTitle>
-        <CardDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-          Teachers and faculty will post photos, projects, and achievement updates here soon!
-        </CardDescription>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      {filteredStories.map(story => (
-        <StoryCard key={story.id} story={story} students={students || []} />
-      ))}
+      {/* Filter Tabs Bar */}
+      <div className="flex flex-wrap items-center gap-2 p-2 bg-slate-100/90 backdrop-blur-sm rounded-2xl border border-slate-200/80 shadow-inner">
+        <button
+          onClick={() => setFeedFilter('all')}
+          className={cn(
+            "px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all duration-200",
+            feedFilter === 'all' ? "bg-white text-indigo-600 shadow-sm font-black scale-[1.02]" : "text-slate-500 hover:text-slate-900"
+          )}
+        >
+          🎨 All Stories
+        </button>
+        {studentIdFilter && (
+          <button
+            onClick={() => setFeedFilter('ward')}
+            className={cn(
+              "px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all duration-200",
+              feedFilter === 'ward' ? "bg-white text-indigo-600 shadow-sm font-black scale-[1.02]" : "text-slate-500 hover:text-slate-900"
+            )}
+          >
+            🌟 My Ward Highlights
+          </button>
+        )}
+        <button
+          onClick={() => setFeedFilter('class')}
+          className={cn(
+            "px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all duration-200",
+            feedFilter === 'class' ? "bg-white text-indigo-600 shadow-sm font-black scale-[1.02]" : "text-slate-500 hover:text-slate-900"
+          )}
+        >
+          📚 Class Feed
+        </button>
+        <button
+          onClick={() => setFeedFilter('school')}
+          className={cn(
+            "px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all duration-200",
+            feedFilter === 'school' ? "bg-white text-indigo-600 shadow-sm font-black scale-[1.02]" : "text-slate-500 hover:text-slate-900"
+          )}
+        >
+          🏛️ School Community
+        </button>
+      </div>
+
+      {filteredStories.length > 0 ? (
+        filteredStories.map(story => (
+          <StoryCard key={story.id} story={story} students={students || []} />
+        ))
+      ) : (
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-md bg-white p-12 text-center space-y-3">
+          <Camera className="h-12 w-12 text-slate-300 mx-auto" />
+          <CardTitle className="text-base font-black uppercase text-slate-700 tracking-tight">No Class Stories Found</CardTitle>
+          <CardDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+            {feedFilter === 'ward'
+              ? "No specific stories tagged for your ward in this view yet."
+              : "Teachers and faculty will post photos, projects, and achievement updates here soon!"}
+          </CardDescription>
+        </Card>
+      )}
     </div>
   );
 }
