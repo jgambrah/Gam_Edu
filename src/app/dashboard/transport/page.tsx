@@ -613,6 +613,20 @@ function DailyTransportManifest({
           status,
           timestamp: serverTimestamp()
         });
+
+        // Trigger in-app notification for student & parent suite
+        const targetStudent = students?.find(s => s.uid === studentId || s.id === studentId);
+        const studentName = targetStudent ? `${targetStudent.firstName} ${targetStudent.lastName}` : 'Student';
+        await addDocumentNonBlocking(collection(firestore, 'notifications'), {
+          schoolId,
+          userId: studentId,
+          title: `Bus Transit: ${studentName} ${status}`,
+          message: `${studentName} has been marked as ${status} during ${shift} on route ${route.name}.`,
+          type: 'transport',
+          createdAt: serverTimestamp(),
+          read: false
+        });
+
         toast({ title: `Student marked as ${status}` });
       } catch (err) {
         console.error("Error logging vehicle transit:", err);
