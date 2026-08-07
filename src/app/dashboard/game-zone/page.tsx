@@ -21,6 +21,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { Student } from '@/lib/types';
 import { generateTriviaQuiz } from '@/ai/flows/think-tank';
 import { BinaryCodeBreaker, BooleanGates, generateBooleanPuzzle } from '@/components/academics/arcade-games';
+import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 
 const CATEGORIES = ['Python Programming', 'Boolean Logic Gates', 'Math Riddles', 'Deductive Logic'];
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
@@ -332,7 +333,7 @@ export default function GameZonePage() {
 
   // 3. Score callback
   const handleSolve = async (points: number, gameId: string) => {
-    if (!user || !firestore || role !== 'Student') return;
+    if (!user || !firestore) return;
     if (solvedGames.includes(gameId)) return; // No duplicate scoring
 
     const nextSolved = [...solvedGames, gameId];
@@ -347,7 +348,16 @@ export default function GameZonePage() {
             arcadeCompleted: nextSolved,
             arcadeScore: nextScore
         }, { merge: true });
-        
+
+        // Resolve student document ID (support custom ID or UID)
+        const targetStudentId = studentData && studentData[0]?.id ? studentData[0].id : user.uid;
+
+        // Save XP directly to student profile (totalPoints)
+        await awardActivityXP(firestore, targetStudentId, points, 'Cyber Logic Arcade');
+
+        // Trigger STEM Pioneer badge unlock evaluation
+        await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+
         confetti({ particleCount: 120, spread: 60, colors: ['#10b981', '#3b82f6', '#ec4899'] });
     } catch (e) {
         console.error("Failed to save progress:", e);

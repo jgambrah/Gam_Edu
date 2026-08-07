@@ -159,7 +159,7 @@ export async function triggerStudentBadgeEvent(
   firestore: any,
   studentId: string,
   event: {
-    type: 'ATTENDANCE_PRESENT' | 'ATTENDANCE_TARDY' | 'QUIZ_SUBMITTED' | 'LIBRARY_BOOK_RETURNED' | 'MANUAL_TEACHER_AWARD';
+    type: 'ATTENDANCE_PRESENT' | 'ATTENDANCE_TARDY' | 'QUIZ_SUBMITTED' | 'LIBRARY_BOOK_RETURNED' | 'STEM_CHALLENGE_COMPLETED' | 'MANUAL_TEACHER_AWARD';
     quizScorePercent?: number;
     customBadgeId?: string;
   }
@@ -173,7 +173,7 @@ export async function triggerStudentBadgeEvent(
 
     const studentData = snap.data();
     const existingBadges: EarnedBadge[] = studentData.earnedBadges || [];
-    const hasBadge = (badgeId: string) => existingBadges.some(b => b.id === badgeId);
+    const hasBadge = (badgeId: string) => existingBadges.some(b => b.id === badgeId || (b.id && b.id.startsWith(`${badgeId}_`)));
 
     const updatePayload: Record<string, any> = {};
     const newBadgesToAward: BadgeCatalogItem[] = [];
@@ -181,6 +181,7 @@ export async function triggerStudentBadgeEvent(
     let currentAttendanceStreak = Number(studentData.attendanceStreak || 0);
     let currentQuizStreak90 = Number(studentData.quizStreak90 || 0);
     let currentBooksCount = Number(studentData.booksReadCount || 0);
+    let currentStemCount = Number(studentData.stemCount || 0);
 
     // 1. ATTENDANCE EVENT
     if (event.type === 'ATTENDANCE_PRESENT') {
@@ -225,7 +226,18 @@ export async function triggerStudentBadgeEvent(
       }
     }
 
-    // 4. MANUAL TEACHER AWARD (Always cumulative)
+    // 4. STEM / CYBER LOGIC ARCADE EVENT
+    if (event.type === 'STEM_CHALLENGE_COMPLETED') {
+      currentStemCount += 1;
+      updatePayload.stemCount = currentStemCount;
+
+      if (!hasBadge('stem_explorer')) {
+        const cat = BADGE_CATALOG.find(b => b.id === 'stem_explorer');
+        if (cat) newBadgesToAward.push(cat);
+      }
+    }
+
+    // 5. MANUAL TEACHER AWARD (Always cumulative)
     if (event.type === 'MANUAL_TEACHER_AWARD' && event.customBadgeId) {
       const cat = BADGE_CATALOG.find(b => b.id === event.customBadgeId);
       if (cat) {
