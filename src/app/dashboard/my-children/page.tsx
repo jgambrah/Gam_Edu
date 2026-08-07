@@ -5,7 +5,8 @@ import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@
 import { collection, doc, query, where, orderBy, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users, Calendar as CalendarIcon, Home, ClipboardCopy, Plus, AlertOctagon, HelpCircle, Wallet, Coins, Milestone } from 'lucide-react';
+import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users, Calendar as CalendarIcon, Home, ClipboardCopy, Plus, AlertOctagon, HelpCircle, Wallet, Coins, Milestone, Bus as BusIcon } from 'lucide-react';
+import { StudentTransportCard } from '@/components/dashboard/StudentTransportCard';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
@@ -728,7 +729,7 @@ function StudentDetailView({ student }: { student: Student }) {
             />
 
             <Tabs defaultValue="roadmap" className="w-full">
-                <TabsList className="grid w-full grid-cols-6 bg-slate-100 p-1 rounded-xl">
+                <TabsList className="grid w-full grid-cols-7 bg-slate-100 p-1 rounded-xl">
                     <TabsTrigger value="roadmap" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm text-indigo-950">
                         <Flame className="mr-2 h-4 w-4 text-amber-500" /> Roadmap
                     </TabsTrigger>
@@ -740,6 +741,9 @@ function StudentDetailView({ student }: { student: Student }) {
                     </TabsTrigger>
                     <TabsTrigger value="timeline" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <Milestone className="mr-2 h-4 w-4" /> Journey Timeline
+                    </TabsTrigger>
+                    <TabsTrigger value="transport" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <BusIcon className="mr-2 h-4 w-4 text-indigo-600" /> Transport Fleet
                     </TabsTrigger>
                     <TabsTrigger value="boarding" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <Home className="mr-2 h-4 w-4" /> Boarding Service
@@ -763,6 +767,10 @@ function StudentDetailView({ student }: { student: Student }) {
 
                 <TabsContent value="timeline" className="mt-6">
                     <StudentJourneyTimeline studentId={studentId} />
+                </TabsContent>
+
+                <TabsContent value="transport" className="mt-6">
+                    <StudentTransportCard student={student} />
                 </TabsContent>
 
                 <TabsContent value="boarding" className="mt-6">

@@ -927,6 +927,10 @@ export interface Bus {
   name: string;
   capacity: number;
   schoolId: string;
+  licensePlate?: string;
+  status?: 'Active' | 'Maintenance' | 'Inactive';
+  driverId?: string;
+  driverPhone?: string;
 }
 
 export interface Stop {
@@ -935,6 +939,8 @@ export interface Stop {
   address: string;
   order: number;
   assignedStudentIds: string[];
+  pickupTime?: string;
+  dropoffTime?: string;
 }
 
 export interface Route {

@@ -306,6 +306,8 @@ const stopSchema = z.object({
   name: z.string().min(1, 'Stop name is required.'),
   address: z.string().min(1, 'Address is required.'),
   order: z.coerce.number().min(1, 'Order must be at least 1.'),
+  pickupTime: z.string().optional(),
+  dropoffTime: z.string().optional(),
   assignedStudentIds: z.array(z.string()).default([]),
 });
 
@@ -368,7 +370,7 @@ function RouteManagementDialog({
                     driverId: '',
                     dailyRate: 0,
                     termlyRate: 0,
-                    stops: [{ name: '', address: '', order: 1, assignedStudentIds: [] }],
+                    stops: [{ name: '', address: '', order: 1, pickupTime: '07:15 AM', dropoffTime: '04:00 PM', assignedStudentIds: [] }],
                 });
             }
         }
@@ -499,6 +501,22 @@ function RouteManagementDialog({
                                                 </FormItem>
                                             )}/>
                                         </div>
+                                        <div className="w-24">
+                                            <FormField control={form.control} name={`stops.${index}.pickupTime`} render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-[10px] font-black uppercase text-slate-400">Pickup</FormLabel>
+                                                    <FormControl><Input {...field} placeholder="07:15 AM" className="h-10 rounded-xl border-2 text-xs" /></FormControl>
+                                                </FormItem>
+                                            )}/>
+                                        </div>
+                                        <div className="w-24">
+                                            <FormField control={form.control} name={`stops.${index}.dropoffTime`} render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-[10px] font-black uppercase text-slate-400">Dropoff</FormLabel>
+                                                    <FormControl><Input {...field} placeholder="04:00 PM" className="h-10 rounded-xl border-2 text-xs" /></FormControl>
+                                                </FormItem>
+                                            )}/>
+                                        </div>
                                         <div className="pt-5">
                                             <Button type="button" variant="ghost" size="icon" className="text-red-400 hover:text-red-600 hover:bg-rose-50 rounded-xl h-10 w-10" onClick={() => remove(index)}>
                                                 <Trash2 className="h-4 w-4"/>
@@ -507,7 +525,7 @@ function RouteManagementDialog({
                                     </div>
                                 ))}
                             </div>
-                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', address: '', order: fields.length + 1, assignedStudentIds: [] })} className="mt-4 border-2 border-dashed border-slate-200 hover:border-slate-300 rounded-xl h-10 px-4 font-black uppercase text-xs tracking-wider">
+                            <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', address: '', order: fields.length + 1, pickupTime: '07:15 AM', dropoffTime: '04:00 PM', assignedStudentIds: [] })} className="mt-4 border-2 border-dashed border-slate-200 hover:border-slate-300 rounded-xl h-10 px-4 font-black uppercase text-xs tracking-wider">
                                 <PlusCircle className="h-4 w-4 mr-2 text-indigo-600"/> Add Route Stop
                             </Button>
                         </div>
