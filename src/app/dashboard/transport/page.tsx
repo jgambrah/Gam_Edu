@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Route, Stop, Student, Bus, Class } from '@/lib/types';
-import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit, Calendar, ShieldAlert, Clock } from 'lucide-react';
+import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit, Calendar, ShieldAlert, Clock, CheckCircle, XCircle, UserCheck, ClipboardList } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -228,18 +229,18 @@ function BusManagementDialog({ open, onOpenChange, onBusChange, schoolId }: { op
     const { data: buses, isLoading } = useCollection<Bus>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     const form = useForm({
-        defaultValues: { name: '', capacity: 30 }
+        defaultValues: { name: '', capacity: 30, licensePlate: '', status: 'Active' as 'Active' | 'Maintenance' | 'Inactive' }
     });
 
-    const onAddBus = async (values: { name: string; capacity: number }) => {
+    const onAddBus = async (values: { name: string; capacity: number; licensePlate?: string; status?: string }) => {
         setIsSubmitting(true);
         try {
             await addDocumentNonBlocking(collection(firestore!, 'buses'), { ...values, schoolId });
-            toast({ title: 'Bus Added' });
+            toast({ title: 'Bus Enrolled in Fleet' });
             onBusChange();
-            form.reset();
+            form.reset({ name: '', capacity: 30, licensePlate: '', status: 'Active' });
         } catch (e) {
-            toast({ variant: 'destructive', title: 'Error' });
+            toast({ variant: 'destructive', title: 'Error adding bus' });
         } finally {
             setIsSubmitting(false);
         }
@@ -247,47 +248,83 @@ function BusManagementDialog({ open, onOpenChange, onBusChange, schoolId }: { op
     
     return (
          <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="rounded-3xl border-0 shadow-2xl sm:max-w-md">
+            <DialogContent className="rounded-3xl border-0 shadow-2xl sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight font-black uppercase">Manage Buses</DialogTitle>
-                    <DialogDescription className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Configure school transportation vehicles.</DialogDescription>
+                    <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight font-black uppercase">Transport Fleet Vehicles</DialogTitle>
+                    <DialogDescription className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Configure school buses, registration, and maintenance status.</DialogDescription>
                 </DialogHeader>
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(onAddBus)} className="space-y-4">
-                        <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-xs font-black uppercase text-slate-400">Bus Name/Number</FormLabel>
-                                <FormControl><Input {...field} placeholder="e.g., Yellow Eagle" className="h-11 rounded-xl border-2" /></FormControl>
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="capacity" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-xs font-black uppercase text-slate-400">Capacity</FormLabel>
-                                <FormControl><Input type="number" {...field} className="h-11 rounded-xl border-2" /></FormControl>
-                            </FormItem>
-                        )} />
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="name" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Bus Name/Code</FormLabel>
+                                    <FormControl><Input {...field} placeholder="e.g., Bus #04 - Yellow Eagle" className="h-11 rounded-xl border-2 text-xs" /></FormControl>
+                                </FormItem>
+                            )} />
+                            <FormField control={form.control} name="licensePlate" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">License Plate</FormLabel>
+                                    <FormControl><Input {...field} placeholder="e.g., GT 4820-24" className="h-11 rounded-xl border-2 text-xs font-mono" /></FormControl>
+                                </FormItem>
+                            )} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="capacity" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Seat Capacity</FormLabel>
+                                    <FormControl><Input type="number" {...field} className="h-11 rounded-xl border-2 text-xs font-mono" /></FormControl>
+                                </FormItem>
+                            )} />
+                            <FormField control={form.control} name="status" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-xs font-black uppercase text-slate-400">Operational Status</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl><SelectTrigger className="h-11 rounded-xl border-2 text-xs"><SelectValue placeholder="Select status" /></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Active">Active (In Service)</SelectItem>
+                                            <SelectItem value="Maintenance">Under Maintenance</SelectItem>
+                                            <SelectItem value="Inactive">Inactive</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )} />
+                        </div>
                         <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-2xl font-black uppercase tracking-tight shadow-md">
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Add Bus
+                            Enroll Vehicle to Fleet
                         </Button>
                     </form>
                 </Form>
                 <div className="mt-4 border-t border-slate-100 pt-4">
-                    <h4 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-2">Existing Buses</h4>
+                    <h4 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-2">Registered Fleet Inventory</h4>
                     {isLoading ? <div className="py-6 flex justify-center"><Loader2 className="animate-spin h-5 w-5 text-indigo-600"/></div> : (
-                        <div className="max-h-48 overflow-y-auto border border-slate-100 rounded-2xl">
+                        <div className="max-h-52 overflow-y-auto border border-slate-100 rounded-2xl">
                             <Table>
                                 <TableHeader className="bg-slate-50/50">
                                     <TableRow>
-                                        <TableHead className="font-bold uppercase text-[9px] tracking-wider">Name</TableHead>
+                                        <TableHead className="font-bold uppercase text-[9px] tracking-wider">Vehicle</TableHead>
+                                        <TableHead className="font-bold uppercase text-[9px] tracking-wider">Plate</TableHead>
                                         <TableHead className="font-bold uppercase text-[9px] tracking-wider">Capacity</TableHead>
+                                        <TableHead className="font-bold uppercase text-[9px] tracking-wider">Status</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {buses?.map(bus => (
                                         <TableRow key={bus.id} className="hover:bg-slate-50/50 transition-colors">
-                                            <TableCell className="font-bold text-slate-700 uppercase">{bus.name}</TableCell>
-                                            <TableCell className="font-mono font-bold text-slate-500">{bus.capacity} seats</TableCell>
+                                            <TableCell className="font-bold text-slate-800 text-xs uppercase">{bus.name}</TableCell>
+                                            <TableCell className="font-mono text-xs font-bold text-slate-600">{bus.licensePlate || 'N/A'}</TableCell>
+                                            <TableCell className="font-mono text-xs font-bold text-slate-500">{bus.capacity} seats</TableCell>
+                                            <TableCell>
+                                                <Badge className={cn(
+                                                    "font-bold uppercase text-[9px] px-2 py-0.5 rounded-full border-none",
+                                                    bus.status === 'Maintenance' ? "bg-amber-100 text-amber-800" :
+                                                    bus.status === 'Inactive' ? "bg-rose-100 text-rose-800" :
+                                                    "bg-emerald-100 text-emerald-800"
+                                                )}>
+                                                    {bus.status || 'Active'}
+                                                </Badge>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -540,6 +577,162 @@ function RouteManagementDialog({
     );
 }
 
+// --- Daily Transport Manifest Component ---
+function DailyTransportManifest({
+  route,
+  routes,
+  students,
+  buses,
+  drivers,
+  schoolId
+}: {
+  route: Route | null;
+  routes: Route[];
+  students: Student[];
+  buses: Bus[];
+  drivers: any[];
+  schoolId: string;
+}) {
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [shift, setShift] = useState<'Morning AM' | 'Afternoon PM'>('Morning AM');
+  const [transitState, setTransitState] = useState<Record<string, 'Boarded' | 'Dropped Off' | 'Absent'>>({});
+
+  const handleMarkStatus = async (studentId: string, stopId: string, status: 'Boarded' | 'Dropped Off' | 'Absent') => {
+    setTransitState(prev => ({ ...prev, [studentId]: status }));
+
+    if (firestore && schoolId && route) {
+      try {
+        await addDocumentNonBlocking(collection(firestore, 'vehicle_logs'), {
+          schoolId,
+          routeId: route.id,
+          routeName: route.name,
+          stopId,
+          studentId,
+          shift,
+          status,
+          timestamp: serverTimestamp()
+        });
+        toast({ title: `Student marked as ${status}` });
+      } catch (err) {
+        console.error("Error logging vehicle transit:", err);
+      }
+    }
+  };
+
+  if (!route) {
+    return (
+      <Card className="rounded-[2.5rem] border border-slate-100 shadow-lg bg-white p-8 text-center">
+        <BusIcon className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+        <CardTitle className="text-base font-black uppercase text-slate-700 tracking-tight">No Route Selected</CardTitle>
+        <CardDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">Please select a route from the dropdown above to load the passenger check-in roster.</CardDescription>
+      </Card>
+    );
+  }
+
+  const assignedBus = buses?.find(b => b.id === route.busId);
+  const assignedDriver = drivers?.find(d => d.uid === route.driverId);
+
+  return (
+    <Card className="rounded-[2.5rem] border border-slate-100 shadow-xl bg-white overflow-hidden space-y-6">
+      <CardHeader className="bg-slate-900 text-white p-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <ClipboardList className="h-6 w-6 text-indigo-400" />
+              <CardTitle className="text-xl font-black uppercase tracking-tight text-white">{route.name} - Passenger Manifest</CardTitle>
+            </div>
+            <CardDescription className="text-xs text-slate-300 font-medium mt-1">
+              Vehicle: <strong className="text-white">{assignedBus?.name || 'School Bus'}</strong> ({assignedBus?.licensePlate || 'Plate N/A'}) | Driver: <strong className="text-white">{assignedDriver ? `${assignedDriver.firstName} ${assignedDriver.lastName}` : (route.driverName || 'Staff Driver')}</strong>
+            </CardDescription>
+          </div>
+          <div className="flex gap-2 bg-slate-800 p-1.5 rounded-2xl border border-slate-700">
+            <Button
+              variant={shift === 'Morning AM' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setShift('Morning AM')}
+              className={cn("rounded-xl font-black text-xs uppercase px-4", shift === 'Morning AM' ? "bg-indigo-600 text-white shadow-md" : "text-slate-300 hover:text-white")}
+            >
+              Morning Pickup (AM)
+            </Button>
+            <Button
+              variant={shift === 'Afternoon PM' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setShift('Afternoon PM')}
+              className={cn("rounded-xl font-black text-xs uppercase px-4", shift === 'Afternoon PM' ? "bg-indigo-600 text-white shadow-md" : "text-slate-300 hover:text-white")}
+            >
+              Afternoon Drop-off (PM)
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-6 space-y-6">
+        {route.stops?.sort((a, b) => a.order - b.order).map((stop) => (
+          <div key={stop.id} className="p-5 rounded-2xl border-2 border-slate-100 bg-slate-50/50 space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-200/60 pb-3">
+              <div>
+                <h4 className="font-black text-slate-800 text-sm uppercase tracking-tight flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-indigo-600" />
+                  Stop {stop.order}: {stop.name}
+                </h4>
+                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{stop.address}</p>
+              </div>
+              <Badge className="bg-white text-indigo-600 border border-slate-200 font-bold text-[10px] uppercase px-3 py-1 rounded-full">
+                Scheduled: {shift === 'Morning AM' ? (stop.pickupTime || '07:15 AM') : (stop.dropoffTime || '04:00 PM')}
+              </Badge>
+            </div>
+
+            <div className="space-y-3">
+              {stop.assignedStudentIds && stop.assignedStudentIds.length > 0 ? (
+                stop.assignedStudentIds.map((studentId) => {
+                  const student = students?.find(s => s.uid === studentId);
+                  if (!student || (student.enrollmentStatus && student.enrollmentStatus !== 'Active')) return null;
+                  const currentStatus = transitState[studentId];
+
+                  return (
+                    <div key={studentId} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-white rounded-xl border border-slate-150 shadow-sm gap-3">
+                      <StudentDisplay student={student} variant="compact" />
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant={currentStatus === 'Boarded' ? 'default' : 'outline'}
+                          onClick={() => handleMarkStatus(studentId, stop.id, 'Boarded')}
+                          className={cn("h-8 text-[10px] font-extrabold uppercase rounded-lg px-3", currentStatus === 'Boarded' ? "bg-emerald-600 text-white hover:bg-emerald-700" : "text-emerald-700 hover:bg-emerald-50 border-emerald-200")}
+                        >
+                          <CheckCircle className="h-3 w-3 mr-1" /> Boarded
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={currentStatus === 'Dropped Off' ? 'default' : 'outline'}
+                          onClick={() => handleMarkStatus(studentId, stop.id, 'Dropped Off')}
+                          className={cn("h-8 text-[10px] font-extrabold uppercase rounded-lg px-3", currentStatus === 'Dropped Off' ? "bg-indigo-600 text-white hover:bg-indigo-700" : "text-indigo-700 hover:bg-indigo-50 border-indigo-200")}
+                        >
+                          <UserCheck className="h-3 w-3 mr-1" /> Dropped Off
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={currentStatus === 'Absent' ? 'default' : 'outline'}
+                          onClick={() => handleMarkStatus(studentId, stop.id, 'Absent')}
+                          className={cn("h-8 text-[10px] font-extrabold uppercase rounded-lg px-3", currentStatus === 'Absent' ? "bg-rose-600 text-white hover:bg-rose-700" : "text-rose-700 hover:bg-rose-50 border-rose-200")}
+                        >
+                          <XCircle className="h-3 w-3 mr-1" /> Absent
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-xs text-slate-400 italic font-medium">No passengers assigned to this stop.</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
 // --- Stat Card Component ---
 function StatCard({ title, value, icon: Icon, gradientClass }: { title: string; value: string | number; icon: React.ElementType; gradientClass: string }) {
     return (
@@ -709,21 +902,29 @@ export default function TransportPage() {
             <StatCard title="Waiting Assignment" value={waitingCount} icon={User} gradientClass="from-rose-500 to-red-500" />
         </div>
 
-        <Card className="rounded-[2rem] border-none shadow-md bg-white overflow-hidden">
-            <CardContent className="p-6 flex flex-col md:flex-row items-center gap-4">
-                <div className="text-sm font-black uppercase tracking-wider text-slate-400">Select Bus Route:</div>
-                <div className="w-full md:w-80">
-                    <Select onValueChange={setSelectedRouteId}>
-                      <SelectTrigger className="h-11 bg-white border-2 rounded-xl"><SelectValue placeholder="Select a route to view details..." /></SelectTrigger>
-                      <SelectContent>
-                          {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                </div>
-            </CardContent>
-        </Card>
+        <Tabs defaultValue="overview" className="w-full space-y-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
+            <TabsList className="bg-slate-100 p-1 rounded-xl">
+              <TabsTrigger value="overview" className="rounded-lg font-bold text-xs uppercase px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <RouteIcon className="h-4 w-4 mr-2 text-indigo-600" /> Fleet & Route Overview
+              </TabsTrigger>
+              <TabsTrigger value="manifest" className="rounded-lg font-bold text-xs uppercase px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <ClipboardList className="h-4 w-4 mr-2 text-indigo-600" /> Daily Transport Manifest (Driver Roster)
+              </TabsTrigger>
+            </TabsList>
+            <div className="flex items-center gap-2 px-2">
+              <span className="text-xs font-black uppercase text-slate-400">Route:</span>
+              <Select onValueChange={setSelectedRouteId} value={selectedRouteId || undefined}>
+                <SelectTrigger className="h-10 w-64 bg-white border-2 rounded-xl text-xs font-bold"><SelectValue placeholder="Choose route..." /></SelectTrigger>
+                <SelectContent>
+                  {routes?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-      {isLoading && selectedRouteId && <div className="text-center p-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-600"/></div>}
+          <TabsContent value="overview" className="space-y-6 mt-0">
+            {isLoading && selectedRouteId && <div className="text-center p-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-600"/></div>}
 
       <div className="grid md:grid-cols-2 gap-6">
         {selectedRoute && !isLoading && (
@@ -811,7 +1012,14 @@ export default function TransportPage() {
                             <h4 className="font-black text-slate-800 uppercase tracking-tight">{stop.order}. {stop.name}</h4>
                             <Badge className="bg-slate-100 hover:bg-slate-100 text-slate-600 border-none font-bold uppercase text-[9px]">{stop.assignedStudentIds?.length || 0} Students</Badge>
                         </div>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide mb-3">{stop.address}</p>
+                        <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 mb-3 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                            <span>Address: {stop.address}</span>
+                            <div className="flex gap-2">
+                                <span className="text-indigo-600">Pickup: {stop.pickupTime || '07:15 AM'}</span>
+                                <span className="text-slate-400">|</span>
+                                <span className="text-emerald-600">Dropoff: {stop.dropoffTime || '04:00 PM'}</span>
+                            </div>
+                        </div>
                         <div className="space-y-2 pl-4 border-l-2 border-indigo-100">
                             {stop.assignedStudentIds?.length > 0 ? (
                                 stop.assignedStudentIds.map((studentId: string) => {
@@ -889,6 +1097,19 @@ export default function TransportPage() {
             </CardContent>
         </Card>
       </div>
+          </TabsContent>
+
+          <TabsContent value="manifest" className="mt-0">
+            <DailyTransportManifest
+              route={selectedRoute || null}
+              routes={routes || []}
+              students={students || []}
+              buses={buses || []}
+              drivers={drivers || []}
+              schoolId={schoolId || ''}
+            />
+          </TabsContent>
+        </Tabs>
       
       {selectedRoute && (
         <StudentAssignmentDialog 
