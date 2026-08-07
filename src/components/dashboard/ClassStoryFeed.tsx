@@ -436,6 +436,9 @@ function StoryCard({ story, students, userRole }: { story: ClassStoryPost; stude
               className="max-h-[85vh] w-auto object-contain rounded-2xl mx-auto shadow-2xl"
             />
           )}
+        </DialogContent>
+      </Dialog>
+
       {/* Edit Story Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent className="max-w-xl p-6 bg-white rounded-3xl space-y-4">
