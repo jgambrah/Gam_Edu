@@ -18,11 +18,18 @@ export function StudentTransportCard({ student }: StudentTransportCardProps) {
   const studentIdVal = student.uid || student.id;
 
   const logsQuery = useMemoFirebase(
-    () => (firestore && studentIdVal ? query(collection(firestore, 'vehicle_logs'), where('studentId', '==', studentIdVal), orderBy('timestamp', 'desc'), limit(1)) : null),
+    () => (firestore && studentIdVal ? query(collection(firestore, 'vehicle_logs'), where('studentId', '==', studentIdVal)) : null),
     [firestore, studentIdVal]
   );
   const { data: latestLogs } = useCollection<any>(logsQuery);
-  const latestCheckIn = latestLogs?.[0];
+  const latestCheckIn = useMemo(() => {
+    if (!latestLogs || latestLogs.length === 0) return null;
+    return [...latestLogs].sort((a: any, b: any) => {
+      const timeA = a.timestamp?.seconds ? a.timestamp.seconds * 1000 : (a.timestamp?.toDate ? a.timestamp.toDate().getTime() : 0);
+      const timeB = b.timestamp?.seconds ? b.timestamp.seconds * 1000 : (b.timestamp?.toDate ? b.timestamp.toDate().getTime() : 0);
+      return timeB - timeA;
+    })[0];
+  }, [latestLogs]);
 
   const routesQuery = useMemoFirebase(
     () => (firestore && student.schoolId ? query(collection(firestore, 'routes'), where('schoolId', '==', student.schoolId)) : null),
