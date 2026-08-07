@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
+import confetti from 'canvas-confetti';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
@@ -115,16 +117,26 @@ function QuizComponent() {
 
     const resultsCollection = collection(firestore, 'science_results');
 
-    // Perform writes and catch potential errors to emit a contextual error.
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
+    );
+
     try {
         await Promise.all([
             setDoc(leaderboardRef, leaderboardData, { merge: true }),
             addDoc(resultsCollection, resultData)
         ]);
 
+        const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+        const pointsAwarded = Math.max(30, Math.round(correctCount * 10));
+
+        await awardActivityXP(firestore, targetStudentId, pointsAwarded, 'Science Practice Matrix', 'stem_explorer');
+        await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+
         setScore(finalScore);
         setIsFinished(true);
-        toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
+        confetti({ particleCount: 120, spread: 70, colors: ['#10b981', '#14b8a6'] });
+        toast({ title: 'Quantum Simulation Complete! 🔬', description: `Scored ${finalScore.toFixed(0)}%! +${pointsAwarded} XP saved to your profile.`});
     } catch (serverError) {
         // Create and emit a detailed error for the listener
         const permissionError = new FirestorePermissionError({
