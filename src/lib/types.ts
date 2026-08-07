@@ -1666,4 +1666,36 @@ export interface ForumComment {
   createdAt: any;
 }
 
+export interface ClassStoryPost {
+  id: string;
+  schoolId: string;
+  classId: string;
+  className?: string;
+  authorId: string;
+  authorName: string;
+  authorRole: 'Teacher' | 'Admin' | 'SuperAdmin';
+  authorAvatar?: string;
+  title: string;
+  content: string;
+  category: 'Activity' | 'Achievement' | 'Field Trip' | 'Project' | 'Kudos' | 'Announcements';
+  mediaUrls?: string[];
+  taggedStudentIds?: string[];
+  likes?: string[];
+  commentsCount: number;
+  isPinned?: boolean;
+  createdAt: any;
+}
+
+export interface ClassStoryComment {
+  id: string;
+  storyId: string;
+  schoolId: string;
+  authorId: string;
+  authorName: string;
+  authorRole: string;
+  authorAvatar?: string;
+  content: string;
+  createdAt: any;
+}
+
 

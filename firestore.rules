@@ -642,6 +642,18 @@ service cloud.firestore {
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
+    match /class_stories/{storyId} {
+      allow read, list, get: if isSignedIn();
+      allow create, update, delete: if isSuperAdmin() || isAdmin() || isTeacher();
+      allow update: if isSignedIn();
+      
+      match /comments/{commentId} {
+        allow read, list, get: if isSignedIn();
+        allow create: if isSignedIn();
+        allow update, delete: if isSuperAdmin() || isAdmin() || isTeacher() || resource.data.authorId == request.auth.uid;
+      }
+    }
+
 
     match /admissionApplications/{applicationId} {
       allow read, write, list: if isAdmin() || isSuperAdmin();

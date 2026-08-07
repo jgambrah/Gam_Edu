@@ -14,9 +14,10 @@ import {
   TrendingDown, ArrowUpRight, CheckSquare, Info, ShieldAlert, BookOpen, AlertTriangle,
   User, Activity, CalendarDays, FlaskConical, Utensils, MapPin,
   Star, Frown, Smile, HeartHandshake, ThumbsUp, ChevronDown, Loader2, ShoppingBag,
-  Bus as BusIcon
+  Bus as BusIcon, Camera
 } from 'lucide-react';
 import { StudentTransportCard } from '@/components/dashboard/StudentTransportCard';
+import { ClassStoryFeed } from '@/components/dashboard/ClassStoryFeed';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import { useFirestore, useMemoFirebase, useUser, useCollection } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, orderBy, limit } from 'firebase/firestore';
@@ -952,6 +953,14 @@ export function ParentDashboard({
             badge: "Fleet Logistics",
             badgeColor: "bg-indigo-500/20 text-indigo-300",
             icon: BusIcon,
+        },
+        stories: {
+            gradient: "from-purple-900 via-indigo-950 to-slate-900 border-indigo-500/20",
+            title: "Class Stories & Learning Moments",
+            description: "Visual classroom highlights, science projects, field trips, and student achievement celebrations.",
+            badge: "Moments & Stories",
+            badgeColor: "bg-indigo-500/20 text-indigo-300",
+            icon: Camera,
         }
     };
 
@@ -968,8 +977,8 @@ export function ParentDashboard({
 
                 {/* Main Navigation Tab Selector */}
                 <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
-                    <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-                        {(['overview', 'activity', 'attendance', 'academics', 'examination', 'assignments', 'financials', 'notices', 'canteen', 'satisfaction'] as const).map((tab) => (
+                    <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner flex-wrap gap-1">
+                        {(['overview', 'stories', 'activity', 'attendance', 'academics', 'examination', 'assignments', 'financials', 'transport', 'notices', 'canteen', 'satisfaction'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
@@ -980,7 +989,7 @@ export function ParentDashboard({
                                         : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
                                 )}
                             >
-                                {tab === 'activity' ? "Today's Activity" : tab === 'attendance' ? "Attendance" : tab === 'satisfaction' ? "Feedback & Ratings" : tab}
+                                {tab === 'stories' ? "Class Stories 📸" : tab === 'activity' ? "Today's Activity" : tab === 'attendance' ? "Attendance" : tab === 'transport' ? "Bus Fleet 🚌" : tab === 'satisfaction' ? "Feedback & Ratings" : tab}
                             </button>
                         ))}
                     </div>
@@ -1047,6 +1056,22 @@ export function ParentDashboard({
 
             {/* TAB CONTENT SECTIONS */}
             <div className="mt-8">
+                {activeTab === 'stories' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        {schoolId ? (
+                            <ClassStoryFeed schoolId={schoolId} studentIdFilter={activeChildId} />
+                        ) : (
+                            <p className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest p-8">Loading class stories...</p>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'transport' && activeChild && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        <StudentTransportCard student={activeChild} />
+                    </div>
+                )}
+
                 {activeTab === 'overview' && (
                     <div className="space-y-8 animate-in fade-in duration-300">
                         {activeChild ? (

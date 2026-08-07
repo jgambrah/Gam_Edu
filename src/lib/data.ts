@@ -59,7 +59,8 @@ import {
   Database,
   LayoutTemplate,
   IdCard,
-  User as UserIcon
+  User as UserIcon,
+  Camera
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -67,6 +68,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard',
     title: 'Dashboard',
     icon: LayoutDashboard,
+    roles: 'all',
+  },
+  {
+    path: '/dashboard/class-stories',
+    title: 'Class Stories 📸',
+    icon: Camera,
     roles: 'all',
   },
   {
