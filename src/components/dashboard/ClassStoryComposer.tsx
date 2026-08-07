@@ -60,6 +60,21 @@ export function ClassStoryComposer({ schoolId, classes, open, onOpenChange, onSt
     return students.filter(s => s.classId === classId);
   }, [students, classId]);
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setMediaUrls(prev => [...prev, event.target!.result as string]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleAddMedia = () => {
     if (mediaUrlInput.trim()) {
       setMediaUrls(prev => [...prev, mediaUrlInput.trim()]);
@@ -196,20 +211,32 @@ export function ClassStoryComposer({ schoolId, classes, open, onOpenChange, onSt
             </div>
           </div>
 
-          {/* Media Links / Photos */}
+          {/* Media Links / Photos / Videos */}
           <div className="space-y-2 p-4 bg-slate-50 rounded-2xl border border-slate-150">
-            <label className="text-xs font-black uppercase text-slate-600 tracking-wider flex items-center gap-2">
-              <ImageIcon className="h-4 w-4 text-indigo-600" /> Photo & Video Links
-            </label>
-            <div className="flex gap-2">
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-black uppercase text-slate-600 tracking-wider flex items-center gap-2">
+                <ImageIcon className="h-4 w-4 text-indigo-600" /> Photo & Video Attachments
+              </label>
+              <label className="cursor-pointer text-[11px] font-extrabold text-indigo-600 hover:text-indigo-700 bg-white px-3 py-1 rounded-xl border border-slate-200 shadow-sm flex items-center gap-1">
+                <Plus className="h-3.5 w-3.5" /> Upload File
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </label>
+            </div>
+            <div className="flex gap-2 pt-1">
               <Input
-                placeholder="Paste image or video URL (https://...)"
+                placeholder="Or paste video (YouTube/MP4) / image URL..."
                 value={mediaUrlInput}
                 onChange={(e) => setMediaUrlInput(e.target.value)}
                 className="h-10 rounded-xl border-2 text-xs bg-white"
               />
               <Button type="button" onClick={handleAddMedia} variant="outline" className="h-10 px-4 rounded-xl font-extrabold text-xs uppercase border-2">
-                <Plus className="h-4 w-4 mr-1" /> Add
+                <Plus className="h-4 w-4 mr-1" /> Add URL
               </Button>
             </div>
 

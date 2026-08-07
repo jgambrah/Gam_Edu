@@ -9,8 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Tag, Sparkles, Award, Camera, Image as ImageIcon, Video, Send, Loader2, Pin, UserCheck, Trash2, Building, Sparkle, BookOpen } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Heart, MessageCircle, Share2, Tag, Sparkles, Award, Camera, Image as ImageIcon, Video, Send, Loader2, Pin, UserCheck, Trash2, Building, Sparkle, BookOpen, Play, Maximize2 } from 'lucide-react';
 import { StudentDisplay } from '@/components/student-display';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -27,16 +27,83 @@ const CATEGORY_STYLES: Record<string, { label: string; color: string }> = {
   'Art & Craft': { label: '🎨 Art & Craft', color: 'bg-pink-50 text-pink-700 border-pink-200' },
   'Sports & Fitness': { label: '⚽ Sports & Fitness', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   'Academic Kudos': { label: '🏆 Academic Kudos', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  'Field Trip': { label: '🚌 Field Trip & Excursion', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  'Class Activity': { label: '🌟 Class Activity', color: 'bg-sky-50 text-sky-700 border-sky-200' },
-  'Class Bulletin': { label: '📢 Class Bulletin', color: 'bg-slate-100 text-slate-700 border-slate-200' },
-};
+function isVideoUrl(url: string): boolean {
+  if (!url) return false;
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', 'data:video/'];
+  const lower = url.toLowerCase();
+  if (videoExtensions.some(ext => lower.includes(ext))) return true;
+  if (lower.includes('youtube.com') || lower.includes('youtu.be') || lower.includes('vimeo.com')) return true;
+  return false;
+}
+
+function getYouTubeEmbedUrl(url: string): string | null {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+}
+
+function getVimeoEmbedUrl(url: string): string | null {
+  const regExp = /vimeo\.com\/(?:video\/)?([0-9]+)/;
+  const match = url.match(regExp);
+  return match ? `https://player.vimeo.com/video/${match[1]}` : null;
+}
+
+function MediaElement({ url, onOpenImage }: { url: string; onOpenImage: (url: string) => void }) {
+  const isVideo = isVideoUrl(url);
+
+  if (isVideo) {
+    const ytEmbed = getYouTubeEmbedUrl(url);
+    if (ytEmbed) {
+      return (
+        <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-black aspect-video w-full shadow-md">
+          <iframe src={ytEmbed} className="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+        </div>
+      );
+    }
+    const vimeoEmbed = getVimeoEmbedUrl(url);
+    if (vimeoEmbed) {
+      return (
+        <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-black aspect-video w-full shadow-md">
+          <iframe src={vimeoEmbed} className="w-full h-full border-0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 aspect-video w-full shadow-md">
+        <video src={url} controls className="w-full h-full object-cover rounded-2xl" preload="metadata" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={() => onOpenImage(url)}
+      className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group aspect-video cursor-pointer shadow-md"
+    >
+      <img
+        src={url}
+        alt="Class Story Moment"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        onError={(e) => {
+          (e.target as HTMLElement).style.display = 'none';
+        }}
+      />
+      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+        <div className="p-2.5 bg-black/60 rounded-full backdrop-blur-md">
+          <Maximize2 className="h-5 w-5" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function StoryCard({ story, students }: { story: ClassStoryPost; students: Student[] }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const [commentInput, setCommentInput] = useState('');
   const [showComments, setShowComments] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Fetch story comments subcollection
   const commentsQuery = useMemoFirebase(
@@ -163,16 +230,7 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
         {story.mediaUrls && story.mediaUrls.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
             {story.mediaUrls.map((url, idx) => (
-              <div key={idx} className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group aspect-video">
-                <img
-                  src={url}
-                  alt={`Story photo ${idx + 1}`}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
-                  }}
-                />
-              </div>
+              <MediaElement key={idx} url={url} onOpenImage={setSelectedImage} />
             ))}
           </div>
         )}
@@ -263,6 +321,19 @@ function StoryCard({ story, students }: { story: ClassStoryPost; students: Stude
           </div>
         )}
       </CardContent>
+
+      {/* Image Lightbox Modal */}
+      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-slate-950 border-slate-800 rounded-3xl overflow-hidden flex items-center justify-center">
+          {selectedImage && (
+            <img
+              src={selectedImage}
+              alt="Class Moment Full View"
+              className="max-h-[85vh] w-auto object-contain rounded-2xl mx-auto shadow-2xl"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
