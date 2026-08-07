@@ -246,10 +246,6 @@ service cloud.firestore {
       allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 
-    match /routes/{routeId} {
-      allow read, list, write: if isSignedIn();
-    }
-
     match /school_calendar/{eventId} {
       allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
@@ -570,12 +566,12 @@ service cloud.firestore {
 
     match /routes/{routeId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isFinanceStaff() || isTransportStaff();
+      allow write: if isSuperAdmin() || isAdmin() || isFinanceStaff() || isTransportStaff();
     }
 
     match /buses/{busId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isFinanceStaff() || isTransportStaff();
+      allow write: if isSuperAdmin() || isAdmin() || isFinanceStaff() || isTransportStaff();
     }
 
     // Support Staff Collections
@@ -636,7 +632,8 @@ service cloud.firestore {
 
     match /vehicle_logs/{logId} {
       allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isTransportStaff();
+      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isTransportStaff() || isStaff());
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
 
