@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, MathProblem, mathProblemSchema, GlobalLeaderboardEntry } from '@/lib/types';
-import { awardActivityXP } from '@/lib/achievement-utils';
+import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from '@/lib/utils';
@@ -103,6 +103,10 @@ function MathExplorerTab() {
     [user, firestore]);
     const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
 
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && schoolId && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [user, schoolId, firestore])
+    );
+
     const handleLearn = async () => {
         if (!topic.trim() || !schoolId) return;
         setIsLearning(true);
@@ -120,7 +124,10 @@ function MathExplorerTab() {
                         userId: user.uid,
                         timestamp: serverTimestamp()
                     });
-                    await awardActivityXP(firestore, user.uid, 40, 'Maths Exploration', 'stem_explorer');
+                    const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
+                    await awardActivityXP(firestore, targetStudentId, 40, 'Maths Exploration', 'stem_explorer');
+                    await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+                    toast({ title: 'Math Matrix Engaged! 📐', description: '+40 XP saved to your profile! STEM Pioneer badge evaluated.' });
                 }
             } else {
                 toast({ variant: 'destructive', title: "AI Error", description: result.error || "Could not generate lesson." });
@@ -706,7 +713,7 @@ export default function MathsClubPage() {
         if (studentClassId) {
              return query(baseQuery, where('classId', '==', studentClassId));
         }
-        return null;
+        return baseQuery;
     }
     return baseQuery;
   }, [firestore, isTeacherOrAdmin, role, studentClassId, schoolId]);
