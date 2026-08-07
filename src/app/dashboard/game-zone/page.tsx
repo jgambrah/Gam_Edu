@@ -416,16 +416,28 @@ export default function GameZonePage() {
     }
   };
 
-  const nextQuestion = () => {
+  const nextQuestion = async () => {
     if (currentQuestionIdx < triviaQuestions.length - 1) {
       setCurrentQuestionIdx(prev => prev + 1);
       setSelectedOption(null);
     } else {
       setShowResults(true);
-      // Award XP points
-      const points = quizScore * 10;
-      if (points > 0) {
-        handleSolve(points, `trivia-${selectedCategory}-${Date.now()}`);
+      
+      const totalQ = triviaQuestions.length || 5;
+      const pct = Math.round((quizScore / totalQ) * 100);
+      const points = Math.max(20, quizScore * 10 + (pct >= 90 ? 50 : 0));
+
+      const targetStudentId = studentData && studentData[0]?.id ? studentData[0].id : user?.uid;
+
+      // 1. Award Arcade & Profile XP (triggers STEM Pioneer badge)
+      await handleSolve(points, `trivia-${selectedCategory}-${Date.now()}`);
+
+      // 2. Trigger Quiz Master & Triple Star Scholar badge evaluation
+      if (firestore && targetStudentId) {
+        await triggerStudentBadgeEvent(firestore, targetStudentId, {
+          type: 'QUIZ_SUBMITTED',
+          quizScorePercent: pct
+        });
       }
     }
   };
