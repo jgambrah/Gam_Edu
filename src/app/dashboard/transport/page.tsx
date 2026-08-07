@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Route, Stop, Student, Bus, Class } from '@/lib/types';
-import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit, Calendar, ShieldAlert, Clock, CheckCircle, XCircle, UserCheck, ClipboardList } from 'lucide-react';
+import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit, Calendar, ShieldAlert, Clock, CheckCircle, XCircle, UserCheck, ClipboardList, Search } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -597,6 +597,31 @@ function DailyTransportManifest({
   const { toast } = useToast();
   const [shift, setShift] = useState<'Morning AM' | 'Afternoon PM'>('Morning AM');
   const [transitState, setTransitState] = useState<Record<string, 'Boarded' | 'Dropped Off' | 'Absent'>>({});
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredStops = useMemo(() => {
+    if (!route || !route.stops) return [];
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return route.stops;
+
+    return route.stops.map(stop => {
+      const stopMatches = stop.name.toLowerCase().includes(q) || stop.address.toLowerCase().includes(q);
+      const matchingStudents = stop.assignedStudentIds?.filter(studentId => {
+        const student = students?.find(s => s.uid === studentId || s.id === studentId);
+        if (!student) return false;
+        const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+        return fullName.includes(q) || (student.otherNames && student.otherNames.toLowerCase().includes(q));
+      }) || [];
+
+      if (stopMatches || matchingStudents.length > 0) {
+        return {
+          ...stop,
+          assignedStudentIds: stopMatches ? stop.assignedStudentIds : matchingStudents
+        };
+      }
+      return null;
+    }).filter(Boolean) as Stop[];
+  }, [route, searchQuery, students]);
 
   const handleMarkStatus = async (studentId: string, stopId: string, status: 'Boarded' | 'Dropped Off' | 'Absent') => {
     setTransitState(prev => ({ ...prev, [studentId]: status }));
@@ -684,7 +709,18 @@ function DailyTransportManifest({
       </CardHeader>
 
       <CardContent className="p-6 space-y-6">
-        {route.stops?.sort((a, b) => a.order - b.order).map((stop) => (
+        <div className="relative">
+          <Search className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Search passenger by student name or stop location..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-11 h-11 bg-white border-2 border-slate-200 rounded-2xl text-xs font-semibold focus:border-indigo-500 shadow-sm"
+          />
+        </div>
+
+        {filteredStops.length > 0 ? (
+          filteredStops.sort((a, b) => a.order - b.order).map((stop) => (
           <div key={stop.id} className="p-5 rounded-2xl border-2 border-slate-100 bg-slate-50/50 space-y-4">
             <div className="flex justify-between items-center border-b border-slate-200/60 pb-3">
               <div>
@@ -743,7 +779,14 @@ function DailyTransportManifest({
               )}
             </div>
           </div>
-        ))}
+        ))
+        ) : (
+          <div className="p-8 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+            <Search className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+            <p className="text-xs font-extrabold text-slate-600 uppercase tracking-wider">No matching passengers or stops found</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Try searching with a different student name or stop location.</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
