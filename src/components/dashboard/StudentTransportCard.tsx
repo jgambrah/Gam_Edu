@@ -2,11 +2,11 @@
 
 import { useMemo } from 'react';
 import { useFirestore, useMemoFirebase, useCollection } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { Route, Stop, Bus, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bus as BusIcon, MapPin, Clock, Phone, User, ShieldCheck } from 'lucide-react';
+import { Bus as BusIcon, MapPin, Clock, Phone, User, ShieldCheck, Activity, CheckCircle, UserCheck, XCircle } from 'lucide-react';
 
 interface StudentTransportCardProps {
   student: Student;
@@ -14,6 +14,15 @@ interface StudentTransportCardProps {
 
 export function StudentTransportCard({ student }: StudentTransportCardProps) {
   const firestore = useFirestore();
+
+  const studentIdVal = student.uid || student.id;
+
+  const logsQuery = useMemoFirebase(
+    () => (firestore && studentIdVal ? query(collection(firestore, 'vehicle_logs'), where('studentId', '==', studentIdVal), orderBy('timestamp', 'desc'), limit(1)) : null),
+    [firestore, studentIdVal]
+  );
+  const { data: latestLogs } = useCollection<any>(logsQuery);
+  const latestCheckIn = latestLogs?.[0];
 
   const routesQuery = useMemoFirebase(
     () => (firestore && student.schoolId ? query(collection(firestore, 'routes'), where('schoolId', '==', student.schoolId)) : null),
@@ -148,6 +157,32 @@ export function StudentTransportCard({ student }: StudentTransportCardProps) {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Live Bus Status / Last Check-In Log */}
+        <div className="p-4 rounded-2xl bg-slate-900 text-white flex items-center justify-between shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-300 border border-indigo-500/30">
+              <Activity className="h-4 w-4 animate-pulse" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Live Bus Status & Check-In Log</p>
+              <p className="text-xs font-extrabold text-slate-200">
+                {latestCheckIn
+                  ? `Marked as ${latestCheckIn.status} on ${latestCheckIn.shift || 'Transit'}`
+                  : 'Bus in Service - Scheduled Stops Operating Normal'}
+              </p>
+            </div>
+          </div>
+          {latestCheckIn && (
+            <Badge className={
+              latestCheckIn.status === 'Boarded' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+              latestCheckIn.status === 'Dropped Off' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' :
+              'bg-rose-500/20 text-rose-300 border-rose-500/30'
+            }>
+              {latestCheckIn.status}
+            </Badge>
+          )}
         </div>
       </CardContent>
     </Card>

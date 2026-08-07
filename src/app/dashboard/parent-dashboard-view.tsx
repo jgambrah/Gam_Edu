@@ -13,8 +13,10 @@ import {
   CheckCircle, XCircle, AlertCircle, Clock, Wallet, MessageSquare, ChevronRight,
   TrendingDown, ArrowUpRight, CheckSquare, Info, ShieldAlert, BookOpen, AlertTriangle,
   User, Activity, CalendarDays, FlaskConical, Utensils, MapPin,
-  Star, Frown, Smile, HeartHandshake, ThumbsUp, ChevronDown, Loader2, ShoppingBag
+  Star, Frown, Smile, HeartHandshake, ThumbsUp, ChevronDown, Loader2, ShoppingBag,
+  Bus as BusIcon
 } from 'lucide-react';
+import { StudentTransportCard } from '@/components/dashboard/StudentTransportCard';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import { useFirestore, useMemoFirebase, useUser, useCollection } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, orderBy, limit } from 'firebase/firestore';
@@ -942,6 +944,14 @@ export function ParentDashboard({
             badge: "Satisfaction & Feedback",
             badgeColor: "bg-teal-500/20 text-teal-300",
             icon: HeartHandshake,
+        },
+        transport: {
+            gradient: "from-blue-900 via-indigo-950 to-slate-900 border-indigo-500/20",
+            title: "School Transport Fleet",
+            description: "View designated pickup/drop-off stops, schedules, driver contacts, and live bus check-in logs.",
+            badge: "Fleet Logistics",
+            badgeColor: "bg-indigo-500/20 text-indigo-300",
+            icon: BusIcon,
         }
     };
 
