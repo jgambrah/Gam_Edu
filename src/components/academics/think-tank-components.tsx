@@ -180,6 +180,8 @@ export function DebateArena({ topic, onSolve }: { topic: DebateTopic; onSolve?: 
         }
     };
 
+    const { toast } = useToast();
+
     const handleConclude = async () => {
         if (messages.length < 3) return;
 
@@ -195,9 +197,16 @@ export function DebateArena({ topic, onSolve }: { topic: DebateTopic; onSolve?: 
             if (result.success && result.data) {
                 setEvaluation(result.data);
                 confetti({ particleCount: 150, spread: 80, colors: ['#eab308', '#a855f7'] });
+                
+                const awardedPoints = Math.max(30, Number(result.data.logicScore || 30) + 10);
                 if (onSolve) {
-                    onSolve(30, topic.id || 'debate-topic');
+                    onSolve(awardedPoints, topic.id || `debate-${Date.now()}`);
                 }
+
+                toast({
+                    title: "Debate Gavel Judged! ⚔️",
+                    description: `+${awardedPoints} Logic XP saved to your profile! STEM Pioneer badge evaluated.`
+                });
             }
         } catch (error) {
             console.error(error);
