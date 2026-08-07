@@ -497,6 +497,9 @@ export type Student = {
     alumniDetails?: AlumniDetails;
     transportStopId?: string;
     routeId?: string; 
+    busRouteId?: string;
+    busStopId?: string;
+    transportNote?: string;
     usesBusService?: boolean;
     usesCanteen?: boolean;
     photoURL?: string; 
@@ -941,6 +944,7 @@ export interface Stop {
   assignedStudentIds: string[];
   pickupTime?: string;
   dropoffTime?: string;
+  geoCoordinates?: { lat: number; lng: number };
 }
 
 export interface Route {
