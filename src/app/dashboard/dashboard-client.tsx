@@ -6,6 +6,7 @@ import StudentTimetableView from './StudentTimetableView';
 import StudentCalendarView from './StudentCalendarView';
 import { AcademicPerformanceDashboardView } from '@/components/dashboard/AcademicPerformanceDashboardView';
 import { AttendanceAnalyticsView } from '@/components/dashboard/AttendanceAnalyticsView';
+import { StudentRegistryDashboardView } from '@/components/dashboard/StudentRegistryDashboardView';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { useRole } from '@/context/role-context';
@@ -1443,66 +1444,13 @@ function AdminDashboard({
             </div>
 
             {studentSubTab === 'registry' ? (
-              <>
-                {/* Student statistics row */}
-                <div className="grid gap-6 md:grid-cols-3">
-                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-purple-200/50 transition-all duration-300">
-                    <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Enrollment</p>
-                      <h4 className="text-2xl font-black text-slate-800 mt-2">{activeStudents.length} Students</h4>
-                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Official School Registry</p>
-                    </div>
-                    <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl"><GraduationCap className="h-5 w-5" /></div>
-                  </div>
-
-                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-emerald-200/50 transition-all duration-300">
-                    <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Attendance Pulse</p>
-                      <h4 className="text-2xl font-black text-slate-800 mt-2">{hasTodayAttendance ? `${todayAttendanceRate}%` : "Not Taken"}</h4>
-                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Today's Present Log</p>
-                    </div>
-                    <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl"><CheckCircle2 className="h-5 w-5" /></div>
-                  </div>
-
-                  <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:border-amber-200/50 transition-all duration-300">
-                    <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Average Class size</p>
-                      <h4 className="text-2xl font-black text-slate-800 mt-2">
-                        {classes?.length ? Math.round(activeStudents.length / classes.length) : 0} Students
-                      </h4>
-                      <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase">Grade Midpoint</p>
-                    </div>
-                    <div className="p-3.5 bg-amber-50 text-amber-500 rounded-2xl"><School className="h-5 w-5" /></div>
-                  </div>
-                </div>
-
-                {/* Class break-down lists */}
-                <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
-                  <div className="flex justify-between items-center mb-6">
-                    <div>
-                      <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Class Breakdown & Room Audit</CardTitle>
-                      <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Review sizes and class details</CardDescription>
-                    </div>
-                    <Button asChild size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-[10px] uppercase h-8 px-4">
-                      <Link href="/dashboard/academics">Manage Classes</Link>
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {classes?.map((c: any) => {
-                      const size = students?.filter((s: any) => s.classId === c.id && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)).length || 0;
-                      return (
-                        <div key={c.id} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:scale-[1.02] transition-transform duration-300">
-                          <div>
-                            <p className="font-black text-slate-800 uppercase tracking-tight text-sm">{c.name}</p>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{c.room || 'No Room Assigned'}</p>
-                          </div>
-                          <Badge className="bg-indigo-100 text-indigo-800 border-none font-black text-xs px-3 py-1 rounded-full">{size} Students</Badge>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </Card>
-              </>
+              <StudentRegistryDashboardView 
+                students={students}
+                classes={classes}
+                staff={staff}
+                attendance={attendance}
+                schoolData={schoolData}
+              />
             ) : studentSubTab === 'discipline' ? (
               <DisciplineDashboardView 
                 students={students}
