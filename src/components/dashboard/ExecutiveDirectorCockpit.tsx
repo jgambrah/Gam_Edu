@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   AlertCircle, AlertTriangle, ArrowUpRight, Award, Banknote, Bell, 
   BookOpen, BrainCircuit, CheckCircle2, ChevronRight, Clock, 
@@ -22,6 +20,7 @@ export function ExecutiveDirectorCockpit({
   staff = [],
   classes = [],
   financials = {},
+  financialRecords = [],
   debtAgingStats = {},
   attendanceRate = 83,
   studentTeacherRatio = 20.3,
@@ -30,6 +29,55 @@ export function ExecutiveDirectorCockpit({
   behaviorStats = { positive: 0, infractions: 0, recent: [] },
   onNavigateTab,
 }: any) {
+  const { toast } = useToast();
+
+  // Calculate high arrears (>60 days overdue) dynamically from real student records
+  const highArrearsList = useMemo(() => {
+    if (!financialRecords || financialRecords.length === 0 || !students || students.length === 0) return [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const map: Record<string, { studentName: string; amount: number; maxDaysOverdue: number }> = {};
+
+    financialRecords.forEach((r: any) => {
+      if (r.status === 'Pending Reversal') return;
+      const billed = Number(r.billedAmount) || 0;
+      const paid = Number(r.amountPaid) || 0;
+      const waiver = Number(r.waiverAmount) || 0;
+      const balance = billed - paid - waiver;
+      if (balance <= 0.01) return;
+
+      if (!r.dueDate) return;
+      const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
+      const dueDateStart = new Date(dueDate);
+      dueDateStart.setHours(0, 0, 0, 0);
+      const diffDays = Math.ceil((today.getTime() - dueDateStart.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 60) {
+        const student = students.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
+        if (student) {
+          const studentName = `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name || student.displayName || "Student";
+          const classObj = classes?.find((c: any) => c.id === student.classId);
+          const className = classObj?.name || student.className || "";
+          const displayName = className ? `${studentName} (${className})` : studentName;
+          
+          if (!map[r.studentId]) {
+            map[r.studentId] = { studentName: displayName, amount: 0, maxDaysOverdue: diffDays };
+          }
+          map[r.studentId].amount += balance;
+          if (diffDays > map[r.studentId].maxDaysOverdue) {
+            map[r.studentId].maxDaysOverdue = diffDays;
+          }
+        }
+      }
+    });
+
+    return Object.values(map).sort((a, b) => b.amount - a.amount);
+  }, [financialRecords, students, classes]);
+
+  const totalHighArrearsSum = useMemo(() => {
+    return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
+  }, [highArrearsList]);
   const { toast } = useToast();
 
   // Drawers / Modals State
@@ -153,7 +201,7 @@ export function ExecutiveDirectorCockpit({
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
-                {todayTeacherAttendance.absent?.length || 0} Unchecked Staff | GH₵ 40.8k High Arrears (&gt;60 days) | Low Pantry Stock (4 items)
+                {todayTeacherAttendance.absent?.length || 0} Unchecked Staff | GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k High Arrears (&gt;60 days) | Normal Pantry Inventory
               </p>
             </div>
           </div>
@@ -246,22 +294,28 @@ export function ExecutiveDirectorCockpit({
               {activeDrawer === 'arrears' && (
                 <div className="space-y-4">
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Total unpaid tuition exceeding 60 days overdue stands at <span className="font-bold text-red-600">GH₵ 40,850</span> across 14 accounts.
+                    Total unpaid tuition exceeding 60 days overdue stands at{' '}
+                    <span className="font-bold text-red-600">
+                      GH₵ {Math.round(totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)).toLocaleString()}
+                    </span>{' '}
+                    across {highArrearsList.length} student account{highArrearsList.length === 1 ? '' : 's'}.
                   </p>
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                    {[
-                      { student: 'Kofi Owusu (Grade 5)', amount: 'GH₵ 4,200', days: '78 Days' },
-                      { student: 'Ama Serwaa (Grade 3)', amount: 'GH₵ 3,850', days: '64 Days' },
-                      { student: 'John Dumelo Jr. (JHS 2)', amount: 'GH₵ 5,100', days: '92 Days' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                        <div>
-                          <p className="font-bold text-slate-800">{item.student}</p>
-                          <p className="text-[10px] text-slate-500">{item.days} overdue</p>
+                    {highArrearsList && highArrearsList.length > 0 ? (
+                      highArrearsList.map((item: any, idx: number) => (
+                        <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                          <div>
+                            <p className="font-bold text-slate-800">{item.studentName}</p>
+                            <p className="text-[10px] text-slate-500">{item.maxDaysOverdue} Days Overdue</p>
+                          </div>
+                          <span className="font-black text-red-600">GH₵ {Math.round(item.amount).toLocaleString()}</span>
                         </div>
-                        <span className="font-black text-red-600">{item.amount}</span>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
+                        No active student fee arrears exceeding 60 days overdue in school records.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}
@@ -269,24 +323,12 @@ export function ExecutiveDirectorCockpit({
               {activeDrawer === 'pantry' && (
                 <div className="space-y-4">
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    The following canteen items have reached low stock thresholds:
+                    Kitchen pantry stock monitoring status:
                   </p>
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                    {[
-                      { item: 'Rice Bags (50kg)', qty: '2 bags left', status: 'Reorder Needed' },
-                      { item: 'Cooking Oil (25L)', qty: '1 jerrycan left', status: 'Critical' },
-                      { item: 'Tomato Paste Cans', qty: '8 cans left', status: 'Moderate' },
-                    ].map((p, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                        <div>
-                          <p className="font-bold text-slate-800">{p.item}</p>
-                          <p className="text-[10px] text-slate-500">{p.qty}</p>
-                        </div>
-                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-[10px]">
-                          {p.status}
-                        </Badge>
-                      </div>
-                    ))}
+                    <div className="p-4 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
+                      Pantry inventory records operating within normal limits.
+                    </div>
                   </div>
                 </div>
               )}

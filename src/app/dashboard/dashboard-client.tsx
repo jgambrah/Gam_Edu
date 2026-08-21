@@ -1348,6 +1348,7 @@ function AdminDashboard({
               staff={staff}
               classes={classes}
               financials={financials}
+              financialRecords={financialRecords}
               debtAgingStats={debtAgingStats}
               attendanceRate={attendanceRate}
               studentTeacherRatio={studentTeacherRatio}
@@ -5165,6 +5166,7 @@ function DirectorDashboard({
               staff={staff}
               classes={classes}
               financials={financials}
+              financialRecords={financialRecords}
               debtAgingStats={debtAgingStats}
               attendanceRate={todayAttendanceRate}
               studentTeacherRatio={studentTeacherRatio}
