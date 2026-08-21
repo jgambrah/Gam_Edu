@@ -1,5 +1,6 @@
 'use client';
 
+// Executive Student Registry & Demographics Cockpit
 import React, { useState, useMemo } from 'react';
 import { 
   GraduationCap, Users, School, CheckCircle2, RefreshCw, 
