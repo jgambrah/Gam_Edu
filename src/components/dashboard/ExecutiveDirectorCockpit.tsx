@@ -78,7 +78,6 @@ export function ExecutiveDirectorCockpit({
   const totalHighArrearsSum = useMemo(() => {
     return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
   }, [highArrearsList]);
-  const { toast } = useToast();
 
   // Drawers / Modals State
   const [activeDrawer, setActiveDrawer] = useState<'staff' | 'arrears' | 'pantry' | null>(null);
