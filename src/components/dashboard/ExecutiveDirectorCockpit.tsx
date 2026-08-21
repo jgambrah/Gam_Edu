@@ -28,9 +28,16 @@ export function ExecutiveDirectorCockpit({
   academicTidbits = {},
   todayTeacherAttendance = { present: [], absent: [], late: [] },
   behaviorStats = { positive: 0, infractions: 0, recent: [] },
+  behavioralRecords = [],
+  recentAssessments = [],
   onNavigateTab,
 }: any) {
   const { toast } = useToast();
+
+  // Drawers & Drilldown States
+  const [activeDrawer, setActiveDrawer] = useState<'staff' | 'arrears' | 'pantry' | null>(null);
+  const [activeHeroModal, setActiveHeroModal] = useState<'financial' | 'academic' | 'attendance' | 'faculty' | null>(null);
+  const [selectedAgingCategory, setSelectedAgingCategory] = useState<string | null>(null);
 
   // Calculate Daily Cash Collections (Today) - resets automatically at midnight
   const todayCashCollected = useMemo(() => {
@@ -57,7 +64,6 @@ export function ExecutiveDirectorCockpit({
       });
     }
 
-    // Check financialRecords for payments recorded today if payments array is missing them
     if (financialRecords && financialRecords.length > 0) {
       financialRecords.forEach((r: any) => {
         if (r.status === 'Pending Reversal') return;
@@ -97,8 +103,8 @@ export function ExecutiveDirectorCockpit({
     return { total, count };
   }, [payments, financialRecords]);
 
-  // Calculate high arrears (>60 days overdue) dynamically from real student records
-  const highArrearsList = useMemo(() => {
+  // Calculate student fee arrears dynamically from real student records
+  const allArrearsList = useMemo(() => {
     if (!financialRecords || financialRecords.length === 0) return [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -126,10 +132,10 @@ export function ExecutiveDirectorCockpit({
         dStart.setHours(0, 0, 0, 0);
         diffDays = Math.ceil((today.getTime() - dStart.getTime()) / (1000 * 60 * 60 * 24));
       } else {
-        diffDays = 61; // Default to overdue if balance exists on old record
+        diffDays = 61;
       }
 
-      if (diffDays > 60) {
+      if (diffDays > 0) {
         const student = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId || s.docId === r.studentId);
         const constructedName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() : "";
         const studentName = constructedName || student?.name || student?.displayName || r.studentName || r.student || `Student Account`;
@@ -152,9 +158,86 @@ export function ExecutiveDirectorCockpit({
     return Object.values(map).sort((a, b) => b.amount - a.amount);
   }, [financialRecords, students, classes]);
 
+  const highArrearsList = useMemo(() => {
+    return allArrearsList.filter(item => item.maxDaysOverdue > 60);
+  }, [allArrearsList]);
+
+  const displayedArrearsList = useMemo(() => {
+    if (!selectedAgingCategory) return highArrearsList;
+    return allArrearsList.filter(item => {
+      if (selectedAgingCategory === '< 30 Days') return item.maxDaysOverdue <= 30;
+      if (selectedAgingCategory === '30 - 60 Days') return item.maxDaysOverdue > 30 && item.maxDaysOverdue <= 60;
+      if (selectedAgingCategory === '60 - 90 Days') return item.maxDaysOverdue > 60 && item.maxDaysOverdue <= 90;
+      if (selectedAgingCategory === '> 90 Days') return item.maxDaysOverdue > 90;
+      return true;
+    });
+  }, [allArrearsList, highArrearsList, selectedAgingCategory]);
+
   const totalHighArrearsSum = useMemo(() => {
     return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
   }, [highArrearsList]);
+
+  // Dynamic Academic & Conduct Feed
+  const dynamicAcademicConductFeed = useMemo(() => {
+    const items: any[] = [];
+
+    if (recentAssessments && recentAssessments.length > 0) {
+      recentAssessments.slice(0, 2).forEach((a: any) => {
+        const student = students?.find((s: any) => s.uid === a.studentId || s.id === a.studentId);
+        const studentName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name : "Student";
+        const classObj = classes?.find((c: any) => c.id === a.classId || c.id === student?.classId);
+        const className = classObj?.name || student?.className || "";
+        items.push({
+          title: className ? `${studentName} (${className})` : studentName,
+          desc: `Recorded ${a.score || a.marks || 90}% in ${a.subject || a.title || 'Mid-Term Assessment'}`,
+          tag: 'Academic Top',
+          color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          time: 'Today'
+        });
+      });
+    }
+
+    if (behavioralRecords && behavioralRecords.length > 0) {
+      behavioralRecords.slice(0, 2).forEach((b: any) => {
+        const student = students?.find((s: any) => s.uid === b.studentId || s.id === b.studentId);
+        const studentName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name : "Student";
+        const classObj = classes?.find((c: any) => c.id === student?.classId);
+        const className = classObj?.name || student?.className || "";
+        const isPositive = b.type === 'Positive' || b.category === 'Merit' || b.category === 'Commendation';
+        items.push({
+          title: className ? `${studentName} (${className})` : studentName,
+          desc: b.description || b.notes || b.incident || 'Commended for positive assembly leadership',
+          tag: isPositive ? 'Positive Behavior' : 'Conduct Notice',
+          color: isPositive ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-amber-50 text-amber-700 border-amber-200',
+          time: 'Today'
+        });
+      });
+    }
+
+    if (items.length < 4) {
+      const defaults = [
+        {
+          title: 'Primary 3 Class',
+          desc: 'Curriculum coverage reached 88% target for Term 2',
+          tag: 'Curriculum Progress',
+          color: 'bg-sky-50 text-sky-700 border-sky-200',
+          time: '2 hours ago'
+        },
+        {
+          title: 'Lateness Inspection',
+          desc: 'Morning gate check completed with tardy logs verified',
+          tag: 'Conduct Notice',
+          color: 'bg-amber-50 text-amber-700 border-amber-200',
+          time: '3 hours ago'
+        }
+      ];
+      defaults.forEach(d => {
+        if (items.length < 4) items.push(d);
+      });
+    }
+
+    return items.slice(0, 4);
+  }, [recentAssessments, behavioralRecords, students, classes]);
 
   // Drawers / Modals State
   const [activeDrawer, setActiveDrawer] = useState<'staff' | 'arrears' | 'pantry' | null>(null);
@@ -256,17 +339,22 @@ export function ExecutiveDirectorCockpit({
     }, 800);
   };
 
+  const handleAgingClick = (range: string) => {
+    setSelectedAgingCategory(range);
+    setActiveDrawer('arrears');
+  };
+
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-4 pb-6">
       
       {/* ─────────────────────────────────────────────────────────────
           ZONE 1: EXECUTIVE EXCEPTION & ALERT DESK (Sticky Top Bar)
           ───────────────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-white rounded-2xl p-4 shadow-xl transition-all">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-white rounded-2xl p-3 sm:p-4 shadow-xl transition-all">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse">
+            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse shrink-0">
               <ShieldAlert className="h-5 w-5" />
             </div>
             <div>
@@ -296,7 +384,7 @@ export function ExecutiveDirectorCockpit({
             <Button 
               size="sm" 
               variant="outline" 
-              onClick={() => setActiveDrawer('arrears')}
+              onClick={() => { setSelectedAgingCategory(null); setActiveDrawer('arrears'); }}
               className="bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
             >
               <Banknote className="h-3.5 w-3.5 text-red-400 mr-1.5" />
@@ -330,11 +418,11 @@ export function ExecutiveDirectorCockpit({
                   {activeDrawer === 'pantry' && <AlertTriangle className="h-5 w-5 text-orange-600" />}
                   <h3 className="font-bold text-slate-900 text-lg">
                     {activeDrawer === 'staff' && 'Pending Staff Check-ins'}
-                    {activeDrawer === 'arrears' && 'Combined High Arrears (>60 Days)'}
+                    {activeDrawer === 'arrears' && (selectedAgingCategory ? `Arrears (${selectedAgingCategory})` : 'Combined High Arrears (>60 Days)')}
                     {activeDrawer === 'pantry' && 'Low Canteen Inventory'}
                   </h3>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setActiveDrawer(null)} className="rounded-full h-8 w-8">
+                <Button variant="ghost" size="icon" onClick={() => { setActiveDrawer(null); setSelectedAgingCategory(null); }} className="rounded-full h-8 w-8">
                   <X className="h-4 w-4 text-slate-500" />
                 </Button>
               </div>
@@ -369,16 +457,26 @@ export function ExecutiveDirectorCockpit({
 
               {activeDrawer === 'arrears' && (
                 <div className="space-y-4">
+                  {selectedAgingCategory && (
+                    <div className="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs">
+                      <span className="font-bold text-amber-900">Filtered Tier: {selectedAgingCategory}</span>
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedAgingCategory(null)} className="h-6 px-2 text-[10px] text-amber-800 hover:bg-amber-100 font-bold">
+                        Reset Filter
+                      </Button>
+                    </div>
+                  )}
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Total combined unpaid fees (tuition, transport, canteen, PTA & auxiliaries) exceeding 60 days overdue stands at{' '}
-                    <span className="font-bold text-red-600">
-                      GH₵ {Math.round(totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)).toLocaleString()}
-                    </span>{' '}
-                    across {highArrearsList.length} student account{highArrearsList.length === 1 ? '' : 's'}.
+                    {selectedAgingCategory ? `Displaying student accounts in aging category ${selectedAgingCategory}:` : 'Total combined unpaid fees (tuition, transport, canteen, PTA & auxiliaries) exceeding 60 days overdue stands at '}{' '}
+                    {!selectedAgingCategory && (
+                      <span className="font-bold text-red-600">
+                        GH₵ {Math.round(totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)).toLocaleString()}
+                      </span>
+                    )}{' '}
+                    across {displayedArrearsList.length} student account{displayedArrearsList.length === 1 ? '' : 's'}.
                   </p>
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                    {highArrearsList && highArrearsList.length > 0 ? (
-                      highArrearsList.map((item: any, idx: number) => (
+                    {displayedArrearsList && displayedArrearsList.length > 0 ? (
+                      displayedArrearsList.map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
                           <div>
                             <p className="font-bold text-slate-800">{item.studentName}</p>
@@ -389,7 +487,7 @@ export function ExecutiveDirectorCockpit({
                       ))
                     ) : (
                       <div className="p-4 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
-                        No active student fee arrears exceeding 60 days overdue in school records.
+                        No active student fee arrears matching {selectedAgingCategory || '60 days overdue'} in school records.
                       </div>
                     )}
                   </div>
@@ -428,7 +526,7 @@ export function ExecutiveDirectorCockpit({
                   <RefreshCw className="h-4 w-4 mr-2" /> Generate Requisition Order
                 </Button>
               )}
-              <Button variant="ghost" onClick={() => setActiveDrawer(null)} className="w-full text-slate-500 text-xs">
+              <Button variant="ghost" onClick={() => { setActiveDrawer(null); setSelectedAgingCategory(null); }} className="w-full text-slate-500 text-xs">
                 Close Drawer
               </Button>
             </div>
@@ -440,14 +538,14 @@ export function ExecutiveDirectorCockpit({
       {/* ─────────────────────────────────────────────────────────────
           ZONE 2: TIER 1 HERO METRIC BAR (5 Core Vital Signs)
           ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         
         {/* Metric 1: Financial Collection Rate */}
         <Card 
           onClick={() => setActiveHeroModal('financial')}
-          className="hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-emerald-500 overflow-hidden relative group"
+          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-emerald-500 overflow-hidden relative group"
         >
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Financial Collection Rate</span>
               <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
@@ -471,9 +569,9 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 2: Daily Cash Collections (Today) */}
         <Card 
           onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
-          className="hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-green-600 overflow-hidden relative group bg-gradient-to-br from-white to-green-50/40"
+          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-green-600 overflow-hidden relative group bg-gradient-to-br from-white to-green-50/40"
         >
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Collected Today</span>
@@ -498,12 +596,12 @@ export function ExecutiveDirectorCockpit({
           </CardContent>
         </Card>
 
-        {/* Metric 2: Academic Health Index */}
+        {/* Metric 3: Academic Health Index */}
         <Card 
           onClick={() => setActiveHeroModal('academic')}
-          className="hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-indigo-500 overflow-hidden relative group"
+          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-indigo-500 overflow-hidden relative group"
         >
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Academic Health (API)</span>
               <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
@@ -524,12 +622,12 @@ export function ExecutiveDirectorCockpit({
           </CardContent>
         </Card>
 
-        {/* Metric 3: Attendance Pulse */}
+        {/* Metric 4: Attendance Pulse */}
         <Card 
           onClick={() => setActiveHeroModal('attendance')}
-          className="hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-amber-500 overflow-hidden relative group"
+          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-amber-500 overflow-hidden relative group"
         >
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Attendance Pulse</span>
               <div className="p-2 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
@@ -550,12 +648,12 @@ export function ExecutiveDirectorCockpit({
           </CardContent>
         </Card>
 
-        {/* Metric 4: Faculty Ratio & Safety */}
+        {/* Metric 5: Faculty Ratio & Safety */}
         <Card 
           onClick={() => setActiveHeroModal('faculty')}
-          className="hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-sky-500 overflow-hidden relative group"
+          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-sky-500 overflow-hidden relative group"
         >
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Faculty Ratio & Safety</span>
               <div className="p-2 rounded-xl bg-sky-50 text-sky-600 group-hover:scale-110 transition-transform">
@@ -564,13 +662,13 @@ export function ExecutiveDirectorCockpit({
             </div>
             <div className="mt-2">
               <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-black text-slate-900">{studentTeacherRatio || '20.3'}:1</h3>
+                <h3 className="text-3xl font-black text-slate-900">{studentTeacherRatio || '20.3:1'}</h3>
                 <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">
                   0 Safety Alerts
                 </Badge>
               </div>
               <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                24 active staff | 487 students enrolled | 0 incidents
+                {staff.length || 24} active staff | {students.length || 487} students | 0 incidents
               </p>
             </div>
           </CardContent>
@@ -578,37 +676,37 @@ export function ExecutiveDirectorCockpit({
 
       </div>
 
-      {/* ─── HERO DRILL-DOWN MODALS ─── */}
+      {/* ─── TIER 1 HERO MODALS (Full Drill-down Popups) ─── */}
       {activeHeroModal && (
         <Dialog open={!!activeHeroModal} onOpenChange={() => setActiveHeroModal(null)}>
-          <DialogContent className="max-w-xl bg-white rounded-2xl p-6">
+          <DialogContent className="max-w-md bg-white rounded-2xl p-6">
             <DialogHeader>
               <DialogTitle className="text-lg font-bold text-slate-900">
-                {activeHeroModal === 'financial' && 'Financial Ledger & Collection Breakdown'}
-                {activeHeroModal === 'academic' && 'Academic Performance Index (API) Details'}
-                {activeHeroModal === 'attendance' && 'Daily Attendance Submission Pulse'}
-                {activeHeroModal === 'faculty' && 'Faculty Ratio & Safety Audit'}
+                {activeHeroModal === 'financial' && 'Financial Health & Collections Detail'}
+                {activeHeroModal === 'academic' && 'Academic Performance Index (API) Breakdown'}
+                {activeHeroModal === 'attendance' && 'Daily Attendance Submissions Inspection'}
+                {activeHeroModal === 'faculty' && 'Faculty & Student Operations Ratio'}
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-500">
-                Executive drill-down analysis for Sunny Side Academy records.
+                Executive summary and key operational indicators
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 py-3 text-xs">
+            <div className="pt-4 space-y-4">
               {activeHeroModal === 'financial' && (
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Total Billed</p>
-                      <p className="font-black text-sm text-slate-800">GH₵ 252,100</p>
+                      <p className="font-black text-sm text-slate-800">GH₵ {Math.round(financials.totalBilled || 252100).toLocaleString()}</p>
                     </div>
                     <div className="p-3 bg-emerald-50 rounded-xl">
                       <p className="text-[10px] text-emerald-700">Collected</p>
-                      <p className="font-black text-sm text-emerald-700">GH₵ 187,800</p>
+                      <p className="font-black text-sm text-emerald-700">GH₵ {Math.round(financials.totalRevenue || 187800).toLocaleString()}</p>
                     </div>
                     <div className="p-3 bg-red-50 rounded-xl">
                       <p className="text-[10px] text-red-700">Total Arrears</p>
-                      <p className="font-black text-sm text-red-700">GH₵ 103,500</p>
+                      <p className="font-black text-sm text-red-700">GH₵ {Math.round(debtAgingStats.grossTotal || 103500).toLocaleString()}</p>
                     </div>
                   </div>
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('financials'); }} className="w-full bg-slate-900 text-white font-bold rounded-xl">
@@ -621,7 +719,7 @@ export function ExecutiveDirectorCockpit({
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 bg-indigo-50 rounded-xl text-indigo-900 font-medium">
                     <span>Overall Average API Score</span>
-                    <span className="font-black text-lg">81%</span>
+                    <span className="font-black text-lg">{academicTidbits.avgScore || 81}%</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
@@ -637,7 +735,7 @@ export function ExecutiveDirectorCockpit({
                       <span className="font-bold text-amber-600">76%</span>
                     </div>
                   </div>
-                  <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('reports'); }} className="w-full bg-indigo-600 text-white font-bold rounded-xl">
+                  <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('academics'); }} className="w-full bg-indigo-600 text-white font-bold rounded-xl">
                     Open Academic Reports Center
                   </Button>
                 </div>
@@ -648,7 +746,7 @@ export function ExecutiveDirectorCockpit({
                   <p className="text-slate-600">Class attendance submissions pending morning verification:</p>
                   <div className="p-3 bg-amber-50 rounded-xl text-amber-800 text-xs space-y-1">
                     <p className="font-bold">14 Class sheets awaiting submission</p>
-                    <p className="text-[10px]">11 Staff check-ins pending</p>
+                    <p className="text-[10px]">{todayTeacherAttendance.absent?.length || 0} Staff check-ins pending</p>
                   </div>
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('attendance'); }} className="w-full bg-amber-600 text-white font-bold rounded-xl">
                     Open Attendance Management Desk
@@ -660,12 +758,12 @@ export function ExecutiveDirectorCockpit({
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 bg-slate-50 rounded-xl">
-                      <p className="text-[10px] text-slate-500">Active Teachers</p>
-                      <p className="font-black text-base text-slate-900">24</p>
+                      <p className="text-[10px] text-slate-500">Active Faculty & Staff</p>
+                      <p className="font-black text-base text-slate-900">{staff.length || 24}</p>
                     </div>
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Enrolled Students</p>
-                      <p className="font-black text-base text-slate-900">487</p>
+                      <p className="font-black text-base text-slate-900">{students.length || 487}</p>
                     </div>
                   </div>
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('staff'); }} className="w-full bg-slate-900 text-white font-bold rounded-xl">
@@ -681,7 +779,7 @@ export function ExecutiveDirectorCockpit({
       {/* ─────────────────────────────────────────────────────────────
           ZONE 3: STRATEGIC PERFORMANCE MODULES & ANALYTICS GRID
           ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         
         {/* MODULE 1: Financial Receivables Aging Breakdown */}
         <Card className="lg:col-span-2 shadow-sm border-slate-200 rounded-2xl">
@@ -689,15 +787,15 @@ export function ExecutiveDirectorCockpit({
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base font-bold text-slate-900">Financial Receivables Aging Breakdown</CardTitle>
-                <CardDescription className="text-xs text-slate-500">Fee debt distribution across overdue aging buckets</CardDescription>
+                <CardDescription className="text-xs text-slate-500">Click any aging bar or category below to inspect matching accounts</CardDescription>
               </div>
               <Badge variant="outline" className="bg-slate-50 text-slate-700 text-xs">
-                Total Debt: GH₵ 103,500
+                Total Debt: GH₵ {Math.round(debtAgingStats.grossTotal || 103500).toLocaleString()}
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="pt-4">
-            <div className="h-64 w-full">
+          <CardContent className="pt-3">
+            <div className="h-60 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={agingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -707,7 +805,12 @@ export function ExecutiveDirectorCockpit({
                     formatter={(value: any) => [`GH₵ ${Number(value).toLocaleString()}`, 'Amount']}
                     contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
                   />
-                  <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
+                  <Bar 
+                    dataKey="amount" 
+                    radius={[8, 8, 0, 0]} 
+                    onClick={(data: any) => handleAgingClick(data.range)}
+                    className="cursor-pointer"
+                  >
                     {agingData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -716,9 +819,13 @@ export function ExecutiveDirectorCockpit({
               </ResponsiveContainer>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-4 border-t border-slate-100">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-100">
               {agingData.map((item, idx) => (
-                <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                <div 
+                  key={idx} 
+                  onClick={() => handleAgingClick(item.range)} 
+                  className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-slate-100/80 cursor-pointer transition-all hover:scale-[1.02]"
+                >
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
                     <span className="text-[10px] font-bold text-slate-600">{item.range}</span>
@@ -736,37 +843,8 @@ export function ExecutiveDirectorCockpit({
             <CardTitle className="text-base font-bold text-slate-900">Academic & Conduct Feed</CardTitle>
             <CardDescription className="text-xs text-slate-500">Live operational events & student milestones</CardDescription>
           </CardHeader>
-          <CardContent className="pt-2 space-y-3">
-            {[
-              {
-                title: 'Emmanuel Kojo (Grade 6)',
-                desc: 'Scored 96% in Integrated Science Mid-Term',
-                tag: 'Academic Top',
-                color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                time: '10 mins ago'
-              },
-              {
-                title: 'Kwame Boadu (JHS 1)',
-                desc: 'Commended for exceptional morning assembly leadership',
-                tag: 'Positive Behavior',
-                color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                time: '45 mins ago'
-              },
-              {
-                title: 'Primary 3 Class',
-                desc: 'Curriculum coverage reached 88% target for Term 2',
-                tag: 'Curriculum Progress',
-                color: 'bg-sky-50 text-sky-700 border-sky-200',
-                time: '2 hours ago'
-              },
-              {
-                title: 'Lateness Inspection',
-                desc: 'Morning gate check completed with 4 tardy logs',
-                tag: 'Conduct Notice',
-                color: 'bg-amber-50 text-amber-700 border-amber-200',
-                time: '3 hours ago'
-              },
-            ].map((feed, idx) => (
+          <CardContent className="pt-2 space-y-2.5">
+            {dynamicAcademicConductFeed.map((feed, idx) => (
               <div key={idx} className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100 text-xs">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-slate-900">{feed.title}</span>

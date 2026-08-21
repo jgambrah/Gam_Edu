@@ -1356,6 +1356,8 @@ function AdminDashboard({
               academicTidbits={academicTidbits}
               todayTeacherAttendance={todayTeacherAttendance}
               behaviorStats={behaviorStats}
+              behavioralRecords={behavioralRecords}
+              recentAssessments={recentAssessments}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
             />
           </div>
@@ -5175,6 +5177,8 @@ function DirectorDashboard({
               academicTidbits={academicTidbits}
               todayTeacherAttendance={todayTeacherAttendance}
               behaviorStats={behaviorStats}
+              behavioralRecords={behavioralRecords}
+              recentAssessments={recentAssessments}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
             />
           </div>
