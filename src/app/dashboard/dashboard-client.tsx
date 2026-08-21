@@ -12963,10 +12963,10 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Director gets financial KPIs from summary doc on Overview tab. Raw records are only loaded when opening the Financials tab or for Accountant.
-  const isFinancialNeeded = isAccountant || (role === 'Director' && directorActiveTab === 'financials');
+  // Financial records loaded for Accountant, Director, and Admin on Overview or Financials tabs
+  const isFinancialNeeded = isAccountant || role === 'Director' || role === 'Administrator';
 
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(250)) : null, [firestore, schoolId, isFinancialNeeded]);
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(500)) : null, [firestore, schoolId, isFinancialNeeded]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
   // collectionGroup scan only loaded when viewing Financials tab or for Accountant.

@@ -33,7 +33,7 @@ export function ExecutiveDirectorCockpit({
 
   // Calculate high arrears (>60 days overdue) dynamically from real student records
   const highArrearsList = useMemo(() => {
-    if (!financialRecords || financialRecords.length === 0 || !students || students.length === 0) return [];
+    if (!financialRecords || financialRecords.length === 0) return [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -47,27 +47,38 @@ export function ExecutiveDirectorCockpit({
       const balance = billed - paid - waiver;
       if (balance <= 0.01) return;
 
-      if (!r.dueDate) return;
-      const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
-      const dueDateStart = new Date(dueDate);
-      dueDateStart.setHours(0, 0, 0, 0);
-      const diffDays = Math.ceil((today.getTime() - dueDateStart.getTime()) / (1000 * 60 * 60 * 24));
+      let diffDays = 0;
+      if (r.dueDate) {
+        const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
+        const dueDateStart = new Date(dueDate);
+        dueDateStart.setHours(0, 0, 0, 0);
+        diffDays = Math.ceil((today.getTime() - dueDateStart.getTime()) / (1000 * 60 * 60 * 24));
+      } else if (r.createdAt || r.date) {
+        const dateVal = r.createdAt || r.date;
+        const d = dateVal?.toDate ? dateVal.toDate() : new Date(dateVal);
+        const dStart = new Date(d);
+        dStart.setHours(0, 0, 0, 0);
+        diffDays = Math.ceil((today.getTime() - dStart.getTime()) / (1000 * 60 * 60 * 24));
+      } else {
+        diffDays = 61; // Default to overdue if balance exists on old record
+      }
 
       if (diffDays > 60) {
-        const student = students.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
-        if (student) {
-          const studentName = `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name || student.displayName || "Student";
-          const classObj = classes?.find((c: any) => c.id === student.classId);
-          const className = classObj?.name || student.className || "";
-          const displayName = className ? `${studentName} (${className})` : studentName;
-          
-          if (!map[r.studentId]) {
-            map[r.studentId] = { studentName: displayName, amount: 0, maxDaysOverdue: diffDays };
-          }
-          map[r.studentId].amount += balance;
-          if (diffDays > map[r.studentId].maxDaysOverdue) {
-            map[r.studentId].maxDaysOverdue = diffDays;
-          }
+        const student = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId || s.docId === r.studentId);
+        const constructedName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() : "";
+        const studentName = constructedName || student?.name || student?.displayName || r.studentName || r.student || `Student Account`;
+        
+        const classObj = classes?.find((c: any) => c.id === student?.classId || c.id === r.classId);
+        const className = classObj?.name || student?.className || r.className || "";
+        const displayName = className ? `${studentName} (${className})` : studentName;
+        
+        const key = r.studentId || r.id || studentName;
+        if (!map[key]) {
+          map[key] = { studentName: displayName, amount: 0, maxDaysOverdue: diffDays };
+        }
+        map[key].amount += balance;
+        if (diffDays > map[key].maxDaysOverdue) {
+          map[key].maxDaysOverdue = diffDays;
         }
       }
     });
