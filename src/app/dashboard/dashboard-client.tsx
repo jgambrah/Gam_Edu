@@ -73,6 +73,7 @@ import { ParentDashboard } from './parent-dashboard-view';
 import { ParentSatisfactionDashboardView } from './parent-satisfaction-dashboard-view';
 import { TeacherDashboardView } from '@/components/dashboard/TeacherDashboardView';
 import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
+import { ExecutiveDirectorCockpit } from '@/components/dashboard/ExecutiveDirectorCockpit';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
@@ -1336,6 +1337,21 @@ function AdminDashboard({
       <div className="mt-8">
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-in fade-in duration-300">
+            {/* 3-Zone Executive Director Cockpit */}
+            <ExecutiveDirectorCockpit
+              profile={profile}
+              students={students}
+              staff={staff}
+              classes={classes}
+              financials={financials}
+              debtAgingStats={debtAgingStats}
+              attendanceRate={attendanceRate}
+              studentTeacherRatio={studentTeacherRatio}
+              academicTidbits={academicTidbits}
+              todayTeacherAttendance={todayTeacherAttendance}
+              behaviorStats={behaviorStats}
+              onNavigateTab={(tab: string) => setActiveTab(tab)}
+            />
             {/* Stat Cards Grid - 10 Compact Cards */}
             <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
               <DirectorStatCard 
