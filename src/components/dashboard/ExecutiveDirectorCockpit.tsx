@@ -211,7 +211,7 @@ export function ExecutiveDirectorCockpit({
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
-                {todayTeacherAttendance.absent?.length || 0} Unchecked Staff | GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k High Arrears (&gt;60 days) | Normal Pantry Inventory
+                {todayTeacherAttendance.absent?.length || 0} Unchecked Staff | GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k Combined High Arrears (&gt;60 days) | Normal Pantry Inventory
               </p>
             </div>
           </div>
@@ -234,7 +234,7 @@ export function ExecutiveDirectorCockpit({
               className="bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
             >
               <Banknote className="h-3.5 w-3.5 text-red-400 mr-1.5" />
-              Fee Arrears (&gt;60d)
+              Combined Arrears (&gt;60d)
             </Button>
 
             <Button 
@@ -244,7 +244,7 @@ export function ExecutiveDirectorCockpit({
               className="bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
             >
               <AlertTriangle className="h-3.5 w-3.5 text-orange-400 mr-1.5" />
-              Low Stock (4)
+              Low Stock (0)
             </Button>
           </div>
 
@@ -264,7 +264,7 @@ export function ExecutiveDirectorCockpit({
                   {activeDrawer === 'pantry' && <AlertTriangle className="h-5 w-5 text-orange-600" />}
                   <h3 className="font-bold text-slate-900 text-lg">
                     {activeDrawer === 'staff' && 'Pending Staff Check-ins'}
-                    {activeDrawer === 'arrears' && 'High Arrears (>60 Days)'}
+                    {activeDrawer === 'arrears' && 'Combined High Arrears (>60 Days)'}
                     {activeDrawer === 'pantry' && 'Low Canteen Inventory'}
                   </h3>
                 </div>
@@ -304,7 +304,7 @@ export function ExecutiveDirectorCockpit({
               {activeDrawer === 'arrears' && (
                 <div className="space-y-4">
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Total unpaid tuition exceeding 60 days overdue stands at{' '}
+                    Total combined unpaid fees (tuition, transport, canteen, PTA & auxiliaries) exceeding 60 days overdue stands at{' '}
                     <span className="font-bold text-red-600">
                       GH₵ {Math.round(totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)).toLocaleString()}
                     </span>{' '}
@@ -354,7 +354,7 @@ export function ExecutiveDirectorCockpit({
               )}
               {activeDrawer === 'arrears' && (
                 <Button onClick={handleIssueArrearsNotice} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs py-2.5">
-                  <Send className="h-4 w-4 mr-2" /> Issue Fee Arrears Reminders
+                  <Send className="h-4 w-4 mr-2" /> Issue Combined Fee Arrears Reminders
                 </Button>
               )}
               {activeDrawer === 'pantry' && (
@@ -396,7 +396,7 @@ export function ExecutiveDirectorCockpit({
                 </span>
               </div>
               <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                GH₵ 187.8k collected of GH₵ 252.1k billed (GH₵ 103.5k arrears)
+                GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k collected of GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k total billed (Combined Fees)
               </p>
             </div>
           </CardContent>
