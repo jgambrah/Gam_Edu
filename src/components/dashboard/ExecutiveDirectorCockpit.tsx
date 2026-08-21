@@ -177,66 +177,50 @@ export function ExecutiveDirectorCockpit({
     return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
   }, [highArrearsList]);
 
-  // Dynamic Academic & Conduct Feed
+  // Dynamic Academic & Conduct Feed strictly derived from active database records
   const dynamicAcademicConductFeed = useMemo(() => {
     const items: any[] = [];
 
     if (recentAssessments && recentAssessments.length > 0) {
-      recentAssessments.slice(0, 2).forEach((a: any) => {
-        const student = students?.find((s: any) => s.uid === a.studentId || s.id === a.studentId);
-        const studentName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name : "Student";
+      recentAssessments.forEach((a: any) => {
+        const student = students?.find((s: any) => s.uid === a.studentId || s.id === a.studentId || s.docId === a.studentId);
+        const studentName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name || student.displayName : "";
         const classObj = classes?.find((c: any) => c.id === a.classId || c.id === student?.classId);
         const className = classObj?.name || student?.className || "";
+        const title = className ? (studentName ? `${studentName} (${className})` : className) : (studentName || "Academic Milestone");
+        
         items.push({
-          title: className ? `${studentName} (${className})` : studentName,
-          desc: `Recorded ${a.score || a.marks || 90}% in ${a.subject || a.title || 'Mid-Term Assessment'}`,
-          tag: 'Academic Top',
+          id: a.id || Math.random().toString(),
+          title: title,
+          desc: `Recorded ${a.score || a.marks || a.grade || 0}% in ${a.subject || a.title || a.name || 'Assessment'}`,
+          tag: 'Academic Record',
           color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-          time: 'Today'
+          time: 'Live Record'
         });
       });
     }
 
     if (behavioralRecords && behavioralRecords.length > 0) {
-      behavioralRecords.slice(0, 2).forEach((b: any) => {
-        const student = students?.find((s: any) => s.uid === b.studentId || s.id === b.studentId);
-        const studentName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name : "Student";
-        const classObj = classes?.find((c: any) => c.id === student?.classId);
+      behavioralRecords.forEach((b: any) => {
+        const student = students?.find((s: any) => s.uid === b.studentId || s.id === b.studentId || s.docId === b.studentId);
+        const studentName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name || student.displayName : "";
+        const classObj = classes?.find((c: any) => c.id === student?.classId || c.id === b.classId);
         const className = classObj?.name || student?.className || "";
-        const isPositive = b.type === 'Positive' || b.category === 'Merit' || b.category === 'Commendation';
+        const title = className ? (studentName ? `${studentName} (${className})` : className) : (studentName || "Conduct Log");
+        const isPositive = b.type === 'Positive' || b.category === 'Merit' || b.category === 'Commendation' || b.severity === 'Low';
+        
         items.push({
-          title: className ? `${studentName} (${className})` : studentName,
-          desc: b.description || b.notes || b.incident || 'Commended for positive assembly leadership',
+          id: b.id || Math.random().toString(),
+          title: title,
+          desc: b.description || b.notes || b.incident || b.title || 'Behavioral log recorded',
           tag: isPositive ? 'Positive Behavior' : 'Conduct Notice',
           color: isPositive ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-amber-50 text-amber-700 border-amber-200',
-          time: 'Today'
+          time: 'Live Record'
         });
       });
     }
 
-    if (items.length < 4) {
-      const defaults = [
-        {
-          title: 'Primary 3 Class',
-          desc: 'Curriculum coverage reached 88% target for Term 2',
-          tag: 'Curriculum Progress',
-          color: 'bg-sky-50 text-sky-700 border-sky-200',
-          time: '2 hours ago'
-        },
-        {
-          title: 'Lateness Inspection',
-          desc: 'Morning gate check completed with tardy logs verified',
-          tag: 'Conduct Notice',
-          color: 'bg-amber-50 text-amber-700 border-amber-200',
-          time: '3 hours ago'
-        }
-      ];
-      defaults.forEach(d => {
-        if (items.length < 4) items.push(d);
-      });
-    }
-
-    return items.slice(0, 4);
+    return items.slice(0, 5);
   }, [recentAssessments, behavioralRecords, students, classes]);
 
   // Command Bar State
@@ -840,18 +824,24 @@ export function ExecutiveDirectorCockpit({
             <CardDescription className="text-xs text-slate-500">Live operational events & student milestones</CardDescription>
           </CardHeader>
           <CardContent className="pt-2 space-y-2.5">
-            {dynamicAcademicConductFeed.map((feed, idx) => (
-              <div key={idx} className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100 text-xs">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-slate-900">{feed.title}</span>
-                  <span className="text-[10px] text-slate-400">{feed.time}</span>
+            {dynamicAcademicConductFeed && dynamicAcademicConductFeed.length > 0 ? (
+              dynamicAcademicConductFeed.map((feed, idx) => (
+                <div key={feed.id || idx} className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100 text-xs">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold text-slate-900">{feed.title}</span>
+                    <span className="text-[10px] text-slate-400">{feed.time}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 mb-2">{feed.desc}</p>
+                  <Badge variant="outline" className={cn("text-[10px] font-semibold", feed.color)}>
+                    {feed.tag}
+                  </Badge>
                 </div>
-                <p className="text-[11px] text-slate-600 mb-2">{feed.desc}</p>
-                <Badge variant="outline" className={cn("text-[10px] font-semibold", feed.color)}>
-                  {feed.tag}
-                </Badge>
+              ))
+            ) : (
+              <div className="p-6 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
+                No active academic or conduct milestone logs in school records.
               </div>
-            ))}
+            )}
           </CardContent>
         </Card>
 
