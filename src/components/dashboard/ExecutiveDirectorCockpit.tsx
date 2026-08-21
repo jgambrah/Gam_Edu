@@ -239,10 +239,6 @@ export function ExecutiveDirectorCockpit({
     return items.slice(0, 4);
   }, [recentAssessments, behavioralRecords, students, classes]);
 
-  // Drawers / Modals State
-  const [activeDrawer, setActiveDrawer] = useState<'staff' | 'arrears' | 'pantry' | null>(null);
-  const [activeHeroModal, setActiveHeroModal] = useState<'financial' | 'academic' | 'attendance' | 'faculty' | null>(null);
-
   // Command Bar State
   const [commandSuccess, setCommandSuccess] = useState<string | null>(null);
   const [announcementText, setAnnouncementText] = useState('');
