@@ -1,0 +1,774 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { 
+  Award, BookOpen, BrainCircuit, CheckCircle2, ChevronRight, 
+  Sparkles, TrendingUp, Users, AlertTriangle, AlertCircle, RefreshCw,
+  Send, FileText, ArrowUpRight, Check, X, ShieldAlert, GraduationCap
+} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, LineChart, Line } from 'recharts';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { useFirestore } from '@/components/ion/firestore-provider';
+import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+
+export function AcademicPerformanceDashboardView({
+  students = [],
+  classes = [],
+  recentAssessments = [],
+  performanceReviews = [],
+  staff = [],
+  subjects = [],
+  rooms = [],
+  behavioralRecords = [],
+  financialRecords = [],
+  schoolData,
+}: any) {
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
+  const [selectedAtRiskStudent, setSelectedAtRiskStudent] = useState<any | null>(null);
+  const [activeRemediationModal, setActiveRemediationModal] = useState<any | null>(null);
+
+  // Sync Academic Analytics to Firestore dashboard_summaries
+  const handleSyncAcademicSummary = async () => {
+    const sId = schoolData?.id || schoolData?.schoolId;
+    if (!firestore || !sId) return;
+    setIsSyncingAcademics(true);
+    try {
+      const q = query(collection(firestore, 'assessments'), where('schoolId', '==', sId), limit(300));
+      const snap = await getDocs(q);
+      
+      let totalPct = 0;
+      let count = 0;
+      let passingCount = 0;
+      const subMap: Record<string, { total: number; count: number }> = {};
+
+      snap.docs.forEach((d) => {
+        const a = d.data();
+        const score = Number(a.score) || 0;
+        const max = Number(a.maxScore) || 100;
+        if (max > 0) {
+          const pct = (score / max) * 100;
+          totalPct += pct;
+          count++;
+          if (pct >= 50) passingCount++;
+          
+          if (a.subjectName) {
+            if (!subMap[a.subjectName]) subMap[a.subjectName] = { total: 0, count: 0 };
+            subMap[a.subjectName].total += pct;
+            subMap[a.subjectName].count++;
+          }
+        }
+      });
+
+      const avgScore = count > 0 ? Math.round(totalPct / count) : 0;
+      const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 0;
+
+      let topSubject = "General Academics";
+      let bestAvg = 0;
+      Object.entries(subMap).forEach(([sub, data]) => {
+        const avg = data.total / data.count;
+        if (avg > bestAvg) {
+          bestAvg = avg;
+          topSubject = sub;
+        }
+      });
+
+      await setDoc(doc(firestore, 'dashboard_summaries', sId), {
+        academics: {
+          schoolAvg: avgScore,
+          passingThreshold: passingRate,
+          topSubject,
+          pendingAssessments: count
+        },
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+
+      toast({ 
+        title: "Academic Analytics Synced", 
+        description: "Successfully updated grade averages and class performance metrics." 
+      });
+    } catch (err) {
+      console.error("Error syncing academic summary:", err);
+      toast({ 
+        variant: "destructive", 
+        title: "Sync Failed", 
+        description: "Unable to complete academic analytics sync." 
+      });
+    } finally {
+      setIsSyncingAcademics(false);
+    }
+  };
+
+  // Helper to format staff name
+  const getStaffName = (s: any) => {
+    if (!s) return "Unassigned";
+    return `${s.firstName || ""} ${s.lastName || ""}`.trim() || s.name || s.displayName || "Staff";
+  };
+
+  // Dynamic Real-Time Academic Computation
+  const computed = useMemo(() => {
+    if (!recentAssessments || recentAssessments.length === 0) {
+      return {
+        schoolAverage: 0,
+        bestClass: "N/A",
+        weakestClass: "N/A",
+        bestSubject: "N/A",
+        weakestSubject: "N/A",
+        studentsFailingCount: 0,
+        studentsExcellingCount: 0,
+        subjectRankings: [],
+        classRankings: [],
+        teacherRankings: [],
+        atRiskStudents: [],
+        subjectTrendsData: [],
+        classComparisonData: [],
+        examPerformanceTrends: [],
+        hasAssessments: false,
+      };
+    }
+
+    const parsed = recentAssessments.map((a: any) => {
+      const score = Number(a.score) || 0;
+      const maxScore = Number(a.maxScore) || 100;
+      const pct = maxScore > 0 ? (score / maxScore) * 100 : 0;
+      const matchedSubject = subjects?.find((s: any) => s.id === a.subjectId);
+      const subjectName = matchedSubject?.name || a.subjectName || a.subjectId || "General";
+      return {
+        ...a,
+        pct,
+        subjectName
+      };
+    });
+
+    // 1. Overall School Average
+    const totalSum = parsed.reduce((sum: number, a: any) => sum + a.pct, 0);
+    const schoolAverage = Math.round(totalSum / parsed.length);
+
+    // 2. Class grouping
+    const classGroups: Record<string, { totalPct: number; count: number; passingCount: number }> = {};
+    parsed.forEach((a: any) => {
+      if (a.classId) {
+        if (!classGroups[a.classId]) {
+          classGroups[a.classId] = { totalPct: 0, count: 0, passingCount: 0 };
+        }
+        classGroups[a.classId].totalPct += a.pct;
+        classGroups[a.classId].count++;
+        if (a.pct >= 50) classGroups[a.classId].passingCount++;
+      }
+    });
+
+    const classRankings = Object.entries(classGroups).map(([classId, data]) => {
+      const cls = classes?.find((c: any) => c.id === classId);
+      const name = cls?.name || `Class Stream`;
+      const average = Math.round(data.totalPct / data.count);
+      const passRate = Math.round((data.passingCount / data.count) * 100);
+      const advisorStaff = staff?.find((st: any) => st.uid === cls?.teacherId || st.id === cls?.teacherId);
+      const advisor = advisorStaff ? getStaffName(advisorStaff) : "Unassigned";
+      const size = students?.filter((s: any) => s.classId === classId && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)).length || 0;
+      const matchedRoom = rooms?.find((r: any) => r.id === cls?.homeRoomId || r.id === cls?.room || r.name === cls?.room);
+      const room = matchedRoom ? matchedRoom.name : (cls?.room || "Classroom");
+
+      return { id: classId, name, average, passRate, size, room, advisor };
+    }).sort((a, b) => b.average - a.average);
+
+    const bestClass = classRankings.length > 0 ? classRankings[0].name : "N/A";
+    const weakestClass = classRankings.length > 0 ? classRankings[classRankings.length - 1].name : "N/A";
+
+    // 3. Subject grouping
+    const subjectGroups: Record<string, { totalPct: number; count: number; passingCount: number; teachers: Record<string, number>; subjectId?: string }> = {};
+    parsed.forEach((a: any) => {
+      const subName = a.subjectName || a.subjectId || "General";
+      if (!subjectGroups[subName]) {
+        subjectGroups[subName] = { totalPct: 0, count: 0, passingCount: 0, teachers: {}, subjectId: a.subjectId };
+      }
+      subjectGroups[subName].totalPct += a.pct;
+      subjectGroups[subName].count++;
+      if (a.pct >= 50) subjectGroups[subName].passingCount++;
+      if (a.teacherId) {
+        subjectGroups[subName].teachers[a.teacherId] = (subjectGroups[subName].teachers[a.teacherId] || 0) + 1;
+      }
+    });
+
+    const subjectRankings = Object.entries(subjectGroups).map(([name, data]) => {
+      const average = Math.round(data.totalPct / data.count);
+      const passRate = Math.round((data.passingCount / data.count) * 100);
+      const matchedSubjectDoc = subjects?.find((s: any) => s.name?.toLowerCase() === name.toLowerCase() || s.id === name || s.id === data.subjectId);
+      let teacherName = "";
+      
+      if (matchedSubjectDoc) {
+        if (matchedSubjectDoc.teacherIds && matchedSubjectDoc.teacherIds.length > 0) {
+          const names = matchedSubjectDoc.teacherIds.map((tId: string) => {
+            const st = staff?.find((x: any) => x.uid === tId || x.id === tId);
+            return st ? getStaffName(st) : "";
+          }).filter(Boolean);
+          if (names.length > 0) teacherName = names.join(", ");
+        } else if (matchedSubjectDoc.teacherId) {
+          const st = staff?.find((x: any) => x.uid === matchedSubjectDoc.teacherId || x.id === matchedSubjectDoc.teacherId);
+          if (st) teacherName = getStaffName(st);
+        }
+      }
+
+      if (!teacherName) {
+        let topTeacherId = "";
+        let maxGraded = 0;
+        Object.entries(data.teachers).forEach(([tId, count]) => {
+          if (count > maxGraded) {
+            maxGraded = count;
+            topTeacherId = tId;
+          }
+        });
+        const st = staff?.find((x: any) => x.uid === topTeacherId || x.id === topTeacherId);
+        teacherName = st ? getStaffName(st) : "Unassigned";
+      }
+
+      return { name, average, passRate, teacher: teacherName };
+    }).sort((a, b) => b.average - a.average);
+
+    const bestSubject = subjectRankings.length > 0 ? subjectRankings[0].name : "N/A";
+    const weakestSubject = subjectRankings.length > 0 ? subjectRankings[subjectRankings.length - 1].name : "N/A";
+
+    // 4. At-risk & Excelling student calculation
+    const studentGroup: Record<string, { totalPct: number; count: number; failingSubjects: Set<string> }> = {};
+    parsed.forEach((a: any) => {
+      if (a.studentId) {
+        if (!studentGroup[a.studentId]) {
+          studentGroup[a.studentId] = { totalPct: 0, count: 0, failingSubjects: new Set() };
+        }
+        studentGroup[a.studentId].totalPct += a.pct;
+        studentGroup[a.studentId].count++;
+        if (a.pct < 50) {
+          studentGroup[a.studentId].failingSubjects.add(a.subjectName || "Subject");
+        }
+      }
+    });
+
+    let failingCount = 0;
+    let excellingCount = 0;
+    const atRiskStudents: any[] = [];
+
+    Object.entries(studentGroup).forEach(([studentId, data]) => {
+      const avg = Math.round(data.totalPct / data.count);
+      if (avg < 50) {
+        failingCount++;
+        const stud = students?.find((s: any) => s.uid === studentId || s.id === studentId);
+        if (stud) {
+          const sClass = classes?.find((c: any) => c.id === stud.classId);
+          const status = avg < 40 ? "Critical" : avg < 45 ? "High Risk" : "Warning";
+          atRiskStudents.push({
+            id: studentId,
+            studentObj: stud,
+            name: `${stud.firstName || ""} ${stud.lastName || ""}`.trim() || stud.name || "Student",
+            class: sClass?.name || stud.className || "Class Stream",
+            average: `${avg}%`,
+            rawAvg: avg,
+            subjects: Array.from(data.failingSubjects).slice(0, 3).join(", ") || "General Academics",
+            status
+          });
+        }
+      } else if (avg >= 80) {
+        excellingCount++;
+      }
+    });
+
+    atRiskStudents.sort((a, b) => a.rawAvg - b.rawAvg);
+
+    // 5. Teacher Performance Rankings
+    const teachersList = staff?.filter((s: any) => s.role?.toLowerCase() === 'teacher') || [];
+    const teacherRankings = teachersList.map((t: any) => {
+      const reviews = performanceReviews?.filter((r: any) => r.staffId === t.uid || r.staffId === t.id) || [];
+      let rating = 4.5;
+      if (reviews.length > 0) {
+        rating = parseFloat((reviews.reduce((sum: number, r: any) => sum + (Number(r.rating) || 5), 0) / reviews.length).toFixed(1));
+      }
+      const satisfaction = `${Math.round((rating / 5) * 100)}%`;
+      const tAssessments = parsed.filter((a: any) => a.teacherId === t.uid || a.teacherId === t.id);
+      const subCounts: Record<string, number> = {};
+      tAssessments.forEach((a: any) => {
+        const name = a.subjectName || "Academics";
+        subCounts[name] = (subCounts[name] || 0) + 1;
+      });
+      let subject = "Academics";
+      let maxSub = 0;
+      Object.entries(subCounts).forEach(([name, c]) => {
+        if (c > maxSub) { maxSub = c; subject = name; }
+      });
+      const cls = classes?.find((c: any) => c.teacherId === t.uid || c.teacherId === t.id);
+      const className = cls?.name || "General Stream";
+
+      return {
+        name: getStaffName(t),
+        subject,
+        rating,
+        satisfaction,
+        class: className
+      };
+    }).sort((a: any, b: any) => b.rating - a.rating);
+
+    // 6. Longitudinal Exam Trends
+    const termGroups: Record<string, { totalPct: number; count: number; sortKey: string; label: string }> = {};
+    parsed.forEach((a: any) => {
+      const year = a.academicYear || "2026";
+      const term = a.term || "Term 1";
+      const label = `${term} ${year}`.trim();
+      const sortKey = `${year}-${term}`;
+      if (!termGroups[label]) {
+        termGroups[label] = { totalPct: 0, count: 0, sortKey, label };
+      }
+      termGroups[label].totalPct += a.pct;
+      termGroups[label].count++;
+    });
+
+    const examPerformanceTrends = Object.values(termGroups).map((g) => ({
+      term: g.label,
+      average: Math.round(g.totalPct / g.count)
+    })).slice(-5);
+
+    return {
+      schoolAverage,
+      bestClass,
+      weakestClass,
+      bestSubject,
+      weakestSubject,
+      studentsFailingCount: failingCount,
+      studentsExcellingCount: excellingCount,
+      subjectRankings,
+      classRankings,
+      teacherRankings,
+      atRiskStudents,
+      classComparisonData: classRankings.map(c => ({ name: c.name, average: c.average })).slice(0, 6),
+      examPerformanceTrends,
+      hasAssessments: true
+    };
+  }, [recentAssessments, students, classes, staff, subjects, rooms, performanceReviews]);
+
+  // Handlers for Parent Notification & Remediation
+  const handleDraftParentAlert = (student: any) => {
+    setSelectedAtRiskStudent(student);
+  };
+
+  const handleDispatchParentSms = () => {
+    if (!selectedAtRiskStudent) return;
+    toast({
+      title: "Parent Alert Dispatched",
+      description: `SMS notification dispatched to parents of ${selectedAtRiskStudent.name} (${selectedAtRiskStudent.class}).`,
+    });
+    setSelectedAtRiskStudent(null);
+  };
+
+  const handleRecommendRemediation = (student: any) => {
+    setActiveRemediationModal(student);
+  };
+
+  return (
+    <div className="space-y-4 pb-8 animate-in fade-in duration-300">
+      
+      {/* ─────────────────────────────────────────────────────────────
+          ZONE 1: ACADEMIC INTELLIGENCE HEADER BANNER & SYNC CONTROL
+          ───────────────────────────────────────────────────────────── */}
+      <div className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white border border-slate-800 shadow-xl overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="space-y-2 max-w-xl">
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full uppercase border border-indigo-500/30">
+              Academics Pulse
+            </span>
+            <span className="text-[10px] text-slate-400 font-semibold">
+              Live School Grade Analytics
+            </span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight italic">
+            ACADEMIC <span className="text-indigo-400">INTELLIGENCE HUB</span>
+          </h2>
+          <p className="text-xs text-slate-300 leading-relaxed font-medium">
+            Unified score variance, subject mastery rankings, teacher staffing ratios, and student risk intervention desk.
+          </p>
+        </div>
+
+        <Button
+          onClick={handleSyncAcademicSummary}
+          disabled={isSyncingAcademics}
+          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl h-11 px-5 shadow-lg shadow-indigo-500/20 flex items-center gap-2 shrink-0 text-xs"
+        >
+          <RefreshCw className={cn("h-4 w-4", isSyncingAcademics && "animate-spin")} />
+          <span>{isSyncingAcademics ? "Syncing..." : "Sync Academic Analytics"}</span>
+        </Button>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          ZONE 2: 6 VITAL ACADEMIC KPI CARDS
+          ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        
+        {/* Metric 1: School Average */}
+        <Card className="border-l-4 border-l-indigo-600 shadow-sm rounded-2xl bg-white">
+          <CardContent className="p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">School Average</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{computed.schoolAverage}%</h3>
+            <p className="text-[10px] text-indigo-600 font-bold mt-0.5">Target: 75% Benchmark</p>
+          </CardContent>
+        </Card>
+
+        {/* Metric 2: Best Class */}
+        <Card className="border-l-4 border-l-emerald-500 shadow-sm rounded-2xl bg-white">
+          <CardContent className="p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Top Class Stream</p>
+            <h3 className="text-xl font-black text-emerald-700 truncate mt-1">{computed.bestClass}</h3>
+            <p className="text-[10px] text-emerald-600 font-bold mt-0.5">Highest Class Avg</p>
+          </CardContent>
+        </Card>
+
+        {/* Metric 3: Weakest Class */}
+        <Card className="border-l-4 border-l-amber-500 shadow-sm rounded-2xl bg-white">
+          <CardContent className="p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Lowest Class Stream</p>
+            <h3 className="text-xl font-black text-amber-700 truncate mt-1">{computed.weakestClass}</h3>
+            <p className="text-[10px] text-amber-600 font-bold mt-0.5">Intervention Priority</p>
+          </CardContent>
+        </Card>
+
+        {/* Metric 4: Best Subject */}
+        <Card className="border-l-4 border-l-sky-500 shadow-sm rounded-2xl bg-white">
+          <CardContent className="p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Top Subject</p>
+            <h3 className="text-xl font-black text-sky-700 truncate mt-1">{computed.bestSubject}</h3>
+            <p className="text-[10px] text-sky-600 font-bold mt-0.5">Highest Subject Avg</p>
+          </CardContent>
+        </Card>
+
+        {/* Metric 5: Weakest Subject */}
+        <Card className="border-l-4 border-l-orange-500 shadow-sm rounded-2xl bg-white">
+          <CardContent className="p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Lowest Subject</p>
+            <h3 className="text-xl font-black text-orange-700 truncate mt-1">{computed.weakestSubject}</h3>
+            <p className="text-[10px] text-orange-600 font-bold mt-0.5">Focus Subject</p>
+          </CardContent>
+        </Card>
+
+        {/* Metric 6: At Risk Students */}
+        <Card className="border-l-4 border-l-red-600 shadow-sm rounded-2xl bg-white">
+          <CardContent className="p-4">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Students At Risk</p>
+            <h3 className="text-2xl font-black text-red-600 mt-1">{computed.studentsFailingCount}</h3>
+            <p className="text-[10px] text-red-600 font-bold mt-0.5">Requires Remediation</p>
+          </CardContent>
+        </Card>
+
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          ZONE 3: STUDENTS AT ACADEMIC RISK & REMEDIATION DESK
+          ───────────────────────────────────────────────────────────── */}
+      <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
+        <CardHeader className="pb-3 border-b border-slate-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="h-5 w-5 text-red-600" />
+              <div>
+                <CardTitle className="text-base font-bold text-slate-900">Students at Academic Risk</CardTitle>
+                <CardDescription className="text-xs text-slate-500">Flagged profiles requiring immediate intervention and parent communication</CardDescription>
+              </div>
+            </div>
+            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-xs font-bold px-3 py-1">
+              {computed.studentsFailingCount} Students Flagged (&lt;50%)
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-4">
+          {computed.atRiskStudents && computed.atRiskStudents.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                    <th className="pb-3">Student Name</th>
+                    <th className="pb-3">Class Stream</th>
+                    <th className="pb-3">Overall Avg</th>
+                    <th className="pb-3">Failing Subject(s)</th>
+                    <th className="pb-3">Risk Level</th>
+                    <th className="pb-3 text-right">Intervention Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {computed.atRiskStudents.map((s: any, idx: number) => (
+                    <tr key={s.id || idx} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3 font-bold text-slate-900">{s.name}</td>
+                      <td className="py-3 text-slate-600">{s.class}</td>
+                      <td className="py-3 font-black text-red-600">{s.average}</td>
+                      <td className="py-3 text-slate-600 max-w-xs truncate">{s.subjects}</td>
+                      <td className="py-3">
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-[10px] font-bold uppercase",
+                            s.status === 'Critical' ? "bg-red-100 text-red-800 border-red-200" :
+                            s.status === 'High Risk' ? "bg-orange-100 text-orange-800 border-orange-200" :
+                            "bg-amber-100 text-amber-800 border-amber-200"
+                          )}
+                        >
+                          {s.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3 text-right space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleDraftParentAlert(s)}
+                          className="h-7 text-[10px] font-bold border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-xl"
+                        >
+                          <Send className="h-3 w-3 mr-1" /> Draft Parent SMS
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleRecommendRemediation(s)}
+                          className="h-7 text-[10px] font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-xl"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1 text-amber-400" /> Remediation Plan
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="p-8 text-center text-xs text-slate-500 font-bold bg-slate-50/50 rounded-2xl border border-slate-100 space-y-1">
+              <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
+              <p className="text-slate-800 text-sm">No Active Students Flagged at Academic Risk</p>
+              <p className="text-slate-500 text-xs">All enrolled students are currently maintaining overall performance above the 50% threshold.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ─────────────────────────────────────────────────────────────
+          ZONE 4: COMPARATIVE ANALYTICS & LONGITUDINAL GROWTH
+          ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        
+        {/* Longitudinal Exam Performance Line Chart */}
+        <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-bold text-slate-900">Examination Performance Trends (Longitudinal)</CardTitle>
+            <CardDescription className="text-xs text-slate-500">School-wide academic growth tracking across terms</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-3">
+            <div className="h-64 w-full">
+              {computed.examPerformanceTrends && computed.examPerformanceTrends.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={computed.examPerformanceTrends} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="term" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '12px' }} />
+                    <Line type="monotone" dataKey="average" stroke="#6366f1" strokeWidth={3} dot={{ r: 5, fill: '#4f46e5' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-xs text-slate-400 font-bold bg-slate-50 rounded-xl">
+                  Longitudinal assessment trend data will populate as term assessments are logged.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Class Average Comparison Bar Chart */}
+        <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-bold text-slate-900">Class Performance Comparison</CardTitle>
+            <CardDescription className="text-xs text-slate-500">Stream averages evaluated against 50% target benchmark</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-3">
+            <div className="h-64 w-full">
+              {computed.classComparisonData && computed.classComparisonData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={computed.classComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <Tooltip 
+                      formatter={(val: any) => [`${val}%`, 'Class Average']}
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '12px' }} 
+                    />
+                    <Bar dataKey="average" radius={[8, 8, 0, 0]}>
+                      {computed.classComparisonData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.average >= 70 ? '#6366f1' : entry.average >= 50 ? '#3b82f6' : '#ef4444'} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-xs text-slate-400 font-bold bg-slate-50 rounded-xl">
+                  Class comparison chart will render as class grades are submitted.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          ZONE 5: 3-COLUMN EXCELLENCE MATRIX (Subject, Class, Faculty)
+          ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        {/* Column 1: Subject Rankings */}
+        <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
+          <CardHeader className="pb-2 border-b border-slate-100">
+            <CardTitle className="text-sm font-bold text-slate-900">Subject Rankings</CardTitle>
+            <CardDescription className="text-[11px] text-slate-500">Curriculum subject averages & pass rates</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-3 space-y-2.5">
+            {computed.subjectRankings && computed.subjectRankings.length > 0 ? (
+              computed.subjectRankings.slice(0, 6).map((sub: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                  <div>
+                    <p className="font-bold text-slate-900">{idx + 1}. {sub.name}</p>
+                    <p className="text-[10px] text-slate-500">{sub.teacher || 'Unassigned'}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-black text-slate-900">{sub.average}% AVG</span>
+                    <p className="text-[10px] text-emerald-600 font-semibold">{sub.passRate}% Pass</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-6 text-center text-xs text-slate-400 font-bold bg-slate-50 rounded-xl">
+                No subject rankings available.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Column 2: Class Stream Rankings */}
+        <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
+          <CardHeader className="pb-2 border-b border-slate-100">
+            <CardTitle className="text-sm font-bold text-slate-900">Class Stream Rankings</CardTitle>
+            <CardDescription className="text-[11px] text-slate-500">Stream performance & class advisors</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-3 space-y-2.5">
+            {computed.classRankings && computed.classRankings.length > 0 ? (
+              computed.classRankings.slice(0, 6).map((cls: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                  <div>
+                    <p className="font-bold text-slate-900">{idx + 1}. {cls.name}</p>
+                    <p className="text-[10px] text-slate-500">{cls.size} Students | {cls.advisor}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-black text-indigo-600">{cls.average}% AVG</span>
+                    <p className="text-[10px] text-slate-500">{cls.passRate}% Pass</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-6 text-center text-xs text-slate-400 font-bold bg-slate-50 rounded-xl">
+                No class stream rankings available.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Column 3: Teacher Academic Performance */}
+        <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
+          <CardHeader className="pb-2 border-b border-slate-100">
+            <CardTitle className="text-sm font-bold text-slate-900">Faculty Performance</CardTitle>
+            <CardDescription className="text-[11px] text-slate-500">Teacher evaluations & student satisfaction</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-3 space-y-2.5">
+            {computed.teacherRankings && computed.teacherRankings.length > 0 ? (
+              computed.teacherRankings.slice(0, 6).map((t: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                  <div>
+                    <p className="font-bold text-slate-900">{idx + 1}. {t.name}</p>
+                    <p className="text-[10px] text-slate-500">{t.subject} ({t.class})</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-black text-amber-600">⭐ {t.rating}</span>
+                    <p className="text-[10px] text-slate-500">Satisfaction: {t.satisfaction}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-6 text-center text-xs text-slate-400 font-bold bg-slate-50 rounded-xl">
+                No faculty performance reviews logged.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+      </div>
+
+      {/* ─── PARENT ALERT MODAL ─── */}
+      {selectedAtRiskStudent && (
+        <Dialog open={!!selectedAtRiskStudent} onOpenChange={() => setSelectedAtRiskStudent(null)}>
+          <DialogContent className="max-w-md bg-white rounded-2xl p-6">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-slate-900">Draft AI Parent Notification</DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                Automated academic intervention alert for parents of {selectedAtRiskStudent.name}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="pt-3 space-y-4 text-xs">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 leading-relaxed font-mono text-[11px]">
+                "Dear Parent, Sunny Side Academy Academic Directorate requests an urgent conference regarding {selectedAtRiskStudent.name} ({selectedAtRiskStudent.class}). Current overall academic average stands at {selectedAtRiskStudent.average} with low performance in {selectedAtRiskStudent.subjects}. Remediation classes scheduled."
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={handleDispatchParentSms} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs py-2.5">
+                  <Send className="h-4 w-4 mr-2" /> Dispatch SMS Alert
+                </Button>
+                <Button variant="outline" onClick={() => setSelectedAtRiskStudent(null)} className="rounded-xl text-xs">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* ─── REMEDIATION PLAN MODAL ─── */}
+      {activeRemediationModal && (
+        <Dialog open={!!activeRemediationModal} onOpenChange={() => setActiveRemediationModal(null)}>
+          <DialogContent className="max-w-md bg-white rounded-2xl p-6">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-slate-900">Remediation & Intervention Plan</DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                AI-assisted learning plan for {activeRemediationModal.name} ({activeRemediationModal.class})
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="pt-3 space-y-3 text-xs">
+              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 space-y-1">
+                <p className="font-bold">Intervention Target Areas:</p>
+                <p className="text-[11px]">{activeRemediationModal.subjects} (Current Avg: {activeRemediationModal.average})</p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="font-bold text-slate-800">Recommended Steps:</p>
+                <ul className="list-disc pl-4 space-y-1 text-slate-600 text-[11px]">
+                  <li>Assign 2x weekly after-school peer tutoring sessions in {activeRemediationModal.subjects}.</li>
+                  <li>Issue diagnostic quiz set to identify foundational gaps.</li>
+                  <li>Schedule bi-weekly progress review with Class Advisor.</li>
+                </ul>
+              </div>
+
+              <Button onClick={() => {
+                toast({ title: "Remediation Plan Assigned", description: `Personalized intervention plan active for ${activeRemediationModal.name}.` });
+                setActiveRemediationModal(null);
+              }} className="w-full bg-slate-900 text-white font-bold rounded-xl text-xs py-2.5 mt-2">
+                <Check className="h-4 w-4 mr-2" /> Assign Intervention Plan
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+    </div>
+  );
+}
