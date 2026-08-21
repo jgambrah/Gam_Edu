@@ -2368,6 +2368,7 @@ function DirectorStatCard({ title, value, icon: Icon, link, isLoading, color = "
       </Card>
     </Link>
   );
+}
 // ==========================================
 // ATTENDANCE ANALYTICS VIEW COMPONENT
 // ==========================================
