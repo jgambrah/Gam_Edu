@@ -369,32 +369,23 @@ export function AcademicPerformanceDashboardView({
     <div className="space-y-4 pb-8 animate-in fade-in duration-300">
       
       {/* ─────────────────────────────────────────────────────────────
-          ZONE 1: ACADEMIC INTELLIGENCE HEADER BANNER & SYNC CONTROL
+          ZONE 1: ACADEMIC ANALYTICS ACTION BAR & SYNC CONTROL
           ───────────────────────────────────────────────────────────── */}
-      <div className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white border border-slate-800 shadow-xl overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="space-y-2 max-w-xl">
-          <div className="flex items-center gap-2">
-            <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full uppercase border border-indigo-500/30">
-              Academics Pulse
-            </span>
-            <span className="text-[10px] text-slate-400 font-semibold">
-              Live School Grade Analytics
-            </span>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm gap-3">
+        <div className="flex items-center gap-2">
+          <GraduationCap className="h-5 w-5 text-indigo-600" />
+          <div>
+            <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Academic Gradebook & Assessment Analytics</h3>
+            <p className="text-[11px] text-slate-400 font-semibold">Live score averages, class rankings, and student grade performance.</p>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight italic">
-            ACADEMIC <span className="text-indigo-400">INTELLIGENCE HUB</span>
-          </h2>
-          <p className="text-xs text-slate-300 leading-relaxed font-medium">
-            Unified score variance, subject mastery rankings, teacher staffing ratios, and student risk intervention desk.
-          </p>
         </div>
 
         <Button
           onClick={handleSyncAcademicSummary}
           disabled={isSyncingAcademics}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl h-11 px-5 shadow-lg shadow-indigo-500/20 flex items-center gap-2 shrink-0 text-xs"
+          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs"
         >
-          <RefreshCw className={cn("h-4 w-4", isSyncingAcademics && "animate-spin")} />
+          <RefreshCw className={cn("h-3.5 w-3.5", isSyncingAcademics && "animate-spin")} />
           <span>{isSyncingAcademics ? "Syncing..." : "Sync Academic Analytics"}</span>
         </Button>
       </div>

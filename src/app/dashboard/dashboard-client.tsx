@@ -12106,10 +12106,19 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isParent, activeClassId]);
   const { data: classAssessments } = useCollection<Assessment>(classAssessmentsQuery);
 
-  // Overview uses cached dashboardSummary / express trigger button to prevent high assessment read costs
-  const assessmentsQuery = useMemoFirebase(() => null, []);
-  const recentAssessments: any[] = [];
-  const loadingAssessments = false;
+  // Live assessment records for Director / Admin / Staff
+  const staffAssessmentsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || isParent) return null;
+    return query(
+      collection(firestore, 'assessments'),
+      where('schoolId', '==', schoolId),
+      limit(300)
+    );
+  }, [firestore, schoolId, isParent]);
+  const { data: staffAssessments, isLoading: loadingStaffAssessments } = useCollection<Assessment>(staffAssessmentsQuery);
+
+  const recentAssessments = isParent ? parentAssessments : (staffAssessments || []);
+  const loadingAssessments = isParent ? loadingParentAssessments : loadingStaffAssessments;
 
   // For Director: parents, admissions, behavioral, staffAttendance, performanceReviews
   const parentsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId), limit(200)) : null, [firestore, schoolId, isAdmin]);
