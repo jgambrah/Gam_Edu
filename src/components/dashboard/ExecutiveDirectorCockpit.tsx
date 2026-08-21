@@ -21,6 +21,7 @@ export function ExecutiveDirectorCockpit({
   classes = [],
   financials = {},
   financialRecords = [],
+  payments = [],
   debtAgingStats = {},
   attendanceRate = 83,
   studentTeacherRatio = 20.3,
@@ -30,6 +31,71 @@ export function ExecutiveDirectorCockpit({
   onNavigateTab,
 }: any) {
   const { toast } = useToast();
+
+  // Calculate Daily Cash Collections (Today) - resets automatically at midnight
+  const todayCashCollected = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let total = 0;
+    let count = 0;
+
+    if (payments && payments.length > 0) {
+      payments.forEach((p: any) => {
+        if (p.status === 'Reversed' || p.status === 'Cancelled') return;
+        const rawDate = p.createdAt || p.date || p.timestamp || p.paymentDate;
+        if (!rawDate) return;
+        const pDate = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate);
+        if (!isNaN(pDate.getTime())) {
+          const pStart = new Date(pDate);
+          pStart.setHours(0, 0, 0, 0);
+          if (pStart.getTime() === today.getTime()) {
+            total += Number(p.amount) || Number(p.amountPaid) || 0;
+            count++;
+          }
+        }
+      });
+    }
+
+    // Check financialRecords for payments recorded today if payments array is missing them
+    if (financialRecords && financialRecords.length > 0) {
+      financialRecords.forEach((r: any) => {
+        if (r.status === 'Pending Reversal') return;
+        if (r.payments && Array.isArray(r.payments)) {
+          r.payments.forEach((p: any) => {
+            const rawDate = p.date || p.createdAt || p.timestamp;
+            if (!rawDate) return;
+            const pDate = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate);
+            if (!isNaN(pDate.getTime())) {
+              const pStart = new Date(pDate);
+              pStart.setHours(0, 0, 0, 0);
+              if (pStart.getTime() === today.getTime()) {
+                if (!payments?.some((existing: any) => existing.id === p.id)) {
+                  total += Number(p.amount) || 0;
+                  count++;
+                }
+              }
+            }
+          });
+        } else if (r.lastPaymentDate) {
+          const rawDate = r.lastPaymentDate;
+          const pDate = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate);
+          if (!isNaN(pDate.getTime())) {
+            const pStart = new Date(pDate);
+            pStart.setHours(0, 0, 0, 0);
+            if (pStart.getTime() === today.getTime()) {
+              if (!payments || payments.length === 0) {
+                total += Number(r.lastPaymentAmount) || Number(r.amountPaid) || 0;
+                count++;
+              }
+            }
+          }
+        }
+      });
+    }
+
+    return { total, count };
+  }, [payments, financialRecords]);
 
   // Calculate high arrears (>60 days overdue) dynamically from real student records
   const highArrearsList = useMemo(() => {
@@ -372,9 +438,9 @@ export function ExecutiveDirectorCockpit({
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          ZONE 2: TIER 1 HERO METRIC BAR (4 Core Vital Signs)
+          ZONE 2: TIER 1 HERO METRIC BAR (5 Core Vital Signs)
           ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         
         {/* Metric 1: Financial Collection Rate */}
         <Card 
@@ -397,6 +463,36 @@ export function ExecutiveDirectorCockpit({
               </div>
               <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
                 GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k collected of GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k total billed (Combined Fees)
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Metric 2: Daily Cash Collections (Today) */}
+        <Card 
+          onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
+          className="hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-green-600 overflow-hidden relative group bg-gradient-to-br from-white to-green-50/40"
+        >
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Collected Today</span>
+                <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              </div>
+              <div className="p-2 rounded-xl bg-green-100/80 text-green-700 group-hover:scale-110 transition-transform">
+                <Banknote className="h-5 w-5" />
+              </div>
+            </div>
+            <div className="mt-2">
+              <div className="flex items-baseline gap-2">
+                <h3 className="text-2xl font-black text-slate-900">
+                  GH₵ {todayCashCollected.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </h3>
+              </div>
+              <p className="text-[11px] font-semibold text-green-700 mt-1 line-clamp-1">
+                {todayCashCollected.count > 0 
+                  ? `${todayCashCollected.count} payment entry${todayCashCollected.count === 1 ? '' : 's'} recorded today`
+                  : "0 cash payments recorded today (resets nightly)"}
               </p>
             </div>
           </CardContent>
