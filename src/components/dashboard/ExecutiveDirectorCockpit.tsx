@@ -153,7 +153,7 @@ export function ExecutiveDirectorCockpit({
                 </Badge>
               </div>
               <p className="text-xs text-slate-400">
-                11 Unchecked Staff | GH₵ 40.8k High Arrears (&gt;60 days) | Low Pantry Stock (4 items)
+                {todayTeacherAttendance.absent?.length || 0} Unchecked Staff | GH₵ 40.8k High Arrears (&gt;60 days) | Low Pantry Stock (4 items)
               </p>
             </div>
           </div>
@@ -166,7 +166,7 @@ export function ExecutiveDirectorCockpit({
               className="bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
             >
               <UserCheck className="h-3.5 w-3.5 text-amber-400 mr-1.5" />
-              Staff Check-ins (11)
+              Staff Check-ins ({todayTeacherAttendance.absent?.length || 0})
             </Button>
 
             <Button 
@@ -219,25 +219,26 @@ export function ExecutiveDirectorCockpit({
               {activeDrawer === 'staff' && (
                 <div className="space-y-4">
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    The following 11 staff members have not completed morning attendance inspection check-in:
+                    The following {todayTeacherAttendance.absent?.length || 0} staff members have not completed morning attendance inspection check-in:
                   </p>
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                    {[
-                      { name: 'Kwadwo Mensah', role: 'Mathematics Teacher', time: 'Pending' },
-                      { name: 'Abena Osei', role: 'Primary 4 Class Teacher', time: 'Pending' },
-                      { name: 'Grace Appiah', role: 'Science Instructor', time: 'Pending' },
-                      { name: 'Daniel Addo', role: 'ICT Coordinator', time: 'Pending' },
-                    ].map((s, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                        <div>
-                          <p className="font-bold text-slate-800">{s.name}</p>
-                          <p className="text-[10px] text-slate-500">{s.role}</p>
+                    {todayTeacherAttendance.absent && todayTeacherAttendance.absent.length > 0 ? (
+                      todayTeacherAttendance.absent.map((s: any, idx: number) => (
+                        <div key={s.id || idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                          <div>
+                            <p className="font-bold text-slate-800">{s.name}</p>
+                            <p className="text-[10px] text-slate-500">{s.email || s.role || 'Staff Member'}</p>
+                          </div>
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">
+                            Not Checked In
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">
-                          {s.time}
-                        </Badge>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
+                        All active staff members are present and checked in today.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}

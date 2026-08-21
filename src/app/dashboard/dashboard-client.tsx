@@ -607,7 +607,7 @@ function AdminDashboard({
       });
     }
 
-    const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
+    const staffList = staff && staff.length > 0 ? staff : [];
 
     const today = startOfToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
@@ -616,20 +616,25 @@ function AdminDashboard({
 
     const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
 
-    const absentTeachers = shouldFlagAbsences
-      ? teachersList.filter((t: any) => {
+    const absentStaff = shouldFlagAbsences
+      ? staffList.filter((t: any) => {
           const tid = t.uid || t.id;
           const temail = t.email?.toLowerCase();
           const isPresent = (tid && presentIds.has(tid)) || (temail && presentIds.has(temail));
           return !isPresent;
-        }).map((t: any) => ({
-          id: t.uid || t.id,
-          name: `${t.firstName || ""} ${t.lastName || ""}`.trim() || t.name || "Teacher",
-          email: t.email || "No Email"
-        }))
+        }).map((t: any) => {
+          const fullName = `${t.firstName || ""} ${t.lastName || ""}`.trim();
+          const name = fullName || t.name || t.displayName || t.fullName || t.email || "Staff Member";
+          return {
+            id: t.uid || t.id,
+            name,
+            email: t.email || "",
+            role: t.role || "Staff"
+          };
+        })
       : [];
 
-    return { present: Array.from(presentIds), absent: absentTeachers, late: lates };
+    return { present: Array.from(presentIds), absent: absentStaff, late: lates };
   }, [staffAttendance, attendance, staff, startOfToday, schoolData]);
 
   const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
@@ -4044,7 +4049,7 @@ function DirectorDashboard({
       });
     }
 
-    const teachersList = staff.filter((s: any) => s.role?.toLowerCase() === 'teacher');
+    const staffList = staff && staff.length > 0 ? staff : [];
 
     const today = startOfToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
@@ -4053,20 +4058,25 @@ function DirectorDashboard({
 
     const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
 
-    const absentTeachers = shouldFlagAbsences
-      ? teachersList.filter((t: any) => {
+    const absentStaff = shouldFlagAbsences
+      ? staffList.filter((t: any) => {
           const tid = t.uid || t.id;
           const temail = t.email?.toLowerCase();
           const isPresent = (tid && presentIds.has(tid)) || (temail && presentIds.has(temail));
           return !isPresent;
-        }).map((t: any) => ({
-          id: t.uid || t.id,
-          name: `${t.firstName || ""} ${t.lastName || ""}`.trim() || t.name || "Teacher",
-          email: t.email || "No Email"
-        }))
+        }).map((t: any) => {
+          const fullName = `${t.firstName || ""} ${t.lastName || ""}`.trim();
+          const name = fullName || t.name || t.displayName || t.fullName || t.email || "Staff Member";
+          return {
+            id: t.uid || t.id,
+            name,
+            email: t.email || "",
+            role: t.role || "Staff"
+          };
+        })
       : [];
 
-    return { present: Array.from(presentIds), absent: absentTeachers, late: lates };
+    return { present: Array.from(presentIds), absent: absentStaff, late: lates };
   }, [staffAttendance, attendance, staff, startOfToday, schoolData]);
 
   // Canteen Inventory & Requisitions
