@@ -11859,7 +11859,42 @@ export default function DashboardClient() {
   }
 
   if (role === 'Administrator') {
-    return <AdminDashboard activeTab={adminActiveTab} setActiveTab={setAdminActiveTab} profile={profile} students={students} staff={staff} classes={classes} announcements={announcements} isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical || dashboardSummaryLoading} schoolData={schoolData} hasFinanceAccess={hasFinanceAccess} financialRecords={records} payments={payments || []} attendance={attendance} schoolId={schoolId} recentAssessments={recentAssessments} parents={parents} admissions={admissions} behavioralRecords={behavioralRecords} staffAttendance={staffAttendance} performanceReviews={performanceReviews} subjects={subjects} schoolSettings={schoolSettings} rooms={rooms} lessonPlans={lessonPlans} assignments={assignments} submissions={submissions} medicalLogs={medicalLogs} budgets={budgets || []} budgetItems={budgetItems || []} accounts={accounts || []} journals={journals || []} parentSatisfactionRecords={parentSatisfactionRecords || []} loadingSatisfaction={loadingSatisfaction} dashboardSummary={dashboardSummary} />;
+    return <AdminDashboard 
+      activeTab={adminActiveTab} 
+      setActiveTab={setAdminActiveTab} 
+      profile={profile} 
+      students={students ?? []} 
+      staff={staff ?? []} 
+      classes={classes ?? []} 
+      announcements={announcements ?? []} 
+      isLoading={loadingStudents || loadingStaff || loadingClasses || loadingAssessments || loadingParents || loadingAdmissions || loadingBehavioral || loadingStaffAttendance || loadingPerformance || loadingRooms || loadingMedical || dashboardSummaryLoading} 
+      schoolData={schoolData} 
+      hasFinanceAccess={hasFinanceAccess} 
+      financialRecords={records ?? []} 
+      payments={payments ?? []} 
+      attendance={attendance ?? []} 
+      schoolId={schoolId} 
+      recentAssessments={recentAssessments ?? []} 
+      parents={parents ?? []} 
+      admissions={admissions ?? []} 
+      behavioralRecords={behavioralRecords ?? []} 
+      staffAttendance={staffAttendance ?? []} 
+      performanceReviews={performanceReviews ?? []} 
+      subjects={subjects ?? []} 
+      schoolSettings={schoolSettings} 
+      rooms={rooms ?? []} 
+      lessonPlans={lessonPlans ?? []} 
+      assignments={assignments ?? []} 
+      submissions={submissions ?? []} 
+      medicalLogs={medicalLogs ?? []} 
+      budgets={budgets ?? []} 
+      budgetItems={budgetItems ?? []} 
+      accounts={accounts ?? []} 
+      journals={journals ?? []} 
+      parentSatisfactionRecords={parentSatisfactionRecords ?? []} 
+      loadingSatisfaction={loadingSatisfaction} 
+      dashboardSummary={dashboardSummary} 
+    />;
   }
 
   if (role === 'Secretary') {

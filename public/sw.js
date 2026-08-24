@@ -44,7 +44,7 @@ self.addEventListener('notificationclick', (event) => {
 // 2. NEW PWA CACHING STRATEGY: Network-First
 // ============================================================================
 
-const CACHE_NAME = 'gam-edu-cache-v2';
+const CACHE_NAME = 'gam-edu-cache-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting(); 
@@ -72,7 +72,7 @@ self.addEventListener('fetch', (event) => {
   if (!event.request.url.startsWith(self.location.origin)) return;
   if (event.request.url.includes('/_next/webpack-hmr')) return;
 
-  // NETWORK FIRST STRATEGY
+  // NETWORK FIRST STRATEGY WITH AUTOMATIC CHUNK PURGE
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
@@ -85,7 +85,14 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       })
       .catch(() => {
-        return caches.match(event.request);
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          // If a Next.js JS chunk is missing from network and cache, clear cache to force fresh reload
+          if (event.request.url.includes('/_next/static/')) {
+            caches.delete(CACHE_NAME);
+          }
+          return new Response('Network error', { status: 408, headers: { 'Content-Type': 'text/plain' } });
+        });
       })
   );
 });
