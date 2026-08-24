@@ -2371,13 +2371,35 @@ function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
 }
 
 // --- 6. SCIENCE WORLD (NON-SAAS DYNAMIC & CYCLING) ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
+function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
     
-    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
+    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'solar' | 'body' | 'experiment' | 'library'>(activeAgeTier === 'ages5+' ? 'solar' : 'lab');
+    
+    const SOLAR_SYSTEM_PLANETS = useMemo(() => [
+      { name: "Sun ☀️", type: "Star", fact: "The giant burning ball of gas at the center of our solar system!" },
+      { name: "Mercury 🪨", type: "Rocky Planet", fact: "The smallest planet closest to the burning Sun!" },
+      { name: "Venus 🟡", type: "Rocky Planet", fact: "The hottest planet with thick yellow clouds!" },
+      { name: "Earth 🌍", type: "Home Planet", fact: "Our beautiful blue water world where living plants and animals thrive!" },
+      { name: "Mars 🔴", type: "Red Planet", fact: "The rusty red desert planet with giant volcanoes!" },
+      { name: "Jupiter 🪐", type: "Gas Giant", fact: "The largest planet in the solar system with a giant stormy red spot!" },
+      { name: "Saturn 🪐", type: "Ringed Giant", fact: "Famous for its magnificent rings made of ice and rock!" },
+      { name: "Moon 🌙", type: "Earth's Satellite", fact: "Orbits around Earth every month and shines at night!" }
+    ], []);
+
+    const HUMAN_BODY_ORGANS = useMemo(() => [
+      { name: "Brain 🧠", system: "Nervous System", function: "Controls all thinking, memory, emotions, and bodily movements!" },
+      { name: "Heart ❤️", system: "Circulatory System", function: "Pumps oxygen-rich blood through blood vessels to all body parts!" },
+      { name: "Lungs 🫁", system: "Respiratory System", function: "Inhales fresh oxygen from air and exhales carbon dioxide waste!" },
+      { name: "Stomach 🥪", system: "Digestive System", function: "Breaks down food and absorbs nutrients into energy!" },
+      { name: "Skeleton 🦴", system: "Skeletal System", function: "206 bones that protect organs and allow body movement!" }
+    ], []);
+
+    const [selectedPlanet, setSelectedPlanet] = useState<any>(SOLAR_SYSTEM_PLANETS[3]);
+    const [selectedOrgan, setSelectedOrgan] = useState<any>(HUMAN_BODY_ORGANS[0]);
     
     // --- 1. DATA FETCHING (Standard Firestore) ---
     const sorterQuery = useMemoFirebase(() => 
@@ -2529,56 +2551,171 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-8">
-            <div className="flex gap-2 p-1.5 bg-blue-50/50 rounded-2xl w-fit mx-auto border border-blue-100/50 shadow-inner">
+            <div className="flex gap-2 p-1.5 bg-blue-50/50 rounded-2xl w-full overflow-x-auto no-scrollbar border border-blue-100/50 shadow-inner">
+                <Button 
+                    variant={activeTab === 'solar' ? 'default' : 'ghost'} 
+                    onClick={() => setActiveTab('solar')}
+                    className={cn(
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[120px]",
+                      activeTab === 'solar' 
+                        ? 'bg-gradient-to-b from-blue-600 to-indigo-600 text-white shadow-md border-b-4 border-indigo-800' 
+                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent'
+                    )}
+                >
+                    🌌 Solar System
+                </Button>
+                <Button 
+                    variant={activeTab === 'body' ? 'default' : 'ghost'} 
+                    onClick={() => setActiveTab('body')}
+                    className={cn(
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[120px]",
+                      activeTab === 'body' 
+                        ? 'bg-gradient-to-b from-purple-600 to-pink-600 text-white shadow-md border-b-4 border-purple-800' 
+                        : 'text-purple-700 hover:bg-purple-100/40 border border-transparent'
+                    )}
+                >
+                    🧠 Body Organs
+                </Button>
                 <Button 
                     variant={activeTab === 'lab' ? 'default' : 'ghost'} 
                     onClick={() => setActiveTab('lab')}
                     className={cn(
-                      "rounded-xl font-black transition-all animate-none text-sm h-10 px-6",
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[100px]",
                       activeTab === 'lab' 
                         ? 'bg-gradient-to-b from-blue-500 to-sky-500 text-white shadow-md border-b-4 border-blue-700' 
-                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent hover:border-blue-200/50'
+                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent'
                     )}
                 >
-                    Discovery
+                    💡 AI Discovery
                 </Button>
                 <Button 
                     variant={activeTab === 'sorter' ? 'default' : 'ghost'} 
                     onClick={() => setActiveTab('sorter')}
                     className={cn(
-                      "rounded-xl font-black transition-all animate-none text-sm h-10 px-6",
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[100px]",
                       activeTab === 'sorter' 
                         ? 'bg-gradient-to-b from-blue-500 to-sky-500 text-white shadow-md border-b-4 border-blue-700' 
-                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent hover:border-blue-200/50'
+                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent'
                     )}
                 >
-                    Sorter
+                    🌱 Living Sorter
                 </Button>
                 <Button 
                     variant={activeTab === 'experiment' ? 'default' : 'ghost'} 
                     onClick={() => setActiveTab('experiment')}
                     className={cn(
-                      "rounded-xl font-black transition-all animate-none text-sm h-10 px-6",
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[110px]",
                       activeTab === 'experiment' 
                         ? 'bg-gradient-to-b from-blue-500 to-sky-500 text-white shadow-md border-b-4 border-blue-700' 
-                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent hover:border-blue-200/50'
+                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent'
                     )}
                 >
-                    Matter Lab
+                    🧊 Matter Lab
                 </Button>
                 <Button 
                     variant={activeTab === 'library' ? 'default' : 'ghost'} 
                     onClick={() => setActiveTab('library')}
                     className={cn(
-                      "rounded-xl font-black transition-all animate-none text-sm h-10 px-6",
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[100px]",
                       activeTab === 'library' 
                         ? 'bg-gradient-to-b from-blue-500 to-sky-500 text-white shadow-md border-b-4 border-blue-700' 
-                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent hover:border-blue-200/50'
+                        : 'text-blue-700 hover:bg-blue-100/40 border border-transparent'
                     )}
                 >
                     Journal
                 </Button>
             </div>
+
+            {/* SOLAR SYSTEM EXPLORER FOR AGE 5+ */}
+            {activeTab === 'solar' && (
+              <div className="space-y-6 animate-in fade-in">
+                <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 p-8 rounded-[40px] text-white border-4 border-indigo-500/30 shadow-2xl space-y-6">
+                  <div className="text-center">
+                    <span className="text-xs font-black uppercase tracking-widest text-indigo-300 bg-indigo-900/50 px-4 py-1 rounded-full border border-indigo-400/30">
+                      Primary Science: Solar System Explorer
+                    </span>
+                    <h3 className="text-3xl font-black text-white mt-2">The Solar System & Planets 🌌</h3>
+                    <p className="text-xs text-indigo-200 font-medium">Tap any planet to learn its scientific classification and cosmic fact!</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {SOLAR_SYSTEM_PLANETS.map((p) => (
+                      <div
+                        key={p.name}
+                        onClick={() => {
+                          setSelectedPlanet(p);
+                          speak(`${p.name}. ${p.fact}`);
+                        }}
+                        className={cn(
+                          "p-4 rounded-3xl border-2 text-center cursor-pointer transition-all hover:scale-105",
+                          selectedPlanet?.name === p.name ? "bg-indigo-600/60 border-amber-400 shadow-lg ring-4 ring-amber-400/30" : "bg-white/10 border-white/10 hover:bg-white/20"
+                        )}
+                      >
+                        <span className="text-4xl block mb-1">{p.name.split(' ')[1]}</span>
+                        <span className="text-xs font-black block">{p.name.split(' ')[0]}</span>
+                        <span className="text-[10px] text-indigo-300 font-bold block">{p.type}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {selectedPlanet && (
+                    <div className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 text-center space-y-3">
+                      <h4 className="text-2xl font-black text-amber-300">{selectedPlanet.name}</h4>
+                      <p className="text-base font-bold text-slate-100 max-w-xl mx-auto">"{selectedPlanet.fact}"</p>
+                      <Button onClick={() => speak(`${selectedPlanet.name}. ${selectedPlanet.fact}`)} className="bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl text-xs">
+                        <Volume2 className="w-4 h-4 mr-2" /> Listen to Planet Audio
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* HUMAN BODY ORGANS FOR AGE 5+ */}
+            {activeTab === 'body' && (
+              <div className="space-y-6 animate-in fade-in">
+                <div className="bg-purple-50 p-8 rounded-[40px] border-4 border-purple-200 text-center space-y-6 shadow-xl">
+                  <div>
+                    <span className="text-xs font-black uppercase tracking-widest text-purple-600 bg-purple-100 px-4 py-1 rounded-full border border-purple-200">
+                      Primary Science: Human Body Anatomy
+                    </span>
+                    <h3 className="text-3xl font-black text-purple-950 mt-2">Human Body Organs & Systems 🧠</h3>
+                    <p className="text-xs text-purple-700 font-medium">Explore how vital organs keep the human body healthy and functioning!</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    {HUMAN_BODY_ORGANS.map((o) => (
+                      <div
+                        key={o.name}
+                        onClick={() => {
+                          setSelectedOrgan(o);
+                          speak(`${o.name}. ${o.function}`);
+                        }}
+                        className={cn(
+                          "p-4 rounded-3xl border-2 text-center cursor-pointer transition-all hover:scale-105 bg-white",
+                          selectedOrgan?.name === o.name ? "border-purple-500 bg-purple-100 shadow-md ring-4 ring-purple-200" : "border-purple-100 hover:bg-purple-50"
+                        )}
+                      >
+                        <span className="text-4xl block mb-1">{o.name.split(' ')[1]}</span>
+                        <span className="text-xs font-black block text-slate-800">{o.name.split(' ')[0]}</span>
+                        <span className="text-[9px] text-purple-600 font-bold block">{o.system}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {selectedOrgan && (
+                    <div className="bg-white p-6 rounded-3xl border-2 border-purple-200 shadow-inner max-w-xl mx-auto space-y-3">
+                      <span className="text-xs font-black text-purple-600 uppercase tracking-widest">{selectedOrgan.system}</span>
+                      <h4 className="text-2xl font-black text-slate-900">{selectedOrgan.name}</h4>
+                      <p className="text-base font-bold text-slate-700">"{selectedOrgan.function}"</p>
+                      <Button onClick={() => speak(`${selectedOrgan.name}. ${selectedOrgan.function}`)} className="bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl text-xs">
+                        <Volume2 className="w-4 h-4 mr-2" /> Listen to Organ Function
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* DISCOVERY LAB */}
             {activeTab === 'lab' && (
