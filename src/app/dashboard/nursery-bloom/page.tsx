@@ -43,7 +43,7 @@ const speak = (text: string, rate = 0.9) => {
 
 
 // --- 1. VOICE COACH (THE SPEAKING ACADEMY) ---
-function VoiceCoach({ canEdit }: { canEdit: boolean }) {
+function VoiceCoach({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
@@ -57,8 +57,22 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [viewMode, setViewMode] = useState<'practice' | 'library'>('practice');
 
+    const TODDLER_WORDS = useMemo(() => [
+      { word: "Dog", emoji: "🐶", sentence: "The happy dog says Woof!", phonetic: "/dɒɡ/" },
+      { word: "Cat", emoji: "🐱", sentence: "The soft cat says Meow!", phonetic: "/kæt/" },
+      { word: "Cow", emoji: "🐮", sentence: "The big cow says Moo!", phonetic: "/kaʊ/" },
+      { word: "Duck", emoji: "🦆", sentence: "The yellow duck says Quack!", phonetic: "/dʌk/" },
+      { word: "Ball", emoji: "⚽", sentence: "Roll the round ball!", phonetic: "/bɔːl/" },
+      { word: "Star", emoji: "⭐", sentence: "Twinkle bright star!", phonetic: "/stɑːr/" }
+    ], []);
+
     const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: wordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
+    const { data: dbWordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
+
+    const wordLibrary = useMemo(() => {
+      if (activeAgeTier === 'ages2-3') return TODDLER_WORDS;
+      return dbWordLibrary && dbWordLibrary.length > 0 ? dbWordLibrary : TODDLER_WORDS;
+    }, [activeAgeTier, dbWordLibrary, TODDLER_WORDS]);
 
     const pickRandomWord = useCallback(() => {
         if (!wordLibrary || wordLibrary.length === 0) return;
@@ -68,8 +82,8 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     }, [wordLibrary]);
     
     useEffect(() => { 
-        if (wordLibrary && wordLibrary.length > 0 && !challenge) pickRandomWord();
-    }, [wordLibrary, challenge, pickRandomWord]);
+        if (wordLibrary && wordLibrary.length > 0) pickRandomWord();
+    }, [wordLibrary, activeAgeTier, pickRandomWord]);
 
     const startListening = () => {
         if (!('webkitSpeechRecognition' in window)) {
@@ -358,7 +372,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 2. PHONICS FOREST (COMPREHENSIVE) ---
-function PhonicsForest({ canEdit }: { canEdit: boolean }) {
+function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { toast } = useToast();
     const firestore = useFirestore();
     const [activeTab, setActiveTab] = useState<'library' | 'blender' | 'families' | 'game'>('library');
@@ -377,8 +391,14 @@ function PhonicsForest({ canEdit }: { canEdit: boolean }) {
     const [newRhyme, setNewRhyme] = useState({ family: '', words: '' });
     const [isAddingRhyme, setIsAddingRhyme] = useState(false);
 
+    const toddlerSoundGroups = [
+        { name: "First Alphabet Sounds (Ages 2-3)", color: "bg-amber-100 text-amber-700 border-amber-300", sounds: ["a", "b", "c", "d", "e", "f"], example: ["apple 🍎", "ball ⚽", "cat 🐱", "duck 🦆", "egg 🥚", "fish 🐟"] },
+        { name: "Toddler Animal Sounds", color: "bg-pink-100 text-pink-700 border-pink-300", sounds: ["woof", "meow", "moo", "quack", "roar", "baa"], example: ["dog 🐶", "cat 🐱", "cow 🐮", "duck 🦆", "lion 🦁", "sheep 🐑"] },
+    ];
+
     // Comprehensive Sound Categories (SSP Structured)
     const defaultSoundGroups = [
+        ...(activeAgeTier === 'ages2-3' ? toddlerSoundGroups : []),
         { name: "Short Vowels", color: "bg-rose-100 text-rose-600 border-rose-200", sounds: ["a", "e", "i", "o", "u"], example: ["apple", "egg", "ink", "octopus", "up"] },
         { name: "Digraphs (2 letters, 1 sound)", color: "bg-teal-100 text-teal-600 border-teal-200", sounds: ["ch", "sh", "th", "ng", "qu", "wh"], example: ["chip", "ship", "thin", "ring", "queen", "whale"] },
         { name: "Long Vowels", color: "bg-purple-100 text-purple-600 border-purple-200", sounds: ["ai", "ee", "igh", "oa", "oo"], example: ["rain", "tree", "light", "boat", "moon"] },
@@ -1182,9 +1202,9 @@ function ABCKingdom({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 4. MATH PLAYGROUND (ULTIMATE VERSION) ---
-function MathPlayground() {
-  type MathMode = 'add' | 'sub' | 'mul' | 'div' | 'compare' | 'patterns' | 'shapes' | 'time';
-  const [mode, setMode] = useState<MathMode>('add');
+function MathPlayground({ activeAgeTier = 'ages2-3' }: { activeAgeTier?: string }) {
+  type MathMode = 'count' | 'add' | 'sub' | 'mul' | 'div' | 'compare' | 'patterns' | 'shapes' | 'time';
+  const [mode, setMode] = useState<MathMode>(activeAgeTier === 'ages2-3' ? 'count' : 'add');
   const [question, setQuestion] = useState<any>({ a: 0, b: 0, icon: '🍎', ans: '', options: [], displayPrompt: "" });
   const [feedback, setFeedback] = useState("");
   const [streak, setStreak] = useState(0);
@@ -1199,6 +1219,13 @@ function MathPlayground() {
     let displayPrompt = "";
 
     switch (mode) {
+      case 'count':
+        a = Math.floor(Math.random() * 5) + 1;
+        b = 0;
+        ans = a;
+        options = [a, a === 5 ? 4 : a + 1, Math.max(1, a - 1)].sort(() => Math.random() - 0.5);
+        displayPrompt = `Count the objects! How many are there?`;
+        break;
       case 'add':
         a = Math.floor(Math.random() * 9) + 1; b = Math.floor(Math.random() * 9) + 1;
         ans = a + b;
@@ -1291,7 +1318,10 @@ function MathPlayground() {
   return (
     <div className="flex flex-col items-center space-y-6">
       <div className="flex gap-2 p-1.5 bg-orange-50/50 rounded-2xl w-full overflow-x-auto no-scrollbar border border-orange-100/50 shadow-inner">
-          {(['add', 'sub', 'mul', 'div', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
+          {(activeAgeTier === 'ages2-3' 
+            ? (['count', 'shapes'] as MathMode[]) 
+            : (['count', 'add', 'sub', 'mul', 'div', 'compare', 'patterns', 'shapes', 'time'] as MathMode[])
+          ).map((m) => (
             <Button 
                 key={m}
                 variant={mode === m ? 'default' : 'ghost'} 
@@ -1313,6 +1343,25 @@ function MathPlayground() {
             {/* Decorative background stars */}
             <div className="absolute top-4 left-4 text-orange-200 select-none animate-pulse">★</div>
             <div className="absolute bottom-4 right-4 text-orange-200 select-none animate-pulse">★</div>
+            
+            {/* COUNTING: Toddler Object Visual */}
+            {mode === 'count' && (
+              <div className="space-y-4 mb-6">
+                <p className="text-xs font-black text-orange-600 uppercase tracking-widest text-center">Tap each object to count out loud!</p>
+                <div className="flex justify-center gap-4 flex-wrap p-6 bg-orange-50/60 border-2 border-orange-200 rounded-3xl shadow-inner min-w-[200px]">
+                  {Array.from({ length: question.a }).map((_, i) => (
+                    <span 
+                      key={i} 
+                      onClick={() => speak(`${i + 1}`)}
+                      className="text-6xl hover:scale-125 transition-transform cursor-pointer animate-bounce"
+                      style={{ animationDelay: `${i * 150}ms` }}
+                    >
+                      {question.icon}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* MULTIPLICATION: Array Grid Visual */}
             {mode === 'mul' && (
@@ -1448,15 +1497,24 @@ function MathPlayground() {
 }
 
 // --- 5. STORY SPARK ---
-function StorySpark({ canEdit }: { canEdit: boolean }) {
+function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { user } = useUser(); 
     const { role } = useRole();
     const firestore = useFirestore(); 
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
     
+    const TODDLER_STORY = useMemo(() => ({
+      title: "The Happy Little Puppy 🐶",
+      pages: [
+        { text: "Once upon a time, a happy little puppy ran in the green grass. Woof woof!", emoji: "🐶" },
+        { text: "The puppy found a bright red ball and rolled it with his nose. Wheee!", emoji: "⚽" },
+        { text: "After playing all day, the tired puppy went to sleep under the warm sun. Goodnight puppy!", emoji: "😴" }
+      ]
+    }), []);
+
     // Core State
-    const [story, setStory] = useState<any>(null); 
+    const [story, setStory] = useState<any>(activeAgeTier === 'ages2-3' ? TODDLER_STORY : null); 
     const [topic, setTopic] = useState(''); 
     const [context, setContext] = useState('');
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
@@ -4994,32 +5052,32 @@ export default function JuniorCampusPage() {
 
                 <TabsContent value="coach" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-pink-400">
-                    <VoiceCoach canEdit={canEdit} />
+                    <VoiceCoach canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="phonics" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-teal-400">
-                    <PhonicsForest canEdit={canEdit} />
+                    <PhonicsForest canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="abc" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400">
-                    <ABCKingdom canEdit={canEdit} />
+                    <ABCKingdom canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="math" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-orange-400 relative">
-                    <MathPlayground />
+                    <MathPlayground activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="stories" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-purple-400">
-                    <StorySpark canEdit={canEdit} />
+                    <StorySpark canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="science" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-blue-400">
-                    <ScienceWorld canEdit={canEdit} />
+                    <ScienceWorld canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="art" className="mt-0 animate-in fade-in-50 duration-300">
