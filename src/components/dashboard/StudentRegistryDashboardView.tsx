@@ -20,12 +20,17 @@ import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp 
 import Link from 'next/link';
 
 export function StudentRegistryDashboardView({
-  students = [],
-  classes = [],
-  staff = [],
-  attendance = [],
+  students: rawStudents,
+  classes: rawClasses,
+  staff: rawStaff,
+  attendance: rawAttendance,
   schoolData,
 }: any) {
+  const students = useMemo(() => rawStudents || [], [rawStudents]);
+  const classes = useMemo(() => rawClasses || [], [rawClasses]);
+  const staff = useMemo(() => rawStaff || [], [rawStaff]);
+  const attendance = useMemo(() => rawAttendance || [], [rawAttendance]);
+
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSyncingStudents, setIsSyncingStudents] = useState(false);

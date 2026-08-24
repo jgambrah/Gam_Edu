@@ -21,14 +21,21 @@ import { format, startOfDay } from 'date-fns';
 import Link from 'next/link';
 
 export function StaffDirectoryDashboardView({
-  staff = [],
-  staffAttendance = [],
-  classes = [],
-  students = [],
+  staff: rawStaff,
+  staffAttendance: rawStaffAttendance,
+  classes: rawClasses,
+  students: rawStudents,
   schoolData,
-  performanceReviews = [],
-  leaveRequests = [],
+  performanceReviews: rawPerformanceReviews,
+  leaveRequests: rawLeaveRequests,
 }: any) {
+  const staff = useMemo(() => rawStaff || [], [rawStaff]);
+  const staffAttendance = useMemo(() => rawStaffAttendance || [], [rawStaffAttendance]);
+  const classes = useMemo(() => rawClasses || [], [rawClasses]);
+  const students = useMemo(() => rawStudents || [], [rawStudents]);
+  const performanceReviews = useMemo(() => rawPerformanceReviews || [], [rawPerformanceReviews]);
+  const leaveRequests = useMemo(() => rawLeaveRequests || [], [rawLeaveRequests]);
+
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSyncingStaff, setIsSyncingStaff] = useState(false);

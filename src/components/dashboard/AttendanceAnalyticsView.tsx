@@ -18,13 +18,19 @@ import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp,
 import { format, startOfDay } from 'date-fns';
 
 export function AttendanceAnalyticsView({
-  students = [],
-  staff = [],
-  classes = [],
-  attendance = [],
-  staffAttendance = [],
+  students: rawStudents,
+  staff: rawStaff,
+  classes: rawClasses,
+  attendance: rawAttendance,
+  staffAttendance: rawStaffAttendance,
   schoolData,
 }: any) {
+  const students = useMemo(() => rawStudents || [], [rawStudents]);
+  const staff = useMemo(() => rawStaff || [], [rawStaff]);
+  const classes = useMemo(() => rawClasses || [], [rawClasses]);
+  const attendance = useMemo(() => rawAttendance || [], [rawAttendance]);
+  const staffAttendance = useMemo(() => rawStaffAttendance || [], [rawStaffAttendance]);
+
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSyncingAttendance, setIsSyncingAttendance] = useState(false);

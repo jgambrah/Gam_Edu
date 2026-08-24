@@ -17,17 +17,27 @@ import { useFirestore } from '@/firebase';
 import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 
 export function AcademicPerformanceDashboardView({
-  students = [],
-  classes = [],
-  recentAssessments = [],
-  performanceReviews = [],
-  staff = [],
-  subjects = [],
-  rooms = [],
-  behavioralRecords = [],
-  financialRecords = [],
+  students: rawStudents,
+  classes: rawClasses,
+  recentAssessments: rawRecentAssessments,
+  performanceReviews: rawPerformanceReviews,
+  staff: rawStaff,
+  subjects: rawSubjects,
+  rooms: rawRooms,
+  behavioralRecords: rawBehavioralRecords,
+  financialRecords: rawFinancialRecords,
   schoolData,
 }: any) {
+  const students = useMemo(() => rawStudents || [], [rawStudents]);
+  const classes = useMemo(() => rawClasses || [], [rawClasses]);
+  const recentAssessments = useMemo(() => rawRecentAssessments || [], [rawRecentAssessments]);
+  const performanceReviews = useMemo(() => rawPerformanceReviews || [], [rawPerformanceReviews]);
+  const staff = useMemo(() => rawStaff || [], [rawStaff]);
+  const subjects = useMemo(() => rawSubjects || [], [rawSubjects]);
+  const rooms = useMemo(() => rawRooms || [], [rawRooms]);
+  const behavioralRecords = useMemo(() => rawBehavioralRecords || [], [rawBehavioralRecords]);
+  const financialRecords = useMemo(() => rawFinancialRecords || [], [rawFinancialRecords]);
+
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
