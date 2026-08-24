@@ -11898,33 +11898,33 @@ export default function DashboardClient() {
   }
 
   if (role === 'Secretary') {
-    return <SecretaryDashboard profile={profile} students={students} announcements={announcements} isLoading={loadingStudents} />;
+    return <SecretaryDashboard profile={profile} students={students ?? []} announcements={announcements ?? []} isLoading={loadingStudents} />;
   }
 
   if (role === 'Receptionist') {
-    return <ReceptionistDashboard profile={profile} announcements={announcements} attendance={attendance} students={students} isLoading={loadingAnnouncements || loadingStudents} />;
+    return <ReceptionistDashboard profile={profile} announcements={announcements ?? []} attendance={attendance ?? []} students={students ?? []} isLoading={loadingAnnouncements || loadingStudents} />;
   }
 
   if (role === 'Accountant') {
-    return <AccountantDashboard profile={profile} students={students} classes={classes} records={records} tills={tills} announcements={announcements} isLoading={loadingStudents || loadingRecords || loadingTills} schoolSettings={schoolSettings} />;
+    return <AccountantDashboard profile={profile} students={students ?? []} classes={classes ?? []} records={records ?? []} tills={tills ?? []} announcements={announcements ?? []} isLoading={loadingStudents || loadingRecords || loadingTills} schoolSettings={schoolSettings} />;
   }
 
   if (isSupportStaff) {
-    return <SupportStaffDashboard role={role} profile={profile} leaveRequests={leaveRequests} announcements={announcements} isLoading={loadingLeaves} announcementsLoading={loadingAnnouncements} />;
+    return <SupportStaffDashboard role={role} profile={profile} leaveRequests={leaveRequests ?? []} announcements={announcements ?? []} isLoading={loadingLeaves} announcementsLoading={loadingAnnouncements} />;
   }
 
   if (role === 'Teacher') {
     return (
       <TeacherDashboardView 
         profile={profile} 
-        classes={teacherClasses} 
-        students={teacherStudents} 
-        assessments={recentAssessments} 
-        announcements={announcements} 
-        timetable={timetable}
-        assignments={assignments}
-        submissions={submissions}
-        subjects={subjects}
+        classes={teacherClasses ?? []} 
+        students={teacherStudents ?? []} 
+        assessments={recentAssessments ?? []} 
+        announcements={announcements ?? []} 
+        timetable={timetable ?? []}
+        assignments={assignments ?? []}
+        submissions={submissions ?? []}
+        subjects={subjects ?? []}
         isLoading={loadingClasses || loadingStudents || loadingAssessments || loadingTimetable} 
       />
     );
@@ -11933,22 +11933,22 @@ export default function DashboardClient() {
   if (role === 'Parent') {
     return <ParentDashboard 
       profile={profile} 
-      children={parentChildren} 
-      financials={parentFinancials} 
-      announcements={announcements} 
+      children={parentChildren ?? []} 
+      financials={parentFinancials ?? []} 
+      announcements={announcements ?? []} 
       isLoading={loadingStudents || loadingRecords || loadingStickers || loadingParentAssessments || loadingAttendance || loadingParentAssignments || loadingParentSubmissions} 
       schoolSettings={schoolSettings} 
-      stickers={parentStickers} 
-      assessments={parentAssessments} 
-      attendance={parentAttendance} 
-      subjects={subjects}
+      stickers={parentStickers ?? []} 
+      assessments={parentAssessments ?? []} 
+      attendance={parentAttendance ?? []} 
+      subjects={subjects ?? []}
       selectedChildId={selectedChildId}
       setSelectedChildId={setSelectedChildId}
-      classAssessments={classAssessments}
-      assignments={parentAssignments}
-      submissions={parentSubmissions}
-      students={students}
-      classes={classes}
+      classAssessments={classAssessments ?? []}
+      assignments={parentAssignments ?? []}
+      submissions={parentSubmissions ?? []}
+      students={students ?? []}
+      classes={classes ?? []}
       quizzes={parentQuizzes || []}
       quizAttempts={parentQuizAttempts || []}
     />;
