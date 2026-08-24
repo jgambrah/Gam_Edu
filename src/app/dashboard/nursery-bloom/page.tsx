@@ -3010,15 +3010,26 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
 }
 
 // --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
-function ArtStudio({ canEdit }: { canEdit: boolean }) {
+function ArtStudio({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
+    const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery' | 'symmetry'>('freestyle');
     const [isDrawing, setIsDrawing] = useState(false);
     const [color, setColor] = useState('#4f46e5');
     const [brushSize, setBrushSize] = useState(8);
     const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp' | 'pencil' | 'crayon' | 'paint_brush' | 'marker'>('brush');
     const [selectedShape, setSelectedShape] = useState<'circle' | 'square' | 'star'>('circle');
+    const [symmetryMode, setSymmetryMode] = useState(false);
     
+    const AGE5_ART_QUESTS = useMemo(() => [
+      { title: "Space Adventure 🚀", prompt: "Draw Commander Leo's Rocket launching past stars and planets into deep space!" },
+      { title: "Underwater Kingdom 🐠", prompt: "Draw colourful fish swimming through sea anemones and coral reefs!" },
+      { title: "Medieval Castle 🏰", prompt: "Draw a tall castle with towers, flags, and a drawbridge!" },
+      { title: "Nature Rainbow 🌈", prompt: "Draw a bright 7-color rainbow over a green forest with birds!" },
+      { title: "Prehistoric Dinosaur 🦕", prompt: "Draw a friendly green dinosaur eating leaves from a tall tree!" }
+    ], []);
+
+    const [questIdx, setQuestIdx] = useState(0);
+
     // Color Lab State
     const [mix1, setMix1] = useState<string | null>(null);
     const [mix2, setMix2] = useState<string | null>(null);
@@ -3074,8 +3085,17 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        
         ctx.lineTo(x, y);
         ctx.stroke();
+
+        if (symmetryMode) {
+          const mirrorX = canvas.width - x;
+          ctx.moveTo(canvas.width - x, y);
+          ctx.arc(mirrorX, y, brushSize / 2, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
     };
 
     const stopDrawing = () => { setIsDrawing(false); };
@@ -3162,42 +3182,73 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-6">
-            <div className="flex gap-2 p-1.5 bg-cyan-50/50 rounded-2xl w-fit mx-auto border border-cyan-100/50 shadow-inner">
+            {activeAgeTier === 'ages5+' && (
+              <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">
+                    Class 1 Creative Art Challenge
+                  </span>
+                  <h3 className="text-2xl font-black mt-1 flex items-center gap-2">
+                    🎨 {AGE5_ART_QUESTS[questIdx].title}
+                  </h3>
+                  <p className="text-xs text-pink-100 font-medium mt-0.5 max-w-xl">"{AGE5_ART_QUESTS[questIdx].prompt}"</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={() => setQuestIdx((prev) => (prev + 1) % AGE5_ART_QUESTS.length)} variant="secondary" className="font-black text-xs rounded-2xl bg-white text-purple-900 hover:bg-pink-50">
+                    Next Art Challenge <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2 p-1.5 bg-cyan-50/50 rounded-2xl w-full overflow-x-auto no-scrollbar border border-cyan-100/50 shadow-inner">
                 <Button 
                     variant={activeTab === 'freestyle' ? 'default' : 'ghost'} 
                     onClick={() => setActiveTab('freestyle')} 
                     className={cn(
-                      "rounded-xl font-black transition-all animate-none text-sm h-10 px-6",
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[100px]",
                       activeTab === 'freestyle' 
                         ? 'bg-gradient-to-b from-cyan-500 to-teal-400 text-white shadow-md border-b-4 border-cyan-600' 
-                        : 'text-cyan-700 hover:bg-cyan-100/40 border border-transparent hover:border-cyan-200/50'
+                        : 'text-cyan-700 hover:bg-cyan-100/40 border border-transparent'
                     )}
                 >
-                    Freestyle
+                    🎨 Freestyle
+                </Button>
+                <Button 
+                    variant={symmetryMode ? 'default' : 'ghost'} 
+                    onClick={() => setSymmetryMode(!symmetryMode)} 
+                    className={cn(
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[120px]",
+                      symmetryMode 
+                        ? 'bg-gradient-to-b from-purple-600 to-indigo-600 text-white shadow-md border-b-4 border-purple-800' 
+                        : 'text-purple-700 hover:bg-purple-100/40 border border-transparent'
+                    )}
+                >
+                    🦋 Symmetry {symmetryMode ? 'ON' : 'OFF'}
                 </Button>
                 <Button 
                     variant={activeTab === 'color-lab' ? 'default' : 'ghost'} 
                     onClick={() => setActiveTab('color-lab')} 
                     className={cn(
-                      "rounded-xl font-black transition-all animate-none text-sm h-10 px-6",
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[100px]",
                       activeTab === 'color-lab' 
                         ? 'bg-gradient-to-b from-cyan-500 to-teal-400 text-white shadow-md border-b-4 border-cyan-600' 
-                        : 'text-cyan-700 hover:bg-cyan-100/40 border border-transparent hover:border-cyan-200/50'
+                        : 'text-cyan-700 hover:bg-cyan-100/40 border border-transparent'
                     )}
                 >
-                    Color Lab
+                    🌈 Color Lab
                 </Button>
                 <Button 
                     variant={activeTab === 'shapes' ? 'default' : 'ghost'} 
                     onClick={() => setActiveTab('shapes')} 
                     className={cn(
-                      "rounded-xl font-black transition-all animate-none text-sm h-10 px-6",
+                      "rounded-xl font-black transition-all text-sm h-10 px-5 min-w-[120px]",
                       activeTab === 'shapes' 
                         ? 'bg-gradient-to-b from-cyan-500 to-teal-400 text-white shadow-md border-b-4 border-cyan-600' 
-                        : 'text-cyan-700 hover:bg-cyan-100/40 border border-transparent hover:border-cyan-200/50'
+                        : 'text-cyan-700 hover:bg-cyan-100/40 border border-transparent'
                     )}
                 >
-                    Shape Quest
+                    📐 Shape Quest
                 </Button>
             </div>
 
@@ -5494,7 +5545,7 @@ export default function JuniorCampusPage() {
                 </TabsContent>
                 <TabsContent value="art" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-cyan-500">
-                    <ArtStudio canEdit={canEdit} />
+                    <ArtStudio canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="rewards" className="mt-0 animate-in fade-in-50 duration-300">
