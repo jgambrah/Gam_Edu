@@ -1253,12 +1253,12 @@ function AdminDashboard({
           totalStudents: activeStudents.length,
           attendanceRateToday: attendanceRate,
           totalStaff,
-          financials: {
+          financials: hasFinanceAccess ? {
             totalOutstanding: financials.totalOutstanding,
             totalRevenue: financials.totalRevenue,
             collectionRate: financials.collectionRate,
             revenueByType: financials.revenueByType,
-          },
+          } : undefined,
           classSizes: classSizes,
           announcementsCount,
         };
@@ -11792,7 +11792,6 @@ export default function DashboardClient() {
   const hasFinanceAccess = 
     role === 'Director' || 
     role === 'Accountant' || 
-    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
     user?.email === 'jamesgambrah@gmail.com';
 
   // Admin no longer has financial stats or tabs on this page, so we don't load budgets, accounts, etc. for Admin on this dashboard.

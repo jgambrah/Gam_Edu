@@ -3441,7 +3441,6 @@ export default function AccountsPage() {
   const canAccess = 
     role === 'Director' || 
     role === 'Accountant' || 
-    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
     profile?.email === 'jamesgambrah@gmail.com';
 
   const isLoading = isLoadingRecords || isLoadingStudents;

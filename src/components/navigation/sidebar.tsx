@@ -124,7 +124,6 @@ export function AppSidebarContent() {
   const hasFinanceAccess = 
     role === 'Director' || 
     role === 'Accountant' || 
-    (role === 'Administrator' && schoolSettings?.allowAdminFinanceAccess !== false) ||
     user?.email === 'jamesgambrah@gmail.com';
 
   const isSubItemActive = (item: NavItem) => {

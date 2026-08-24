@@ -31,8 +31,12 @@ export function ExecutiveDirectorCockpit({
   behavioralRecords = [],
   recentAssessments = [],
   onNavigateTab,
+  hasFinanceAccess,
 }: any) {
   const { toast } = useToast();
+
+  const isAdministrator = profile?.role === 'Administrator' || profile?.role === 'Admin';
+  const showFinancials = (hasFinanceAccess !== undefined ? hasFinanceAccess : !isAdministrator) && !isAdministrator;
 
   // Drawers & Drilldown States
   const [activeDrawer, setActiveDrawer] = useState<'staff' | 'arrears' | 'pantry' | null>(null);
@@ -518,63 +522,67 @@ export function ExecutiveDirectorCockpit({
       {/* ─────────────────────────────────────────────────────────────
           ZONE 2: TIER 1 HERO METRIC BAR (5 Core Vital Signs)
           ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className={cn("grid grid-cols-1 sm:grid-cols-2 gap-3", showFinancials ? "lg:grid-cols-5" : "lg:grid-cols-3")}>
         
-        {/* Metric 1: Financial Collection Rate */}
-        <Card 
-          onClick={() => setActiveHeroModal('financial')}
-          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-emerald-500 overflow-hidden relative group"
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Financial Collection Rate</span>
-              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-                <Banknote className="h-5 w-5" />
-              </div>
-            </div>
-            <div className="mt-2">
-              <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-black text-slate-900">{financials.collectionRate || 74}%</h3>
-                <span className="text-xs font-bold text-emerald-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-0.5" /> +4.2%
-                </span>
-              </div>
-              <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k collected of GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k total billed (Combined Fees)
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {showFinancials && (
+          <>
+            {/* Metric 1: Financial Collection Rate */}
+            <Card 
+              onClick={() => setActiveHeroModal('financial')}
+              className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-emerald-500 overflow-hidden relative group"
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Financial Collection Rate</span>
+                  <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+                    <Banknote className="h-5 w-5" />
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <div className="flex items-baseline gap-2">
+                    <h3 className="text-3xl font-black text-slate-900">{financials.collectionRate || 74}%</h3>
+                    <span className="text-xs font-bold text-emerald-600 flex items-center">
+                      <TrendingUp className="h-3 w-3 mr-0.5" /> +4.2%
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
+                    GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k collected of GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k total billed (Combined Fees)
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Metric 2: Daily Cash Collections (Today) */}
-        <Card 
-          onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
-          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-green-600 overflow-hidden relative group bg-gradient-to-br from-white to-green-50/40"
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Collected Today</span>
-                <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              </div>
-              <div className="p-2 rounded-xl bg-green-100/80 text-green-700 group-hover:scale-110 transition-transform">
-                <Banknote className="h-5 w-5" />
-              </div>
-            </div>
-            <div className="mt-2">
-              <div className="flex items-baseline gap-2">
-                <h3 className="text-2xl font-black text-slate-900">
-                  GH₵ {todayCashCollected.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </h3>
-              </div>
-              <p className="text-[11px] font-semibold text-green-700 mt-1 line-clamp-1">
-                {todayCashCollected.count > 0 
-                  ? `${todayCashCollected.count} payment entry${todayCashCollected.count === 1 ? '' : 's'} recorded today`
-                  : "0 cash payments recorded today (resets nightly)"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Metric 2: Daily Cash Collections (Today) */}
+            <Card 
+              onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
+              className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-green-600 overflow-hidden relative group bg-gradient-to-br from-white to-green-50/40"
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Collected Today</span>
+                    <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  </div>
+                  <div className="p-2 rounded-xl bg-green-100/80 text-green-700 group-hover:scale-110 transition-transform">
+                    <Banknote className="h-5 w-5" />
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <div className="flex items-baseline gap-2">
+                    <h3 className="text-2xl font-black text-slate-900">
+                      GH₵ {todayCashCollected.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </h3>
+                  </div>
+                  <p className="text-[11px] font-semibold text-green-700 mt-1 line-clamp-1">
+                    {todayCashCollected.count > 0 
+                      ? `${todayCashCollected.count} payment entry${todayCashCollected.count === 1 ? '' : 's'} recorded today`
+                      : "0 cash payments recorded today (resets nightly)"}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
 
         {/* Metric 3: Academic Health Index */}
         <Card 
@@ -662,7 +670,7 @@ export function ExecutiveDirectorCockpit({
           <DialogContent className="max-w-md bg-white rounded-2xl p-6">
             <DialogHeader>
               <DialogTitle className="text-lg font-bold text-slate-900">
-                {activeHeroModal === 'financial' && 'Financial Health & Collections Detail'}
+                {activeHeroModal === 'financial' && showFinancials && 'Financial Health & Collections Detail'}
                 {activeHeroModal === 'academic' && 'Academic Performance Index (API) Breakdown'}
                 {activeHeroModal === 'attendance' && 'Daily Attendance Submissions Inspection'}
                 {activeHeroModal === 'faculty' && 'Faculty & Student Operations Ratio'}
@@ -673,7 +681,7 @@ export function ExecutiveDirectorCockpit({
             </DialogHeader>
 
             <div className="pt-4 space-y-4">
-              {activeHeroModal === 'financial' && (
+              {activeHeroModal === 'financial' && showFinancials && (
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="p-3 bg-slate-50 rounded-xl">
@@ -759,66 +767,68 @@ export function ExecutiveDirectorCockpit({
       {/* ─────────────────────────────────────────────────────────────
           ZONE 3: STRATEGIC PERFORMANCE MODULES & ANALYTICS GRID
           ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className={cn("grid grid-cols-1 gap-5", showFinancials ? "lg:grid-cols-3" : "lg:grid-cols-1")}>
         
         {/* MODULE 1: Financial Receivables Aging Breakdown */}
-        <Card className="lg:col-span-2 shadow-sm border-slate-200 rounded-2xl">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-bold text-slate-900">Financial Receivables Aging Breakdown</CardTitle>
-                <CardDescription className="text-xs text-slate-500">Click any aging bar or category below to inspect matching accounts</CardDescription>
-              </div>
-              <Badge variant="outline" className="bg-slate-50 text-slate-700 text-xs">
-                Total Debt: GH₵ {Math.round(debtAgingStats.grossTotal || 103500).toLocaleString()}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-3">
-            <div className="h-60 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={agingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="range" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <Tooltip 
-                    formatter={(value: any) => [`GH₵ ${Number(value).toLocaleString()}`, 'Amount']}
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
-                  />
-                  <Bar 
-                    dataKey="amount" 
-                    radius={[8, 8, 0, 0]} 
-                    onClick={(data: any) => handleAgingClick(data.range)}
-                    className="cursor-pointer"
-                  >
-                    {agingData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-100">
-              {agingData.map((item, idx) => (
-                <div 
-                  key={idx} 
-                  onClick={() => handleAgingClick(item.range)} 
-                  className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-slate-100/80 cursor-pointer transition-all hover:scale-[1.02]"
-                >
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-[10px] font-bold text-slate-600">{item.range}</span>
-                  </div>
-                  <p className="text-xs font-black text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
+        {showFinancials && (
+          <Card className="lg:col-span-2 shadow-sm border-slate-200 rounded-2xl">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold text-slate-900">Financial Receivables Aging Breakdown</CardTitle>
+                  <CardDescription className="text-xs text-slate-500">Click any aging bar or category below to inspect matching accounts</CardDescription>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <Badge variant="outline" className="bg-slate-50 text-slate-700 text-xs">
+                  Total Debt: GH₵ {Math.round(debtAgingStats.grossTotal || 103500).toLocaleString()}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-3">
+              <div className="h-60 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={agingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="range" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <Tooltip 
+                      formatter={(value: any) => [`GH₵ ${Number(value).toLocaleString()}`, 'Amount']}
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px' }}
+                    />
+                    <Bar 
+                      dataKey="amount" 
+                      radius={[8, 8, 0, 0]} 
+                      onClick={(data: any) => handleAgingClick(data.range)}
+                      className="cursor-pointer"
+                    >
+                      {agingData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-100">
+                {agingData.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    onClick={() => handleAgingClick(item.range)} 
+                    className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-slate-100/80 cursor-pointer transition-all hover:scale-[1.02]"
+                  >
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                      <span className="text-[10px] font-bold text-slate-600">{item.range}</span>
+                    </div>
+                    <p className="text-xs font-black text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* MODULE 2: Academic & Conduct Activity Feed */}
-        <Card className="shadow-sm border-slate-200 rounded-2xl">
+        <Card className={cn("shadow-sm border-slate-200 rounded-2xl", showFinancials ? "" : "w-full")}>
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-bold text-slate-900">Academic & Conduct Feed</CardTitle>
             <CardDescription className="text-xs text-slate-500">Live operational events & student milestones</CardDescription>
@@ -903,29 +913,59 @@ export function ExecutiveDirectorCockpit({
             </form>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <Button 
-                variant="outline"
-                onClick={() => toast({ title: "Financial Summary Exported", description: "Ledger report downloaded as PDF." })}
-                className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
-              >
-                <Download className="h-4 w-4 text-emerald-600 mr-2" /> Export Ledger Summary
-              </Button>
+              {showFinancials ? (
+                <>
+                  <Button 
+                    variant="outline"
+                    onClick={() => toast({ title: "Financial Summary Exported", description: "Ledger report downloaded as PDF." })}
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                  >
+                    <Download className="h-4 w-4 text-emerald-600 mr-2" /> Export Ledger Summary
+                  </Button>
 
-              <Button 
-                variant="outline"
-                onClick={handleIssueArrearsNotice}
-                className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
-              >
-                <Send className="h-4 w-4 text-red-600 mr-2" /> Issue Fee Reminders
-              </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={handleIssueArrearsNotice}
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                  >
+                    <Send className="h-4 w-4 text-red-600 mr-2" /> Issue Fee Reminders
+                  </Button>
 
-              <Button 
-                variant="outline"
-                onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
-                className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
-              >
-                <Users className="h-4 w-4 text-indigo-600 mr-2" /> Emergency Staff Call
-              </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                  >
+                    <Users className="h-4 w-4 text-indigo-600 mr-2" /> Emergency Staff Call
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    variant="outline"
+                    onClick={() => onNavigateTab?.('students')}
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                  >
+                    <Users className="h-4 w-4 text-indigo-600 mr-2" /> Student Registry
+                  </Button>
+
+                  <Button 
+                    variant="outline"
+                    onClick={() => onNavigateTab?.('attendance')}
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                  >
+                    <Clock className="h-4 w-4 text-amber-600 mr-2" /> Attendance Analytics
+                  </Button>
+
+                  <Button 
+                    variant="outline"
+                    onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                  >
+                    <Users className="h-4 w-4 text-emerald-600 mr-2" /> Emergency Staff Call
+                  </Button>
+                </>
+              )}
             </div>
 
           </CardContent>
@@ -980,11 +1020,15 @@ export function ExecutiveDirectorCockpit({
 
           {/* Quick Query Pill Suggestions */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[11px]">
-            {[
+            {(showFinancials ? [
               'What is our projected cash flow for next month?',
               'Analyze staff attendance trends today',
               'Which grade has the highest academic gap?'
-            ].map((suggest, idx) => (
+            ] : [
+              'What is our current student enrollment breakdown?',
+              'Analyze staff attendance trends today',
+              'Which grade has the highest academic gap?'
+            ]).map((suggest, idx) => (
               <button
                 key={idx}
                 onClick={() => handleAiAuditQuery(suggest)}
@@ -998,7 +1042,7 @@ export function ExecutiveDirectorCockpit({
           {/* AI Input Form */}
           <div className="flex gap-2">
             <Input
-              placeholder="Ask Dr. GAM AI Auditor about finances, academics, or staff..."
+              placeholder={showFinancials ? "Ask Dr. GAM AI Auditor about finances, academics, or staff..." : "Ask Dr. GAM AI Auditor about academics, attendance, or staff..."}
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAiAuditQuery()}
