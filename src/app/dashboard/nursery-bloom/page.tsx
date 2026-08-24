@@ -3015,10 +3015,11 @@ function ArtStudio({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; a
     const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery' | 'symmetry'>('freestyle');
     const [isDrawing, setIsDrawing] = useState(false);
     const [color, setColor] = useState('#4f46e5');
-    const [brushSize, setBrushSize] = useState(8);
+    const [brushSize, setBrushSize] = useState(3);
     const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp' | 'pencil' | 'crayon' | 'paint_brush' | 'marker'>('brush');
     const [selectedShape, setSelectedShape] = useState<'circle' | 'square' | 'star'>('circle');
     const [symmetryMode, setSymmetryMode] = useState(false);
+    const lastPoint = useRef<{ x: number; y: number } | null>(null);
     
     const AGE5_ART_QUESTS = useMemo(() => [
       { title: "Space Adventure 🚀", prompt: "Draw Commander Leo's Rocket launching past stars and planets into deep space!" },
@@ -3061,18 +3062,36 @@ function ArtStudio({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; a
         }
     }, [activeTab]);
 
+    const getCanvasPos = (e: any) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return { x: 0, y: 0 };
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    };
+
     const startDrawing = (e: any) => {
-        const ctx = canvasRef.current?.getContext('2d');
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        const rect = canvasRef.current!.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
-          ctx.beginPath(); 
-          ctx.moveTo(x, y); 
-          ctx.strokeStyle = color; 
-          ctx.lineWidth = brushSize; 
-          setIsDrawing(true);
+        const { x, y } = getCanvasPos(e);
+
+        if (tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = tool === 'pencil' ? 2 : tool === 'marker' ? 12 : brushSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            setIsDrawing(true);
+            lastPoint.current = { x, y };
         }
     };
 
@@ -3082,23 +3101,34 @@ function ArtStudio({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; a
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        
+        const { x, y } = getCanvasPos(e);
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = tool === 'pencil' ? 2 : tool === 'marker' ? 12 : brushSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
         ctx.lineTo(x, y);
         ctx.stroke();
 
-        if (symmetryMode) {
-          const mirrorX = canvas.width - x;
-          ctx.moveTo(canvas.width - x, y);
-          ctx.arc(mirrorX, y, brushSize / 2, 0, Math.PI * 2);
-          ctx.fillStyle = color;
-          ctx.fill();
+        if (symmetryMode && lastPoint.current) {
+            const mirrorX = canvas.width - x;
+            const mirrorLastX = canvas.width - lastPoint.current.x;
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(mirrorLastX, lastPoint.current.y);
+            ctx.lineTo(mirrorX, y);
+            ctx.stroke();
+            ctx.restore();
         }
+
+        lastPoint.current = { x, y };
     };
 
-    const stopDrawing = () => { setIsDrawing(false); };
+    const stopDrawing = () => { 
+        setIsDrawing(false); 
+        lastPoint.current = null;
+    };
     
     const clearCanvas = () => { 
         const canvas = canvasRef.current; 
@@ -3326,8 +3356,30 @@ function ArtStudio({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; a
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Brush Size</label>
-                                <input type="range" min="2" max="40" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500 bg-slate-100 h-2 rounded-full cursor-pointer" />
+                                <div className="flex justify-between items-center">
+                                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Brush Line Size ({brushSize}px)</label>
+                                </div>
+                                <div className="grid grid-cols-4 gap-1.5 p-1 bg-slate-50 border border-slate-100 rounded-xl">
+                                  {[
+                                    { label: 'Fine', size: 2, icon: '✏️' },
+                                    { label: 'Pen', size: 4, icon: '🖊️' },
+                                    { label: 'Bold', size: 8, icon: '🖌️' },
+                                    { label: 'Shading', size: 16, icon: '🖍️' }
+                                  ].map(b => (
+                                    <button
+                                      key={b.size}
+                                      type="button"
+                                      onClick={() => setBrushSize(b.size)}
+                                      className={cn(
+                                        "py-1.5 text-[10px] font-black rounded-lg border transition-all flex flex-col items-center justify-center bg-white",
+                                        brushSize === b.size ? 'border-indigo-600 bg-indigo-50 text-indigo-900 shadow-sm' : 'border-slate-100 text-slate-600 hover:border-slate-200'
+                                      )}
+                                    >
+                                      <span>{b.icon} {b.size}px</span>
+                                    </button>
+                                  ))}
+                                </div>
+                                <input type="range" min="1" max="25" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500 bg-slate-100 h-2 rounded-full cursor-pointer mt-1" />
                             </div>
                              <div className="space-y-2 pt-4 border-t border-slate-100">
                                 <Button variant="outline" className="w-full font-black border-2 border-slate-200 hover:bg-slate-50 rounded-xl h-11" onClick={() => {toast({title:"Artwork Saved!"})}}>
