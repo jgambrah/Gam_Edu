@@ -4962,6 +4962,211 @@ function StorySequencerGame() {
   );
 }
 
+// --- AGES 5+ ADVANCED CLASS 1 MATH MASTERY SUITE ---
+function Age5PlusMathMastery() {
+  type StandardMathMode = '2digit_add' | '2digit_sub' | 'times_tables' | 'sharing_div' | 'skip_count' | 'compare_100' | 'geometry_3d' | 'clock_money' | 'word_problem';
+  
+  const [activeMode, setActiveMode] = useState<StandardMathMode>('2digit_add');
+  const [question, setQuestion] = useState<any>(null);
+  const [feedback, setFeedback] = useState("");
+  const [streak, setStreak] = useState(0);
+
+  const WORD_PROBLEMS_5PLUS = useMemo(() => [
+    { prompt: "Kofi collected 15 shiny shells at the beach. Ama gave him 12 more shells. How many shells does Kofi have now?", ans: 27, options: [27, 25, 30, 22] },
+    { prompt: "There were 28 red balloons at the school party. 10 balloons popped. How many balloons are left?", ans: 18, options: [18, 20, 15, 38] },
+    { prompt: "A baker made 4 trays of cupcakes. Each tray has 5 cupcakes. How many cupcakes did the baker make in total?", ans: 20, options: [20, 15, 25, 10] },
+    { prompt: "Sharing 15 apples equally among 3 children. How many apples does each child receive?", ans: 5, options: [5, 3, 6, 4] },
+    { prompt: "Yaa saved $20 on Monday and $25 on Tuesday. How much money did Yaa save in total?", ans: 45, options: [45, 40, 50, 35] }
+  ], []);
+
+  const generateQuestion = useCallback(() => {
+    let q: any = {};
+    if (activeMode === '2digit_add') {
+      const a = Math.floor(Math.random() * 40) + 10;
+      const b = Math.floor(Math.random() * 40) + 10;
+      const ans = a + b;
+      const options = [ans, ans + 10, Math.max(10, ans - 5), ans + 2].sort(() => Math.random() - 0.5);
+      q = { prompt: `${a} + ${b} = ?`, tensA: Math.floor(a/10), onesA: a%10, tensB: Math.floor(b/10), onesB: b%10, ans, options, category: "2-Digit Addition (Tens & Ones)" };
+    } else if (activeMode === '2digit_sub') {
+      const a = Math.floor(Math.random() * 40) + 50;
+      const b = Math.floor(Math.random() * 30) + 10;
+      const ans = a - b;
+      const options = [ans, ans + 5, Math.max(5, ans - 10), ans + 2].sort(() => Math.random() - 0.5);
+      q = { prompt: `${a} - ${b} = ?`, tensA: Math.floor(a/10), onesA: a%10, tensB: Math.floor(b/10), onesB: b%10, ans, options, category: "2-Digit Subtraction" };
+    } else if (activeMode === 'times_tables') {
+      const tables = [2, 3, 5, 10];
+      const mult = tables[Math.floor(Math.random() * tables.length)];
+      const num = Math.floor(Math.random() * 10) + 1;
+      const ans = mult * num;
+      const options = [ans, ans + mult, Math.max(mult, ans - mult), ans + 2].sort(() => Math.random() - 0.5);
+      q = { prompt: `${mult} × ${num} = ?`, ans, options, category: `Times Tables (${mult}x)` };
+    } else if (activeMode === 'sharing_div') {
+      const groups = [2, 3, 5];
+      const grp = groups[Math.floor(Math.random() * groups.length)];
+      const itemsPerGroup = Math.floor(Math.random() * 5) + 1;
+      const total = grp * itemsPerGroup;
+      const ans = itemsPerGroup;
+      const options = [ans, ans + 1, Math.max(1, ans - 1), ans + 2].sort(() => Math.random() - 0.5);
+      q = { prompt: `Share ${total} items equally into ${grp} groups. How many in each group?`, ans, options, category: "Equal Division & Sharing" };
+    } else if (activeMode === 'skip_count') {
+      const step = [2, 5, 10][Math.floor(Math.random() * 3)];
+      const start = Math.floor(Math.random() * 4) * step + step;
+      const seq = [start, start + step, start + step * 2];
+      const ans = start + step * 3;
+      const options = [ans, ans + step, ans - 1, ans + 2].sort(() => Math.random() - 0.5);
+      q = { prompt: `${seq[0]}, ${seq[1]}, ${seq[2]}, ?`, ans, options, category: `Skip Counting by ${step}s` };
+    } else if (activeMode === 'compare_100') {
+      const a = Math.floor(Math.random() * 80) + 10;
+      const b = Math.floor(Math.random() * 80) + 10;
+      const ans = a > b ? '>' : a < b ? '<' : '=';
+      q = { prompt: `${a}  ___  ${b}`, ans, options: ['>', '<', '='], category: "Comparing Numbers up to 100" };
+    } else if (activeMode === 'geometry_3d') {
+      const shapes3D = [
+        { name: 'Cube', icon: '🧊', desc: '6 square faces' },
+        { name: 'Sphere', icon: '⚽', desc: 'Round ball shape' },
+        { name: 'Cylinder', icon: '🛢️', desc: 'Can shape with 2 circular ends' },
+        { name: 'Cone', icon: '🍦', desc: 'Party hat shape with 1 point' },
+        { name: 'Pyramid', icon: '🔺', desc: 'Triangular faces meeting at top' }
+      ];
+      const pick = shapes3D[Math.floor(Math.random() * shapes3D.length)];
+      q = { prompt: `Identify this 3D shape: ${pick.icon}`, icon: pick.icon, desc: pick.desc, ans: pick.name, options: shapes3D.map(s => s.name).sort(() => Math.random() - 0.5), category: "2D & 3D Geometry" };
+    } else if (activeMode === 'clock_money') {
+      const types = ['clock', 'money'];
+      const t = types[Math.floor(Math.random() * types.length)];
+      if (t === 'clock') {
+        const hr = Math.floor(Math.random() * 12) + 1;
+        const isHalf = Math.random() > 0.5;
+        const ans = isHalf ? `${hr}:30 (Half past ${hr})` : `${hr}:00 (${hr} o'clock)`;
+        const options = [ans, `${(hr % 12) + 1}:00`, `${hr}:00 (${hr} o'clock)`].filter((v, i, a) => a.indexOf(v) === i);
+        if (options.length < 3) options.push(`6:30`);
+        q = { prompt: `What time does the clock show?`, detail: `Hour hand at ${hr}, minute hand at ${isHalf ? 6 : 12}`, ans, options: options.sort(() => Math.random() - 0.5), category: "Telling Time (Analog Clock)" };
+      } else {
+        const c1 = [1, 2, 5, 10][Math.floor(Math.random() * 4)];
+        const c2 = [1, 2, 5, 10][Math.floor(Math.random() * 4)];
+        const ans = `$${c1 + c2}`;
+        const options = [ans, `$${c1 + c2 + 3}`, `$${Math.max(1, c1 + c2 - 2)}`, `$${c1 + c2 + 5}`].sort(() => Math.random() - 0.5);
+        q = { prompt: `Count money: $${c1} bill + $${c2} bill = ?`, ans, options, category: "Counting Currency & Money" };
+      }
+    } else if (activeMode === 'word_problem') {
+      const item = WORD_PROBLEMS_5PLUS[Math.floor(Math.random() * WORD_PROBLEMS_5PLUS.length)];
+      q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Class 1 Word Problem Challenge" };
+    }
+    setQuestion(q);
+    setFeedback("");
+  }, [activeMode, WORD_PROBLEMS_5PLUS]);
+
+  useEffect(() => { generateQuestion(); }, [generateQuestion]);
+
+  const handleAnswer = (choice: any) => {
+    if (choice === question.ans) {
+      setFeedback("CORRECT! Outstanding math mastery! 🌟");
+      speak("Great job! Correct answer!");
+      confetti({ particleCount: 80, spread: 70 });
+      setStreak(s => s + 1);
+      setTimeout(generateQuestion, 1800);
+    } else {
+      setFeedback("Try again! Double check your math calculations.");
+      speak("Try again!");
+      setStreak(0);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">
+            Class 1 Standard Math Curriculum
+          </span>
+          <h3 className="text-2xl font-black mt-1 flex items-center gap-2">
+            🎓 Age 5+ Advanced Math Mastery Suite <Sparkles className="w-6 h-6 text-yellow-300 animate-pulse" />
+          </h3>
+          <p className="text-xs text-indigo-100 font-medium mt-0.5">2-Digit Addition/Subtraction, Times Tables, Geometry, Time, Money & Word Problems</p>
+        </div>
+        <div className="bg-white/15 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/20 text-center">
+          <div className="text-[10px] font-black uppercase text-indigo-200">Math Streak</div>
+          <div className="text-2xl font-black text-amber-300">🔥 {streak} Streaks</div>
+        </div>
+      </div>
+
+      {/* Mode Switcher Buttons */}
+      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+        {[
+          { id: '2digit_add', label: '➕ 2-Digit Add' },
+          { id: '2digit_sub', label: '➖ 2-Digit Sub' },
+          { id: 'times_tables', label: '✖️ Times Tables' },
+          { id: 'sharing_div', label: '➗ Equal Division' },
+          { id: 'skip_count', label: '🔢 Skip Counting' },
+          { id: 'compare_100', label: '⚖️ Compare (<>)' },
+          { id: 'geometry_3d', label: '🧊 3D Shapes' },
+          { id: 'clock_money', label: '🕒 Time & Money' },
+          { id: 'word_problem', label: '📝 Word Problems' }
+        ].map(m => (
+          <Button
+            key={m.id}
+            onClick={() => setActiveMode(m.id as StandardMathMode)}
+            variant={activeMode === m.id ? 'default' : 'outline'}
+            className={cn(
+              "rounded-2xl font-black text-xs px-4 py-2 min-w-[120px] transition-all",
+              activeMode === m.id
+                ? "bg-indigo-600 text-white shadow-md border-b-4 border-indigo-800"
+                : "border-indigo-200 text-indigo-800 hover:bg-indigo-50"
+            )}
+          >
+            {m.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Question Display Card */}
+      {question && (
+        <div className="bg-white p-8 rounded-[36px] border-4 border-indigo-100 shadow-xl text-center space-y-6">
+          <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-4 py-1.5 rounded-full border border-indigo-100">
+            {question.category}
+          </span>
+
+          <h3 className="text-3xl font-black text-slate-800 leading-snug max-w-xl mx-auto">
+            {question.prompt}
+          </h3>
+
+          {question.desc && <p className="text-sm font-bold text-slate-500">{question.desc}</p>}
+          {question.detail && <p className="text-xs font-extrabold text-indigo-600 bg-indigo-50 p-2 rounded-xl inline-block">{question.detail}</p>}
+
+          {/* Place Value Tens & Ones Helper for 2-Digit Math */}
+          {question.tensA !== undefined && (
+            <div className="flex justify-center items-center gap-6 py-2">
+              <div className="bg-purple-50 p-3 rounded-2xl border border-purple-200 text-xs font-black text-purple-800">
+                <span className="block text-[10px] text-purple-500 uppercase">Tens Block</span>
+                📦 {question.tensA} Tens ({question.tensA * 10})
+              </div>
+              <span className="text-xl font-black text-slate-400">+</span>
+              <div className="bg-pink-50 p-3 rounded-2xl border border-pink-200 text-xs font-black text-pink-800">
+                <span className="block text-[10px] text-pink-500 uppercase">Ones Block</span>
+                🎲 {question.onesA} Ones
+              </div>
+            </div>
+          )}
+
+          {/* Answer Choice Buttons */}
+          <div className="flex justify-center gap-4 flex-wrap max-w-lg mx-auto pt-2">
+            {question.options.map((opt: any, idx: number) => (
+              <Button
+                key={idx}
+                onClick={() => handleAnswer(opt)}
+                className="h-16 min-w-[120px] px-6 text-2xl font-black rounded-2xl bg-white hover:bg-indigo-100 text-indigo-900 border-2 border-b-8 border-indigo-200 shadow-lg hover:scale-105 active:translate-y-1 transition-all"
+              >
+                {opt}
+              </Button>
+            ))}
+          </div>
+
+          {feedback && <p className="text-lg font-black text-indigo-600 animate-pulse pt-2">{feedback}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
@@ -5108,6 +5313,9 @@ export default function JuniorCampusPage() {
                         <div className="border-t border-slate-100 pt-6">
                           <SentenceFinisherGame />
                         </div>
+                        <div className="border-t border-slate-100 pt-6">
+                          <Age5PlusMathMastery />
+                        </div>
                       </div>
                     )}
                   </div>
@@ -5130,7 +5338,11 @@ export default function JuniorCampusPage() {
                 </TabsContent>
                 <TabsContent value="math" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-orange-400 relative">
-                    <MathPlayground activeAgeTier={activeAgeTier} />
+                    {activeAgeTier === 'ages5+' ? (
+                      <Age5PlusMathMastery />
+                    ) : (
+                      <MathPlayground activeAgeTier={activeAgeTier} />
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="stories" className="mt-0 animate-in fade-in-50 duration-300">
