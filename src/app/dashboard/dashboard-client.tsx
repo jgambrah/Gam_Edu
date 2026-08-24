@@ -11512,7 +11512,7 @@ export default function DashboardClient() {
   const studentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     if (isParent) {
-      if (parentStudentIds.length === 0) return null;
+      if (!parentStudentIds || parentStudentIds.length === 0) return null;
       return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', parentStudentIds.slice(0, 30)));
     }
     if (isStaff) {
@@ -11572,7 +11572,7 @@ export default function DashboardClient() {
   const [selectedChildId, setSelectedChildId] = useState<string>('');
 
   const parentRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    if (!firestore || !schoolId || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
     return query(
       collection(firestore, 'financialRecords'),
       where('schoolId', '==', schoolId),
@@ -11581,24 +11581,24 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isParent, parentStudentIds]);
   const { data: parentRecords, isLoading: loadingParentRecords } = useCollection(parentRecordsQuery);
 
-  const records = isParent ? parentRecords : allRecords;
+  const records = isParent ? (parentRecords || []) : (allRecords || []);
   const loadingRecords = isParent ? loadingParentRecords : loadingAllRecords;
 
-  const parentChildren = useMemo(() => students?.filter(s => parentStudentIds.includes(s.uid)) || [], [students, parentStudentIds]);
-  const parentFinancials = useMemo(() => records?.filter(r => parentStudentIds.includes(r.studentId)) || [], [records, parentStudentIds]);
+  const parentChildren = useMemo(() => students?.filter(s => parentStudentIds?.includes(s.uid)) || [], [students, parentStudentIds]);
+  const parentFinancials = useMemo(() => records?.filter(r => parentStudentIds?.includes(r.studentId)) || [], [records, parentStudentIds]);
 
   const activeChildId = selectedChildId || parentChildren?.[0]?.uid || '';
   const activeChild = useMemo(() => parentChildren?.find(c => c.uid === activeChildId), [parentChildren, activeChildId]);
   const activeClassId = activeChild?.classId || '';
 
   const parentStickersQuery = useMemoFirebase(() => {
-    if (!firestore || !isParent || parentStudentIds.length === 0) return null;
+    if (!firestore || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
     return query(collection(firestore, 'junior_stickers'), where('userId', 'in', parentStudentIds.slice(0, 30)));
   }, [firestore, isParent, parentStudentIds]);
   const { data: parentStickers, isLoading: loadingStickers } = useCollection(parentStickersQuery);
 
   const parentAssessmentsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    if (!firestore || !schoolId || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
     return query(
       collection(firestore, 'assessments'),
       where('schoolId', '==', schoolId),
@@ -11609,7 +11609,7 @@ export default function DashboardClient() {
   const { data: parentAssessments, isLoading: loadingParentAssessments } = useCollection(parentAssessmentsQuery);
 
   const parentAttendanceQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    if (!firestore || !schoolId || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
     return query(
       collection(firestore, 'attendance'),
       where('schoolId', '==', schoolId),
@@ -11622,7 +11622,7 @@ export default function DashboardClient() {
   const parentClassIds = useMemo(() => Array.from(new Set(parentChildren.map((c: any) => c.classId).filter(Boolean))), [parentChildren]);
 
   const parentAssignmentsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || parentClassIds.length === 0) return null;
+    if (!firestore || !schoolId || !isParent || !parentClassIds || parentClassIds.length === 0) return null;
     return query(
       collection(firestore, 'assignments'),
       where('schoolId', '==', schoolId),
@@ -11632,7 +11632,7 @@ export default function DashboardClient() {
   const { data: parentAssignments, isLoading: loadingParentAssignments } = useCollection<any>(parentAssignmentsQuery);
 
   const parentSubmissionsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    if (!firestore || !schoolId || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
     return query(
       collection(firestore, 'submissions'),
       where('schoolId', '==', schoolId),
@@ -11642,7 +11642,7 @@ export default function DashboardClient() {
   const { data: parentSubmissions, isLoading: loadingParentSubmissions } = useCollection<any>(parentSubmissionsQuery);
 
   const parentQuizzesQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || parentClassIds.length === 0) return null;
+    if (!firestore || !schoolId || !isParent || !parentClassIds || parentClassIds.length === 0) return null;
     return query(
       collection(firestore, 'quizzes'),
       where('schoolId', '==', schoolId),
@@ -11652,7 +11652,7 @@ export default function DashboardClient() {
   const { data: parentQuizzes } = useCollection<any>(parentQuizzesQuery);
 
   const parentQuizAttemptsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || parentStudentIds.length === 0) return null;
+    if (!firestore || !schoolId || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
     return query(
       collection(firestore, 'quizAttempts'),
       where('schoolId', '==', schoolId),
@@ -11688,7 +11688,7 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isParent]);
   const { data: staffAssessments, isLoading: loadingStaffAssessments } = useCollection<Assessment>(staffAssessmentsQuery);
 
-  const recentAssessments = isParent ? parentAssessments : (staffAssessments || []);
+  const recentAssessments = isParent ? (parentAssessments || []) : (staffAssessments || []);
   const loadingAssessments = isParent ? loadingParentAssessments : loadingStaffAssessments;
 
   // For Director: parents, admissions, behavioral, staffAttendance, performanceReviews
