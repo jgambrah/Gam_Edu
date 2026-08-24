@@ -29,7 +29,8 @@ import { JuniorAgeLevelSelector } from '@/components/dashboard/junior-academy/Ju
 import { 
   AGE_TIERS, ANIMAL_SOUNDS, HOUSEHOLD_OBJECTS, LETTER_DISTINCTION, 
   PATTERN_DRILLS, CVC_WORDS, SIGHT_WORDS, RHYME_MATCHES, 
-  SENTENCE_PACING_READS, STORY_SEQUENCING_DRILLS, INCOMPLETE_SENTENCES 
+  SENTENCE_PACING_READS, STORY_SEQUENCING_DRILLS, INCOMPLETE_SENTENCES,
+  ADVANCED_VOICE_WORDS_AGE5
 } from '@/lib/junior-age-levels';
 
 // --- HELPER: TEXT TO SPEECH ---
@@ -71,6 +72,7 @@ function VoiceCoach({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
 
     const wordLibrary = useMemo(() => {
       if (activeAgeTier === 'ages2-3') return TODDLER_WORDS;
+      if (activeAgeTier === 'ages5+') return ADVANCED_VOICE_WORDS_AGE5;
       return dbWordLibrary && dbWordLibrary.length > 0 ? dbWordLibrary : TODDLER_WORDS;
     }, [activeAgeTier, dbWordLibrary, TODDLER_WORDS]);
 
@@ -4816,14 +4818,26 @@ function SentencePacingGame() {
   return (
     <div className="space-y-6 text-center">
       <div className="bg-indigo-50 p-6 rounded-3xl border-2 border-indigo-200">
-        <h3 className="text-xl font-black text-indigo-900 mb-2">Sentence Pacing & Fluency</h3>
+        <span className="text-xs font-black uppercase text-indigo-600 tracking-wider block mb-1">Advanced Reading Fluency & Syllabification</span>
+        <h3 className="text-2xl font-black text-indigo-950 mb-3">{item.title}</h3>
         <p className="text-2xl font-bold text-slate-800 leading-relaxed bg-white p-6 rounded-2xl border border-indigo-100 shadow-inner">
           "{item.sentence}"
         </p>
 
+        {/* Vocabulary Focus */}
+        <div className="mt-4 flex items-center justify-center gap-2 flex-wrap">
+          <span className="text-xs font-black text-indigo-600 uppercase">Key Vocabulary:</span>
+          {item.vocabFocus?.map((v, idx) => (
+            <span key={idx} onClick={() => speak(v)} className="px-3 py-1 bg-white text-indigo-800 font-extrabold text-xs rounded-xl border border-indigo-200 shadow-sm cursor-pointer hover:bg-indigo-100">
+              🔍 {v}
+            </span>
+          ))}
+        </div>
+
+        {/* Syllables breakdown */}
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           {item.syllablesBreakdown.map((syl, i) => (
-            <span key={i} className="px-3 py-1 bg-indigo-100 text-indigo-800 font-bold text-sm rounded-xl border border-indigo-200">
+            <span key={i} onClick={() => speak(syl.replace(/-/g, ''))} className="px-3 py-1 bg-indigo-100 text-indigo-800 font-black text-sm rounded-xl border border-indigo-200 cursor-pointer hover:scale-105 transition-transform">
               {syl}
             </span>
           ))}
@@ -4835,9 +4849,55 @@ function SentencePacingGame() {
           <Volume2 className="w-5 h-5 mr-2" /> Read Aloud with Pacing
         </Button>
         <Button onClick={() => setCurrentIdx((prev) => (prev + 1) % SENTENCE_PACING_READS.length)} variant="outline" className="border-indigo-300 text-indigo-700 font-black rounded-2xl">
-          Next Passage <ArrowRight className="w-4 h-4 ml-1" />
+          Next Advanced Story <ArrowRight className="w-4 h-4 ml-1" />
         </Button>
       </div>
+    </div>
+  );
+}
+
+function SentenceFinisherGame() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const item = INCOMPLETE_SENTENCES[currentIdx];
+
+  const handleSelect = (choice: string) => {
+    if (choice === item.answer) {
+      setFeedback("EXCELLENT! Correct grammar & context match! 🌟");
+      speak(`Awesome! ${item.answer} fits the sentence!`);
+      confetti({ particleCount: 70 });
+      setTimeout(() => {
+        setFeedback("");
+        setCurrentIdx((prev) => (prev + 1) % INCOMPLETE_SENTENCES.length);
+      }, 2000);
+    } else {
+      setFeedback("Try again! Read the sentence context carefully.");
+      speak("Not quite. Think about what word makes sense!");
+    }
+  };
+
+  return (
+    <div className="space-y-6 text-center">
+      <div className="bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
+        <span className="text-xs font-black uppercase text-purple-600 tracking-widest block mb-1">Context Clues & Science Grammar</span>
+        <h3 className="text-2xl font-bold text-purple-900 leading-relaxed bg-white p-6 rounded-2xl border border-purple-100 shadow-inner">
+          "{item.prompt}"
+        </h3>
+      </div>
+
+      <div className="flex justify-center gap-3 flex-wrap">
+        {item.options.map((opt, i) => (
+          <Button
+            key={i}
+            onClick={() => handleSelect(opt)}
+            className="h-16 px-6 text-xl font-black rounded-2xl bg-white hover:bg-purple-100 text-purple-800 border-2 border-purple-300 shadow-md"
+          >
+            {opt}
+          </Button>
+        ))}
+      </div>
+
+      {feedback && <p className="text-base font-black text-purple-600 animate-pulse">{feedback}</p>}
     </div>
   );
 }
@@ -5044,6 +5104,9 @@ export default function JuniorCampusPage() {
                         <SentencePacingGame />
                         <div className="border-t border-slate-100 pt-6">
                           <StorySequencerGame />
+                        </div>
+                        <div className="border-t border-slate-100 pt-6">
+                          <SentenceFinisherGame />
                         </div>
                       </div>
                     )}

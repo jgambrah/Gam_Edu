@@ -17,7 +17,7 @@ export interface AgeTierConfig {
   borderColor: string;
   iconEmoji: string;
   objectives: string[];
-  modules: string[]; // module ids available for this tier
+  modules: string[];
 }
 
 export const AGE_TIERS: Record<string, AgeTierConfig> = {
@@ -79,20 +79,21 @@ export const AGE_TIERS: Record<string, AgeTierConfig> = {
   'ages5+': {
     id: 'ages5+',
     name: 'Ages 5+',
-    subtitle: 'KG2 & Primary 1 / Class 1',
+    subtitle: 'KG2 & Primary 1 / Class 1 (Advanced)',
     recommendedGrade: 'Kindergarten / Class 1',
-    color: 'from-indigo-500 to-purple-500',
+    color: 'from-indigo-500 to-purple-600',
     badgeBg: 'bg-indigo-100 text-indigo-800 border-indigo-300',
-    borderColor: 'border-indigo-400',
+    borderColor: 'border-indigo-500',
     iconEmoji: '🎓',
     objectives: [
-      'Reading full sentences with proper pacing & fluency',
-      'Breaking down longer words into syllables',
-      'Putting story events in the correct order',
-      'Finishing an incomplete sentence',
-      'Reading a description and drawing what it says'
+      'Reading multi-sentence passages with advanced vocabulary & pacing',
+      'Multi-syllable word breakdown (e.g. ex-plo-ra-tion)',
+      'Chronological story event sequencing (4-step logic)',
+      'Context clue sentence finisher & grammar recognition',
+      'Descriptive Read & Draw comprehension challenges',
+      'Advanced 2-digit math, multiplication arrays & time reading'
     ],
-    modules: ['sentence_reader', 'syllables', 'story_sequencer', 'sentence_finisher', 'read_and_draw', 'stories', 'science', 'rewards']
+    modules: ['sentence_reader', 'syllables', 'story_sequencer', 'sentence_finisher', 'read_and_draw', 'advanced_math', 'stories', 'science', 'rewards']
   }
 };
 
@@ -156,39 +157,60 @@ export const RHYME_MATCHES = [
   { word: 'hop', rhymesWith: ['top', 'mop', 'pop'], distractor: 'bed', emoji: '🥏' }
 ];
 
-// --- DATASETS FOR AGES 5+ ---
+// --- ADVANCED DATASETS FOR AGES 5+ (KG2 / CLASS 1) ---
 export const SENTENCE_PACING_READS = [
   {
     id: '1',
-    sentence: 'The brave little dog ran across the sunny garden to catch the red ball.',
-    syllablesBreakdown: ['The', 'brave', 'lit-tle', 'dog', 'ran', 'a-cross', 'the', 'sun-ny', 'gar-den', 'to', 'catch', 'the', 'red', 'ball.'],
-    drawDescription: 'Draw a dog playing with a red ball in a sunny garden with green grass!'
+    title: 'The Brave Space Explorer 🚀',
+    sentence: 'Commander Leo put on his shiny helmet and launched his rocket into the starry blue universe.',
+    syllablesBreakdown: ['Com-man-der', 'Le-o', 'put', 'on', 'his', 'shi-ny', 'hel-met', 'and', 'launched', 'his', 'roc-ket', 'in-to', 'the', 'star-ry', 'blue', 'u-ni-verse.'],
+    vocabFocus: ['Commander', 'Shiny', 'Universe', 'Launched'],
+    drawDescription: 'Draw Commander Leo in a space suit standing next to a rocket ship surrounded by stars and planets!'
   },
   {
     id: '2',
-    sentence: 'A yellow star shines high in the night sky above the green trees.',
-    syllablesBreakdown: ['A', 'yel-low', 'star', 'shines', 'high', 'in', 'the', 'night', 'sky', 'a-bove', 'the', 'green', 'trees.'],
-    drawDescription: 'Draw night sky with a yellow star and green trees below!'
+    title: 'The Secret Coral Reef 🐠',
+    sentence: 'A glowing golden fish swam gracefully through the colourful sea anemones to explore the ocean floor.',
+    syllablesBreakdown: ['A', 'glow-ing', 'gol-den', 'fish', 'swam', 'grace-ful-ly', 'through', 'the', 'co-lour-ful', 'sea', 'a-nem-o-nes', 'to', 'ex-plore', 'the', 'o-cean', 'floor.'],
+    vocabFocus: ['Gracefully', 'Colourful', 'Anemones', 'Explore'],
+    drawDescription: 'Draw a ocean floor with colourful corals, sea anemones, and a golden swimming fish!'
+  },
+  {
+    id: '3',
+    title: 'The Ancient Forest Adventure 🌲',
+    sentence: 'The curious woodland animals gathered around the giant oak tree to listen to the wise old owl.',
+    syllablesBreakdown: ['The', 'cu-ri-ous', 'wood-land', 'an-i-mals', 'gath-ered', 'a-round', 'the', 'gi-ant', 'oak', 'tree', 'to', 'lis-ten', 'to', 'the', 'wise', 'old', 'owl.'],
+    vocabFocus: ['Curious', 'Gathered', 'Giant', 'Wisdom'],
+    drawDescription: 'Draw a big oak tree in a forest with an owl perched on a branch and forest animals listening below!'
   }
 ];
 
 export const STORY_SEQUENCING_DRILLS = [
   {
-    title: 'Baking a Cake',
+    title: 'Launching a Satellite into Orbit 🚀',
     events: [
-      { order: 1, text: 'Mix the flour, eggs, and sugar in a bowl.' },
-      { order: 2, text: 'Pour the cake batter into a baking pan.' },
-      { order: 3, text: 'Bake the cake in the warm oven.' },
-      { order: 4, text: 'Eat the delicious warm cake!' }
+      { order: 1, text: 'Engineers build and test the satellite in the laboratory cleanroom.' },
+      { order: 2, text: 'The rocket booster countdown reaches zero and ignites at launchpad.' },
+      { order: 3, text: 'The rocket ascends into space and detaches the satellite in orbit.' },
+      { order: 4, text: 'Solar panels unfold and send communication signals back to Earth.' }
     ]
   },
   {
-    title: 'Planting a Flower Seed',
+    title: 'The Journey of Water (The Water Cycle) 🌧️',
     events: [
-      { order: 1, text: 'Dig a tiny hole in the soft soil.' },
-      { order: 2, text: 'Drop the flower seed into the hole.' },
-      { order: 3, text: 'Water the seed with fresh clean water.' },
-      { order: 4, text: 'Watch a beautiful green sprout grow!' }
+      { order: 1, text: 'The warm sun heats water in oceans and rivers to evaporate into steam.' },
+      { order: 2, text: 'Water vapor cools down and condenses into fluffy clouds in the sky.' },
+      { order: 3, text: 'Heavy clouds release rainwater or snow back down to the ground.' },
+      { order: 4, text: 'Rainwater flows back into streams, rivers, and oceans.' }
+    ]
+  },
+  {
+    title: 'Baking a Birthday Cake 🎂',
+    events: [
+      { order: 1, text: 'Measure flour, sugar, butter, and crack fresh eggs into a bowl.' },
+      { order: 2, text: 'Mix the ingredients thoroughly and pour batter into a round cake pan.' },
+      { order: 3, text: 'Bake in the warm oven for 30 minutes until golden and fluffy.' },
+      { order: 4, text: 'Decorate with sweet frosting, sprinkles, and candles.' }
     ]
   }
 ];
@@ -196,20 +218,34 @@ export const STORY_SEQUENCING_DRILLS = [
 export const INCOMPLETE_SENTENCES = [
   {
     id: '1',
-    prompt: 'The rabbit loves to eat crunchy ______.',
-    answer: 'carrots',
-    options: ['carrots', 'books', 'shoes', 'rocks']
+    prompt: 'Astronauts float weightlessly in space because there is very little ______.',
+    answer: 'gravity',
+    options: ['gravity', 'chocolate', 'noise', 'curtains']
   },
   {
     id: '2',
-    prompt: 'We wear warm coats when the weather is ______.',
-    answer: 'cold',
-    options: ['cold', 'hot', 'sunny', 'purple']
+    prompt: 'Botanists study green plants to learn how they convert sunlight into ______.',
+    answer: 'energy',
+    options: ['energy', 'pencils', 'ice cream', 'sand']
   },
   {
     id: '3',
-    prompt: 'A big bird flies high up in the ______.',
-    answer: 'sky',
-    options: ['sky', 'water', 'kitchen', 'pencil']
+    prompt: 'A magnet attracts objects that are made of ______.',
+    answer: 'iron',
+    options: ['iron', 'paper', 'wood', 'cotton']
+  },
+  {
+    id: '4',
+    prompt: 'Submarines dive deep underwater using strong steel hulls to withstand high ______.',
+    answer: 'pressure',
+    options: ['pressure', 'sugar', 'feathers', 'sunlight']
   }
+];
+
+export const ADVANCED_VOICE_WORDS_AGE5 = [
+  { word: "Exploration", emoji: "🧭", sentence: "The brave team went on an exciting space exploration!", phonetic: "/ˌek.spləˈreɪ.ʃən/" },
+  { word: "Glistening", emoji: "✨", sentence: "The morning dew was glistening on the green grass.", phonetic: "/ˈɡlɪs.n̩.ɪŋ/" },
+  { word: "Constellation", emoji: "🌌", sentence: "Look up at the night sky to spot the Orion constellation!", phonetic: "/ˌkɒn.stəˈleɪ.ʃən/" },
+  { word: "Metamorphosis", emoji: "🦋", sentence: "The caterpillar underwent metamorphosis to become a butterfly.", phonetic: "/ˌmet.əˈmɔː.fə.sɪs/" },
+  { word: "Photosynthesis", emoji: "🌿", sentence: "Green leaves use sunlight for photosynthesis.", phonetic: "/ˌfəʊ.təʊˈsɪn.θə.sɪs/" }
 ];
