@@ -890,8 +890,12 @@ export function ExecutiveDirectorCockpit({
         {/* Director Quick Command Bar */}
         <Card className="lg:col-span-2 shadow-sm border-slate-200 rounded-2xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-slate-900">Director Command Bar</CardTitle>
-            <CardDescription className="text-xs text-slate-500">Instant executive actions & portal communications</CardDescription>
+            <CardTitle className="text-base font-bold text-slate-900">
+              {showFinancials ? 'Director Command Bar' : 'Administrator Command Bar'}
+            </CardTitle>
+            <CardDescription className="text-xs text-slate-500">
+              {showFinancials ? 'Instant executive actions & portal communications' : 'Instant operational actions & portal communications'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="pt-2 space-y-4">
             
