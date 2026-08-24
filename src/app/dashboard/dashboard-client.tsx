@@ -3636,6 +3636,8 @@ function DirectorDashboard({
             staffAttendance={staffAttendance}
             schoolData={schoolData}
           />
+        )}
+
         {activeTab === 'students' && (
           <div className="space-y-8 animate-in fade-in duration-300">
             <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner w-fit">
