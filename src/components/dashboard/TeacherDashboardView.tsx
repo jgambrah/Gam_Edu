@@ -33,16 +33,24 @@ import { billStudentForAttendance } from '@/lib/billing';
 
 export function TeacherDashboardView({ 
     profile, 
-    classes, 
-    students, 
-    assessments, 
-    announcements, 
-    timetable, 
-    assignments, 
-    submissions, 
-    subjects,
+    classes: rawClasses, 
+    students: rawStudents, 
+    assessments: rawAssessments, 
+    announcements: rawAnnouncements, 
+    timetable: rawTimetable, 
+    assignments: rawAssignments, 
+    submissions: rawSubmissions, 
+    subjects: rawSubjects,
     isLoading 
 }: any) {
+    const classes = useMemo(() => rawClasses || [], [rawClasses]);
+    const students = useMemo(() => rawStudents || [], [rawStudents]);
+    const assessments = useMemo(() => rawAssessments || [], [rawAssessments]);
+    const announcements = useMemo(() => rawAnnouncements || [], [rawAnnouncements]);
+    const timetable = useMemo(() => rawTimetable || [], [rawTimetable]);
+    const assignments = useMemo(() => rawAssignments || [], [rawAssignments]);
+    const submissions = useMemo(() => rawSubmissions || [], [rawSubmissions]);
+    const subjects = useMemo(() => rawSubjects || [], [rawSubjects]);
     const { user } = useUser();
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Teacher';
     const { toast } = useToast();
