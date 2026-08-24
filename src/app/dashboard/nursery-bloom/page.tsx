@@ -25,6 +25,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { JuniorAgeLevelSelector } from '@/components/dashboard/junior-academy/JuniorAgeLevelSelector';
+import { 
+  AGE_TIERS, ANIMAL_SOUNDS, HOUSEHOLD_OBJECTS, LETTER_DISTINCTION, 
+  PATTERN_DRILLS, CVC_WORDS, SIGHT_WORDS, RHYME_MATCHES, 
+  SENTENCE_PACING_READS, STORY_SEQUENCING_DRILLS, INCOMPLETE_SENTENCES 
+} from '@/lib/junior-age-levels';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -4526,13 +4532,328 @@ function hexToRgb(hex: string) {
     return [r, g, b];
 }
 
+// --- AGES 2-3: ANIMAL SOUNDS & GUESS THE SOUND ---
+function ToddlerAnimalSoundsQuiz() {
+  const [selectedAnimal, setSelectedAnimal] = useState<any>(ANIMAL_SOUNDS[0]);
+  const [quizScore, setQuizScore] = useState(0);
+
+  const handleAnimalClick = (item: any) => {
+    setSelectedAnimal(item);
+    speak(`${item.animal} says ${item.sound}`);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center bg-amber-50 p-6 rounded-3xl border-2 border-amber-200">
+        <span className="text-8xl block mb-3 hover:scale-110 transition-transform cursor-pointer" onClick={() => speak(`${selectedAnimal.animal} says ${selectedAnimal.sound}`)}>
+          {selectedAnimal.emoji}
+        </span>
+        <h3 className="text-3xl font-black text-amber-900">{selectedAnimal.animal}</h3>
+        <p className="text-xl font-bold text-amber-700 mt-1">{selectedAnimal.sound}</p>
+        <Button onClick={() => speak(`${selectedAnimal.animal} says ${selectedAnimal.sound}`)} className="mt-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl">
+          <Volume2 className="w-5 h-5 mr-2" /> Hear Sound
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {ANIMAL_SOUNDS.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => handleAnimalClick(item)}
+            className={cn(
+              "p-4 rounded-2xl text-center cursor-pointer border-2 transition-all hover:scale-105",
+              selectedAnimal.id === item.id ? "bg-amber-100 border-amber-400 font-black shadow-md" : "bg-white border-amber-100 hover:bg-amber-50"
+            )}
+          >
+            <span className="text-4xl block">{item.emoji}</span>
+            <span className="text-xs font-black text-slate-700 mt-1 block">{item.animal}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- AGES 3-4: LETTER DISTINCTION & PATTERNS ---
+function LetterDistinctionGame() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const item = LETTER_DISTINCTION[currentIdx];
+
+  const handleSelect = (choice: string) => {
+    if (choice === item.target) {
+      setFeedback("CORRECT! Wonderful job! 🎉");
+      speak(`Awesome! That is letter ${choice}`);
+      confetti({ particleCount: 50, spread: 60 });
+      setTimeout(() => {
+        setFeedback("");
+        setCurrentIdx((prev) => (prev + 1) % LETTER_DISTINCTION.length);
+      }, 2000);
+    } else {
+      setFeedback(`Try again! Find letter ${item.target}`);
+      speak(`Try again! Look for ${item.target}`);
+    }
+  };
+
+  return (
+    <div className="space-y-6 text-center">
+      <div className="bg-pink-50 p-6 rounded-3xl border-2 border-pink-200">
+        <h3 className="text-2xl font-black text-pink-900">{item.prompt}</h3>
+        <p className="text-xs text-pink-600 font-bold mt-1">Tap the correct letter below</p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {item.options.map((opt, i) => (
+          <Button
+            key={i}
+            onClick={() => handleSelect(opt)}
+            className="h-24 text-5xl font-black rounded-3xl bg-white hover:bg-pink-100 text-pink-700 border-4 border-pink-200 shadow-lg hover:scale-105 transition-all"
+          >
+            {opt}
+          </Button>
+        ))}
+      </div>
+
+      {feedback && <p className="text-lg font-black text-pink-600 animate-pulse">{feedback}</p>}
+    </div>
+  );
+}
+
+function PatternCompletionGame() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const item = PATTERN_DRILLS[currentIdx];
+
+  const handleSelect = (choice: string) => {
+    if (choice === item.answer) {
+      setFeedback("CORRECT! You solved the pattern! 🌟");
+      speak("Great job! Pattern complete!");
+      confetti({ particleCount: 60, spread: 70 });
+      setTimeout(() => {
+        setFeedback("");
+        setCurrentIdx((prev) => (prev + 1) % PATTERN_DRILLS.length);
+      }, 2000);
+    } else {
+      setFeedback("Not quite! Look at the pattern sequence again.");
+      speak("Try again!");
+    }
+  };
+
+  return (
+    <div className="space-y-6 text-center">
+      <div className="bg-rose-50 p-6 rounded-3xl border-2 border-rose-200">
+        <h3 className="text-xl font-black text-rose-900 mb-4">Complete the Pattern</h3>
+        <div className="flex justify-center items-center gap-3 text-4xl bg-white p-4 rounded-2xl border border-rose-200 shadow-inner">
+          {item.sequence.map((seq, i) => (
+            <span key={i} className="p-2 rounded-xl bg-slate-50 border border-slate-200">{seq}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-center gap-4 flex-wrap">
+        {item.options.map((opt, i) => (
+          <Button
+            key={i}
+            onClick={() => handleSelect(opt)}
+            className="h-16 w-16 text-3xl font-black rounded-2xl bg-white hover:bg-rose-100 border-2 border-rose-200 shadow-md"
+          >
+            {opt}
+          </Button>
+        ))}
+      </div>
+
+      {feedback && <p className="text-base font-black text-rose-600 animate-pulse">{feedback}</p>}
+    </div>
+  );
+}
+
+// --- AGES 4-5: CVC BLENDING & RHYMING ---
+function CVCBlendingDrill() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const wordObj = CVC_WORDS[currentIdx];
+
+  const playBlend = () => {
+    speak(`${wordObj.C} ... ${wordObj.V} ... ${wordObj.C2} ... ${wordObj.word}`, 0.7);
+  };
+
+  return (
+    <div className="space-y-6 text-center">
+      <div className="bg-teal-50 p-6 rounded-3xl border-2 border-teal-200">
+        <span className="text-8xl block mb-2 cursor-pointer hover:scale-110 transition-transform" onClick={() => speak(wordObj.word)}>
+          {wordObj.emoji}
+        </span>
+        <h3 className="text-4xl font-black text-teal-900 uppercase tracking-widest">{wordObj.word}</h3>
+        <p className="text-sm font-bold text-teal-700 mt-2">"{wordObj.sentence}"</p>
+      </div>
+
+      <div className="flex justify-center gap-4">
+        <Button onClick={playBlend} className="bg-teal-600 hover:bg-teal-700 text-white font-black rounded-2xl text-sm py-3 px-6 shadow-md">
+          <Volume2 className="w-5 h-5 mr-2" /> Speed-Blend Sounds
+        </Button>
+        <Button onClick={() => setCurrentIdx((prev) => (prev + 1) % CVC_WORDS.length)} variant="outline" className="border-teal-300 text-teal-700 hover:bg-teal-50 font-black rounded-2xl text-sm">
+          Next Word <ArrowRight className="w-4 h-4 ml-1" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function RhymeMatchingGame() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const item = RHYME_MATCHES[currentIdx];
+
+  const options = useMemo(() => {
+    return [...item.rhymesWith.slice(0, 1), item.distractor].sort(() => Math.random() - 0.5);
+  }, [item]);
+
+  const handleSelect = (choice: string) => {
+    if (item.rhymesWith.includes(choice)) {
+      setFeedback(`CORRECT! "${item.word}" rhymes with "${choice}"! 🎉`);
+      speak(`Great! ${item.word} rhymes with ${choice}`);
+      confetti({ particleCount: 50 });
+      setTimeout(() => {
+        setFeedback("");
+        setCurrentIdx((prev) => (prev + 1) % RHYME_MATCHES.length);
+      }, 2000);
+    } else {
+      setFeedback(`Try again! "${choice}" does not rhyme with "${item.word}".`);
+      speak(`Try again! Find what rhymes with ${item.word}`);
+    }
+  };
+
+  return (
+    <div className="space-y-6 text-center">
+      <div className="bg-emerald-50 p-6 rounded-3xl border-2 border-emerald-200">
+        <span className="text-7xl block mb-2">{item.emoji}</span>
+        <h3 className="text-2xl font-black text-emerald-900">Which word rhymes with "{item.word}"?</h3>
+      </div>
+
+      <div className="flex justify-center gap-4">
+        {options.map((opt, i) => (
+          <Button
+            key={i}
+            onClick={() => handleSelect(opt)}
+            className="h-16 px-8 text-2xl font-black rounded-2xl bg-white hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 shadow-md"
+          >
+            {opt}
+          </Button>
+        ))}
+      </div>
+
+      {feedback && <p className="text-base font-black text-emerald-600 animate-pulse">{feedback}</p>}
+    </div>
+  );
+}
+
+// --- AGES 5+: SENTENCE PACING & STORY SEQUENCING ---
+function SentencePacingGame() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const item = SENTENCE_PACING_READS[currentIdx];
+
+  const readSentence = () => {
+    speak(item.sentence, 0.85);
+  };
+
+  return (
+    <div className="space-y-6 text-center">
+      <div className="bg-indigo-50 p-6 rounded-3xl border-2 border-indigo-200">
+        <h3 className="text-xl font-black text-indigo-900 mb-2">Sentence Pacing & Fluency</h3>
+        <p className="text-2xl font-bold text-slate-800 leading-relaxed bg-white p-6 rounded-2xl border border-indigo-100 shadow-inner">
+          "{item.sentence}"
+        </p>
+
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {item.syllablesBreakdown.map((syl, i) => (
+            <span key={i} className="px-3 py-1 bg-indigo-100 text-indigo-800 font-bold text-sm rounded-xl border border-indigo-200">
+              {syl}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-center gap-4">
+        <Button onClick={readSentence} className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl px-6">
+          <Volume2 className="w-5 h-5 mr-2" /> Read Aloud with Pacing
+        </Button>
+        <Button onClick={() => setCurrentIdx((prev) => (prev + 1) % SENTENCE_PACING_READS.length)} variant="outline" className="border-indigo-300 text-indigo-700 font-black rounded-2xl">
+          Next Passage <ArrowRight className="w-4 h-4 ml-1" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function StorySequencerGame() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const story = STORY_SEQUENCING_DRILLS[currentIdx];
+  const [userOrder, setUserOrder] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (story) {
+      setUserOrder([...story.events].sort(() => Math.random() - 0.5));
+    }
+  }, [story, currentIdx]);
+
+  const moveUp = (idx: number) => {
+    if (idx === 0) return;
+    const updated = [...userOrder];
+    const temp = updated[idx];
+    updated[idx] = updated[idx - 1];
+    updated[idx - 1] = temp;
+    setUserOrder(updated);
+  };
+
+  const checkOrder = () => {
+    const isCorrect = userOrder.every((item, i) => item.order === i + 1);
+    if (isCorrect) {
+      speak("Fantastic! You put the story in the correct order!");
+      confetti({ particleCount: 70 });
+    } else {
+      speak("Not quite. Check the story steps once more!");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-purple-50 p-6 rounded-3xl border-2 border-purple-200 text-center">
+        <h3 className="text-xl font-black text-purple-900">Story Event Sequencing: {story.title}</h3>
+        <p className="text-xs text-purple-600 font-bold mt-1">Re-order the steps in chronological order</p>
+      </div>
+
+      <div className="space-y-3">
+        {userOrder.map((ev, i) => (
+          <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-purple-100 shadow-sm">
+            <span className="font-bold text-slate-800 text-sm">{i + 1}. {ev.text}</span>
+            <Button size="sm" variant="ghost" onClick={() => moveUp(i)} disabled={i === 0} className="text-purple-600 font-black">
+              Move Up ⬆️
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center gap-4">
+        <Button onClick={checkOrder} className="bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl px-6">
+          Check Story Order
+        </Button>
+        <Button onClick={() => setCurrentIdx((prev) => (prev + 1) % STORY_SEQUENCING_DRILLS.length)} variant="outline" className="border-purple-300 text-purple-700 font-black rounded-2xl">
+          Next Story
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
 
+  const [activeAgeTier, setActiveAgeTier] = useState<'ages2-3' | 'ages3-4' | 'ages4-5' | 'ages5+'>('ages2-3');
+
   const pageModules = [
+    { id: 'level_curriculum', name: 'Age Level Curriculum', icon: <Brain className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
     { id: 'coach', name: 'Voice Coach', icon: <Mic className="w-5 h-5"/>, color: 'text-pink-600 bg-pink-100' },
     { id: 'phonics', name: 'Phonics Forest', icon: <Music className="w-5 h-5"/>, color: 'text-teal-600 bg-teal-100' },
     { id: 'abc', name: 'ABC Kingdom', icon: <Brain className="w-5 h-5"/>, color: 'text-green-600 bg-green-100' },
@@ -4567,7 +4888,7 @@ export default function JuniorCampusPage() {
               <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight drop-shadow-sm flex items-center gap-2">
                 Junior Campus <Sparkles className="w-7 h-7 text-yellow-500 animate-pulse" />
               </h1>
-              <p className="text-slate-700/80 font-bold text-lg mt-1">A magical space to learn, play, and bloom!</p>
+              <p className="text-slate-700/80 font-bold text-lg mt-1">A magical space to learn, play, and bloom across early childhood levels!</p>
             </div>
           </div>
 
@@ -4580,10 +4901,13 @@ export default function JuniorCampusPage() {
             </div>
           </div>
         </div>
+
+        {/* Structured Age Level Selector */}
+        <JuniorAgeLevelSelector activeTier={activeAgeTier} onSelectTier={(tier) => setActiveAgeTier(tier)} />
       </div>
 
       <div className="max-w-6xl mx-auto">
-        <Tabs defaultValue="coach" className="w-full">
+        <Tabs defaultValue="level_curriculum" className="w-full">
             <div className="bg-white/70 backdrop-blur-md p-2 rounded-3xl shadow-lg border border-white/80 mb-8 overflow-x-auto no-scrollbar">
               <TabsList className="flex w-max md:w-full md:grid gap-2 bg-transparent p-0 h-auto" style={{ gridTemplateColumns: `repeat(${pageModules.length}, minmax(0, 1fr))` }}>
                   {pageModules.map(mod => (
@@ -4593,6 +4917,7 @@ export default function JuniorCampusPage() {
                           className={cn(
                             "rounded-2xl font-black flex flex-col items-center gap-2 text-xs py-3 px-4 md:px-2 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm border border-transparent",
                             "data-[state=active]:bg-gradient-to-b data-[state=active]:shadow-md data-[state=active]:border-white/50 data-[state=active]:-translate-y-0.5",
+                            mod.id === 'level_curriculum' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
                             mod.id === 'coach' && "data-[state=active]:from-pink-500 data-[state=active]:to-rose-500 data-[state=active]:text-white text-pink-600 hover:bg-pink-50/50",
                             mod.id === 'phonics' && "data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white text-teal-600 hover:bg-teal-50/50",
                             mod.id === 'abc' && "data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white text-green-600 hover:bg-green-50/50",
@@ -4617,6 +4942,56 @@ export default function JuniorCampusPage() {
             
             {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
+                <TabsContent value="level_curriculum" className="mt-0 animate-in fade-in-50 duration-300">
+                  <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-amber-400">
+                    <div className="mb-6 flex items-center justify-between border-b border-amber-100 pb-4">
+                      <div>
+                        <span className="text-xs font-black uppercase tracking-wider text-amber-600">Active Curriculum Tier</span>
+                        <h2 className="text-2xl font-black text-slate-900 flex items-center gap-2">
+                          {AGE_TIERS[activeAgeTier].iconEmoji} {AGE_TIERS[activeAgeTier].name}: {AGE_TIERS[activeAgeTier].subtitle}
+                        </h2>
+                      </div>
+                      <span className="text-xs font-black px-3 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                        {AGE_TIERS[activeAgeTier].recommendedGrade}
+                      </span>
+                    </div>
+
+                    {/* DYNAMIC AGE TIER CONTENT */}
+                    {activeAgeTier === 'ages2-3' && (
+                      <div className="space-y-8">
+                        <ToddlerAnimalSoundsQuiz />
+                      </div>
+                    )}
+
+                    {activeAgeTier === 'ages3-4' && (
+                      <div className="space-y-8">
+                        <LetterDistinctionGame />
+                        <div className="border-t border-slate-100 pt-6">
+                          <PatternCompletionGame />
+                        </div>
+                      </div>
+                    )}
+
+                    {activeAgeTier === 'ages4-5' && (
+                      <div className="space-y-8">
+                        <CVCBlendingDrill />
+                        <div className="border-t border-slate-100 pt-6">
+                          <RhymeMatchingGame />
+                        </div>
+                      </div>
+                    )}
+
+                    {activeAgeTier === 'ages5+' && (
+                      <div className="space-y-8">
+                        <SentencePacingGame />
+                        <div className="border-t border-slate-100 pt-6">
+                          <StorySequencerGame />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
                 <TabsContent value="coach" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-pink-400">
                     <VoiceCoach canEdit={canEdit} />
