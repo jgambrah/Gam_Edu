@@ -6021,22 +6021,33 @@ export default function JuniorCampusPage() {
   const { toast } = useToast(); 
 
   const [activeAgeTier, setActiveAgeTier] = useState<'ages2-3' | 'ages3-4' | 'ages4-5' | 'ages5+'>('ages2-3');
+  const [activeTab, setActiveTab] = useState<string>('level_curriculum');
 
-  const pageModules = [
-    { id: 'level_curriculum', name: 'Age Level Curriculum', icon: <Brain className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
-    { id: 'sentence_finisher', name: 'Sentence Finisher (Year 5+)', icon: <PenTool className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' },
-    { id: 'coach', name: 'Voice Coach', icon: <Mic className="w-5 h-5"/>, color: 'text-pink-600 bg-pink-100' },
-    { id: 'phonics', name: 'Phonics Forest', icon: <Music className="w-5 h-5"/>, color: 'text-teal-600 bg-teal-100' },
-    { id: 'abc', name: 'ABC Kingdom', icon: <Brain className="w-5 h-5"/>, color: 'text-green-600 bg-green-100' },
-    { id: 'numbers', name: 'Number Garden', icon: <Hash className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
-    { id: 'math', name: 'Math Playground', icon: <Calculator className="w-5 h-5"/>, color: 'text-orange-600 bg-orange-100' },
-    { id: 'stories', name: 'Story Spark', icon: <BookOpen className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' },
-    { id: 'science', name: 'Science World', icon: <Atom className="w-5 h-5"/>, color: 'text-blue-600 bg-blue-100' },
-    { id: 'music', name: 'Music Corner', icon: <Lightbulb className="w-5 h-5"/>, color: 'text-violet-600 bg-violet-100' },
-    { id: 'art', name: 'Art Studio', icon: <Palette className="w-5 h-5"/>, color: 'text-cyan-600 bg-cyan-100' },
-    { id: 'rewards', name: 'Sticker Book', icon: <Trophy className="w-5 h-5"/>, color: 'text-yellow-600 bg-yellow-100' },
-    ...(canEdit ? [{ id: 'dashboard', name: 'Dashboard', icon: <BarChart3 className="w-5 h-5"/>, color: 'text-indigo-600 bg-indigo-100' }] : []),
-  ];
+  const pageModules = useMemo(() => {
+    return [
+      { id: 'level_curriculum', name: 'Age Level Curriculum', icon: <Brain className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
+      ...(activeAgeTier === 'ages5+' ? [{ id: 'sentence_finisher', name: 'Sentence Finisher (Year 5+)', icon: <PenTool className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' }] : []),
+      { id: 'coach', name: 'Voice Coach', icon: <Mic className="w-5 h-5"/>, color: 'text-pink-600 bg-pink-100' },
+      { id: 'phonics', name: 'Phonics Forest', icon: <Music className="w-5 h-5"/>, color: 'text-teal-600 bg-teal-100' },
+      { id: 'abc', name: 'ABC Kingdom', icon: <Brain className="w-5 h-5"/>, color: 'text-green-600 bg-green-100' },
+      { id: 'numbers', name: 'Number Garden', icon: <Hash className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
+      { id: 'math', name: 'Math Playground', icon: <Calculator className="w-5 h-5"/>, color: 'text-orange-600 bg-orange-100' },
+      { id: 'stories', name: 'Story Spark', icon: <BookOpen className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' },
+      { id: 'science', name: 'Science World', icon: <Atom className="w-5 h-5"/>, color: 'text-blue-600 bg-blue-100' },
+      { id: 'music', name: 'Music Corner', icon: <Lightbulb className="w-5 h-5"/>, color: 'text-violet-600 bg-violet-100' },
+      { id: 'art', name: 'Art Studio', icon: <Palette className="w-5 h-5"/>, color: 'text-cyan-600 bg-cyan-100' },
+      { id: 'rewards', name: 'Sticker Book', icon: <Trophy className="w-5 h-5"/>, color: 'text-yellow-600 bg-yellow-100' },
+      ...(canEdit ? [{ id: 'dashboard', name: 'Dashboard', icon: <BarChart3 className="w-5 h-5"/>, color: 'text-indigo-600 bg-indigo-100' }] : []),
+    ];
+  }, [activeAgeTier, canEdit]);
+
+  // Safely fallback when active tab gets dynamically hidden
+  useEffect(() => {
+    const isTabAvailable = pageModules.some(mod => mod.id === activeTab);
+    if (!isTabAvailable) {
+      setActiveTab('level_curriculum');
+    }
+  }, [activeAgeTier, pageModules, activeTab]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] to-[#E0F2FE] p-4 md:p-8 font-sans relative overflow-hidden">
@@ -6078,7 +6089,7 @@ export default function JuniorCampusPage() {
       </div>
 
       <div className="max-w-6xl mx-auto">
-        <Tabs defaultValue="level_curriculum" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="bg-white/70 backdrop-blur-md p-3 rounded-[32px] shadow-lg border border-white/80 mb-8">
               <TabsList className="flex flex-wrap gap-2.5 bg-transparent p-0 h-auto justify-center w-full">
                   {pageModules.map(mod => (
