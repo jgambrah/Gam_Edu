@@ -3578,7 +3578,7 @@ function StickerBook() {
 }
 
 // --- 9. NUMBER GARDEN (COUNTING, TRACING & WORD MATCHING) ---
-function NumberGarden() {
+function NumberGarden({ activeAgeTier = 'ages2-3' }: { activeAgeTier?: string }) {
     const [activeTab, setActiveTab] = useState<'counting' | 'tracing' | 'matching'>('counting');
     const [currentNumber, setCurrentNumber] = useState(1);
     const [countingItems, setCountingItems] = useState<string[]>([]);
@@ -3590,6 +3590,10 @@ function NumberGarden() {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+
+    // Duplicate prevention refs
+    const lastCountingNumberRef = useRef<number>(-1);
+    const lastMatchingNumberRef = useRef<number>(-1);
 
     // Matching game state
     const [matchTarget, setMatchTarget] = useState<{ digit: number; word: string }>({ digit: 5, word: 'five' });
@@ -3606,26 +3610,56 @@ function NumberGarden() {
     const emojis = ['🍎', '🌟', '🐶', '🐱', '🦋', '🌺', '🚗', '⚽', '🎈', '🍪', '🐝', '🌈', '🍓', '🐸', '🎵', '🌻', '🍬', '🐠', '🎀', '🌙'];
 
     const generateCounting = useCallback(() => {
-        const num = Math.floor(Math.random() * 10) + 1;
+        let maxNum = 10;
+        if (activeAgeTier === 'ages2-3') maxNum = 5;
+        else if (activeAgeTier === 'ages3-4') maxNum = 10;
+        else if (activeAgeTier === 'ages4-5') maxNum = 15;
+        else maxNum = 20;
+
+        let num;
+        let attempts = 0;
+        do {
+            num = Math.floor(Math.random() * maxNum) + 1;
+            attempts++;
+        } while (num === lastCountingNumberRef.current && maxNum > 1 && attempts < 5);
+
+        lastCountingNumberRef.current = num;
+
         const emoji = emojis[Math.floor(Math.random() * emojis.length)];
         setCurrentNumber(num);
         setCountingItems(Array(num).fill(emoji));
         setTappedCount(0);
         setFeedback('');
         speak(`How many do you see? Tap each one to count!`);
-    }, []);
+    }, [activeAgeTier]);
 
     const generateMatching = useCallback(() => {
-        const targetNum = Math.floor(Math.random() * 20) + 1;
+        let maxNum = 20;
+        if (activeAgeTier === 'ages2-3') maxNum = 5;
+        else if (activeAgeTier === 'ages3-4') maxNum = 10;
+        else if (activeAgeTier === 'ages4-5') maxNum = 15;
+        else maxNum = 20;
+
+        let targetNum;
+        let attempts = 0;
+        do {
+            targetNum = Math.floor(Math.random() * maxNum) + 1;
+            attempts++;
+        } while (targetNum === lastMatchingNumberRef.current && maxNum > 1 && attempts < 5);
+
+        lastMatchingNumberRef.current = targetNum;
+
         const mode = Math.random() > 0.5 ? 'digit-to-word' : 'word-to-digit';
         setMatchMode(mode);
         setMatchTarget({ digit: targetNum, word: numberWords[targetNum] });
 
         // Generate 3 wrong options + 1 correct
         const wrongNumbers = new Set<number>();
-        while (wrongNumbers.size < 3) {
-            const r = Math.floor(Math.random() * 20) + 1;
+        let wrongAttempts = 0;
+        while (wrongNumbers.size < 3 && wrongAttempts < 30) {
+            const r = Math.floor(Math.random() * maxNum) + 1;
             if (r !== targetNum) wrongNumbers.add(r);
+            wrongAttempts++;
         }
 
         if (mode === 'digit-to-word') {
@@ -3636,7 +3670,7 @@ function NumberGarden() {
             setMatchOptions(options.sort(() => Math.random() - 0.5));
         }
         setFeedback('');
-    }, []);
+    }, [activeAgeTier]);
 
     useEffect(() => {
         if (activeTab === 'counting') generateCounting();
@@ -3795,7 +3829,7 @@ function NumberGarden() {
             {activeTab === 'tracing' && (
                 <div className="space-y-6 animate-in slide-in-from-right-4">
                     <div className="flex flex-wrap justify-center gap-2 bg-amber-50 p-2 rounded-2xl border border-amber-100 shadow-inner">
-                        {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
+                        {Array.from({ length: activeAgeTier === 'ages2-3' ? 5 : activeAgeTier === 'ages3-4' ? 10 : activeAgeTier === 'ages4-5' ? 15 : 20 }, (_, i) => i + 1).map(n => (
                             <button
                                 key={n}
                                 onClick={() => { setCurrentNumber(n); speak(String(n)); }}
@@ -6887,7 +6921,7 @@ export default function JuniorCampusPage() {
                 </TabsContent>
                 <TabsContent value="numbers" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-amber-400">
-                    <NumberGarden />
+                    <NumberGarden activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="music" className="mt-0 animate-in fade-in-50 duration-300">
