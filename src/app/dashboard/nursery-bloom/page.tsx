@@ -5096,6 +5096,190 @@ function SentencePacingGame() {
   );
 }
 
+// --- ALGORITHMIC SENTENCE GENERATOR (YEAR 5+) ---
+function generateAlgorithmicSentence(index: number): IncompleteSentenceItem {
+  const templates = [
+    // 1. Science & Nature
+    {
+      prompt: "The elephant is the largest land animal, known for its long ______.",
+      answer: "trunk",
+      options: ["trunk", "tail", "ears", "horns"],
+      category: "Science & Nature",
+      explanation: "Elephants use their long trunk for breathing, smelling, and grabbing things."
+    },
+    {
+      prompt: "Plants use their ______ to absorb water and nutrients from the soil.",
+      answer: "roots",
+      options: ["roots", "leaves", "flowers", "stems"],
+      category: "Science & Nature",
+      explanation: "Roots grow underground to anchor the plant and drink water."
+    },
+    {
+      prompt: "______ is the process of water falling from clouds as rain or snow.",
+      answer: "Precipitation",
+      options: ["Precipitation", "Evaporation", "Condensation", "Freezing"],
+      category: "Science & Nature",
+      explanation: "Precipitation is the scientific term for rain, snow, sleet, or hail."
+    },
+    {
+      prompt: "Birds are unique animals because their bodies are covered in ______.",
+      answer: "feathers",
+      options: ["feathers", "fur", "scales", "hair"],
+      category: "Science & Nature",
+      explanation: "Feathers keep birds warm and help them fly."
+    },
+    {
+      prompt: "The ______ rises in the east and sets in the west every day.",
+      answer: "Sun",
+      options: ["Sun", "Moon", "Earth", "Mars"],
+      category: "Science & Nature",
+      explanation: "The Sun is our star that provides light and warmth during the day."
+    },
+
+    // 2. Grammar & Words
+    {
+      prompt: "Words like 'run', 'play', and 'dance' are called ______.",
+      answer: "verbs",
+      options: ["verbs", "nouns", "pronouns", "adjectives"],
+      category: "Grammar & Words",
+      explanation: "Verbs are action words that tell us what someone or something is doing."
+    },
+    {
+      prompt: "The opposite of the word 'bright' is ______.",
+      answer: "dark",
+      options: ["dark", "shiny", "glowing", "sunny"],
+      category: "Grammar & Words",
+      explanation: "Dark is the antonym (opposite) of bright."
+    },
+    {
+      prompt: "We use the pronoun '______' to refer to a group of people.",
+      answer: "they",
+      options: ["they", "he", "she", "it"],
+      category: "Grammar & Words",
+      explanation: "'They' is a plural pronoun used for multiple people."
+    },
+    {
+      prompt: "A ______ is a punctuation mark used at the end of a question.",
+      answer: "question mark",
+      options: ["question mark", "period", "comma", "exclamation point"],
+      category: "Grammar & Words",
+      explanation: "A question mark asks something, while a period ends a statement."
+    },
+    {
+      prompt: "The word 'beautiful' is an ______ because it describes a noun.",
+      answer: "adjective",
+      options: ["adjective", "noun", "verb", "adverb"],
+      category: "Grammar & Words",
+      explanation: "Adjectives describe or modify nouns, like a beautiful flower."
+    },
+
+    // 3. Space & Tech
+    {
+      prompt: "Astronauts travel to space inside a ______.",
+      answer: "rocket",
+      options: ["rocket", "airplane", "submarine", "helicopter"],
+      category: "Space & Tech",
+      explanation: "Rockets have powerful engines capable of escaping Earth's gravity."
+    },
+    {
+      prompt: "We use a computer ______ to type words onto the screen.",
+      answer: "keyboard",
+      options: ["keyboard", "mouse", "printer", "monitor"],
+      category: "Space & Tech",
+      explanation: "The keyboard contains keys for letters, numbers, and symbols."
+    },
+    {
+      prompt: "The ______ is a natural satellite that orbits around Earth.",
+      answer: "Moon",
+      options: ["Moon", "Sun", "asteroid", "comet"],
+      category: "Space & Tech",
+      explanation: "The Moon orbits the Earth and reflects light from the Sun."
+    },
+    {
+      prompt: "______ is the red planet that is fourth from the Sun.",
+      answer: "Mars",
+      options: ["Mars", "Venus", "Jupiter", "Saturn"],
+      category: "Space & Tech",
+      explanation: "Mars is often called the Red Planet due to iron oxide on its surface."
+    },
+
+    // 4. Math & Logic
+    {
+      prompt: "A flat shape with three straight sides and three corners is a ______.",
+      answer: "triangle",
+      options: ["triangle", "square", "circle", "rectangle"],
+      category: "Math & Logic",
+      explanation: "Triangles always have exactly three sides."
+    },
+    {
+      prompt: "An analog clock has hands that point to ______ to tell time.",
+      answer: "numbers",
+      options: ["numbers", "letters", "colors", "shapes"],
+      category: "Math & Logic",
+      explanation: "The clock face is numbered 1 through 12 to show hours and minutes."
+    },
+    {
+      prompt: "If you have 10 apples and eat 3, you are doing ______.",
+      answer: "subtraction",
+      options: ["subtraction", "addition", "multiplication", "division"],
+      category: "Math & Logic",
+      explanation: "Subtraction is taking away a part from a total."
+    },
+    {
+      prompt: "A standard calendar year has ______ months.",
+      answer: "twelve",
+      options: ["twelve", "ten", "fourteen", "seven"],
+      category: "Math & Logic",
+      explanation: "A year starts in January and ends in December, total 12 months."
+    },
+
+    // 5. Logic & Life
+    {
+      prompt: "We wear a heavy coat, scarf, and gloves during the ______ season.",
+      answer: "winter",
+      options: ["winter", "summer", "spring", "autumn"],
+      category: "Logic & Life",
+      explanation: "Winter is the coldest season of the year."
+    },
+    {
+      prompt: "Doctors and nurses work in a ______ to take care of sick people.",
+      answer: "hospital",
+      options: ["hospital", "school", "library", "bakery"],
+      category: "Logic & Life",
+      explanation: "Hospitals provide medical care and treatment."
+    },
+    {
+      prompt: "Before eating dinner, we should always wash our ______ with soap.",
+      answer: "hands",
+      options: ["hands", "hair", "feet", "shoes"],
+      category: "Logic & Life",
+      explanation: "Washing hands removes germs and prevents getting sick."
+    },
+    {
+      prompt: "We visit a ______ when we want to borrow and read books.",
+      answer: "library",
+      options: ["library", "market", "cinema", "park"],
+      category: "Logic & Life",
+      explanation: "Libraries have bookshelves filled with books you can borrow."
+    }
+  ];
+
+  const item = templates[index % templates.length];
+  const names = ["Ama", "Kofi", "Yaa", "Kwame", "Abena"];
+  const randomName = names[Math.floor(Math.random() * names.length)];
+  const customPrompt = item.prompt.replace(/Kofi/g, randomName);
+
+  return {
+    id: `algo-sentence-${index}-${Math.floor(Math.random() * 1000)}`,
+    prompt: customPrompt,
+    answer: item.answer,
+    options: [...item.options].sort(() => Math.random() - 0.5),
+    category: item.category,
+    explanation: item.explanation,
+    isTeacherAdded: false
+  };
+}
+
 function SentenceFinisherGame({ canEdit = false, isDedicatedTab = false }: { canEdit?: boolean; isDedicatedTab?: boolean }) {
   const firestore = useFirestore();
   const { user } = useUser();
@@ -5106,7 +5290,7 @@ function SentenceFinisherGame({ canEdit = false, isDedicatedTab = false }: { can
   const sentencesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_incomplete_sentences'), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
   const { data: dbSentences } = useCollection<any>(sentencesQuery);
 
-  // Combine built-in dataset with teacher-created sentences
+  // Combine built-in dataset with teacher-created and algorithmic sentences
   const allSentences = useMemo(() => {
     const custom: IncompleteSentenceItem[] = (dbSentences || []).map((s: any) => ({
       id: s.id,
@@ -5118,7 +5302,16 @@ function SentenceFinisherGame({ canEdit = false, isDedicatedTab = false }: { can
       createdBy: s.createdBy,
       isTeacherAdded: true
     }));
-    return [...INCOMPLETE_SENTENCES, ...custom];
+
+    // Generate 50 unique algorithmic sentences!
+    const algorithmic: IncompleteSentenceItem[] = [];
+    for (let i = 0; i < 50; i++) {
+      algorithmic.push(generateAlgorithmicSentence(i));
+    }
+
+    // Shuffle the combined built-in and algorithmic pool, then prepend custom questions
+    const pool = [...INCOMPLETE_SENTENCES, ...algorithmic].sort(() => Math.random() - 0.5);
+    return [...custom, ...pool];
   }, [dbSentences]);
 
   const categories = ['All', 'Science & Nature', 'Grammar & Words', 'Space & Tech', 'Math & Logic', 'Logic & Life', 'Teacher Added 👩‍🏫'];
