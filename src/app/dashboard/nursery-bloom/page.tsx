@@ -2424,14 +2424,18 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'solar' | 'body' | 'experiment' | 'library'>(activeAgeTier === 'ages5+' ? 'solar' : 'lab');
     
     const SOLAR_SYSTEM_PLANETS = useMemo(() => [
-      { name: "Sun ☀️", type: "Star", fact: "The giant burning ball of gas at the center of our solar system!" },
-      { name: "Mercury 🪨", type: "Rocky Planet", fact: "The smallest planet closest to the burning Sun!" },
-      { name: "Venus 🟡", type: "Rocky Planet", fact: "The hottest planet with thick yellow clouds!" },
-      { name: "Earth 🌍", type: "Home Planet", fact: "Our beautiful blue water world where living plants and animals thrive!" },
-      { name: "Mars 🔴", type: "Red Planet", fact: "The rusty red desert planet with giant volcanoes!" },
-      { name: "Jupiter 🪐", type: "Gas Giant", fact: "The largest planet in the solar system with a giant stormy red spot!" },
-      { name: "Saturn 🪐", type: "Ringed Giant", fact: "Famous for its magnificent rings made of ice and rock!" },
-      { name: "Moon 🌙", type: "Earth's Satellite", fact: "Orbits around Earth every month and shines at night!" }
+      { name: "Sun ☀️", type: "Star", fact: "The giant burning ball of gas at the center of our solar system!", order: 0, feature: "being the center star that gives light and heat" },
+      { name: "Mercury 🪨", type: "Rocky Planet", fact: "The smallest planet closest to the burning Sun!", order: 1, feature: "being the smallest planet closest to the Sun" },
+      { name: "Venus 🟡", type: "Rocky Planet", fact: "The hottest planet with thick yellow clouds!", order: 2, feature: "having thick yellow clouds and super hot heat" },
+      { name: "Earth 🌍", type: "Home Planet", fact: "Our beautiful blue water world where living plants and animals thrive!", order: 3, feature: "having blue oceans, air, and supporting life" },
+      { name: "Mars 🔴", type: "Red Planet", fact: "The rusty red desert planet with giant volcanoes!", order: 4, feature: "being a rusty red planet with giant volcanoes" },
+      { name: "Jupiter 🪐", type: "Gas Giant", fact: "The largest planet in the solar system with a giant stormy red spot!", order: 5, feature: "being the largest planet with a stormy red spot" },
+      { name: "Saturn 🪐", type: "Ringed Giant", fact: "Famous for its magnificent rings made of ice and rock!", order: 6, feature: "having magnificent rings made of ice and rock" },
+      { name: "Uranus 🪐", type: "Ice Giant", fact: "A freezing cold ice giant that spins completely on its side!", order: 7, feature: "being a cold green-blue planet that spins on its side" },
+      { name: "Neptune 🔵", type: "Ice Giant", fact: "The windiest planet that is farthest from the Sun!", order: 8, feature: "being the windiest blue planet farthest from the Sun" },
+      { name: "Moon 🌙", type: "Earth's Satellite", fact: "Orbits around Earth every month and shines at night!", order: 9, feature: "orbiting Earth and glowing in the night sky" },
+      { name: "Pluto ❄️", type: "Dwarf Planet", fact: "A small icy dwarf planet located at the outer edge of our system!", order: 10, feature: "being a tiny icy dwarf planet at the edge of the solar system" },
+      { name: "Asteroids ☄️", type: "Space Rocks", fact: "Lumpy rocks floating in a ring belt between Mars and Jupiter!", order: 11, feature: "forming a rocky belt between Mars and Jupiter" }
     ], []);
 
     const HUMAN_BODY_ORGANS = useMemo(() => [
@@ -2450,28 +2454,69 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
     const [spaceQuestion, setSpaceQuestion] = useState<{ prompt: string; ans: string; options: string[] } | null>(null);
     const [spaceFeedback, setSpaceFeedback] = useState("");
     const [spaceStreak, setSpaceStreak] = useState(0);
-    const lastSpacePlanetRef = useRef<string>("");
+    const lastQuestionsRef = useRef<string[]>([]);
 
     const generateSpaceQuestion = useCallback(() => {
-        let targetPlanet;
+        let q: any = null;
         let attempts = 0;
+        
         do {
-            targetPlanet = SOLAR_SYSTEM_PLANETS[Math.floor(Math.random() * SOLAR_SYSTEM_PLANETS.length)];
+            const targetPlanet = SOLAR_SYSTEM_PLANETS[Math.floor(Math.random() * SOLAR_SYSTEM_PLANETS.length)];
+            const templates = ["fact", "feature", "type"];
+            if (targetPlanet.order >= 1 && targetPlanet.order <= 8) {
+                templates.push("order");
+            }
+            const qType = templates[Math.floor(Math.random() * templates.length)];
+            
+            let prompt = "";
+            let ans = targetPlanet.name;
+            
+            if (qType === "fact") {
+                prompt = `Which body is described as: "${targetPlanet.fact}"?`;
+            } else if (qType === "feature") {
+                prompt = `Which celestial body is known for ${targetPlanet.feature}?`;
+            } else if (qType === "type") {
+                prompt = `Which body in our solar system is classified as a "${targetPlanet.type}"?`;
+            } else if (qType === "order") {
+                const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth"];
+                const ord = ordinals[targetPlanet.order - 1];
+                prompt = `Which planet is the ${ord} planet from the Sun?`;
+            }
+            
+            const isDuplicate = lastQuestionsRef.current.includes(prompt);
+            if (!isDuplicate) {
+                const wrongOptions = SOLAR_SYSTEM_PLANETS.filter(p => p.name !== targetPlanet.name).map(p => p.name);
+                const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
+                const options = [ans, ...shuffledWrong].sort(() => Math.random() - 0.5);
+                
+                q = { prompt, ans, options };
+            }
             attempts++;
-        } while (targetPlanet.name === lastSpacePlanetRef.current && SOLAR_SYSTEM_PLANETS.length > 1 && attempts < 5);
+        } while (!q && attempts < 15);
 
-        lastSpacePlanetRef.current = targetPlanet.name;
-
-        const prompt = `Which body is described as: "${targetPlanet.fact}"?`;
-        const ans = targetPlanet.name;
-
-        const wrongOptions = SOLAR_SYSTEM_PLANETS.filter(p => p.name !== targetPlanet.name).map(p => p.name);
-        const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
-        const options = [ans, ...shuffledWrong].sort(() => Math.random() - 0.5);
-
-        setSpaceQuestion({ prompt, ans, options });
+        if (q) {
+            // Push prompt into history (keep last 4)
+            lastQuestionsRef.current = [q.prompt, ...lastQuestionsRef.current.slice(0, 3)];
+            setSpaceQuestion(q);
+        } else {
+            // Fallback in case of a collision lock
+            const targetPlanet = SOLAR_SYSTEM_PLANETS[Math.floor(Math.random() * SOLAR_SYSTEM_PLANETS.length)];
+            const prompt = `Which planet is: "${targetPlanet.fact}"?`;
+            const ans = targetPlanet.name;
+            const wrongOptions = SOLAR_SYSTEM_PLANETS.filter(p => p.name !== targetPlanet.name).map(p => p.name);
+            const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
+            const options = [ans, ...shuffledWrong].sort(() => Math.random() - 0.5);
+            
+            setSpaceQuestion({ prompt, ans, options });
+        }
         setSpaceFeedback('');
-        speak(prompt);
+        
+        // Speak the prompt after state resolves
+        if (q) {
+            speak(q.prompt);
+        } else {
+            speak(`Which planet is: "${SOLAR_SYSTEM_PLANETS[0].fact}"?`);
+        }
     }, [SOLAR_SYSTEM_PLANETS]);
 
     const handleSpaceAnswer = (choice: string) => {
