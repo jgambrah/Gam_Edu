@@ -6356,12 +6356,13 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
           q = { prompt: `Count money: $${c1} bill + $${c2} bill + $${c3} bill = ?`, ans, options, category: "Counting Currency & Money" };
         }
       } else if (activeMode === 'word_problem') {
-        const useAlgorithmic = Math.random() > 0.5 || combinedWordProblems.length === 0;
-        if (useAlgorithmic) {
-          q = generateAlgorithmicWordProblem();
+        const customTeacherProblems = combinedWordProblems.filter(p => p.isTeacherAdded);
+        const useTeacherCustom = customTeacherProblems.length > 0 && Math.random() < 0.3;
+        if (useTeacherCustom) {
+          const item = customTeacherProblems[Math.floor(Math.random() * customTeacherProblems.length)];
+          q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Teacher Custom Challenge", isTeacherAdded: true, id: item.id };
         } else {
-          const item = combinedWordProblems[Math.floor(Math.random() * combinedWordProblems.length)];
-          q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Class 1 Word Problem Challenge", isTeacherAdded: item.isTeacherAdded, id: item.id };
+          q = generateAlgorithmicWordProblem();
         }
       }
       attempts++;
