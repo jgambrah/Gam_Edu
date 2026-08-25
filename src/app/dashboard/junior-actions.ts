@@ -440,3 +440,45 @@ export async function generateScienceWorldEntry(topic: string, category: string,
         return { success: false, error: (error as Error).message };
     }
 }
+
+// --- INCOMPLETE SENTENCE GENERATOR (YEAR 5+) ---
+const IncompleteSentenceSchema = z.object({
+  prompt: z.string().describe("The incomplete sentence prompt containing '______' where the missing word goes, suitable for Year 5+/Class 1 pupils."),
+  answer: z.string().describe("The single correct word or short phrase that fits the missing space."),
+  options: z.array(z.string()).length(4).describe("Array of 4 options containing the correct answer and 3 plausible distractor options."),
+  category: z.string().describe("The category, e.g. Science & Nature, Grammar & Words, Space & Tech, Math & Logic, Logic & Life."),
+  explanation: z.string().describe("A concise 1-2 sentence explanation of why the answer is correct.")
+});
+
+export async function generateIncompleteSentenceAction(topic: string, category: string, schoolId: string) {
+  try {
+    const creditResult = await checkAndSpendCredits(schoolId, 2);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits." };
+    }
+    const prompt = `
+      Create a Year 5+ / Class 1 elementary school incomplete sentence challenge for pupils.
+      Topic / Subject: "${topic}"
+      Category: "${category || 'Science & Nature'}"
+      
+      RULES:
+      1. Provide a clear, educational sentence containing '______' (6 underscores) representing the blank space to be filled.
+      2. The correct answer must logically and grammatically complete the sentence.
+      3. Provide exactly 4 options (1 correct answer and 3 plausible wrong distractors).
+      4. Provide a 1-2 sentence child-friendly explanation of why the answer is correct.
+      5. Output strictly JSON matching the schema.
+    `;
+
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-3-flash-preview',
+      prompt,
+      output: { schema: IncompleteSentenceSchema }
+    });
+    if (!output) throw new Error("AI did not generate a valid incomplete sentence.");
+    return { success: true, data: output };
+  } catch (error: any) {
+    console.error("Incomplete Sentence AI Error:", error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+

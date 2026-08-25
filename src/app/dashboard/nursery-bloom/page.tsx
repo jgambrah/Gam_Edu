@@ -14,7 +14,7 @@ import {
   Hash, Play, Pause, BarChart3, TrendingUp
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction, generateIncompleteSentenceAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -30,7 +30,7 @@ import {
   AGE_TIERS, ANIMAL_SOUNDS, HOUSEHOLD_OBJECTS, LETTER_DISTINCTION, 
   PATTERN_DRILLS, CVC_WORDS, SIGHT_WORDS, RHYME_MATCHES, 
   SENTENCE_PACING_READS, STORY_SEQUENCING_DRILLS, INCOMPLETE_SENTENCES,
-  ADVANCED_VOICE_WORDS_AGE5
+  ADVANCED_VOICE_WORDS_AGE5, IncompleteSentenceItem
 } from '@/lib/junior-age-levels';
 
 // --- HELPER: TEXT TO SPEECH ---
@@ -813,7 +813,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
 }
 
 // --- 3. ABC KINGDOM (ALPHABET ACADEMY) ---
-function ABCKingdom({ canEdit }: { canEdit: boolean }) {
+function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTier?: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [activeTab, setActiveTab] = useState<'explorer' | 'tracing' | 'matcher'>('explorer');
@@ -5096,48 +5096,655 @@ function SentencePacingGame() {
   );
 }
 
-function SentenceFinisherGame() {
+function SentenceFinisherGame({ canEdit = false, isDedicatedTab = false }: { canEdit?: boolean; isDedicatedTab?: boolean }) {
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const { schoolId } = useCurrentSchool();
+  const { toast } = useToast();
+
+  // Firestore query for teacher added sentence challenges
+  const sentencesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_incomplete_sentences'), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+  const { data: dbSentences } = useCollection<any>(sentencesQuery);
+
+  // Combine built-in dataset with teacher-created sentences
+  const allSentences = useMemo(() => {
+    const custom: IncompleteSentenceItem[] = (dbSentences || []).map((s: any) => ({
+      id: s.id,
+      prompt: s.prompt,
+      answer: s.answer,
+      options: s.options || [s.answer, s.option2, s.option3, s.option4].filter(Boolean),
+      category: s.category || 'Teacher Created 👩‍🏫',
+      explanation: s.explanation || `Created by ${s.createdBy || 'Class Teacher'}`,
+      createdBy: s.createdBy,
+      isTeacherAdded: true
+    }));
+    return [...INCOMPLETE_SENTENCES, ...custom];
+  }, [dbSentences]);
+
+  const categories = ['All', 'Science & Nature', 'Grammar & Words', 'Space & Tech', 'Math & Logic', 'Logic & Life', 'Teacher Added 👩‍🏫'];
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+
+  const filteredSentences = useMemo(() => {
+    if (activeCategory === 'All') return allSentences;
+    if (activeCategory === 'Teacher Added 👩‍🏫') return allSentences.filter(s => s.isTeacherAdded);
+    return allSentences.filter(s => s.category === activeCategory);
+  }, [allSentences, activeCategory]);
+
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [feedback, setFeedback] = useState("");
-  const item = INCOMPLETE_SENTENCES[currentIdx];
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [score, setScore] = useState(0);
+  const [masteredCount, setMasteredCount] = useState(0);
+
+  // Reset index when category changes
+  useEffect(() => {
+    setCurrentIdx(0);
+    setSelectedOption(null);
+    setIsCorrect(null);
+    setFeedback("");
+    setShowExplanation(false);
+  }, [activeCategory]);
+
+  const item = filteredSentences[currentIdx] || filteredSentences[0];
 
   const handleSelect = (choice: string) => {
+    if (!item) return;
+    setSelectedOption(choice);
+
     if (choice === item.answer) {
-      setFeedback("EXCELLENT! Correct grammar & context match! 🌟");
-      speak(`Awesome! ${item.answer} fits the sentence!`);
-      confetti({ particleCount: 70 });
-      setTimeout(() => {
-        setFeedback("");
-        setCurrentIdx((prev) => (prev + 1) % INCOMPLETE_SENTENCES.length);
-      }, 2000);
+      setIsCorrect(true);
+      setFeedback("EXCELLENT! Perfect grammar & context match! 🌟");
+      setShowExplanation(true);
+      setStreak(prev => prev + 1);
+      setScore(prev => prev + 10);
+      setMasteredCount(prev => prev + 1);
+
+      const filledSentence = item.prompt.replace(/______/g, item.answer);
+      speak(`Superb! ${item.answer}. ${filledSentence}`);
+      confetti({ particleCount: 80, spread: 70 });
     } else {
-      setFeedback("Try again! Read the sentence context carefully.");
-      speak("Not quite. Think about what word makes sense!");
+      setIsCorrect(false);
+      setFeedback("Not quite! Think about which word completes the sentence context.");
+      speak("Not quite. Read the sentence again carefully!");
+      setStreak(0);
+    }
+  };
+
+  const nextChallenge = () => {
+    setSelectedOption(null);
+    setIsCorrect(null);
+    setFeedback("");
+    setShowExplanation(false);
+    if (filteredSentences.length > 0) {
+      setCurrentIdx((prev) => (prev + 1) % filteredSentences.length);
+    }
+  };
+
+  const prevChallenge = () => {
+    setSelectedOption(null);
+    setIsCorrect(null);
+    setFeedback("");
+    setShowExplanation(false);
+    if (filteredSentences.length > 0) {
+      setCurrentIdx((prev) => (prev - 1 + filteredSentences.length) % filteredSentences.length);
+    }
+  };
+
+  const speakPrompt = () => {
+    if (!item) return;
+    const filledText = item.prompt.replace(/______/g, selectedOption || 'blank');
+    speak(filledText);
+  };
+
+  // --- TEACHER MODAL & AI GENERATOR STATE ---
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Form fields
+  const [formPrompt, setFormPrompt] = useState("");
+  const [formAnswer, setFormAnswer] = useState("");
+  const [formOpt2, setFormOpt2] = useState("");
+  const [formOpt3, setFormOpt3] = useState("");
+  const [formOpt4, setFormOpt4] = useState("");
+  const [formCategory, setFormCategory] = useState("Science & Nature");
+  const [formExplanation, setFormExplanation] = useState("");
+
+  // AI Generator state inside modal
+  const [aiTopic, setAiTopic] = useState("");
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+
+  const resetForm = () => {
+    setFormPrompt("");
+    setFormAnswer("");
+    setFormOpt2("");
+    setFormOpt3("");
+    setFormOpt4("");
+    setFormCategory("Science & Nature");
+    setFormExplanation("");
+    setAiTopic("");
+  };
+
+  const handleSaveSentence = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId) {
+      toast({ title: "Error", description: "Database connection unavailable.", variant: "destructive" });
+      return;
+    }
+    if (!formPrompt.includes('______')) {
+      toast({ title: "Missing Blank", description: "Please include '______' (6 underscores) in your sentence prompt.", variant: "destructive" });
+      return;
+    }
+    if (!formAnswer || !formOpt2 || !formOpt3 || !formOpt4) {
+      toast({ title: "Missing Options", description: "Please provide the correct answer and 3 distractor choices.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const optionsArray = [formAnswer, formOpt2, formOpt3, formOpt4].sort(() => Math.random() - 0.5);
+
+      await addDoc(collection(firestore, 'junior_incomplete_sentences'), {
+        prompt: formPrompt.trim(),
+        answer: formAnswer.trim(),
+        options: optionsArray,
+        category: formCategory,
+        explanation: formExplanation.trim() || `Context rule: ${formAnswer} correctly finishes the sentence.`,
+        schoolId,
+        createdBy: user?.displayName || 'Teacher',
+        createdAt: serverTimestamp()
+      });
+
+      toast({ title: "Success! 🎉", description: "New incomplete sentence challenge added for pupils to master!" });
+      resetForm();
+      setIsAddModalOpen(false);
+    } catch (err: any) {
+      console.error("Save sentence error:", err);
+      toast({ title: "Save Failed", description: err.message || "Failed to save sentence challenge.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAiGenerate = async () => {
+    if (!aiTopic.trim()) {
+      toast({ title: "Missing Topic", description: "Enter a topic e.g. Photosynthesis, Solar System, Verbs", variant: "destructive" });
+      return;
+    }
+    if (!schoolId) {
+      toast({ title: "Error", description: "School ID not detected.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      setIsAiGenerating(true);
+      const res = await generateIncompleteSentenceAction(aiTopic, formCategory, schoolId);
+      if (res.success && res.data) {
+        setFormPrompt(res.data.prompt);
+        setFormAnswer(res.data.answer);
+        const distractors = res.data.options.filter((o: string) => o.toLowerCase() !== res.data.answer.toLowerCase());
+        setFormOpt2(distractors[0] || 'chocolate');
+        setFormOpt3(distractors[1] || 'pencils');
+        setFormOpt4(distractors[2] || 'curtains');
+        if (res.data.category) setFormCategory(res.data.category);
+        if (res.data.explanation) setFormExplanation(res.data.explanation);
+
+        toast({ title: "AI Generated! ✨", description: "Sentence challenge pre-filled. You can edit before saving." });
+      } else {
+        toast({ title: "AI Generation Failed", description: res.error || "Could not generate sentence.", variant: "destructive" });
+      }
+    } catch (err: any) {
+      console.error("AI Generate Error:", err);
+      toast({ title: "AI Error", description: err.message || "An error occurred during generation.", variant: "destructive" });
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  const handleDeleteCustomSentence = async (docId: string) => {
+    if (!firestore) return;
+    try {
+      await deleteDoc(doc(firestore, 'junior_incomplete_sentences', docId));
+      toast({ title: "Deleted", description: "Teacher challenge removed from Nursery Bloom." });
+    } catch (err: any) {
+      toast({ title: "Delete Failed", description: err.message, variant: "destructive" });
     }
   };
 
   return (
-    <div className="space-y-6 text-center">
-      <div className="bg-purple-50 p-6 rounded-3xl border-2 border-purple-200">
-        <span className="text-xs font-black uppercase text-purple-600 tracking-widest block mb-1">Context Clues & Science Grammar</span>
-        <h3 className="text-2xl font-bold text-purple-900 leading-relaxed bg-white p-6 rounded-2xl border border-purple-100 shadow-inner">
-          "{item.prompt}"
-        </h3>
+    <div className="space-y-6">
+      {/* HEADER & TEACHER CONTROLS */}
+      <div className="bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white p-6 md:p-8 rounded-[36px] shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="z-10 max-w-2xl">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge className="bg-white/20 hover:bg-white/30 text-white font-black text-xs px-3 py-1 uppercase tracking-widest border border-white/30">
+              Year 5+ KG2 / Class 1 Advanced
+            </Badge>
+            <Badge className="bg-yellow-400 text-purple-950 font-black text-xs px-3 py-1 uppercase tracking-widest">
+              Grammar & Context Mastery
+            </Badge>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight flex items-center gap-3">
+            Finishing An Incomplete Sentence <Sparkles className="w-7 h-7 text-yellow-300 animate-bounce" />
+          </h2>
+          <p className="text-purple-100/90 font-medium text-sm md:text-base mt-2">
+            Read carefully, identify context clues, and select the exact word that completes the sentence logically and grammatically!
+          </p>
+        </div>
+
+        {/* STATS & TEACHER ACTIONS */}
+        <div className="z-10 flex flex-wrap items-center gap-3">
+          <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 text-center min-w-[90px]">
+            <div className="text-[10px] font-black uppercase text-purple-200">Streak</div>
+            <div className="text-xl font-black text-yellow-300">🔥 {streak}</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20 text-center min-w-[90px]">
+            <div className="text-[10px] font-black uppercase text-purple-200">Mastered</div>
+            <div className="text-xl font-black text-emerald-300">🌟 {masteredCount}</div>
+          </div>
+
+          {canEdit && (
+            <div className="flex flex-col gap-2 w-full md:w-auto">
+              <Button
+                onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+                className="bg-yellow-400 hover:bg-yellow-300 text-purple-950 font-black rounded-2xl shadow-lg border-b-4 border-yellow-600 flex items-center gap-2"
+              >
+                <PlusCircle className="w-5 h-5" /> Add Teacher Example
+              </Button>
+
+              <Button
+                onClick={() => setIsLibraryOpen(true)}
+                variant="outline"
+                className="bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl border-white/30 flex items-center gap-2 text-xs"
+              >
+                <Library className="w-4 h-4" /> Manage Custom Examples ({dbSentences?.length || 0})
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="flex justify-center gap-3 flex-wrap">
-        {item.options.map((opt, i) => (
-          <Button
-            key={i}
-            onClick={() => handleSelect(opt)}
-            className="h-16 px-6 text-xl font-black rounded-2xl bg-white hover:bg-purple-100 text-purple-800 border-2 border-purple-300 shadow-md"
-          >
-            {opt}
+      {/* CATEGORY FILTER PILLS */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+        <span className="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-1 pl-1">
+          <PenTool className="w-4 h-4" /> Category:
+        </span>
+        {categories.map((cat) => {
+          const count = cat === 'All' ? allSentences.length : cat === 'Teacher Added 👩‍🏫' ? (dbSentences?.length || 0) : allSentences.filter(s => s.category === cat).length;
+          return (
+            <Button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              variant={activeCategory === cat ? 'default' : 'outline'}
+              className={cn(
+                "rounded-2xl font-black text-xs px-4 py-2 whitespace-nowrap transition-all",
+                activeCategory === cat
+                  ? "bg-purple-600 text-white shadow-md border-b-4 border-purple-900"
+                  : "border-purple-200 text-purple-900 hover:bg-purple-50"
+              )}
+            >
+              {cat} <span className="ml-1 opacity-75 font-bold text-[10px]">({count})</span>
+            </Button>
+          );
+        })}
+      </div>
+
+      {/* GAMEPLAY CONTAINER */}
+      {item ? (
+        <div className="bg-white p-6 md:p-10 rounded-[40px] border-4 border-purple-100 shadow-2xl space-y-8 relative overflow-hidden">
+          {/* Card Meta Header */}
+          <div className="flex items-center justify-between border-b border-purple-100 pb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-black uppercase tracking-widest bg-purple-100 text-purple-800 px-4 py-1.5 rounded-full border border-purple-200">
+                {item.category || 'General Context'}
+              </span>
+              {item.isTeacherAdded && (
+                <span className="text-xs font-black bg-amber-100 text-amber-900 px-3 py-1 rounded-full border border-amber-300 flex items-center gap-1">
+                  👩‍🏫 Teacher Challenge
+                </span>
+              )}
+            </div>
+
+            <div className="text-xs font-black text-slate-400">
+              Challenge {currentIdx + 1} of {filteredSentences.length}
+            </div>
+          </div>
+
+          {/* Prompt Sentence Box */}
+          <div className="bg-gradient-to-b from-purple-50 to-indigo-50/40 p-8 rounded-3xl border-2 border-purple-200 text-center relative group">
+            <Button
+              onClick={speakPrompt}
+              size="icon"
+              className="absolute top-4 right-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl shadow-md"
+              title="Listen to sentence"
+            >
+              <Volume2 className="w-5 h-5" />
+            </Button>
+
+            <span className="text-xs font-black uppercase text-purple-600 tracking-widest block mb-2">
+              Fill in the missing word:
+            </span>
+
+            <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 leading-relaxed max-w-3xl mx-auto">
+              "{item.prompt.split('______').map((part, idx, arr) => (
+                <span key={idx}>
+                  {part}
+                  {idx < arr.length - 1 && (
+                    <span className={cn(
+                      "inline-block mx-2 px-4 py-1 rounded-2xl font-black transition-all border-2",
+                      selectedOption
+                        ? (isCorrect ? "bg-emerald-500 text-white border-emerald-600 shadow-md scale-105" : "bg-rose-500 text-white border-rose-600 animate-shake")
+                        : "bg-white text-purple-700 border-purple-400 shadow-inner min-w-[120px] underline decoration-wavy decoration-purple-400"
+                    )}>
+                      {selectedOption ? selectedOption : "[ ______ ]"}
+                    </span>
+                  )}
+                </span>
+              ))}"
+            </h3>
+          </div>
+
+          {/* Option Buttons */}
+          <div className="space-y-3">
+            <span className="text-xs font-black uppercase text-slate-400 tracking-widest block text-center">
+              Choose the correct word to finish the sentence:
+            </span>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              {item.options.map((opt, idx) => {
+                const isThisSelected = selectedOption === opt;
+                const isAnswer = opt === item.answer;
+
+                return (
+                  <Button
+                    key={idx}
+                    onClick={() => handleSelect(opt)}
+                    className={cn(
+                      "h-20 text-xl font-black rounded-3xl border-2 border-b-8 transition-all flex items-center justify-between px-6 shadow-md hover:scale-102 active:translate-y-1",
+                      isThisSelected
+                        ? (isAnswer
+                            ? "bg-emerald-500 text-white border-emerald-700 shadow-emerald-200"
+                            : "bg-rose-500 text-white border-rose-700 shadow-rose-200")
+                        : (selectedOption && isAnswer
+                            ? "bg-emerald-100 text-emerald-900 border-emerald-400"
+                            : "bg-white hover:bg-purple-50 text-purple-950 border-purple-200 hover:border-purple-400")
+                    )}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-2xl bg-purple-100 text-purple-800 text-xs font-black flex items-center justify-center border border-purple-200">
+                        {String.fromCharCode(65 + idx)}
+                      </span>
+                      {opt}
+                    </span>
+
+                    {isThisSelected && isAnswer && <CheckCircle2 className="w-7 h-7 text-white animate-bounce" />}
+                    {isThisSelected && !isAnswer && <XCircle className="w-7 h-7 text-white" />}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Feedback & Explanation Card */}
+          {feedback && (
+            <div className={cn(
+              "p-6 rounded-3xl border-2 text-center transition-all animate-in fade-in-50 duration-300",
+              isCorrect ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-rose-50 border-rose-200 text-rose-900"
+            )}>
+              <p className="text-lg font-black">{feedback}</p>
+
+              {showExplanation && item.explanation && (
+                <div className="mt-4 bg-white/80 p-4 rounded-2xl border border-emerald-200 text-left text-xs md:text-sm font-medium text-emerald-950 flex items-start gap-3 shadow-sm">
+                  <Lightbulb className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-black text-emerald-800 block text-xs uppercase tracking-wider mb-1">
+                      Context Rule & Explanation:
+                    </span>
+                    {item.explanation}
+                  </div>
+                  <Button
+                    onClick={() => speak(item.explanation || '')}
+                    size="icon"
+                    variant="ghost"
+                    className="ml-auto text-emerald-700 hover:bg-emerald-100 rounded-xl"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Nav Controls */}
+          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+            <Button
+              onClick={prevChallenge}
+              variant="outline"
+              className="rounded-2xl font-black border-purple-200 text-purple-900 hover:bg-purple-50"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Previous
+            </Button>
+
+            <Button
+              onClick={() => speakPrompt()}
+              variant="ghost"
+              className="font-black text-purple-700 hover:bg-purple-50 rounded-2xl text-xs"
+            >
+              <Volume2 className="w-4 h-4 mr-1" /> Replay Voice
+            </Button>
+
+            <Button
+              onClick={nextChallenge}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl px-6 shadow-md"
+            >
+              Next Challenge <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white p-12 rounded-[40px] border-4 border-purple-100 text-center space-y-4">
+          <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto" />
+          <h3 className="text-xl font-black text-slate-800">No Sentences Found</h3>
+          <p className="text-sm text-slate-500">No incomplete sentence challenges available in this category yet.</p>
+          <Button onClick={() => setActiveCategory('All')} className="bg-purple-600 text-white font-black rounded-2xl">
+            Show All Sentences
           </Button>
-        ))}
-      </div>
+        </div>
+      )}
 
-      {feedback && <p className="text-base font-black text-purple-600 animate-pulse">{feedback}</p>}
+      {/* TEACHER ADD DIALOG */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="max-w-2xl bg-white rounded-[36px] p-6 md:p-8 border-4 border-purple-200 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-purple-950 flex items-center gap-2">
+              <PenTool className="w-6 h-6 text-purple-600" /> Create Teacher Sentence Challenge
+            </DialogTitle>
+            <CardDescription className="text-xs font-bold text-slate-500">
+              Add a new incomplete sentence for pupils to practice context clues, grammar, and vocabulary.
+            </CardDescription>
+          </DialogHeader>
+
+          {/* AI Generator Helper Box */}
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-3xl border border-purple-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black uppercase tracking-wider text-purple-800 flex items-center gap-1.5">
+                <Wand2 className="w-4 h-4 text-purple-600" /> ✨ AI Sentence Creator Helper
+              </span>
+              <Badge className="bg-purple-200 text-purple-900 font-bold text-[10px]">Gemini AI Powered</Badge>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Topic e.g. Photosynthesis, Solar System, Past Tense Verbs"
+                value={aiTopic}
+                onChange={(e) => setAiTopic(e.target.value)}
+                className="rounded-xl border-purple-200 text-sm font-medium bg-white"
+              />
+              <Button
+                type="button"
+                onClick={handleAiGenerate}
+                disabled={isAiGenerating}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl text-xs whitespace-nowrap px-4"
+              >
+                {isAiGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate Challenge"}
+              </Button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveSentence} className="space-y-4 pt-2">
+            <div>
+              <Label className="text-xs font-black text-purple-900 uppercase">
+                Sentence Prompt (Must include '______' for blank space) *
+              </Label>
+              <Input
+                required
+                value={formPrompt}
+                onChange={(e) => setFormPrompt(e.target.value)}
+                placeholder="e.g. Camels store fat in their humps to survive long journeys in the ______."
+                className="rounded-2xl border-purple-200 mt-1 font-semibold text-sm"
+              />
+              <span className="text-[10px] text-slate-400 font-medium">Tip: Type 6 underscores '______' where pupils should fill in the missing word.</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs font-black text-emerald-800 uppercase">Correct Answer *</Label>
+                <Input
+                  required
+                  value={formAnswer}
+                  onChange={(e) => setFormAnswer(e.target.value)}
+                  placeholder="e.g. desert"
+                  className="rounded-2xl border-emerald-300 mt-1 font-black text-emerald-950 bg-emerald-50/50"
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-black text-purple-900 uppercase">Category</Label>
+                <Select value={formCategory} onValueChange={setFormCategory}>
+                  <SelectTrigger className="rounded-2xl border-purple-200 mt-1 font-bold">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl">
+                    <SelectItem value="Science & Nature">Science & Nature</SelectItem>
+                    <SelectItem value="Grammar & Words">Grammar & Words</SelectItem>
+                    <SelectItem value="Space & Tech">Space & Tech</SelectItem>
+                    <SelectItem value="Math & Logic">Math & Logic</SelectItem>
+                    <SelectItem value="Logic & Life">Logic & Life</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs font-black text-rose-800 uppercase">Wrong Options (Distractor Choices) *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
+                <Input
+                  required
+                  value={formOpt2}
+                  onChange={(e) => setFormOpt2(e.target.value)}
+                  placeholder="Option 2 (e.g. ocean)"
+                  className="rounded-2xl border-purple-200 text-sm"
+                />
+                <Input
+                  required
+                  value={formOpt3}
+                  onChange={(e) => setFormOpt3(e.target.value)}
+                  placeholder="Option 3 (e.g. forest)"
+                  className="rounded-2xl border-purple-200 text-sm"
+                />
+                <Input
+                  required
+                  value={formOpt4}
+                  onChange={(e) => setFormOpt4(e.target.value)}
+                  placeholder="Option 4 (e.g. glacier)"
+                  className="rounded-2xl border-purple-200 text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs font-black text-purple-900 uppercase">Explanation / Context Rule (Optional)</Label>
+              <Input
+                value={formExplanation}
+                onChange={(e) => setFormExplanation(e.target.value)}
+                placeholder="e.g. Deserts are dry ecosystems with minimal rainfall where camels thrive."
+                className="rounded-2xl border-purple-200 mt-1 text-sm font-medium"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-purple-100">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsAddModalOpen(false)}
+                className="rounded-2xl font-bold"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSaving}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-black rounded-2xl px-6"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                Publish Challenge to Nursery Bloom
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* TEACHER MANAGEMENT LIBRARY DIALOG */}
+      <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
+        <DialogContent className="max-w-3xl bg-white rounded-[36px] p-6 md:p-8 border-4 border-purple-200 max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-purple-950 flex items-center gap-2">
+              <Library className="w-6 h-6 text-purple-600" /> Custom Teacher Sentence Challenges
+            </DialogTitle>
+            <CardDescription className="text-xs font-bold text-slate-500">
+              View and manage incomplete sentence exercises published by teachers.
+            </CardDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            {!dbSentences || dbSentences.length === 0 ? (
+              <div className="p-8 text-center bg-purple-50 rounded-3xl border border-purple-100">
+                <PenTool className="w-10 h-10 text-purple-400 mx-auto mb-2" />
+                <p className="font-black text-purple-950 text-sm">No custom teacher sentences published yet.</p>
+                <p className="text-xs text-purple-600 mt-1">Use the "Add Teacher Example" button to create custom challenges.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {dbSentences.map((s: any) => (
+                  <div key={s.id} className="p-4 bg-purple-50/50 rounded-2xl border border-purple-200 flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge className="bg-purple-200 text-purple-900 font-bold text-[10px] uppercase">
+                          {s.category || 'General'}
+                        </Badge>
+                        <span className="text-[10px] font-bold text-slate-400">By {s.createdBy || 'Teacher'}</span>
+                      </div>
+                      <p className="font-extrabold text-slate-900 text-sm">"{s.prompt}"</p>
+                      <p className="text-xs text-emerald-700 font-bold mt-1">Correct Answer: {s.answer}</p>
+                    </div>
+
+                    <Button
+                      onClick={() => handleDeleteCustomSentence(s.id)}
+                      size="icon"
+                      variant="ghost"
+                      className="text-rose-500 hover:bg-rose-100 rounded-xl"
+                      title="Delete Challenge"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -5417,6 +6024,7 @@ export default function JuniorCampusPage() {
 
   const pageModules = [
     { id: 'level_curriculum', name: 'Age Level Curriculum', icon: <Brain className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
+    { id: 'sentence_finisher', name: 'Sentence Finisher (Year 5+)', icon: <PenTool className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' },
     { id: 'coach', name: 'Voice Coach', icon: <Mic className="w-5 h-5"/>, color: 'text-pink-600 bg-pink-100' },
     { id: 'phonics', name: 'Phonics Forest', icon: <Music className="w-5 h-5"/>, color: 'text-teal-600 bg-teal-100' },
     { id: 'abc', name: 'ABC Kingdom', icon: <Brain className="w-5 h-5"/>, color: 'text-green-600 bg-green-100' },
@@ -5481,6 +6089,7 @@ export default function JuniorCampusPage() {
                             "rounded-2xl font-black flex flex-col items-center gap-2 text-xs py-3 px-4 md:px-2 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm border border-transparent",
                             "data-[state=active]:bg-gradient-to-b data-[state=active]:shadow-md data-[state=active]:border-white/50 data-[state=active]:-translate-y-0.5",
                             mod.id === 'level_curriculum' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
+                            mod.id === 'sentence_finisher' && "data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white text-purple-700 hover:bg-purple-50/50",
                             mod.id === 'coach' && "data-[state=active]:from-pink-500 data-[state=active]:to-rose-500 data-[state=active]:text-white text-pink-600 hover:bg-pink-50/50",
                             mod.id === 'phonics' && "data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white text-teal-600 hover:bg-teal-50/50",
                             mod.id === 'abc' && "data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white text-green-600 hover:bg-green-50/50",
@@ -5551,13 +6160,19 @@ export default function JuniorCampusPage() {
                           <StorySequencerGame />
                         </div>
                         <div className="border-t border-slate-100 pt-6">
-                          <SentenceFinisherGame />
+                          <SentenceFinisherGame canEdit={canEdit} />
                         </div>
                         <div className="border-t border-slate-100 pt-6">
                           <Age5PlusMathMastery />
                         </div>
                       </div>
                     )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="sentence_finisher" className="mt-0 animate-in fade-in-50 duration-300">
+                  <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-purple-500">
+                    <SentenceFinisherGame canEdit={canEdit} isDedicatedTab={true} />
                   </div>
                 </TabsContent>
 

@@ -215,30 +215,177 @@ export const STORY_SEQUENCING_DRILLS = [
   }
 ];
 
-export const INCOMPLETE_SENTENCES = [
+export interface IncompleteSentenceItem {
+  id: string;
+  prompt: string;
+  answer: string;
+  options: string[];
+  category?: string;
+  explanation?: string;
+  createdBy?: string;
+  isTeacherAdded?: boolean;
+}
+
+export const INCOMPLETE_SENTENCES: IncompleteSentenceItem[] = [
   {
     id: '1',
     prompt: 'Astronauts float weightlessly in space because there is very little ______.',
     answer: 'gravity',
-    options: ['gravity', 'chocolate', 'noise', 'curtains']
+    options: ['gravity', 'chocolate', 'noise', 'curtains'],
+    category: 'Space & Tech',
+    explanation: 'Gravity is the invisible force pulling objects together. In deep space, gravity is very weak, causing astronauts to float!'
   },
   {
     id: '2',
     prompt: 'Botanists study green plants to learn how they convert sunlight into ______.',
     answer: 'energy',
-    options: ['energy', 'pencils', 'ice cream', 'sand']
+    options: ['energy', 'pencils', 'ice cream', 'sand'],
+    category: 'Science & Nature',
+    explanation: 'Green leaves absorb sunlight and water to produce food energy through photosynthesis.'
   },
   {
     id: '3',
     prompt: 'A magnet attracts objects that are made of ______.',
     answer: 'iron',
-    options: ['iron', 'paper', 'wood', 'cotton']
+    options: ['iron', 'paper', 'wood', 'cotton'],
+    category: 'Science & Nature',
+    explanation: 'Iron and steel are magnetic metals that get pulled toward a magnet.'
   },
   {
     id: '4',
     prompt: 'Submarines dive deep underwater using strong steel hulls to withstand high ______.',
     answer: 'pressure',
-    options: ['pressure', 'sugar', 'feathers', 'sunlight']
+    options: ['pressure', 'sugar', 'feathers', 'sunlight'],
+    category: 'Space & Tech',
+    explanation: 'As you go deeper into the ocean, the weight of the water above creates intense pressure.'
+  },
+  {
+    id: '5',
+    prompt: 'A caterpillar transforms into a beautiful butterfly through the process of ______.',
+    answer: 'metamorphosis',
+    options: ['metamorphosis', 'evaporation', 'multiplication', 'freezing'],
+    category: 'Science & Nature',
+    explanation: 'Metamorphosis is the remarkable life process where a caterpillar builds a chrysalis and emerges as a butterfly!'
+  },
+  {
+    id: '6',
+    prompt: 'When clouds get too heavy with condensed water droplets, water falls to Earth as ______.',
+    answer: 'precipitation',
+    options: ['precipitation', 'lightning', 'steam', 'smoke'],
+    category: 'Science & Nature',
+    explanation: 'Precipitation is any water that falls from clouds to the ground, such as rain, snow, or hail.'
+  },
+  {
+    id: '7',
+    prompt: 'The human heart is a strong muscular organ that continually pumps ______ throughout our body.',
+    answer: 'blood',
+    options: ['blood', 'air', 'juice', 'steam'],
+    category: 'Science & Nature',
+    explanation: 'The heart beats continuously to circulate oxygenated blood to all cells in your body.'
+  },
+  {
+    id: '8',
+    prompt: 'To measure how hot or cold liquid is, scientists use an instrument called a ______.',
+    answer: 'thermometer',
+    options: ['thermometer', 'microscope', 'telescope', 'calculator'],
+    category: 'Science & Nature',
+    explanation: 'Thermometers gauge temperature in units of degrees Celsius or Fahrenheit.'
+  },
+  {
+    id: '9',
+    prompt: 'The central star at the middle of our solar system that provides light and heat is the ______.',
+    answer: 'Sun',
+    options: ['Sun', 'Moon', 'Mars', 'Jupiter'],
+    category: 'Space & Tech',
+    explanation: 'The Sun is a massive star whose gravity holds all planets in orbit around it.'
+  },
+  {
+    id: '10',
+    prompt: 'Astronomers peer through a high-powered ______ to observe distant stars and nebulae.',
+    answer: 'telescope',
+    options: ['telescope', 'microscope', 'magnifier', 'camera'],
+    category: 'Space & Tech',
+    explanation: 'Telescopes gather light from deep space to magnify far-off planets and stars.'
+  },
+  {
+    id: '11',
+    prompt: 'Names of specific people, places, and holidays must always start with a ______ letter.',
+    answer: 'capital',
+    options: ['capital', 'lowercase', 'tiny', 'vowel'],
+    category: 'Grammar & Words',
+    explanation: 'Proper nouns like Kofi, Accra, and Independence Day always begin with an uppercase capital letter!'
+  },
+  {
+    id: '12',
+    prompt: 'Yesterday afternoon, Sarah ______ her bicycle all around the sunny neighborhood park.',
+    answer: 'rode',
+    options: ['rode', 'ride', 'riding', 'will ride'],
+    category: 'Grammar & Words',
+    explanation: 'Since the event happened in the past (yesterday), we use the past tense verb "rode".'
+  },
+  {
+    id: '13',
+    prompt: 'Words that share the exact same or very similar meaning, such as "small" and "tiny", are called ______.',
+    answer: 'synonyms',
+    options: ['synonyms', 'antonyms', 'homophones', 'rhymes'],
+    category: 'Grammar & Words',
+    explanation: 'Synonyms are words that express equivalent concepts, like happy and joyful.'
+  },
+  {
+    id: '14',
+    prompt: 'The direct opposite of a word, such as "hot" compared to "cold", is called an ______.',
+    answer: 'antonym',
+    options: ['antonym', 'synonym', 'adjective', 'noun'],
+    category: 'Grammar & Words',
+    explanation: 'Antonyms are word pairs with contrasting meanings, like fast and slow.'
+  },
+  {
+    id: '15',
+    prompt: 'To find the total distance around the outer boundary of a rectangular garden, calculate its ______.',
+    answer: 'perimeter',
+    options: ['perimeter', 'volume', 'height', 'weight'],
+    category: 'Math & Logic',
+    explanation: 'Perimeter is found by adding up all the lengths of the outer sides of a 2D shape.'
+  },
+  {
+    id: '16',
+    prompt: 'If you divide a whole pizza into 4 equal slices and eat 1 slice, you consumed one ______ of the pizza.',
+    answer: 'quarter',
+    options: ['quarter', 'half', 'third', 'whole'],
+    category: 'Math & Logic',
+    explanation: 'One equal slice out of four total slices is a quarter or 1/4 fraction.'
+  },
+  {
+    id: '17',
+    prompt: 'Living plants and animals interacting with non-living soil and climate form a balanced ______.',
+    answer: 'ecosystem',
+    options: ['ecosystem', 'scaffold', 'generator', 'pyramid'],
+    category: 'Science & Nature',
+    explanation: 'An ecosystem is a biological community where living organisms coexist with physical surroundings.'
+  },
+  {
+    id: '18',
+    prompt: 'When molten rock breaks through the Earth crust during an eruption, it bursts from a ______.',
+    answer: 'volcano',
+    options: ['volcano', 'glacier', 'canyon', 'desert'],
+    category: 'Science & Nature',
+    explanation: 'Volcanoes erupt hot magma (lava), ash, and gases from beneath the Earth crust.'
+  },
+  {
+    id: '19',
+    prompt: 'Always telling the truth and taking responsibility for your choices demonstrates strong ______.',
+    answer: 'integrity',
+    options: ['integrity', 'jealousy', 'carelessness', 'friction'],
+    category: 'Logic & Life',
+    explanation: 'Integrity means acting honestly and adhering to moral principles even when no one is watching.'
+  },
+  {
+    id: '20',
+    prompt: 'When pupils combine their efforts and listen to each other to solve a complex puzzle, they show ______.',
+    answer: 'teamwork',
+    options: ['teamwork', 'solitude', 'hesitation', 'noise'],
+    category: 'Logic & Life',
+    explanation: 'Teamwork brings people together to pool ideas, support each other, and achieve a common goal!'
   }
 ];
 
