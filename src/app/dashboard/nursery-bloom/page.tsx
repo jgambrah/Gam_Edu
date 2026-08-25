@@ -2444,6 +2444,50 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
 
     const [selectedPlanet, setSelectedPlanet] = useState<any>(SOLAR_SYSTEM_PLANETS[3]);
     const [selectedOrgan, setSelectedOrgan] = useState<any>(HUMAN_BODY_ORGANS[0]);
+
+    // Space Quiz Game State
+    const [spaceQuizActive, setSpaceQuizActive] = useState(false);
+    const [spaceQuestion, setSpaceQuestion] = useState<{ prompt: string; ans: string; options: string[] } | null>(null);
+    const [spaceFeedback, setSpaceFeedback] = useState("");
+    const [spaceStreak, setSpaceStreak] = useState(0);
+    const lastSpacePlanetRef = useRef<string>("");
+
+    const generateSpaceQuestion = useCallback(() => {
+        let targetPlanet;
+        let attempts = 0;
+        do {
+            targetPlanet = SOLAR_SYSTEM_PLANETS[Math.floor(Math.random() * SOLAR_SYSTEM_PLANETS.length)];
+            attempts++;
+        } while (targetPlanet.name === lastSpacePlanetRef.current && SOLAR_SYSTEM_PLANETS.length > 1 && attempts < 5);
+
+        lastSpacePlanetRef.current = targetPlanet.name;
+
+        const prompt = `Which body is described as: "${targetPlanet.fact}"?`;
+        const ans = targetPlanet.name;
+
+        const wrongOptions = SOLAR_SYSTEM_PLANETS.filter(p => p.name !== targetPlanet.name).map(p => p.name);
+        const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5).slice(0, 3);
+        const options = [ans, ...shuffledWrong].sort(() => Math.random() - 0.5);
+
+        setSpaceQuestion({ prompt, ans, options });
+        setSpaceFeedback('');
+        speak(prompt);
+    }, [SOLAR_SYSTEM_PLANETS]);
+
+    const handleSpaceAnswer = (choice: string) => {
+        if (!spaceQuestion) return;
+        if (choice === spaceQuestion.ans) {
+            setSpaceFeedback("CORRECT! You are a Space Explorer! 🌠");
+            setSpaceStreak(s => s + 1);
+            confetti({ particleCount: 85, spread: 70 });
+            speak("Correct! Outstanding!");
+            setTimeout(generateSpaceQuestion, 2000);
+        } else {
+            setSpaceFeedback("Not quite! Try again.");
+            speak("Not quite. Read the clue again!");
+            setSpaceStreak(0);
+        }
+    };
     
     // --- 1. DATA FETCHING (Standard Firestore) ---
     const sorterQuery = useMemoFirebase(() => 
@@ -2674,42 +2718,99 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
             {activeTab === 'solar' && (
               <div className="space-y-6 animate-in fade-in">
                 <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 p-8 rounded-[40px] text-white border-4 border-indigo-500/30 shadow-2xl space-y-6">
-                  <div className="text-center">
+                  <div className="text-center space-y-2">
                     <span className="text-xs font-black uppercase tracking-widest text-indigo-300 bg-indigo-900/50 px-4 py-1 rounded-full border border-indigo-400/30">
                       Primary Science: Solar System Explorer
                     </span>
                     <h3 className="text-3xl font-black text-white mt-2">The Solar System & Planets 🌌</h3>
-                    <p className="text-xs text-indigo-200 font-medium">Tap any planet to learn its scientific classification and cosmic fact!</p>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {SOLAR_SYSTEM_PLANETS.map((p) => (
-                      <div
-                        key={p.name}
-                        onClick={() => {
-                          setSelectedPlanet(p);
-                          speak(`${p.name}. ${p.fact}`);
-                        }}
-                        className={cn(
-                          "p-4 rounded-3xl border-2 text-center cursor-pointer transition-all hover:scale-105",
-                          selectedPlanet?.name === p.name ? "bg-indigo-600/60 border-amber-400 shadow-lg ring-4 ring-amber-400/30" : "bg-white/10 border-white/10 hover:bg-white/20"
-                        )}
+                    <div className="flex justify-center gap-4 py-2">
+                      <button 
+                        onClick={() => setSpaceQuizActive(false)} 
+                        className={cn("px-4 py-2 rounded-full font-black text-xs transition-all border border-indigo-500/20 shadow-sm", !spaceQuizActive ? "bg-indigo-600 text-white" : "bg-white/5 text-indigo-200 hover:bg-white/10")}
                       >
-                        <span className="text-4xl block mb-1">{p.name.split(' ')[1]}</span>
-                        <span className="text-xs font-black block">{p.name.split(' ')[0]}</span>
-                        <span className="text-[10px] text-indigo-300 font-bold block">{p.type}</span>
-                      </div>
-                    ))}
+                        🪐 Explorer Mode
+                      </button>
+                      <button 
+                        onClick={() => { setSpaceQuizActive(true); generateSpaceQuestion(); }} 
+                        className={cn("px-4 py-2 rounded-full font-black text-xs transition-all border border-indigo-500/20 shadow-sm", spaceQuizActive ? "bg-indigo-600 text-white animate-pulse" : "bg-white/5 text-indigo-200 hover:bg-white/10")}
+                      >
+                        🚀 Space Quiz Game
+                      </button>
+                    </div>
                   </div>
 
-                  {selectedPlanet && (
-                    <div className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 text-center space-y-3">
-                      <h4 className="text-2xl font-black text-amber-300">{selectedPlanet.name}</h4>
-                      <p className="text-base font-bold text-slate-100 max-w-xl mx-auto">"{selectedPlanet.fact}"</p>
-                      <Button onClick={() => speak(`${selectedPlanet.name}. ${selectedPlanet.fact}`)} className="bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl text-xs">
-                        <Volume2 className="w-4 h-4 mr-2" /> Listen to Planet Audio
-                      </Button>
-                    </div>
+                  {!spaceQuizActive ? (
+                    <>
+                      <p className="text-xs text-indigo-200 font-medium text-center">Tap any planet to learn its scientific classification and cosmic fact!</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {SOLAR_SYSTEM_PLANETS.map((p) => (
+                          <div
+                            key={p.name}
+                            onClick={() => {
+                              setSelectedPlanet(p);
+                              speak(`${p.name}. ${p.fact}`);
+                            }}
+                            className={cn(
+                              "p-4 rounded-3xl border-2 text-center cursor-pointer transition-all hover:scale-105",
+                              selectedPlanet?.name === p.name ? "bg-indigo-600/60 border-amber-400 shadow-lg ring-4 ring-amber-400/30" : "bg-white/10 border-white/10 hover:bg-white/20"
+                            )}
+                          >
+                            <span className="text-4xl block mb-1">{p.name.split(' ')[1]}</span>
+                            <span className="text-xs font-black block">{p.name.split(' ')[0]}</span>
+                            <span className="text-[10px] text-indigo-300 font-bold block">{p.type}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {selectedPlanet && (
+                        <div className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 text-center space-y-3">
+                          <h4 className="text-2xl font-black text-amber-300">{selectedPlanet.name}</h4>
+                          <p className="text-base font-bold text-slate-100 max-w-xl mx-auto">"{selectedPlanet.fact}"</p>
+                          <Button onClick={() => speak(`${selectedPlanet.name}. ${selectedPlanet.fact}`)} className="bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl text-xs">
+                            <Volume2 className="w-4 h-4 mr-2" /> Listen to Planet Audio
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    spaceQuestion && (
+                      <div className="space-y-6 text-center animate-in zoom-in max-w-xl mx-auto py-4">
+                        <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-4">
+                          <p className="text-xl font-bold text-indigo-100">{spaceQuestion.prompt}</p>
+                          <Button size="sm" variant="outline" onClick={() => speak(spaceQuestion.prompt)} className="rounded-full border-white/20 hover:bg-white/10 font-bold text-white text-xs">
+                            <Volume2 className="mr-2 h-4 w-4" /> Repeat Clue
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          {spaceQuestion.options.map((opt) => (
+                            <button
+                              key={opt}
+                              onClick={() => handleSpaceAnswer(opt)}
+                              className="p-4 bg-white/10 hover:bg-indigo-600/50 border border-white/10 rounded-2xl font-black text-sm text-white hover:scale-105 active:scale-95 transition-all shadow-sm"
+                            >
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
+
+                        {spaceFeedback && (
+                          <p className={cn("text-xl font-black animate-bounce", spaceFeedback.includes("CORRECT") ? "text-green-400" : "text-rose-400")}>
+                            {spaceFeedback}
+                          </p>
+                        )}
+
+                        <div className="flex justify-center gap-3 pt-4">
+                          <Button onClick={generateSpaceQuestion} variant="ghost" className="text-indigo-300 hover:text-indigo-100 hover:bg-white/5 font-bold rounded-full">
+                            Skip / Try Another <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2 rounded-full shadow-md text-white">
+                            <Star className="text-yellow-300 fill-yellow-300 w-4 h-4" />
+                            <span className="font-black text-xs">Streak: {spaceStreak}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
                   )}
                 </div>
               </div>
