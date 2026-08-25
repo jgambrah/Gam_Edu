@@ -14,7 +14,7 @@ import {
   Hash, Play, Pause, BarChart3, TrendingUp
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction, generateIncompleteSentenceAction } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction, generateIncompleteSentenceAction, generateMathWordProblemAction } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -5810,21 +5810,58 @@ function StorySequencerGame() {
 }
 
 // --- AGES 5+ ADVANCED CLASS 1 MATH MASTERY SUITE ---
-function Age5PlusMathMastery() {
+function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
   type StandardMathMode = '2digit_add' | '2digit_sub' | 'times_tables' | 'sharing_div' | 'skip_count' | 'compare_100' | 'geometry_3d' | 'clock_money' | 'word_problem';
   
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const { schoolId } = useCurrentSchool();
+  const { toast } = useToast();
+
   const [activeMode, setActiveMode] = useState<StandardMathMode>('2digit_add');
   const [question, setQuestion] = useState<any>(null);
   const [feedback, setFeedback] = useState("");
   const [streak, setStreak] = useState(0);
 
   const WORD_PROBLEMS_5PLUS = useMemo(() => [
-    { prompt: "Kofi collected 15 shiny shells at the beach. Ama gave him 12 more shells. How many shells does Kofi have now?", ans: 27, options: [27, 25, 30, 22] },
-    { prompt: "There were 28 red balloons at the school party. 10 balloons popped. How many balloons are left?", ans: 18, options: [18, 20, 15, 38] },
-    { prompt: "A baker made 4 trays of cupcakes. Each tray has 5 cupcakes. How many cupcakes did the baker make in total?", ans: 20, options: [20, 15, 25, 10] },
-    { prompt: "Sharing 15 apples equally among 3 children. How many apples does each child receive?", ans: 5, options: [5, 3, 6, 4] },
-    { prompt: "Yaa saved $20 on Monday and $25 on Tuesday. How much money did Yaa save in total?", ans: 45, options: [45, 40, 50, 35] }
+    { prompt: "Kofi collected 15 shiny shells at the beach. Ama gave him 12 more shells. How many shells does Kofi have now?", ans: 27, options: [27, 25, 30, 22], isTeacherAdded: false, id: "static-1" },
+    { prompt: "There were 28 red balloons at the school party. 10 balloons popped. How many balloons are left?", ans: 18, options: [18, 20, 15, 38], isTeacherAdded: false, id: "static-2" },
+    { prompt: "A baker made 4 trays of cupcakes. Each tray has 5 cupcakes. How many cupcakes did the baker make in total?", ans: 20, options: [20, 15, 25, 10], isTeacherAdded: false, id: "static-3" },
+    { prompt: "Sharing 15 apples equally among 3 children. How many apples does each child receive?", ans: 5, options: [5, 3, 6, 4], isTeacherAdded: false, id: "static-4" },
+    { prompt: "Yaa saved $20 on Monday and $25 on Tuesday. How much money did Yaa save in total?", ans: 45, options: [45, 40, 50, 35], isTeacherAdded: false, id: "static-5" }
   ], []);
+
+  // Firestore query for teacher added math word problems
+  const mathProblemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_math_word_problems'), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+  const { data: dbMathProblems } = useCollection<any>(mathProblemsQuery);
+
+  // Combine static word problems with custom teacher problems
+  const combinedWordProblems = useMemo(() => {
+    const custom = (dbMathProblems || []).map((p: any) => ({
+      prompt: p.prompt,
+      ans: Number(p.ans),
+      options: (p.options || []).map(Number).filter((n: any) => !isNaN(n)),
+      isTeacherAdded: true,
+      id: p.id
+    }));
+    return [...WORD_PROBLEMS_5PLUS, ...custom];
+  }, [dbMathProblems, WORD_PROBLEMS_5PLUS]);
+
+  // Modal states
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Form states
+  const [formPrompt, setFormPrompt] = useState("");
+  const [formAnswer, setFormAnswer] = useState("");
+  const [formOpt2, setFormOpt2] = useState("");
+  const [formOpt3, setFormOpt3] = useState("");
+  const [formOpt4, setFormOpt4] = useState("");
+
+  // AI Generator state
+  const [aiTopic, setAiTopic] = useState("");
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
 
   const generateQuestion = useCallback(() => {
     let q: any = {};
@@ -5895,12 +5932,16 @@ function Age5PlusMathMastery() {
         q = { prompt: `Count money: $${c1} bill + $${c2} bill = ?`, ans, options, category: "Counting Currency & Money" };
       }
     } else if (activeMode === 'word_problem') {
-      const item = WORD_PROBLEMS_5PLUS[Math.floor(Math.random() * WORD_PROBLEMS_5PLUS.length)];
-      q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Class 1 Word Problem Challenge" };
+      if (combinedWordProblems.length === 0) {
+        q = { prompt: "No word problems available.", ans: 0, options: [0], category: "Class 1 Word Problem Challenge" };
+      } else {
+        const item = combinedWordProblems[Math.floor(Math.random() * combinedWordProblems.length)];
+        q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Class 1 Word Problem Challenge", isTeacherAdded: item.isTeacherAdded, id: item.id };
+      }
     }
     setQuestion(q);
     setFeedback("");
-  }, [activeMode, WORD_PROBLEMS_5PLUS]);
+  }, [activeMode, combinedWordProblems]);
 
   useEffect(() => { generateQuestion(); }, [generateQuestion]);
 
@@ -5918,6 +5959,95 @@ function Age5PlusMathMastery() {
     }
   };
 
+  const resetForm = () => {
+    setFormPrompt("");
+    setFormAnswer("");
+    setFormOpt2("");
+    setFormOpt3("");
+    setFormOpt4("");
+    setAiTopic("");
+  };
+
+  const handleSaveProblem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firestore || !schoolId) {
+      toast({ title: "Database Error", description: "Database is not connected.", variant: "destructive" });
+      return;
+    }
+    const numericalAns = Number(formAnswer.trim());
+    const numericalOpt2 = Number(formOpt2.trim());
+    const numericalOpt3 = Number(formOpt3.trim());
+    const numericalOpt4 = Number(formOpt4.trim());
+
+    if (isNaN(numericalAns) || isNaN(numericalOpt2) || isNaN(numericalOpt3) || isNaN(numericalOpt4)) {
+      toast({ title: "Validation Error", description: "The correct answer and distractors must be valid numbers.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const optionsArray = [numericalAns, numericalOpt2, numericalOpt3, numericalOpt4].sort(() => Math.random() - 0.5);
+
+      await addDoc(collection(firestore, 'junior_math_word_problems'), {
+        prompt: formPrompt.trim(),
+        ans: numericalAns,
+        options: optionsArray,
+        schoolId,
+        createdBy: user?.displayName || 'Class Teacher',
+        createdAt: serverTimestamp()
+      });
+
+      toast({ title: "Math Problem Published! 🎉", description: "New custom word problem challenge saved for pupils." });
+      resetForm();
+      setIsAddModalOpen(false);
+      generateQuestion();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to save math problem.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAiGenerate = async () => {
+    if (!aiTopic.trim()) {
+      toast({ title: "Missing Topic", description: "Please enter a topic e.g. sharing cookies, counting frogs, losing balloons", variant: "destructive" });
+      return;
+    }
+    if (!schoolId) return;
+
+    try {
+      setIsAiGenerating(true);
+      const res = await generateMathWordProblemAction(aiTopic, schoolId);
+      if (res.success && res.data) {
+        setFormPrompt(res.data.prompt);
+        setFormAnswer(String(res.data.ans));
+        const distractors = (res.data.options || []).filter((o: number) => o !== res.data.ans);
+        setFormOpt2(distractors[0] !== undefined ? String(distractors[0]) : '10');
+        setFormOpt3(distractors[1] !== undefined ? String(distractors[1]) : '15');
+        setFormOpt4(distractors[2] !== undefined ? String(distractors[2]) : '20');
+
+        toast({ title: "AI Generated! ✨", description: "Word problem populated. Verify details and save." });
+      } else {
+        toast({ title: "AI Failed", description: res.error || "Could not generate math word problem.", variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "AI Error", description: err.message, variant: "destructive" });
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  const handleDeleteProblem = async (docId: string) => {
+    if (!firestore) return;
+    try {
+      await deleteDoc(doc(firestore, 'junior_math_word_problems', docId));
+      toast({ title: "Deleted", description: "Math challenge removed from database." });
+      generateQuestion();
+    } catch (err: any) {
+      toast({ title: "Delete Failed", description: err.message, variant: "destructive" });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
@@ -5930,9 +6060,29 @@ function Age5PlusMathMastery() {
           </h3>
           <p className="text-xs text-indigo-100 font-medium mt-0.5">2-Digit Addition/Subtraction, Times Tables, Geometry, Time, Money & Word Problems</p>
         </div>
-        <div className="bg-white/15 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/20 text-center">
-          <div className="text-[10px] font-black uppercase text-indigo-200">Math Streak</div>
-          <div className="text-2xl font-black text-amber-300">🔥 {streak} Streaks</div>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="bg-white/15 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/20 text-center min-w-[100px]">
+            <div className="text-[10px] font-black uppercase text-indigo-200">Math Streak</div>
+            <div className="text-2xl font-black text-amber-300">🔥 {streak}</div>
+          </div>
+          
+          {canEdit && (
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              <Button
+                onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+                className="bg-yellow-400 hover:bg-yellow-300 text-purple-950 font-black rounded-2xl shadow-lg border-b-4 border-yellow-600 flex items-center gap-2 text-xs py-2"
+              >
+                <PlusCircle className="w-4 h-4" /> Add Word Problem
+              </Button>
+              <Button
+                onClick={() => setIsLibraryOpen(true)}
+                variant="outline"
+                className="bg-white/10 hover:bg-white/20 text-white font-black rounded-2xl border-white/30 flex items-center gap-2 text-[10px] py-1.5"
+              >
+                <Library className="w-3.5 h-3.5" /> Manage Problems ({dbMathProblems?.length || 0})
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -5968,9 +6118,16 @@ function Age5PlusMathMastery() {
       {/* Question Display Card */}
       {question && (
         <div className="bg-white p-8 rounded-[36px] border-4 border-indigo-100 shadow-xl text-center space-y-6">
-          <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-4 py-1.5 rounded-full border border-indigo-100">
-            {question.category}
-          </span>
+          <div className="flex justify-center items-center gap-3">
+            <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-4 py-1.5 rounded-full border border-indigo-100">
+              {question.category}
+            </span>
+            {question.isTeacherAdded && (
+              <span className="text-xs font-black bg-amber-100 text-amber-900 px-3 py-1 rounded-full border border-amber-300 flex items-center gap-1">
+                👩‍🏫 Teacher Challenge
+              </span>
+            )}
+          </div>
 
           <h3 className="text-3xl font-black text-slate-800 leading-snug max-w-xl mx-auto">
             {question.prompt}
@@ -6010,6 +6167,175 @@ function Age5PlusMathMastery() {
           {feedback && <p className="text-lg font-black text-indigo-600 animate-pulse pt-2">{feedback}</p>}
         </div>
       )}
+
+      {/* TEACHER ADD DIALOG */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="max-w-2xl bg-white rounded-[36px] p-6 md:p-8 border-4 border-indigo-200 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-indigo-950 flex items-center gap-2">
+              <Calculator className="w-6 h-6 text-indigo-600" /> Create Custom Math Problem
+            </DialogTitle>
+            <CardDescription className="text-xs font-bold text-slate-500">
+              Add a new math word problem for Class 1 / Year 5+ pupils to practice math operations.
+            </CardDescription>
+          </DialogHeader>
+
+          {/* AI Generator Helper Box */}
+          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-3xl border border-indigo-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black uppercase tracking-wider text-indigo-800 flex items-center gap-1.5">
+                <Wand2 className="w-4 h-4 text-indigo-600" /> ✨ AI Math Creator Helper
+              </span>
+              <Badge className="bg-indigo-200 text-indigo-900 font-bold text-[10px]">Gemini AI Powered</Badge>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Topic e.g. sharing candies, counting frogs, losing balloons"
+                value={aiTopic}
+                onChange={(e) => setAiTopic(e.target.value)}
+                className="rounded-xl border-indigo-200 text-sm font-medium bg-white"
+              />
+              <Button
+                type="button"
+                onClick={handleAiGenerate}
+                disabled={isAiGenerating}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs whitespace-nowrap px-4"
+              >
+                {isAiGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Generate Challenge"}
+              </Button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveProblem} className="space-y-4 pt-2">
+            <div>
+              <Label className="text-xs font-black text-indigo-900 uppercase">
+                Word Problem Prompt *
+              </Label>
+              <Input
+                required
+                value={formPrompt}
+                onChange={(e) => setFormPrompt(e.target.value)}
+                placeholder="e.g. Ama has 12 balloons. She gives 5 balloons to Kofi. How many balloons does she have left?"
+                className="rounded-2xl border-indigo-200 mt-1 font-semibold text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs font-black text-emerald-800 uppercase">Correct Answer *</Label>
+                <Input
+                  required
+                  type="number"
+                  value={formAnswer}
+                  onChange={(e) => setFormAnswer(e.target.value)}
+                  placeholder="e.g. 7"
+                  className="rounded-2xl border-emerald-300 mt-1 font-black text-emerald-950 bg-emerald-50/50"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs font-black text-rose-800 uppercase">Wrong Options (Distractor Choices) *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
+                <Input
+                  required
+                  type="number"
+                  value={formOpt2}
+                  onChange={(e) => setFormOpt2(e.target.value)}
+                  placeholder="Option 2 (e.g. 5)"
+                  className="rounded-2xl border-indigo-200 text-sm"
+                />
+                <Input
+                  required
+                  type="number"
+                  value={formOpt3}
+                  onChange={(e) => setFormOpt3(e.target.value)}
+                  placeholder="Option 3 (e.g. 17)"
+                  className="rounded-2xl border-indigo-200 text-sm"
+                />
+                <Input
+                  required
+                  type="number"
+                  value={formOpt4}
+                  onChange={(e) => setFormOpt4(e.target.value)}
+                  placeholder="Option 4 (e.g. 9)"
+                  className="rounded-2xl border-indigo-200 text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-indigo-100">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsAddModalOpen(false)}
+                className="rounded-2xl font-bold"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSaving}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl px-6"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                Publish Math Challenge
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* TEACHER LIBRARY DIALOG */}
+      <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
+        <DialogContent className="max-w-3xl bg-white rounded-[36px] p-6 md:p-8 border-4 border-indigo-200 max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-indigo-950 flex items-center gap-2">
+              <Library className="w-6 h-6 text-indigo-600" /> Custom Teacher Math Problems
+            </DialogTitle>
+            <CardDescription className="text-xs font-bold text-slate-500">
+              View and manage math word problems published by teachers.
+            </CardDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            {!dbMathProblems || dbMathProblems.length === 0 ? (
+              <div className="p-8 text-center bg-indigo-50 rounded-3xl border border-indigo-100">
+                <Calculator className="w-10 h-10 text-indigo-400 mx-auto mb-2" />
+                <p className="font-black text-indigo-950 text-sm">No custom math word problems published yet.</p>
+                <p className="text-xs text-indigo-600 mt-1">Use the "Add Word Problem" button to create custom challenges.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {dbMathProblems.map((p: any) => (
+                  <div key={p.id} className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-200 flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge className="bg-indigo-200 text-indigo-900 font-bold text-[10px] uppercase">
+                          Word Problem
+                        </Badge>
+                        <span className="text-[10px] font-bold text-slate-400">By {p.createdBy || 'Teacher'}</span>
+                      </div>
+                      <p className="font-extrabold text-slate-900 text-sm">"{p.prompt}"</p>
+                      <p className="text-xs text-emerald-700 font-bold mt-1">Correct Answer: {p.ans}</p>
+                    </div>
+
+                    <Button
+                      onClick={() => handleDeleteProblem(p.id)}
+                      size="icon"
+                      variant="ghost"
+                      className="text-rose-500 hover:bg-rose-100 rounded-xl"
+                      title="Delete Challenge"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -6174,7 +6500,7 @@ export default function JuniorCampusPage() {
                           <SentenceFinisherGame canEdit={canEdit} />
                         </div>
                         <div className="border-t border-slate-100 pt-6">
-                          <Age5PlusMathMastery />
+                          <Age5PlusMathMastery canEdit={canEdit} />
                         </div>
                       </div>
                     )}
@@ -6205,7 +6531,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="math" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-orange-400 relative">
                     {activeAgeTier === 'ages5+' ? (
-                      <Age5PlusMathMastery />
+                      <Age5PlusMathMastery canEdit={canEdit} />
                     ) : (
                       <MathPlayground activeAgeTier={activeAgeTier} />
                     )}

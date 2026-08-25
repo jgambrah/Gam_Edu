@@ -482,3 +482,41 @@ export async function generateIncompleteSentenceAction(topic: string, category: 
   }
 }
 
+// --- MATH WORD PROBLEM GENERATOR (YEAR 5+) ---
+const MathWordProblemSchema = z.object({
+  prompt: z.string().describe("The math word problem description for Class 1 (Year 5+) pupils, using simple language and names."),
+  ans: z.number().describe("The single correct numerical answer to the word problem."),
+  options: z.array(z.number()).length(4).describe("An array of 4 numerical options containing the correct answer and 3 plausible distractor numbers.")
+});
+
+export async function generateMathWordProblemAction(topic: string, schoolId: string) {
+  try {
+    const creditResult = await checkAndSpendCredits(schoolId, 2);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error || "Insufficient AI credits." };
+    }
+    const prompt = `
+      Create an elementary school Class 1 / Year 5+ math word problem.
+      Topic or focus: "${topic}"
+      
+      RULES:
+      1. Keep the story prompt simple, using children's names and basic items (e.g. apples, balloons, shells, money).
+      2. The math must be suitable for Class 1 (advanced kindergarten) level. Keep numbers under 100.
+      3. The correct answer must be a single integer.
+      4. Provide exactly 4 options: 1 correct integer answer and 3 realistic incorrect distractors.
+      5. Output strictly JSON matching the schema.
+    `;
+
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-3-flash-preview',
+      prompt,
+      output: { schema: MathWordProblemSchema }
+    });
+    if (!output) throw new Error("AI did not generate a valid math word problem.");
+    return { success: true, data: output };
+  } catch (error: any) {
+    console.error("Math Word Problem AI Error:", error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
