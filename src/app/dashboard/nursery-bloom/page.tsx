@@ -5809,6 +5809,100 @@ function StorySequencerGame() {
   );
 }
 
+// --- ALGORITHMIC STORY GENERATOR (YEAR 5+) ---
+function generateAlgorithmicWordProblem() {
+  const names = ["Kofi", "Ama", "Yaa", "Kwame", "Abena", "Ekow", "Adjoa", "Kweku"];
+  const items = ["shiny shells", "red balloons", "sweet cupcakes", "ripe mangoes", "toy cars", "colorful marbles", "juicy apples"];
+  const pronouns: Record<string, string> = {
+    "Kofi": "him", "Kwame": "him", "Ekow": "him", "Kweku": "him",
+    "Ama": "her", "Yaa": "her", "Abena": "her", "Adjoa": "her"
+  };
+
+  const templates = [
+    // 1. Addition
+    () => {
+      const name1 = names[Math.floor(Math.random() * names.length)];
+      let name2 = names[Math.floor(Math.random() * names.length)];
+      while (name2 === name1) name2 = names[Math.floor(Math.random() * names.length)];
+      const item = items[Math.floor(Math.random() * items.length)];
+      const x = Math.floor(Math.random() * 30) + 10;
+      const y = Math.floor(Math.random() * 30) + 10;
+      const ans = x + y;
+      const p = pronouns[name1] || "him";
+      const prompt = `${name1} collected ${x} ${item}. ${name2} gave ${p} ${y} more. How many ${item} does ${name1} have now?`;
+      return { prompt, ans };
+    },
+    // 2. Subtraction
+    () => {
+      const name1 = names[Math.floor(Math.random() * names.length)];
+      const item = items[Math.floor(Math.random() * items.length)];
+      const x = Math.floor(Math.random() * 40) + 40;
+      const y = Math.floor(Math.random() * 25) + 10;
+      const ans = x - y;
+      const prompt = `There were ${x} ${item} in a classroom basket. ${name1} took ${y} of them out. How many ${item} are left in the basket?`;
+      return { prompt, ans };
+    },
+    // 3. Multiplication (Grouping)
+    () => {
+      const name1 = names[Math.floor(Math.random() * names.length)];
+      const item = items[Math.floor(Math.random() * items.length)];
+      const x = Math.floor(Math.random() * 5) + 3;
+      const y = Math.floor(Math.random() * 4) + 2;
+      const ans = x * y;
+      const prompt = `${name1} bought ${x} trays of ${item}. Each tray contains ${y} ${item}. How many ${item} did ${name1} get in total?`;
+      return { prompt, ans };
+    },
+    // 4. Division (Sharing)
+    () => {
+      const name1 = names[Math.floor(Math.random() * names.length)];
+      const item = items[Math.floor(Math.random() * items.length)];
+      const friends = Math.floor(Math.random() * 3) + 2;
+      const ans = Math.floor(Math.random() * 6) + 3;
+      const total = friends * ans;
+      const prompt = `${name1} wants to share ${total} ${item} equally among ${friends} friends. How many ${item} does each friend receive?`;
+      return { prompt, ans };
+    },
+    // 5. Money
+    () => {
+      const name1 = names[Math.floor(Math.random() * names.length)];
+      const x = Math.floor(Math.random() * 30) + 15;
+      const y = Math.floor(Math.random() * 30) + 15;
+      const ans = x + y;
+      const prompt = `${name1} saved $${x} last week and $${y} this week. How much money did ${name1} save in total?`;
+      return { prompt, ans };
+    }
+  ];
+
+  const pickTemplate = templates[Math.floor(Math.random() * templates.length)];
+  const result = pickTemplate();
+
+  // Auto-generate distractors
+  const distractors = new Set<number>();
+  const offsets = [2, -2, 5, -3, 10, -5, 1, -1];
+  for (const offset of offsets) {
+    const val = result.ans + offset;
+    if (val > 0 && val !== result.ans) {
+      distractors.add(val);
+    }
+    if (distractors.size >= 3) break;
+  }
+  while (distractors.size < 3) {
+    const val = result.ans + Math.floor(Math.random() * 20) + 1;
+    if (val !== result.ans) distractors.add(val);
+  }
+
+  const options = [result.ans, ...Array.from(distractors)].sort(() => Math.random() - 0.5);
+
+  return {
+    prompt: result.prompt,
+    ans: result.ans,
+    options,
+    category: "Infinite Word Problem Challenge",
+    isTeacherAdded: false,
+    id: `algorithmic-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  };
+}
+
 // --- AGES 5+ ADVANCED CLASS 1 MATH MASTERY SUITE ---
 function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
   type StandardMathMode = '2digit_add' | '2digit_sub' | 'times_tables' | 'sharing_div' | 'skip_count' | 'compare_100' | 'geometry_3d' | 'clock_money' | 'word_problem';
@@ -5929,8 +6023,10 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
         q = { prompt: `Count money: $${c1} bill + $${c2} bill = ?`, ans, options, category: "Counting Currency & Money" };
       }
     } else if (activeMode === 'word_problem') {
-      if (combinedWordProblems.length === 0) {
-        q = { prompt: "No word problems available.", ans: 0, options: [0], category: "Class 1 Word Problem Challenge" };
+      // 50% chance to run local algorithmic generator, or 100% chance if no database/static items are loaded
+      const useAlgorithmic = Math.random() > 0.5 || combinedWordProblems.length === 0;
+      if (useAlgorithmic) {
+        q = generateAlgorithmicWordProblem();
       } else {
         const item = combinedWordProblems[Math.floor(Math.random() * combinedWordProblems.length)];
         q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Class 1 Word Problem Challenge", isTeacherAdded: item.isTeacherAdded, id: item.id };
