@@ -373,6 +373,14 @@ function VoiceCoach({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
     );
 }
 
+// --- DECODABLE PHONICS WORD LIST ---
+const DECODABLE_WORDS = [
+  "cat", "dog", "sun", "run", "pig", "big", "dig", "map", "net", "pin", "pot", "top", "bug", "mug", "cup", "tub", "bus", "van", "hen", "fox", "box", "log", "jam", "zip", "mad", "sad", "dad", "bad", "had", "wet", "get", "bet", "let", "jet", "pen", "den", "ten", "men",
+  "ship", "fish", "chip", "chick", "thin", "path", "ring", "song", "duck", "rock", "king", "wing", "sing", "shop", "shell", "shed", "whip", "moth", "bath",
+  "jump", "frog", "flag", "drum", "crab", "plum", "nest", "tent", "hand", "band", "milk", "desk", "gift", "belt", "pond", "lamp", "camp", "fast", "last", "dust", "rust",
+  "tree", "rain", "boat", "goat", "road", "soap", "seed", "feet", "moon", "book", "look", "cook", "meat", "leaf", "star", "park", "fork", "horn", "bird", "girl", "dirt"
+];
+
 // --- 2. PHONICS FOREST (COMPREHENSIVE) ---
 function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { toast } = useToast();
@@ -435,7 +443,16 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
         { family: "-at", words: ["cat", "hat", "mat", "sat"] },
         { family: "-ig", words: ["big", "dig", "pig", "wig"] },
         { family: "-op", words: ["hop", "mop", "pop", "top"] },
-        { family: "-un", words: ["bun", "fun", "run", "sun"] }
+        { family: "-un", words: ["bun", "fun", "run", "sun"] },
+        { family: "-an", words: ["can", "man", "pan", "ran", "fan"] },
+        { family: "-in", words: ["bin", "pin", "tin", "win", "fin"] },
+        { family: "-en", words: ["den", "hen", "pen", "ten", "men"] },
+        { family: "-ot", words: ["cot", "dot", "hot", "pot", "not"] },
+        { family: "-ug", words: ["bug", "hug", "mug", "rug", "tug"] },
+        { family: "-ay", words: ["day", "hay", "lay", "play", "say"] },
+        { family: "-it", words: ["bit", "fit", "hit", "lit", "sit"] },
+        { family: "-et", words: ["bet", "get", "jet", "let", "wet"] },
+        { family: "-ad", words: ["bad", "dad", "had", "mad", "sad"] }
     ];
 
     const rhymeFamilies = useMemo(() => {
@@ -465,15 +482,29 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
 
     // Blending Station State
     const [blendingWord, setBlendingWord] = useState(["c", "a", "t"]);
+
+    // Dynamic quick load words that randomize on mount
+    const quickLoadWords = useMemo(() => {
+        return [...DECODABLE_WORDS].sort(() => Math.random() - 0.5).slice(0, 8);
+    }, []);
     
     // Sound Match Game State
     const [gameTarget, setGameTarget] = useState<any>(null);
     const [gameOptions, setGameOptions] = useState<string[]>([]);
+    const lastGameTargetRef = useRef<string>("");
     
     const startNewGame = useCallback(() => {
         const allSounds = soundGroups.flatMap(g => g.sounds);
         if (allSounds.length === 0) return;
-        const targetSound = allSounds[Math.floor(Math.random() * allSounds.length)];
+
+        let targetSound = "";
+        let attempts = 0;
+        do {
+            targetSound = allSounds[Math.floor(Math.random() * allSounds.length)];
+            attempts++;
+        } while (targetSound === lastGameTargetRef.current && allSounds.length > 1 && attempts < 5);
+
+        lastGameTargetRef.current = targetSound;
         
         // Ensure options don't include the target, then add it back to shuffle
         let shuffledOptions = allSounds.filter(s => s !== targetSound).sort(() => 0.5 - Math.random()).slice(0, 3);
@@ -642,19 +673,32 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                     </div>
 
                     <div className="relative z-10 flex flex-col items-center gap-6">
-                        <Button 
-                            onClick={() => {
-                                speak(blendingWord.join(''), 0.7);
-                                confetti({ colors: ['#2dd4bf', '#10b981'], particleCount: 60 });
-                            }}
-                            className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 h-16 px-12 rounded-full text-2xl font-black shadow-lg hover:shadow-xl hover:scale-105 transition-all animate-none animate-none"
-                        >
-                            Read Word <Sparkles className="ml-2 animate-pulse" />
-                        </Button>
+                        <div className="flex gap-4">
+                            <Button 
+                                onClick={() => {
+                                    speak(blendingWord.join(''), 0.7);
+                                    confetti({ colors: ['#2dd4bf', '#10b981'], particleCount: 60 });
+                                }}
+                                className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 h-16 px-12 rounded-full text-2xl font-black shadow-lg hover:shadow-xl hover:scale-105 transition-all animate-none"
+                            >
+                                Read Word <Sparkles className="ml-2 animate-pulse" />
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    const nextWord = DECODABLE_WORDS[Math.floor(Math.random() * DECODABLE_WORDS.length)];
+                                    setBlendingWord(nextWord.split(''));
+                                    speak("New word loaded! Let's blend it.");
+                                }}
+                                variant="outline"
+                                className="border-teal-400 text-teal-600 hover:bg-teal-50 h-16 px-8 rounded-full text-xl font-black shadow-md hover:scale-105 transition-all animate-none"
+                            >
+                                Surprise Word 🎲
+                            </Button>
+                        </div>
                         <div className="space-y-2">
                             <p className="text-xs font-black uppercase text-teal-500/80 tracking-wider">Quick Words to Load</p>
                             <div className="flex flex-wrap justify-center gap-2">
-                                {["cat", "dog", "ship", "fish", "rain", "sun", "jump", "tree"].map(w => (
+                                {quickLoadWords.map(w => (
                                     <button 
                                       key={w} 
                                       onClick={() => setBlendingWord(w.split(''))} 
