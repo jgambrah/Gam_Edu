@@ -5855,9 +5855,6 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
   // Form states
   const [formPrompt, setFormPrompt] = useState("");
   const [formAnswer, setFormAnswer] = useState("");
-  const [formOpt2, setFormOpt2] = useState("");
-  const [formOpt3, setFormOpt3] = useState("");
-  const [formOpt4, setFormOpt4] = useState("");
 
   // AI Generator state
   const [aiTopic, setAiTopic] = useState("");
@@ -5962,9 +5959,6 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
   const resetForm = () => {
     setFormPrompt("");
     setFormAnswer("");
-    setFormOpt2("");
-    setFormOpt3("");
-    setFormOpt4("");
     setAiTopic("");
   };
 
@@ -5975,18 +5969,31 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
       return;
     }
     const numericalAns = Number(formAnswer.trim());
-    const numericalOpt2 = Number(formOpt2.trim());
-    const numericalOpt3 = Number(formOpt3.trim());
-    const numericalOpt4 = Number(formOpt4.trim());
 
-    if (isNaN(numericalAns) || isNaN(numericalOpt2) || isNaN(numericalOpt3) || isNaN(numericalOpt4)) {
-      toast({ title: "Validation Error", description: "The correct answer and distractors must be valid numbers.", variant: "destructive" });
+    if (isNaN(numericalAns)) {
+      toast({ title: "Validation Error", description: "The correct answer must be a valid number.", variant: "destructive" });
       return;
     }
 
     try {
       setIsSaving(true);
-      const optionsArray = [numericalAns, numericalOpt2, numericalOpt3, numericalOpt4].sort(() => Math.random() - 0.5);
+      
+      // Auto-generate 3 unique numerical distractors
+      const distractors = new Set<number>();
+      const offsets = [2, -2, 5, -3, 10, -5, 1, -1];
+      for (const offset of offsets) {
+        const val = numericalAns + offset;
+        if (val > 0 && val !== numericalAns) {
+          distractors.add(val);
+        }
+        if (distractors.size >= 3) break;
+      }
+      while (distractors.size < 3) {
+        const val = numericalAns + Math.floor(Math.random() * 20) + 1;
+        if (val !== numericalAns) distractors.add(val);
+      }
+      
+      const optionsArray = [numericalAns, ...Array.from(distractors)].sort(() => Math.random() - 0.5);
 
       await addDoc(collection(firestore, 'junior_math_word_problems'), {
         prompt: formPrompt.trim(),
@@ -6021,11 +6028,6 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
       if (res.success && res.data) {
         setFormPrompt(res.data.prompt);
         setFormAnswer(String(res.data.ans));
-        const distractors = (res.data.options || []).filter((o: number) => o !== res.data.ans);
-        setFormOpt2(distractors[0] !== undefined ? String(distractors[0]) : '10');
-        setFormOpt3(distractors[1] !== undefined ? String(distractors[1]) : '15');
-        setFormOpt4(distractors[2] !== undefined ? String(distractors[2]) : '20');
-
         toast({ title: "AI Generated! ✨", description: "Word problem populated. Verify details and save." });
       } else {
         toast({ title: "AI Failed", description: res.error || "Could not generate math word problem.", variant: "destructive" });
@@ -6234,35 +6236,7 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
               </div>
             </div>
 
-            <div>
-              <Label className="text-xs font-black text-rose-800 uppercase">Wrong Options (Distractor Choices) *</Label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
-                <Input
-                  required
-                  type="number"
-                  value={formOpt2}
-                  onChange={(e) => setFormOpt2(e.target.value)}
-                  placeholder="Option 2 (e.g. 5)"
-                  className="rounded-2xl border-indigo-200 text-sm"
-                />
-                <Input
-                  required
-                  type="number"
-                  value={formOpt3}
-                  onChange={(e) => setFormOpt3(e.target.value)}
-                  placeholder="Option 3 (e.g. 17)"
-                  className="rounded-2xl border-indigo-200 text-sm"
-                />
-                <Input
-                  required
-                  type="number"
-                  value={formOpt4}
-                  onChange={(e) => setFormOpt4(e.target.value)}
-                  placeholder="Option 4 (e.g. 9)"
-                  className="rounded-2xl border-indigo-200 text-sm"
-                />
-              </div>
-            </div>
+            {/* Wrong Options are automatically generated during publication */}
 
             <div className="flex justify-end gap-3 pt-4 border-t border-indigo-100">
               <Button
