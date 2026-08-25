@@ -6079,14 +6079,14 @@ export default function JuniorCampusPage() {
 
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="level_curriculum" className="w-full">
-            <div className="bg-white/70 backdrop-blur-md p-2 rounded-3xl shadow-lg border border-white/80 mb-8 overflow-x-auto no-scrollbar">
-              <TabsList className="flex w-max md:w-full md:grid gap-2 bg-transparent p-0 h-auto" style={{ gridTemplateColumns: `repeat(${pageModules.length}, minmax(0, 1fr))` }}>
+            <div className="bg-white/70 backdrop-blur-md p-3 rounded-[32px] shadow-lg border border-white/80 mb-8">
+              <TabsList className="flex flex-wrap gap-2.5 bg-transparent p-0 h-auto justify-center w-full">
                   {pageModules.map(mod => (
                       <TabsTrigger 
                           key={mod.id}
                           value={mod.id} 
                           className={cn(
-                            "rounded-2xl font-black flex flex-col items-center gap-2 text-xs py-3 px-4 md:px-2 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm border border-transparent",
+                            "rounded-2xl font-black flex flex-row items-center gap-2 text-xs py-2 px-3.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm border border-transparent flex-initial",
                             "data-[state=active]:bg-gradient-to-b data-[state=active]:shadow-md data-[state=active]:border-white/50 data-[state=active]:-translate-y-0.5",
                             mod.id === 'level_curriculum' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
                             mod.id === 'sentence_finisher' && "data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white text-purple-700 hover:bg-purple-50/50",
@@ -6103,10 +6103,10 @@ export default function JuniorCampusPage() {
                             mod.id === 'dashboard' && "data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-indigo-600 hover:bg-indigo-50/50"
                           )}
                       >
-                          <div className="p-1.5 rounded-xl bg-white/20 shadow-inner">
+                          <div className="p-1 rounded-xl bg-white/20 shadow-inner flex-shrink-0">
                             {mod.icon}
                           </div>
-                          <span className="font-extrabold tracking-wide">{mod.name}</span>
+                          <span className="font-extrabold tracking-wide whitespace-nowrap">{mod.name}</span>
                       </TabsTrigger>
                   ))}
               </TabsList>
