@@ -5811,11 +5811,11 @@ function StorySequencerGame() {
 
 // --- ALGORITHMIC STORY GENERATOR (YEAR 5+) ---
 function generateAlgorithmicWordProblem() {
-  const names = ["Kofi", "Ama", "Yaa", "Kwame", "Abena", "Ekow", "Adjoa", "Kweku"];
-  const items = ["shiny shells", "red balloons", "sweet cupcakes", "ripe mangoes", "toy cars", "colorful marbles", "juicy apples"];
+  const names = ["Kofi", "Ama", "Yaa", "Kwame", "Abena", "Ekow", "Adjoa", "Kweku", "Mansa", "Tetteh", "Sena", "Afi", "Bako", "Manu", "Chidi", "Obinna"];
+  const items = ["shiny shells", "red balloons", "sweet cupcakes", "ripe mangoes", "toy cars", "colorful marbles", "juicy apples", "ripe bananas", "chocolate bars", "stickers", "crayons", "storybooks"];
   const pronouns: Record<string, string> = {
-    "Kofi": "him", "Kwame": "him", "Ekow": "him", "Kweku": "him",
-    "Ama": "her", "Yaa": "her", "Abena": "her", "Adjoa": "her"
+    "Kofi": "him", "Kwame": "him", "Ekow": "him", "Kweku": "him", "Manu": "him", "Chidi": "him", "Obinna": "him", "Tetteh": "him",
+    "Ama": "her", "Yaa": "her", "Abena": "her", "Adjoa": "her", "Mansa": "her", "Afi": "her", "Sena": "her", "Bako": "her"
   };
 
   const templates = [
@@ -5870,6 +5870,35 @@ function generateAlgorithmicWordProblem() {
       const ans = x + y;
       const prompt = `${name1} saved $${x} last week and $${y} this week. How much money did ${name1} save in total?`;
       return { prompt, ans };
+    },
+    // 6. Difference / Comparison
+    () => {
+      const name1 = names[Math.floor(Math.random() * names.length)];
+      let name2 = names[Math.floor(Math.random() * names.length)];
+      while (name2 === name1) name2 = names[Math.floor(Math.random() * names.length)];
+      const item = items[Math.floor(Math.random() * items.length)];
+      const y = Math.floor(Math.random() * 20) + 10;
+      const diff = Math.floor(Math.random() * 15) + 5;
+      const x = y + diff;
+      const ans = diff;
+      const prompt = `${name1} has ${x} ${item}. ${name2} has ${y} ${item}. How many more ${item} does ${name1} have than ${name2}?`;
+      return { prompt, ans };
+    },
+    // 7. Three-person Sum
+    () => {
+      const name1 = names[Math.floor(Math.random() * names.length)];
+      let name2 = names[Math.floor(Math.random() * names.length)];
+      while (name2 === name1) name2 = names[Math.floor(Math.random() * names.length)];
+      let name3 = names[Math.floor(Math.random() * names.length)];
+      while (name3 === name1 || name3 === name2) name3 = names[Math.floor(Math.random() * names.length)];
+      
+      const item = items[Math.floor(Math.random() * items.length)];
+      const x = Math.floor(Math.random() * 15) + 5;
+      const y = Math.floor(Math.random() * 15) + 5;
+      const z = Math.floor(Math.random() * 15) + 5;
+      const ans = x + y + z;
+      const prompt = `${name1} has ${x} ${item}, ${name2} has ${y}, and ${name3} has ${z}. How many ${item} do they have in total?`;
+      return { prompt, ans };
     }
   ];
 
@@ -5911,6 +5940,8 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
   const { user } = useUser();
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
+
+  const lastQuestionPromptRef = useRef<string>("");
 
   const [activeMode, setActiveMode] = useState<StandardMathMode>('2digit_add');
   const [question, setQuestion] = useState<any>(null);
@@ -5956,82 +5987,116 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
 
   const generateQuestion = useCallback(() => {
     let q: any = {};
-    if (activeMode === '2digit_add') {
-      const a = Math.floor(Math.random() * 40) + 10;
-      const b = Math.floor(Math.random() * 40) + 10;
-      const ans = a + b;
-      const options = [ans, ans + 10, Math.max(10, ans - 5), ans + 2].sort(() => Math.random() - 0.5);
-      q = { prompt: `${a} + ${b} = ?`, tensA: Math.floor(a/10), onesA: a%10, tensB: Math.floor(b/10), onesB: b%10, ans, options, category: "2-Digit Addition (Tens & Ones)" };
-    } else if (activeMode === '2digit_sub') {
-      const a = Math.floor(Math.random() * 40) + 50;
-      const b = Math.floor(Math.random() * 30) + 10;
-      const ans = a - b;
-      const options = [ans, ans + 5, Math.max(5, ans - 10), ans + 2].sort(() => Math.random() - 0.5);
-      q = { prompt: `${a} - ${b} = ?`, tensA: Math.floor(a/10), onesA: a%10, tensB: Math.floor(b/10), onesB: b%10, ans, options, category: "2-Digit Subtraction" };
-    } else if (activeMode === 'times_tables') {
-      const tables = [2, 3, 5, 10];
-      const mult = tables[Math.floor(Math.random() * tables.length)];
-      const num = Math.floor(Math.random() * 10) + 1;
-      const ans = mult * num;
-      const options = [ans, ans + mult, Math.max(mult, ans - mult), ans + 2].sort(() => Math.random() - 0.5);
-      q = { prompt: `${mult} × ${num} = ?`, ans, options, category: `Times Tables (${mult}x)` };
-    } else if (activeMode === 'sharing_div') {
-      const groups = [2, 3, 5];
-      const grp = groups[Math.floor(Math.random() * groups.length)];
-      const itemsPerGroup = Math.floor(Math.random() * 5) + 1;
-      const total = grp * itemsPerGroup;
-      const ans = itemsPerGroup;
-      const options = [ans, ans + 1, Math.max(1, ans - 1), ans + 2].sort(() => Math.random() - 0.5);
-      q = { prompt: `Share ${total} items equally into ${grp} groups. How many in each group?`, ans, options, category: "Equal Division & Sharing" };
-    } else if (activeMode === 'skip_count') {
-      const step = [2, 5, 10][Math.floor(Math.random() * 3)];
-      const start = Math.floor(Math.random() * 4) * step + step;
-      const seq = [start, start + step, start + step * 2];
-      const ans = start + step * 3;
-      const options = [ans, ans + step, ans - 1, ans + 2].sort(() => Math.random() - 0.5);
-      q = { prompt: `${seq[0]}, ${seq[1]}, ${seq[2]}, ?`, ans, options, category: `Skip Counting by ${step}s` };
-    } else if (activeMode === 'compare_100') {
-      const a = Math.floor(Math.random() * 80) + 10;
-      const b = Math.floor(Math.random() * 80) + 10;
-      const ans = a > b ? '>' : a < b ? '<' : '=';
-      q = { prompt: `${a}  ___  ${b}`, ans, options: ['>', '<', '='], category: "Comparing Numbers up to 100" };
-    } else if (activeMode === 'geometry_3d') {
-      const shapes3D = [
-        { name: 'Cube', icon: '🧊', desc: '6 square faces' },
-        { name: 'Sphere', icon: '⚽', desc: 'Round ball shape' },
-        { name: 'Cylinder', icon: '🛢️', desc: 'Can shape with 2 circular ends' },
-        { name: 'Cone', icon: '🍦', desc: 'Party hat shape with 1 point' },
-        { name: 'Pyramid', icon: '🔺', desc: 'Triangular faces meeting at top' }
-      ];
-      const pick = shapes3D[Math.floor(Math.random() * shapes3D.length)];
-      q = { prompt: `Identify this 3D shape: ${pick.icon}`, icon: pick.icon, desc: pick.desc, ans: pick.name, options: shapes3D.map(s => s.name).sort(() => Math.random() - 0.5), category: "2D & 3D Geometry" };
-    } else if (activeMode === 'clock_money') {
-      const types = ['clock', 'money'];
-      const t = types[Math.floor(Math.random() * types.length)];
-      if (t === 'clock') {
-        const hr = Math.floor(Math.random() * 12) + 1;
-        const isHalf = Math.random() > 0.5;
-        const ans = isHalf ? `${hr}:30 (Half past ${hr})` : `${hr}:00 (${hr} o'clock)`;
-        const options = [ans, `${(hr % 12) + 1}:00`, `${hr}:00 (${hr} o'clock)`].filter((v, i, a) => a.indexOf(v) === i);
-        if (options.length < 3) options.push(`6:30`);
-        q = { prompt: `What time does the clock show?`, detail: `Hour hand at ${hr}, minute hand at ${isHalf ? 6 : 12}`, ans, options: options.sort(() => Math.random() - 0.5), category: "Telling Time (Analog Clock)" };
-      } else {
-        const c1 = [1, 2, 5, 10][Math.floor(Math.random() * 4)];
-        const c2 = [1, 2, 5, 10][Math.floor(Math.random() * 4)];
-        const ans = `$${c1 + c2}`;
-        const options = [ans, `$${c1 + c2 + 3}`, `$${Math.max(1, c1 + c2 - 2)}`, `$${c1 + c2 + 5}`].sort(() => Math.random() - 0.5);
-        q = { prompt: `Count money: $${c1} bill + $${c2} bill = ?`, ans, options, category: "Counting Currency & Money" };
+    let attempts = 0;
+
+    do {
+      if (activeMode === '2digit_add') {
+        const a = Math.floor(Math.random() * 40) + 10;
+        const b = Math.floor(Math.random() * 40) + 10;
+        const ans = a + b;
+        const options = [ans, ans + 10, Math.max(10, ans - 5), ans + 2].sort(() => Math.random() - 0.5);
+        q = { prompt: `${a} + ${b} = ?`, tensA: Math.floor(a/10), onesA: a%10, tensB: Math.floor(b/10), onesB: b%10, ans, options, category: "2-Digit Addition (Tens & Ones)" };
+      } else if (activeMode === '2digit_sub') {
+        const a = Math.floor(Math.random() * 40) + 50;
+        const b = Math.floor(Math.random() * 30) + 10;
+        const ans = a - b;
+        const options = [ans, ans + 5, Math.max(5, ans - 10), ans + 2].sort(() => Math.random() - 0.5);
+        q = { prompt: `${a} - ${b} = ?`, tensA: Math.floor(a/10), onesA: a%10, tensB: Math.floor(b/10), onesB: b%10, ans, options, category: "2-Digit Subtraction" };
+      } else if (activeMode === 'times_tables') {
+        const tables = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+        const mult = tables[Math.floor(Math.random() * tables.length)];
+        const num = Math.floor(Math.random() * 12) + 1;
+        const ans = mult * num;
+        const options = [ans, ans + mult, Math.max(mult, ans - mult), ans + 2].sort(() => Math.random() - 0.5);
+        q = { prompt: `${mult} × ${num} = ?`, ans, options, category: `Times Tables (${mult}x)` };
+      } else if (activeMode === 'sharing_div') {
+        const groups = [2, 3, 4, 5, 6, 8, 10];
+        const grp = groups[Math.floor(Math.random() * groups.length)];
+        const itemsPerGroup = Math.floor(Math.random() * 10) + 1;
+        const total = grp * itemsPerGroup;
+        const ans = itemsPerGroup;
+        const options = [ans, ans + 1, Math.max(1, ans - 1), ans + 2].sort(() => Math.random() - 0.5);
+        q = { prompt: `Share ${total} items equally into ${grp} groups. How many in each group?`, ans, options, category: "Equal Division & Sharing" };
+      } else if (activeMode === 'skip_count') {
+        const step = [2, 3, 4, 5, 10, 20][Math.floor(Math.random() * 6)];
+        const start = (Math.floor(Math.random() * 12) + 1) * step;
+        const seq = [start, start + step, start + step * 2];
+        const ans = start + step * 3;
+        const options = [ans, ans + step, ans - 1, ans + 2].sort(() => Math.random() - 0.5);
+        q = { prompt: `${seq[0]}, ${seq[1]}, ${seq[2]}, ?`, ans, options, category: `Skip Counting by ${step}s` };
+      } else if (activeMode === 'compare_100') {
+        const a = Math.floor(Math.random() * 80) + 10;
+        const b = Math.floor(Math.random() * 80) + 10;
+        const ans = a > b ? '>' : a < b ? '<' : '=';
+        q = { prompt: `${a}  ___  ${b}`, ans, options: ['>', '<', '='], category: "Comparing Numbers up to 100" };
+      } else if (activeMode === 'geometry_3d') {
+        const shapes = [
+          { name: 'Cube', icon: '🧊', desc: '3D shape with 6 square faces' },
+          { name: 'Sphere', icon: '⚽', desc: 'Round 3D ball shape' },
+          { name: 'Cylinder', icon: '🛢️', desc: '3D can shape with 2 circular ends' },
+          { name: 'Cone', icon: '🍦', desc: '3D party hat shape with 1 point' },
+          { name: 'Pyramid', icon: '🔺', desc: '3D triangular faces meeting at top' },
+          { name: 'Triangle', icon: '📐', desc: '2D flat shape with 3 sides' },
+          { name: 'Square', icon: '⏹️', desc: '2D flat shape with 4 equal sides' },
+          { name: 'Circle', icon: '🔴', desc: 'Round 2D flat shape' },
+          { name: 'Star', icon: '⭐', desc: '5-pointed flat shape' },
+          { name: 'Heart', icon: '❤️', desc: 'Flat heart shape' }
+        ];
+        const pick = shapes[Math.floor(Math.random() * shapes.length)];
+        const randomizedOptions = shapes.map(s => s.name).sort(() => Math.random() - 0.5).slice(0, 4);
+        if (!randomizedOptions.includes(pick.name)) {
+          randomizedOptions[0] = pick.name;
+        }
+        const options = randomizedOptions.sort(() => Math.random() - 0.5);
+        q = { prompt: `Identify this shape: ${pick.icon}`, icon: pick.icon, desc: pick.desc, ans: pick.name, options, category: "2D & 3D Geometry" };
+      } else if (activeMode === 'clock_money') {
+        const types = ['clock', 'money'];
+        const t = types[Math.floor(Math.random() * types.length)];
+        if (t === 'clock') {
+          const hr = Math.floor(Math.random() * 12) + 1;
+          const clockTypes = ['o_clock', 'half_past', 'quarter_past', 'quarter_to'];
+          const ct = clockTypes[Math.floor(Math.random() * clockTypes.length)];
+          let ans = "";
+          let detail = "";
+          if (ct === 'o_clock') {
+            ans = `${hr}:00 (${hr} o'clock)`;
+            detail = `Hour hand at ${hr}, minute hand at 12`;
+          } else if (ct === 'half_past') {
+            ans = `${hr}:30 (Half past ${hr})`;
+            detail = `Hour hand past ${hr}, minute hand at 6`;
+          } else if (ct === 'quarter_past') {
+            ans = `${hr}:15 (Quarter past ${hr})`;
+            detail = `Hour hand just past ${hr}, minute hand at 3`;
+          } else {
+            ans = `${hr === 12 ? 11 : hr - 1}:45 (Quarter to ${hr})`;
+            detail = `Hour hand almost at ${hr}, minute hand at 9`;
+          }
+          const options = [ans, `${(hr % 12) + 1}:00`, `${hr}:00 (${hr} o'clock)`, `6:30`].filter((v, i, a) => a.indexOf(v) === i);
+          while (options.length < 3) options.push(`${Math.floor(Math.random()*12)+1}:15`);
+          q = { prompt: `What time does the clock show?`, detail, ans, options: options.sort(() => Math.random() - 0.5), category: "Telling Time (Analog Clock)" };
+        } else {
+          const bills = [1, 2, 5, 10, 20];
+          const c1 = bills[Math.floor(Math.random() * bills.length)];
+          const c2 = bills[Math.floor(Math.random() * bills.length)];
+          const c3 = bills[Math.floor(Math.random() * bills.length)];
+          const sum = c1 + c2 + c3;
+          const ans = `$${sum}`;
+          const options = [ans, `$${sum + 3}`, `$${Math.max(1, sum - 2)}`, `$${sum + 5}`].sort(() => Math.random() - 0.5);
+          q = { prompt: `Count money: $${c1} bill + $${c2} bill + $${c3} bill = ?`, ans, options, category: "Counting Currency & Money" };
+        }
+      } else if (activeMode === 'word_problem') {
+        const useAlgorithmic = Math.random() > 0.5 || combinedWordProblems.length === 0;
+        if (useAlgorithmic) {
+          q = generateAlgorithmicWordProblem();
+        } else {
+          const item = combinedWordProblems[Math.floor(Math.random() * combinedWordProblems.length)];
+          q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Class 1 Word Problem Challenge", isTeacherAdded: item.isTeacherAdded, id: item.id };
+        }
       }
-    } else if (activeMode === 'word_problem') {
-      // 50% chance to run local algorithmic generator, or 100% chance if no database/static items are loaded
-      const useAlgorithmic = Math.random() > 0.5 || combinedWordProblems.length === 0;
-      if (useAlgorithmic) {
-        q = generateAlgorithmicWordProblem();
-      } else {
-        const item = combinedWordProblems[Math.floor(Math.random() * combinedWordProblems.length)];
-        q = { prompt: item.prompt, ans: item.ans, options: item.options, category: "Class 1 Word Problem Challenge", isTeacherAdded: item.isTeacherAdded, id: item.id };
-      }
-    }
+      attempts++;
+    } while (q.prompt === lastQuestionPromptRef.current && attempts < 5);
+
+    lastQuestionPromptRef.current = q.prompt;
     setQuestion(q);
     setFeedback("");
   }, [activeMode, combinedWordProblems]);
