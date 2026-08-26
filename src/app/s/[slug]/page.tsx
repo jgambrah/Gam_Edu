@@ -707,7 +707,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
     ? school.upcomingEvents
     : (Array.isArray(school?.calendarEvents) && school.calendarEvents.length > 0)
     ? school.calendarEvents
-    : defaultEvents;
+    : [];
 
   // ── DYNAMIC INSTITUTIONAL IMPACT STATISTICS RESOLUTION ───────
   const dynamicStats: Array<{
