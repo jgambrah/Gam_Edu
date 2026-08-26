@@ -597,13 +597,13 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       title: 'School Library & Resource Center',
       description: 'A quiet, well-structured learning environment stocked with rich literary collections, reference materials, and digital reading portals to cultivate lifelong research and reading habits.',
       icon: 'BookOpen',
-      imageUrl: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=1200'
+      imageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1200'
     },
     {
       title: 'Computer & Science Innovation Labs',
       description: 'Equipped with modern computer setups, high-speed connectivity, and modern science experimentation kits to provide practical STEM education and digital literacy skills.',
       icon: 'Atom',
-      imageUrl: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200'
+      imageUrl: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1200'
     },
     {
       title: 'Sports & Creative Athletics',
@@ -613,8 +613,12 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     }
   ];
 
-  const pillars = school.academicsPillars && school.academicsPillars.length > 0
+  const pillars = (school.academicsPillars && school.academicsPillars.length > 0)
     ? school.academicsPillars
+    : (school.facilities && school.facilities.length > 0)
+    ? school.facilities
+    : (school.campusPillars && school.campusPillars.length > 0)
+    ? school.campusPillars
     : fallbackPillars;
 
   const getPillarIcon = (iconName?: string) => {
@@ -1468,11 +1472,11 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               <div className="space-y-12">
                 {pillars.map((pillar: any, idx: number) => {
                   const isEven = idx % 2 === 0;
-                  const facilityImg = pillar.imageUrl || (
+                  const facilityImg = pillar.imageUrl || pillar.photoUrl || pillar.image || pillar.buildingImg || pillar.photo || (
                     idx === 0
-                      ? 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=1200'
+                      ? 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1200'
                       : idx === 1
-                      ? 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200'
+                      ? 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1200'
                       : 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=1200'
                   );
 
