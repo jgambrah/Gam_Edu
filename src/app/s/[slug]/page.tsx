@@ -279,6 +279,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [team, setTeam] = useState<any[]>([]);
   const [newsList, setNewsList] = useState<any[]>([]);
   const [selectedNews, setSelectedNews] = useState<any | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -1719,8 +1720,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           <div className="max-w-7xl mx-auto space-y-16">
             <SectionHeader eyebrow="Campus Calendar" title="Upcoming Events & Schedules" color={brand} />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-              {eventsList.slice(0, 3).map((ev: any, idx: number) => {
+            {/* Carleton University 4-Column Card Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+              {eventsList.slice(0, 4).map((ev: any, idx: number) => {
                 let monthStr = 'SEP';
                 let dayStr = '15';
                 if (ev.date) {
@@ -1736,52 +1738,86 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   }
                 }
 
-                return (
-                  <ScrollReveal key={ev.id || idx} delayMs={idx * 120} className="h-full">
-                    <div
-                      className="bg-white rounded-[2rem] p-6 border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-md card-hover flex gap-5 items-start group h-full"
-                    >
-                      {/* Date Badge pulled to the left side */}
-                      <div
-                        className="flex flex-col items-center justify-center w-20 h-22 rounded-2xl shrink-0 text-white shadow-md transition-transform group-hover:scale-105"
-                        style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
-                      >
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-85 font-mono">
-                          {monthStr}
-                        </span>
-                        <span className="text-3xl font-black font-mono leading-none mt-1">
-                          {dayStr}
-                        </span>
-                      </div>
+                const eventFallbackImages = [
+                  'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=800',
+                  'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=80&w=800',
+                  'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800',
+                  'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800'
+                ];
+                const eventImg = ev.imageUrl || ev.image || ev.photoUrl || eventFallbackImages[idx % eventFallbackImages.length];
 
-                      {/* Event Details (Visually locked flex-1) */}
-                      <div className="space-y-2.5 flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
+                return (
+                  <ScrollReveal key={ev.id || idx} delayMs={idx * 100} className="h-full">
+                    <div
+                      onClick={() => setSelectedEvent(ev)}
+                      className="bg-white rounded-[2rem] border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-xl card-hover flex flex-col justify-between overflow-hidden group h-full cursor-pointer"
+                    >
+                      <div>
+                        {/* Top Featured Image Banner */}
+                        <div className="h-44 w-full overflow-hidden relative bg-slate-100 shrink-0">
+                          <img
+                            src={eventImg}
+                            alt={ev.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
+                          
+                          {/* Carleton Style Floating Date Badge */}
+                          <div
+                            className="absolute top-3 left-3 flex flex-col items-center justify-center w-14 h-16 rounded-2xl text-white shadow-lg backdrop-blur-md border border-white/30"
+                            style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                          >
+                            <span className="text-[9px] font-black uppercase tracking-widest opacity-90 font-mono">
+                              {monthStr}
+                            </span>
+                            <span className="text-xl font-black font-mono leading-none mt-0.5">
+                              {dayStr}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Event Details Content */}
+                        <div className="p-6 space-y-3">
                           <span
-                            className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border"
+                            className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border"
                             style={{ color: brand, borderColor: `${brand}30`, backgroundColor: `${brand}10` }}
                           >
                             {ev.category || 'Event'}
                           </span>
+
+                          <h4 className="text-base font-black text-slate-900 tracking-tight leading-snug group-hover:text-indigo-600 transition-colors line-clamp-2">
+                            {ev.title}
+                          </h4>
+
+                          {ev.time && (
+                            <p className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 font-mono pt-1">
+                              <Calendar className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                              <span className="truncate">{ev.time}</span>
+                            </p>
+                          )}
+
+                          {ev.location && (
+                            <p className="text-xs font-bold text-slate-400 flex items-center gap-1.5 truncate">
+                              <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                              <span className="truncate">{ev.location}</span>
+                            </p>
+                          )}
                         </div>
+                      </div>
 
-                        <h4 className="text-base font-black text-slate-900 tracking-tight leading-snug group-hover:text-indigo-600 transition-colors line-clamp-2">
-                          {ev.title}
-                        </h4>
-
-                        {ev.time && (
-                          <p className="text-xs font-semibold text-slate-500 flex items-center gap-1 font-mono pt-0.5">
-                            <Calendar className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
-                            <span>{ev.time}</span>
-                          </p>
-                        )}
-
-                        {ev.location && (
-                          <p className="text-[11px] font-bold text-slate-400 flex items-center gap-1 truncate">
-                            <MapPin className="h-3 w-3 text-slate-400 shrink-0" />
-                            <span className="truncate">{ev.location}</span>
-                          </p>
-                        )}
+                      {/* Carleton Style Red / Brand "More Info" Button */}
+                      <div className="px-6 pb-6 pt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedEvent(ev);
+                          }}
+                          className="w-full py-3 rounded-2xl text-white text-xs font-black uppercase tracking-widest shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer border border-white/20"
+                          style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                        >
+                          <span>More Info</span>
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </button>
                       </div>
                     </div>
                   </ScrollReveal>
@@ -2427,6 +2463,110 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── EVENT DETAILED MODAL ─────────────────────────────── */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2.5rem] max-w-xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-slate-100 relative shadow-2xl animate-in zoom-in-95 duration-200">
+            {/* Header image or banner */}
+            <div className="h-52 w-full relative bg-slate-900 overflow-hidden shrink-0">
+              {selectedEvent.imageUrl || selectedEvent.image ? (
+                <img
+                  src={selectedEvent.imageUrl || selectedEvent.image}
+                  alt={selectedEvent.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div
+                  className="w-full h-full flex flex-col items-center justify-center text-white relative p-6 text-center"
+                  style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                >
+                  <Calendar className="h-14 w-14 text-white/40 mb-2" />
+                  <span className="text-xs font-black uppercase tracking-widest opacity-80 font-mono">Campus Event Details</span>
+                </div>
+              )}
+
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-slate-950/60 text-white hover:bg-slate-950 transition-colors cursor-pointer border border-white/20 z-10"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              <div className="absolute bottom-4 left-6 px-3.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-slate-900 text-[10px] font-black uppercase tracking-widest border border-white/40 shadow-md">
+                {selectedEvent.category || 'Event'}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-8 md:p-10 overflow-y-auto space-y-6 flex-1">
+              <div className="space-y-2">
+                <h3 className="text-2xl font-black text-slate-900 leading-tight">
+                  {selectedEvent.title}
+                </h3>
+                {selectedEvent.date && (
+                  <p className="text-xs font-bold text-indigo-600 font-mono">
+                    📅 Scheduled: {selectedEvent.date}
+                  </p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 border-y border-slate-100 text-xs font-semibold text-slate-700">
+                {selectedEvent.time && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                      <Calendar className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black text-slate-400 uppercase block font-mono">Time</span>
+                      <span className="font-bold text-slate-800">{selectedEvent.time}</span>
+                    </div>
+                  </div>
+                )}
+
+                {selectedEvent.location && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                      <MapPin className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black text-slate-400 uppercase block font-mono">Venue</span>
+                      <span className="font-bold text-slate-800">{selectedEvent.location}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="text-xs font-black uppercase tracking-widest text-slate-400">Event Overview & Details</h4>
+                <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                  {selectedEvent.description || 'Join us for this important school event. Further instructions and agenda schedules will be communicated by the administration.'}
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="w-full py-4 rounded-2xl text-white text-xs font-black uppercase tracking-widest shadow-lg transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+                  style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                >
+                  Close Details
+                </button>
+                {selectedEvent.location && (
+                  <a
+                    href={`https://maps.google.com/?q=${encodeURIComponent(selectedEvent.location)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1.5 shrink-0"
+                  >
+                    <MapPin className="h-4 w-4 text-indigo-600" /> Map ↗
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
