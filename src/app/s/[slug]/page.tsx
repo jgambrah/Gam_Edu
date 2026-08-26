@@ -692,6 +692,87 @@ Welcome to our admissions portal! To ensure a smooth application process for you
     ? school.customEvents
     : defaultEvents;
 
+  // ── DYNAMIC INSTITUTIONAL IMPACT STATISTICS RESOLUTION ───────
+  const dynamicStats: Array<{
+    label: string;
+    value: number | string;
+    suffix?: string;
+    icon?: any;
+  }> = (() => {
+    // 1. Direct custom statistics array from tenant backend
+    if (Array.isArray(school?.customStats) && school.customStats.length > 0) {
+      return school.customStats.map((st: any) => ({
+        label: st.label || st.title || 'Metric',
+        value: st.value || st.number || st.count || 0,
+        suffix: st.suffix || '+',
+        icon: st.icon === 'Award' ? Award : st.icon === 'Sparkles' ? Sparkles : st.icon === 'User' ? User : Users,
+      }));
+    }
+    if (Array.isArray(school?.stats) && school.stats.length > 0) {
+      return school.stats.map((st: any) => ({
+        label: st.label || st.title || 'Metric',
+        value: st.value || st.number || st.count || 0,
+        suffix: st.suffix || '+',
+        icon: st.icon === 'Award' ? Award : st.icon === 'Sparkles' ? Sparkles : st.icon === 'User' ? User : Users,
+      }));
+    }
+
+    // 2. Individual fields populated in school management document
+    const items: Array<{ label: string; value: any; suffix: string; icon: any }> = [];
+    if (school?.yearsEstablished) {
+      items.push({
+        label: 'Years of Excellence',
+        value: school.yearsEstablished,
+        suffix: '+',
+        icon: Award,
+      });
+    }
+    if (school?.passRate) {
+      items.push({
+        label: 'BECE Pass Rate',
+        value: school.passRate,
+        suffix: '%',
+        icon: Sparkles,
+      });
+    }
+    if (school?.staffCount) {
+      items.push({
+        label: 'Certified Educators',
+        value: school.staffCount,
+        suffix: '+',
+        icon: User,
+      });
+    }
+    if (school?.studentCount) {
+      items.push({
+        label: 'Enrolled Students',
+        value: school.studentCount,
+        suffix: '+',
+        icon: Users,
+      });
+    }
+    if (school?.programCount) {
+      items.push({
+        label: 'Academic Programs',
+        value: school.programCount,
+        suffix: '+',
+        icon: BookOpen,
+      });
+    }
+
+    // 3. Fallback dataset if tenant metrics are unspecified
+    if (items.length === 0) {
+      return [
+        { label: 'Years of Excellence', value: school?.yearsEstablished || 25, suffix: '+', icon: Award },
+        { label: 'BECE Pass Rate', value: school?.passRate || 100, suffix: '%', icon: Sparkles },
+        { label: 'Certified Educators', value: school?.staffCount || 50, suffix: '+', icon: User },
+        { label: 'Enrolled Students', value: school?.studentCount || 500, suffix: '+', icon: Users },
+      ];
+    }
+
+    return items;
+  })();
+
   const navLinks = [
     { label: 'About', id: 'about' },
     (school.directorMessage || school.principalMessage) && { label: 'Leadership', id: 'leadership' },
@@ -1036,43 +1117,32 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       </section>
 
       {/* ─── ANIMATED IMPACT STATISTICS BANNER ─────────────── */}
-      <section id="impact" className="py-20 px-6 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }}>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent pointer-events-none" />
-        <div className="max-w-7xl mx-auto relative z-10 space-y-8">
-          <div className="text-center">
-            <span className="inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.25em] bg-white/15 text-white border border-white/20 backdrop-blur-md shadow-sm">
-              Institutional Impact
-            </span>
-          </div>
+      {dynamicStats.length > 0 && (
+        <section id="impact" className="py-20 px-6 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }}>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent pointer-events-none" />
+          <div className="max-w-7xl mx-auto relative z-10 space-y-8">
+            <div className="text-center">
+              <span className="inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.25em] bg-white/15 text-white border border-white/20 backdrop-blur-md shadow-sm">
+                Institutional Impact
+              </span>
+            </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            <ImpactCounters
-              icon={Award}
-              label="Years of Excellence"
-              targetNumber={school.yearsEstablished || 25}
-              suffix="+"
-            />
-            <ImpactCounters
-              icon={Sparkles}
-              label="BECE Pass Rate"
-              targetNumber={school.passRate || 100}
-              suffix="%"
-            />
-            <ImpactCounters
-              icon={User}
-              label="Certified Educators"
-              targetNumber={school.staffCount || 50}
-              suffix="+"
-            />
-            <ImpactCounters
-              icon={Users}
-              label="Enrolled Students"
-              targetNumber={school.studentCount || 500}
-              suffix="+"
-            />
+            <div className={`grid grid-cols-2 ${
+              dynamicStats.length >= 4 ? 'lg:grid-cols-4' : dynamicStats.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'
+            } gap-6 md:gap-8`}>
+              {dynamicStats.map((st, idx) => (
+                <ImpactCounters
+                  key={idx}
+                  icon={st.icon || Award}
+                  label={st.label}
+                  targetNumber={st.value}
+                  suffix={st.suffix || '+'}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ─── ABOUT ──────────────────────────────────────────── */}
       <section id="about" className="py-32 px-6 bg-white">
