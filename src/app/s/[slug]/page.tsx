@@ -889,11 +889,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         navScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* logo / name */}
+          {/* name / crest */}
           <div className="flex items-center gap-3 shrink-0">
-            {school.logoUrl && (
-              <img src={school.logoUrl} alt={school.name} className="h-10 w-10 shrink-0 object-contain rounded-xl" />
-            )}
             <span
               className="font-black tracking-tight leading-tight transition-colors whitespace-normal break-words"
               style={{
@@ -903,6 +900,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             >
               {school.name}
             </span>
+            {school.logoUrl && (
+              <img src={school.logoUrl} alt={school.name} className="h-10 w-10 shrink-0 object-contain rounded-xl" />
+            )}
           </div>
 
           {/* links */}
@@ -2107,6 +2107,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             {/* Column 1: School Logo & Short About Text Clamp */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-2">
+                <h4 className="serif text-2xl italic text-white tracking-wide leading-tight font-bold">{school.name}</h4>
                 {school.logoUrl ? (
                   <div className="p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl shrink-0">
                     <img src={school.logoUrl} alt="Logo" className="h-10 w-10 object-contain" />
@@ -2116,7 +2117,6 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     <GraduationCap className="h-6 w-6 text-white" />
                   </div>
                 )}
-                <h4 className="serif text-2xl italic text-white tracking-wide leading-tight font-bold">{school.name}</h4>
               </div>
 
               <p className="text-sm text-slate-400 leading-relaxed font-medium line-clamp-4">
