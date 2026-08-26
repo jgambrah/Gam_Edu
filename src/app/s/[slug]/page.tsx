@@ -698,8 +698,14 @@ Welcome to our admissions portal! To ensure a smooth application process for you
     }
   ];
 
-  const eventsList = school?.customEvents && school.customEvents.length > 0
+  const eventsList = (Array.isArray(school?.events) && school.events.length > 0)
+    ? school.events
+    : (Array.isArray(school?.customEvents) && school.customEvents.length > 0)
     ? school.customEvents
+    : (Array.isArray(school?.upcomingEvents) && school.upcomingEvents.length > 0)
+    ? school.upcomingEvents
+    : (Array.isArray(school?.calendarEvents) && school.calendarEvents.length > 0)
+    ? school.calendarEvents
     : defaultEvents;
 
   // ── DYNAMIC INSTITUTIONAL IMPACT STATISTICS RESOLUTION ───────
