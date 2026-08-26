@@ -1081,37 +1081,39 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           style={{ background: 'linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.25))' }}
         />
 
-        {/* content: Carleton University Style Left-Aligned Hero Overlay Card */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 flex justify-start items-center">
-          <div className="w-full max-w-xl bg-slate-950/85 backdrop-blur-xl border border-white/20 p-8 md:p-12 rounded-[2.5rem] shadow-2xl space-y-6 text-left fade-up">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-emerald-950/30">
-              <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse" /> Admissions Open
-            </span>
+        {/* content: Carleton University Style Bottom-Left Rectangular Hero Overlay Banner */}
+        <div className="absolute bottom-8 md:bottom-12 left-6 md:left-12 right-6 md:right-auto z-20 max-w-3xl w-full">
+          <div className="bg-slate-950/85 backdrop-blur-xl border border-white/20 p-6 md:p-8 rounded-3xl shadow-2xl space-y-4 text-left fade-up">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] font-black uppercase tracking-[0.2em] shadow-md shadow-emerald-950/30 font-mono">
+                <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse" /> Admissions Open
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-300 font-mono">
+                {school.name}
+              </span>
+            </div>
 
-            <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1] tracking-tight drop-shadow-md">
-              Join a Smart, Caring Community
-            </h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-1">
+              <div className="space-y-2 flex-1 min-w-0">
+                <h1 className="text-2xl md:text-3xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                  Join a Smart, Caring Community
+                </h1>
+                <p className="text-slate-200 text-xs md:text-sm leading-relaxed font-medium">
+                  {school.motto || 'Empowering young minds with academic rigor, STEM innovation, and moral character. Nurturing confident, creative, and future-ready leaders.'}
+                </p>
+              </div>
 
-            <p className="text-slate-200 text-sm md:text-base leading-relaxed font-medium">
-              {school.motto || school.aboutText || 'Find your purpose and excel in academic excellence, leadership development, and moral character with exceptional student support.'}
-            </p>
-
-            <div className="pt-2">
-              <button
-                onClick={() => scrollTo('apply')}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl text-white text-base font-black uppercase tracking-tight shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-2.5 border border-white/20 cursor-pointer"
-                style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
-              >
-                <GraduationCap className="h-5 w-5" /> Start Application
-              </button>
+              <div className="shrink-0">
+                <button
+                  onClick={() => scrollTo('apply')}
+                  className="w-full md:w-auto px-6 py-3.5 rounded-2xl text-white text-sm font-black uppercase tracking-tight shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-2 border border-white/20 cursor-pointer"
+                  style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                >
+                  <GraduationCap className="h-4 w-4" /> Start Application
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* scroll cue */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/40">
-          <span className="text-[9px] uppercase tracking-[0.3em] font-bold">Scroll</span>
-          <ChevronDown className="h-5 w-5 animate-bounce" />
         </div>
       </section>
 
