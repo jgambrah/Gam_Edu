@@ -1043,7 +1043,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       )}
 
       <section 
-        className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden hero-grain"
+        className="relative min-h-screen flex items-center px-6 overflow-hidden hero-grain"
         style={{ backgroundColor: banners.length > 0 ? '#ffffff' : bannerBgColor }}
       >
         {/* cover image slideshow */}
@@ -1075,53 +1075,36 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           className="absolute inset-0 opacity-25 pointer-events-none"
           style={{ background: `radial-gradient(ellipse at 60% 40%, ${brand}22 0%, transparent 70%)` }}
         />
-        {/* Enforced CSS gradient overlay so white H1 text always remains legible */}
+        {/* Enforced CSS gradient overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.35))' }}
+          style={{ background: 'linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.25))' }}
         />
 
-        {/* content */}
-        <div className="relative z-10 max-w-5xl fade-up space-y-8">
-          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 text-[11px] font-black uppercase tracking-[0.25em] backdrop-blur-md shadow-lg shadow-emerald-950/30 animate-pulse">
-            <Sparkles className="h-3.5 w-3.5 text-yellow-400" /> Admissions Open
-          </span>
+        {/* content: Carleton University Style Left-Aligned Hero Overlay Card */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-20 flex justify-start items-center">
+          <div className="w-full max-w-xl bg-slate-950/85 backdrop-blur-xl border border-white/20 p-8 md:p-12 rounded-[2.5rem] shadow-2xl space-y-6 text-left fade-up">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-emerald-950/30">
+              <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse" /> Admissions Open
+            </span>
 
-          <h1
-            className="serif text-white leading-[1.05] italic font-black drop-shadow-[0_4px_16px_rgba(0,0,0,0.7)] break-words max-w-4xl mx-auto"
-            style={{
-              fontSize: school.name.length > 35
-                ? 'clamp(2.25rem, 5.5vw, 4rem)'
-                : school.name.length > 20
-                ? 'clamp(2.75rem, 7vw, 5rem)'
-                : 'clamp(3.25rem, 8.5vw, 6rem)'
-            }}
-          >
-            {school.name}
-          </h1>
+            <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1] tracking-tight drop-shadow-md">
+              Join a Smart, Caring Community
+            </h1>
 
-          {school.motto && (
-            <p className="text-xl md:text-2xl text-slate-100 font-semibold max-w-2xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)]">
-              {school.motto}
+            <p className="text-slate-200 text-sm md:text-base leading-relaxed font-medium">
+              {school.motto || school.aboutText || 'Find your purpose and excel in academic excellence, leadership development, and moral character with exceptional student support.'}
             </p>
-          )}
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            {/* Primary Call-to-Action */}
-            <button
-              onClick={() => scrollTo('apply')}
-              className="px-8 py-4 rounded-2xl text-white text-lg font-black uppercase tracking-tight shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-2 border border-white/20 hover:shadow-indigo-500/20 cursor-pointer"
-              style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
-            >
-              <GraduationCap className="h-5 w-5" /> Start Application
-            </button>
-            {/* Secondary Outline Button */}
-            <button
-              onClick={() => scrollTo('about')}
-              className="px-8 py-4 rounded-2xl bg-white/10 border border-white/30 text-white text-lg font-black uppercase tracking-tight backdrop-blur-md hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              Learn More
-            </button>
+            <div className="pt-2">
+              <button
+                onClick={() => scrollTo('apply')}
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl text-white text-base font-black uppercase tracking-tight shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-2.5 border border-white/20 cursor-pointer"
+                style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+              >
+                <GraduationCap className="h-5 w-5" /> Start Application
+              </button>
+            </div>
           </div>
         </div>
 
