@@ -884,14 +884,14 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* logo / name */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             {school.logoUrl && (
-              <img src={school.logoUrl} alt="Logo" className="h-10 w-10 object-contain rounded-xl" />
+              <img src={school.logoUrl} alt={school.name} className="h-10 w-10 shrink-0 object-contain rounded-xl" />
             )}
             <span
-              className="font-black tracking-tight line-clamp-1 max-w-[200px] sm:max-w-md transition-colors"
+              className="font-black tracking-tight leading-tight transition-colors whitespace-normal break-words"
               style={{
-                fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)',
+                fontSize: 'clamp(0.85rem, 2vw, 1.15rem)',
                 color: navScrolled ? brand : (isLight ? '#1e293b' : 'white')
               }}
             >
