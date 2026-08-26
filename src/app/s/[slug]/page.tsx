@@ -2087,7 +2087,14 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         <div className="absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none opacity-[0.04]" style={{ backgroundColor: brand }} />
         <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full blur-[100px] pointer-events-none opacity-[0.03]" style={{ backgroundColor: secondaryColor }} />
 
-        <div className="max-w-7xl mx-auto px-6 py-20 relative z-10 space-y-16">
+        {/* Carleton-Style Institutional Land & Mission Acknowledgment */}
+        <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 text-center border-b border-white/10 relative z-10">
+          <p className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-slate-300 font-mono leading-relaxed max-w-4xl mx-auto">
+            {school.name} acknowledges and celebrates the rich cultural heritage, academic excellence, and moral leadership across all our learning communities.
+          </p>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 relative z-10 space-y-16">
           {/* Multi-Column 4-Column Footer Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10 pb-16 border-b border-white/10">
 
@@ -2253,35 +2260,91 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             </div>
           </div>
 
-          {/* Social Links & Copyright Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-4 text-[11px] font-bold uppercase tracking-widest text-slate-500">
-            <div className="flex items-center gap-3">
-              <Globe className="h-4 w-4 text-indigo-400 animate-pulse" />
-              <span>Powered by <strong className="text-slate-300">GAM Edu Platform</strong></span>
+          {/* Carleton-Style Contact Sub-Header Line */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-400 font-mono pt-2">
+            <div>
+              <span>Contact us by </span>
+              {school.phone && (
+                <a href={getCleanPhoneLink(school.phone)} className="text-indigo-400 hover:text-white underline">phone</a>
+              )}
+              {school.phone && school.email && <span> or </span>}
+              {school.email && (
+                <a href={`mailto:${school.email.trim()}`} className="text-indigo-400 hover:text-white underline">email</a>
+              )}
             </div>
 
-            {/* Social media icons if present */}
-            {(school.facebookUrl || school.instagramUrl || school.linkedinUrl) && (
-              <div className="flex items-center gap-4 text-slate-400">
-                {school.facebookUrl && (
-                  <a href={school.facebookUrl} target="_blank" rel="noreferrer" className="hover:text-blue-400 transition-colors">
-                    <Facebook className="h-4 w-4" />
-                  </a>
-                )}
-                {school.instagramUrl && (
-                  <a href={school.instagramUrl} target="_blank" rel="noreferrer" className="hover:text-pink-400 transition-colors">
-                    <Instagram className="h-4 w-4" />
-                  </a>
-                )}
-                {school.linkedinUrl && (
-                  <a href={school.linkedinUrl} target="_blank" rel="noreferrer" className="hover:text-sky-400 transition-colors">
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                )}
+            {school.address && (
+              <div className="text-center text-slate-300 font-sans font-semibold normal-case">
+                {school.address}
               </div>
             )}
 
-            <span>&copy; {new Date().getFullYear()} {school.name}. All Rights Reserved.</span>
+            {/* Social media icons */}
+            <div className="flex items-center gap-4 text-slate-300">
+              {school.facebookUrl && (
+                <a href={school.facebookUrl} target="_blank" rel="noreferrer" className="hover:text-blue-400 transition-colors">
+                  <Facebook className="h-4 w-4" />
+                </a>
+              )}
+              {school.instagramUrl && (
+                <a href={school.instagramUrl} target="_blank" rel="noreferrer" className="hover:text-pink-400 transition-colors">
+                  <Instagram className="h-4 w-4" />
+                </a>
+              )}
+              {school.linkedinUrl && (
+                <a href={school.linkedinUrl} target="_blank" rel="noreferrer" className="hover:text-sky-400 transition-colors">
+                  <Linkedin className="h-4 w-4" />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Carleton University Signature Dynamic Curved Brand Swoosh Banner */}
+        <div className="relative w-full overflow-hidden pt-24 pb-16 bg-slate-950 border-t border-slate-900/80">
+          {/* Dual Layered Dynamic Brand Swoosh Waves (Adapts dynamically to school primary & secondary brand colors) */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <svg
+              className="absolute bottom-0 left-0 w-full h-48 md:h-64"
+              viewBox="0 0 1440 320"
+              fill="none"
+              preserveAspectRatio="none"
+            >
+              {/* Secondary Brand Color Curve Accent */}
+              <path
+                d="M0,192 C320,300 640,120 960,220 C1280,320 1440,180 1440,180 L1440,320 L0,320 Z"
+                fill={secondaryColor}
+                opacity="0.85"
+              />
+              {/* Primary Brand Color Swoosh Wave (School Primary Accent / Carleton Red Swoosh) */}
+              <path
+                d="M0,240 C360,140 720,280 1080,180 C1260,130 1440,220 1440,220 L1440,320 L0,320 Z"
+                fill={brand}
+              />
+            </svg>
+          </div>
+
+          {/* Centered Carleton-Style Institutional Logo & Crest Banner */}
+          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-4 px-6 pt-4">
+            <div className="inline-flex items-center justify-center p-4 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-transform hover:scale-105 duration-300">
+              {school.logoUrl ? (
+                <img src={school.logoUrl} alt={school.name} className="h-14 md:h-20 object-contain drop-shadow-md" />
+              ) : (
+                <GraduationCap className="h-12 w-12 text-white drop-shadow-md" />
+              )}
+            </div>
+            <h3 className="serif text-3xl md:text-5xl italic text-white font-black drop-shadow-md tracking-tight">
+              {school.name}
+            </h3>
+            {school.address && (
+              <p className="text-xs uppercase tracking-[0.25em] text-white/90 font-bold font-mono drop-shadow-sm">
+                {school.address}
+              </p>
+            )}
+
+            <div className="pt-6 text-[11px] font-bold uppercase tracking-widest text-white/70">
+              &copy; {new Date().getFullYear()} {school.name}. All Rights Reserved. Powered by GAM Edu Platform.
+            </div>
           </div>
         </div>
       </footer>
