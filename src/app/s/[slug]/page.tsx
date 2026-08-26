@@ -346,8 +346,14 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     ? school.gallery
     : defaultFallbackGallery;
 
-  const testimonialList = school?.customTestimonials && school.customTestimonials.length > 0
+  const testimonialList = (Array.isArray(school?.testimonials) && school.testimonials.length > 0)
+    ? school.testimonials
+    : (Array.isArray(school?.customTestimonials) && school.customTestimonials.length > 0)
     ? school.customTestimonials
+    : (Array.isArray(school?.reviews) && school.reviews.length > 0)
+    ? school.reviews
+    : (Array.isArray(school?.parentReviews) && school.parentReviews.length > 0)
+    ? school.parentReviews
     : defaultTestimonials;
 
   const validVideos = (school?.videoUrls || [])
@@ -1917,49 +1923,56 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             {/* Testimonials 3-Card Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
               {testimonialList.map((t: any, idx: number) => {
+                const quote = t.quote || t.text || t.comment || t.review || t.content || '';
+                const name = t.name || t.author || t.parentName || t.studentName || 'Parent / Alumni';
+                const role = t.role || t.title || t.relation || 'Parent';
+                const avatar = t.avatar || t.photoUrl || t.imageUrl || t.image;
+                const rating = t.rating || 5;
+
                 const isSelected = idx === activeTestimonialIdx;
                 return (
-                  <div
-                    key={idx}
-                    onClick={() => setActiveTestimonialIdx(idx)}
-                    className={`bg-slate-950/80 backdrop-blur-md rounded-[2.5rem] p-8 md:p-10 border transition-all duration-500 flex flex-col justify-between cursor-pointer group ${
-                      isSelected
-                        ? 'border-indigo-500/80 shadow-2xl shadow-indigo-500/10 scale-105 bg-slate-950'
-                        : 'border-white/10 hover:border-white/20 opacity-85 hover:opacity-100'
-                    }`}
-                  >
-                    <div className="space-y-6">
-                      {/* Rating Stars & Quote Icon */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          {[...Array(t.rating || 5)].map((_, starIdx) => (
-                            <Star key={starIdx} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                          ))}
+                  <ScrollReveal key={idx} delayMs={idx * 120} className="h-full">
+                    <div
+                      onClick={() => setActiveTestimonialIdx(idx)}
+                      className={`bg-slate-950/80 backdrop-blur-md rounded-[2.5rem] p-8 md:p-10 border transition-all duration-500 flex flex-col justify-between cursor-pointer group h-full ${
+                        isSelected
+                          ? 'border-indigo-500/80 shadow-2xl shadow-indigo-500/10 scale-105 bg-slate-950'
+                          : 'border-white/10 hover:border-white/20 opacity-85 hover:opacity-100'
+                      }`}
+                    >
+                      <div className="space-y-6">
+                        {/* Rating Stars & Quote Icon */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            {[...Array(rating)].map((_, starIdx) => (
+                              <Star key={starIdx} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                            ))}
+                          </div>
+                          <Quote className="h-8 w-8 text-white/20 group-hover:text-indigo-400/40 transition-colors" />
                         </div>
-                        <Quote className="h-8 w-8 text-white/20 group-hover:text-indigo-400/40 transition-colors" />
+
+                        {/* Quote Text */}
+                        <p className="text-base text-slate-300 leading-relaxed italic font-medium">
+                          "{quote}"
+                        </p>
                       </div>
 
-                      {/* Quote Text */}
-                      <p className="text-base text-slate-300 leading-relaxed italic font-medium">
-                        "{t.quote}"
-                      </p>
-                    </div>
-
-                    {/* Author Footer */}
-                    <div className="flex items-center gap-4 pt-6 mt-6 border-t border-white/10">
-                      {t.avatar ? (
-                        <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-indigo-400/40 shrink-0" />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shrink-0">
-                          {t.name?.charAt(0) || 'P'}
+                      {/* Author Footer */}
+                      <div className="flex items-center gap-4 pt-6 mt-6 border-t border-white/10">
+                        {avatar ? (
+                          <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover border-2 border-indigo-400/40 shrink-0" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shrink-0 shadow-md">
+                            {name.charAt(0)}
+                          </div>
+                        )}
+                        <div>
+                          <h4 className="text-base font-bold text-white leading-tight">{name}</h4>
+                          <p className="text-xs text-indigo-300/80 font-medium mt-0.5">{role}</p>
                         </div>
-                      )}
-                      <div>
-                        <h4 className="text-base font-bold text-white leading-tight">{t.name}</h4>
-                        <p className="text-xs text-indigo-300/80 font-medium mt-0.5">{t.role || 'Parent'}</p>
                       </div>
                     </div>
-                  </div>
+                  </ScrollReveal>
                 );
               })}
             </div>
