@@ -886,7 +886,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
       {/* ─── NAV ────────────────────────────────────────────── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        navScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
+        navScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100'
+          : 'bg-slate-950/80 backdrop-blur-md border-b border-white/10 shadow-lg'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* name / crest */}
@@ -895,26 +897,26 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               className="font-black tracking-tight leading-tight transition-colors whitespace-normal break-words"
               style={{
                 fontSize: 'clamp(0.85rem, 2vw, 1.15rem)',
-                color: navScrolled ? brand : (isLight ? '#1e293b' : 'white')
+                color: navScrolled ? brand : 'white'
               }}
             >
               {school.name}
             </span>
             {school.logoUrl && (
-              <img src={school.logoUrl} alt={school.name} className="h-10 w-10 shrink-0 object-contain rounded-xl" />
+              <img src={school.logoUrl} alt={school.name} className="h-10 w-10 shrink-0 object-contain rounded-xl bg-white/10 p-1 border border-white/20" />
             )}
           </div>
 
           {/* links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
             {navLinks.map(link => (
               <button
                 key={link.id}
                 onClick={() => scrollTo(link.id)}
-                className={`text-sm font-bold uppercase tracking-widest transition-colors ${
+                className={`text-xs lg:text-sm font-black uppercase tracking-widest transition-colors cursor-pointer ${
                   navScrolled 
-                    ? 'text-slate-500 hover:text-slate-900' 
-                    : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-white/80 hover:text-white')
+                    ? 'text-slate-600 hover:text-slate-900' 
+                    : 'text-slate-100 hover:text-white drop-shadow-sm'
                 }`}
               >
                 {link.label}
@@ -924,17 +926,17 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               href="https://gam-it-service.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className={`px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all shadow-sm border flex items-center gap-1.5 hover:scale-[1.03] active:scale-[0.97] ${
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm border flex items-center gap-1.5 hover:scale-[1.03] active:scale-[0.97] ${
                 navScrolled 
                   ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900' 
                   : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
               }`}
             >
-              <GraduationCap className="h-4 w-4" /> Portal Login
+              <GraduationCap className="h-3.5 w-3.5" /> Portal Login
             </a>
             <button
               onClick={() => setA11yOpen(true)}
-              className={`p-2.5 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
+              className={`p-2 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
                 navScrolled 
                   ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
                   : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
@@ -946,7 +948,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             </button>
             <button
               onClick={() => scrollTo('apply')}
-              className="px-6 py-2.5 rounded-xl text-white text-sm font-black uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-[0.97] hover:shadow-lg shadow-md cursor-pointer"
+              className="px-5 py-2.5 rounded-xl text-white text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-[0.97] hover:shadow-lg shadow-md cursor-pointer shrink-0"
               style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
             >
               Apply Now
@@ -956,7 +958,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           {/* Hamburger for Mobile */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-            className="flex md:hidden p-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all"
+            className="flex md:hidden p-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all text-white"
             style={{ color: navScrolled ? brand : 'white' }}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
