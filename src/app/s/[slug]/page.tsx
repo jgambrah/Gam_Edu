@@ -831,7 +831,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const testimonialList = (() => {
     if (school?.hideTestimonials) return [];
 
-    // 1. Array from customTestimonials or testimonials or reviews or parentReviews
+    // 1. If school explicitly defined customTestimonials array in DB
     if (Array.isArray(school?.customTestimonials) && school.customTestimonials.length > 0) {
       return school.customTestimonials;
     }

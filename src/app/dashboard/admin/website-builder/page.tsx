@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles, Star, MessageSquare
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles, Star, MessageSquare, Pencil
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -141,6 +141,7 @@ export default function WebsiteBuilderPage() {
   const [testiRating, setTestiRating] = useState('5');
   const [testiAvatarUrl, setTestiAvatarUrl] = useState('');
   const [testiAvatarUploading, setTestiAvatarUploading] = useState(false);
+  const [editingTestiIdx, setEditingTestiIdx] = useState<number | null>(null);
 
   const handleTestiAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -157,29 +158,68 @@ export default function WebsiteBuilderPage() {
     }
   };
 
-  const handleAddTestimonial = () => {
-    if (!testiName.trim() || !testiQuote.trim()) {
-      toast({ title: "Name & Quote Required", description: "Please enter author name and testimonial text.", variant: "destructive" });
-      return;
-    }
-    const newItem = {
-      id: `testi-${Date.now()}`,
-      name: testiName.trim(),
-      role: testiRole.trim() || 'Parent',
-      quote: testiQuote.trim(),
-      rating: Number(testiRating) || 5,
-      avatar: testiAvatarUrl
-    };
-    setFormData(prev => ({
-      ...prev,
-      customTestimonials: [...(prev.customTestimonials || []), newItem]
-    }));
+  const handleStartEditTestimonial = (index: number) => {
+    const item = formData.customTestimonials[index];
+    if (!item) return;
+    setEditingTestiIdx(index);
+    setTestiName(item.name || '');
+    setTestiRole(item.role || '');
+    setTestiQuote(item.quote || '');
+    setTestiRating(String(item.rating || 5));
+    setTestiAvatarUrl(item.avatar || '');
+  };
+
+  const handleCancelEditTestimonial = () => {
+    setEditingTestiIdx(null);
     setTestiName('');
     setTestiRole('');
     setTestiQuote('');
     setTestiRating('5');
     setTestiAvatarUrl('');
-    toast({ title: "Testimonial Added!", description: "Review added to list. Click Save to publish." });
+  };
+
+  const handleAddOrUpdateTestimonial = () => {
+    if (!testiName.trim() || !testiQuote.trim()) {
+      toast({ title: "Name & Quote Required", description: "Please enter author name and testimonial text.", variant: "destructive" });
+      return;
+    }
+
+    if (editingTestiIdx !== null) {
+      setFormData(prev => {
+        const updated = [...prev.customTestimonials];
+        updated[editingTestiIdx] = {
+          ...updated[editingTestiIdx],
+          name: testiName.trim(),
+          role: testiRole.trim() || 'Parent',
+          quote: testiQuote.trim(),
+          rating: Number(testiRating) || 5,
+          avatar: testiAvatarUrl
+        };
+        return { ...prev, customTestimonials: updated };
+      });
+      setEditingTestiIdx(null);
+      toast({ title: "Testimonial Updated!", description: "Changes applied. Click Save & Publish Website." });
+    } else {
+      const newItem = {
+        id: `testi-${Date.now()}`,
+        name: testiName.trim(),
+        role: testiRole.trim() || 'Parent',
+        quote: testiQuote.trim(),
+        rating: Number(testiRating) || 5,
+        avatar: testiAvatarUrl
+      };
+      setFormData(prev => ({
+        ...prev,
+        customTestimonials: [...(prev.customTestimonials || []), newItem]
+      }));
+      toast({ title: "Testimonial Added!", description: "Review added. Click Save & Publish Website." });
+    }
+
+    setTestiName('');
+    setTestiRole('');
+    setTestiQuote('');
+    setTestiRating('5');
+    setTestiAvatarUrl('');
   };
 
   const handleRemoveTestimonial = (index: number) => {
@@ -187,6 +227,18 @@ export default function WebsiteBuilderPage() {
       ...prev,
       customTestimonials: prev.customTestimonials.filter((_, i) => i !== index)
     }));
+    if (editingTestiIdx === index) {
+      handleCancelEditTestimonial();
+    }
+  };
+
+  const handleClearAllTestimonials = () => {
+    setFormData(prev => ({
+      ...prev,
+      customTestimonials: []
+    }));
+    handleCancelEditTestimonial();
+    toast({ title: "All Reviews Cleared", description: "Default reviews erased. Add your custom parent reviews." });
   };
 
   useEffect(() => {
@@ -1107,11 +1159,23 @@ export default function WebsiteBuilderPage() {
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {/* New Testimonial Form */}
+                            {/* New / Edit Testimonial Form */}
                             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-4">
-                                <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <Plus className="h-4 w-4 text-indigo-600" /> Add New Parent / Alumni Review
-                                </h4>
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                        {editingTestiIdx !== null ? (
+                                            <><Pencil className="h-4 w-4 text-indigo-600" /> Edit Parent / Alumni Review</>
+                                        ) : (
+                                            <><Plus className="h-4 w-4 text-indigo-600" /> Add New Parent / Alumni Review</>
+                                        )}
+                                    </h4>
+                                    {editingTestiIdx !== null && (
+                                        <Button type="button" variant="ghost" size="sm" onClick={handleCancelEditTestimonial} className="text-xs text-slate-500 hover:text-slate-700">
+                                            Cancel Editing
+                                        </Button>
+                                    )}
+                                </div>
+
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div className="space-y-1.5">
                                         <Label className="text-xs font-semibold">Author Name *</Label>
@@ -1171,25 +1235,54 @@ export default function WebsiteBuilderPage() {
                                             </label>
                                         </Button>
                                     </div>
-                                    <Button type="button" onClick={handleAddTestimonial} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
-                                        <Plus className="h-4 w-4 mr-1" /> Add Testimonial
-                                    </Button>
+                                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                                        {editingTestiIdx !== null && (
+                                            <Button type="button" variant="outline" onClick={handleCancelEditTestimonial} size="sm" className="w-1/2 sm:w-auto">
+                                                Cancel
+                                            </Button>
+                                        )}
+                                        <Button type="button" onClick={handleAddOrUpdateTestimonial} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
+                                            {editingTestiIdx !== null ? (
+                                                <><Pencil className="h-4 w-4 mr-1" /> Update Testimonial</>
+                                            ) : (
+                                                <><Plus className="h-4 w-4 mr-1" /> Add Testimonial</>
+                                            )}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* List of Current Testimonials */}
                             <div className="space-y-3 pt-2">
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                                    Active Testimonials ({formData.customTestimonials?.length || 0})
-                                </h4>
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                        Active Testimonials ({formData.customTestimonials?.length || 0})
+                                    </h4>
+                                    {formData.customTestimonials && formData.customTestimonials.length > 0 && (
+                                        <Button 
+                                            type="button" 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            onClick={handleClearAllTestimonials}
+                                            className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-7"
+                                        >
+                                            <Trash2 className="h-3.5 w-3.5 mr-1" /> Clear All Reviews
+                                        </Button>
+                                    )}
+                                </div>
                                 {(!formData.customTestimonials || formData.customTestimonials.length === 0) ? (
                                     <div className="p-6 text-center border-2 border-dashed rounded-xl bg-slate-50 text-slate-400 text-sm">
-                                        No custom testimonials added yet. Add parent & alumni reviews above or leave empty to display system defaults.
+                                        No custom testimonials added yet. Click above to add your own parent & alumni reviews.
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         {formData.customTestimonials.map((t, idx) => (
-                                            <div key={t.id || idx} className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 relative group hover:border-indigo-200 transition-colors">
+                                            <div 
+                                                key={t.id || idx} 
+                                                className={`p-4 rounded-xl border bg-white space-y-2 relative group transition-all ${
+                                                    editingTestiIdx === idx ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-50/20' : 'border-slate-200 hover:border-indigo-200'
+                                                }`}
+                                            >
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="flex items-center gap-2.5">
                                                         <div className="h-9 w-9 rounded-full overflow-hidden bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-600 shrink-0 text-sm">
@@ -1204,15 +1297,28 @@ export default function WebsiteBuilderPage() {
                                                             <div className="text-xs text-indigo-600 font-medium">{t.role}</div>
                                                         </div>
                                                     </div>
-                                                    <Button 
-                                                        type="button" 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        onClick={() => handleRemoveTestimonial(idx)}
-                                                        className="h-7 w-7 text-slate-400 hover:text-red-600 hover:bg-red-50"
-                                                    >
-                                                        <Trash2 className="h-3.5 w-3.5" />
-                                                    </Button>
+                                                    <div className="flex items-center gap-1">
+                                                        <Button 
+                                                            type="button" 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            onClick={() => handleStartEditTestimonial(idx)}
+                                                            className="h-7 w-7 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50"
+                                                            title="Edit Testimonial"
+                                                        >
+                                                            <Pencil className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                        <Button 
+                                                            type="button" 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            onClick={() => handleRemoveTestimonial(idx)}
+                                                            className="h-7 w-7 text-slate-400 hover:text-red-600 hover:bg-red-50"
+                                                            title="Delete Testimonial"
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                                 <p className="text-xs text-slate-600 italic line-clamp-3">"{t.quote}"</p>
                                                 <div className="flex items-center gap-1 text-amber-400 text-xs">
