@@ -339,6 +339,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [activeImageIdx, setActiveImageIdx] = useState<number | null>(null);
   const [fabOpen, setFabOpen] = useState(false);
   const [activeTestimonialIdx, setActiveTestimonialIdx] = useState(0);
+  const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
 
   // Accessibility (WCAG) controls
   const [a11yOpen, setA11yOpen] = useState(false);
@@ -839,6 +840,37 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
     return items;
   })();
+
+  const defaultAdmissionsFaqs = [
+    {
+      q: "What is the cut-off age for Pre-School & Kindergarten enrollment?",
+      a: "Our Pre-School program welcomes toddlers starting from 2 years old (Creche & Nursery). Kindergarten 1 requires children to be 4 years old by the start of the academic year, while KG2 requires 5 years old."
+    },
+    {
+      q: "Are there school bus transport services available for students?",
+      a: "Yes! We operate safe, air-conditioned campus school buses with real-time GPS tracking and dedicated bus attendants. Pick-up and drop-off routes cover major residential neighborhoods surrounding the school."
+    },
+    {
+      q: "How do parents track their child's daily academic progress & attendance?",
+      a: "Parents receive login credentials to our 24/7 GAM Edu Parent Portal & Mobile App. You can view instant NFC gate check-in alerts, weekly continuous assessment grades, teacher notes, and term report cards."
+    },
+    {
+      q: "What are the entry placement requirements for transfer students?",
+      a: "Transfer students from Primary 1 through JHS 2 undergo a standard placement assessment in English and Mathematics to ensure accurate grade placement, alongside submitting previous terminal reports."
+    },
+    {
+      q: "How are tuition fees paid and are flexible payment terms available?",
+      a: "Tuition and facility fees can be paid conveniently via Mobile Money or Visa/Mastercard on the Parent Portal with instant e-receipts. Flexible term installment plans are available upon request at the Accounts Office."
+    }
+  ];
+
+  const admissionsFaqs = (Array.isArray(school?.faqs) && school.faqs.length > 0)
+    ? school.faqs
+    : (Array.isArray(school?.customFaqs) && school.customFaqs.length > 0)
+    ? school.customFaqs
+    : (Array.isArray(school?.admissionsFaqs) && school.admissionsFaqs.length > 0)
+    ? school.admissionsFaqs
+    : defaultAdmissionsFaqs;
 
   const navLinks = [
     { label: 'About', id: 'about' },
@@ -2362,6 +2394,80 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* ─── INTERACTIVE ADMISSIONS ACCORDION (FAQ) MODULE ──── */}
+          <div className="pt-16 border-t border-slate-200/80 space-y-10 max-w-4xl mx-auto">
+            <div className="text-center space-y-3">
+              <span
+                className="inline-block px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border"
+                style={{ color: brand, borderColor: `${brand}30`, backgroundColor: `${brand}10` }}
+              >
+                Admissions FAQ
+              </span>
+              <h3 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+                Frequently Asked Questions
+              </h3>
+              <p className="text-sm text-slate-500 font-medium">
+                Everything you need to know about enrolling your child at {school.name}.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {admissionsFaqs.map((faq: any, idx: number) => {
+                const isOpen = openFaqIdx === idx;
+                const questionText = faq.q || faq.question || faq.title || '';
+                const answerText = faq.a || faq.answer || faq.content || faq.description || '';
+
+                return (
+                  <ScrollReveal key={idx} delayMs={idx * 60}>
+                    <div
+                      className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                        isOpen
+                          ? 'bg-white border-indigo-200 shadow-md ring-2 ring-indigo-500/10'
+                          : 'bg-white/80 hover:bg-white border-slate-200/80 hover:border-slate-300 shadow-xs'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                        className="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-colors ${
+                              isOpen ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
+                            }`}
+                          >
+                            Q{idx + 1}
+                          </div>
+                          <h4 className="text-base font-bold text-slate-800 leading-snug">
+                            {questionText}
+                          </h4>
+                        </div>
+
+                        <div
+                          className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 transition-all duration-300 ${
+                            isOpen
+                              ? 'bg-indigo-50 border-indigo-200 text-indigo-600 rotate-180'
+                              : 'bg-slate-50 border-slate-200 text-slate-400'
+                          }`}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </div>
+                      </button>
+
+                      {/* Smooth Collapsible Content Drawer */}
+                      {isOpen && (
+                        <div className="px-6 pb-6 pt-0 border-t border-slate-100/80 text-sm text-slate-600 leading-relaxed font-medium animate-in fade-in duration-200 pl-17">
+                          <p className="pt-4">{answerText}</p>
+                        </div>
+                      )}
+                    </div>
+                  </ScrollReveal>
+                );
+              })}
             </div>
           </div>
         </div>
