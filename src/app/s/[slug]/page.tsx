@@ -935,20 +935,52 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     fetchClasses();
   }, [firestore, school]);
 
-  // ── AUTOMATED REAL-TIME ERP SEAT AVAILABILITY COMPUTATION ────
+  // ── AUTOMATED REAL-TIME ERP & WEB BUILDER SEAT AVAILABILITY COMPUTATION ────
   const liveSeatQuotas = useMemo(() => {
     if (school?.hideSeatAvailability) return [];
 
-    // 1. If school configured explicit custom quota items in DB
-    if (Array.isArray(school?.enrollmentQuotas) && school.enrollmentQuotas.length > 0) {
-      return school.enrollmentQuotas.map((q: any) => ({
-        grade: q.grade || q.name || q.className || 'Grade Stream',
-        remaining: typeof q.remaining === 'number' ? q.remaining : (Number(q.total || q.capacity || 30) - Number(q.enrolled || q.students || 0)),
+    // 1. WEB BUILDER TOP PRIORITY: Explicit custom vacancies array entered in Web Builder
+    const webBuilderQuotas = Array.isArray(school?.enrollmentQuotas) && school.enrollmentQuotas.length > 0
+      ? school.enrollmentQuotas
+      : Array.isArray(school?.vacancies) && school.vacancies.length > 0
+      ? school.vacancies
+      : Array.isArray(school?.customQuotas) && school.customQuotas.length > 0
+      ? school.customQuotas
+      : [];
+
+    if (webBuilderQuotas.length > 0) {
+      return webBuilderQuotas.map((q: any) => ({
+        grade: q.grade || q.name || q.category || q.className || 'Class Stream',
+        remaining: typeof q.remaining === 'number'
+          ? q.remaining
+          : (Number(q.total || q.capacity || 30) - Number(q.enrolled || q.students || 0)),
         total: Number(q.total || q.capacity || 30)
       }));
     }
 
-    // 2. Check embedded `school.classes` or `school.classStreams` array on school document
+    // 2. WEB BUILDER CATEGORY INPUTS: Individual class category seat fields
+    const webBuilderCategorySeats: Array<{ grade: string; remaining: number; total: number }> = [];
+    if (school?.preschoolSeats != null && school.preschoolSeats !== '') {
+      webBuilderCategorySeats.push({ grade: 'Pre-School / Creche', remaining: Number(school.preschoolSeats), total: Number(school.preschoolCap || 25) });
+    }
+    if (school?.kgSeats != null && school.kgSeats !== '') {
+      webBuilderCategorySeats.push({ grade: 'Kindergarten 1 & 2', remaining: Number(school.kgSeats), total: Number(school.kgCap || 30) });
+    }
+    if (school?.primaryLowerSeats != null && school.primaryLowerSeats !== '') {
+      webBuilderCategorySeats.push({ grade: 'Primary (Lower)', remaining: Number(school.primaryLowerSeats), total: Number(school.primaryLowerCap || 35) });
+    }
+    if (school?.primaryUpperSeats != null && school.primaryUpperSeats !== '') {
+      webBuilderCategorySeats.push({ grade: 'Primary (Upper)', remaining: Number(school.primaryUpperSeats), total: Number(school.primaryUpperCap || 35) });
+    }
+    if (school?.jhsSeats != null && school.jhsSeats !== '') {
+      webBuilderCategorySeats.push({ grade: 'JHS Academy', remaining: Number(school.jhsSeats), total: Number(school.jhsCap || 40) });
+    }
+
+    if (webBuilderCategorySeats.length > 0) {
+      return webBuilderCategorySeats;
+    }
+
+    // 3. ERP CLASS MODULE AUTO-CALCULATION: From realtimeClasses or embedded school.classes
     const embeddedClasses = Array.isArray(school?.classes) && school.classes.length > 0
       ? school.classes
       : Array.isArray(school?.classStreams) && school.classStreams.length > 0
@@ -970,28 +1002,6 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
           total
         };
       });
-    }
-
-    // 3. Check individual seat fields on school doc (supporting numbers or string numbers from DB)
-    const customSpecificSeats: Array<{ grade: string; remaining: number; total: number }> = [];
-    if (school?.preschoolSeats != null && school.preschoolSeats !== '') {
-      customSpecificSeats.push({ grade: 'Pre-School / Creche', remaining: Number(school.preschoolSeats), total: Number(school.preschoolCap || 25) });
-    }
-    if (school?.kgSeats != null && school.kgSeats !== '') {
-      customSpecificSeats.push({ grade: 'Kindergarten 1 & 2', remaining: Number(school.kgSeats), total: Number(school.kgCap || 30) });
-    }
-    if (school?.primaryLowerSeats != null && school.primaryLowerSeats !== '') {
-      customSpecificSeats.push({ grade: 'Primary (Lower)', remaining: Number(school.primaryLowerSeats), total: Number(school.primaryLowerCap || 35) });
-    }
-    if (school?.primaryUpperSeats != null && school.primaryUpperSeats !== '') {
-      customSpecificSeats.push({ grade: 'Primary (Upper)', remaining: Number(school.primaryUpperSeats), total: Number(school.primaryUpperCap || 35) });
-    }
-    if (school?.jhsSeats != null && school.jhsSeats !== '') {
-      customSpecificSeats.push({ grade: 'JHS Academy', remaining: Number(school.jhsSeats), total: Number(school.jhsCap || 40) });
-    }
-
-    if (customSpecificSeats.length > 0) {
-      return customSpecificSeats;
     }
 
     // 4. Default Streams with dynamic capacity calculation
