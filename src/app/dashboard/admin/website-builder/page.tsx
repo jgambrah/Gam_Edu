@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles, Star, MessageSquare, Pencil
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles, Star, MessageSquare, Pencil, BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
