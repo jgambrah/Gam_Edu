@@ -8,7 +8,7 @@ import {
   Camera, Info, Facebook, Instagram, Linkedin, Video,
   Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap,
   User, Users, ChevronDown, ChevronLeft, ChevronRight, Star, BookOpen, Award, Menu, X, Atom,
-  MessageCircle, Quote, Eye, Type, ZapOff, RotateCcw
+  MessageCircle, Quote, Eye, Type, ZapOff, RotateCcw, Smartphone, Bell, Shield
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -1577,6 +1577,181 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               </p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ─── SMART CAMPUS / TECHNOLOGY SHOWCASE MODULE ────────────── */}
+      <section id="technology" className="py-32 px-6 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white relative overflow-hidden">
+        {/* Ambient Glows */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none opacity-20" style={{ backgroundColor: brand }} />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none opacity-15" style={{ backgroundColor: secondaryColor }} />
+
+        <div className="max-w-7xl mx-auto relative z-10 space-y-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            
+            {/* Left Column: Interactive Smartphone Mockup */}
+            <div className="lg:col-span-5 flex justify-center order-2 lg:order-1">
+              <ScrollReveal delayMs={100} className="w-full max-w-sm">
+                <div className="relative rounded-[3rem] p-4 bg-slate-900 border-4 border-slate-800 shadow-2xl shadow-indigo-950/50 group hover:scale-[1.02] transition-transform duration-500">
+                  {/* Speaker & Notch */}
+                  <div className="absolute top-7 left-1/2 -translate-x-1/2 w-28 h-4 bg-slate-950 rounded-full z-20 flex items-center justify-center">
+                    <div className="w-10 h-1 bg-slate-800 rounded-full" />
+                  </div>
+
+                  {/* Smartphone Display Frame */}
+                  <div className="bg-slate-950 rounded-[2.5rem] overflow-hidden border border-white/10 pt-10 pb-6 px-4 space-y-4 text-left relative">
+                    {/* App Bar */}
+                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                      <div className="flex items-center gap-2">
+                        {school.logoUrl ? (
+                          <img src={school.logoUrl} alt="Logo" className="w-7 h-7 object-contain rounded-lg bg-white/10 p-0.5" />
+                        ) : (
+                          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+                            <GraduationCap className="h-4 w-4" />
+                          </div>
+                        )}
+                        <div>
+                          <h4 className="text-[10px] font-black text-white leading-tight font-mono">{school.name}</h4>
+                          <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-widest">Parent Portal Live</span>
+                        </div>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[8px] font-black uppercase font-mono border border-emerald-500/30">
+                        Connected
+                      </span>
+                    </div>
+
+                    {/* Dashboard Widget 1: Attendance Badge */}
+                    <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">Today's Attendance</span>
+                        <span className="text-[9px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">Present 08:15 AM</span>
+                      </div>
+                      <p className="text-[11px] font-bold text-white">Student checked in safely via NFC Smart Gate</p>
+                    </div>
+
+                    {/* Dashboard Widget 2: Academic Progress */}
+                    <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">Continuous Assessment</span>
+                        <span className="text-[10px] font-black text-yellow-400">Grade A (92%)</span>
+                      </div>
+                      <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full w-[92%]" />
+                      </div>
+                      <span className="text-[9px] text-slate-300 font-medium block">Mathematics & Robotics Mid-Term Result Released</span>
+                    </div>
+
+                    {/* Dashboard Widget 3: Instant Fee Status */}
+                    <div className="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-400/30 backdrop-blur-md flex items-center justify-between">
+                      <div>
+                        <span className="text-[8px] font-black uppercase text-indigo-300 font-mono block">Tuition Fee Status</span>
+                        <span className="text-[11px] font-bold text-white">Term 1 Fees Paid in Full</span>
+                      </div>
+                      <span className="p-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-bold">
+                        Receipt #8492
+                      </span>
+                    </div>
+
+                    {/* App Navigation Bar */}
+                    <div className="pt-2 flex justify-around border-t border-white/10 text-slate-400">
+                      <div className="flex flex-col items-center gap-0.5 text-indigo-400">
+                        <Smartphone className="h-3.5 w-3.5" />
+                        <span className="text-[7px] font-bold uppercase font-mono">Home</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <BookOpen className="h-3.5 w-3.5" />
+                        <span className="text-[7px] font-bold uppercase font-mono">Grades</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <Bell className="h-3.5 w-3.5" />
+                        <span className="text-[7px] font-bold uppercase font-mono">Notices</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-0.5">
+                        <Users className="h-3.5 w-3.5" />
+                        <span className="text-[7px] font-bold uppercase font-mono">Profile</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
+
+            {/* Right Column: Technology Selling Points & Features */}
+            <div className="lg:col-span-7 space-y-8 text-left order-1 lg:order-2">
+              <ScrollReveal delayMs={200} className="space-y-4">
+                <span
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border backdrop-blur-md"
+                  style={{ color: '#38bdf8', borderColor: '#38bdf840', backgroundColor: '#38bdf815' }}
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse" /> Smart Campus Technology
+                </span>
+
+                <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tight">
+                  Always Connected to Your Child's Journey
+                </h2>
+
+                <p className="text-slate-300 text-base md:text-lg leading-relaxed font-medium">
+                  {school.name} leverages the state-of-the-art <strong className="text-white">GAM Edu Multitenant Platform</strong> to provide parents with 24/7 real-time visibility, automated security alerts, and seamless digital interaction.
+                </p>
+              </ScrollReveal>
+
+              {/* Feature Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:bg-white/10 transition-colors">
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-400 mb-3">
+                    <BookOpen className="h-5 w-5" />
+                  </div>
+                  <h4 className="text-base font-black text-white">Real-Time Academic Tracking</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                    View live gradebooks, weekly continuous assessments, homework schedules, and official term report card downloads instantly.
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:bg-white/10 transition-colors">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 mb-3">
+                    <Bell className="h-5 w-5" />
+                  </div>
+                  <h4 className="text-base font-black text-white">Automated Attendance Alerts</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                    Receive instant SMS & push notifications as soon as your child checks into campus, enters the classroom, or boards school transport.
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:bg-white/10 transition-colors">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400 mb-3">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <h4 className="text-base font-black text-white">Direct Parent-Teacher Messaging</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                    Communicate directly with class educators, view daily classroom story photos, and request one-on-one consultation appointments.
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:bg-white/10 transition-colors">
+                  <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-400 mb-3">
+                    <Shield className="h-5 w-5" />
+                  </div>
+                  <h4 className="text-base font-black text-white">Secure Digital Fee Payments</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                    Pay tuition fees securely via Mobile Money or Visa/Mastercard with instant digital receipts and automated balance tracking.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Link to Portal Login */}
+              <div className="pt-4 flex items-center gap-4">
+                <a
+                  href="https://gam-it-service.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-4 rounded-2xl text-white text-sm font-black uppercase tracking-widest shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:scale-[1.03] active:scale-95 flex items-center gap-2.5 border border-white/20 cursor-pointer"
+                  style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+                >
+                  <GraduationCap className="h-5 w-5" /> Access Parent Portal ↗
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
