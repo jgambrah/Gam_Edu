@@ -680,6 +680,93 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [activeTestimonialIdx, setActiveTestimonialIdx] = useState(0);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [activePortalTab, setActivePortalTab] = useState<'grades' | 'attendance' | 'fees' | 'stories'>('grades');
+  const [currentLang, setCurrentLang] = useState<'en' | 'fr' | 'tw' | 'ar' | 'es'>('en');
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+
+  const i18nDict: Record<string, Record<string, string>> = {
+    en: {
+      about: 'About',
+      academics: 'Academics',
+      team: 'Team',
+      events: 'Events',
+      news: 'News',
+      gallery: 'Gallery',
+      reviews: 'Reviews',
+      contact: 'Contact',
+      applyNow: 'Apply Now',
+      portalLogin: 'Portal Login',
+      admissions: 'Admissions',
+      joinCommunity: 'Join Our Community',
+      campusTour: 'Book Campus Tour',
+      accreditation: 'Institutional Accreditation'
+    },
+    fr: {
+      about: 'À Propos',
+      academics: 'Programmes',
+      team: 'Équipe',
+      events: 'Événements',
+      news: 'Actualités',
+      gallery: 'Galerie',
+      reviews: 'Avis',
+      contact: 'Contact',
+      applyNow: 'Postuler',
+      portalLogin: 'Connexion Portail',
+      admissions: 'Admissions',
+      joinCommunity: 'Rejoignez Notre Communauté',
+      campusTour: 'Réserver une Visite',
+      accreditation: 'Accréditations & Normes'
+    },
+    tw: {
+      about: 'Kyerɛ Mu',
+      academics: 'Adesua',
+      team: 'Akyerɛkyerɛfoɔ',
+      events: 'Ndwuma',
+      news: 'Asem Foforo',
+      gallery: 'Mfonin',
+      reviews: 'Adwene',
+      contact: 'Nkitahodi',
+      applyNow: 'Gye Tumii Seesei',
+      portalLogin: 'Kɔ Mu',
+      admissions: 'Nsramu',
+      joinCommunity: 'Bata Yɛn Ho',
+      campusTour: 'Sra Skuul Ha',
+      accreditation: 'Aban Nsramu'
+    },
+    ar: {
+      about: 'عن المدرسة',
+      academics: 'الأكاديميات',
+      team: 'الهيئة التدريسية',
+      events: 'الفعاليات',
+      news: 'الأخبار',
+      gallery: 'معرض الصور',
+      reviews: 'الآراء',
+      contact: 'اتصل بنا',
+      applyNow: 'قدّم الآن',
+      portalLogin: 'تسجيل الدخول',
+      admissions: 'القبول والتسجيل',
+      joinCommunity: 'انضم إلى مجتمعنا',
+      campusTour: 'حجز جولة',
+      accreditation: 'الاعتماد الأكاديمي'
+    },
+    es: {
+      about: 'Nosotros',
+      academics: 'Académico',
+      team: 'Profesores',
+      events: 'Eventos',
+      news: 'Noticias',
+      gallery: 'Galería',
+      reviews: 'Reseñas',
+      contact: 'Contacto',
+      applyNow: 'Aplicar Ahora',
+      portalLogin: 'Iniciar Sesión',
+      admissions: 'Admisiones',
+      joinCommunity: 'Únete a la Comunidad',
+      campusTour: 'Reservar Visita',
+      accreditation: 'Acreditaciones'
+    }
+  };
+
+  const t = i18nDict[currentLang] || i18nDict.en;
 
   // Accessibility (WCAG) controls
   const [a11yOpen, setA11yOpen] = useState(false);
@@ -1213,15 +1300,15 @@ Welcome to our admissions portal! To ensure a smooth application process for you
     : defaultAdmissionsFaqs;
 
   const navLinks = [
-    { label: 'About', id: 'about' },
+    { label: t.about || 'About', id: 'about' },
     (school.directorMessage || school.principalMessage) && { label: 'Leadership', id: 'leadership' },
-    { label: 'Academics', id: 'academics' },
-    team.length > 0 && { label: 'Team', id: 'team' },
-    eventsList.length > 0 && { label: 'Events', id: 'events' },
-    newsList && newsList.length > 0 && { label: 'News', id: 'news' },
-    galleryList.length > 0 && { label: 'Gallery', id: 'gallery' },
-    testimonialList.length > 0 && { label: 'Reviews', id: 'testimonials' },
-    { label: 'Contact', id: 'contact' },
+    { label: t.academics || 'Academics', id: 'academics' },
+    team.length > 0 && { label: t.team || 'Team', id: 'team' },
+    eventsList.length > 0 && { label: t.events || 'Events', id: 'events' },
+    newsList && newsList.length > 0 && { label: t.news || 'News', id: 'news' },
+    galleryList.length > 0 && { label: t.gallery || 'Gallery', id: 'gallery' },
+    testimonialList.length > 0 && { label: t.reviews || 'Reviews', id: 'testimonials' },
+    { label: t.contact || 'Contact', id: 'contact' },
   ].filter(Boolean) as { label: string; id: string }[];
 
   // ── render ─────────────────────────────────────────────────
@@ -1355,8 +1442,52 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
               }`}
             >
-              <GraduationCap className="h-3.5 w-3.5" /> Portal Login
+              <GraduationCap className="h-3.5 w-3.5" /> {t.portalLogin || 'Portal Login'}
             </a>
+
+            {/* Language Selector Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className={`px-3 py-2 rounded-xl border text-xs font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 ${
+                  navScrolled 
+                    ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
+                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                }`}
+                title="Select Language / Langue"
+              >
+                <span>{currentLang === 'en' ? '🇬🇧 EN' : currentLang === 'fr' ? '🇫🇷 FR' : currentLang === 'tw' ? '🇬🇭 TW' : currentLang === 'ar' ? '🇦🇪 AR' : '🇪🇸 ES'}</span>
+                <ChevronDown className="h-3 w-3" />
+              </button>
+
+              {langDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-36 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl p-1.5 z-50 animate-in fade-in duration-200">
+                  {[
+                    { code: 'en', label: 'English', flag: '🇬🇧' },
+                    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+                    { code: 'tw', label: 'Twi (Akan)', flag: '🇬🇭' },
+                    { code: 'ar', label: 'العربية', flag: '🇦🇪' },
+                    { code: 'es', label: 'Español', flag: '🇪🇸' }
+                  ].map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setCurrentLang(lang.code as any);
+                        setLangDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                        currentLang === lang.code ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      <span>{lang.flag} {lang.label}</span>
+                      {currentLang === lang.code && <span className="text-[10px]">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => setA11yOpen(true)}
               className={`p-2 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
@@ -1374,7 +1505,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               className="px-5 py-2.5 rounded-xl text-white text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-[0.97] hover:shadow-lg shadow-md cursor-pointer shrink-0"
               style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
             >
-              Apply Now
+              {t.applyNow || 'Apply Now'}
             </button>
           </div>
 
