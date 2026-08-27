@@ -102,7 +102,10 @@ export default function WebsiteBuilderPage() {
     showcaseLabPass: '',
     showcaseGpa: '',
     showcaseAttendance: '',
-    feeStatusText: ''
+    feeStatusText: '',
+    showcaseStoryText: '',
+    showcaseStoryCategory: '',
+    showcaseStoryAuthor: ''
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -310,7 +313,10 @@ export default function WebsiteBuilderPage() {
         showcaseLabPass: schoolData.showcaseLabPass || '',
         showcaseGpa: schoolData.showcaseGpa || '',
         showcaseAttendance: schoolData.showcaseAttendance || schoolData.attendanceRate || '',
-        feeStatusText: schoolData.feeStatusText || ''
+        feeStatusText: schoolData.feeStatusText || '',
+        showcaseStoryText: schoolData.showcaseStoryText || '',
+        showcaseStoryCategory: schoolData.showcaseStoryCategory || '',
+        showcaseStoryAuthor: schoolData.showcaseStoryAuthor || ''
       });
     }
   }, [schoolData]);
@@ -1417,6 +1423,42 @@ export default function WebsiteBuilderPage() {
                                         value={formData.feeStatusText} 
                                         onChange={e => setFormData({...formData, feeStatusText: e.target.value})} 
                                         className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="pt-3 border-t space-y-3">
+                                <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                    📸 Classroom Daily Photo Feed Highlight
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs font-semibold">Feed Category Badge</Label>
+                                        <Input 
+                                            placeholder="e.g. STEM Workshop" 
+                                            value={formData.showcaseStoryCategory} 
+                                            onChange={e => setFormData({...formData, showcaseStoryCategory: e.target.value})} 
+                                            className="bg-white h-9 text-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs font-semibold">Educator / Author Name</Label>
+                                        <Input 
+                                            placeholder="e.g. Lead Educator" 
+                                            value={formData.showcaseStoryAuthor} 
+                                            onChange={e => setFormData({...formData, showcaseStoryAuthor: e.target.value})} 
+                                            className="bg-white h-9 text-sm"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-semibold">Class Story Highlight Text</Label>
+                                    <Textarea 
+                                        placeholder="e.g. Students successfully assembled their first solar-powered vehicle prototypes in today's STEM workshop!" 
+                                        value={formData.showcaseStoryText} 
+                                        onChange={e => setFormData({...formData, showcaseStoryText: e.target.value})} 
+                                        rows={2} 
+                                        className="bg-white text-sm"
                                     />
                                 </div>
                             </div>

@@ -1056,7 +1056,11 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       attendanceRate: school?.showcaseAttendance || school?.attendanceRate || '100% (22/22 Days)',
       feeStatus: school?.feeStatusText || 'Status: Paid in Full',
       tuitionAmount: school?.showcaseTuition || 'GH₵ 1,850.00',
-      labPassAmount: school?.showcaseLabPass || 'GH₵ 250.00'
+      labPassAmount: school?.showcaseLabPass || 'GH₵ 250.00',
+      storyCategory: school?.showcaseStoryCategory || 'STEM Workshop',
+      storyAuthor: school?.showcaseStoryAuthor || 'Lead Educator',
+      storyAuthorInitials: school?.showcaseStoryAuthor ? school.showcaseStoryAuthor.split(' ').map((n: string) => n.charAt(0)).join('').toUpperCase().slice(0, 2) : 'ED',
+      storyText: school?.showcaseStoryText || "Students successfully assembled their first solar-powered vehicle prototypes in today's STEM workshop!"
     };
   }, [school]);
 
@@ -2743,21 +2747,21 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                       <div className="space-y-4 animate-in fade-in duration-300">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono">Classroom Daily Photo Feed</span>
-                          <span className="text-xs font-black text-purple-300 bg-purple-500/20 px-2.5 py-1 rounded-full border border-purple-400/30 font-mono">STEM Workshop</span>
+                          <span className="text-xs font-black text-purple-300 bg-purple-500/20 px-2.5 py-1 rounded-full border border-purple-400/30 font-mono">{portalSample.storyCategory}</span>
                         </div>
 
                         <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3 text-xs">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white text-xs">
-                              ED
+                            <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white text-xs font-mono">
+                              {portalSample.storyAuthorInitials}
                             </div>
                             <div>
-                              <h5 className="font-bold text-white">Lead Educator</h5>
+                              <h5 className="font-bold text-white">{portalSample.storyAuthor}</h5>
                               <span className="text-[10px] text-slate-400">Posted today in Class Feed</span>
                             </div>
                           </div>
                           <p className="text-slate-300 text-xs leading-relaxed font-medium">
-                            "Students successfully assembled their first solar-powered vehicle prototypes in today's STEM workshop!"
+                            "{portalSample.storyText}"
                           </p>
                         </div>
                       </div>
