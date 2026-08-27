@@ -3097,6 +3097,91 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         </div>
       </section>
 
+      {/* ─── REGIONAL TRUST & ACCREDITATION BANNER ─────────────── */}
+      <section className="py-20 px-6 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white border-t border-slate-800 relative overflow-hidden">
+        {/* Subtle grid pattern background */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto space-y-12 relative z-10 text-center">
+          <div className="space-y-3 max-w-3xl mx-auto">
+            <span
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border backdrop-blur-md"
+              style={{ color: '#38bdf8', borderColor: '#38bdf840', backgroundColor: '#38bdf815' }}
+            >
+              <Shield className="h-3.5 w-3.5 text-emerald-400" /> Regulatory Compliance & Standards
+            </span>
+            <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+              Institutional Accreditation & Regional Trust
+            </h3>
+            <p className="text-sm text-slate-300 font-medium">
+              {school.name} is fully recognized by government regulatory bodies and international academic councils.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {[
+              {
+                title: 'Ghana Education Service',
+                subtitle: 'Ministry of Education',
+                regNo: 'Reg: GES/ASH/EJ/2024',
+                badge: 'Certified Grade-A',
+                flag: '🇬🇭'
+              },
+              {
+                title: 'Cambridge Assessment',
+                subtitle: 'Global Education Centre',
+                regNo: 'Centre ID: GH-842',
+                badge: 'IGCSE & Primary',
+                flag: '🇬🇧'
+              },
+              {
+                title: 'Data Protection Commission',
+                subtitle: 'Act 843 Security Compliant',
+                regNo: 'Cert: DPC/PRIV/8942',
+                badge: '256-Bit Encrypted',
+                flag: '🛡️'
+              },
+              {
+                title: 'WAEC Examination Board',
+                subtitle: 'National Exam Center',
+                regNo: 'Centre: 0050849',
+                badge: 'BECE & WASSCE',
+                flag: '🏅'
+              },
+              {
+                title: 'Ghana STEM Council',
+                subtitle: 'Robotics & AI Hub',
+                regNo: 'Hub ID: STEM-GH-26',
+                badge: 'Innovator Hub',
+                flag: '🤖'
+              }
+            ].map((acc, idx) => (
+              <ScrollReveal key={idx} delayMs={idx * 80}>
+                <div className="bg-white/5 border border-white/10 hover:border-indigo-400/40 rounded-3xl p-6 transition-all duration-300 hover:bg-white/10 group flex flex-col justify-between items-center text-center space-y-4 h-full">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 via-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+                    {acc.flag}
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-black text-white leading-tight group-hover:text-indigo-300 transition-colors">
+                      {acc.title}
+                    </h4>
+                    <p className="text-[11px] text-slate-400 font-medium">{acc.subtitle}</p>
+                  </div>
+
+                  <div className="w-full pt-3 border-t border-white/10 space-y-1.5">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-400/10 text-emerald-300 text-[9px] font-black uppercase font-mono tracking-widest border border-emerald-400/20 block">
+                      {acc.badge}
+                    </span>
+                    <span className="text-[9px] text-slate-400 font-mono block truncate">{acc.regNo}</span>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ─── FOOTER & CONTACT US ───────────────────────────────── */}
       <footer id="contact" className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-400 border-t border-slate-900 overflow-hidden">
         {/* Ambient glow */}
