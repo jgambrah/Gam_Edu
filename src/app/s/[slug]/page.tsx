@@ -1556,8 +1556,18 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       }));
     }
 
-    // 2. Default Accreditations dataset with individual school field overrides & toggles
-    const defaults = [
+    // 2. Default Regulatory Catalog (Data Protection is ON for all; GES is default for target market but toggleable)
+    const catalog = [
+      {
+        id: 'dpc',
+        title: 'Data Protection Commission',
+        subtitle: 'Act 843 Security Compliant',
+        regNo: school?.dpcCertNumber || 'Cert: DPC/PRIV/8942',
+        badge: '256-Bit Encrypted',
+        flag: '🛡️',
+        logoUrl: school?.dpcLogoUrl,
+        enabled: school?.enableDpcAccreditation ?? true // Always enabled for all by default
+      },
       {
         id: 'ges',
         title: 'Ghana Education Service',
@@ -1566,7 +1576,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         badge: 'Certified Grade-A',
         flag: '🇬🇭',
         logoUrl: school?.gesLogoUrl,
-        enabled: school?.enableGesAccreditation ?? true
+        enabled: school?.enableGesAccreditation ?? (school?.curriculumType ? school.curriculumType === 'ges' : true)
       },
       {
         id: 'cambridge',
@@ -1576,17 +1586,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         badge: 'IGCSE & Primary',
         flag: '🇬🇧',
         logoUrl: school?.cambridgeLogoUrl,
-        enabled: school?.enableCambridgeAccreditation ?? true
-      },
-      {
-        id: 'dpc',
-        title: 'Data Protection Commission',
-        subtitle: 'Act 843 Security Compliant',
-        regNo: school?.dpcCertNumber || 'Cert: DPC/PRIV/8942',
-        badge: '256-Bit Encrypted',
-        flag: '🛡️',
-        logoUrl: school?.dpcLogoUrl,
-        enabled: school?.enableDpcAccreditation ?? true
+        enabled: school?.enableCambridgeAccreditation ?? (school?.curriculumType === 'cambridge' || school?.isCambridgeSchool === true)
       },
       {
         id: 'waec',
@@ -1596,7 +1596,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         badge: 'BECE & WASSCE',
         flag: '🏅',
         logoUrl: school?.waecLogoUrl,
-        enabled: school?.enableWaecAccreditation ?? true
+        enabled: school?.enableWaecAccreditation ?? (school?.curriculumType !== 'cambridge')
       },
       {
         id: 'stem',
@@ -1607,15 +1607,25 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         flag: '🤖',
         logoUrl: school?.stemLogoUrl,
         enabled: school?.enableStemAccreditation ?? true
+      },
+      {
+        id: 'ib',
+        title: 'International Baccalaureate',
+        subtitle: 'IB World Organization',
+        regNo: school?.ibSchoolCode || 'School Code: IB-00482',
+        badge: 'IB World School',
+        flag: '🌐',
+        logoUrl: school?.ibLogoUrl,
+        enabled: school?.enableIbAccreditation ?? (school?.curriculumType === 'ib')
       }
     ];
 
-    // Filter enabled items if configured by school admin
-    if (Array.isArray(school?.enabledAccreditationIds)) {
-      return defaults.filter(d => school.enabledAccreditationIds.includes(d.id));
+    // Explicit ID selection array configured by school web builder
+    if (Array.isArray(school?.enabledAccreditationIds) && school.enabledAccreditationIds.length > 0) {
+      return catalog.filter(item => school.enabledAccreditationIds.includes(item.id));
     }
 
-    return defaults.filter(d => d.enabled !== false);
+    return catalog.filter(item => item.enabled !== false);
   })();
 
   const navLinks = [
