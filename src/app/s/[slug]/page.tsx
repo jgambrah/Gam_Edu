@@ -1,5 +1,5 @@
 'use client';
-import { use, useState, useEffect, useRef } from 'react';
+import { use, useState, useEffect, useRef, useMemo } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, getDocs, orderBy, limit, addDoc } from 'firebase/firestore';
 import { AdmissionForm, AdmissionEnquiryForm } from '@/components/public/AdmissionForm';
@@ -8,7 +8,7 @@ import {
   Camera, Info, Facebook, Instagram, Linkedin, Video,
   Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap,
   User, Users, ChevronDown, ChevronLeft, ChevronRight, Star, BookOpen, Award, Menu, X, Atom,
-  MessageCircle, Quote, Eye, Type, ZapOff, RotateCcw, Smartphone, Bell, Shield
+  MessageCircle, Quote, Eye, Type, ZapOff, RotateCcw, Smartphone, Bell, Shield, Search
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -682,6 +682,8 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [activePortalTab, setActivePortalTab] = useState<'grades' | 'attendance' | 'fees' | 'stories'>('grades');
   const [currentLang, setCurrentLang] = useState<'en' | 'fr' | 'tw' | 'ar' | 'es'>('en');
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const i18nDict: Record<string, Record<string, string>> = {
     en: {
@@ -1299,6 +1301,116 @@ Welcome to our admissions portal! To ensure a smooth application process for you
     ? school.admissionsFaqs
     : defaultAdmissionsFaqs;
 
+  // ── AUTOMATED GLOBAL SEARCH COMPUTATION ─────────────────────
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().trim();
+    const results: Array<{
+      id: string;
+      title: string;
+      category: string;
+      snippet: string;
+      targetId: string;
+      action?: () => void;
+    }> = [];
+
+    // 1. Academics & Facilities
+    pillars.forEach((p: any, i: number) => {
+      if (
+        (p.title && p.title.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q))
+      ) {
+        results.push({
+          id: `pillar-${i}`,
+          title: p.title || 'Academic Pillar',
+          category: 'Academics & Facilities',
+          snippet: p.description || 'Explore our campus academic facilities.',
+          targetId: 'academics'
+        });
+      }
+    });
+
+    // 2. Admissions & Fees
+    if (
+      'admissions'.includes(q) || 'fees'.includes(q) || 'tuition'.includes(q) ||
+      'application'.includes(q) || 'requirements'.includes(q) || 'cut-off'.includes(q) || 'bus'.includes(q)
+    ) {
+      results.push({
+        id: 'admissions-sec',
+        title: 'Admissions Guidelines & Tuition Payment',
+        category: 'Admissions & Fees',
+        snippet: 'Review entry requirements, document checklists, and online application forms.',
+        targetId: 'apply'
+      });
+    }
+
+    admissionsFaqs.forEach((faq: any, i: number) => {
+      const qText = (faq.q || faq.question || '').toLowerCase();
+      const aText = (faq.a || faq.answer || '').toLowerCase();
+      if (qText.includes(q) || aText.includes(q)) {
+        results.push({
+          id: `faq-${i}`,
+          title: faq.q || faq.question || 'Admissions FAQ',
+          category: 'Admissions FAQ',
+          snippet: faq.a || faq.answer || '',
+          targetId: 'apply',
+          action: () => setOpenFaqIdx(i)
+        });
+      }
+    });
+
+    // 3. News & Bulletins
+    newsList.forEach((n: any, i: number) => {
+      const title = (n.title || '').toLowerCase();
+      const summary = (n.summary || n.content || '').toLowerCase();
+      if (title.includes(q) || summary.includes(q)) {
+        results.push({
+          id: `news-${n.id || i}`,
+          title: n.title || 'News Bulletin',
+          category: 'News & Announcements',
+          snippet: n.summary || n.content || '',
+          targetId: 'news',
+          action: () => setSelectedNews(n)
+        });
+      }
+    });
+
+    // 4. Events
+    eventsList.forEach((ev: any, i: number) => {
+      const title = (ev.title || '').toLowerCase();
+      const desc = (ev.description || '').toLowerCase();
+      const cat = (ev.category || '').toLowerCase();
+      if (title.includes(q) || desc.includes(q) || cat.includes(q)) {
+        results.push({
+          id: `event-${ev.id || i}`,
+          title: ev.title || 'Campus Event',
+          category: 'Events & Calendar',
+          snippet: `${ev.date || ''} • ${ev.description || ''}`,
+          targetId: 'events',
+          action: () => setSelectedEvent(ev)
+        });
+      }
+    });
+
+    // 5. Educators & Team
+    team.forEach((m: any, i: number) => {
+      const name = (m.name || `${m.firstName || ''} ${m.lastName || ''}`).toLowerCase();
+      const role = (m.role || '').toLowerCase();
+      const bio = (m.bio || '').toLowerCase();
+      if (name.includes(q) || role.includes(q) || bio.includes(q)) {
+        results.push({
+          id: `team-${m.id || i}`,
+          title: m.name || `${m.firstName || ''} ${m.lastName || ''}`,
+          category: 'Faculty & Staff',
+          snippet: `${m.role || 'Educator'} • ${m.highestDegree || m.qualifications || ''}`,
+          targetId: 'team'
+        });
+      }
+    });
+
+    return results;
+  }, [searchQuery, pillars, admissionsFaqs, newsList, eventsList, team]);
+
   const navLinks = [
     { label: t.about || 'About', id: 'about' },
     (school.directorMessage || school.principalMessage) && { label: 'Leadership', id: 'leadership' },
@@ -1487,6 +1599,21 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 </div>
               )}
             </div>
+
+            {/* Global Search Button Trigger */}
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className={`p-2 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
+                navScrolled 
+                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
+                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+              }`}
+              title="Global Site Search"
+              aria-label="Search"
+            >
+              <Search className="h-4 w-4" />
+            </button>
 
             <button
               onClick={() => setA11yOpen(true)}
@@ -4094,6 +4221,113 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 Apply
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── AUTOMATED GLOBAL SEARCH OVERLAY ──────────────────── */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-2xl animate-in fade-in duration-200 flex flex-col items-center p-6 md:p-12 overflow-y-auto">
+          <div className="w-full max-w-3xl space-y-8">
+            {/* Close & Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Search className="h-5 w-5 text-indigo-400" />
+                <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-300 font-mono">Instant Site Search</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSearchOpen(false)}
+                className="p-2.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all cursor-pointer"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Input Bar */}
+            <div className="relative">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-400" />
+              <input
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Type keywords (e.g., fees, admissions, bus, calendar, robotics)..."
+                className="w-full pl-15 pr-6 py-5 rounded-3xl bg-white/10 border border-white/20 text-white text-lg font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 shadow-2xl"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-white uppercase tracking-wider font-mono bg-white/10 px-2.5 py-1 rounded-lg"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {/* Quick Keyword Suggestion Pills */}
+            {!searchQuery && (
+              <div className="space-y-3 pt-2 text-left">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono block">Popular Searches:</span>
+                <div className="flex flex-wrap gap-2">
+                  {['Admissions & Fees', 'School Bus Routes', 'Academic Calendar', 'Pre-School Cut-Off', 'STEM Robotics', 'Headmaster Profile'].map((tag, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSearchQuery(tag)}
+                      className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+                    >
+                      🔍 {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Search Results List */}
+            {searchQuery && (
+              <div className="space-y-4 pt-4 text-left">
+                <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+                  <span>Found {searchResults.length} matching results</span>
+                  <span>Press ESC to exit</span>
+                </div>
+
+                {searchResults.length === 0 ? (
+                  <div className="p-10 rounded-3xl bg-white/5 border border-white/10 text-center space-y-2">
+                    <p className="text-slate-300 font-bold text-base">No content found matching "{searchQuery}"</p>
+                    <p className="text-slate-400 text-xs font-medium">Try searching for "fees", "admissions", "calendar", or "teachers".</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {searchResults.map((res) => (
+                      <div
+                        key={res.id}
+                        onClick={() => {
+                          setSearchOpen(false);
+                          if (res.action) res.action();
+                          scrollTo(res.targetId);
+                        }}
+                        className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-indigo-400/40 hover:bg-white/10 transition-all cursor-pointer group space-y-1.5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-black uppercase tracking-widest font-mono">
+                            {res.category}
+                          </span>
+                          <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                        </div>
+                        <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">
+                          {res.title}
+                        </h4>
+                        <p className="text-xs text-slate-400 line-clamp-2 font-medium">
+                          {res.snippet}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
