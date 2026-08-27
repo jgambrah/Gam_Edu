@@ -679,6 +679,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [fabOpen, setFabOpen] = useState(false);
   const [activeTestimonialIdx, setActiveTestimonialIdx] = useState(0);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
+  const [activePortalTab, setActivePortalTab] = useState<'grades' | 'attendance' | 'fees' | 'stories'>('grades');
 
   // Accessibility (WCAG) controls
   const [a11yOpen, setA11yOpen] = useState(false);
@@ -2015,95 +2016,215 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         <div className="max-w-7xl mx-auto relative z-10 space-y-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Left Column: Interactive Smartphone Mockup */}
-            <div className="lg:col-span-5 flex justify-center order-2 lg:order-1">
-              <ScrollReveal delayMs={100} className="w-full max-w-sm">
-                <div className="relative rounded-[3rem] p-4 bg-slate-900 border-4 border-slate-800 shadow-2xl shadow-indigo-950/50 group hover:scale-[1.02] transition-transform duration-500">
-                  {/* Speaker & Notch */}
-                  <div className="absolute top-7 left-1/2 -translate-x-1/2 w-28 h-4 bg-slate-950 rounded-full z-20 flex items-center justify-center">
-                    <div className="w-10 h-1 bg-slate-800 rounded-full" />
+            {/* Left Column: Interactive Parent Dashboard Teaser Module */}
+            <div className="lg:col-span-6 flex flex-col justify-center order-2 lg:order-1 space-y-4">
+              {/* Teaser Tab Switcher */}
+              <div className="flex gap-1.5 p-1.5 bg-slate-900 border border-white/10 rounded-2xl w-full text-[10px] font-black uppercase tracking-wider font-mono">
+                <button
+                  type="button"
+                  onClick={() => setActivePortalTab('grades')}
+                  className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                    activePortalTab === 'grades' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <BookOpen className="h-3.5 w-3.5" /> Grades
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActivePortalTab('attendance')}
+                  className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                    activePortalTab === 'attendance' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Bell className="h-3.5 w-3.5" /> Attendance
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActivePortalTab('fees')}
+                  className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                    activePortalTab === 'fees' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Shield className="h-3.5 w-3.5" /> Fees
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActivePortalTab('stories')}
+                  className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                    activePortalTab === 'stories' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Users className="h-3.5 w-3.5" /> Stories
+                </button>
+              </div>
+
+              {/* Dynamic Dashboard Preview Card */}
+              <ScrollReveal delayMs={100} className="w-full">
+                <div className="relative rounded-[2.5rem] p-6 md:p-8 bg-slate-900/90 backdrop-blur-xl border border-white/15 shadow-2xl shadow-indigo-950/80 space-y-6 text-left">
+                  {/* Top Header Bar */}
+                  <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      {school.logoUrl ? (
+                        <img src={school.logoUrl} alt="Logo" className="w-9 h-9 object-contain rounded-xl bg-white/10 p-1" />
+                      ) : (
+                        <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+                          <GraduationCap className="h-5 w-5" />
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="text-sm font-black text-white leading-tight">{school.name}</h4>
+                        <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest font-mono">GAM Edu Parent Portal</span>
+                      </div>
+                    </div>
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase font-mono border border-emerald-500/30 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" /> Live Sync
+                    </span>
                   </div>
 
-                  {/* Smartphone Display Frame */}
-                  <div className="bg-slate-950 rounded-[2.5rem] overflow-hidden border border-white/10 pt-10 pb-6 px-4 space-y-4 text-left relative">
-                    {/* App Bar */}
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        {school.logoUrl ? (
-                          <img src={school.logoUrl} alt="Logo" className="w-7 h-7 object-contain rounded-lg bg-white/10 p-0.5" />
-                        ) : (
-                          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
-                            <GraduationCap className="h-4 w-4" />
+                  {/* Tab 1: Grades */}
+                  {activePortalTab === 'grades' && (
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono">Continuous Assessment Overview</span>
+                        <span className="text-xs font-black text-yellow-400 bg-yellow-400/10 px-2.5 py-1 rounded-full border border-yellow-400/20 font-mono">Term 1 GPA: 3.92 / 4.0</span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {[
+                          { subject: 'Mathematics & STEM Robotics', score: 96, grade: 'A+' },
+                          { subject: 'English Language & Literature', score: 91, grade: 'A' },
+                          { subject: 'Integrated Science', score: 94, grade: 'A+' },
+                          { subject: 'Creative Arts & Design', score: 88, grade: 'B+' }
+                        ].map((sub, idx) => (
+                          <div key={idx} className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-bold text-white">
+                              <span>{sub.subject}</span>
+                              <span className="text-emerald-400 font-mono">{sub.score}% ({sub.grade})</span>
+                            </div>
+                            <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                              <div className="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full" style={{ width: `${sub.score}%` }} />
+                            </div>
                           </div>
-                        )}
-                        <div>
-                          <h4 className="text-[10px] font-black text-white leading-tight font-mono">{school.name}</h4>
-                          <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-widest">Parent Portal Live</span>
+                        ))}
+                      </div>
+
+                      <div className="pt-2 flex justify-between items-center text-xs">
+                        <span className="text-slate-400 font-medium">Terminal Report Card Ready</span>
+                        <a
+                          href="https://gam-it-service.app/"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-indigo-400 font-bold hover:underline flex items-center gap-1"
+                        >
+                          Download Report PDF 📄
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tab 2: Attendance */}
+                  {activePortalTab === 'attendance' && (
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono">Gate Check-In & Transport</span>
+                        <span className="text-xs font-black text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20 font-mono">Present Today (08:15 AM)</span>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0">
+                            <Bell className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <h5 className="text-xs font-bold text-white">NFC Smart Gate Check-In</h5>
+                            <p className="text-[11px] text-slate-300 font-medium">Student scanned entrance badge at Main Campus Gate 1.</p>
+                          </div>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[8px] font-black uppercase font-mono border border-emerald-500/30">
-                        Connected
-                      </span>
-                    </div>
 
-                    {/* Dashboard Widget 1: Attendance Badge */}
-                    <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-1.5">
+                      <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                        <div className="flex items-center justify-between text-xs font-bold text-white">
+                          <span>Monthly Attendance Rate</span>
+                          <span className="text-emerald-400 font-mono">100% (22/22 Days)</span>
+                        </div>
+                        <div className="grid grid-cols-7 gap-1.5 pt-1">
+                          {[...Array(21)].map((_, i) => (
+                            <div key={i} className="h-5 rounded-lg bg-emerald-500/30 border border-emerald-400/40 flex items-center justify-center text-[8px] font-black text-emerald-300">
+                              ✓
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tab 3: Fees */}
+                  {activePortalTab === 'fees' && (
+                    <div className="space-y-4 animate-in fade-in duration-300">
                       <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">Today's Attendance</span>
-                        <span className="text-[9px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">Present 08:15 AM</span>
+                        <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono">Tuition & Facility Billing</span>
+                        <span className="text-xs font-black text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20 font-mono">Status: Paid in Full</span>
                       </div>
-                      <p className="text-[11px] font-bold text-white">Student checked in safely via NFC Smart Gate</p>
-                    </div>
 
-                    {/* Dashboard Widget 2: Academic Progress */}
-                    <div className="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
+                      <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-400/30 space-y-3 text-xs">
+                        <div className="flex justify-between border-b border-white/10 pb-2">
+                          <span className="text-slate-300">Term 1 Tuition & Learning Aids</span>
+                          <span className="font-bold text-white">GH₵ 1,850.00</span>
+                        </div>
+                        <div className="flex justify-between border-b border-white/10 pb-2">
+                          <span className="text-slate-300">STEM & Robotics Lab Pass</span>
+                          <span className="font-bold text-white">GH₵ 250.00</span>
+                        </div>
+                        <div className="flex justify-between font-black text-white pt-1">
+                          <span>Total Amount Paid</span>
+                          <span className="text-emerald-400">GH₵ 2,100.00</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs pt-1">
+                        <span className="text-slate-400 font-medium">Digital Receipt #8492 Issued</span>
+                        <a
+                          href="https://gam-it-service.app/"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] uppercase tracking-wider transition-colors"
+                        >
+                          Pay Tuition Online
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tab 4: Stories */}
+                  {activePortalTab === 'stories' && (
+                    <div className="space-y-4 animate-in fade-in duration-300">
                       <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase font-mono">Continuous Assessment</span>
-                        <span className="text-[10px] font-black text-yellow-400">Grade A (92%)</span>
+                        <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono">Classroom Daily Photo Feed</span>
+                        <span className="text-xs font-black text-purple-300 bg-purple-500/20 px-2.5 py-1 rounded-full border border-purple-400/30 font-mono">Grade 4 Robotics</span>
                       </div>
-                      <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full w-[92%]" />
-                      </div>
-                      <span className="text-[9px] text-slate-300 font-medium block">Mathematics & Robotics Mid-Term Result Released</span>
-                    </div>
 
-                    {/* Dashboard Widget 3: Instant Fee Status */}
-                    <div className="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-400/30 backdrop-blur-md flex items-center justify-between">
-                      <div>
-                        <span className="text-[8px] font-black uppercase text-indigo-300 font-mono block">Tuition Fee Status</span>
-                        <span className="text-[11px] font-bold text-white">Term 1 Fees Paid in Full</span>
-                      </div>
-                      <span className="p-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-bold">
-                        Receipt #8492
-                      </span>
-                    </div>
-
-                    {/* App Navigation Bar */}
-                    <div className="pt-2 flex justify-around border-t border-white/10 text-slate-400">
-                      <div className="flex flex-col items-center gap-0.5 text-indigo-400">
-                        <Smartphone className="h-3.5 w-3.5" />
-                        <span className="text-[7px] font-bold uppercase font-mono">Home</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-0.5">
-                        <BookOpen className="h-3.5 w-3.5" />
-                        <span className="text-[7px] font-bold uppercase font-mono">Grades</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-0.5">
-                        <Bell className="h-3.5 w-3.5" />
-                        <span className="text-[7px] font-bold uppercase font-mono">Notices</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-0.5">
-                        <Users className="h-3.5 w-3.5" />
-                        <span className="text-[7px] font-bold uppercase font-mono">Profile</span>
+                      <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3 text-xs">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white text-xs">
+                            ED
+                          </div>
+                          <div>
+                            <h5 className="font-bold text-white">Mrs. Evelyn Darko (Lead Educator)</h5>
+                            <span className="text-[10px] text-slate-400">Posted today at 11:30 AM</span>
+                          </div>
+                        </div>
+                        <p className="text-slate-300 text-xs leading-relaxed font-medium">
+                          "Students successfully assembled their first solar-powered vehicle prototypes in today's STEM workshop!"
+                        </p>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </ScrollReveal>
             </div>
 
             {/* Right Column: Technology Selling Points & Features */}
-            <div className="lg:col-span-7 space-y-8 text-left order-1 lg:order-2">
+            <div className="lg:col-span-6 space-y-8 text-left order-1 lg:order-2">
               <ScrollReveal delayMs={200} className="space-y-4">
                 <span
                   className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.25em] border backdrop-blur-md"
