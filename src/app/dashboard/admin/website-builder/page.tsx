@@ -96,7 +96,12 @@ export default function WebsiteBuilderPage() {
     jhsSeats: '',
     hideSeatAvailability: false,
     customTestimonials: [] as { id?: string; name: string; role: string; quote: string; rating?: number; avatar?: string }[],
-    hideTestimonials: false
+    hideTestimonials: false,
+    hideParentPortalTeaser: false,
+    showcaseTuition: '',
+    showcaseLabPass: '',
+    showcaseGpa: '',
+    feeStatusText: ''
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -298,7 +303,12 @@ export default function WebsiteBuilderPage() {
         customTestimonials: Array.isArray(schoolData.customTestimonials) && schoolData.customTestimonials.length > 0
           ? schoolData.customTestimonials
           : (Array.isArray(schoolData.testimonials) && schoolData.testimonials.length > 0 ? schoolData.testimonials : []),
-        hideTestimonials: schoolData.hideTestimonials === true
+        hideTestimonials: schoolData.hideTestimonials === true,
+        hideParentPortalTeaser: schoolData.hideParentPortalTeaser === true || schoolData.hidePortalPreview === true,
+        showcaseTuition: schoolData.showcaseTuition || '',
+        showcaseLabPass: schoolData.showcaseLabPass || '',
+        showcaseGpa: schoolData.showcaseGpa || '',
+        feeStatusText: schoolData.feeStatusText || ''
       });
     }
   }, [schoolData]);
@@ -1330,6 +1340,73 @@ export default function WebsiteBuilderPage() {
                                         ))}
                                     </div>
                                 )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <LayoutTemplate className="h-5 w-5 text-indigo-600" /> Parent Portal Preview Teaser Module
+                                </CardTitle>
+                                <CardDescription>Customize or hide the interactive Parent Portal teaser mockup on your public website.</CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="checkbox" 
+                                    id="hideParentPortalTeaser"
+                                    checked={formData.hideParentPortalTeaser}
+                                    onChange={e => setFormData({...formData, hideParentPortalTeaser: e.target.checked})}
+                                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <Label htmlFor="hideParentPortalTeaser" className="text-xs cursor-pointer font-semibold text-slate-700">Hide Portal Teaser Section</Label>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <p className="text-xs text-slate-500">
+                                Customize the sample figures shown in the Parent Portal Preview Teaser mockup to match your school's actual fee structures and academic standards.
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">Term Tuition Amount</Label>
+                                    <Input 
+                                        placeholder="e.g. GH₵ 1,850.00" 
+                                        value={formData.showcaseTuition} 
+                                        onChange={e => setFormData({...formData, showcaseTuition: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">STEM & Lab Fee</Label>
+                                    <Input 
+                                        placeholder="e.g. GH₵ 250.00" 
+                                        value={formData.showcaseLabPass} 
+                                        onChange={e => setFormData({...formData, showcaseLabPass: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">Sample GPA / Performance</Label>
+                                    <Input 
+                                        placeholder="e.g. 3.92 / 4.0" 
+                                        value={formData.showcaseGpa} 
+                                        onChange={e => setFormData({...formData, showcaseGpa: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">Billing Badge Status</Label>
+                                    <Input 
+                                        placeholder="e.g. Status: Paid in Full" 
+                                        value={formData.feeStatusText} 
+                                        onChange={e => setFormData({...formData, feeStatusText: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
