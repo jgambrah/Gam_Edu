@@ -105,7 +105,12 @@ export default function WebsiteBuilderPage() {
     feeStatusText: '',
     showcaseStoryText: '',
     showcaseStoryCategory: '',
-    showcaseStoryAuthor: ''
+    showcaseStoryAuthor: '',
+    libraryBookCount: '',
+    clubCount: '',
+    trophyCount: '',
+    labCount: '',
+    hideCampusMetrics: false
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -316,7 +321,12 @@ export default function WebsiteBuilderPage() {
         feeStatusText: schoolData.feeStatusText || '',
         showcaseStoryText: schoolData.showcaseStoryText || '',
         showcaseStoryCategory: schoolData.showcaseStoryCategory || '',
-        showcaseStoryAuthor: schoolData.showcaseStoryAuthor || ''
+        showcaseStoryAuthor: schoolData.showcaseStoryAuthor || '',
+        libraryBookCount: schoolData.libraryBookCount ?? schoolData.digitalLibraryCount ?? '',
+        clubCount: schoolData.clubCount ?? schoolData.studentClubsCount ?? '',
+        trophyCount: schoolData.trophyCount ?? schoolData.awardsCount ?? '',
+        labCount: schoolData.labCount ?? schoolData.stemWorkstationsCount ?? '',
+        hideCampusMetrics: schoolData.hideCampusMetrics === true
       });
     }
   }, [schoolData]);
@@ -1459,6 +1469,77 @@ export default function WebsiteBuilderPage() {
                                         onChange={e => setFormData({...formData, showcaseStoryText: e.target.value})} 
                                         rows={2} 
                                         className="bg-white text-sm"
+                                    />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <BarChart3 className="h-5 w-5 text-indigo-600" /> Live Campus System Metrics
+                                </CardTitle>
+                                <CardDescription>Display real-time campus statistics and system counts pulled from your ERP or custom numbers.</CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="checkbox" 
+                                    id="hideCampusMetrics"
+                                    checked={formData.hideCampusMetrics}
+                                    onChange={e => setFormData({...formData, hideCampusMetrics: e.target.checked})}
+                                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <Label htmlFor="hideCampusMetrics" className="text-xs cursor-pointer font-semibold text-slate-700">Hide System Metrics Bar</Label>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <p className="text-xs text-slate-500">
+                                Enter your actual facility and resource counts below. Leave empty to automatically display numbers cataloged in your GAM Edu ERP system!
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">Digital Library Collections</Label>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="e.g. 4520" 
+                                        value={formData.libraryBookCount} 
+                                        onChange={e => setFormData({...formData, libraryBookCount: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">Student Clubs & Societies</Label>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="e.g. 12" 
+                                        value={formData.clubCount} 
+                                        onChange={e => setFormData({...formData, clubCount: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">Academic & Sports Awards</Label>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="e.g. 38" 
+                                        value={formData.trophyCount} 
+                                        onChange={e => setFormData({...formData, trophyCount: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">STEM & Robotics Workstations</Label>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="e.g. 45" 
+                                        value={formData.labCount} 
+                                        onChange={e => setFormData({...formData, labCount: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
                                     />
                                 </div>
                             </div>
