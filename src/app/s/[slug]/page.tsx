@@ -1081,12 +1081,12 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         {/* Enforced CSS gradient overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.25))' }}
+          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.15))' }}
         />
 
         {/* content: Carleton University Style Bottom-Left Rectangular Hero Overlay Banner */}
         <div className="absolute bottom-8 md:bottom-12 left-6 md:left-12 right-6 md:right-auto z-20 max-w-3xl w-full">
-          <div className="bg-slate-950/85 backdrop-blur-xl border border-white/20 p-6 md:p-8 rounded-3xl shadow-2xl space-y-4 text-left fade-up">
+          <div className="bg-slate-950/45 backdrop-blur-md border border-white/25 p-6 md:p-8 rounded-3xl shadow-2xl space-y-4 text-left fade-up">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] font-black uppercase tracking-[0.2em] shadow-md shadow-emerald-950/30 font-mono">
                 <Sparkles className="h-3.5 w-3.5 text-yellow-400 animate-pulse" /> Admissions Open
