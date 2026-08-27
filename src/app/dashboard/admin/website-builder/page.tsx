@@ -110,7 +110,11 @@ export default function WebsiteBuilderPage() {
     clubCount: '',
     trophyCount: '',
     labCount: '',
-    hideCampusMetrics: false
+    hideCampusMetrics: false,
+    mathScore: '',
+    englishScore: '',
+    scienceScore: '',
+    artsScore: ''
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -326,7 +330,11 @@ export default function WebsiteBuilderPage() {
         clubCount: schoolData.clubCount ?? schoolData.studentClubsCount ?? '',
         trophyCount: schoolData.trophyCount ?? schoolData.awardsCount ?? '',
         labCount: schoolData.labCount ?? schoolData.stemWorkstationsCount ?? '',
-        hideCampusMetrics: schoolData.hideCampusMetrics === true
+        hideCampusMetrics: schoolData.hideCampusMetrics === true,
+        mathScore: schoolData.mathScore ?? '',
+        englishScore: schoolData.englishScore ?? '',
+        scienceScore: schoolData.scienceScore ?? '',
+        artsScore: schoolData.artsScore ?? ''
       });
     }
   }, [schoolData]);
@@ -1470,6 +1478,54 @@ export default function WebsiteBuilderPage() {
                                         rows={2} 
                                         className="bg-white text-sm"
                                     />
+                                </div>
+                            </div>
+
+                            <div className="pt-3 border-t space-y-3">
+                                <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                    📊 Continuous Assessment Overview Scores (%)
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                    <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-semibold">Maths & STEM Score</Label>
+                                        <Input 
+                                            type="number"
+                                            placeholder="e.g. 96" 
+                                            value={formData.mathScore} 
+                                            onChange={e => setFormData({...formData, mathScore: e.target.value})} 
+                                            className="bg-white h-8 text-xs font-mono"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-semibold">English Score</Label>
+                                        <Input 
+                                            type="number"
+                                            placeholder="e.g. 91" 
+                                            value={formData.englishScore} 
+                                            onChange={e => setFormData({...formData, englishScore: e.target.value})} 
+                                            className="bg-white h-8 text-xs font-mono"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-semibold">Science Score</Label>
+                                        <Input 
+                                            type="number"
+                                            placeholder="e.g. 94" 
+                                            value={formData.scienceScore} 
+                                            onChange={e => setFormData({...formData, scienceScore: e.target.value})} 
+                                            className="bg-white h-8 text-xs font-mono"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-semibold">Creative Arts Score</Label>
+                                        <Input 
+                                            type="number"
+                                            placeholder="e.g. 88" 
+                                            value={formData.artsScore} 
+                                            onChange={e => setFormData({...formData, artsScore: e.target.value})} 
+                                            className="bg-white h-8 text-xs font-mono"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>

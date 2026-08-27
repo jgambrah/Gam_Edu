@@ -1048,10 +1048,10 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       grades: Array.isArray(school?.showcaseGrades) && school.showcaseGrades.length > 0
         ? school.showcaseGrades
         : [
-            { subject: 'Mathematics & STEM Robotics', score: school?.mathScore || 96, grade: 'A+' },
-            { subject: 'English Language & Literature', score: school?.englishScore || 91, grade: 'A' },
-            { subject: 'Integrated Science', score: school?.scienceScore || 94, grade: 'A+' },
-            { subject: 'Creative Arts & Design', score: school?.artsScore || 88, grade: 'B+' }
+            { subject: 'Mathematics & STEM Robotics', score: Number(school?.mathScore ?? 96), grade: Number(school?.mathScore ?? 96) >= 95 ? 'A+' : Number(school?.mathScore ?? 96) >= 90 ? 'A' : 'B+' },
+            { subject: 'English Language & Literature', score: Number(school?.englishScore ?? 91), grade: Number(school?.englishScore ?? 91) >= 95 ? 'A+' : Number(school?.englishScore ?? 91) >= 90 ? 'A' : 'B+' },
+            { subject: 'Integrated Science', score: Number(school?.scienceScore ?? 94), grade: Number(school?.scienceScore ?? 94) >= 95 ? 'A+' : Number(school?.scienceScore ?? 94) >= 90 ? 'A' : 'B+' },
+            { subject: 'Creative Arts & Design', score: Number(school?.artsScore ?? 88), grade: Number(school?.artsScore ?? 88) >= 95 ? 'A+' : Number(school?.artsScore ?? 88) >= 90 ? 'A' : 'B+' }
           ],
       attendanceRate: school?.showcaseAttendance || school?.attendanceRate || '100% (22/22 Days)',
       feeStatus: school?.feeStatusText || 'Status: Paid in Full',
