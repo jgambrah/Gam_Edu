@@ -684,6 +684,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [realtimeClasses, setRealtimeClasses] = useState<any[]>([]);
 
   const i18nDict: Record<string, Record<string, string>> = {
     en: {
@@ -892,6 +893,60 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       }
     }
   }, [school]);
+
+  // ── Fetch Live Real-Time Class Capacity from ERP ──────────────
+  useEffect(() => {
+    const fetchClasses = async () => {
+      if (!firestore || !school?.id) return;
+      try {
+        const snap = await getDocs(query(collection(firestore, 'classes'), where('schoolId', '==', school.id)));
+        if (!snap.empty) {
+          const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setRealtimeClasses(list);
+        }
+      } catch (e) {
+        console.error('Failed to fetch real-time class capacity quotas:', e);
+      }
+    };
+    fetchClasses();
+  }, [firestore, school?.id]);
+
+  // ── AUTOMATED REAL-TIME ERP SEAT AVAILABILITY COMPUTATION ────
+  const liveSeatQuotas = useMemo(() => {
+    if (school?.hideSeatAvailability) return [];
+
+    // 1. If school configured explicit custom quota items in DB
+    if (Array.isArray(school?.enrollmentQuotas) && school.enrollmentQuotas.length > 0) {
+      return school.enrollmentQuotas.map((q: any) => ({
+        grade: q.grade || q.name || q.className || 'Grade Stream',
+        remaining: typeof q.remaining === 'number' ? q.remaining : (Number(q.total || 30) - Number(q.enrolled || 0)),
+        total: Number(q.total || q.capacity || 30)
+      }));
+    }
+
+    // 2. If school has real-time class ERP data in Firestore
+    if (realtimeClasses.length > 0) {
+      return realtimeClasses.map((c: any) => {
+        const total = Number(c.capacity || c.maxCapacity || c.totalCapacity || 30);
+        const enrolled = Number(c.currentStudents || c.studentsCount || c.enrolledCount || (Array.isArray(c.studentIds) ? c.studentIds.length : 0));
+        const remaining = Math.max(0, total - enrolled);
+        return {
+          grade: c.name || c.className || 'Class Stream',
+          remaining,
+          total
+        };
+      });
+    }
+
+    // 3. Dynamic Fallback with school-specific DB seat numbers
+    return [
+      { grade: 'Pre-School / Creche', remaining: school?.preschoolSeats ?? 4, total: school?.preschoolCap ?? 25 },
+      { grade: 'Kindergarten 1 & 2', remaining: school?.kgSeats ?? 6, total: school?.kgCap ?? 30 },
+      { grade: 'Primary (Lower)', remaining: school?.primaryLowerSeats ?? 3, total: school?.primaryLowerCap ?? 35 },
+      { grade: 'Primary (Upper)', remaining: school?.primaryUpperSeats ?? 6, total: school?.primaryUpperCap ?? 35 },
+      { grade: 'JHS Academy', remaining: school?.jhsSeats ?? 2, total: school?.jhsCap ?? 40 }
+    ];
+  }, [school, realtimeClasses]);
 
   // ── PWA Installation Listener ─────────────────────────────
   useEffect(() => {
@@ -3265,49 +3320,50 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           </div>
 
           {/* ─── LIVE SEAT AVAILABILITY & URGENCY INDICATOR ─────── */}
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-[2.5rem] p-6 md:p-8 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-600 shrink-0">
-                  <ZapOff className="h-5 w-5 animate-bounce text-amber-600" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
-                    <h4 className="text-base font-black text-slate-900 uppercase tracking-wider font-mono">Live Enrollment Capacity</h4>
+          {liveSeatQuotas.length > 0 && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-[2.5rem] p-6 md:p-8 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-600 shrink-0">
+                    <ZapOff className="h-5 w-5 animate-bounce text-amber-600" />
                   </div>
-                  <p className="text-xs text-slate-600 font-medium">Real-time seat quotas pulled from GAM Edu Registrar ERP. Apply now before remaining seats fill up.</p>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                      <h4 className="text-base font-black text-slate-900 uppercase tracking-wider font-mono">Live Enrollment Capacity</h4>
+                    </div>
+                    <p className="text-xs text-slate-600 font-medium">Real-time seat quotas pulled from GAM Edu Registrar ERP. Apply now before remaining seats fill up.</p>
+                  </div>
                 </div>
+                <span className="px-3 py-1.5 rounded-full bg-red-500/10 text-red-700 text-[10px] font-black uppercase font-mono tracking-widest border border-red-500/20 shrink-0">
+                  High Demand Enrollment Season
+                </span>
               </div>
-              <span className="px-3 py-1.5 rounded-full bg-red-500/10 text-red-700 text-[10px] font-black uppercase font-mono tracking-widest border border-red-500/20 shrink-0">
-                High Demand Enrollment Season
-              </span>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-              {[
-                { grade: 'Pre-School / Creche', remaining: school.preschoolSeats || 4, total: 25 },
-                { grade: 'Kindergarten 1 & 2', remaining: school.kgSeats || 6, total: 30 },
-                { grade: 'Primary (Lower)', remaining: school.primaryLowerSeats || 3, total: 35 },
-                { grade: 'Primary (Upper)', remaining: school.primaryUpperSeats || 6, total: 35 },
-                { grade: 'JHS Academy', remaining: school.jhsSeats || 2, total: 40 }
-              ].map((item, idx) => (
-                <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-2 text-left">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block font-mono truncate">{item.grade}</span>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-sm font-black text-red-600 font-mono">{item.remaining} Seats Left</span>
-                    <span className="text-[9px] font-bold text-slate-400 font-mono">Cap: {item.total}</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-amber-500 to-red-500 h-full rounded-full"
-                      style={{ width: `${Math.min(100, Math.round(((item.total - item.remaining) / item.total) * 100))}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+                {liveSeatQuotas.map((item: any, idx: number) => {
+                  const isFull = item.remaining <= 0;
+                  return (
+                    <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-2 text-left">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block font-mono truncate">{item.grade}</span>
+                      <div className="flex items-baseline justify-between">
+                        <span className={`text-sm font-black font-mono ${isFull ? 'text-slate-500' : 'text-red-600'}`}>
+                          {isFull ? 'Waitlist Only' : `${item.remaining} Seats Left`}
+                        </span>
+                        <span className="text-[9px] font-bold text-slate-400 font-mono">Cap: {item.total}</span>
+                      </div>
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${isFull ? 'bg-slate-400' : 'bg-gradient-to-r from-amber-500 to-red-500'}`}
+                          style={{ width: `${Math.min(100, Math.round(((item.total - item.remaining) / item.total) * 100))}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             {/* Guidelines Column */}
