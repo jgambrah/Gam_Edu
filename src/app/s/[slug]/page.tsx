@@ -82,6 +82,56 @@ function getCleanWhatsAppLink(waStr: string) {
   return `https://wa.me/${numbersOnly}`;
 }
 
+function formatTitleCase(str?: string): string {
+  if (!str) return '';
+  const s = str.trim();
+  return s.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
+function formatSentenceCase(str?: string): string {
+  if (!str) return '';
+  const s = str.trim();
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+function resolveHumanAddress(schoolData: any): string {
+  if (!schoolData) return 'Ejisu-Besease, Ashanti Region, Ghana';
+
+  // 1. Explicit physical address string takes precedence
+  if (schoolData.physicalAddress && typeof schoolData.physicalAddress === 'string' && schoolData.physicalAddress.trim().length > 0) {
+    return schoolData.physicalAddress.trim();
+  }
+
+  const rawAddr = schoolData.address || '';
+  const town = schoolData.town || schoolData.city || schoolData.location || '';
+  const region = schoolData.region || schoolData.district || 'Ashanti Region';
+  const digitalAddr = schoolData.digitalAddress || schoolData.ghanaPostGps || schoolData.gpsAddress || '';
+
+  // 2. Check if address is raw numeric coordinates (e.g. "6.7174661, -1.4521248")
+  const isCoordinates = /^-?\d+(\.\d+)?[\s,]+-?\d+(\.\d+)?$/.test(rawAddr.trim());
+
+  if (isCoordinates) {
+    if (town && region) {
+      return digitalAddr ? `${town}, ${region} (${digitalAddr})` : `${town}, ${region}, Ghana`;
+    }
+    if (town) return `${town}, Ghana`;
+    if (region) return `Campus Location, ${region}, Ghana`;
+    return 'Ejisu-Besease, Ashanti Region, Ghana';
+  }
+
+  // 3. Address is already a valid human-readable string
+  if (rawAddr && rawAddr.trim().length > 0) {
+    return rawAddr.trim();
+  }
+
+  // 4. Construct from town and region if available
+  if (town || region) {
+    return [town, region, 'Ghana'].filter(Boolean).join(', ');
+  }
+
+  return 'Ejisu-Besease, Ashanti Region, Ghana';
+}
+
 // ─── auto logo color extraction ─────────────────────────────
 function extractLogoColors(
   logoUrl: string,
@@ -1598,22 +1648,54 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                         )}
                       </div>
 
-                      {/* Bulleted List for Qualifications */}
-                      {qualificationsList.length > 0 && (
-                        <div className="w-full pt-5 border-t border-slate-100 space-y-2 mt-6">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block text-left">
-                            Qualifications
-                          </span>
-                          <ul className="space-y-1.5 text-xs text-slate-650 font-medium text-left">
-                            {qualificationsList.map((q: string, qIdx: number) => (
-                              <li key={qIdx} className="flex items-start gap-2">
-                                <span className="h-1.5 w-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: brand }} />
-                                <span className="leading-snug">{q}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {/* Structured Educator Profile Cards: [Highest Degree], [Years Experience], [Key Achievement] */}
+                      <div className="w-full pt-5 border-t border-slate-100 space-y-2 mt-6 text-left">
+                        {(member.highestDegree || member.degree) && (
+                          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100">
+                            <GraduationCap className="h-4 w-4 text-indigo-600 shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block font-mono">Highest Degree</span>
+                              <span className="text-xs font-bold text-slate-800 truncate block">{formatTitleCase(member.highestDegree || member.degree)}</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {(member.yearsExperience || member.experience) && (
+                          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100">
+                            <Award className="h-4 w-4 text-amber-600 shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block font-mono">Experience</span>
+                              <span className="text-xs font-bold text-slate-800 truncate block">{member.yearsExperience || member.experience}</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {(member.keyAchievement || member.achievement) && (
+                          <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100">
+                            <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block font-mono">Key Achievement</span>
+                              <span className="text-xs font-bold text-slate-800 truncate block">{formatSentenceCase(member.keyAchievement || member.achievement)}</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {qualificationsList.length > 0 && !(member.highestDegree || member.degree) && (
+                          <div className="pt-2">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block text-left mb-1.5">
+                              Qualifications
+                            </span>
+                            <ul className="space-y-1 text-xs text-slate-650 font-medium text-left">
+                              {qualificationsList.map((q: string, qIdx: number) => (
+                                <li key={qIdx} className="flex items-start gap-2">
+                                  <span className="h-1.5 w-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: brand }} />
+                                  <span className="leading-snug">{formatTitleCase(q)}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </ScrollReveal>
                 );
@@ -2203,7 +2285,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               <div className="space-y-4 text-sm font-medium">
                 {school.address && (
                   <a
-                    href={`https://maps.google.com/?q=${encodeURIComponent(school.address)}`}
+                    href={`https://maps.google.com/?q=${encodeURIComponent(
+                      school.gpsCoordinates || (school.latitude && school.longitude ? `${school.latitude},${school.longitude}` : null) || school.address || school.name
+                    )}`}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-start gap-3 text-slate-400 hover:text-white transition-colors group/item"
@@ -2211,7 +2295,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:border-indigo-400/50">
                       <MapPin className="h-4 w-4 text-indigo-400" />
                     </div>
-                    <span className="leading-snug line-clamp-2">{school.address}</span>
+                    <span className="leading-snug line-clamp-2">{resolveHumanAddress(school)}</span>
                   </a>
                 )}
 
@@ -2272,7 +2356,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 />
                 <div className="absolute bottom-2 left-2 right-2 bg-slate-950/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 flex items-center justify-between text-[10px] text-white">
                   <span className="font-mono truncate max-w-[140px]">
-                    {school.gpsCoordinates || school.address || school.name}
+                    {resolveHumanAddress(school)}
                   </span>
                   <a
                     href={`https://maps.google.com/?q=${encodeURIComponent(
