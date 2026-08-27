@@ -938,14 +938,30 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       });
     }
 
-    // 3. Dynamic Fallback with school-specific DB seat numbers
-    return [
-      { grade: 'Pre-School / Creche', remaining: school?.preschoolSeats ?? 4, total: school?.preschoolCap ?? 25 },
-      { grade: 'Kindergarten 1 & 2', remaining: school?.kgSeats ?? 6, total: school?.kgCap ?? 30 },
-      { grade: 'Primary (Lower)', remaining: school?.primaryLowerSeats ?? 3, total: school?.primaryLowerCap ?? 35 },
-      { grade: 'Primary (Upper)', remaining: school?.primaryUpperSeats ?? 6, total: school?.primaryUpperCap ?? 35 },
-      { grade: 'JHS Academy', remaining: school?.jhsSeats ?? 2, total: school?.jhsCap ?? 40 }
-    ];
+    // 3. If school has explicitly entered specific seat numbers in DB fields
+    const customSpecificSeats = [];
+    if (typeof school?.preschoolSeats === 'number') {
+      customSpecificSeats.push({ grade: 'Pre-School / Creche', remaining: school.preschoolSeats, total: school.preschoolCap || 25 });
+    }
+    if (typeof school?.kgSeats === 'number') {
+      customSpecificSeats.push({ grade: 'Kindergarten 1 & 2', remaining: school.kgSeats, total: school.kgCap || 30 });
+    }
+    if (typeof school?.primaryLowerSeats === 'number') {
+      customSpecificSeats.push({ grade: 'Primary (Lower)', remaining: school.primaryLowerSeats, total: school.primaryLowerCap || 35 });
+    }
+    if (typeof school?.primaryUpperSeats === 'number') {
+      customSpecificSeats.push({ grade: 'Primary (Upper)', remaining: school.primaryUpperSeats, total: school.primaryUpperCap || 35 });
+    }
+    if (typeof school?.jhsSeats === 'number') {
+      customSpecificSeats.push({ grade: 'JHS Academy', remaining: school.jhsSeats, total: school.jhsCap || 40 });
+    }
+
+    if (customSpecificSeats.length > 0) {
+      return customSpecificSeats;
+    }
+
+    // 4. Do NOT show hardcoded fake numbers if school has no seat data configured!
+    return [];
   }, [school, realtimeClasses]);
 
   // ── DYNAMIC PARENT PORTAL PREVIEW SHOWCASE RESOLVER ──────────
