@@ -88,7 +88,13 @@ export default function WebsiteBuilderPage() {
     admissionsGuidelines: '',
     bannerImages: [] as string[],
     academicsPillars: [] as { title: string; description: string; icon?: string }[],
-    showAcademicsPillars: true
+    showAcademicsPillars: true,
+    preschoolSeats: '',
+    kgSeats: '',
+    primaryLowerSeats: '',
+    primaryUpperSeats: '',
+    jhsSeats: '',
+    hideSeatAvailability: false
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -173,7 +179,13 @@ export default function WebsiteBuilderPage() {
         admissionsGuidelines: schoolData.admissionsGuidelines || '',
         bannerImages: schoolData.bannerImages || [],
         academicsPillars: schoolData.academicsPillars || [],
-        showAcademicsPillars: schoolData.showAcademicsPillars !== false
+        showAcademicsPillars: schoolData.showAcademicsPillars !== false,
+        preschoolSeats: schoolData.preschoolSeats ?? '',
+        kgSeats: schoolData.kgSeats ?? '',
+        primaryLowerSeats: schoolData.primaryLowerSeats ?? '',
+        primaryUpperSeats: schoolData.primaryUpperSeats ?? '',
+        jhsSeats: schoolData.jhsSeats ?? '',
+        hideSeatAvailability: schoolData.hideSeatAvailability === true
       });
     }
   }, [schoolData]);
@@ -926,6 +938,84 @@ export default function WebsiteBuilderPage() {
 - 2 passport sized photographs
 - Academic transcript from former school (for transfers)" 
                                 />
+                            </div>
+
+                            <div className="pt-4 border-t space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h4 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                                            <Users className="h-4 w-4 text-indigo-600" /> Class Stream Seat Vacancies (Live Enrollment Quotas)
+                                        </h4>
+                                        <p className="text-xs text-slate-500">Enter remaining vacant seats for each grade category to display on your public website.</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <input 
+                                            type="checkbox" 
+                                            id="hideSeatAvailability"
+                                            checked={formData.hideSeatAvailability}
+                                            onChange={e => setFormData({...formData, hideSeatAvailability: e.target.checked})}
+                                            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                        />
+                                        <Label htmlFor="hideSeatAvailability" className="text-xs cursor-pointer font-semibold text-slate-700">Hide Vacancy Quotas Section</Label>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 pt-2">
+                                    <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-bold text-slate-700 block truncate">👶 Pre-School / Creche</Label>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="e.g. 4" 
+                                            value={formData.preschoolSeats} 
+                                            onChange={e => setFormData({...formData, preschoolSeats: e.target.value})} 
+                                            className="h-9 font-mono text-sm bg-white"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-bold text-slate-700 block truncate">🎒 KG 1 & 2</Label>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="e.g. 6" 
+                                            value={formData.kgSeats} 
+                                            onChange={e => setFormData({...formData, kgSeats: e.target.value})} 
+                                            className="h-9 font-mono text-sm bg-white"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-bold text-slate-700 block truncate">📚 Primary (Lower)</Label>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="e.g. 3" 
+                                            value={formData.primaryLowerSeats} 
+                                            onChange={e => setFormData({...formData, primaryLowerSeats: e.target.value})} 
+                                            className="h-9 font-mono text-sm bg-white"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-bold text-slate-700 block truncate">✍️ Primary (Upper)</Label>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="e.g. 6" 
+                                            value={formData.primaryUpperSeats} 
+                                            onChange={e => setFormData({...formData, primaryUpperSeats: e.target.value})} 
+                                            className="h-9 font-mono text-sm bg-white"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                        <Label className="text-xs font-bold text-slate-700 block truncate">🎓 JHS Academy</Label>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="e.g. 2" 
+                                            value={formData.jhsSeats} 
+                                            onChange={e => setFormData({...formData, jhsSeats: e.target.value})} 
+                                            className="h-9 font-mono text-sm bg-white"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
