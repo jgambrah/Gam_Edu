@@ -828,10 +828,10 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     ? school.gallery
     : defaultFallbackGallery;
 
-  const testimonialList = (Array.isArray(school?.testimonials) && school.testimonials.length > 0)
-    ? school.testimonials
-    : (Array.isArray(school?.customTestimonials) && school.customTestimonials.length > 0)
+  const testimonialList = school?.hideTestimonials ? [] : (Array.isArray(school?.customTestimonials) && school.customTestimonials.length > 0)
     ? school.customTestimonials
+    : (Array.isArray(school?.testimonials) && school.testimonials.length > 0)
+    ? school.testimonials
     : (Array.isArray(school?.reviews) && school.reviews.length > 0)
     ? school.reviews
     : (Array.isArray(school?.parentReviews) && school.parentReviews.length > 0)

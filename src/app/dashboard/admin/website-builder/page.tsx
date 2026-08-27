@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles, Star, MessageSquare
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -94,7 +94,9 @@ export default function WebsiteBuilderPage() {
     primaryLowerSeats: '',
     primaryUpperSeats: '',
     jhsSeats: '',
-    hideSeatAvailability: false
+    hideSeatAvailability: false,
+    customTestimonials: [] as { id?: string; name: string; role: string; quote: string; rating?: number; avatar?: string }[],
+    hideTestimonials: false
   });
 
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
@@ -131,6 +133,61 @@ export default function WebsiteBuilderPage() {
   const [pillarTitle, setPillarTitle] = useState('');
   const [pillarDesc, setPillarDesc] = useState('');
   const [pillarIcon, setPillarIcon] = useState('BookOpen');
+
+  // Custom Testimonials Form States
+  const [testiName, setTestiName] = useState('');
+  const [testiRole, setTestiRole] = useState('');
+  const [testiQuote, setTestiQuote] = useState('');
+  const [testiRating, setTestiRating] = useState('5');
+  const [testiAvatarUrl, setTestiAvatarUrl] = useState('');
+  const [testiAvatarUploading, setTestiAvatarUploading] = useState(false);
+
+  const handleTestiAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setTestiAvatarUploading(true);
+    try {
+      const url = await uploadSchoolMedia(file, 'testimonials');
+      setTestiAvatarUrl(url);
+      toast({ title: "Photo Uploaded!", description: "Author photo ready." });
+    } catch (err: any) {
+      toast({ title: "Upload Failed", description: err.message, variant: "destructive" });
+    } finally {
+      setTestiAvatarUploading(false);
+    }
+  };
+
+  const handleAddTestimonial = () => {
+    if (!testiName.trim() || !testiQuote.trim()) {
+      toast({ title: "Name & Quote Required", description: "Please enter author name and testimonial text.", variant: "destructive" });
+      return;
+    }
+    const newItem = {
+      id: `testi-${Date.now()}`,
+      name: testiName.trim(),
+      role: testiRole.trim() || 'Parent',
+      quote: testiQuote.trim(),
+      rating: Number(testiRating) || 5,
+      avatar: testiAvatarUrl
+    };
+    setFormData(prev => ({
+      ...prev,
+      customTestimonials: [...(prev.customTestimonials || []), newItem]
+    }));
+    setTestiName('');
+    setTestiRole('');
+    setTestiQuote('');
+    setTestiRating('5');
+    setTestiAvatarUrl('');
+    toast({ title: "Testimonial Added!", description: "Review added to list. Click Save to publish." });
+  };
+
+  const handleRemoveTestimonial = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      customTestimonials: prev.customTestimonials.filter((_, i) => i !== index)
+    }));
+  };
 
   useEffect(() => {
     if (schoolData) {
@@ -185,7 +242,11 @@ export default function WebsiteBuilderPage() {
         primaryLowerSeats: schoolData.primaryLowerSeats ?? '',
         primaryUpperSeats: schoolData.primaryUpperSeats ?? '',
         jhsSeats: schoolData.jhsSeats ?? '',
-        hideSeatAvailability: schoolData.hideSeatAvailability === true
+        hideSeatAvailability: schoolData.hideSeatAvailability === true,
+        customTestimonials: Array.isArray(schoolData.customTestimonials) && schoolData.customTestimonials.length > 0
+          ? schoolData.customTestimonials
+          : (Array.isArray(schoolData.testimonials) && schoolData.testimonials.length > 0 ? schoolData.testimonials : []),
+        hideTestimonials: schoolData.hideTestimonials === true
       });
     }
   }, [schoolData]);
@@ -1016,6 +1077,147 @@ export default function WebsiteBuilderPage() {
                                         />
                                     </div>
                                 </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <MessageSquare className="h-5 w-5 text-indigo-600" /> Parent & Alumni Testimonials (Reviews)
+                                </CardTitle>
+                                <CardDescription>Manage stories, feedback, and reviews from parents and alumni displayed on your public website.</CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="checkbox" 
+                                    id="hideTestimonials"
+                                    checked={formData.hideTestimonials}
+                                    onChange={e => setFormData({...formData, hideTestimonials: e.target.checked})}
+                                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <Label htmlFor="hideTestimonials" className="text-xs cursor-pointer font-semibold text-slate-700">Hide Testimonials Section</Label>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* New Testimonial Form */}
+                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-4">
+                                <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                    <Plus className="h-4 w-4 text-indigo-600" /> Add New Parent / Alumni Review
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs font-semibold">Author Name *</Label>
+                                        <Input 
+                                            placeholder="e.g. Dr. Kwame Mensah" 
+                                            value={testiName}
+                                            onChange={e => setTestiName(e.target.value)}
+                                            className="bg-white h-9 text-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs font-semibold">Role / Grade Tag *</Label>
+                                        <Input 
+                                            placeholder="e.g. Parent (Grade 4 & Grade 8)" 
+                                            value={testiRole}
+                                            onChange={e => setTestiRole(e.target.value)}
+                                            className="bg-white h-9 text-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-xs font-semibold">Rating (1 to 5 Stars)</Label>
+                                        <select 
+                                            value={testiRating}
+                                            onChange={e => setTestiRating(e.target.value)}
+                                            className="w-full h-9 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium"
+                                        >
+                                            <option value="5">⭐⭐⭐⭐⭐ (5 Stars)</option>
+                                            <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                                            <option value="3">⭐⭐⭐ (3 Stars)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-semibold">Testimonial Quote *</Label>
+                                    <Textarea 
+                                        placeholder="e.g. Enrolling our children here was the best decision we ever made. The balance between academic excellence and moral character building is truly exceptional." 
+                                        value={testiQuote}
+                                        onChange={e => setTestiQuote(e.target.value)}
+                                        rows={3}
+                                        className="bg-white text-sm"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                                        {testiAvatarUrl ? (
+                                            <div className="h-9 w-9 rounded-full overflow-hidden border shrink-0 bg-slate-200">
+                                                <img src={testiAvatarUrl} className="h-full w-full object-cover" />
+                                            </div>
+                                        ) : null}
+                                        <input type="file" accept="image/*" onChange={handleTestiAvatarUpload} className="hidden" id="testi-avatar-file" disabled={testiAvatarUploading} />
+                                        <Button type="button" variant="outline" size="sm" asChild disabled={testiAvatarUploading}>
+                                            <label htmlFor="testi-avatar-file" className="cursor-pointer flex items-center gap-1.5 text-xs font-semibold">
+                                                {testiAvatarUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin"/> : <Upload className="h-3.5 w-3.5"/>}
+                                                {testiAvatarUrl ? 'Change Author Photo' : 'Upload Author Photo (Optional)'}
+                                            </label>
+                                        </Button>
+                                    </div>
+                                    <Button type="button" onClick={handleAddTestimonial} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
+                                        <Plus className="h-4 w-4 mr-1" /> Add Testimonial
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* List of Current Testimonials */}
+                            <div className="space-y-3 pt-2">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    Active Testimonials ({formData.customTestimonials?.length || 0})
+                                </h4>
+                                {(!formData.customTestimonials || formData.customTestimonials.length === 0) ? (
+                                    <div className="p-6 text-center border-2 border-dashed rounded-xl bg-slate-50 text-slate-400 text-sm">
+                                        No custom testimonials added yet. Add parent & alumni reviews above or leave empty to display system defaults.
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {formData.customTestimonials.map((t, idx) => (
+                                            <div key={t.id || idx} className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 relative group hover:border-indigo-200 transition-colors">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <div className="h-9 w-9 rounded-full overflow-hidden bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-600 shrink-0 text-sm">
+                                                            {t.avatar ? (
+                                                                <img src={t.avatar} className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                t.name.charAt(0)
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-slate-900 text-sm">{t.name}</div>
+                                                            <div className="text-xs text-indigo-600 font-medium">{t.role}</div>
+                                                        </div>
+                                                    </div>
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        onClick={() => handleRemoveTestimonial(idx)}
+                                                        className="h-7 w-7 text-slate-400 hover:text-red-600 hover:bg-red-50"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                </div>
+                                                <p className="text-xs text-slate-600 italic line-clamp-3">"{t.quote}"</p>
+                                                <div className="flex items-center gap-1 text-amber-400 text-xs">
+                                                    {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                                                        <Star key={i} className="h-3 w-3 fill-amber-400" />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
