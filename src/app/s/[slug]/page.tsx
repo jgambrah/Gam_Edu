@@ -1053,7 +1053,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             { subject: 'Integrated Science', score: school?.scienceScore || 94, grade: 'A+' },
             { subject: 'Creative Arts & Design', score: school?.artsScore || 88, grade: 'B+' }
           ],
-      attendanceRate: school?.attendanceRate || '100% (22/22 Days)',
+      attendanceRate: school?.showcaseAttendance || school?.attendanceRate || '100% (22/22 Days)',
       feeStatus: school?.feeStatusText || 'Status: Paid in Full',
       tuitionAmount: school?.showcaseTuition || 'GH₵ 1,850.00',
       labPassAmount: school?.showcaseLabPass || 'GH₵ 250.00'

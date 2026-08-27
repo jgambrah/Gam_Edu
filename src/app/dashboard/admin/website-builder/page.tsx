@@ -101,6 +101,7 @@ export default function WebsiteBuilderPage() {
     showcaseTuition: '',
     showcaseLabPass: '',
     showcaseGpa: '',
+    showcaseAttendance: '',
     feeStatusText: ''
   });
 
@@ -308,6 +309,7 @@ export default function WebsiteBuilderPage() {
         showcaseTuition: schoolData.showcaseTuition || '',
         showcaseLabPass: schoolData.showcaseLabPass || '',
         showcaseGpa: schoolData.showcaseGpa || '',
+        showcaseAttendance: schoolData.showcaseAttendance || schoolData.attendanceRate || '',
         feeStatusText: schoolData.feeStatusText || ''
       });
     }
@@ -1367,7 +1369,7 @@ export default function WebsiteBuilderPage() {
                             <p className="text-xs text-slate-500">
                                 Customize the sample figures shown in the Parent Portal Preview Teaser mockup to match your school's actual fee structures and academic standards.
                             </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
                                 <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
                                     <Label className="text-xs font-bold text-slate-700">Term Tuition Amount</Label>
                                     <Input 
@@ -1394,6 +1396,16 @@ export default function WebsiteBuilderPage() {
                                         placeholder="e.g. 3.92 / 4.0" 
                                         value={formData.showcaseGpa} 
                                         onChange={e => setFormData({...formData, showcaseGpa: e.target.value})} 
+                                        className="h-9 font-mono text-sm bg-white"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                                    <Label className="text-xs font-bold text-slate-700">Monthly Attendance Rate</Label>
+                                    <Input 
+                                        placeholder="e.g. 100% (22/22 Days)" 
+                                        value={formData.showcaseAttendance} 
+                                        onChange={e => setFormData({...formData, showcaseAttendance: e.target.value})} 
                                         className="h-9 font-mono text-sm bg-white"
                                     />
                                 </div>
