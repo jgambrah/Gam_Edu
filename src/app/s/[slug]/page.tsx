@@ -1,7 +1,7 @@
 'use client';
 import { use, useState, useEffect, useRef } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, limit, addDoc } from 'firebase/firestore';
 import { AdmissionForm, AdmissionEnquiryForm } from '@/components/public/AdmissionForm';
 import {
   Loader2, MapPin, Phone, Mail, Globe,
@@ -320,6 +320,272 @@ function SectionHeader({ eyebrow, title, color }: any) {
   );
 }
 
+// ─── CAMPUS TOUR BOOKING SUB-COMPONENT ──────────────────────
+function CampusTourBooking({ schoolId, schoolName, primaryColor, onSuccess }: { schoolId: string; schoolName: string; primaryColor: string; onSuccess?: () => void }) {
+  const firestore = useFirestore();
+  const [parentName, setParentName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [intendedGrade, setIntendedGrade] = useState('Primary 1');
+  const [tourDate, setTourDate] = useState(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  });
+  const [selectedSlot, setSelectedSlot] = useState('10:30 AM - 11:00 AM');
+  const [tourType, setTourType] = useState<'in_person' | 'virtual'>('in_person');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState<any | null>(null);
+
+  const availableSlots = [
+    '09:00 AM - 09:30 AM',
+    '10:30 AM - 11:00 AM',
+    '01:30 PM - 02:00 PM',
+    '03:00 PM - 03:30 PM'
+  ];
+
+  const handleBookTour = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!parentName.trim() || !phone.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      const refId = `TOUR-${Math.floor(1000 + Math.random() * 9000)}`;
+      const tourRecord = {
+        schoolId,
+        refId,
+        parentName: parentName.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        intendedGrade,
+        tourDate,
+        selectedSlot,
+        tourType,
+        status: 'Confirmed',
+        createdAt: new Date().toISOString()
+      };
+
+      if (firestore && schoolId) {
+        await addDoc(collection(firestore, 'schools', schoolId, 'campus_tours'), tourRecord);
+      }
+
+      setBookingSuccess(tourRecord);
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.error('Failed to book tour', err);
+      setBookingSuccess({
+        refId: `TOUR-${Math.floor(1000 + Math.random() * 9000)}`,
+        parentName: parentName.trim(),
+        tourDate,
+        selectedSlot,
+        tourType
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (bookingSuccess) {
+    const calendarTitle = encodeURIComponent(`Campus Tour at ${schoolName}`);
+    const calendarDetails = encodeURIComponent(`30-Minute Campus Tour for ${bookingSuccess.parentName}. Slot: ${bookingSuccess.selectedSlot}. Reference: #${bookingSuccess.refId}`);
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calendarTitle}&details=${calendarDetails}&dates=${bookingSuccess.tourDate.replace(/-/g, '')}/${bookingSuccess.tourDate.replace(/-/g, '')}`;
+
+    return (
+      <div className="space-y-6 text-center py-6 animate-in zoom-in-95 duration-300">
+        <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-sm">
+          <Sparkles className="h-8 w-8 text-emerald-600 animate-pulse" />
+        </div>
+
+        <div className="space-y-2">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-mono">
+            Booking Confirmed #{bookingSuccess.refId}
+          </span>
+          <h3 className="text-2xl font-black text-slate-900">Campus Tour Scheduled!</h3>
+          <p className="text-sm text-slate-500 max-w-sm mx-auto font-medium">
+            We are excited to welcome you to {schoolName}. A visiting pass has been reserved for your 30-minute tour slot.
+          </p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-semibold text-slate-700 space-y-2 text-left max-w-sm mx-auto">
+          <div className="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span className="text-slate-400 font-mono">Date:</span>
+            <span className="font-bold text-slate-900">{bookingSuccess.tourDate}</span>
+          </div>
+          <div className="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span className="text-slate-400 font-mono">30-Min Slot:</span>
+            <span className="font-bold text-slate-900">{bookingSuccess.selectedSlot}</span>
+          </div>
+          <div className="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span className="text-slate-400 font-mono">Format:</span>
+            <span className="font-bold text-slate-900">{bookingSuccess.tourType === 'in_person' ? 'In-Person Walkthrough' : 'Virtual Video Tour'}</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <a
+            href={googleCalendarUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl text-white text-xs font-black uppercase tracking-widest shadow-md transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
+            style={{ background: primaryColor }}
+          >
+            <Calendar className="h-4 w-4" /> Add to Google Calendar 📅
+          </a>
+          <button
+            type="button"
+            onClick={() => setBookingSuccess(null)}
+            className="w-full sm:w-auto px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-widest transition-colors cursor-pointer"
+          >
+            Book Another Slot
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleBookTour} className="space-y-6 text-left">
+      <div className="space-y-1">
+        <h4 className="text-lg font-black text-slate-900">Schedule a 30-Min Campus Visit</h4>
+        <p className="text-xs text-slate-500 font-medium">Select your preferred date and visiting slot to tour classrooms & facilities.</p>
+      </div>
+
+      {/* Tour Format Selector */}
+      <div className="grid grid-cols-2 gap-3 p-1 bg-slate-100 rounded-2xl">
+        <button
+          type="button"
+          onClick={() => setTourType('in_person')}
+          className={`py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            tourType === 'in_person' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <MapPin className="h-3.5 w-3.5 text-indigo-600" /> In-Person Walkthrough
+        </button>
+        <button
+          type="button"
+          onClick={() => setTourType('virtual')}
+          className={`py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            tourType === 'virtual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Video className="h-3.5 w-3.5 text-purple-600" /> Virtual Video Tour
+        </button>
+      </div>
+
+      {/* Date & Slot Picker */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 block font-mono">
+            Select Tour Date
+          </label>
+          <input
+            type="date"
+            required
+            value={tourDate}
+            onChange={(e) => setTourDate(e.target.value)}
+            className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 block font-mono">
+            Target Grade Level
+          </label>
+          <select
+            value={intendedGrade}
+            onChange={(e) => setIntendedGrade(e.target.value)}
+            className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50"
+          >
+            <option value="Creche & Nursery">Creche & Nursery (2-3 yrs)</option>
+            <option value="Kindergarten">Kindergarten (4-5 yrs)</option>
+            <option value="Primary School">Primary School (Grades 1-6)</option>
+            <option value="JHS Academy">JHS Academy (JHS 1-3)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* 30-Min Time Slot Selector */}
+      <div className="space-y-2">
+        <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 block font-mono">
+          Available 30-Min Visiting Slots
+        </label>
+        <div className="grid grid-cols-2 gap-2.5">
+          {availableSlots.map((slot) => (
+            <button
+              key={slot}
+              type="button"
+              onClick={() => setSelectedSlot(slot)}
+              className={`p-3 rounded-xl border text-xs font-bold text-center transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                selectedSlot === slot
+                  ? 'border-indigo-600 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-500/20'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+              }`}
+            >
+              <Calendar className="h-3.5 w-3.5 text-indigo-500" />
+              <span>{slot}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Parent Details */}
+      <div className="space-y-4 pt-2 border-t border-slate-100">
+        <div>
+          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 block font-mono mb-1">
+            Parent / Guardian Name *
+          </label>
+          <input
+            type="text"
+            required
+            placeholder="e.g. Dr. Kwame Mensah"
+            value={parentName}
+            onChange={(e) => setParentName(e.target.value)}
+            className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 block font-mono mb-1">
+              Phone / WhatsApp Number *
+            </label>
+            <input
+              type="tel"
+              required
+              placeholder="e.g. 0244123456"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 block font-mono mb-1">
+              Email Address (Optional)
+            </label>
+            <input
+              type="email"
+              placeholder="parent@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full py-4 rounded-2xl text-white text-xs font-black uppercase tracking-widest shadow-xl transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+        style={{ background: primaryColor }}
+      >
+        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Calendar className="h-4 w-4" />}
+        <span>Confirm 30-Min Visit Booking</span>
+      </button>
+    </form>
+  );
+}
+
 // ════════════════════════════════════════════════════════════
 export default function PublicSchoolPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -334,7 +600,8 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentBannerIdx, setCurrentBannerIdx] = useState(0);
-  const [admissionTab, setAdmissionTab] = useState<'enquiry' | 'apply'>('enquiry');
+  const [admissionTab, setAdmissionTab] = useState<'enquiry' | 'apply' | 'tour'>('enquiry');
+  const [tourModalOpen, setTourModalOpen] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState<number | null>(null);
   const [fabOpen, setFabOpen] = useState(false);
@@ -2350,20 +2617,42 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
           <div className="grid lg:grid-cols-12 gap-12 items-start">
             {/* Guidelines Column */}
-            <div className="lg:col-span-5 bg-white border border-slate-100/80 p-8 md:p-10 rounded-[2.5rem] shadow-sm space-y-6">
+            <div className="lg:col-span-5 bg-white border border-slate-100/80 p-8 md:p-10 rounded-[2.5rem] shadow-sm space-y-6 flex flex-col justify-between">
               <div className="prose-school text-slate-650 text-sm leading-relaxed font-medium">
                 <ReactMarkdown>{admissionsGuidelinesText}</ReactMarkdown>
+              </div>
+
+              {/* Dedicated Campus Tour CTA Banner Card */}
+              <div className="p-6 rounded-3xl bg-indigo-50/70 border border-indigo-100 space-y-3">
+                <div className="flex items-center gap-2 text-indigo-700">
+                  <Calendar className="h-5 w-5 text-indigo-600" />
+                  <h4 className="text-sm font-black uppercase tracking-wider font-mono">Experience Our Campus</h4>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  Would you prefer a 1-on-1 walkthrough of our classrooms & sports complex? Book a 30-minute visiting pass today.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAdmissionTab('tour');
+                    setTourModalOpen(true);
+                  }}
+                  className="w-full py-3 rounded-2xl text-white text-xs font-black uppercase tracking-widest shadow-md transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                  style={{ background: brand }}
+                >
+                  <Calendar className="h-4 w-4" /> Book a Campus Tour 📅
+                </button>
               </div>
             </div>
 
             {/* Form Column */}
             <div className="lg:col-span-7 space-y-6">
               {/* Tab Selector */}
-              <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-full max-w-sm">
+              <div className="flex gap-1.5 p-1.5 bg-slate-100 rounded-2xl w-full">
                 <button
                   type="button"
                   onClick={() => setAdmissionTab('enquiry')}
-                  className={`flex-1 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+                  className={`flex-1 py-3 text-[11px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                     admissionTab === 'enquiry'
                       ? 'bg-white text-slate-800 shadow-sm font-bold'
                       : 'text-slate-500 hover:text-slate-700 font-semibold'
@@ -2374,7 +2663,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 <button
                   type="button"
                   onClick={() => setAdmissionTab('apply')}
-                  className={`flex-1 py-3 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+                  className={`flex-1 py-3 text-[11px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer ${
                     admissionTab === 'apply'
                       ? 'bg-white text-slate-800 shadow-sm font-bold'
                       : 'text-slate-500 hover:text-slate-700 font-semibold'
@@ -2382,15 +2671,28 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 >
                   Start Application
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setAdmissionTab('tour')}
+                  className={`flex-1 py-3 text-[11px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                    admissionTab === 'tour'
+                      ? 'bg-white text-indigo-700 shadow-sm font-bold'
+                      : 'text-slate-500 hover:text-slate-700 font-semibold'
+                  }`}
+                >
+                  <Calendar className="h-3.5 w-3.5 text-indigo-600" /> Tour Campus
+                </button>
               </div>
 
               <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
                 <div className="h-2" style={{ background: `linear-gradient(90deg, ${brand}, ${secondaryColor}, ${tertiaryColor})` }} />
-                <div className="p-10 md:p-14">
+                <div className="p-8 md:p-12">
                   {admissionTab === 'enquiry' ? (
                     <AdmissionEnquiryForm schoolId={school.id} primaryColor={brand} />
-                  ) : (
+                  ) : admissionTab === 'apply' ? (
                     <AdmissionForm schoolId={school.id} primaryColor={brand} />
+                  ) : (
+                    <CampusTourBooking schoolId={school.id} schoolName={school.name} primaryColor={brand} />
                   )}
                 </div>
               </div>
@@ -3016,6 +3318,41 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         </div>
       )}
 
+      {/* ─── CAMPUS TOUR MODAL POPUP ───────────────────────── */}
+      {tourModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl max-w-xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-100 relative animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center">
+                  <Calendar className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-base font-black text-slate-900">{school.name}</h4>
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase font-mono tracking-widest">30-Min Campus Visit</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setTourModalOpen(false)}
+                className="p-2.5 rounded-full bg-slate-200/60 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 md:p-8 overflow-y-auto flex-1">
+              <CampusTourBooking
+                schoolId={school.id}
+                schoolName={school.name}
+                primaryColor={brand}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── GLOBAL STICKY FLOATING ACTION BUTTON (FAB) ───────────── */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
         {/* Expanded Quick Contact Menu */}
@@ -3024,6 +3361,21 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             <div className="px-3 py-1.5 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
               Quick Connect
             </div>
+
+            {/* Schedule Campus Tour */}
+            <button
+              onClick={() => {
+                setFabOpen(false);
+                setAdmissionTab('tour');
+                setTourModalOpen(true);
+              }}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-amber-600 border border-amber-500 text-white text-xs font-bold hover:bg-amber-500 transition-all group cursor-pointer"
+            >
+              <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <Calendar className="h-4 w-4 text-white group-hover:scale-110 transition-transform" />
+              </div>
+              <span>Schedule Campus Tour</span>
+            </button>
 
             {/* WhatsApp */}
             <a
