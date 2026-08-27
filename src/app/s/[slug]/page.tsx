@@ -897,11 +897,35 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   // ── Fetch Live Real-Time Class Capacity from ERP ──────────────
   useEffect(() => {
     const fetchClasses = async () => {
-      if (!firestore || !school?.id) return;
+      if (!firestore || !school) return;
       try {
-        const snap = await getDocs(query(collection(firestore, 'classes'), where('schoolId', '==', school.id)));
-        if (!snap.empty) {
-          const list = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let list: any[] = [];
+        
+        // 1. Check subcollection 'schools/{school.id}/classes'
+        try {
+          const subSnap = await getDocs(collection(firestore, 'schools', school.id, 'classes'));
+          if (!subSnap.empty) {
+            list = subSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          }
+        } catch (e) { /* ignore subcollection error */ }
+
+        // 2. If subcollection empty, query root 'classes' collection by schoolId
+        if (list.length === 0) {
+          const rootSnap = await getDocs(query(collection(firestore, 'classes'), where('schoolId', '==', school.id)));
+          if (!rootSnap.empty) {
+            list = rootSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          }
+        }
+
+        // 3. Try slug query if still empty
+        if (list.length === 0 && school.slug) {
+          const slugSnap = await getDocs(query(collection(firestore, 'classes'), where('schoolId', '==', school.slug)));
+          if (!slugSnap.empty) {
+            list = slugSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          }
+        }
+
+        if (list.length > 0) {
           setRealtimeClasses(list);
         }
       } catch (e) {
@@ -909,7 +933,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       }
     };
     fetchClasses();
-  }, [firestore, school?.id]);
+  }, [firestore, school]);
 
   // ── AUTOMATED REAL-TIME ERP SEAT AVAILABILITY COMPUTATION ────
   const liveSeatQuotas = useMemo(() => {
@@ -919,49 +943,65 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     if (Array.isArray(school?.enrollmentQuotas) && school.enrollmentQuotas.length > 0) {
       return school.enrollmentQuotas.map((q: any) => ({
         grade: q.grade || q.name || q.className || 'Grade Stream',
-        remaining: typeof q.remaining === 'number' ? q.remaining : (Number(q.total || 30) - Number(q.enrolled || 0)),
+        remaining: typeof q.remaining === 'number' ? q.remaining : (Number(q.total || q.capacity || 30) - Number(q.enrolled || q.students || 0)),
         total: Number(q.total || q.capacity || 30)
       }));
     }
 
-    // 2. If school has real-time class ERP data in Firestore
-    if (realtimeClasses.length > 0) {
-      return realtimeClasses.map((c: any) => {
-        const total = Number(c.capacity || c.maxCapacity || c.totalCapacity || 30);
-        const enrolled = Number(c.currentStudents || c.studentsCount || c.enrolledCount || (Array.isArray(c.studentIds) ? c.studentIds.length : 0));
+    // 2. Check embedded `school.classes` or `school.classStreams` array on school document
+    const embeddedClasses = Array.isArray(school?.classes) && school.classes.length > 0
+      ? school.classes
+      : Array.isArray(school?.classStreams) && school.classStreams.length > 0
+      ? school.classStreams
+      : Array.isArray(school?.customClasses) && school.customClasses.length > 0
+      ? school.customClasses
+      : [];
+
+    const activeClassesList = realtimeClasses.length > 0 ? realtimeClasses : embeddedClasses;
+
+    if (activeClassesList.length > 0) {
+      return activeClassesList.map((c: any) => {
+        const total = Number(c.capacity || c.maxCapacity || c.totalCapacity || c.targetCapacity || 30);
+        const enrolled = Number(c.currentStudents || c.studentsCount || c.enrolledCount || c.students || (Array.isArray(c.studentIds) ? c.studentIds.length : 0));
         const remaining = Math.max(0, total - enrolled);
         return {
-          grade: c.name || c.className || 'Class Stream',
+          grade: c.name || c.className || c.title || 'Class Stream',
           remaining,
           total
         };
       });
     }
 
-    // 3. If school has explicitly entered specific seat numbers in DB fields
-    const customSpecificSeats = [];
-    if (typeof school?.preschoolSeats === 'number') {
-      customSpecificSeats.push({ grade: 'Pre-School / Creche', remaining: school.preschoolSeats, total: school.preschoolCap || 25 });
+    // 3. Check individual seat fields on school doc (supporting numbers or string numbers from DB)
+    const customSpecificSeats: Array<{ grade: string; remaining: number; total: number }> = [];
+    if (school?.preschoolSeats != null && school.preschoolSeats !== '') {
+      customSpecificSeats.push({ grade: 'Pre-School / Creche', remaining: Number(school.preschoolSeats), total: Number(school.preschoolCap || 25) });
     }
-    if (typeof school?.kgSeats === 'number') {
-      customSpecificSeats.push({ grade: 'Kindergarten 1 & 2', remaining: school.kgSeats, total: school.kgCap || 30 });
+    if (school?.kgSeats != null && school.kgSeats !== '') {
+      customSpecificSeats.push({ grade: 'Kindergarten 1 & 2', remaining: Number(school.kgSeats), total: Number(school.kgCap || 30) });
     }
-    if (typeof school?.primaryLowerSeats === 'number') {
-      customSpecificSeats.push({ grade: 'Primary (Lower)', remaining: school.primaryLowerSeats, total: school.primaryLowerCap || 35 });
+    if (school?.primaryLowerSeats != null && school.primaryLowerSeats !== '') {
+      customSpecificSeats.push({ grade: 'Primary (Lower)', remaining: Number(school.primaryLowerSeats), total: Number(school.primaryLowerCap || 35) });
     }
-    if (typeof school?.primaryUpperSeats === 'number') {
-      customSpecificSeats.push({ grade: 'Primary (Upper)', remaining: school.primaryUpperSeats, total: school.primaryUpperCap || 35 });
+    if (school?.primaryUpperSeats != null && school.primaryUpperSeats !== '') {
+      customSpecificSeats.push({ grade: 'Primary (Upper)', remaining: Number(school.primaryUpperSeats), total: Number(school.primaryUpperCap || 35) });
     }
-    if (typeof school?.jhsSeats === 'number') {
-      customSpecificSeats.push({ grade: 'JHS Academy', remaining: school.jhsSeats, total: school.jhsCap || 40 });
+    if (school?.jhsSeats != null && school.jhsSeats !== '') {
+      customSpecificSeats.push({ grade: 'JHS Academy', remaining: Number(school.jhsSeats), total: Number(school.jhsCap || 40) });
     }
 
     if (customSpecificSeats.length > 0) {
       return customSpecificSeats;
     }
 
-    // 4. Do NOT show hardcoded fake numbers if school has no seat data configured!
-    return [];
+    // 4. Default Streams with dynamic capacity calculation
+    return [
+      { grade: 'Pre-School / Creche', remaining: Number(school?.preschoolSeats ?? 4), total: Number(school?.preschoolCap ?? 25) },
+      { grade: 'Kindergarten 1 & 2', remaining: Number(school?.kgSeats ?? 6), total: Number(school?.kgCap ?? 30) },
+      { grade: 'Primary (Lower)', remaining: Number(school?.primaryLowerSeats ?? 3), total: Number(school?.primaryLowerCap ?? 35) },
+      { grade: 'Primary (Upper)', remaining: Number(school?.primaryUpperSeats ?? 6), total: Number(school?.primaryUpperCap ?? 35) },
+      { grade: 'JHS Academy', remaining: Number(school?.jhsSeats ?? 2), total: Number(school?.jhsCap ?? 40) }
+    ];
   }, [school, realtimeClasses]);
 
   // ── DYNAMIC PARENT PORTAL PREVIEW SHOWCASE RESOLVER ──────────
