@@ -268,7 +268,13 @@ export default function WebsiteBuilderPage() {
     if (!firestore || !schoolId) return;
     setIsSaving(true);
     try {
-        await updateDoc(doc(firestore, 'schools', schoolId), { ...formData });
+        await updateDoc(doc(firestore, 'schools', schoolId), { 
+            ...formData,
+            testimonials: formData.customTestimonials,
+            customTestimonials: formData.customTestimonials,
+            reviews: formData.customTestimonials,
+            parentReviews: formData.customTestimonials
+        });
         toast({ title: "Website Published!", description: "Your public page has been updated." });
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });

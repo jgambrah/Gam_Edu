@@ -828,15 +828,39 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     ? school.gallery
     : defaultFallbackGallery;
 
-  const testimonialList = school?.hideTestimonials ? [] : (Array.isArray(school?.customTestimonials) && school.customTestimonials.length > 0)
-    ? school.customTestimonials
-    : (Array.isArray(school?.testimonials) && school.testimonials.length > 0)
-    ? school.testimonials
-    : (Array.isArray(school?.reviews) && school.reviews.length > 0)
-    ? school.reviews
-    : (Array.isArray(school?.parentReviews) && school.parentReviews.length > 0)
-    ? school.parentReviews
-    : defaultTestimonials;
+  const testimonialList = (() => {
+    if (school?.hideTestimonials) return [];
+
+    // 1. Array from customTestimonials or testimonials or reviews or parentReviews
+    if (Array.isArray(school?.customTestimonials) && school.customTestimonials.length > 0) {
+      return school.customTestimonials;
+    }
+    if (Array.isArray(school?.testimonials) && school.testimonials.length > 0) {
+      return school.testimonials;
+    }
+    if (Array.isArray(school?.reviews) && school.reviews.length > 0) {
+      return school.reviews;
+    }
+    if (Array.isArray(school?.parentReviews) && school.parentReviews.length > 0) {
+      return school.parentReviews;
+    }
+
+    // 2. Single field overrides on school doc (parentTestimonialQuote / parentTestimonialName / etc)
+    if (school?.parentTestimonialQuote || school?.parentTestimonialName || school?.testimonialQuote || school?.testimonialName) {
+      return [
+        {
+          quote: school?.parentTestimonialQuote || school?.testimonialQuote || defaultTestimonials[0].quote,
+          name: school?.parentTestimonialName || school?.testimonialName || defaultTestimonials[0].name,
+          role: school?.parentTestimonialRole || school?.testimonialRole || defaultTestimonials[0].role,
+          rating: Number(school?.parentTestimonialRating || 5),
+          avatar: school?.parentTestimonialAvatar || school?.testimonialAvatar || defaultTestimonials[0].avatar
+        },
+        ...defaultTestimonials.slice(1)
+      ];
+    }
+
+    return defaultTestimonials;
+  })();
 
   const validVideos = (school?.videoUrls || [])
     .map((v: any) => ({
