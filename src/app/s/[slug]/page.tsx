@@ -1026,6 +1026,142 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     }
   }, [highContrast]);
 
+  // ── AUTOMATED GLOBAL SEARCH COMPUTATION (Hook placed before early returns) ──
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim() || !school) return [];
+    const q = searchQuery.toLowerCase().trim();
+    const results: Array<{
+      id: string;
+      title: string;
+      category: string;
+      snippet: string;
+      targetId: string;
+      action?: () => void;
+    }> = [];
+
+    // 1. Academics & Facilities
+    const pillarsList = (Array.isArray(school?.academicsPillars) && school.academicsPillars.length > 0)
+      ? school.academicsPillars
+      : (Array.isArray(school?.facilities) && school.facilities.length > 0)
+      ? school.facilities
+      : (Array.isArray(school?.campusPillars) && school.campusPillars.length > 0)
+      ? school.campusPillars
+      : [];
+
+    pillarsList.forEach((p: any, i: number) => {
+      if (
+        (p.title && p.title.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q))
+      ) {
+        results.push({
+          id: `pillar-${i}`,
+          title: p.title || 'Academic Pillar',
+          category: 'Academics & Facilities',
+          snippet: p.description || 'Explore our campus academic facilities.',
+          targetId: 'academics'
+        });
+      }
+    });
+
+    // 2. Admissions & Fees
+    if (
+      'admissions'.includes(q) || 'fees'.includes(q) || 'tuition'.includes(q) ||
+      'application'.includes(q) || 'requirements'.includes(q) || 'cut-off'.includes(q) || 'bus'.includes(q)
+    ) {
+      results.push({
+        id: 'admissions-sec',
+        title: 'Admissions Guidelines & Tuition Payment',
+        category: 'Admissions & Fees',
+        snippet: 'Review entry requirements, document checklists, and online application forms.',
+        targetId: 'apply'
+      });
+    }
+
+    const faqsList = (Array.isArray(school?.faqs) && school.faqs.length > 0)
+      ? school.faqs
+      : (Array.isArray(school?.customFaqs) && school.customFaqs.length > 0)
+      ? school.customFaqs
+      : (Array.isArray(school?.admissionsFaqs) && school.admissionsFaqs.length > 0)
+      ? school.admissionsFaqs
+      : [];
+
+    faqsList.forEach((faq: any, i: number) => {
+      const qText = (faq.q || faq.question || '').toLowerCase();
+      const aText = (faq.a || faq.answer || '').toLowerCase();
+      if (qText.includes(q) || aText.includes(q)) {
+        results.push({
+          id: `faq-${i}`,
+          title: faq.q || faq.question || 'Admissions FAQ',
+          category: 'Admissions FAQ',
+          snippet: faq.a || faq.answer || '',
+          targetId: 'apply',
+          action: () => setOpenFaqIdx(i)
+        });
+      }
+    });
+
+    // 3. News & Bulletins
+    (newsList || []).forEach((n: any, i: number) => {
+      const title = (n.title || '').toLowerCase();
+      const summary = (n.summary || n.content || '').toLowerCase();
+      if (title.includes(q) || summary.includes(q)) {
+        results.push({
+          id: `news-${n.id || i}`,
+          title: n.title || 'News Bulletin',
+          category: 'News & Announcements',
+          snippet: n.summary || n.content || '',
+          targetId: 'news',
+          action: () => setSelectedNews(n)
+        });
+      }
+    });
+
+    // 4. Events
+    const events = (Array.isArray(school?.events) && school.events.length > 0)
+      ? school.events
+      : (Array.isArray(school?.customEvents) && school.customEvents.length > 0)
+      ? school.customEvents
+      : (Array.isArray(school?.upcomingEvents) && school.upcomingEvents.length > 0)
+      ? school.upcomingEvents
+      : (Array.isArray(school?.calendarEvents) && school.calendarEvents.length > 0)
+      ? school.calendarEvents
+      : [];
+
+    events.forEach((ev: any, i: number) => {
+      const title = (ev.title || '').toLowerCase();
+      const desc = (ev.description || '').toLowerCase();
+      const cat = (ev.category || '').toLowerCase();
+      if (title.includes(q) || desc.includes(q) || cat.includes(q)) {
+        results.push({
+          id: `event-${ev.id || i}`,
+          title: ev.title || 'Campus Event',
+          category: 'Events & Calendar',
+          snippet: `${ev.date || ''} • ${ev.description || ''}`,
+          targetId: 'events',
+          action: () => setSelectedEvent(ev)
+        });
+      }
+    });
+
+    // 5. Educators & Team
+    (team || []).forEach((m: any, i: number) => {
+      const name = (m.name || `${m.firstName || ''} ${m.lastName || ''}`).toLowerCase();
+      const role = (m.role || '').toLowerCase();
+      const bio = (m.bio || '').toLowerCase();
+      if (name.includes(q) || role.includes(q) || bio.includes(q)) {
+        results.push({
+          id: `team-${m.id || i}`,
+          title: m.name || `${m.firstName || ''} ${m.lastName || ''}`,
+          category: 'Faculty & Staff',
+          snippet: `${m.role || 'Educator'} • ${m.highestDegree || m.qualifications || ''}`,
+          targetId: 'team'
+        });
+      }
+    });
+
+    return results;
+  }, [searchQuery, school, newsList, team]);
+
   // ── loading / not found ────────────────────────────────────
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950">
@@ -1300,116 +1436,6 @@ Welcome to our admissions portal! To ensure a smooth application process for you
     : (Array.isArray(school?.admissionsFaqs) && school.admissionsFaqs.length > 0)
     ? school.admissionsFaqs
     : defaultAdmissionsFaqs;
-
-  // ── AUTOMATED GLOBAL SEARCH COMPUTATION ─────────────────────
-  const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase().trim();
-    const results: Array<{
-      id: string;
-      title: string;
-      category: string;
-      snippet: string;
-      targetId: string;
-      action?: () => void;
-    }> = [];
-
-    // 1. Academics & Facilities
-    pillars.forEach((p: any, i: number) => {
-      if (
-        (p.title && p.title.toLowerCase().includes(q)) ||
-        (p.description && p.description.toLowerCase().includes(q))
-      ) {
-        results.push({
-          id: `pillar-${i}`,
-          title: p.title || 'Academic Pillar',
-          category: 'Academics & Facilities',
-          snippet: p.description || 'Explore our campus academic facilities.',
-          targetId: 'academics'
-        });
-      }
-    });
-
-    // 2. Admissions & Fees
-    if (
-      'admissions'.includes(q) || 'fees'.includes(q) || 'tuition'.includes(q) ||
-      'application'.includes(q) || 'requirements'.includes(q) || 'cut-off'.includes(q) || 'bus'.includes(q)
-    ) {
-      results.push({
-        id: 'admissions-sec',
-        title: 'Admissions Guidelines & Tuition Payment',
-        category: 'Admissions & Fees',
-        snippet: 'Review entry requirements, document checklists, and online application forms.',
-        targetId: 'apply'
-      });
-    }
-
-    admissionsFaqs.forEach((faq: any, i: number) => {
-      const qText = (faq.q || faq.question || '').toLowerCase();
-      const aText = (faq.a || faq.answer || '').toLowerCase();
-      if (qText.includes(q) || aText.includes(q)) {
-        results.push({
-          id: `faq-${i}`,
-          title: faq.q || faq.question || 'Admissions FAQ',
-          category: 'Admissions FAQ',
-          snippet: faq.a || faq.answer || '',
-          targetId: 'apply',
-          action: () => setOpenFaqIdx(i)
-        });
-      }
-    });
-
-    // 3. News & Bulletins
-    newsList.forEach((n: any, i: number) => {
-      const title = (n.title || '').toLowerCase();
-      const summary = (n.summary || n.content || '').toLowerCase();
-      if (title.includes(q) || summary.includes(q)) {
-        results.push({
-          id: `news-${n.id || i}`,
-          title: n.title || 'News Bulletin',
-          category: 'News & Announcements',
-          snippet: n.summary || n.content || '',
-          targetId: 'news',
-          action: () => setSelectedNews(n)
-        });
-      }
-    });
-
-    // 4. Events
-    eventsList.forEach((ev: any, i: number) => {
-      const title = (ev.title || '').toLowerCase();
-      const desc = (ev.description || '').toLowerCase();
-      const cat = (ev.category || '').toLowerCase();
-      if (title.includes(q) || desc.includes(q) || cat.includes(q)) {
-        results.push({
-          id: `event-${ev.id || i}`,
-          title: ev.title || 'Campus Event',
-          category: 'Events & Calendar',
-          snippet: `${ev.date || ''} • ${ev.description || ''}`,
-          targetId: 'events',
-          action: () => setSelectedEvent(ev)
-        });
-      }
-    });
-
-    // 5. Educators & Team
-    team.forEach((m: any, i: number) => {
-      const name = (m.name || `${m.firstName || ''} ${m.lastName || ''}`).toLowerCase();
-      const role = (m.role || '').toLowerCase();
-      const bio = (m.bio || '').toLowerCase();
-      if (name.includes(q) || role.includes(q) || bio.includes(q)) {
-        results.push({
-          id: `team-${m.id || i}`,
-          title: m.name || `${m.firstName || ''} ${m.lastName || ''}`,
-          category: 'Faculty & Staff',
-          snippet: `${m.role || 'Educator'} • ${m.highestDegree || m.qualifications || ''}`,
-          targetId: 'team'
-        });
-      }
-    });
-
-    return results;
-  }, [searchQuery, pillars, admissionsFaqs, newsList, eventsList, team]);
 
   const navLinks = [
     { label: t.about || 'About', id: 'about' },
