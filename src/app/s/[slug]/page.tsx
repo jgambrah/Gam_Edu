@@ -586,6 +586,78 @@ function CampusTourBooking({ schoolId, schoolName, primaryColor, onSuccess }: { 
   );
 }
 
+// ─── LITE YOUTUBE PLAYER SUB-COMPONENT ──────────────────────
+function LiteYouTubePlayer({ ytId, title, brandColor }: { ytId: string; title: string; brandColor: string }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [imgSrc, setImgSrc] = useState(`https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`);
+
+  if (isPlaying) {
+    return (
+      <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-slate-950 border border-white/10">
+        <iframe
+          width="100%"
+          height="100%"
+          src={`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`}
+          title={title}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={() => setIsPlaying(true)}
+      className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 bg-slate-950 group cursor-pointer select-none"
+    >
+      {/* High-res Cover Image */}
+      <img
+        src={imgSrc}
+        alt={title}
+        onError={() => setImgSrc(`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`)}
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter brightness-90 group-hover:brightness-100"
+      />
+
+      {/* Dark Vignette Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
+
+      {/* Custom Branded Play Button with Pulse Glow */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative">
+          <div
+            className="absolute -inset-3 rounded-full opacity-60 blur-md animate-ping pointer-events-none"
+            style={{ backgroundColor: brandColor }}
+          />
+          <div
+            className="w-16 h-16 md:w-20 md:h-20 rounded-full text-white shadow-2xl flex items-center justify-center border-2 border-white/40 transition-transform duration-300 group-hover:scale-110 relative z-10"
+            style={{ background: `linear-gradient(135deg, ${brandColor}, #ef4444)` }}
+          >
+            <Video className="h-8 w-8 text-white fill-white ml-0.5" />
+          </div>
+        </div>
+      </div>
+
+      {/* Top Media Badge */}
+      <div className="absolute top-4 left-4 z-10">
+        <span className="px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest font-mono border border-white/20 shadow-md flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> HD Video
+        </span>
+      </div>
+
+      {/* Bottom Action Hint */}
+      <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between text-white text-xs font-bold">
+        <span className="truncate max-w-[75%] font-medium text-slate-200">{title}</span>
+        <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-black uppercase tracking-widest font-mono border border-white/30">
+          Click to Play ▶
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ════════════════════════════════════════════════════════════
 export default function PublicSchoolPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -2234,27 +2306,56 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         </section>
       )}
 
-      {/* ─── VIDEOS ─────────────────────────────────────────── */}
+      {/* ─── VIDEOS / MEDIA SHOWCASE ─────────────────────────── */}
       {validVideos.length > 0 && (
-        <section id="videos" className="py-32 px-6 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <SectionHeader eyebrow="Media" title="Video Showcase" color={brand} />
+        <section id="videos" className="py-32 px-6 bg-slate-50 border-t border-slate-100">
+          <div className="max-w-7xl mx-auto space-y-16">
+            <SectionHeader eyebrow="Media & Campus Life" title="Video Showcase" color={brand} />
 
-            <div className="grid md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
               {validVideos.map((video: any, i: number) => (
-                <div key={i} className="space-y-4">
-                  <div className="rounded-3xl overflow-hidden aspect-video shadow-xl border border-slate-100">
-                    <iframe
-                      width="100%" height="100%"
-                      src={`https://www.youtube.com/embed/${video.ytId}?rel=0&modestbranding=1`}
-                      title={video.title || `Video ${i + 1}`}
-                      frameBorder="0" allowFullScreen
-                    />
+                <ScrollReveal key={i} delayMs={i * 120} className="h-full">
+                  <div className="bg-white border border-slate-200/80 rounded-[2.5rem] p-6 md:p-8 shadow-sm transition-all duration-300 hover:shadow-xl group flex flex-col justify-between h-full space-y-6">
+                    <div className="space-y-6">
+                      {/* Lite YouTube Embed Player */}
+                      <LiteYouTubePlayer ytId={video.ytId} title={video.title} brandColor={brand} />
+
+                      {/* Video Information Wrapper */}
+                      <div className="space-y-3 px-2 text-left">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border"
+                            style={{ color: brand, borderColor: `${brand}30`, backgroundColor: `${brand}10` }}
+                          >
+                            {video.category || 'Featured Showcase'}
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-400 font-mono">Verified HD</span>
+                        </div>
+
+                        <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-snug group-hover:text-indigo-600 transition-colors">
+                          {video.title}
+                        </h3>
+
+                        <p className="text-sm text-slate-600 leading-relaxed font-medium line-clamp-3">
+                          {video.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* External Watch Link */}
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between px-2 text-xs font-bold text-slate-500">
+                      <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">{school.name} Channel</span>
+                      <a
+                        href={`https://www.youtube.com/watch?v=${video.ytId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-red-600 hover:text-red-700 font-black uppercase text-[11px] tracking-wider hover:underline"
+                      >
+                        Watch on YouTube ↗
+                      </a>
+                    </div>
                   </div>
-                  {video.title && (
-                    <p className="text-center text-lg font-bold text-slate-700">{video.title}</p>
-                  )}
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
