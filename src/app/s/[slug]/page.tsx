@@ -2005,6 +2005,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   ))}
                 </div>
               )}
+            </div>
+
             {/* Permanent High-Contrast Solid Primary CTA Button */}
             <button
               onClick={() => scrollTo('apply')}
@@ -4783,7 +4785,6 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 }
