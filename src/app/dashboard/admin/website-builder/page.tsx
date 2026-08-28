@@ -443,7 +443,7 @@ export default function WebsiteBuilderPage() {
         const storageRef = ref(storage, `schools/${schoolId}/website/gallery_${Date.now()}_${i}`);
         const snapshot = await uploadBytes(storageRef, file);
         const url = await getDownloadURL(snapshot.ref);
-        newImages.push({ url, caption: file.name.split('.')[0] });
+        newImages.push({ url, caption: '' });
       }
       setFormData(prev => ({
         ...prev,

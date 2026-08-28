@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, orderBy, limit, addDoc } from 'fireb
 import { AdmissionForm, AdmissionEnquiryForm } from '@/components/public/AdmissionForm';
 import {
   Loader2, MapPin, Phone, Mail, Globe,
-  Camera, Info, Facebook, Instagram, Linkedin, Video,
+  Camera, Info, Facebook, Instagram, Linkedin, Youtube, Video,
   Megaphone, Calendar, ArrowRight, Sparkles, GraduationCap,
   User, Users, ChevronDown, ChevronLeft, ChevronRight, Star, BookOpen, Award, Menu, X, Atom,
   MessageCircle, Quote, Eye, Type, ZapOff, RotateCcw, Smartphone, Bell, Shield, Search
@@ -95,33 +95,35 @@ function formatSentenceCase(str?: string): string {
 }
 
 function resolveHumanAddress(schoolData: any): string {
-  if (!schoolData) return 'Ejisu-Besease, Ashanti Region, Ghana';
+  if (!schoolData) return '';
 
   // 1. Explicit physical address string takes precedence
   if (schoolData.physicalAddress && typeof schoolData.physicalAddress === 'string' && schoolData.physicalAddress.trim().length > 0) {
-    return schoolData.physicalAddress.trim();
+    const isCoords = /^-?\d+(\.\d+)?[\s,]+-?\d+(\.\d+)?$/.test(schoolData.physicalAddress.trim());
+    if (!isCoords) return schoolData.physicalAddress.trim();
   }
 
-  const rawAddr = schoolData.address || '';
-  const town = schoolData.town || schoolData.city || schoolData.location || '';
-  const region = schoolData.region || schoolData.district || 'Ashanti Region';
-  const digitalAddr = schoolData.digitalAddress || schoolData.ghanaPostGps || schoolData.gpsAddress || '';
+  const rawAddr = (schoolData.address || '').trim();
+  const town = (schoolData.town || schoolData.city || schoolData.location || '').trim();
+  const region = (schoolData.region || schoolData.district || '').trim();
+  const digitalAddr = (schoolData.digitalAddress || schoolData.ghanaPostGps || schoolData.gpsAddress || '').trim();
 
   // 2. Check if address is raw numeric coordinates (e.g. "6.7174661, -1.4521248")
-  const isCoordinates = /^-?\d+(\.\d+)?[\s,]+-?\d+(\.\d+)?$/.test(rawAddr.trim());
+  const isCoordinates = /^-?\d+(\.\d+)?[\s,]+-?\d+(\.\d+)?$/.test(rawAddr);
 
   if (isCoordinates) {
     if (town && region) {
       return digitalAddr ? `${town}, ${region} (${digitalAddr})` : `${town}, ${region}, Ghana`;
     }
     if (town) return `${town}, Ghana`;
-    if (region) return `Campus Location, ${region}, Ghana`;
-    return 'Ejisu-Besease, Ashanti Region, Ghana';
+    if (region) return `${region}, Ghana`;
+    // If raw coordinates exist and NO human town/region is filled, hide the field entirely rather than printing raw GPS numbers
+    return '';
   }
 
   // 3. Address is already a valid human-readable string
-  if (rawAddr && rawAddr.trim().length > 0) {
-    return rawAddr.trim();
+  if (rawAddr && rawAddr.length > 0) {
+    return rawAddr;
   }
 
   // 4. Construct from town and region if available
@@ -129,7 +131,69 @@ function resolveHumanAddress(schoolData: any): string {
     return [town, region, 'Ghana'].filter(Boolean).join(', ');
   }
 
-  return 'Ejisu-Besease, Ashanti Region, Ghana';
+  // Hide field entirely if address is empty
+  return '';
+}
+
+function isRawFilename(caption?: string): boolean {
+  if (!caption || typeof caption !== 'string') return true;
+  const trimmed = caption.trim();
+  if (!trimmed) return true;
+
+  // Check numeric only (e.g. 1000710519)
+  if (/^\d+$/.test(trimmed)) return true;
+
+  // Check underscore or parenthesis file patterns (e.g., "Springfield_Graduation2025 (192)")
+  if (/_/.test(trimmed) || /\(\d+\)/.test(trimmed)) return true;
+
+  // Check camera prefix patterns (e.g., "IMG_1234", "DSC_001", "PXL_20250101", "screenshot")
+  if (/^(img|dsc|pxl|photo|asset|image|file|download|screenshot)[\s_.-]/i.test(trimmed)) return true;
+
+  // Check hash or URL slug patterns (e.g., "photo-1523050854058-8df90110c9f1")
+  if (/^[a-f0-9-]{15,}$/i.test(trimmed)) return true;
+
+  return false;
+}
+
+function getSanitizedCaption(item: any): string | null {
+  const rawCaption = typeof item === 'string' ? '' : item?.caption;
+  if (isRawFilename(rawCaption)) {
+    return null;
+  }
+  return rawCaption.trim();
+}
+
+function getAccessibleAltText(item: any, fallbackContext: string, schoolName?: string, index: number = 0): string {
+  const cleanCaption = getSanitizedCaption(item);
+  if (cleanCaption && cleanCaption.length > 0) {
+    return cleanCaption;
+  }
+  const cleanSchool = (schoolName || "Mercy's Springfield Academy").trim();
+  const contextLabel = fallbackContext || 'Campus Life';
+  return `${contextLabel} at ${cleanSchool} - Photo ${index + 1}`;
+}
+
+function getThumbnailUrl(url: string): string {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+
+  // 1. Unsplash Optimization (Dynamic WebP, 600px width, 75% compression)
+  if (trimmed.includes('images.unsplash.com')) {
+    const baseUrl = trimmed.split('?')[0];
+    return `${baseUrl}?auto=format&fit=crop&w=600&q=75&fm=webp`;
+  }
+
+  // 2. Cloudinary Optimization
+  if (trimmed.includes('res.cloudinary.com')) {
+    return trimmed.replace('/upload/', '/upload/w_600,c_fill,f_auto,q_auto/');
+  }
+
+  // 3. Generic CDN query params
+  if (trimmed.includes('firebasestorage') || trimmed.includes('storage.googleapis.com')) {
+    return trimmed;
+  }
+
+  return trimmed;
 }
 
 // ─── auto logo color extraction ─────────────────────────────
@@ -685,6 +749,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [realtimeClasses, setRealtimeClasses] = useState<any[]>([]);
+  const [activeLegalModal, setActiveLegalModal] = useState<'privacy' | 'terms' | 'safeguarding' | null>(null);
 
   const i18nDict: Record<string, Record<string, string>> = {
     en: {
@@ -1735,8 +1800,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
       {/* Google Font & WCAG Accessibility Overrides */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,900;1,9..40,700&family=DM+Serif+Display:ital@0;1&display=swap');
-        .serif { font-family: 'DM Serif Display', Georgia, serif; }
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,900;1,9..40,700&display=swap');
+        .serif { font-family: 'DM Sans', sans-serif; }
         html { scroll-behavior: smooth; }
         body { overflow: auto !important; }
         .hero-grain::after {
@@ -1804,14 +1869,28 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       {/* ─── NAV ────────────────────────────────────────────── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         navScrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-100'
+          ? 'bg-white/95 backdrop-blur-md shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] border-b border-slate-200/80'
           : 'bg-slate-950/80 backdrop-blur-md border-b border-white/10 shadow-lg'
       }`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* name / crest */}
-          <div className="flex items-center gap-3 shrink-0">
+        <div className="max-w-7xl mx-auto px-6 py-3.5 sm:py-4 flex items-center justify-between gap-4 h-16 sm:h-20">
+          {/* Brand Logo & Name (Perfect Vertical Alignment) */}
+          <div
+            onClick={() => scrollTo('hero')}
+            className="flex items-center gap-3 shrink-0 cursor-pointer group my-auto"
+          >
+            {school.logoUrl ? (
+              <img
+                src={school.logoUrl}
+                alt={school.name}
+                className="h-10 w-10 shrink-0 object-contain rounded-xl bg-white/10 p-1 border border-white/20 transition-transform group-hover:scale-105 my-auto"
+              />
+            ) : (
+              <div className="h-10 w-10 shrink-0 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white my-auto">
+                <GraduationCap className="h-5 w-5" />
+              </div>
+            )}
             <span
-              className="font-black tracking-tight leading-tight transition-colors whitespace-normal break-words"
+              className="font-extrabold tracking-tight leading-none transition-colors whitespace-normal break-words my-auto"
               style={{
                 fontSize: 'clamp(0.85rem, 2vw, 1.15rem)',
                 color: navScrolled ? brand : 'white'
@@ -1819,13 +1898,10 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             >
               {school.name}
             </span>
-            {school.logoUrl && (
-              <img src={school.logoUrl} alt={school.name} className="h-10 w-10 shrink-0 object-contain rounded-xl bg-white/10 p-1 border border-white/20" />
-            )}
           </div>
 
-          {/* links */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center gap-5 lg:gap-7">
             {navLinks.map(link => (
               <button
                 key={link.id}
@@ -1839,21 +1915,57 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 {link.label}
               </button>
             ))}
+          </div>
+
+          {/* Header Action Utilities & High-Contrast Primary CTA */}
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            {/* Portal Login Link */}
             <a
               href="https://gam-it-service.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-sm border flex items-center gap-1.5 hover:scale-[1.03] active:scale-[0.97] ${
+              className={`hidden xl:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${
                 navScrolled 
-                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900' 
+                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
                   : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
               }`}
             >
-              <GraduationCap className="h-3.5 w-3.5" /> {t.portalLogin || 'Portal Login'}
+              <GraduationCap className="h-3.5 w-3.5 text-emerald-400" />
+              <span>{t.portalLogin || 'Portal Login'}</span>
             </a>
 
+            {/* Global Search Button */}
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className={`p-2.5 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
+                navScrolled 
+                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
+                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+              }`}
+              title="Global Site Search"
+              aria-label="Search"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+
+            {/* Accessibility Control Toolbar */}
+            <button
+              type="button"
+              onClick={() => setA11yOpen(true)}
+              className={`p-2.5 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
+                navScrolled 
+                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
+                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+              }`}
+              title="Accessibility Settings (WCAG)"
+              aria-label="Accessibility Settings"
+            >
+              <Eye className="h-4 w-4" />
+            </button>
+
             {/* Language Selector Dropdown */}
-            <div className="relative">
+            <div className="relative hidden sm:block">
               <button
                 type="button"
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
@@ -1883,62 +1995,45 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                         setCurrentLang(lang.code as any);
                         setLangDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer ${
                         currentLang === lang.code ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white'
                       }`}
                     >
-                      <span>{lang.flag} {lang.label}</span>
-                      {currentLang === lang.code && <span className="text-[10px]">✓</span>}
+                      <span>{lang.flag}</span>
+                      <span>{lang.label}</span>
                     </button>
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Global Search Button Trigger */}
-            <button
-              type="button"
-              onClick={() => setSearchOpen(true)}
-              className={`p-2 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
-                navScrolled 
-                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
-                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-              }`}
-              title="Global Site Search"
-              aria-label="Search"
-            >
-              <Search className="h-4 w-4" />
-            </button>
-
-            <button
-              onClick={() => setA11yOpen(true)}
-              className={`p-2 rounded-xl border transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center ${
-                navScrolled 
-                  ? 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' 
-                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-              }`}
-              title="Accessibility Settings (WCAG)"
-              aria-label="Accessibility Settings"
-            >
-              <Eye className="h-4 w-4" />
-            </button>
+            {/* Permanent High-Contrast Solid Primary CTA Button */}
             <button
               onClick={() => scrollTo('apply')}
-              className="px-5 py-2.5 rounded-xl text-white text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.03] active:scale-[0.97] hover:shadow-lg shadow-md cursor-pointer shrink-0"
-              style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer border border-emerald-400/30 shrink-0"
             >
-              {t.applyNow || 'Apply Now'}
+              <GraduationCap className="h-4 w-4 text-emerald-100" />
+              <span>{t.applyNow || 'Apply Now'}</span>
             </button>
           </div>
 
-          {/* Hamburger for Mobile */}
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-            className="flex md:hidden p-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all text-white"
-            style={{ color: navScrolled ? brand : 'white' }}
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          {/* Mobile Header Primary CTA & Hamburger */}
+          <div className="flex md:hidden items-center gap-2 shrink-0">
+            <button
+              onClick={() => scrollTo('apply')}
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border border-emerald-400/30"
+            >
+              <span>Apply</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className="p-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all text-white"
+              style={{ color: navScrolled ? brand : 'white' }}
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation Drawer */}
@@ -2135,8 +2230,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               >
                 About Us
               </span>
-              <h2 className="serif text-5xl md:text-6xl italic leading-tight" style={{ color: brand }}>
-                Welcome to Our Campus
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                Welcome to <span style={{ color: brand }}>Our Campus</span>
               </h2>
               <div className="prose-school text-lg text-slate-600 leading-relaxed font-medium">
                 <ReactMarkdown>
@@ -2158,10 +2253,19 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   <GraduationCap className="h-20 w-20 text-slate-350" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 text-white z-10">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Our Campus</span>
-                <h4 className="serif text-2xl mt-1 font-bold">{school.name}</h4>
+              {/* Dark linear gradient on bottom 40% of container for sharp text legibility */}
+              <div
+                className="absolute inset-x-0 bottom-0 h-2/5 pointer-events-none z-10 transition-opacity duration-300 group-hover:opacity-90"
+                style={{ background: 'linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%)' }}
+              />
+
+              <div className="absolute bottom-6 left-6 right-6 text-white z-20 space-y-1">
+                <span className="inline-block px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-sm">
+                  Our Campus
+                </span>
+                <h4 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
+                  {school.name}
+                </h4>
               </div>
             </div>
           </div>
@@ -2270,8 +2374,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
                     {/* Message */}
                     <div className="flex-1 p-8 md:p-12 lg:p-14 flex flex-col justify-center">
-                      <h3 className="serif text-2xl md:text-3xl italic mb-6" style={{ color: brand }}>
-                        Message from the Director
+                      <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 mb-6">
+                        <span style={{ color: brand }}>Message</span> from the Director
                       </h3>
                       <div className="prose-school text-slate-600 leading-relaxed text-[15px]">
                         <ReactMarkdown>{school.directorMessage}</ReactMarkdown>
@@ -2320,8 +2424,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
                     {/* Message */}
                     <div className="flex-1 p-8 md:p-12 lg:p-14 flex flex-col justify-center">
-                      <h3 className="serif text-2xl md:text-3xl italic mb-6" style={{ color: secondaryColor }}>
-                        Message from the Principal
+                      <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 mb-6">
+                        <span style={{ color: secondaryColor }}>Message</span> from the Principal
                       </h3>
                       <div className="prose-school text-slate-600 leading-relaxed text-[15px]">
                         <ReactMarkdown>{school.principalMessage}</ReactMarkdown>
@@ -2349,7 +2453,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             >
               Academic Excellence
             </span>
-            <h2 className="serif text-5xl md:text-6xl italic leading-tight" style={{ color: brand }}>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
               Curriculum & Programs
             </h2>
             <div className="prose-school text-lg text-slate-650 leading-relaxed font-medium">
@@ -2433,7 +2537,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 >
                   Facilities & Infrastructure
                 </span>
-                <h3 className="serif text-4xl md:text-5xl italic font-black" style={{ color: brand }}>
+                <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900">
                   Campus Life & Resources
                 </h3>
               </div>
@@ -3042,7 +3146,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             {/* Masonry Grid layout limiting initial display to max 8 thumbnails */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {galleryList.slice(0, 8).map((item: any, i: number) => {
-                const imgUrl = item.url || item;
+                const originalUrl = typeof item === 'string' ? item : item?.url || '';
+                const thumbnailUrl = getThumbnailUrl(originalUrl);
                 const isLastInitial = i === 7 && galleryList.length > 8;
                 const remainingCount = galleryList.length - 8;
 
@@ -3058,8 +3163,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     }`}
                   >
                     <img
-                      src={imgUrl}
-                      alt={item.caption || `Gallery photo ${i + 1}`}
+                      src={thumbnailUrl}
+                      loading="lazy"
+                      alt={getAccessibleAltText(item, 'Campus Activity', school.name, i)}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/0 transition-colors" />
@@ -3434,7 +3540,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             >
               Admissions
             </span>
-            <h2 className="serif text-5xl md:text-6xl italic" style={{ color: brand }}>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
               Join Our Community
             </h2>
             <p className="text-lg text-slate-500 max-w-xl mx-auto font-medium">
@@ -3705,66 +3811,55 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         </section>
       )}
 
-      {/* ─── FOOTER & CONTACT US ───────────────────────────────── */}
-      <footer id="contact" className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-400 border-t border-slate-900 overflow-hidden">
-        {/* Ambient glow */}
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none opacity-[0.04]" style={{ backgroundColor: brand }} />
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full blur-[100px] pointer-events-none opacity-[0.03]" style={{ backgroundColor: secondaryColor }} />
+      {/* ─── FOOTER ───────────────────────────────── */}
+      <footer id="contact" className="relative z-20 w-full bg-slate-950 text-slate-200 border-t border-slate-800/80 overflow-hidden block">
+        {/* Ambient background glow */}
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full blur-[140px] pointer-events-none opacity-[0.05]" style={{ backgroundColor: brand }} />
 
-        {/* Carleton-Style Institutional Land & Mission Acknowledgment */}
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 text-center border-b border-white/10 relative z-10">
-          <p className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-slate-300 font-mono leading-relaxed max-w-4xl mx-auto">
-            {school.name} acknowledges and celebrates the rich cultural heritage, academic excellence, and moral leadership across all our learning communities.
-          </p>
-        </div>
+        <div className="max-w-7xl mx-auto px-6 pt-12 pb-8 relative z-10 w-full">
+          {/* Condensed 4-Column Grid Container */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 pb-10 border-b border-white/10 w-full min-w-0">
 
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 relative z-10 space-y-16">
-          {/* Multi-Column 4-Column Footer Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10 pb-16 border-b border-white/10">
-
-            {/* Column 1: School Logo & Short About Text Clamp */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-2">
-                <h4 className="serif text-2xl italic text-white tracking-wide leading-tight font-bold">{school.name}</h4>
+            {/* Column 1: School Logo & Brand Identity */}
+            <div className="space-y-3.5 min-w-0">
+              <div className="flex items-center gap-3">
                 {school.logoUrl ? (
-                  <div className="p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl shrink-0">
-                    <img src={school.logoUrl} alt="Logo" className="h-10 w-10 object-contain" />
+                  <div className="p-2 rounded-xl bg-white/10 border border-white/15 shrink-0 shadow-md">
+                    <img src={school.logoUrl} alt={school.name} className="h-9 w-9 object-contain" />
                   </div>
                 ) : (
-                  <div className="p-2.5 rounded-2xl shadow-xl shrink-0" style={{ backgroundImage: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}>
-                    <GraduationCap className="h-6 w-6 text-white" />
+                  <div className="p-2 rounded-xl bg-indigo-500/25 border border-indigo-500/40 text-indigo-300 shrink-0 shadow-md">
+                    <GraduationCap className="h-6 w-6" />
                   </div>
                 )}
+                <div className="min-w-0">
+                  <h4 className="text-base font-extrabold text-white tracking-tight leading-tight truncate">
+                    {school.name ? school.name.trim() : 'Springfield Academy'}
+                  </h4>
+                  <p className="text-xs text-indigo-400 font-medium italic mt-0.5 line-clamp-1">
+                    "{school.motto || 'Excellence, Character & Leadership'}"
+                  </p>
+                </div>
               </div>
-
-              <p className="text-sm text-slate-400 leading-relaxed font-medium line-clamp-4">
-                {school.aboutText || school.motto || 'Dedicated to academic excellence, leadership development, and character building in a supportive learning environment.'}
+              <p className="text-xs text-slate-300 leading-relaxed font-medium line-clamp-3">
+                {school.aboutText || 'Dedicated to academic excellence, leadership development, and character building in a supportive learning environment.'}
               </p>
-
-              {school.website && (
-                <a
-                  href={school.website.startsWith('http') ? school.website : `https://${school.website}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-white transition-colors pt-2"
-                >
-                  <Globe className="h-3.5 w-3.5" />
-                  <span>{school.website}</span>
-                </a>
-              )}
             </div>
 
-            {/* Column 2: Quick Links (auto-generated from navigation tree) */}
-            <div className="space-y-4">
-              <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white">Quick Links</h5>
-              <ul className="space-y-2.5 text-sm font-semibold">
+            {/* Column 2: Quick Navigation Links */}
+            <div className="space-y-3.5 min-w-0">
+              <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                <span>Quick Links</span>
+              </h5>
+              <ul className="space-y-2 text-xs font-semibold">
                 {navLinks.map((link) => (
                   <li key={link.id}>
                     <button
                       onClick={() => scrollTo(link.id)}
-                      className="text-slate-400 hover:text-white transition-colors flex items-center gap-2.5 group/link cursor-pointer"
+                      className="text-slate-300 hover:text-white transition-colors flex items-center gap-2 group/link cursor-pointer"
                     >
-                      <ArrowRight className="h-3.5 w-3.5 text-indigo-400 transition-transform group-hover/link:translate-x-1" />
+                      <ArrowRight className="h-3 w-3 text-indigo-400 transition-transform group-hover/link:translate-x-1" />
                       <span>{link.label}</span>
                     </button>
                   </li>
@@ -3772,90 +3867,108 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 <li>
                   <button
                     onClick={() => scrollTo('apply')}
-                    className="text-slate-400 hover:text-white transition-colors flex items-center gap-2.5 group/link cursor-pointer"
+                    className="text-slate-300 hover:text-white transition-colors flex items-center gap-2 group/link cursor-pointer"
                   >
-                    <ArrowRight className="h-3.5 w-3.5 text-indigo-400 transition-transform group-hover/link:translate-x-1" />
+                    <ArrowRight className="h-3 w-3 text-indigo-400 transition-transform group-hover/link:translate-x-1" />
                     <span>Apply Now</span>
                   </button>
-                </li>
-                <li>
-                  <a
-                    href="https://gam-it-service.app/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-slate-400 hover:text-white transition-colors flex items-center gap-2.5 group/link"
-                  >
-                    <GraduationCap className="h-3.5 w-3.5 text-indigo-400" />
-                    <span>Portal Login ↗</span>
-                  </a>
                 </li>
               </ul>
             </div>
 
-            {/* Column 3: Contact Details using unified SVG icons */}
-            <div className="space-y-4">
-              <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white">Contact Details</h5>
-              <div className="space-y-4 text-sm font-medium">
-                {school.address && (
+            {/* Column 3: Contact Details & Social Media */}
+            <div className="space-y-3.5 min-w-0">
+              <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Contact Details</span>
+              </h5>
+              <div className="space-y-2.5 text-xs font-medium">
+                {resolveHumanAddress(school) && (
                   <a
                     href={`https://maps.google.com/?q=${encodeURIComponent(
                       school.gpsCoordinates || (school.latitude && school.longitude ? `${school.latitude},${school.longitude}` : null) || school.address || school.name
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-start gap-3 text-slate-400 hover:text-white transition-colors group/item"
+                    className="flex items-start gap-2.5 text-slate-200 hover:text-white transition-colors group/item"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:border-indigo-400/50">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-950/50 border border-indigo-500/30 flex items-center justify-center shrink-0 mt-0.5">
                       <MapPin className="h-4 w-4 text-indigo-400" />
                     </div>
-                    <span className="leading-snug line-clamp-2">{resolveHumanAddress(school)}</span>
+                    <span className="leading-tight line-clamp-2 text-slate-200">{resolveHumanAddress(school)}</span>
                   </a>
                 )}
 
-                {school.phone && (
-                  <a
-                    href={getCleanPhoneLink(school.phone)}
-                    className="flex items-center gap-3 text-slate-400 hover:text-white transition-colors group/item"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/item:border-indigo-400/50">
-                      <Phone className="h-4 w-4 text-indigo-400" />
-                    </div>
-                    <span>{school.phone}</span>
-                  </a>
-                )}
+                <a
+                  href={getCleanPhoneLink(school.phone || '0541981910')}
+                  className="flex items-center gap-2.5 text-emerald-400 hover:text-emerald-300 transition-colors font-mono font-bold group/item"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                    <Phone className="h-4 w-4 text-emerald-400" />
+                  </div>
+                  <span className="text-emerald-400 hover:underline">Phone: {school.phone || '0541981910'}</span>
+                </a>
 
-                {school.email && (
-                  <a
-                    href={`mailto:${school.email.trim()}`}
-                    className="flex items-center gap-3 text-slate-400 hover:text-white transition-colors group/item"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/item:border-indigo-400/50">
-                      <Mail className="h-4 w-4 text-indigo-400" />
-                    </div>
-                    <span className="truncate">{school.email}</span>
-                  </a>
-                )}
+                <a
+                  href={`mailto:${(school.email || 'info@springfield.edu.gh').trim()}`}
+                  className="flex items-center gap-2.5 text-sky-300 hover:text-white transition-colors truncate group/item"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-sky-950/50 border border-sky-500/30 flex items-center justify-center shrink-0">
+                    <Mail className="h-4 w-4 text-sky-400" />
+                  </div>
+                  <span className="truncate text-sky-300 hover:underline">Email: {school.email ? school.email.trim() : 'info@springfield.edu.gh'}</span>
+                </a>
+              </div>
 
-                {school.whatsappNumber && (
-                  <a
-                    href={getCleanWhatsAppLink(school.whatsappNumber)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-3 text-emerald-400 hover:text-emerald-300 transition-colors group/item"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-emerald-950/40 border border-emerald-800/40 flex items-center justify-center shrink-0 group-hover/item:border-emerald-500/50">
-                      <MessageCircle className="h-4 w-4 text-emerald-400" />
-                    </div>
-                    <span>WhatsApp: {school.whatsappNumber}</span>
-                  </a>
-                )}
+              {/* Grouped Social Media Accounts (Minimum 44x44px Touch Targets) */}
+              <div className="pt-3 border-t border-white/10 flex items-center gap-2.5 text-slate-200">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mr-1">Socials:</span>
+                <a
+                  href={school.facebookUrl || `https://facebook.com/search/top?q=${encodeURIComponent(school.name)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center hover:bg-blue-600 hover:border-blue-500 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer shrink-0"
+                  title="Facebook"
+                >
+                  <Facebook className="h-5 w-5" />
+                </a>
+                <a
+                  href={school.instagramUrl || `https://instagram.com`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center hover:bg-pink-600 hover:border-pink-500 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer shrink-0"
+                  title="Instagram"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a
+                  href={school.linkedinUrl || `https://linkedin.com`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center hover:bg-sky-600 hover:border-sky-500 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer shrink-0"
+                  title="LinkedIn"
+                >
+                  <Linkedin className="h-5 w-5" />
+                </a>
+                <a
+                  href={school.youtubeUrl || `https://youtube.com`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-11 h-11 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center hover:bg-red-600 hover:border-red-500 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer shrink-0"
+                  title="YouTube"
+                >
+                  <Youtube className="h-5 w-5" />
+                </a>
               </div>
             </div>
 
-            {/* Column 4: Embedded Google Maps iframe block */}
-            <div className="space-y-4">
-              <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white">Find Our Campus</h5>
-              <div className="h-48 w-full rounded-2xl overflow-hidden border border-white/15 bg-slate-900 relative shadow-lg group">
+            {/* Column 4: Interactive Campus Map */}
+            <div className="space-y-3.5 min-w-0">
+              <h5 className="text-xs font-black uppercase tracking-[0.2em] text-white flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Find Our Campus</span>
+              </h5>
+              <div className="h-36 w-full rounded-xl overflow-hidden border border-white/15 bg-slate-900 relative shadow-md group">
                 <iframe
                   title="School Location Map"
                   width="100%"
@@ -3867,113 +3980,174 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   )}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                   className="w-full h-full border-0 filter saturate-90 brightness-95 group-hover:brightness-100 transition-all duration-300"
                 />
-                <div className="absolute bottom-2 left-2 right-2 bg-slate-950/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 flex items-center justify-between text-[10px] text-white">
-                  <span className="font-mono truncate max-w-[140px]">
-                    {resolveHumanAddress(school)}
-                  </span>
-                  <a
-                    href={`https://maps.google.com/?q=${encodeURIComponent(
-                      school.gpsCoordinates || (school.latitude && school.longitude ? `${school.latitude},${school.longitude}` : null) || school.address || school.name
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-indigo-400 font-bold hover:underline shrink-0 ml-1"
-                  >
-                    View Map ↗
-                  </a>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Carleton-Style Contact Sub-Header Line */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-400 font-mono pt-2">
-            <div>
-              <span>Contact us by </span>
-              {school.phone && (
-                <a href={getCleanPhoneLink(school.phone)} className="text-indigo-400 hover:text-white underline">phone</a>
-              )}
-              {school.phone && school.email && <span> or </span>}
-              {school.email && (
-                <a href={`mailto:${school.email.trim()}`} className="text-indigo-400 hover:text-white underline">email</a>
-              )}
-            </div>
-
-            {school.address && (
-              <div className="text-center text-slate-300 font-sans font-semibold normal-case">
-                {school.address}
-              </div>
-            )}
-
-            {/* Social media icons */}
-            <div className="flex items-center gap-4 text-slate-300">
-              {school.facebookUrl && (
-                <a href={school.facebookUrl} target="_blank" rel="noreferrer" className="hover:text-blue-400 transition-colors">
-                  <Facebook className="h-4 w-4" />
-                </a>
-              )}
-              {school.instagramUrl && (
-                <a href={school.instagramUrl} target="_blank" rel="noreferrer" className="hover:text-pink-400 transition-colors">
-                  <Instagram className="h-4 w-4" />
-                </a>
-              )}
-              {school.linkedinUrl && (
-                <a href={school.linkedinUrl} target="_blank" rel="noreferrer" className="hover:text-sky-400 transition-colors">
-                  <Linkedin className="h-4 w-4" />
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Carleton University Signature Dynamic Curved Brand Swoosh Banner */}
-        <div className="relative w-full overflow-hidden pt-24 pb-16 bg-slate-950 border-t border-slate-900/80">
-          {/* Dual Layered Dynamic Brand Swoosh Waves (Adapts dynamically to school primary & secondary brand colors) */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <svg
-              className="absolute bottom-0 left-0 w-full h-48 md:h-64"
-              viewBox="0 0 1440 320"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              {/* Secondary Brand Color Curve Accent */}
-              <path
-                d="M0,192 C320,300 640,120 960,220 C1280,320 1440,180 1440,180 L1440,320 L0,320 Z"
-                fill={secondaryColor}
-                opacity="0.85"
-              />
-              {/* Primary Brand Color Swoosh Wave (School Primary Accent / Carleton Red Swoosh) */}
-              <path
-                d="M0,240 C360,140 720,280 1080,180 C1260,130 1440,220 1440,220 L1440,320 L0,320 Z"
-                fill={brand}
-              />
-            </svg>
-          </div>
-
-          {/* Centered Carleton-Style Institutional Logo & Crest Banner */}
-          <div className="relative z-10 max-w-4xl mx-auto text-center space-y-4 px-6 pt-4">
-            <div className="inline-flex items-center justify-center p-4 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-transform hover:scale-105 duration-300">
-              {school.logoUrl ? (
-                <img src={school.logoUrl} alt={school.name} className="h-14 md:h-20 object-contain drop-shadow-md" />
-              ) : (
-                <GraduationCap className="h-12 w-12 text-white drop-shadow-md" />
-              )}
-            </div>
-            <h3 className="serif text-3xl md:text-5xl italic text-white font-black drop-shadow-md tracking-tight">
-              {school.name}
-            </h3>
-            {school.address && (
-              <p className="text-xs uppercase tracking-[0.25em] text-white/90 font-bold font-mono drop-shadow-sm">
-                {school.address}
-              </p>
-            )}
-
-            <div className="pt-6 text-[11px] font-bold uppercase tracking-widest text-white/70">
-              &copy; {new Date().getFullYear()} {school.name}. All Rights Reserved. Powered by GAM Edu Platform.
+          {/* Ultra-Tight Sub-Footer with Legal & Compliance Links */}
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300 font-medium">
+            <p>&copy; {new Date().getFullYear()} {school.name ? school.name.trim() : ''}. All Rights Reserved. Powered by <span className="text-emerald-400 font-bold">GAM Edu Platform</span>.</p>
+            <div className="flex flex-wrap items-center gap-3 text-slate-200 font-semibold">
+              <button onClick={() => setActiveLegalModal('privacy')} className="text-sky-300 hover:text-white transition-colors cursor-pointer">Privacy Policy</button>
+              <span className="text-slate-600">•</span>
+              <button onClick={() => setActiveLegalModal('terms')} className="text-sky-300 hover:text-white transition-colors cursor-pointer">Terms of Service</button>
+              <span className="text-slate-600">•</span>
+              <button onClick={() => setActiveLegalModal('safeguarding')} className="text-sky-300 hover:text-white transition-colors cursor-pointer">Child Safeguarding</button>
+              <span className="text-slate-600">•</span>
+              <a href="https://gam-it-service.app/" target="_blank" rel="noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors font-bold">Portal Login ↗</a>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* ─── LEGAL & COMPLIANCE MODAL ─────────────────────────────── */}
+      {activeLegalModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2rem] shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col border border-slate-100 relative animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-900 text-white shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold tracking-tight">
+                    {activeLegalModal === 'privacy' && 'Privacy & Data Protection Policy'}
+                    {activeLegalModal === 'terms' && 'Terms of Service & Usage Governance'}
+                    {activeLegalModal === 'safeguarding' && 'Child Safeguarding & Protection Policy'}
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    {school.name ? school.name.trim() : 'GAM Edu Platform'} • Compliance & Safety Standards
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveLegalModal(null)}
+                className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body Content */}
+            <div className="p-8 overflow-y-auto flex-1 space-y-5 text-slate-650 text-xs leading-relaxed font-medium">
+              {activeLegalModal === 'privacy' && (
+                <>
+                  <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-100 text-indigo-900 text-xs font-semibold flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                    <p>
+                      Your privacy and data security are paramount. {school.name ? school.name.trim() : 'Our institution'} enforces strict data privacy standards in full compliance with global regulations and local Data Protection laws.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">1. Collection of Personal & Academic Data</h4>
+                    <p>
+                      We collect student enrollment information, guardian contact data, academic evaluations, attendance metrics, and billing records strictly for educational administration and parent communication.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">2. Secure Financial Transactions</h4>
+                    <p>
+                      All fee payments, uniform purchases, and admission deposits processed via our digital storefront use bank-grade 256-bit SSL encryption provided by PCI-DSS compliant payment gateways (Paystack / Mobile Money). We never store raw credit card credentials or PIN codes.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">3. Data Sharing & Confidentiality</h4>
+                    <p>
+                      Student and parent records are strictly confidential. Data is never sold, rented, or commercialized to third-party advertisers. Information is only shared with authorized educational authorities when mandated by law.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">4. Parental Rights & Data Access</h4>
+                    <p>
+                      Parents and legal guardians retain full rights to request copies of student records, rectify inaccurate contact information, or request data archiving upon graduation through the administration office.
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {activeLegalModal === 'terms' && (
+                <>
+                  <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold flex items-start gap-3">
+                    <Info className="h-5 w-5 text-slate-600 shrink-0 mt-0.5" />
+                    <p>
+                      By accessing the {school.name ? school.name.trim() : 'school'} portal, submitting online admissions forms, or initiating payments, you agree to comply with our institutional terms of service.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">1. Digital Portal & Account Integrity</h4>
+                    <p>
+                      Parents, students, and staff are responsible for maintaining the confidentiality of their portal credentials. Any unauthorized access attempts or credential sharing must be reported to school IT administration immediately.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">2. Online Admissions & Enrollment</h4>
+                    <p>
+                      Submission of an online application form or admission fee does not guarantee placement. Admission is contingent upon document verification, entrance assessment results, and available classroom capacity.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">3. Storefront Orders & Refund Policy</h4>
+                    <p>
+                      Storefront orders for uniforms, textbooks, and academic supplies are subject to inventory verification. Exchanges for unwashed, unused uniforms in original packaging are permitted within 7 business days.
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {activeLegalModal === 'safeguarding' && (
+                <>
+                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-start gap-3">
+                    <Shield className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <p>
+                      {school.name ? school.name.trim() : 'Our institution'} maintains zero tolerance for child abuse or endangerment. We are committed to providing a safe, nurturing, and protective environment for every student.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">1. Child Protection Code of Conduct</h4>
+                    <p>
+                      All teaching staff, administrative personnel, and facility caretakers undergo rigorous background checks and mandatory safeguarding training before interacting with students.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">2. Student Media & Image Consent</h4>
+                    <p>
+                      Photographs and video footage of students in school activities are published on our public website or social media solely with explicit, signed parental/guardian consent. Names of minors are never paired with full personal contact details online.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-slate-900 text-sm">3. Incident Reporting & Safeguarding Officer</h4>
+                    <p>
+                      Any safeguarding concerns, bullying reports, or safety incidents should be reported immediately to our designated Child Protection Officer via the administration office or official hotline ({school.phone || '0541981910'}).
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center shrink-0">
+              <span className="text-[10px] font-mono text-slate-400">GAM Edu Compliance Framework</span>
+              <button
+                onClick={() => setActiveLegalModal(null)}
+                className="px-6 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                I Understand & Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── NEWS DETAILED MODAL ─────────────────────────────── */}
       {selectedNews && (
@@ -4208,12 +4382,12 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             <div className="max-w-5xl max-h-[70vh] flex flex-col items-center justify-center p-2 relative">
               <img
                 src={galleryList[activeImageIdx]?.url || galleryList[activeImageIdx]}
-                alt={galleryList[activeImageIdx]?.caption || `Photo ${activeImageIdx + 1}`}
+                alt={getAccessibleAltText(galleryList[activeImageIdx], 'Campus Life', school.name, activeImageIdx)}
                 className="max-h-[65vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/10"
               />
-              {galleryList[activeImageIdx]?.caption && (
-                <p className="text-sm font-medium text-white/80 mt-4 bg-white/10 backdrop-blur-md px-6 py-2 rounded-full border border-white/20">
-                  {galleryList[activeImageIdx].caption}
+              {getSanitizedCaption(galleryList[activeImageIdx]) && (
+                <p className="text-sm font-medium text-white/90 mt-4 bg-white/10 backdrop-blur-md px-6 py-2 rounded-full border border-white/20 shadow-lg">
+                  {getSanitizedCaption(galleryList[activeImageIdx])}
                 </p>
               )}
             </div>
@@ -4230,7 +4404,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
           {/* Bottom Thumbnail Strip */}
           <div className="flex items-center justify-center gap-3 overflow-x-auto py-2 px-4 shrink-0 max-w-full">
             {galleryList.map((item: any, idx: number) => {
-              const url = item.url || item;
+              const originalUrl = typeof item === 'string' ? item : item?.url || '';
+              const thumbnailUrl = getThumbnailUrl(originalUrl);
               const isActive = idx === activeImageIdx;
               return (
                 <button
@@ -4240,7 +4415,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     isActive ? 'border-indigo-400 scale-110 shadow-lg shadow-indigo-500/20' : 'border-white/20 opacity-50 hover:opacity-100'
                   }`}
                 >
-                  <img src={url} alt={`Thumb ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={thumbnailUrl} loading="lazy" alt={getAccessibleAltText(item, 'Thumbnail Photo', school.name, idx)} className="w-full h-full object-cover" />
                 </button>
               );
             })}
@@ -4283,55 +4458,65 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         </div>
       )}
 
-      {/* ─── GLOBAL STICKY FLOATING ACTION BUTTON (FAB) ───────────── */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-        {/* Expanded Quick Contact Menu */}
-        {fabOpen && (
-          <div className="bg-slate-950/95 backdrop-blur-xl border border-white/15 p-3 rounded-3xl shadow-2xl space-y-2.5 animate-in slide-in-from-bottom-5 fade-in duration-200 min-w-[210px]">
-            <div className="px-3 py-1.5 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Quick Connect
-            </div>
+      {/* ─── GLOBAL STICKY FLOATING ACTION BUTTONS (FAB) ───────────── */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-5">
+        {/* Floating Accessibility Quick Trigger (Purple Button) */}
+        <button
+          onClick={() => setA11yOpen(true)}
+          aria-label="Accessibility Settings"
+          title="Accessibility (WCAG 2.1) Display Settings"
+          className="w-12 h-12 rounded-full bg-purple-700 hover:bg-purple-600 text-white shadow-xl flex items-center justify-center border border-white/20 hover:scale-105 active:scale-95 transition-all cursor-pointer group shrink-0"
+        >
+          <Eye className="h-5 w-5 text-white group-hover:scale-110 transition-transform" />
+        </button>
 
-            {/* Schedule Campus Tour */}
-            <button
-              onClick={() => {
-                setFabOpen(false);
-                setAdmissionTab('tour');
-                setTourModalOpen(true);
-              }}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-amber-600 border border-amber-500 text-white text-xs font-bold hover:bg-amber-500 transition-all group cursor-pointer"
-            >
-              <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                <Calendar className="h-4 w-4 text-white group-hover:scale-110 transition-transform" />
+        {/* Floating Quick Contact Container */}
+        <div className="flex flex-col items-end gap-3">
+          {/* Expanded Quick Contact Menu */}
+          {fabOpen && (
+            <div className="bg-slate-950/95 backdrop-blur-xl border border-white/15 p-3 rounded-3xl shadow-2xl space-y-2.5 animate-in slide-in-from-bottom-5 fade-in duration-200 min-w-[210px]">
+              <div className="px-3 py-1.5 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Quick Connect
               </div>
-              <span>Schedule Campus Tour</span>
-            </button>
 
-            {/* WhatsApp */}
-            <a
-              href={getCleanWhatsAppLink(school.whatsappNumber || '+233000000000')}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-emerald-950/60 border border-emerald-800/40 text-emerald-300 text-xs font-bold hover:bg-emerald-900/60 transition-all group"
-            >
-              <div className="w-7 h-7 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
-                <MessageCircle className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-              </div>
-              <span>WhatsApp Us</span>
-            </a>
-
-            {/* Call */}
-            {school.phone && (
-              <a
-                href={getCleanPhoneLink(school.phone)}
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10 transition-all group"
+              {/* Schedule Campus Tour */}
+              <button
+                onClick={() => {
+                  setFabOpen(false);
+                  setAdmissionTab('tour');
+                  setTourModalOpen(true);
+                }}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-amber-600 border border-amber-500 text-white text-xs font-bold hover:bg-amber-500 transition-all group cursor-pointer"
               >
-                <div className="w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                  <Phone className="h-4 w-4 text-indigo-400 group-hover:scale-110 transition-transform" />
+                <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                  <Calendar className="h-4 w-4 text-white group-hover:scale-110 transition-transform" />
                 </div>
-                <span>Call Campus</span>
+                <span>Schedule Campus Tour</span>
+              </button>
+
+              {/* WhatsApp */}
+              <a
+                href={getCleanWhatsAppLink(school.whatsappNumber || '+233000000000')}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-emerald-950/60 border border-emerald-800/40 text-emerald-300 text-xs font-bold hover:bg-emerald-900/60 transition-all group"
+              >
+                <div className="w-7 h-7 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <MessageCircle className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <span>WhatsApp Us</span>
               </a>
-            )}
+
+              {/* Call */}
+            <a
+              href={getCleanPhoneLink(school.phone || '0541981910')}
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10 transition-all group"
+            >
+              <div className="w-7 h-7 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                <Phone className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <span>Call: {school.phone || '0541981910'}</span>
+            </a>
 
             {/* Apply Now */}
             <button
@@ -4366,6 +4551,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
             </>
           )}
         </button>
+        </div>
+      </div>
       {/* ─── ACCESSIBILITY (WCAG 2.1) CONTROL TOOLBAR MODAL ── */}
       {a11yOpen && (
         <div className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">

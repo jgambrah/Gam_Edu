@@ -35,3 +35,4 @@ next-env.d.ts
 
 # Service Worker (User requested to ignore for privacy/security on GitHub)
 public/sw.js
+dist/
