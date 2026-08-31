@@ -1477,40 +1477,42 @@ function AdminDashboard({
 
       {/* ROW 2: Dedicated Full-Width Tab Bar */}
       <div className="w-full flex items-center justify-between gap-2 flex-nowrap overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 shrink-0">
-        <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap shrink-0 overflow-x-auto no-scrollbar min-w-0">
-          {([
-            { id: 'overview', label: 'Overview' },
-            { id: 'academics', label: 'Academics' },
-            { id: 'attendance', label: 'Attendance' },
-            { id: 'students', label: 'Students' },
-            { id: 'staff', label: 'Staff' },
-            { id: 'canteen', label: 'Canteen' },
-            { id: 'satisfaction', label: 'Satisfaction' },
-            { id: 'system', label: 'General' }
-          ] as const).map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={cn(
-                "px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap flex-shrink-0 shrink-0 cursor-pointer",
-                activeTab === tab.id
-                  ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-bold"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap shrink-0 overflow-x-auto no-scrollbar min-w-0 w-full justify-between">
+          <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap shrink-0">
+            {([
+              { id: 'overview', label: 'Overview' },
+              { id: 'academics', label: 'Academics' },
+              { id: 'attendance', label: 'Attendance' },
+              { id: 'students', label: 'Students' },
+              { id: 'staff', label: 'Staff' },
+              { id: 'canteen', label: 'Canteen' },
+              { id: 'satisfaction', label: 'Satisfaction' },
+              { id: 'system', label: 'General' }
+            ] as const).map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={cn(
+                  "px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap flex-shrink-0 shrink-0 cursor-pointer",
+                  activeTab === tab.id
+                    ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-bold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        {/* AI Auditor as an inline badge on the right */}
-        <button
-          onClick={handleRunAudit}
-          className="flex-shrink-0 shrink-0 flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg shadow-xs transition-colors whitespace-nowrap ml-2 cursor-pointer"
-        >
-          <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
-          <span>AI Auditor</span>
-        </button>
+          {/* AI Auditor as an inline badge on the right */}
+          <button
+            onClick={handleRunAudit}
+            className="flex-shrink-0 shrink-0 flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg shadow-xs transition-colors whitespace-nowrap ml-2 cursor-pointer"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
+            <span>AI Auditor</span>
+          </button>
+        </div>
       </div>
 
       {/* Global Omni-Search Command Palette Dialog (⌘K) */}
@@ -1569,21 +1571,23 @@ function AdminDashboard({
         </DialogContent>
       </Dialog>
 
-      {/* Enterprise Executive Banner Header */}
-      <div className="relative p-6 xl:p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 transition-all duration-300">
-        <div className="space-y-2 relative z-10 max-w-2xl">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full uppercase bg-slate-100 text-slate-700 border border-slate-200">
-              {banners.badge}
-            </span>
+      {/* Enterprise Executive Banner Header (Render for tabs that do not have built-in hero headers) */}
+      {activeTab !== 'academics' && activeTab !== 'overview' && (
+        <div className="relative p-6 xl:p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 transition-all duration-300">
+          <div className="space-y-2 relative z-10 max-w-2xl">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full uppercase bg-slate-100 text-slate-700 border border-slate-200">
+                {banners?.badge}
+              </span>
+            </div>
+            <h2 className="text-xl xl:text-2xl font-bold tracking-tight text-slate-900 mt-1">{banners?.title}</h2>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">{banners?.description}</p>
           </div>
-          <h2 className="text-xl xl:text-2xl font-bold tracking-tight text-slate-900 mt-1">{banners.title}</h2>
-          <p className="text-xs text-slate-500 font-medium leading-relaxed">{banners.description}</p>
+          <div className="hidden xl:flex p-4 bg-slate-50 border border-slate-200/80 rounded-xl relative z-10 shrink-0 text-slate-700">
+            {banners?.icon && <banners.icon className="h-7 w-7 text-indigo-600" />}
+          </div>
         </div>
-        <div className="hidden xl:flex p-4 bg-slate-50 border border-slate-200/80 rounded-xl relative z-10 shrink-0 text-slate-700">
-          <banners.icon className="h-7 w-7 text-indigo-600" />
-        </div>
-      </div>
+      )}
 
       {/* Main Tabs Container */}
       <div className="mt-8">
