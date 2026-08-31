@@ -1432,12 +1432,14 @@ function AdminDashboard({
           {/* Global Omni-Search (⌘K Command Palette Trigger Button) */}
           <button
             onClick={() => setIsOmniSearchOpen(true)}
-            className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium text-slate-500 transition-all shadow-xs cursor-pointer group"
+            className="flex-1 max-w-md sm:max-w-lg flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium text-slate-500 transition-all shadow-xs cursor-pointer group"
           >
-            <Search className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-            <span className="text-slate-600 font-semibold hidden sm:inline">Search students, invoices, staff...</span>
-            <span className="text-slate-600 font-semibold inline sm:hidden">Search...</span>
-            <kbd className="inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-bold text-slate-500 bg-white border border-slate-200 rounded-md shadow-xs ml-1">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <Search className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors shrink-0" />
+              <span className="text-slate-600 font-medium truncate hidden sm:inline">Search students, invoices, staff...</span>
+              <span className="text-slate-600 font-medium truncate inline sm:hidden">Search...</span>
+            </div>
+            <kbd className="inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-bold text-slate-500 bg-white border border-slate-200 rounded-md shadow-xs shrink-0 ml-2">
               <span className="text-[11px]">⌘</span>K
             </kbd>
           </button>

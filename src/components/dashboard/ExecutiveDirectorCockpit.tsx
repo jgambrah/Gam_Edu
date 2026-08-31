@@ -1325,16 +1325,10 @@ export function ExecutiveDirectorCockpit({
                 <div className="flex items-center gap-2 text-xs">
                   <button
                     onClick={() => setShowDebtDetailsToggle(prev => prev === 'net' ? 'gross' : 'net')}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[11px] font-semibold text-slate-700 transition cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-xs font-semibold text-slate-700 transition cursor-pointer shadow-xs"
                   >
                     <span>{showDebtDetailsToggle === 'net' ? 'Inspect Gross vs Deposits' : 'View Net Arrears Only'}</span>
                   </button>
-                  <Badge variant="outline" className="bg-slate-50 text-slate-700 font-semibold">
-                    Gross Debt: GH₵ {grossTotalDebt.toLocaleString()}
-                  </Badge>
-                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
-                    Net Debt: GH₵ {netOutstandingDebt.toLocaleString()}
-                  </Badge>
                 </div>
               </div>
             </CardHeader>
@@ -1459,14 +1453,20 @@ export function ExecutiveDirectorCockpit({
             <CardDescription className="text-xs text-slate-500 font-medium">Monthly student growth vs intake target</CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
-            <div className="h-48 w-full">
+            <div className="h-48 min-h-[160px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={enrollmentData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <AreaChart data={enrollmentData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="enrollmentGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.35}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '10px', color: '#fff', fontSize: '11px' }} />
-                  <Area type="monotone" dataKey="enrolled" stroke="#6366f1" fill="#e0e7ff" strokeWidth={2} />
+                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} domain={['dataMin - 15', 'dataMax + 15']} />
+                  <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '11px', border: 'none' }} />
+                  <Area type="monotone" dataKey="enrolled" stroke="#4f46e5" fill="url(#enrollmentGrad)" strokeWidth={2.5} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
