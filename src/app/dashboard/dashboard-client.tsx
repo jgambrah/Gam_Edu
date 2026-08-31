@@ -1476,8 +1476,8 @@ function AdminDashboard({
       </div>
 
       {/* ROW 2: Dedicated Full-Width Tab Bar */}
-      <div className="w-full flex items-center justify-between gap-2 overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200">
-        <div className="flex items-center gap-1.5 flex-nowrap">
+      <div className="w-full flex items-center justify-between gap-2 flex-nowrap overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap shrink-0 overflow-x-auto no-scrollbar min-w-0">
           {([
             { id: 'overview', label: 'Overview' },
             { id: 'academics', label: 'Academics' },
@@ -1492,7 +1492,7 @@ function AdminDashboard({
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap cursor-pointer",
+                "px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap flex-shrink-0 shrink-0 cursor-pointer",
                 activeTab === tab.id
                   ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-bold"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
@@ -1506,7 +1506,7 @@ function AdminDashboard({
         {/* AI Auditor as an inline badge on the right */}
         <button
           onClick={handleRunAudit}
-          className="flex-shrink-0 flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg shadow-xs transition-colors whitespace-nowrap ml-2 cursor-pointer"
+          className="flex-shrink-0 shrink-0 flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg shadow-xs transition-colors whitespace-nowrap ml-2 cursor-pointer"
         >
           <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
           <span>AI Auditor</span>
