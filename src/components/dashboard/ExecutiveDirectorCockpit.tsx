@@ -348,7 +348,7 @@ export function ExecutiveDirectorCockpit({
     let slaColor = slaPercentage >= 90 ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
 
     if (classes && classes.length > 0) {
-      slaDesc = `Primary & Secondary Department Gradebooks operating at ${slaPercentage}% submission SLA (${submittedClasses}/${totalClassesCount} active class registers logged).`;
+      slaDesc = `All Department Gradebooks operating at ${slaPercentage}% submission SLA (${submittedClasses}/${totalClassesCount} active class registers logged).`;
     } else {
       slaDesc = `Primary Science & JHS English at 100% submission SLA (14/14 registers). JHS Mathematics at 85% SLA (2 pending).`;
     }
@@ -366,7 +366,7 @@ export function ExecutiveDirectorCockpit({
       safetyTag = `Safeguarding: ${infractions.length} Active Incident${infractions.length === 1 ? '' : 's'}`;
       safetyColor = "bg-amber-50 text-amber-700 border-amber-200";
     } else if (behavioralRecords && behavioralRecords.length > 0) {
-      safetyDesc = `0 critical safety breaches reported. ${positiveMerits} positive commendations awarded across primary and secondary divisions.`;
+      safetyDesc = `0 critical safety breaches reported. ${positiveMerits} positive commendations awarded across all school divisions.`;
       safetyTag = `Safeguarding: 100% Clear`;
       safetyColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
     } else {
