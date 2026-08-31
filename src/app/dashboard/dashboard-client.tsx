@@ -56,7 +56,10 @@ import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
 import { TermManagementModal, TermUnlockCountdownBanner } from '@/components/dashboard/term-management-modal';
 import { Input } from '@/components/ui/input';
 import { generateSchoolExecutiveBriefingAction } from '@/app/actions/insights-ai';
-import { format, startOfDay, endOfDay, formatDistanceToNow, subDays } from 'date-fns';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -240,6 +243,131 @@ function AdminDashboard({
   const [auditError, setAuditError] = useState<string | null>(null);
 
   const { user } = useUser();
+  const { auth } = useFirebase();
+  const router = useRouter();
+  const { role } = useRole();
+  const { toast } = useToast();
+
+  // Consolidated Top-Right Account Sign Out Handler
+  const handleSignOut = async () => {
+    if (auth) {
+      try {
+        await signOut(auth);
+        router.push('/');
+      } catch (error) {
+        console.error('Error signing out:', error);
+      }
+    }
+  };
+
+  const getInitials = (email?: string | null) => {
+    if (!email) return 'U';
+    return email.substring(0, 2).toUpperCase();
+  };
+
+  // Omni-Search Command Palette State (⌘K / Ctrl+K)
+  const [isOmniSearchOpen, setIsOmniSearchOpen] = useState(false);
+  const [omniSearchQuery, setOmniSearchQuery] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsOmniSearchOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const omniSearchResults = useMemo(() => {
+    if (!omniSearchQuery.trim()) return [];
+    const q = omniSearchQuery.toLowerCase().trim();
+    const results: Array<{ id: string; category: string; title: string; subtitle: string; icon: any; action: () => void }> = [];
+
+    // Index Students
+    if (students && Array.isArray(students)) {
+      students.forEach((s: any) => {
+        const fullName = `${s.firstName || ''} ${s.lastName || ''}`.trim();
+        if (fullName.toLowerCase().includes(q) || (s.studentId && String(s.studentId).toLowerCase().includes(q))) {
+          results.push({
+            id: `student-${s.id}`,
+            category: 'Students Roster',
+            title: fullName || 'Student Record',
+            subtitle: `Grade: ${s.className || s.classId || 'Assigned'} • Status: ${s.enrollmentStatus || 'Active'}`,
+            icon: GraduationCap,
+            action: () => {
+              setActiveTab('students');
+              setIsOmniSearchOpen(false);
+            }
+          });
+        }
+      });
+    }
+
+    // Index Staff Records
+    if (staff && Array.isArray(staff)) {
+      staff.forEach((st: any) => {
+        const name = st.name || `${st.firstName || ''} ${st.lastName || ''}`.trim() || st.email;
+        if (name.toLowerCase().includes(q) || (st.role && st.role.toLowerCase().includes(q))) {
+          results.push({
+            id: `staff-${st.id}`,
+            category: 'Faculty & Staff',
+            title: name,
+            subtitle: `Role: ${st.role || 'Staff'} • Dept: ${st.department || 'Academic'}`,
+            icon: Users,
+            action: () => {
+              setActiveTab('staff');
+              setIsOmniSearchOpen(false);
+            }
+          });
+        }
+      });
+    }
+
+    // Index Financial Invoices & Receipts
+    if (financialRecords && Array.isArray(financialRecords)) {
+      financialRecords.forEach((r: any) => {
+        if ((r.invoiceNo && String(r.invoiceNo).toLowerCase().includes(q)) || (r.studentName && String(r.studentName).toLowerCase().includes(q))) {
+          results.push({
+            id: `financial-${r.id}`,
+            category: 'Financial Ledger',
+            title: r.invoiceNo ? `Invoice #${r.invoiceNo}` : `Fee Account: ${r.studentName || 'Student'}`,
+            subtitle: `Billed: GH₵ ${r.billedAmount || 0} • Outstanding: GH₵ ${r.balance || r.amount || 0}`,
+            icon: Banknote,
+            action: () => {
+              setActiveTab('financials');
+              setIsOmniSearchOpen(false);
+            }
+          });
+        }
+      });
+    }
+
+    // Index Direct System Shortcuts
+    const systemShortcuts = [
+      { title: 'Send Staff Attendance Reminders', subtitle: 'Dispatches instant check-in reminder SMS to unchecked faculty', icon: UserCheck, action: () => { setActiveTab('overview'); setIsOmniSearchOpen(false); } },
+      { title: 'Dispatch Fee Arrears Collection Notices', subtitle: 'Opens executive 1-click fee notice collection drawer', icon: Banknote, action: () => { setActiveTab('overview'); setIsOmniSearchOpen(false); } },
+      { title: 'Broadcast Executive Announcement', subtitle: 'Publish announcement to staff, teachers & parents', icon: Megaphone, action: () => { setActiveTab('overview'); setIsOmniSearchOpen(false); } },
+      { title: 'Open Financials Ledger & Accounting', subtitle: 'View billed tuition, collection rates & revenue aging', icon: Wallet, action: () => { setActiveTab('financials'); setIsOmniSearchOpen(false); } },
+      { title: 'Open Academic Performance & Grades', subtitle: 'View subject averages, API benchmarks & student reviews', icon: Award, action: () => { setActiveTab('academics'); setIsOmniSearchOpen(false); } },
+    ];
+
+    systemShortcuts.forEach((sc, idx) => {
+      if (sc.title.toLowerCase().includes(q) || sc.subtitle.toLowerCase().includes(q)) {
+        results.push({
+          id: `shortcut-${idx}`,
+          category: 'System Shortcut',
+          title: sc.title,
+          subtitle: sc.subtitle,
+          icon: sc.icon,
+          action: sc.action
+        });
+      }
+    });
+
+    return results.slice(0, 8);
+  }, [omniSearchQuery, students, staff, financialRecords, setActiveTab]);
   const firestore = useFirestore();
   const { toast } = useToast();
   const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
@@ -1287,14 +1415,33 @@ function AdminDashboard({
       {/* Header bar */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/10 text-indigo-600 px-3.5 py-1.5 rounded-full uppercase">Administrator Suite</span>
+            {/* Explicit Academic Term Temporal Context Badge */}
+            <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wide bg-slate-100/90 text-slate-700 border border-slate-200/80 px-3 py-1 rounded-full shadow-xs">
+              <Calendar className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+              <span>Term 2 • 2025/2026 Academic Year • Week 8</span>
+            </span>
           </div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Operations <span className="text-indigo-600">Console</span></h1>
         </div>
         
         {/* Navigation & Controls */}
-        <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+          
+          {/* Global Omni-Search (⌘K Command Palette Trigger Button) */}
+          <button
+            onClick={() => setIsOmniSearchOpen(true)}
+            className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium text-slate-500 transition-all shadow-xs cursor-pointer group"
+          >
+            <Search className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+            <span className="text-slate-600 font-semibold hidden sm:inline">Search students, invoices, staff...</span>
+            <span className="text-slate-600 font-semibold inline sm:hidden">Search...</span>
+            <kbd className="inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-bold text-slate-500 bg-white border border-slate-200 rounded-md shadow-xs ml-1">
+              <span className="text-[11px]">⌘</span>K
+            </kbd>
+          </button>
+
           {/* Custom Tab Bar */}
           <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
             {(['overview', 'academics', 'attendance', 'students', 'staff', 'canteen', 'satisfaction', 'system'] as const).map((tab) => {
@@ -1303,7 +1450,7 @@ function AdminDashboard({
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
+                    "px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300 cursor-pointer",
                     activeTab === tab 
                       ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02]"
                       : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
@@ -1318,14 +1465,100 @@ function AdminDashboard({
           {/* AI Auditor Trigger Button */}
           <Button 
             onClick={handleRunAudit}
-            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-11 px-6 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden"
+            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-10 px-5 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             <Sparkles className="h-4 w-4 animate-pulse group-hover:rotate-12 transition-transform" />
             <span className="text-xs uppercase tracking-wider">AI Auditor</span>
           </Button>
+
+          {/* Consolidated Top-Right User Account Dropdown Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2.5 p-1 rounded-2xl hover:bg-slate-100 border border-slate-200/80 transition-all cursor-pointer bg-white shadow-xs">
+                <Avatar className="h-8 w-8 border border-indigo-200 shadow-xs shrink-0">
+                  <AvatarImage src={profile?.photoURL || user?.photoURL || ''} alt="User Avatar" className="object-cover" />
+                  <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs">{getInitials(user?.email)}</AvatarFallback>
+                </Avatar>
+                <div className="hidden sm:flex flex-col text-left pr-1">
+                  <span className="text-xs font-bold text-slate-900 leading-none">{profile?.firstName || user?.displayName?.split(' ')[0] || 'User'}</span>
+                  <span className="text-[9px] font-semibold text-indigo-600 uppercase tracking-wider mt-0.5">{role || 'Admin'}</span>
+                </div>
+                <ChevronDown className="h-3.5 w-3.5 text-slate-400 mr-1" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl bg-white border border-slate-200 shadow-xl space-y-1 z-50">
+              <DropdownMenuLabel className="px-2 py-1 text-xs font-bold text-slate-900">
+                {profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}` : user?.email}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-slate-100" />
+              <DropdownMenuItem onClick={() => router.push('/dashboard/profile')} className="rounded-xl text-xs font-medium cursor-pointer">
+                <User className="h-4 w-4 mr-2 text-indigo-600" /> View Profile & Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSignOut} className="rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 cursor-pointer">
+                <LogOut className="h-4 w-4 mr-2 text-red-600" /> Sign Out Account
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
         </div>
       </div>
+
+      {/* Global Omni-Search Command Palette Dialog (⌘K) */}
+      <Dialog open={isOmniSearchOpen} onOpenChange={setIsOmniSearchOpen}>
+        <DialogContent className="max-w-xl p-0 overflow-hidden bg-white rounded-2xl shadow-2xl border border-slate-200">
+          <div className="p-4 border-b border-slate-100 flex items-center gap-3 bg-slate-50/50">
+            <Search className="h-5 w-5 text-indigo-600 shrink-0" />
+            <Input
+              autoFocus
+              placeholder="Type to search students, invoices, staff records, or executive actions..."
+              value={omniSearchQuery}
+              onChange={(e) => setOmniSearchQuery(e.target.value)}
+              className="border-none bg-transparent text-sm focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-8"
+            />
+            <kbd className="text-[10px] font-bold px-2 py-0.5 bg-white border border-slate-200 rounded text-slate-400 shrink-0">
+              ESC
+            </kbd>
+          </div>
+
+          <div className="max-h-96 overflow-y-auto p-2 space-y-1">
+            {omniSearchQuery.trim() === '' ? (
+              <div className="p-6 text-center text-xs text-slate-400 space-y-1">
+                <p className="font-semibold text-slate-600">Quick Global Command Palette (⌘K)</p>
+                <p>Try searching for "Kwame", "Invoice", "Attendance", "Fee", or "Science"...</p>
+              </div>
+            ) : omniSearchResults.length > 0 ? (
+              omniSearchResults.map((item) => {
+                const ItemIcon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={item.action}
+                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-left transition-colors cursor-pointer border border-transparent hover:border-slate-100 group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 group-hover:scale-105 transition-transform shrink-0">
+                        <ItemIcon className="h-4 w-4" />
+                      </div>
+                      <div className="truncate">
+                        <p className="font-bold text-slate-800 text-xs truncate">{item.title}</p>
+                        <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">{item.subtitle}</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-[9px] font-semibold bg-white text-slate-600 shrink-0 ml-2">
+                      {item.category}
+                    </Badge>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="p-6 text-center text-xs text-slate-500 font-medium">
+                No records or actions matching "{omniSearchQuery}".
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Colorful Gradient Banner Header */}
       <div className={cn("relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r transition-all duration-500", banners.gradient)}>

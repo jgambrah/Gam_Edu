@@ -243,30 +243,22 @@ export function AppSidebarContent() {
           )}
       </UiSidebarContent>
 
-      <SidebarFooter className="p-4 gap-4 border-t border-indigo-900/30">
+      <SidebarFooter className="p-4 gap-3 border-t border-indigo-900/30">
         {process.env.NODE_ENV === 'development' && <RoleSwitcher />}
         <div className="flex items-center gap-3 p-1">
-          <Avatar className="h-10 w-10 border-2 border-indigo-900/50 shadow-inner">
+          <Avatar className="h-9 w-9 border-2 border-indigo-900/50 shadow-inner shrink-0">
             <AvatarImage src={profile?.photoURL || user?.photoURL || ''} alt="User Avatar" className="object-cover" />
             <AvatarFallback className="bg-indigo-900 text-indigo-200 font-bold">{getInitials(user?.email)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col min-w-0">
-            <span className="truncate text-sm font-bold text-white leading-none mb-1">
+            <span className="truncate text-xs font-bold text-white leading-none mb-1">
               {profile?.firstName || user?.displayName || user?.email?.split('@')[0] || 'User'}
             </span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 truncate">
               {loading ? '---' : role || 'User'}
             </span>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          className="h-10 w-full justify-start text-red-400 hover:text-red-100 hover:bg-red-50/20 rounded-xl transition-all"
-          onClick={handleSignOut}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span className="font-bold uppercase text-[10px] tracking-widest">Sign Out</span>
-        </Button>
       </SidebarFooter>
     </>
   );
