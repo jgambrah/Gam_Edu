@@ -455,30 +455,21 @@ export function ExecutiveDirectorCockpit({
     <div className="space-y-4 pb-6">
       
       {/* ─────────────────────────────────────────────────────────────
-          ZONE 1: EXECUTIVE EXCEPTION & ALERT DESK & CAMPUS SWITCHER
+          ZONE 1: EXECUTIVE ALERT DESK (High-Density Action Center & Ribbon)
           ───────────────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border border-slate-200 shadow-sm text-slate-900 rounded-2xl p-4 sm:p-5 transition-all">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-red-50 text-red-600 border border-red-200 shrink-0">
-              <ShieldAlert className="h-5 w-5 text-red-600" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="font-bold text-sm tracking-tight text-slate-900">Executive Alert Desk</h2>
-                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-[11px] font-semibold px-2 py-0.5">
-                  3 Active Alerts
-                </Badge>
-              </div>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Critical operational exceptions requiring executive review
-              </p>
-            </div>
+      <div className="sticky top-0 z-30 bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-sm transition-all">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-pulse" />
+            <h3 className="text-sm font-semibold text-slate-900 tracking-tight">
+              Action Center
+            </h3>
+            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-rose-50 text-rose-700 border border-rose-100">
+              2 Urgent
+            </span>
           </div>
 
-          {/* Top Header Actions: Dynamic Multi-Campus Switcher & Executive Announcement Trigger */}
           <div className="flex items-center gap-2">
-            
             {/* Dynamic Campus Switcher or Single Campus Badge */}
             {availableCampuses.length > 1 ? (
               <div className="relative">
@@ -536,67 +527,63 @@ export function ExecutiveDirectorCockpit({
           </div>
         </div>
 
-        {/* Direct-Action Alert Cards (Click to open 1-click inline resolution modal) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3.5">
-          {/* Alert 1: Critical Severity */}
-          <div 
-            onClick={() => setActiveActionModal('arrears_action')}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-red-50/60 border border-slate-200/80 hover:border-red-200 cursor-pointer transition-all group"
-          >
+        {/* Enterprise Alert Ribbon (High-Density Row-based Action List) */}
+        <div className="divide-y divide-slate-100">
+          
+          {/* Alert 1: Staff Attendance (Critical Severity) */}
+          <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 animate-pulse" />
-              <div className="truncate">
-                <div className="flex items-center gap-1.5">
-                  <Badge className="bg-red-600 text-white text-[9px] font-semibold px-1.5 py-0 uppercase tracking-wider">Critical</Badge>
-                  <span className="text-xs font-semibold text-slate-900 truncate">High Arrears (&gt;60d)</span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                  GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k • Click for 1-Click Action
-                </p>
-              </div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 bg-rose-50 text-rose-700">
+                Staff Attendance
+              </span>
+              <p className="text-xs text-slate-700 font-medium truncate">
+                {todayTeacherAttendance.absent?.length || 22} faculty check-ins pending assembly verification
+              </p>
             </div>
-            <Zap className="h-4 w-4 text-slate-400 group-hover:text-red-600 transition-colors shrink-0 ml-1" />
+            <button 
+              onClick={() => setActiveActionModal('staff_action')}
+              className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer"
+            >
+              Send Reminder
+            </button>
           </div>
 
-          {/* Alert 2: Warning Severity */}
-          <div 
-            onClick={() => setActiveActionModal('staff_action')}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-amber-50/60 border border-slate-200/80 hover:border-amber-200 cursor-pointer transition-all group"
-          >
+          {/* Alert 2: Tuition Arrears (Warning Severity) */}
+          <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
-              <div className="truncate">
-                <div className="flex items-center gap-1.5">
-                  <Badge className="bg-amber-500 text-white text-[9px] font-semibold px-1.5 py-0 uppercase tracking-wider">Warning</Badge>
-                  <span className="text-xs font-semibold text-slate-900 truncate">Staff Check-ins</span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                  {todayTeacherAttendance.absent?.length || 11} pending • Click for 1-Click Action
-                </p>
-              </div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 bg-amber-50 text-amber-700">
+                Tuition Arrears
+              </span>
+              <p className="text-xs text-slate-700 font-medium truncate">
+                GH₵ {Math.round((totalHighArrearsSum || 50000) / 1000)}k+ overdue across 14 accounts (&gt;60 days)
+              </p>
             </div>
-            <Zap className="h-4 w-4 text-slate-400 group-hover:text-amber-600 transition-colors shrink-0 ml-1" />
+            <button 
+              onClick={() => setActiveActionModal('arrears_action')}
+              className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer"
+            >
+              Dispatch Notices
+            </button>
           </div>
 
-          {/* Alert 3: Info Severity */}
-          <div 
-            onClick={() => setActiveActionModal('pantry_action')}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-emerald-50/60 border border-slate-200/80 hover:border-emerald-200 cursor-pointer transition-all group"
-          >
+          {/* Alert 3: Pantry & Stores (Neutral/Info Severity) */}
+          <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-              <div className="truncate">
-                <div className="flex items-center gap-1.5">
-                  <Badge className="bg-emerald-600 text-white text-[9px] font-semibold px-1.5 py-0 uppercase tracking-wider">Info</Badge>
-                  <span className="text-xs font-semibold text-slate-900 truncate">Inventory Status</span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                  Operating normally • Click for Requisition Action
-                </p>
-              </div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 bg-slate-100 text-slate-600">
+                Pantry & Stores
+              </span>
+              <p className="text-xs text-slate-700 font-medium truncate">
+                Inventory healthy • Next restock cycle in 5 days
+              </p>
             </div>
-            <Zap className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors shrink-0 ml-1" />
+            <button 
+              onClick={() => setActiveActionModal('pantry_action')}
+              className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer"
+            >
+              View Audit
+            </button>
           </div>
+
         </div>
       </div>
 
