@@ -51,6 +51,9 @@ export function ExecutiveDirectorCockpit({
   // Direct Action Inline Resolution Modal State
   const [activeActionModal, setActiveActionModal] = useState<'arrears_action' | 'staff_action' | 'pantry_action' | 'announcement_modal' | null>(null);
 
+  // Editable AI Draft Action Template State for Direct Execution
+  const [aiDraftTemplate, setAiDraftTemplate] = useState<{ title: string; recipient: string; subject: string; body: string } | null>(null);
+
   const campuses = [
     { id: 'main', name: 'Main Campus (Accra)', code: 'ACC', badge: 'Headquarters' },
     { id: 'kumasi', name: 'Kumasi Branch (Ahodwo)', code: 'KMS', badge: 'Branch' },
@@ -354,6 +357,31 @@ export function ExecutiveDirectorCockpit({
     }, 600);
   };
 
+  const handleOpenDraftTemplate = (type: 'arrears' | 'staff' | 'academic') => {
+    if (type === 'arrears') {
+      setAiDraftTemplate({
+        title: "Executive Fee Arrears Collection Notice",
+        recipient: "All Parents with Arrears > 60 Days (14 Accounts)",
+        subject: "URGENT: GAM Edu Tuition Fee Balance Settlement Notice",
+        body: "Dear Parent/Guardian,\n\nOur financial records indicate an outstanding tuition balance of GH₵ 94,538 across overdue student accounts. We kindly request that you settle all overdue tuition fees on or before Friday to prevent academic portal restriction.\n\nPayments can be made securely via the GAM Edu Parent Portal or Mobile Money Gateway.\n\nThank you for your prompt cooperation.\n\nExecutive Director's Office\nGAM Edu International Schools"
+      });
+    } else if (type === 'staff') {
+      setAiDraftTemplate({
+        title: "Executive Staff Punctuality & Check-in Memo",
+        recipient: "All Faculty & Academic Staff Members",
+        subject: "MEMORANDUM: Morning Assembly Check-In Protocol Compliance",
+        body: "Dear Faculty Members,\n\nThis is a friendly reminder to record your morning assembly biometric/mobile check-in prior to 07:45 AM daily. Unverified check-ins affect our daily attendance audit pulse.\n\nPlease ensure your attendance is logged promptly.\n\nOffice of the Executive Director"
+      });
+    } else {
+      setAiDraftTemplate({
+        title: "Academic Excellence Commendation Letter",
+        recipient: "Grade 6 Science Department Faculty",
+        subject: "COMMENDATION: Outstanding Academic Target Achievement (+12.4%)",
+        body: "Dear Science Department Team,\n\nWe congratulate you on achieving an exceptional 94.2% average API score in the recent Term 2 assessments, outperforming our school target by +12.4%.\n\nYour dedication to academic excellence sets a benchmark for the entire institution.\n\nWarm regards,\nExecutive Director"
+      });
+    }
+  };
+
   const handleAiAuditQuery = (queryText?: string) => {
     const textToQuery = queryText || aiPrompt;
     if (!textToQuery.trim() || isAiAuditing) return;
@@ -367,7 +395,10 @@ export function ExecutiveDirectorCockpit({
       setAiCredits(prev => Math.max(0, prev - 1));
       
       let reply = "Based on current ledger and attendance analysis, operational health remains strong. Tuition collection is projected to hit 82% by month end if high-arrears notices are dispatched today.";
-      if (textToQuery.toLowerCase().includes('cash flow') || textToQuery.toLowerCase().includes('financial')) {
+      if (textToQuery.toLowerCase().includes('notice') || textToQuery.toLowerCase().includes('draft') || textToQuery.toLowerCase().includes('arrears')) {
+        reply = "I have drafted an official executive fee collection notice for parent accounts with overdue balances > 60 days. You can open and edit the template directly below for instant WhatsApp/SMS dispatch.";
+        handleOpenDraftTemplate('arrears');
+      } else if (textToQuery.toLowerCase().includes('cash flow') || textToQuery.toLowerCase().includes('financial')) {
         reply = "Projected net inflow for next month is GH₵ 48,500 based on recurring tuition installments and canteen requisitions.";
       } else if (textToQuery.toLowerCase().includes('staff') || textToQuery.toLowerCase().includes('attendance')) {
         reply = "Faculty attendance is at 96% punctuality over the last 30 days. Today 11 check-ins are pending morning assembly verification.";
@@ -1178,7 +1209,7 @@ export function ExecutiveDirectorCockpit({
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          MODULE 5: GENKIT AI AUDITOR ASSISTANT DESK
+          MODULE 5: GENKIT AI AUDITOR ASSISTANT DESK & DAILY BRIEFING
           ───────────────────────────────────────────────────────────── */}
       <Card className="shadow-sm border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white rounded-2xl overflow-hidden">
         <CardHeader className="pb-3 border-b border-slate-800">
@@ -1189,7 +1220,7 @@ export function ExecutiveDirectorCockpit({
               </div>
               <div>
                 <CardTitle className="text-sm font-semibold text-white">AI Auditor & Executive Assistant</CardTitle>
-                <CardDescription className="text-xs text-slate-400 font-medium">Real-time Genkit AI analytical queries</CardDescription>
+                <CardDescription className="text-xs text-slate-400 font-medium">Auto-generated daily briefings & instant native action execution</CardDescription>
               </div>
             </div>
             <Badge variant="outline" className="bg-indigo-950/80 text-indigo-300 border-indigo-700 text-xs px-2.5 py-1 font-medium">
@@ -1200,19 +1231,92 @@ export function ExecutiveDirectorCockpit({
         
         <CardContent className="p-4 space-y-4">
           
+          {/* Proactive Auto-Generated Daily Executive Briefing */}
+          <div className="p-3.5 rounded-xl bg-slate-950/90 border border-indigo-500/30 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
+                <span className="text-xs font-bold text-indigo-200 uppercase tracking-wider">
+                  Proactive Daily Executive Briefing
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400 font-medium">Live Audit Active</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+              <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/50 space-y-1">
+                <div className="flex items-center justify-between text-red-400 font-bold">
+                  <span className="flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" /> Finance Alert</span>
+                  <Badge className="bg-red-950 text-red-300 border-red-800 text-[9px] px-1 py-0">Critical</Badge>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-snug">
+                  3 critical financial accounts require attention (&gt;60d overdue, GH₵ 94.5k sum).
+                </p>
+                <button 
+                  onClick={() => handleOpenDraftTemplate('arrears')}
+                  className="text-[10px] font-semibold text-red-300 hover:text-red-200 underline flex items-center pt-0.5"
+                >
+                  <FileText className="h-3 w-3 mr-1" /> Draft Collection Notice
+                </button>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/50 space-y-1">
+                <div className="flex items-center justify-between text-emerald-400 font-bold">
+                  <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5" /> Academic Outperformer</span>
+                  <Badge className="bg-emerald-950 text-emerald-300 border-emerald-800 text-[9px] px-1 py-0">+12.4%</Badge>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-snug">
+                  Grade 6 Science outperforming target benchmark by +12.4% (avg API 94.2%).
+                </p>
+                <button 
+                  onClick={() => handleOpenDraftTemplate('academic')}
+                  className="text-[10px] font-semibold text-emerald-300 hover:text-emerald-200 underline flex items-center pt-0.5"
+                >
+                  <FileText className="h-3 w-3 mr-1" /> Send Commendation
+                </button>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/50 space-y-1">
+                <div className="flex items-center justify-between text-amber-400 font-bold">
+                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Staff Inspection</span>
+                  <Badge className="bg-amber-950 text-amber-300 border-amber-800 text-[9px] px-1 py-0">Pending</Badge>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-snug">
+                  11 staff check-ins pending morning assembly verification.
+                </p>
+                <button 
+                  onClick={() => handleOpenDraftTemplate('staff')}
+                  className="text-[10px] font-semibold text-amber-300 hover:text-amber-200 underline flex items-center pt-0.5"
+                >
+                  <FileText className="h-3 w-3 mr-1" /> Draft Punctuality Memo
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* Chat History Window */}
-          <div className="h-48 overflow-y-auto space-y-3 pr-2 rounded-xl bg-slate-950/80 p-3 border border-slate-800">
+          <div className="h-44 overflow-y-auto space-y-3 pr-2 rounded-xl bg-slate-950/80 p-3 border border-slate-800">
             {aiChatHistory.map((msg, idx) => (
               <div 
                 key={idx} 
                 className={cn(
-                  "p-3 rounded-xl text-xs max-w-[85%] leading-relaxed",
+                  "p-3 rounded-xl text-xs max-w-[85%] leading-relaxed space-y-1.5",
                   msg.role === 'user' 
                     ? "ml-auto bg-indigo-600 text-white font-medium" 
                     : "mr-auto bg-slate-800/90 text-slate-200 border border-slate-700"
                 )}
               >
-                {msg.text}
+                <p>{msg.text}</p>
+                {msg.role === 'assistant' && (
+                  <div className="flex items-center gap-2 pt-1 border-t border-slate-700/60">
+                    <button 
+                      onClick={() => handleOpenDraftTemplate('arrears')}
+                      className="text-[10px] font-semibold text-indigo-300 hover:text-white bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 px-2 py-0.5 rounded-lg transition-colors flex items-center"
+                    >
+                      <FileText className="h-3 w-3 mr-1" /> Draft Collection Notice
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
             {isAiAuditing && (
@@ -1222,17 +1326,14 @@ export function ExecutiveDirectorCockpit({
             )}
           </div>
 
-          {/* Quick Query Pill Suggestions */}
+          {/* Quick Action Prompt Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[11px]">
-            {(showFinancials ? [
+            {[
+              'Draft Fee Arrears Collection Notice',
+              'Draft Staff Punctuality Memo',
               'What is our projected cash flow for next month?',
-              'Analyze staff attendance trends today',
               'Which grade has the highest academic gap?'
-            ] : [
-              'What is our current student enrollment breakdown?',
-              'Analyze staff attendance trends today',
-              'Which grade has the highest academic gap?'
-            ]).map((suggest, idx) => (
+            ].map((suggest, idx) => (
               <button
                 key={idx}
                 onClick={() => handleAiAuditQuery(suggest)}
@@ -1379,6 +1480,82 @@ export function ExecutiveDirectorCockpit({
               </div>
             )}
 
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* ─── EDITABLE NATIVE AI ACTION TEMPLATE MODAL ─── */}
+      {aiDraftTemplate && (
+        <Dialog open={!!aiDraftTemplate} onOpenChange={() => setAiDraftTemplate(null)}>
+          <DialogContent className="max-w-lg bg-white rounded-2xl p-6 shadow-2xl border border-slate-200">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <FileText className="h-5 w-5 text-indigo-600" />
+                {aiDraftTemplate.title}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500 font-medium">
+                AI-generated native executive template • Editable prior to direct dispatch
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-3 pt-2">
+              <div>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Target Recipients</label>
+                <Input
+                  value={aiDraftTemplate.recipient}
+                  onChange={(e) => setAiDraftTemplate({ ...aiDraftTemplate, recipient: e.target.value })}
+                  className="text-xs rounded-xl bg-slate-50 border-slate-200 mt-1 font-medium text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Subject Line</label>
+                <Input
+                  value={aiDraftTemplate.subject}
+                  onChange={(e) => setAiDraftTemplate({ ...aiDraftTemplate, subject: e.target.value })}
+                  className="text-xs rounded-xl bg-slate-50 border-slate-200 mt-1 font-semibold text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Notice Message Content</label>
+                <textarea
+                  rows={6}
+                  value={aiDraftTemplate.body}
+                  onChange={(e) => setAiDraftTemplate({ ...aiDraftTemplate, body: e.target.value })}
+                  className="w-full p-3 text-xs rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                <Button 
+                  onClick={() => {
+                    toast({
+                      title: "Executive Action Dispatched",
+                      description: `Template successfully sent to ${aiDraftTemplate.recipient} via WhatsApp & SMS.`,
+                    });
+                    setAiDraftTemplate(null);
+                  }}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs py-2.5"
+                >
+                  <Send className="h-4 w-4 mr-2" /> Dispatch via WhatsApp & SMS
+                </Button>
+
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    toast({
+                      title: "Letterhead PDF Exported",
+                      description: "Official executive notice formatted to letterhead PDF.",
+                    });
+                    setAiDraftTemplate(null);
+                  }}
+                  className="w-full border-slate-200 hover:bg-slate-50 font-semibold text-slate-700 rounded-xl text-xs py-2.5"
+                >
+                  <Download className="h-4 w-4 mr-2" /> Print Letterhead PDF
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       )}
