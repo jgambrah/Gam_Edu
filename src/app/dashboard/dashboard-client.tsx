@@ -8,7 +8,7 @@ import { AcademicPerformanceDashboardView } from '@/components/dashboard/Academi
 import { AttendanceAnalyticsView } from '@/components/dashboard/AttendanceAnalyticsView';
 import { StudentRegistryDashboardView } from '@/components/dashboard/StudentRegistryDashboardView';
 import { StaffDirectoryDashboardView } from '@/components/dashboard/StaffDirectoryDashboardView';
-import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection, useFirebase } from '@/firebase';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { useRole } from '@/context/role-context';
 import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp, updateDoc } from 'firebase/firestore';
@@ -17,7 +17,7 @@ import {
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wand2, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
-  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert, Compass, Info,
+  XCircle, AlertCircle, Bus as BusIcon, Route as RouteIcon, MapPin, Navigation, Globe, ShieldAlert, Compass, Info, ChevronDown, LogOut,
   ArrowDownRight,
   Activity,
   Database,
