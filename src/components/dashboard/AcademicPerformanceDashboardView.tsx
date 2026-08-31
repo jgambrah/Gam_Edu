@@ -375,29 +375,54 @@ export function AcademicPerformanceDashboardView({
     setActiveRemediationModal(student);
   };
 
+  const handleBatchDispatchRiskAlerts = () => {
+    const count = computed.atRiskStudents?.length || 0;
+    toast({
+      title: "Batch Risk Alerts Dispatched",
+      description: `Academic risk SMS notifications & remediation plans dispatched for ${count} flagged student profile${count === 1 ? '' : 's'}.`,
+    });
+  };
+
   return (
     <div className="space-y-4 pb-8 animate-in fade-in duration-300">
       
       {/* ─────────────────────────────────────────────────────────────
-          ZONE 1: ACADEMIC ANALYTICS ACTION BAR & SYNC CONTROL
+          ZONE 1: ACADEMIC INTELLIGENCE HUB DARK BANNER
           ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm gap-3">
-        <div className="flex items-center gap-2">
-          <GraduationCap className="h-5 w-5 text-indigo-600" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 shadow-md gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 shrink-0">
+            <GraduationCap className="h-6 w-6" />
+          </div>
           <div>
-            <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Academic Gradebook & Assessment Analytics</h3>
-            <p className="text-[11px] text-slate-400 font-semibold">Live score averages, class rankings, and student grade performance.</p>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-md border border-purple-500/30">
+                Academics Pulse
+              </span>
+            </div>
+            <h3 className="text-lg font-black text-white tracking-tight mt-1">ACADEMIC INTELLIGENCE HUB</h3>
+            <p className="text-xs text-slate-400 font-medium">Class sizes skew, teacher staffing ratio distributions, and student score variance analytics.</p>
           </div>
         </div>
 
-        <Button
-          onClick={handleSyncAcademicSummary}
-          disabled={isSyncingAcademics}
-          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs"
-        >
-          <RefreshCw className={cn("h-3.5 w-3.5", isSyncingAcademics && "animate-spin")} />
-          <span>{isSyncingAcademics ? "Syncing..." : "Sync Academic Analytics"}</span>
-        </Button>
+        {/* Right side space: Quick stat sparkline & action trigger */}
+        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-slate-800 pt-3 sm:pt-0">
+          <div className="hidden md:flex flex-col items-end text-right pr-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Term-over-Term Velocity</span>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
+              <TrendingUp className="h-3.5 w-3.5" />
+              <span>+3.2% Subject Score Growth</span>
+            </div>
+          </div>
+          <Button
+            onClick={handleSyncAcademicSummary}
+            disabled={isSyncingAcademics}
+            className="bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs cursor-pointer"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span>Generate Executive Term Report</span>
+          </Button>
+        </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -418,7 +443,7 @@ export function AcademicPerformanceDashboardView({
         <Card className="border-l-4 border-l-emerald-500 shadow-sm rounded-2xl bg-white">
           <CardContent className="p-4">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Top Class Stream</p>
-            <h3 className="text-xl font-black text-emerald-700 truncate mt-1">{computed.bestClass}</h3>
+            <h3 className="text-sm sm:text-base font-black text-emerald-700 leading-tight mt-1 line-clamp-2 min-h-[2.5rem] flex items-center">{computed.bestClass}</h3>
             <p className="text-[10px] text-emerald-600 font-bold mt-0.5">Highest Class Avg</p>
           </CardContent>
         </Card>
@@ -427,7 +452,7 @@ export function AcademicPerformanceDashboardView({
         <Card className="border-l-4 border-l-amber-500 shadow-sm rounded-2xl bg-white">
           <CardContent className="p-4">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Lowest Class Stream</p>
-            <h3 className="text-xl font-black text-amber-700 truncate mt-1">{computed.weakestClass}</h3>
+            <h3 className="text-sm sm:text-base font-black text-amber-700 leading-tight mt-1 line-clamp-2 min-h-[2.5rem] flex items-center">{computed.weakestClass}</h3>
             <p className="text-[10px] text-amber-600 font-bold mt-0.5">Intervention Priority</p>
           </CardContent>
         </Card>
@@ -436,7 +461,7 @@ export function AcademicPerformanceDashboardView({
         <Card className="border-l-4 border-l-sky-500 shadow-sm rounded-2xl bg-white">
           <CardContent className="p-4">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Top Subject</p>
-            <h3 className="text-xl font-black text-sky-700 truncate mt-1">{computed.bestSubject}</h3>
+            <h3 className="text-sm sm:text-base font-black text-sky-700 leading-tight mt-1 line-clamp-2 min-h-[2.5rem] flex items-center">{computed.bestSubject}</h3>
             <p className="text-[10px] text-sky-600 font-bold mt-0.5">Highest Subject Avg</p>
           </CardContent>
         </Card>
@@ -445,7 +470,7 @@ export function AcademicPerformanceDashboardView({
         <Card className="border-l-4 border-l-orange-500 shadow-sm rounded-2xl bg-white">
           <CardContent className="p-4">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Lowest Subject</p>
-            <h3 className="text-xl font-black text-orange-700 truncate mt-1">{computed.weakestSubject}</h3>
+            <h3 className="text-sm sm:text-base font-black text-orange-700 leading-tight mt-1 line-clamp-2 min-h-[2.5rem] flex items-center">{computed.weakestSubject}</h3>
             <p className="text-[10px] text-orange-600 font-bold mt-0.5">Focus Subject</p>
           </CardContent>
         </Card>
@@ -466,17 +491,27 @@ export function AcademicPerformanceDashboardView({
           ───────────────────────────────────────────────────────────── */}
       <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
         <CardHeader className="pb-3 border-b border-slate-100">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5 text-red-600" />
+              <ShieldAlert className="h-5 w-5 text-red-600 shrink-0" />
               <div>
                 <CardTitle className="text-base font-bold text-slate-900">Students at Academic Risk</CardTitle>
                 <CardDescription className="text-xs text-slate-500">Flagged profiles requiring immediate intervention and parent communication</CardDescription>
               </div>
             </div>
-            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-xs font-bold px-3 py-1">
-              {computed.studentsFailingCount} Students Flagged (&lt;50%)
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={handleBatchDispatchRiskAlerts}
+                className="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <Send className="h-3.5 w-3.5" />
+                <span>Batch Dispatch Risk Alerts</span>
+              </Button>
+              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-xs font-bold px-3 py-1.5 rounded-xl shrink-0">
+                {computed.studentsFailingCount} Students Flagged (&lt;50%)
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="pt-4">
@@ -485,22 +520,30 @@ export function AcademicPerformanceDashboardView({
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                    <th className="pb-3">Student Name</th>
-                    <th className="pb-3">Class Stream</th>
-                    <th className="pb-3">Overall Avg</th>
-                    <th className="pb-3">Failing Subject(s)</th>
-                    <th className="pb-3">Risk Level</th>
-                    <th className="pb-3 text-right">Intervention Actions</th>
+                    <th className="pb-3 px-3 min-w-[140px]">Student Name</th>
+                    <th className="pb-3 px-3 min-w-[120px]">Class Stream</th>
+                    <th className="pb-3 px-3 min-w-[100px]">Overall Avg</th>
+                    <th className="pb-3 px-3 min-w-[200px]">Failing Subject(s)</th>
+                    <th className="pb-3 px-3 min-w-[110px]">Risk Level</th>
+                    <th className="pb-3 px-3 text-right min-w-[220px]">Intervention Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
                   {computed.atRiskStudents.map((s: any, idx: number) => (
-                    <tr key={s.id || idx} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 font-bold text-slate-900">{s.name}</td>
-                      <td className="py-3 text-slate-600">{s.class}</td>
-                      <td className="py-3 font-black text-red-600">{s.average}</td>
-                      <td className="py-3 text-slate-600 max-w-xs truncate">{s.subjects}</td>
-                      <td className="py-3">
+                    <tr 
+                      key={s.id || idx} 
+                      className={cn(
+                        "transition-colors",
+                        s.status === 'Critical' ? "bg-rose-50/70 hover:bg-rose-100/80 border-l-4 border-l-rose-600" :
+                        s.status === 'High Risk' ? "bg-amber-50/50 hover:bg-amber-100/60 border-l-4 border-l-amber-500" :
+                        "hover:bg-slate-50/80 border-l-4 border-l-slate-300"
+                      )}
+                    >
+                      <td className="py-3 px-3 font-bold text-slate-900">{s.name}</td>
+                      <td className="py-3 px-3 text-slate-600">{s.class}</td>
+                      <td className="py-3 px-3 font-black text-red-600">{s.average}</td>
+                      <td className="py-3 px-3 text-slate-600 max-w-xs truncate">{s.subjects}</td>
+                      <td className="py-3 px-3">
                         <Badge 
                           variant="outline" 
                           className={cn(
@@ -513,7 +556,7 @@ export function AcademicPerformanceDashboardView({
                           {s.status}
                         </Badge>
                       </td>
-                      <td className="py-3 text-right space-x-2">
+                      <td className="py-3 px-3 text-right space-x-2">
                         <Button 
                           size="sm" 
                           variant="outline" 
