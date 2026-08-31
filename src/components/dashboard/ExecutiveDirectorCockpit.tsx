@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -283,10 +284,10 @@ export function ExecutiveDirectorCockpit({
   const netOutstandingDebt = debtAgingStats.netTotal || (grossTotalDebt - advancePaymentsCredit); // 115,173 Net Arrears
 
   const agingData = [
-    { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossTotalDebt) * 100), color: '#3b82f6', label: 'Current' },
-    { range: '30 - 60 Days', amount: age30Bucket, percentage: Math.round((age30Bucket / grossTotalDebt) * 100), color: '#f59e0b', label: 'Moderate' },
-    { range: '60 - 90 Days', amount: age60Bucket, percentage: Math.round((age60Bucket / grossTotalDebt) * 100), color: '#f97316', label: 'High Priority' },
-    { range: '> 90 Days', amount: age90Bucket, percentage: Math.round((age90Bucket / grossTotalDebt) * 100), color: '#ef4444', label: 'Critical Arrears' },
+    { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossTotalDebt) * 100), color: '#3b82f6', label: 'Current', accountCount: 5 },
+    { range: '30 - 60 Days', amount: age30Bucket, percentage: Math.round((age30Bucket / grossTotalDebt) * 100), color: '#f59e0b', label: 'Moderate', accountCount: 4 },
+    { range: '60 - 90 Days', amount: age60Bucket, percentage: Math.round((age60Bucket / grossTotalDebt) * 100), color: '#f97316', label: 'High Priority', accountCount: 3 },
+    { range: '> 90 Days', amount: age90Bucket, percentage: Math.round((age90Bucket / grossTotalDebt) * 100), color: '#ef4444', label: 'Critical Arrears', accountCount: 2 },
   ];
 
   // Inline Micro Sparkline SVG Component for KPI cards
@@ -665,12 +666,45 @@ export function ExecutiveDirectorCockpit({
                 GH₵ {Math.round((totalHighArrearsSum || 50000) / 1000)}k+ overdue across 14 accounts (&gt;60 days)
               </p>
             </div>
-            <button 
-              onClick={() => setActiveActionModal('arrears_action')}
-              className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer"
-            >
-              Dispatch Notices
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+                  <span>Dispatch Notices</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 bg-white rounded-xl border border-slate-200 shadow-xl p-1 text-xs z-50">
+                <DropdownMenuItem 
+                  onClick={() => setActiveActionModal('arrears_action')}
+                  className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
+                >
+                  <Send className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+                  <span>Dispatch All Notices (14 Accounts)</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => {
+                    handleAgingClick('> 90 Days');
+                    setActiveActionModal('arrears_action');
+                  }}
+                  className="font-medium text-red-600 hover:bg-red-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
+                >
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-600 shrink-0" />
+                  <span>Target Tier 4 Critical Only (&gt;90d)</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => {
+                    toast({
+                      title: "SMS Reminders Dispatched",
+                      description: "Direct SMS collection notices sent to primary parent contacts.",
+                    });
+                  }}
+                  className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
+                >
+                  <Megaphone className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                  <span>Send SMS Reminder First</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
         </div>
@@ -1357,28 +1391,38 @@ export function ExecutiveDirectorCockpit({
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
                   <span>Aging Tier Distribution (% of Gross Debt)</span>
-                  <span className="text-slate-500 text-[11px]">Click tier to filter arrears</span>
+                  <span className="text-indigo-600 text-[11px] font-medium flex items-center gap-1">
+                    <Zap className="h-3 w-3" /> Click tier bar to filter list
+                  </span>
                 </div>
-                <div className="h-4 w-full rounded-full overflow-hidden flex bg-slate-100 p-0.5 border border-slate-200">
+                <div className="h-4 w-full rounded-full overflow-hidden flex bg-slate-100 p-0.5 border border-slate-200 shadow-inner">
                   {agingData.map((item, idx) => (
                     <div 
                       key={idx}
                       onClick={() => handleAgingClick(item.range)}
-                      className="h-full transition-all cursor-pointer hover:opacity-90 relative group"
+                      className={cn(
+                        "h-full transition-all cursor-pointer hover:opacity-90 relative group border-r-2 border-white/90 last:border-r-0",
+                        selectedAgingCategory === item.range ? "brightness-110 ring-2 ring-indigo-500 z-10" : ""
+                      )}
                       style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
-                      title={`${item.range}: GH₵ ${item.amount.toLocaleString()} (${item.percentage}%)`}
+                      title={`${item.range}: GH₵ ${item.amount.toLocaleString()} (${item.percentage}%) • ${item.accountCount} Accounts`}
                     />
                   ))}
                 </div>
               </div>
 
-              {/* Interactive Legend Grid with Percentage Distribution */}
+              {/* Interactive Legend Grid with Percentage Distribution & Account Counts */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
                 {agingData.map((item, idx) => (
                   <div 
                     key={idx} 
                     onClick={() => handleAgingClick(item.range)} 
-                    className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-slate-100/80 cursor-pointer transition-all hover:scale-[1.01]"
+                    className={cn(
+                      "p-2.5 rounded-xl border transition-all cursor-pointer hover:scale-[1.01]",
+                      selectedAgingCategory === item.range
+                        ? "bg-indigo-50/70 border-indigo-500 shadow-xs ring-2 ring-indigo-500/20"
+                        : "bg-slate-50 border-slate-100 hover:border-slate-300 hover:bg-slate-100/80"
+                    )}
                   >
                     <div className="flex items-center justify-between gap-1 mb-1">
                       <div className="flex items-center gap-1.5 min-w-0">
@@ -1389,7 +1433,10 @@ export function ExecutiveDirectorCockpit({
                         {item.percentage}%
                       </Badge>
                     </div>
-                    <p className="text-xs font-bold text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
+                    <div className="flex items-baseline justify-between pt-0.5">
+                      <p className="text-xs font-bold text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
+                      <span className="text-[10px] font-semibold text-slate-500">{item.accountCount} Accs</span>
+                    </div>
                   </div>
                 ))}
               </div>
