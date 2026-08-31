@@ -1074,9 +1074,9 @@ export function ExecutiveDirectorCockpit({
             {/* Metric 1: Financial Collection Rate */}
             <Card 
               onClick={() => setActiveHeroModal('financial')}
-              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
+              className="h-full flex flex-col justify-between hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
             >
-              <CardContent className="p-4">
+              <CardContent className="p-4 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Collection Rate</span>
                   <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
@@ -1110,9 +1110,9 @@ export function ExecutiveDirectorCockpit({
             {/* Metric 2: Daily Cash Collections */}
             <Card 
               onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
-              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
+              className="h-full flex flex-col justify-between hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
             >
-              <CardContent className="p-4">
+              <CardContent className="p-4 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Collected Today</span>
@@ -1166,9 +1166,9 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 3: Academic Health Index */}
         <Card 
           onClick={() => setActiveHeroModal('academic')}
-          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
+          className="h-full flex flex-col justify-between hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
         >
-          <CardContent className="p-4">
+          <CardContent className="p-4 h-full flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Academic Health</span>
               <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
@@ -1205,9 +1205,9 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 4: Attendance Pulse */}
         <Card 
           onClick={() => setActiveHeroModal('attendance')}
-          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
+          className="h-full flex flex-col justify-between hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
         >
-          <CardContent className="p-4">
+          <CardContent className="p-4 h-full flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Student Attendance & Staff</span>
               <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
@@ -1247,9 +1247,9 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 5: Faculty Ratio & Safety */}
         <Card 
           onClick={() => setActiveHeroModal('faculty')}
-          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
+          className="h-full flex flex-col justify-between hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
         >
-          <CardContent className="p-4">
+          <CardContent className="p-4 h-full flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Faculty & Safety</span>
               <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
@@ -1554,9 +1554,10 @@ export function ExecutiveDirectorCockpit({
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} domain={['dataMin - 15', 'dataMax + 15']} />
+                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} domain={[200, 'auto']} />
                   <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '11px', border: 'none' }} />
-                  <Area type="monotone" dataKey="enrolled" stroke="#4f46e5" fill="url(#enrollmentGrad)" strokeWidth={2.5} />
+                  <Area type="monotone" dataKey="target" name="Intake Target" stroke="#cbd5e1" strokeDasharray="3 3" fill="none" strokeWidth={2} isAnimationActive={false} />
+                  <Area type="monotone" dataKey="enrolled" name="Enrolled Students" stroke="#4f46e5" fill="url(#enrollmentGrad)" strokeWidth={2.5} isAnimationActive={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
