@@ -1445,7 +1445,7 @@ function AdminDashboard({
           </button>
 
           {/* Segmented Control Tab Bar */}
-          <div className="flex items-center gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 shadow-xs">
+          <div className="flex items-center gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto">
             {([
               { id: 'overview', label: 'Overview' },
               { id: 'academics', label: 'Academics' },
@@ -1469,17 +1469,15 @@ function AdminDashboard({
                 {tab.label}
               </button>
             ))}
-          </div>
 
-          {/* AI Auditor Trigger Button */}
-          <Button 
-            onClick={handleRunAudit}
-            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-10 px-5 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            <Sparkles className="h-4 w-4 animate-pulse group-hover:rotate-12 transition-transform" />
-            <span className="text-xs uppercase tracking-wider">AI Auditor</span>
-          </Button>
+            <button
+              onClick={handleRunAudit}
+              className="px-3 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white flex items-center gap-1.5 transition-all shadow-xs cursor-pointer whitespace-nowrap ml-1 shrink-0"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
+              <span>AI Auditor</span>
+            </button>
+          </div>
 
           {/* Consolidated Top-Right User Account Dropdown Menu */}
           <DropdownMenu>
