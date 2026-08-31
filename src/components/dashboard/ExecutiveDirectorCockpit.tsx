@@ -548,7 +548,7 @@ export function ExecutiveDirectorCockpit({
   };
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="space-y-4 mt-6 pb-6">
       
       {/* ─────────────────────────────────────────────────────────────
           ZONE 1: EXECUTIVE ALERT DESK (High-Density Action Center & Ribbon)
