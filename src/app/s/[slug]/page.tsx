@@ -4463,7 +4463,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       )}
 
       {/* ─── GLOBAL STICKY FLOATING ACTION BUTTONS (FAB) STACK ───────────── */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none">
+      <div className="fixed bottom-20 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none">
         {/* 1. Small GAM Edu Logo Icon Floating Button (Top of Stack) */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
