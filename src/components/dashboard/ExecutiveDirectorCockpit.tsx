@@ -433,14 +433,15 @@ export function ExecutiveDirectorCockpit({
   ]);
   const [isAiAuditing, setIsAiAuditing] = useState(false);
 
-  // Enrollment Dynamics Data
+  // Enrollment Dynamics Data (Dynamically baseline & scale relative to active enrolled roster)
+  const baseEnrolled = enrolledStudentCount || 253;
   const enrollmentData = [
-    { month: 'Sep', enrolled: 440, target: 450 },
-    { month: 'Oct', enrolled: 455, target: 460 },
-    { month: 'Nov', enrolled: 468, target: 470 },
-    { month: 'Dec', enrolled: 472, target: 475 },
-    { month: 'Jan', enrolled: 480, target: 480 },
-    { month: 'Feb', enrolled: 487, target: 485 },
+    { month: 'Sep', enrolled: Math.round(baseEnrolled * 0.90), target: Math.round(baseEnrolled * 0.92) },
+    { month: 'Oct', enrolled: Math.round(baseEnrolled * 0.93), target: Math.round(baseEnrolled * 0.94) },
+    { month: 'Nov', enrolled: Math.round(baseEnrolled * 0.95), target: Math.round(baseEnrolled * 0.96) },
+    { month: 'Dec', enrolled: Math.round(baseEnrolled * 0.97), target: Math.round(baseEnrolled * 0.98) },
+    { month: 'Jan', enrolled: Math.round(baseEnrolled * 0.99), target: baseEnrolled },
+    { month: 'Feb', enrolled: baseEnrolled, target: Math.round(baseEnrolled * 1.02) },
   ];
 
   // Quick Action Handlers
@@ -1169,22 +1170,25 @@ export function ExecutiveDirectorCockpit({
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Attendance Pulse</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Student Attendance & Staff</span>
               <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                 <Clock className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-2 space-y-1.5">
               <div className="flex items-baseline justify-between gap-1">
-                <h3 className="text-2xl font-bold text-slate-900">96.4%</h3>
+                <div className="flex items-baseline gap-1.5">
+                  <h3 className="text-2xl font-bold text-slate-900">96.4%</h3>
+                  <span className="text-[10px] font-semibold text-slate-500">Student Pulse</span>
+                </div>
                 <Sparkline points={[92, 94, 95, 96, 96.4]} color="#f59e0b" />
               </div>
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-semibold text-amber-700 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-0.5" /> +1.8% Δ Punctuality
+                  <TrendingUp className="h-3 w-3 mr-0.5" /> +1.8% Student Punctuality
                 </span>
                 <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
-                  Pending Verification
+                  Daily Verification
                 </Badge>
               </div>
               <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
@@ -1193,7 +1197,7 @@ export function ExecutiveDirectorCockpit({
                   <span className="font-semibold text-slate-800">14 Active Classes</span>
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
-                  <span>Unchecked Faculty:</span>
+                  <span>Staff Verification:</span>
                   <span className="font-semibold text-amber-700">{telemetry.pendingStaffCheckins} Members Pending</span>
                 </div>
               </div>
