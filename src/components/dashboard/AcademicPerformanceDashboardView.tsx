@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, LineChart, Line, ReferenceLine } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
@@ -320,24 +320,34 @@ export function AcademicPerformanceDashboardView({
       };
     }).sort((a: any, b: any) => b.rating - a.rating);
 
-    // 6. Longitudinal Exam Trends
-    const termGroups: Record<string, { totalPct: number; count: number; sortKey: string; label: string }> = {};
+    // 6. Longitudinal Exam Trends (Chronologically Sorted)
+    const termGroups: Record<string, { totalPct: number; count: number; label: string; sortValue: number }> = {};
     parsed.forEach((a: any) => {
-      const year = a.academicYear || "2026";
-      const term = a.term || "Term 1";
+      const year = a.academicYear || "2024-2025";
+      const term = a.term || "First Term";
       const label = `${term} ${year}`.trim();
-      const sortKey = `${year}-${term}`;
+
+      let termNum = 1;
+      const lowerTerm = term.toLowerCase();
+      if (lowerTerm.includes('second') || lowerTerm.includes('2')) termNum = 2;
+      if (lowerTerm.includes('third') || lowerTerm.includes('3')) termNum = 3;
+
+      const yearStart = parseInt(year.split('-')[0]) || 2024;
+      const sortValue = yearStart * 10 + termNum;
+
       if (!termGroups[label]) {
-        termGroups[label] = { totalPct: 0, count: 0, sortKey, label };
+        termGroups[label] = { totalPct: 0, count: 0, label, sortValue };
       }
       termGroups[label].totalPct += a.pct;
       termGroups[label].count++;
     });
 
-    const examPerformanceTrends = Object.values(termGroups).map((g) => ({
-      term: g.label,
-      average: Math.round(g.totalPct / g.count)
-    })).slice(-5);
+    const examPerformanceTrends = Object.values(termGroups)
+      .sort((a, b) => a.sortValue - b.sortValue)
+      .map((g) => ({
+        term: g.label,
+        average: Math.round(g.totalPct / g.count)
+      })).slice(-5);
 
     return {
       schoolAverage,
@@ -626,7 +636,7 @@ export function AcademicPerformanceDashboardView({
         <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-bold text-slate-900">Class Performance Comparison</CardTitle>
-            <CardDescription className="text-xs text-slate-500">Stream averages evaluated against 50% target benchmark</CardDescription>
+            <CardDescription className="text-xs text-slate-500">Stream averages evaluated against 75% target benchmark</CardDescription>
           </CardHeader>
           <CardContent className="pt-3">
             <div className="h-64 w-full">
@@ -635,14 +645,15 @@ export function AcademicPerformanceDashboardView({
                   <BarChart data={computed.classComparisonData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                    <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <YAxis domain={[50, 100]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip 
                       formatter={(val: any) => [`${val}%`, 'Class Average']}
                       contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '12px' }} 
                     />
+                    <ReferenceLine y={75} stroke="#ef4444" strokeDasharray="4 4" label={{ value: '75% Target Benchmark', fill: '#ef4444', fontSize: 10, position: 'insideTopRight', fontWeight: 'bold' }} />
                     <Bar dataKey="average" radius={[8, 8, 0, 0]}>
                       {computed.classComparisonData.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={entry.average >= 70 ? '#6366f1' : entry.average >= 50 ? '#3b82f6' : '#ef4444'} />
+                        <Cell key={`cell-${index}`} fill={entry.average >= 80 ? '#6366f1' : entry.average >= 75 ? '#3b82f6' : '#f59e0b'} />
                       ))}
                     </Bar>
                   </BarChart>
