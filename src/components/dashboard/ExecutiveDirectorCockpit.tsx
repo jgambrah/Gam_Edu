@@ -649,12 +649,50 @@ export function ExecutiveDirectorCockpit({
                 {telemetry.pendingStaffCheckins} faculty check-ins pending assembly verification
               </p>
             </div>
-            <button 
-              onClick={() => setActiveActionModal('staff_action')}
-              className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer"
-            >
-              Send Reminder
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+                  <span>Send Reminder</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64 bg-white rounded-xl border border-slate-200 shadow-xl p-1 text-xs z-50">
+                <DropdownMenuItem 
+                  onClick={() => {
+                    handleSendStaffReminders();
+                    setActiveActionModal(null);
+                  }}
+                  className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
+                >
+                  <Send className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                  <span>Send SMS to All Unchecked Staff ({telemetry.pendingStaffCheckins})</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => {
+                    toast({
+                      title: "Lead Teachers Alerted",
+                      description: "Notification sent to Department Heads & Lead Teachers.",
+                    });
+                  }}
+                  className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
+                >
+                  <UserCheck className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+                  <span>Target Class Lead Teachers Only</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => {
+                    toast({
+                      title: "Inspection Alert Dispatched",
+                      description: "Official attendance verification alert sent to Vice Principal.",
+                    });
+                  }}
+                  className="font-medium text-rose-600 hover:bg-rose-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
+                >
+                  <ShieldAlert className="h-3.5 w-3.5 text-rose-600 shrink-0" />
+                  <span>Escalate to Vice Principal</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Alert 2: Tuition Arrears (Warning Severity) */}
@@ -1100,8 +1138,9 @@ export function ExecutiveDirectorCockpit({
                         <TrendingUp className="h-3 w-3 mr-0.5" /> +12.5% Δ vs yesterday
                       </span>
                     ) : (
-                      <span className="font-medium text-slate-500 flex items-center">
-                        Reconciliation pending
+                      <span className="font-semibold text-amber-700 flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+                        <span>Awaiting Session Close</span>
                       </span>
                     )}
                   </div>
@@ -1112,9 +1151,9 @@ export function ExecutiveDirectorCockpit({
                         <span className="font-semibold text-slate-800">{todayCashCollected.count} transaction{todayCashCollected.count === 1 ? '' : 's'}</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1 text-slate-500">
-                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
-                        <span>0 transactions logged • Awaiting daily reconciliation</span>
+                      <div className="flex items-center justify-between text-slate-600">
+                        <span>Ledger Status:</span>
+                        <span className="font-semibold text-slate-800">Morning Session Open</span>
                       </div>
                     )}
                   </div>
