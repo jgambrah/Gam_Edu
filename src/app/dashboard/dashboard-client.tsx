@@ -1480,8 +1480,8 @@ function AdminDashboard({
         </div>
       </div>
 
-      {/* Dedicated Sub-Navigation Container (Enterprise SaaS Dock) */}
-      <div className="flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/80 overflow-x-auto no-scrollbar w-full">
+      {/* Dedicated Sub-Navigation Row 2 (Full-Width Enterprise Tab Strip) */}
+      <div className="w-full mt-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/80">
         {([
           { id: 'overview', label: 'Overview' },
           { id: 'academics', label: 'Academics' },
@@ -1496,10 +1496,10 @@ function AdminDashboard({
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={cn(
-              "px-3.5 py-1.5 text-sm transition-colors cursor-pointer whitespace-nowrap rounded-lg shrink-0",
+              "px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap rounded-lg shrink-0",
               activeTab === tab.id 
                 ? "bg-white text-indigo-700 font-semibold shadow-xs"
-                : "text-slate-600 hover:text-slate-900 font-medium"
+                : "text-slate-600 hover:text-slate-900"
             )}
           >
             {tab.label}
@@ -1509,7 +1509,7 @@ function AdminDashboard({
         {/* AI Auditor Tab Pill */}
         <button
           onClick={handleRunAudit}
-          className="bg-purple-600 text-white font-medium px-3.5 py-1.5 rounded-lg shadow-xs flex items-center gap-1.5 text-sm shrink-0 hover:bg-purple-700 transition-colors cursor-pointer ml-auto"
+          className="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs sm:text-sm px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap ml-auto"
         >
           <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
           <span>AI Auditor</span>
