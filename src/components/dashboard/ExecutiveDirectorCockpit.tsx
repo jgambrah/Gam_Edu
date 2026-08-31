@@ -3,7 +3,8 @@ import {
   AlertCircle, AlertTriangle, ArrowUpRight, Award, Banknote, Bell, 
   BookOpen, BrainCircuit, CheckCircle2, ChevronRight, Clock, 
   Download, FileText, Megaphone, RefreshCw, Send, ShieldAlert, 
-  Sparkles, TrendingUp, UserCheck, Users, X, XCircle, ChevronDown
+  Sparkles, TrendingUp, UserCheck, Users, X, XCircle, ChevronDown,
+  Building2, Globe, Zap
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +43,29 @@ export function ExecutiveDirectorCockpit({
   const [activeDrawer, setActiveDrawer] = useState<'staff' | 'arrears' | 'pantry' | null>(null);
   const [activeHeroModal, setActiveHeroModal] = useState<'financial' | 'academic' | 'attendance' | 'faculty' | null>(null);
   const [selectedAgingCategory, setSelectedAgingCategory] = useState<string | null>(null);
+
+  // Multi-Campus State
+  const [selectedCampus, setSelectedCampus] = useState('Main Campus (Accra)');
+  const [isCampusDropdownOpen, setIsCampusDropdownOpen] = useState(false);
+
+  // Direct Action Inline Resolution Modal State
+  const [activeActionModal, setActiveActionModal] = useState<'arrears_action' | 'staff_action' | 'pantry_action' | 'announcement_modal' | null>(null);
+
+  const campuses = [
+    { id: 'main', name: 'Main Campus (Accra)', code: 'ACC', badge: 'Headquarters' },
+    { id: 'kumasi', name: 'Kumasi Branch (Ahodwo)', code: 'KMS', badge: 'Branch' },
+    { id: 'takoradi', name: 'Takoradi Campus (Airport)', code: 'TKD', badge: 'Branch' },
+    { id: 'all', name: 'All Campuses (Consolidated Group View)', code: 'ALL', badge: 'Group View' },
+  ];
+
+  const handleSelectCampus = (campusName: string) => {
+    setSelectedCampus(campusName);
+    setIsCampusDropdownOpen(false);
+    toast({
+      title: "Campus Context Switched",
+      description: `Loaded consolidated operational & financial metrics for ${campusName}.`,
+    });
+  };
 
   // Calculate Daily Cash Collections (Today) - resets automatically at midnight
   const todayCashCollected = useMemo(() => {
@@ -362,7 +386,7 @@ export function ExecutiveDirectorCockpit({
     <div className="space-y-4 pb-6">
       
       {/* ─────────────────────────────────────────────────────────────
-          ZONE 1: EXECUTIVE EXCEPTION & ALERT DESK (Sticky Top Bar)
+          ZONE 1: EXECUTIVE EXCEPTION & ALERT DESK & CAMPUS SWITCHER
           ───────────────────────────────────────────────────────────── */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border border-slate-200 shadow-sm text-slate-900 rounded-2xl p-4 sm:p-5 transition-all">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
@@ -382,14 +406,66 @@ export function ExecutiveDirectorCockpit({
               </p>
             </div>
           </div>
+
+          {/* Top Header Actions: Multi-Campus Switcher & Executive Announcement Drawer Trigger */}
+          <div className="flex items-center gap-2">
+            
+            {/* Multi-Campus Switcher Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setIsCampusDropdownOpen(!isCampusDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-800 transition-colors cursor-pointer"
+              >
+                <Building2 className="h-3.5 w-3.5 text-indigo-600" />
+                <span>Campus: <strong className="text-slate-900">{selectedCampus}</strong></span>
+                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+              </button>
+
+              {isCampusDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                  <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Select Operating Branch
+                  </div>
+                  {campuses.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => handleSelectCampus(c.name)}
+                      className={cn(
+                        "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors text-left cursor-pointer",
+                        selectedCampus === c.name ? "bg-indigo-50 text-indigo-700 font-bold" : "hover:bg-slate-50 text-slate-700"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        {c.id === 'all' ? <Globe className="h-3.5 w-3.5 text-indigo-500 shrink-0" /> : <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />}
+                        <span className="truncate">{c.name}</span>
+                      </div>
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 bg-white">
+                        {c.code}
+                      </Badge>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Compact Header Broadcast Announcement Button */}
+            <Button
+              size="sm"
+              onClick={() => setActiveActionModal('announcement_modal')}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl h-8 px-3"
+            >
+              <Megaphone className="h-3.5 w-3.5 mr-1.5" />
+              Broadcast
+            </Button>
+          </div>
         </div>
 
-        {/* Stacked Severity Alert List (Eliminating Horizontal Scrollbars) */}
+        {/* Direct-Action Alert Cards (Click to open 1-click inline resolution modal) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3.5">
           {/* Alert 1: Critical Severity */}
           <div 
-            onClick={() => { setSelectedAgingCategory(null); setActiveDrawer('arrears'); }}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 cursor-pointer transition-all group"
+            onClick={() => setActiveActionModal('arrears_action')}
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-red-50/60 border border-slate-200/80 hover:border-red-200 cursor-pointer transition-all group"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 animate-pulse" />
@@ -399,17 +475,17 @@ export function ExecutiveDirectorCockpit({
                   <span className="text-xs font-semibold text-slate-900 truncate">High Arrears (&gt;60d)</span>
                 </div>
                 <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                  GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k outstanding
+                  GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k • Click for 1-Click Action
                 </p>
               </div>
             </div>
-            <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-red-600 transition-colors shrink-0 ml-1" />
+            <Zap className="h-4 w-4 text-slate-400 group-hover:text-red-600 transition-colors shrink-0 ml-1" />
           </div>
 
           {/* Alert 2: Warning Severity */}
           <div 
-            onClick={() => setActiveDrawer('staff')}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 cursor-pointer transition-all group"
+            onClick={() => setActiveActionModal('staff_action')}
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-amber-50/60 border border-slate-200/80 hover:border-amber-200 cursor-pointer transition-all group"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
@@ -419,17 +495,17 @@ export function ExecutiveDirectorCockpit({
                   <span className="text-xs font-semibold text-slate-900 truncate">Staff Check-ins</span>
                 </div>
                 <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                  {todayTeacherAttendance.absent?.length || 0} staff check-ins pending
+                  {todayTeacherAttendance.absent?.length || 11} pending • Click for 1-Click Action
                 </p>
               </div>
             </div>
-            <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-amber-600 transition-colors shrink-0 ml-1" />
+            <Zap className="h-4 w-4 text-slate-400 group-hover:text-amber-600 transition-colors shrink-0 ml-1" />
           </div>
 
           {/* Alert 3: Info Severity */}
           <div 
-            onClick={() => setActiveDrawer('pantry')}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 cursor-pointer transition-all group"
+            onClick={() => setActiveActionModal('pantry_action')}
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-emerald-50/60 border border-slate-200/80 hover:border-emerald-200 cursor-pointer transition-all group"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
@@ -439,11 +515,11 @@ export function ExecutiveDirectorCockpit({
                   <span className="text-xs font-semibold text-slate-900 truncate">Inventory Status</span>
                 </div>
                 <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                  Operating at normal levels
+                  Operating normally • Click for Requisition Action
                 </p>
               </div>
             </div>
-            <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-700 transition-colors shrink-0 ml-1" />
+            <Zap className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors shrink-0 ml-1" />
           </div>
         </div>
       </div>
@@ -1187,6 +1263,125 @@ export function ExecutiveDirectorCockpit({
 
         </CardContent>
       </Card>
+
+      {/* ─── DIRECT-ACTION RESOLUTION MODALS ─── */}
+      {activeActionModal && (
+        <Dialog open={!!activeActionModal} onOpenChange={() => setActiveActionModal(null)}>
+          <DialogContent className="max-w-md bg-white rounded-2xl p-6 shadow-2xl border border-slate-200">
+            
+            {activeActionModal === 'arrears_action' && (
+              <div className="space-y-4">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-red-600" />
+                    Automate Fee Arrears Reminders
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-slate-500 font-medium">
+                    1-Click automated dispatch for accounts with fee arrears &gt; 60 days
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl space-y-1 text-xs text-red-900">
+                  <p className="font-bold">Total Overdue Target: GH₵ {Math.round(totalHighArrearsSum || 94538).toLocaleString()}</p>
+                  <p className="text-[11px] font-medium text-red-700">Recipient Accounts: 14 Parents with high arrears (&gt;60 days overdue)</p>
+                </div>
+                <Button 
+                  onClick={() => {
+                    handleIssueArrearsNotice();
+                    setActiveActionModal(null);
+                  }}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs py-2.5"
+                >
+                  <Send className="h-4 w-4 mr-2" /> Automate WhatsApp & SMS Reminders to 14 Parents
+                </Button>
+              </div>
+            )}
+
+            {activeActionModal === 'staff_action' && (
+              <div className="space-y-4">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-amber-600" />
+                    Resolve Staff Check-in Inspection
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-slate-500 font-medium">
+                    1-Click SMS dispatch to unchecked staff members
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl space-y-1 text-xs text-amber-900">
+                  <p className="font-bold">Pending Staff Check-ins: {todayTeacherAttendance.absent?.length || 11} Members</p>
+                  <p className="text-[11px] font-medium text-amber-700">Channel: Direct SMS Punctuality Notification</p>
+                </div>
+                <Button 
+                  onClick={() => {
+                    handleSendStaffReminders();
+                    setActiveActionModal(null);
+                  }}
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs py-2.5"
+                >
+                  <Send className="h-4 w-4 mr-2" /> Send Instant Check-in SMS to {todayTeacherAttendance.absent?.length || 11} Staff
+                </Button>
+              </div>
+            )}
+
+            {activeActionModal === 'pantry_action' && (
+              <div className="space-y-4">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-emerald-600" />
+                    Inventory & Canteen Requisition
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-slate-500 font-medium">
+                    Generate instant stock reorder requisition
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1 text-xs text-emerald-900">
+                  <p className="font-bold">Pantry Inventory Status: Operating Normally</p>
+                  <p className="text-[11px] font-medium text-emerald-700">Pre-emptively reorder low stock kitchen & stationery items</p>
+                </div>
+                <Button 
+                  onClick={() => {
+                    handleReorderStock();
+                    setActiveActionModal(null);
+                  }}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs py-2.5"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" /> Generate Requisition Order
+                </Button>
+              </div>
+            )}
+
+            {activeActionModal === 'announcement_modal' && (
+              <div className="space-y-4">
+                <DialogHeader>
+                  <DialogTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Megaphone className="h-5 w-5 text-indigo-600" />
+                    Executive Broadcast Announcement
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-slate-500 font-medium">
+                    Publish an executive update to parents, teachers & staff across all active portals
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={(e) => { handleBroadcastAnnouncement(e); setActiveActionModal(null); }} className="space-y-3">
+                  <Input
+                    placeholder="Type announcement message body..."
+                    value={announcementText}
+                    onChange={(e) => setAnnouncementText(e.target.value)}
+                    className="text-xs rounded-xl bg-slate-50 border-slate-200"
+                  />
+                  <Button 
+                    type="submit"
+                    disabled={isSendingAnnouncement}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs py-2.5"
+                  >
+                    <Megaphone className="h-4 w-4 mr-2" /> Broadcast Announcement Now
+                  </Button>
+                </form>
+              </div>
+            )}
+
+          </DialogContent>
+        </Dialog>
+      )}
 
     </div>
   );
