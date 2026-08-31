@@ -1411,28 +1411,24 @@ function AdminDashboard({
     : null;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 relative pb-16">
-      {/* Header Bar: Title Context, Search Palette & User Profile */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 pb-2 border-b border-slate-100">
+    <div className="w-full mb-6 space-y-4 animate-in fade-in duration-500 relative pb-16">
+      {/* ROW 1: Heading Title & Top Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="flex flex-wrap items-center gap-2 mb-1.5">
-            <span className="text-[10px] font-semibold tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 py-1 rounded-full uppercase">Administrator Suite</span>
-            {/* Explicit Academic Term Temporal Context Badge */}
-            <span className="flex items-center gap-1.5 text-[10px] font-medium tracking-wide bg-slate-100/90 text-slate-700 border border-slate-200/80 px-3 py-1 rounded-full shadow-xs">
-              <Calendar className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-              <span>Term 2 • 2025/2026 Academic Year • Week 8</span>
-            </span>
-          </div>
-          <h1 className="text-2.5xl font-bold text-slate-900 tracking-tight">Operations <span className="text-indigo-600">Console</span></h1>
+          <span className="text-[11px] font-bold tracking-wider text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+            Director Suite
+          </span>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 mt-1">
+            EXECUTIVE CONSOLE
+          </h1>
         </div>
-        
+
         {/* Top Header Right Controls: Omnisearch & User Profile */}
-        <div className="flex items-center gap-3 w-full xl:w-auto">
-          
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           {/* Global Omni-Search (⌘K Command Palette Trigger Button) */}
           <button
             onClick={() => setIsOmniSearchOpen(true)}
-            className="flex-1 max-w-md sm:max-w-lg flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium text-slate-500 transition-all shadow-xs cursor-pointer group"
+            className="flex-1 sm:flex-initial flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium text-slate-500 transition-all shadow-xs cursor-pointer group"
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <Search className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors shrink-0" />
@@ -1444,7 +1440,7 @@ function AdminDashboard({
             </kbd>
           </button>
 
-          {/* Consolidated Top-Right User Account Dropdown Menu */}
+          {/* User Account Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2.5 p-1 rounded-2xl hover:bg-slate-100 border border-slate-200/80 transition-all cursor-pointer bg-white shadow-xs shrink-0">
@@ -1476,42 +1472,43 @@ function AdminDashboard({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
         </div>
       </div>
 
-      {/* Dedicated Sub-Navigation Row 2 (Full-Width Enterprise Tab Strip) */}
-      <div className="w-full mt-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/80">
-        {([
-          { id: 'overview', label: 'Overview' },
-          { id: 'academics', label: 'Academics' },
-          { id: 'attendance', label: 'Attendance' },
-          { id: 'students', label: 'Students' },
-          { id: 'staff', label: 'Staff' },
-          { id: 'canteen', label: 'Canteen' },
-          { id: 'satisfaction', label: 'Satisfaction' },
-          { id: 'system', label: 'General' }
-        ] as const).map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={cn(
-              "px-3.5 py-1.5 text-xs sm:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap rounded-lg shrink-0",
-              activeTab === tab.id 
-                ? "bg-white text-indigo-700 font-semibold shadow-xs"
-                : "text-slate-600 hover:text-slate-900"
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* ROW 2: Dedicated Full-Width Tab Bar */}
+      <div className="w-full flex items-center justify-between gap-2 overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200">
+        <div className="flex items-center gap-1.5 flex-nowrap">
+          {([
+            { id: 'overview', label: 'Overview' },
+            { id: 'academics', label: 'Academics' },
+            { id: 'attendance', label: 'Attendance' },
+            { id: 'students', label: 'Students' },
+            { id: 'staff', label: 'Staff' },
+            { id: 'canteen', label: 'Canteen' },
+            { id: 'satisfaction', label: 'Satisfaction' },
+            { id: 'system', label: 'General' }
+          ] as const).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap cursor-pointer",
+                activeTab === tab.id
+                  ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-bold"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-        {/* AI Auditor Tab Pill */}
+        {/* AI Auditor as an inline badge on the right */}
         <button
           onClick={handleRunAudit}
-          className="flex-shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs sm:text-sm px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap ml-auto"
+          className="flex-shrink-0 flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg shadow-xs transition-colors whitespace-nowrap ml-2 cursor-pointer"
         >
-          <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
+          <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
           <span>AI Auditor</span>
         </button>
       </div>
