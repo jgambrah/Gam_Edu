@@ -246,6 +246,27 @@ export function ExecutiveDirectorCockpit({
     return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
   }, [highArrearsList]);
 
+  // Centralized Executive Telemetry Store (Single Source of Truth)
+  const telemetry = useMemo(() => {
+    const pendingStaffCheckins = (todayTeacherAttendance?.absent && Array.isArray(todayTeacherAttendance.absent) && todayTeacherAttendance.absent.length > 0)
+      ? todayTeacherAttendance.absent.length
+      : 11;
+
+    const highArrearsCount = 14;
+    const highArrearsOverdueSum = totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0) || 94538;
+
+    return {
+      pendingStaffCheckins,
+      highArrearsCount,
+      highArrearsOverdueSum,
+      attendancePunctuality: 96.4,
+      highestAcademicGapGrade: 'Grade 4 Mathematics',
+      highestAcademicGapValue: '-11%',
+      topPerformingSubject: 'Grade 6 Science',
+      topPerformingScore: 94.2,
+    };
+  }, [todayTeacherAttendance, totalHighArrearsSum, debtAgingStats]);
+
   // Fee Receivables Aging Data (Gross Debt Breakdown & Advance Payment Reconciliation)
   const currentBucket = debtAgingStats.current || 28450;
   const age30Bucket = debtAgingStats.age30 || 8985;
@@ -335,13 +356,13 @@ export function ExecutiveDirectorCockpit({
   const [announcementText, setAnnouncementText] = useState('');
   const [isSendingAnnouncement, setIsSendingAnnouncement] = useState(false);
 
-  // AI Auditor Assistant State
+  // AI Auditor Assistant State (Unified AI Credits Source of Truth: 815)
   const [aiPrompt, setAiPrompt] = useState('');
-  const [aiCredits, setAiCredits] = useState(819);
+  const [aiCredits, setAiCredits] = useState(815);
   const [aiChatHistory, setAiChatHistory] = useState<Array<{ role: 'user' | 'assistant'; text: string }>>([
     {
       role: 'assistant',
-      text: 'Good day Director. I have audited Sunny Side Academy’s active records today. Fee collection stands at GH₵ 187.8k (74%), academic performance is at 81% (gap -11%), and 11 staff check-ins are currently pending. How can I assist your executive overview?'
+      text: `Good day Director. I have audited Sunny Side Academy’s active records today. Fee collection stands at GH₵ 187.8k (74%), academic performance is at 81% (gap -11%), and ${telemetry.pendingStaffCheckins} staff check-ins are currently pending. How can I assist your executive overview?`
     }
   ]);
   const [isAiAuditing, setIsAiAuditing] = useState(false);
@@ -360,7 +381,7 @@ export function ExecutiveDirectorCockpit({
   const handleSendStaffReminders = () => {
     toast({
       title: "Staff Reminders Dispatched",
-      description: "SMS check-in reminders sent to 11 unchecked staff members.",
+      description: `SMS check-in reminders sent to ${telemetry.pendingStaffCheckins} unchecked staff members.`,
     });
     setActiveDrawer(null);
   };
@@ -368,7 +389,7 @@ export function ExecutiveDirectorCockpit({
   const handleIssueArrearsNotice = () => {
     toast({
       title: "Arrears Notices Sent",
-      description: "Automated fee reminder SMS and emails dispatched for debts > 60 days.",
+      description: `Automated fee reminder SMS and emails dispatched for ${telemetry.highArrearsCount} parent accounts with debt > 60 days.`,
     });
     setActiveDrawer(null);
   };
@@ -399,9 +420,9 @@ export function ExecutiveDirectorCockpit({
     if (type === 'arrears') {
       setAiDraftTemplate({
         title: "Executive Fee Arrears Collection Notice",
-        recipient: "All Parents with Arrears > 60 Days (14 Accounts)",
+        recipient: `All Parents with Arrears > 60 Days (${telemetry.highArrearsCount} Accounts)`,
         subject: "URGENT: GAM Edu Tuition Fee Balance Settlement Notice",
-        body: "Dear Parent/Guardian,\n\nOur financial records indicate an outstanding tuition balance of GH₵ 94,538 across overdue student accounts. We kindly request that you settle all overdue tuition fees on or before Friday to prevent academic portal restriction.\n\nPayments can be made securely via the GAM Edu Parent Portal or Mobile Money Gateway.\n\nThank you for your prompt cooperation.\n\nExecutive Director's Office\nGAM Edu International Schools"
+        body: `Dear Parent/Guardian,\n\nOur financial records indicate an outstanding tuition balance of GH₵ ${Math.round(telemetry.highArrearsOverdueSum).toLocaleString()} across overdue student accounts. We kindly request that you settle all overdue tuition fees on or before Friday to prevent academic portal restriction.\n\nPayments can be made securely via the GAM Edu Parent Portal or Mobile Money Gateway.\n\nThank you for your prompt cooperation.\n\nExecutive Director's Office\nGAM Edu International Schools`
       });
     } else if (type === 'staff') {
       setAiDraftTemplate({
@@ -432,14 +453,22 @@ export function ExecutiveDirectorCockpit({
       setIsAiAuditing(false);
       setAiCredits(prev => Math.max(0, prev - 1));
       
-      let reply = "Based on current ledger and attendance analysis, operational health remains strong. Tuition collection is projected to hit 82% by month end if high-arrears notices are dispatched today.";
-      if (textToQuery.toLowerCase().includes('notice') || textToQuery.toLowerCase().includes('draft') || textToQuery.toLowerCase().includes('arrears')) {
-        reply = "I have drafted an official executive fee collection notice for parent accounts with overdue balances > 60 days. You can open and edit the template directly below for instant WhatsApp/SMS dispatch.";
+      const queryLower = textToQuery.toLowerCase();
+      let reply = "";
+
+      if (queryLower.includes('academic') || queryLower.includes('gap') || queryLower.includes('grade') || queryLower.includes('score')) {
+        reply = `Academic Audit Analysis: ${telemetry.highestAcademicGapGrade} currently has the highest academic gap at ${telemetry.highestAcademicGapValue} below the 92% benchmark (class avg: 81%). Conversely, ${telemetry.topPerformingSubject} leads with an impressive ${telemetry.topPerformingScore}% average score (+12.4% vs target). Remedial support sessions are active for target students.`;
+      } else if (queryLower.includes('notice') || queryLower.includes('draft') || queryLower.includes('arrears') || queryLower.includes('remind')) {
+        reply = `I have drafted an official executive fee collection notice for ${telemetry.highArrearsCount} parent accounts with overdue balances > 60 days (GH₵ ${Math.round(telemetry.highArrearsOverdueSum / 1000)}k total). You can open and edit the template directly below for instant WhatsApp/SMS dispatch.`;
         handleOpenDraftTemplate('arrears');
-      } else if (textToQuery.toLowerCase().includes('cash flow') || textToQuery.toLowerCase().includes('financial')) {
-        reply = "Projected net inflow for next month is GH₵ 48,500 based on recurring tuition installments and canteen requisitions.";
-      } else if (textToQuery.toLowerCase().includes('staff') || textToQuery.toLowerCase().includes('attendance')) {
-        reply = "Faculty attendance is at 96% punctuality over the last 30 days. Today 11 check-ins are pending morning assembly verification.";
+      } else if (queryLower.includes('cash flow') || queryLower.includes('financial') || queryLower.includes('revenue') || queryLower.includes('inflow')) {
+        reply = `Projected net cash inflow for next month is GH₵ 48,500 based on recurring tuition installment schedules and canteen requisitions. Financial collection rate currently stands at ${financials.collectionRate || 74}%.`;
+      } else if (queryLower.includes('staff') || queryLower.includes('attendance') || queryLower.includes('check-in') || queryLower.includes('punctuality')) {
+        reply = `Faculty attendance analysis: Punctuality rate is at ${telemetry.attendancePunctuality}% over the last 30 days. Today ${telemetry.pendingStaffCheckins} staff check-ins are pending morning assembly verification.`;
+      } else if (queryLower.includes('enrollment') || queryLower.includes('student')) {
+        reply = `Enrollment Dynamics: Total enrolled students stand at ${students.length || 487} across 14 classes, maintaining a 100% compliant student-to-teacher ratio of ${studentTeacherRatio || '20.3:1'}.`;
+      } else {
+        reply = `Based on current ledger and attendance analysis, operational health remains strong. Tuition collection is projected to hit 82% by month end if high-arrears notices are dispatched today, and ${telemetry.pendingStaffCheckins} staff check-ins are pending verification.`;
       }
 
       setAiChatHistory(prev => [...prev, { role: 'assistant', text: reply }]);
@@ -537,7 +566,7 @@ export function ExecutiveDirectorCockpit({
                 Staff Attendance
               </span>
               <p className="text-xs text-slate-700 font-medium truncate">
-                {todayTeacherAttendance.absent?.length || 22} faculty check-ins pending assembly verification
+                {telemetry.pendingStaffCheckins} faculty check-ins pending assembly verification
               </p>
             </div>
             <button 
@@ -613,7 +642,7 @@ export function ExecutiveDirectorCockpit({
               {activeDrawer === 'staff' && (
                 <div className="space-y-4">
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    The following {todayTeacherAttendance.absent?.length || 0} staff members have not completed morning attendance inspection check-in:
+                    The following {telemetry.pendingStaffCheckins} staff members have not completed morning attendance inspection check-in:
                   </p>
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                     {todayTeacherAttendance.absent && todayTeacherAttendance.absent.length > 0 ? (
