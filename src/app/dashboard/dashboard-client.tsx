@@ -56,6 +56,7 @@ import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
 import { TermManagementModal, TermUnlockCountdownBanner } from '@/components/dashboard/term-management-modal';
 import { Input } from '@/components/ui/input';
 import { generateSchoolExecutiveBriefingAction } from '@/app/actions/insights-ai';
+import { format, startOfDay, endOfDay, formatDistanceToNow, subDays } from 'date-fns';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

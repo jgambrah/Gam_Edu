@@ -1,0 +1,21 @@
+import { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'GAM Edu School Management',
+    short_name: 'GAM Edu',
+    description: 'The Intelligent OS for Future-Ready Schools',
+    start_url: '/dashboard',
+    display: 'standalone',
+    background_color: '#ffffff',
+    theme_color: '#4f46e5',
+    icons: [
+      {
+        src: '/icons/icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+    ],
+  };
+}
