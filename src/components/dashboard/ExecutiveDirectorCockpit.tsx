@@ -334,58 +334,87 @@ export function ExecutiveDirectorCockpit({
       {/* ─────────────────────────────────────────────────────────────
           ZONE 1: EXECUTIVE EXCEPTION & ALERT DESK (Sticky Top Bar)
           ───────────────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-white rounded-2xl p-3 sm:p-4 shadow-xl transition-all">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border border-slate-200 shadow-sm text-slate-900 rounded-2xl p-4 sm:p-5 transition-all">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse shrink-0">
-              <ShieldAlert className="h-5 w-5" />
+            <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-red-50 text-red-600 border border-red-200 shrink-0">
+              <ShieldAlert className="h-5 w-5 text-red-600" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-sm tracking-tight text-slate-100">Executive Alert Desk</span>
-                <Badge variant="destructive" className="bg-red-600 hover:bg-red-700 text-[10px] font-black uppercase tracking-wider px-2 py-0.5">
-                  🔴 3 Actions Required
+                <h2 className="font-bold text-sm tracking-tight text-slate-900">Executive Alert Desk</h2>
+                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-[11px] font-semibold px-2 py-0.5">
+                  3 Active Alerts
                 </Badge>
               </div>
-              <p className="text-xs text-slate-400">
-                {todayTeacherAttendance.absent?.length || 0} Unchecked Staff | GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k Combined High Arrears (&gt;60 days) | Normal Pantry Inventory
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Critical operational exceptions requiring executive review
               </p>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => setActiveDrawer('staff')}
-              className="bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
-            >
-              <UserCheck className="h-3.5 w-3.5 text-amber-400 mr-1.5" />
-              Staff Check-ins ({todayTeacherAttendance.absent?.length || 0})
-            </Button>
-
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => { setSelectedAgingCategory(null); setActiveDrawer('arrears'); }}
-              className="bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
-            >
-              <Banknote className="h-3.5 w-3.5 text-red-400 mr-1.5" />
-              Combined Arrears (&gt;60d)
-            </Button>
-
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => setActiveDrawer('pantry')}
-              className="bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold rounded-xl"
-            >
-              <AlertTriangle className="h-3.5 w-3.5 text-orange-400 mr-1.5" />
-              Low Stock (0)
-            </Button>
+        {/* Stacked Severity Alert List (Eliminating Horizontal Scrollbars) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3.5">
+          {/* Alert 1: Critical Severity */}
+          <div 
+            onClick={() => { setSelectedAgingCategory(null); setActiveDrawer('arrears'); }}
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 cursor-pointer transition-all group"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 animate-pulse" />
+              <div className="truncate">
+                <div className="flex items-center gap-1.5">
+                  <Badge className="bg-red-600 text-white text-[9px] font-semibold px-1.5 py-0 uppercase tracking-wider">Critical</Badge>
+                  <span className="text-xs font-semibold text-slate-900 truncate">High Arrears (&gt;60d)</span>
+                </div>
+                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                  GH₵ {Math.round((totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)) / 1000)}k outstanding
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-red-600 transition-colors shrink-0 ml-1" />
           </div>
 
+          {/* Alert 2: Warning Severity */}
+          <div 
+            onClick={() => setActiveDrawer('staff')}
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 cursor-pointer transition-all group"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
+              <div className="truncate">
+                <div className="flex items-center gap-1.5">
+                  <Badge className="bg-amber-500 text-white text-[9px] font-semibold px-1.5 py-0 uppercase tracking-wider">Warning</Badge>
+                  <span className="text-xs font-semibold text-slate-900 truncate">Staff Check-ins</span>
+                </div>
+                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                  {todayTeacherAttendance.absent?.length || 0} staff check-ins pending
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-amber-600 transition-colors shrink-0 ml-1" />
+          </div>
+
+          {/* Alert 3: Info Severity */}
+          <div 
+            onClick={() => setActiveDrawer('pantry')}
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 cursor-pointer transition-all group"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+              <div className="truncate">
+                <div className="flex items-center gap-1.5">
+                  <Badge className="bg-emerald-600 text-white text-[9px] font-semibold px-1.5 py-0 uppercase tracking-wider">Info</Badge>
+                  <span className="text-xs font-semibold text-slate-900 truncate">Inventory Status</span>
+                </div>
+                <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                  Operating at normal levels
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-700 transition-colors shrink-0 ml-1" />
+          </div>
         </div>
       </div>
 
@@ -466,7 +495,7 @@ export function ExecutiveDirectorCockpit({
                             <p className="font-bold text-slate-800">{item.studentName}</p>
                             <p className="text-[10px] text-slate-500">{item.maxDaysOverdue} Days Overdue</p>
                           </div>
-                          <span className="font-black text-red-600">GH₵ {Math.round(item.amount).toLocaleString()}</span>
+                          <span className="font-bold text-red-600">GH₵ {Math.round(item.amount).toLocaleString()}</span>
                         </div>
                       ))
                     ) : (
@@ -496,17 +525,17 @@ export function ExecutiveDirectorCockpit({
             {/* Action Buttons */}
             <div className="pt-6 border-t border-slate-100 space-y-2">
               {activeDrawer === 'staff' && (
-                <Button onClick={handleSendStaffReminders} className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs py-2.5">
+                <Button onClick={handleSendStaffReminders} className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs py-2.5">
                   <Send className="h-4 w-4 mr-2" /> Send Check-in Reminder SMS
                 </Button>
               )}
               {activeDrawer === 'arrears' && (
-                <Button onClick={handleIssueArrearsNotice} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs py-2.5">
+                <Button onClick={handleIssueArrearsNotice} className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs py-2.5">
                   <Send className="h-4 w-4 mr-2" /> Issue Combined Fee Arrears Reminders
                 </Button>
               )}
               {activeDrawer === 'pantry' && (
-                <Button onClick={handleReorderStock} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-xs py-2.5">
+                <Button onClick={handleReorderStock} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl text-xs py-2.5">
                   <RefreshCw className="h-4 w-4 mr-2" /> Generate Requisition Order
                 </Button>
               )}
@@ -529,24 +558,24 @@ export function ExecutiveDirectorCockpit({
             {/* Metric 1: Financial Collection Rate */}
             <Card 
               onClick={() => setActiveHeroModal('financial')}
-              className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-emerald-500 overflow-hidden relative group"
+              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-emerald-500 overflow-hidden relative group bg-white"
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Financial Collection Rate</span>
-                  <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-                    <Banknote className="h-5 w-5" />
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Collection Rate</span>
+                  <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
+                    <Banknote className="h-4 w-4" />
                   </div>
                 </div>
                 <div className="mt-2">
                   <div className="flex items-baseline gap-2">
-                    <h3 className="text-3xl font-black text-slate-900">{financials.collectionRate || 74}%</h3>
-                    <span className="text-xs font-bold text-emerald-600 flex items-center">
+                    <h3 className="text-2xl font-bold text-slate-900">{financials.collectionRate || 74}%</h3>
+                    <span className="text-xs font-semibold text-emerald-600 flex items-center">
                       <TrendingUp className="h-3 w-3 mr-0.5" /> +4.2%
                     </span>
                   </div>
                   <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                    GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k collected of GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k total billed (Combined Fees)
+                    GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k collected of GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k
                   </p>
                 </div>
               </CardContent>
@@ -555,28 +584,28 @@ export function ExecutiveDirectorCockpit({
             {/* Metric 2: Daily Cash Collections (Today) */}
             <Card 
               onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
-              className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-green-600 overflow-hidden relative group bg-gradient-to-br from-white to-green-50/40"
+              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-emerald-600 overflow-hidden relative group bg-white"
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Collected Today</span>
-                    <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Collected Today</span>
+                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
-                  <div className="p-2 rounded-xl bg-green-100/80 text-green-700 group-hover:scale-110 transition-transform">
-                    <Banknote className="h-5 w-5" />
+                  <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
+                    <Banknote className="h-4 w-4" />
                   </div>
                 </div>
                 <div className="mt-2">
                   <div className="flex items-baseline gap-2">
-                    <h3 className="text-2xl font-black text-slate-900">
+                    <h3 className="text-2xl font-bold text-slate-900">
                       GH₵ {todayCashCollected.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h3>
                   </div>
-                  <p className="text-[11px] font-semibold text-green-700 mt-1 line-clamp-1">
+                  <p className="text-[11px] font-semibold text-emerald-700 mt-1 line-clamp-1">
                     {todayCashCollected.count > 0 
                       ? `${todayCashCollected.count} payment entry${todayCashCollected.count === 1 ? '' : 's'} recorded today`
-                      : "0 cash payments recorded today (resets nightly)"}
+                      : "0 cash payments recorded today"}
                   </p>
                 </div>
               </CardContent>
@@ -587,19 +616,19 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 3: Academic Health Index */}
         <Card 
           onClick={() => setActiveHeroModal('academic')}
-          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-indigo-500 overflow-hidden relative group"
+          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-indigo-500 overflow-hidden relative group bg-white"
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Academic Health (API)</span>
-              <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
-                <Award className="h-5 w-5" />
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Academic Health</span>
+              <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-105 transition-transform">
+                <Award className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-2">
               <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-black text-slate-900">{academicTidbits.avgScore || 81}%</h3>
-                <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200">
+                <h3 className="text-2xl font-bold text-slate-900">{academicTidbits.avgScore || 81}%</h3>
+                <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200 font-semibold">
                   Gap: -11%
                 </Badge>
               </div>
@@ -613,24 +642,24 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 4: Attendance Pulse */}
         <Card 
           onClick={() => setActiveHeroModal('attendance')}
-          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-amber-500 overflow-hidden relative group"
+          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-amber-500 overflow-hidden relative group bg-white"
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Attendance Pulse</span>
-              <div className="p-2 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
-                <Clock className="h-5 w-5" />
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Attendance Pulse</span>
+              <div className="p-2 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-105 transition-transform">
+                <Clock className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-2">
               <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-black text-slate-900">Pending</h3>
-                <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">
+                <h3 className="text-2xl font-bold text-slate-900">Pending</h3>
+                <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200 font-semibold">
                   0/14 Classes
                 </Badge>
               </div>
               <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                0/14 classes submitted today | 11 staff check-ins pending
+                0/14 classes submitted today | 11 staff pending
               </p>
             </div>
           </CardContent>
@@ -639,24 +668,24 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 5: Faculty Ratio & Safety */}
         <Card 
           onClick={() => setActiveHeroModal('faculty')}
-          className="hover:shadow-md transition-all cursor-pointer border-l-4 border-l-sky-500 overflow-hidden relative group"
+          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-sky-500 overflow-hidden relative group bg-white"
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Faculty Ratio & Safety</span>
-              <div className="p-2 rounded-xl bg-sky-50 text-sky-600 group-hover:scale-110 transition-transform">
-                <Users className="h-5 w-5" />
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Faculty & Safety</span>
+              <div className="p-2 rounded-xl bg-sky-50 text-sky-600 group-hover:scale-105 transition-transform">
+                <Users className="h-4 w-4" />
               </div>
             </div>
             <div className="mt-2">
               <div className="flex items-baseline gap-2">
-                <h3 className="text-3xl font-black text-slate-900">{studentTeacherRatio || '20.3:1'}</h3>
-                <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">
-                  0 Safety Alerts
+                <h3 className="text-2xl font-bold text-slate-900">{studentTeacherRatio || '20.3:1'}</h3>
+                <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
+                  0 Incidents
                 </Badge>
               </div>
               <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
-                {staff.length || 24} active staff | {students.length || 487} students | 0 incidents
+                {staff.length || 24} staff | {students.length || 487} students | 0 alerts
               </p>
             </div>
           </CardContent>
@@ -771,14 +800,14 @@ export function ExecutiveDirectorCockpit({
         
         {/* MODULE 1: Financial Receivables Aging Breakdown */}
         {showFinancials && (
-          <Card className="lg:col-span-2 shadow-sm border-slate-200 rounded-2xl">
+          <Card className="lg:col-span-2 shadow-sm border border-slate-200 rounded-2xl bg-white">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base font-bold text-slate-900">Financial Receivables Aging Breakdown</CardTitle>
-                  <CardDescription className="text-xs text-slate-500">Click any aging bar or category below to inspect matching accounts</CardDescription>
+                  <CardTitle className="text-sm font-semibold text-slate-900">Financial Receivables Aging Breakdown</CardTitle>
+                  <CardDescription className="text-xs text-slate-500 font-medium">Click any aging tier or bar to inspect matching accounts</CardDescription>
                 </div>
-                <Badge variant="outline" className="bg-slate-50 text-slate-700 text-xs">
+                <Badge variant="outline" className="bg-slate-50 text-slate-700 text-xs font-semibold">
                   Total Debt: GH₵ {Math.round(debtAgingStats.grossTotal || 103500).toLocaleString()}
                 </Badge>
               </div>
@@ -813,13 +842,13 @@ export function ExecutiveDirectorCockpit({
                   <div 
                     key={idx} 
                     onClick={() => handleAgingClick(item.range)} 
-                    className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-slate-100/80 cursor-pointer transition-all hover:scale-[1.02]"
+                    className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-slate-100/80 cursor-pointer transition-all hover:scale-[1.01]"
                   >
                     <div className="flex items-center gap-1.5 mb-1">
                       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="text-[10px] font-bold text-slate-600">{item.range}</span>
+                      <span className="text-[11px] font-semibold text-slate-600">{item.range}</span>
                     </div>
-                    <p className="text-xs font-black text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
+                    <p className="text-xs font-bold text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
                   </div>
                 ))}
               </div>
@@ -828,27 +857,27 @@ export function ExecutiveDirectorCockpit({
         )}
 
         {/* MODULE 2: Academic & Conduct Activity Feed */}
-        <Card className={cn("shadow-sm border-slate-200 rounded-2xl", showFinancials ? "" : "w-full")}>
+        <Card className={cn("shadow-sm border border-slate-200 rounded-2xl bg-white", showFinancials ? "" : "w-full")}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-slate-900">Academic & Conduct Feed</CardTitle>
-            <CardDescription className="text-xs text-slate-500">Live operational events & student milestones</CardDescription>
+            <CardTitle className="text-sm font-semibold text-slate-900">Academic & Conduct Feed</CardTitle>
+            <CardDescription className="text-xs text-slate-500 font-medium">Live operational events & student milestones</CardDescription>
           </CardHeader>
           <CardContent className="pt-2 space-y-2.5">
             {dynamicAcademicConductFeed && dynamicAcademicConductFeed.length > 0 ? (
               dynamicAcademicConductFeed.map((feed, idx) => (
                 <div key={feed.id || idx} className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100 text-xs">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-slate-900">{feed.title}</span>
-                    <span className="text-[10px] text-slate-400">{feed.time}</span>
+                    <span className="font-semibold text-slate-900">{feed.title}</span>
+                    <span className="text-[10px] text-slate-400 font-medium">{feed.time}</span>
                   </div>
-                  <p className="text-[11px] text-slate-600 mb-2">{feed.desc}</p>
+                  <p className="text-[11px] text-slate-600 mb-2 font-medium">{feed.desc}</p>
                   <Badge variant="outline" className={cn("text-[10px] font-semibold", feed.color)}>
                     {feed.tag}
                   </Badge>
                 </div>
               ))
             ) : (
-              <div className="p-6 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
+              <div className="p-6 text-center text-xs text-slate-500 font-medium bg-slate-50 rounded-xl">
                 No active academic or conduct milestone logs in school records.
               </div>
             )}
@@ -863,10 +892,10 @@ export function ExecutiveDirectorCockpit({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Enrollment Dynamics Chart */}
-        <Card className="shadow-sm border-slate-200 rounded-2xl">
+        <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-slate-900">Enrollment Dynamics</CardTitle>
-            <CardDescription className="text-xs text-slate-500">Monthly student growth vs intake target</CardDescription>
+            <CardTitle className="text-sm font-semibold text-slate-900">Enrollment Dynamics</CardTitle>
+            <CardDescription className="text-xs text-slate-500 font-medium">Monthly student growth vs intake target</CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
             <div className="h-48 w-full">
@@ -881,19 +910,19 @@ export function ExecutiveDirectorCockpit({
               </ResponsiveContainer>
             </div>
             <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100">
-              <span className="text-slate-500">Retention Rate</span>
-              <span className="font-black text-emerald-600">98.2%</span>
+              <span className="text-slate-500 font-medium">Retention Rate</span>
+              <span className="font-bold text-emerald-600">98.2%</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Director Quick Command Bar */}
-        <Card className="lg:col-span-2 shadow-sm border-slate-200 rounded-2xl">
+        <Card className="lg:col-span-2 shadow-sm border border-slate-200 rounded-2xl bg-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-slate-900">
+            <CardTitle className="text-sm font-semibold text-slate-900">
               {showFinancials ? 'Director Command Bar' : 'Administrator Command Bar'}
             </CardTitle>
-            <CardDescription className="text-xs text-slate-500">
+            <CardDescription className="text-xs text-slate-500 font-medium">
               {showFinancials ? 'Instant executive actions & portal communications' : 'Instant operational actions & portal communications'}
             </CardDescription>
           </CardHeader>
@@ -909,7 +938,7 @@ export function ExecutiveDirectorCockpit({
               <Button 
                 type="submit" 
                 disabled={isSendingAnnouncement}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs px-4"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs px-4"
               >
                 {isSendingAnnouncement ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Megaphone className="h-4 w-4 mr-1.5" />}
                 Broadcast
@@ -922,7 +951,7 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={() => toast({ title: "Financial Summary Exported", description: "Ledger report downloaded as PDF." })}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
                   >
                     <Download className="h-4 w-4 text-emerald-600 mr-2" /> Export Ledger Summary
                   </Button>
@@ -930,7 +959,7 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={handleIssueArrearsNotice}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
                   >
                     <Send className="h-4 w-4 text-red-600 mr-2" /> Issue Fee Reminders
                   </Button>
@@ -938,7 +967,7 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
                   >
                     <Users className="h-4 w-4 text-indigo-600 mr-2" /> Emergency Staff Call
                   </Button>
@@ -948,7 +977,7 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={() => onNavigateTab?.('students')}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
                   >
                     <Users className="h-4 w-4 text-indigo-600 mr-2" /> Student Registry
                   </Button>
@@ -956,7 +985,7 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={() => onNavigateTab?.('attendance')}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
                   >
                     <Clock className="h-4 w-4 text-amber-600 mr-2" /> Attendance Analytics
                   </Button>
@@ -964,7 +993,7 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-bold text-xs rounded-xl justify-start"
+                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
                   >
                     <Users className="h-4 w-4 text-emerald-600 mr-2" /> Emergency Staff Call
                   </Button>
@@ -980,19 +1009,19 @@ export function ExecutiveDirectorCockpit({
       {/* ─────────────────────────────────────────────────────────────
           MODULE 5: GENKIT AI AUDITOR ASSISTANT DESK
           ───────────────────────────────────────────────────────────── */}
-      <Card className="shadow-lg border-indigo-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl overflow-hidden">
-        <CardHeader className="pb-3 border-b border-indigo-900/50">
+      <Card className="shadow-sm border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white rounded-2xl overflow-hidden">
+        <CardHeader className="pb-3 border-b border-slate-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
                 <BrainCircuit className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-base font-bold text-white">AI Auditor & Executive Assistant</CardTitle>
-                <CardDescription className="text-xs text-indigo-200">Real-time Genkit AI analytical queries</CardDescription>
+                <CardTitle className="text-sm font-semibold text-white">AI Auditor & Executive Assistant</CardTitle>
+                <CardDescription className="text-xs text-slate-400 font-medium">Real-time Genkit AI analytical queries</CardDescription>
               </div>
             </div>
-            <Badge variant="outline" className="bg-indigo-900/80 text-indigo-300 border-indigo-700 text-xs px-2.5 py-1">
+            <Badge variant="outline" className="bg-indigo-950/80 text-indigo-300 border-indigo-700 text-xs px-2.5 py-1 font-medium">
               <Sparkles className="h-3 w-3 text-amber-400 mr-1" /> {aiCredits} Credits Remaining
             </Badge>
           </div>
@@ -1001,7 +1030,7 @@ export function ExecutiveDirectorCockpit({
         <CardContent className="p-4 space-y-4">
           
           {/* Chat History Window */}
-          <div className="h-48 overflow-y-auto space-y-3 pr-2 rounded-xl bg-slate-950/60 p-3 border border-indigo-900/30">
+          <div className="h-48 overflow-y-auto space-y-3 pr-2 rounded-xl bg-slate-950/80 p-3 border border-slate-800">
             {aiChatHistory.map((msg, idx) => (
               <div 
                 key={idx} 
@@ -1009,7 +1038,7 @@ export function ExecutiveDirectorCockpit({
                   "p-3 rounded-xl text-xs max-w-[85%] leading-relaxed",
                   msg.role === 'user' 
                     ? "ml-auto bg-indigo-600 text-white font-medium" 
-                    : "mr-auto bg-slate-800/80 text-slate-200 border border-slate-700"
+                    : "mr-auto bg-slate-800/90 text-slate-200 border border-slate-700"
                 )}
               >
                 {msg.text}
@@ -1036,7 +1065,7 @@ export function ExecutiveDirectorCockpit({
               <button
                 key={idx}
                 onClick={() => handleAiAuditQuery(suggest)}
-                className="whitespace-nowrap px-3 py-1 rounded-full bg-indigo-900/40 hover:bg-indigo-900/70 border border-indigo-700/50 text-indigo-200 transition-colors"
+                className="whitespace-nowrap px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-indigo-200 transition-colors font-medium cursor-pointer"
               >
                 {suggest}
               </button>
@@ -1050,12 +1079,12 @@ export function ExecutiveDirectorCockpit({
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAiAuditQuery()}
-              className="text-xs bg-slate-950/80 border-indigo-800 text-white placeholder:text-slate-500 rounded-xl focus:border-indigo-500"
+              className="text-xs bg-slate-950/90 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:border-indigo-500"
             />
             <Button 
               onClick={() => handleAiAuditQuery()}
               disabled={isAiAuditing}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs px-4"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs px-4"
             >
               Ask AI
             </Button>
