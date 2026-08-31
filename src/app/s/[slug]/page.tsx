@@ -3913,12 +3913,14 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
                 <a
                   href={`mailto:${(school.email || 'info@springfield.edu.gh').trim()}`}
-                  className="flex items-center gap-2.5 text-sky-300 hover:text-white transition-colors truncate group/item"
+                  className="flex items-start gap-2.5 text-sky-300 hover:text-white transition-colors min-w-0 group/item"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-sky-950/50 border border-sky-500/30 flex items-center justify-center shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-sky-950/50 border border-sky-500/30 flex items-center justify-center shrink-0 mt-0.5">
                     <Mail className="h-4 w-4 text-sky-400" />
                   </div>
-                  <span className="truncate text-sky-300 hover:underline">Email: {school.email ? school.email.trim() : 'info@springfield.edu.gh'}</span>
+                  <span className="break-all text-xs md:text-sm leading-snug text-sky-300 hover:underline">
+                    Email: {school.email ? school.email.trim() : 'info@springfield.edu.gh'}
+                  </span>
                 </a>
               </div>
 
@@ -4460,25 +4462,51 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         </div>
       )}
 
-      {/* ─── GLOBAL STICKY FLOATING ACTION BUTTONS (FAB) ───────────── */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-5">
-        {/* Floating Accessibility Quick Trigger (Purple Button) */}
+      {/* ─── GLOBAL STICKY FLOATING ACTION BUTTONS (FAB) STACK ───────────── */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none">
+        {/* 1. Small GAM Edu Logo Icon Floating Button (Top of Stack) */}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="GAM Edu Institutional Platform - Back to Top"
+          title="GAM Edu Platform • Back to Top"
+          className="pointer-events-auto w-12 h-12 rounded-full bg-slate-950/90 hover:bg-slate-900 text-indigo-400 border border-indigo-500/40 shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group shrink-0 relative"
+        >
+          {/* GAM Edu Emblem / Logo Icon */}
+          <div className="w-7 h-7 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 font-black text-[10px] tracking-tight group-hover:bg-indigo-500/30 group-hover:text-white transition-colors font-mono">
+            GAM
+          </div>
+          {/* Active Platform Green Online Indicator */}
+          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-slate-950" />
+
+          {/* Hover Tooltip Label */}
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-slate-950/90 text-slate-200 text-[11px] font-bold py-1 px-3 rounded-xl shadow-xl whitespace-nowrap pointer-events-none absolute right-14 top-1/2 -translate-y-1/2 border border-white/10 backdrop-blur-md">
+            GAM Edu Platform
+          </span>
+        </button>
+
+        {/* 2. Purple Accessibility Quick Trigger (Middle of Stack) */}
         <button
           onClick={() => setA11yOpen(true)}
           aria-label="Accessibility Settings"
           title="Accessibility (WCAG 2.1) Display Settings"
-          className="w-12 h-12 rounded-full bg-purple-700 hover:bg-purple-600 text-white shadow-xl flex items-center justify-center border border-white/20 hover:scale-105 active:scale-95 transition-all cursor-pointer group shrink-0"
+          className="pointer-events-auto w-12 h-12 rounded-full bg-purple-700 hover:bg-purple-600 text-white shadow-xl flex items-center justify-center border border-white/20 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group shrink-0 relative"
         >
           <Eye className="h-5 w-5 text-white group-hover:scale-110 transition-transform" />
+
+          {/* Hover Tooltip Label */}
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-slate-950/90 text-slate-200 text-[11px] font-bold py-1 px-3 rounded-xl shadow-xl whitespace-nowrap pointer-events-none absolute right-14 top-1/2 -translate-y-1/2 border border-white/10 backdrop-blur-md">
+            Accessibility (WCAG 2.1)
+          </span>
         </button>
 
-        {/* Floating Quick Contact Container */}
-        <div className="flex flex-col items-end gap-3">
+        {/* 3. Green WhatsApp Chat Bubble & Quick Contact FAB Container (Bottom of Stack) */}
+        <div className="pointer-events-auto flex flex-col items-end gap-3 shrink-0">
           {/* Expanded Quick Contact Menu */}
           {fabOpen && (
             <div className="bg-slate-950/95 backdrop-blur-xl border border-white/15 p-3 rounded-3xl shadow-2xl space-y-2.5 animate-in slide-in-from-bottom-5 fade-in duration-200 min-w-[210px]">
-              <div className="px-3 py-1.5 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Quick Connect
+              <div className="px-3 py-1.5 border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center justify-between">
+                <span>Quick Connect</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
 
               {/* Schedule Campus Tour */}
@@ -4496,63 +4524,70 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 <span>Schedule Campus Tour</span>
               </button>
 
-              {/* WhatsApp */}
+              {/* WhatsApp Direct Chat */}
               <a
                 href={getCleanWhatsAppLink(school.whatsappNumber || '+233000000000')}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-emerald-950/60 border border-emerald-800/40 text-emerald-300 text-xs font-bold hover:bg-emerald-900/60 transition-all group"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-emerald-600 border border-emerald-500 text-white text-xs font-bold hover:bg-emerald-500 transition-all group"
               >
-                <div className="w-7 h-7 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
-                  <MessageCircle className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                  <MessageCircle className="h-4 w-4 text-white group-hover:scale-110 transition-transform" />
                 </div>
-                <span>WhatsApp Us</span>
+                <span>WhatsApp Us Direct</span>
               </a>
 
               {/* Call */}
-            <a
-              href={getCleanPhoneLink(school.phone || '0541981910')}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10 transition-all group"
-            >
-              <div className="w-7 h-7 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                <Phone className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-              </div>
-              <span>Call: {school.phone || '0541981910'}</span>
-            </a>
+              <a
+                href={getCleanPhoneLink(school.phone || '0541981910')}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10 transition-all group"
+              >
+                <div className="w-7 h-7 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                  <Phone className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <span>Call: {school.phone || '0541981910'}</span>
+              </a>
 
-            {/* Apply Now */}
-            <button
-              onClick={() => {
-                setFabOpen(false);
-                scrollTo('apply');
-              }}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-indigo-600 border border-indigo-500 text-white text-xs font-bold hover:bg-indigo-500 transition-all group cursor-pointer"
-            >
-              <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-                <GraduationCap className="h-4 w-4 text-white group-hover:scale-110 transition-transform" />
-              </div>
-              <span>Start Application</span>
-            </button>
-          </div>
-        )}
-
-        {/* Main Trigger FAB */}
-        <button
-          onClick={() => setFabOpen(!fabOpen)}
-          aria-label="Toggle Quick Contact Menu"
-          className="w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center border border-white/20 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer relative group"
-          style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }}
-        >
-          {fabOpen ? (
-            <X className="h-6 w-6 transition-transform duration-300 rotate-90" />
-          ) : (
-            <>
-              <MessageCircle className="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-slate-950 animate-ping" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-slate-950" />
-            </>
+              {/* Apply Now */}
+              <button
+                onClick={() => {
+                  setFabOpen(false);
+                  scrollTo('apply');
+                }}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-indigo-600 border border-indigo-500 text-white text-xs font-bold hover:bg-indigo-500 transition-all group cursor-pointer"
+              >
+                <div className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                  <GraduationCap className="h-4 w-4 text-white group-hover:scale-110 transition-transform" />
+                </div>
+                <span>Start Application</span>
+              </button>
+            </div>
           )}
-        </button>
+
+          {/* Green WhatsApp / Quick Action Floating Chat Bubble Button */}
+          <button
+            onClick={() => setFabOpen(!fabOpen)}
+            aria-label="Toggle Quick WhatsApp & Contact Menu"
+            title="Quick Contact & WhatsApp Chat"
+            className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl flex items-center justify-center border border-white/20 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer relative group shrink-0"
+          >
+            {fabOpen ? (
+              <X className="h-6 w-6 transition-transform duration-300 rotate-90 text-white" />
+            ) : (
+              <>
+                <MessageCircle className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-300 border-2 border-slate-950 animate-ping" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-300 border-2 border-slate-950" />
+              </>
+            )}
+
+            {/* Hover Tooltip Label */}
+            {!fabOpen && (
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-slate-950/90 text-slate-200 text-[11px] font-bold py-1 px-3 rounded-xl shadow-xl whitespace-nowrap pointer-events-none absolute right-16 top-1/2 -translate-y-1/2 border border-white/10 backdrop-blur-md">
+                WhatsApp Chat & Quick Connect
+              </span>
+            )}
+          </button>
         </div>
       </div>
       {/* ─── ACCESSIBILITY (WCAG 2.1) CONTROL TOOLBAR MODAL ── */}
