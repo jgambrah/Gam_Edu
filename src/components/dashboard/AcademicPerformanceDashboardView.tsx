@@ -554,12 +554,12 @@ export function AcademicPerformanceDashboardView({
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                    <th className="pb-3 px-3 min-w-[150px]">Student Name</th>
-                    <th className="pb-3 px-3 min-w-[120px]">Class Stream</th>
-                    <th className="pb-3 px-3 min-w-[100px]">Overall Avg</th>
-                    <th className="pb-3 px-3 min-w-[200px]">Failing Subject(s)</th>
-                    <th className="pb-3 px-3 min-w-[110px]">Risk Level</th>
-                    <th className="pb-3 px-3 text-right min-w-[280px]">Intervention Actions</th>
+                    <th className="pb-3 px-3.5 w-1/4 min-w-[180px]">Student Name</th>
+                    <th className="pb-3 px-3.5 min-w-[130px]">Class Stream</th>
+                    <th className="pb-3 px-3.5 min-w-[100px]">Overall Avg</th>
+                    <th className="pb-3 px-3.5 w-1/3 min-w-[220px]">Failing Subject(s)</th>
+                    <th className="pb-3 px-3.5 min-w-[110px]">Risk Level</th>
+                    <th className="pb-3 px-3.5 text-right min-w-[300px]">Intervention Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
