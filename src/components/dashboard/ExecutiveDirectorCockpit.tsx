@@ -307,49 +307,41 @@ export function ExecutiveDirectorCockpit({
     );
   };
 
-  // Macro Executive Academic & Operational Feed
+  // Macro Executive Academic & Governance Feed (Outliers, Department SLAs, Safeguarding)
   const macroAcademicConductFeed = useMemo(() => {
-    const items: any[] = [
+    return [
       {
-        id: 'macro-1',
-        title: 'Science Department Macro API',
-        desc: 'Grade 6 Science achieving 94.2% average (+3.2% vs target benchmark).',
-        tag: 'Top Performing Subject',
+        id: 'outlier-1',
+        type: 'academic_outlier',
+        title: 'Critical Academic Outliers',
+        desc: '3 student accounts in Grade 4 Mathematics performing -15% below target benchmark (Kwame Mensah, Sarah Osei, Emmanuel K.). Intervention plan assigned.',
+        tag: '3 Students Pending Intervention',
+        color: 'bg-rose-50 text-rose-700 border-rose-200',
+        actionLabel: 'View Intervention Plan',
+        time: 'Active Outlier'
+      },
+      {
+        id: 'sla-1',
+        type: 'department_sla',
+        title: 'Department Gradebook SLA Compliance',
+        desc: 'Primary Science & JHS English at 100% submission SLA (14/14 registers). JHS Mathematics at 85% SLA (2 pending).',
+        tag: 'SLA: 92.8% Submitted',
+        color: 'bg-amber-50 text-amber-700 border-amber-200',
+        actionLabel: 'Audit SLA Compliance',
+        time: 'Term 2 SLA'
+      },
+      {
+        id: 'safeguarding-1',
+        type: 'safeguarding',
+        title: 'Critical Safeguarding & Incident Audit',
+        desc: '0 critical safety breaches reported this week. 1 minor medical room visit logged & resolved (Kofi A. - Grade 2).',
+        tag: 'Safeguarding: 100% Clear',
         color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        time: 'Term Overview'
-      },
-      {
-        id: 'macro-2',
-        title: 'Academic Risk Alert: Grade 4 Mathematics',
-        desc: '3 student accounts performing below 60% API threshold. Remedial plan active.',
-        tag: 'Academic Risk (3 Students)',
-        color: 'bg-red-50 text-red-700 border-red-200',
-        time: 'Action Item'
-      },
-      {
-        id: 'macro-3',
-        title: 'School-Wide Conduct Summary',
-        desc: '42 Commendation Merits awarded this month across primary & JHS classes.',
-        tag: 'Positive Conduct',
-        color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        time: 'Live Record'
+        actionLabel: 'View Safety Audit',
+        time: 'Safety Audit'
       }
     ];
-
-    if (recentAssessments && recentAssessments.length > 0) {
-      const avgScore = Math.round(recentAssessments.reduce((acc: number, curr: any) => acc + (Number(curr.score || curr.marks || 80)), 0) / recentAssessments.length);
-      items.unshift({
-        id: 'macro-live',
-        title: 'Recent Assessment Batch Rollup',
-        desc: `${recentAssessments.length} assessment entries processed. School-wide batch avg: ${avgScore}%.`,
-        tag: 'Batch Performance',
-        color: 'bg-sky-50 text-sky-700 border-sky-200',
-        time: 'Recent Entry'
-      });
-    }
-
-    return items.slice(0, 4);
-  }, [recentAssessments]);
+  }, []);
 
   // Command Bar State
   const [commandSuccess, setCommandSuccess] = useState<string | null>(null);
@@ -1152,43 +1144,45 @@ export function ExecutiveDirectorCockpit({
           </Card>
         )}
 
-        {/* MODULE 2: Macro Academic & Conduct Feed */}
+        {/* MODULE 2: Macro Academic & Governance Desk */}
         <Card className={cn("shadow-sm border border-slate-200 rounded-2xl bg-white", showFinancials ? "" : "w-full")}>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-semibold text-slate-900">Macro Academic & Conduct Feed</CardTitle>
-                <CardDescription className="text-xs text-slate-500 font-medium">Executive-level department benchmarks & academic risk alerts</CardDescription>
+                <CardTitle className="text-sm font-semibold text-slate-900">Macro Academic & Governance Desk</CardTitle>
+                <CardDescription className="text-xs text-slate-500 font-medium">Critical academic outliers, department gradebook SLAs & safeguarding audits</CardDescription>
               </div>
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => onNavigateTab?.('academics')} 
-                className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-7 px-2"
+                className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 h-7 px-2 cursor-pointer"
               >
                 Drill Down <ChevronRight className="h-3 w-3 ml-0.5" />
               </Button>
             </div>
           </CardHeader>
           <CardContent className="pt-2 space-y-2.5">
-            {macroAcademicConductFeed && macroAcademicConductFeed.length > 0 ? (
-              macroAcademicConductFeed.map((feed, idx) => (
-                <div key={feed.id || idx} className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100 text-xs">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-slate-900">{feed.title}</span>
-                    <span className="text-[10px] text-slate-400 font-medium">{feed.time}</span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 mb-2 font-medium">{feed.desc}</p>
+            {macroAcademicConductFeed.map((feed, idx) => (
+              <div key={feed.id || idx} className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100 text-xs space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-900 text-xs">{feed.title}</span>
+                  <span className="text-[10px] text-slate-400 font-medium">{feed.time}</span>
+                </div>
+                <p className="text-[11px] text-slate-600 font-medium leading-relaxed">{feed.desc}</p>
+                <div className="flex items-center justify-between pt-1">
                   <Badge variant="outline" className={cn("text-[10px] font-semibold", feed.color)}>
                     {feed.tag}
                   </Badge>
+                  <button 
+                    onClick={() => onNavigateTab?.('academics')}
+                    className="text-[10px] font-semibold text-indigo-600 hover:underline cursor-pointer"
+                  >
+                    {feed.actionLabel} →
+                  </button>
                 </div>
-              ))
-            ) : (
-              <div className="p-6 text-center text-xs text-slate-500 font-medium bg-slate-50 rounded-xl">
-                No active academic or conduct milestone logs in school records.
               </div>
-            )}
+            ))}
           </CardContent>
         </Card>
 
