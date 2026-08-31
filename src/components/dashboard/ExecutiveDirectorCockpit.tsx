@@ -267,6 +267,11 @@ export function ExecutiveDirectorCockpit({
     };
   }, [todayTeacherAttendance, totalHighArrearsSum, debtAgingStats]);
 
+  // Dynamic Student-to-Faculty Ratio Calculation
+  const activeFacultyCount = staff?.length || 22;
+  const enrolledStudentCount = students?.length || 253;
+  const dynamicStudentTeacherRatio = `${(enrolledStudentCount / Math.max(1, activeFacultyCount)).toFixed(1)}:1`;
+
   // Fee Receivables Aging Data (Gross Debt Breakdown & Advance Payment Reconciliation)
   const currentBucket = debtAgingStats.current || 28450;
   const age30Bucket = debtAgingStats.age30 || 8985;
@@ -274,8 +279,8 @@ export function ExecutiveDirectorCockpit({
   const age90Bucket = debtAgingStats.age90 || 79856;
 
   const grossTotalDebt = currentBucket + age30Bucket + age60Bucket + age90Bucket; // 131,973
-  const advancePaymentsCredit = debtAgingStats.advancePayments || 28450; // Parent Advance Tuition & Overpayment Credits
-  const netOutstandingDebt = debtAgingStats.netTotal || (grossTotalDebt - advancePaymentsCredit); // 103,523 Net Arrears
+  const advancePaymentsCredit = debtAgingStats.advancePayments || 16800; // Parent Advance Tuition & Overpayment Credits (GH₵ 16,800)
+  const netOutstandingDebt = debtAgingStats.netTotal || (grossTotalDebt - advancePaymentsCredit); // 115,173 Net Arrears
 
   const agingData = [
     { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossTotalDebt) * 100), color: '#3b82f6', label: 'Current' },
@@ -629,7 +634,7 @@ export function ExecutiveDirectorCockpit({
           </div>
         </div>
 
-        {/* Enterprise Alert Ribbon (High-Density Row-based Action List) */}
+        {/* Enterprise Alert Ribbon (High-Density Urgent Action List) */}
         <div className="divide-y divide-slate-100">
           
           {/* Alert 1: Staff Attendance (Critical Severity) */}
@@ -668,24 +673,24 @@ export function ExecutiveDirectorCockpit({
             </button>
           </div>
 
-          {/* Alert 3: Pantry & Stores (Neutral/Info Severity) */}
-          <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 bg-slate-100 text-slate-600">
-                Pantry & Stores
-              </span>
-              <p className="text-xs text-slate-700 font-medium truncate">
-                Inventory healthy • Next restock cycle in 5 days
-              </p>
-            </div>
-            <button 
-              onClick={() => setActiveActionModal('pantry_action')}
-              className="shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition cursor-pointer"
-            >
-              View Audit
-            </button>
-          </div>
+        </div>
 
+        {/* Operational Health Ticker Sub-bar (Non-urgent Operational Statuses) */}
+        <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs bg-slate-50/80 -mx-4 -mb-4 sm:-mx-5 sm:-mb-5 p-3 sm:px-5 rounded-b-2xl">
+          <div className="flex items-center gap-2 min-w-0">
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-semibold shrink-0">
+              Operational Health
+            </Badge>
+            <span className="text-slate-600 font-medium truncate">
+              Pantry & Stores: Inventory healthy • Next restock cycle in 5 days
+            </span>
+          </div>
+          <button 
+            onClick={() => setActiveActionModal('pantry_action')}
+            className="text-[11px] font-semibold text-slate-600 hover:text-slate-900 underline shrink-0 cursor-pointer"
+          >
+            View Audit
+          </button>
         </div>
       </div>
 
@@ -1176,7 +1181,7 @@ export function ExecutiveDirectorCockpit({
             </div>
             <div className="mt-2 space-y-1.5">
               <div className="flex items-baseline justify-between gap-1">
-                <h3 className="text-2xl font-bold text-slate-900">{studentTeacherRatio || '20.3:1'}</h3>
+                <h3 className="text-2xl font-bold text-slate-900">{dynamicStudentTeacherRatio}</h3>
                 <Sparkline points={[24, 24, 24, 24, 24]} color="#0284c7" />
               </div>
               <div className="flex items-center justify-between text-[11px]">
@@ -1190,11 +1195,11 @@ export function ExecutiveDirectorCockpit({
               <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Active Faculty:</span>
-                  <span className="font-semibold text-slate-800">{staff.length || 24} Staff Members</span>
+                  <span className="font-semibold text-slate-800">{activeFacultyCount} Staff Members</span>
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Enrolled Roster:</span>
-                  <span className="font-semibold text-slate-800">{students.length || 487} Students</span>
+                  <span className="font-semibold text-slate-800">{enrolledStudentCount} Students</span>
                 </div>
               </div>
             </div>
