@@ -1476,7 +1476,7 @@ function AdminDashboard({
       </div>
 
       {/* ROW 2: Dedicated Full-Width Tab Bar */}
-      <div className="w-full flex items-center justify-between gap-2 flex-nowrap overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 shrink-0">
+      <div className="w-full flex items-center justify-between gap-1.5 flex-nowrap overflow-x-auto no-scrollbar bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 mt-3 shrink-0">
         <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap shrink-0 overflow-x-auto no-scrollbar min-w-0 w-full justify-between">
           <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap shrink-0">
             {([

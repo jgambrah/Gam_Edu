@@ -520,12 +520,12 @@ export function AcademicPerformanceDashboardView({
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                    <th className="pb-3 px-3 min-w-[140px]">Student Name</th>
+                    <th className="pb-3 px-3 min-w-[150px]">Student Name</th>
                     <th className="pb-3 px-3 min-w-[120px]">Class Stream</th>
                     <th className="pb-3 px-3 min-w-[100px]">Overall Avg</th>
                     <th className="pb-3 px-3 min-w-[200px]">Failing Subject(s)</th>
                     <th className="pb-3 px-3 min-w-[110px]">Risk Level</th>
-                    <th className="pb-3 px-3 text-right min-w-[220px]">Intervention Actions</th>
+                    <th className="pb-3 px-3 text-right min-w-[280px]">Intervention Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
@@ -556,22 +556,24 @@ export function AcademicPerformanceDashboardView({
                           {s.status}
                         </Badge>
                       </td>
-                      <td className="py-3 px-3 text-right space-x-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleDraftParentAlert(s)}
-                          className="h-7 text-[10px] font-bold border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-xl"
-                        >
-                          <Send className="h-3 w-3 mr-1" /> Draft Parent SMS
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleRecommendRemediation(s)}
-                          className="h-7 text-[10px] font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-xl"
-                        >
-                          <Sparkles className="h-3 w-3 mr-1 text-amber-400" /> Remediation Plan
-                        </Button>
+                      <td className="py-3 px-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleDraftParentAlert(s)}
+                            className="h-7 text-[10px] font-bold border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-xl shrink-0"
+                          >
+                            <Send className="h-3 w-3 mr-1" /> Draft Parent SMS
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleRecommendRemediation(s)}
+                            className="h-7 text-[10px] font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-xl shrink-0"
+                          >
+                            <Sparkles className="h-3 w-3 mr-1 text-amber-400" /> Remediation Plan
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}

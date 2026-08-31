@@ -109,7 +109,7 @@ export function AiChat() {
   return (
     <>
       <Button
-        className="fixed bottom-36 right-6 h-14 w-14 rounded-full shadow-2xl bg-purple-600 hover:bg-purple-700 z-[150] transition-all duration-300 hover:scale-105"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl bg-purple-600 hover:bg-purple-700 z-[150] transition-all duration-300 hover:scale-105"
         onClick={() => setIsOpen(true)}
       >
         <div className="relative">
