@@ -775,14 +775,21 @@ export function ExecutiveDirectorCockpit({
                       <TrendingUp className="h-3 w-3 mr-0.5" /> +4.2% Δ vs last term
                     </span>
                   </div>
-                  <p className="text-[10px] font-medium text-slate-500 line-clamp-1 border-t border-slate-100 pt-1">
-                    GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k collected of GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k
-                  </p>
+                  <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
+                    <div className="flex items-center justify-between font-medium text-slate-600">
+                      <span>Billed Target:</span>
+                      <span className="font-semibold text-slate-800">GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k</span>
+                    </div>
+                    <div className="flex items-center justify-between font-medium text-slate-600">
+                      <span>Collected Revenue:</span>
+                      <span className="font-semibold text-emerald-700">GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k</span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Metric 2: Daily Cash Collections (Today) */}
+            {/* Metric 2: Daily Cash Collections (Today - Neutral Zero-State Indicator) */}
             <Card 
               onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
               className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-emerald-600 overflow-hidden relative group bg-white"
@@ -799,21 +806,38 @@ export function ExecutiveDirectorCockpit({
                 </div>
                 <div className="mt-2 space-y-1.5">
                   <div className="flex items-baseline justify-between gap-1">
-                    <h3 className="text-xl font-bold text-slate-900 truncate">
+                    <h3 className={cn(
+                      "text-xl font-bold truncate",
+                      todayCashCollected.total > 0 ? "text-slate-900" : "text-slate-700"
+                    )}>
                       GH₵ {todayCashCollected.total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </h3>
-                    <Sparkline points={[1200, 2400, 1800, 3100, 4250]} color="#059669" />
+                    <Sparkline points={todayCashCollected.total > 0 ? [1200, 2400, 1800, 3100, 4250] : [0, 0, 0, 0, 0]} color={todayCashCollected.total > 0 ? "#059669" : "#94a3b8"} />
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-semibold text-emerald-600 flex items-center">
-                      <TrendingUp className="h-3 w-3 mr-0.5" /> +12.5% Δ vs yesterday
-                    </span>
+                    {todayCashCollected.total > 0 ? (
+                      <span className="font-semibold text-emerald-600 flex items-center">
+                        <TrendingUp className="h-3 w-3 mr-0.5" /> +12.5% Δ vs yesterday
+                      </span>
+                    ) : (
+                      <span className="font-medium text-slate-500 flex items-center">
+                        Reconciliation pending
+                      </span>
+                    )}
                   </div>
-                  <p className="text-[10px] font-medium text-slate-500 line-clamp-1 border-t border-slate-100 pt-1">
-                    {todayCashCollected.count > 0 
-                      ? `${todayCashCollected.count} payment entry${todayCashCollected.count === 1 ? '' : 's'} today`
-                      : "0 cash payments today"}
-                  </p>
+                  <div className="border-t border-slate-100 pt-1.5 text-[10px] font-medium text-slate-500 leading-snug">
+                    {todayCashCollected.count > 0 ? (
+                      <div className="flex items-center justify-between">
+                        <span>Logged Receipts:</span>
+                        <span className="font-semibold text-slate-800">{todayCashCollected.count} transaction{todayCashCollected.count === 1 ? '' : 's'}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-slate-500">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                        <span>0 transactions logged • Awaiting daily reconciliation</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -845,9 +869,16 @@ export function ExecutiveDirectorCockpit({
                   Gap: -11%
                 </Badge>
               </div>
-              <p className="text-[10px] font-medium text-slate-500 line-clamp-1 border-t border-slate-100 pt-1">
-                Target: 92% | Top: Grade 6 Science (94%)
-              </p>
+              <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
+                <div className="flex items-center justify-between font-medium text-slate-600">
+                  <span>Target Benchmark:</span>
+                  <span className="font-semibold text-slate-800">92.0% API</span>
+                </div>
+                <div className="flex items-center justify-between font-medium text-slate-600">
+                  <span>Lead Subject:</span>
+                  <span className="font-semibold text-indigo-700">Grade 6 Science (94.2%)</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -877,9 +908,16 @@ export function ExecutiveDirectorCockpit({
                   Pending Verification
                 </Badge>
               </div>
-              <p className="text-[10px] font-medium text-slate-500 line-clamp-1 border-t border-slate-100 pt-1">
-                0/14 class sheets submitted today
-              </p>
+              <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
+                <div className="flex items-center justify-between font-medium text-slate-600">
+                  <span>Class Registers:</span>
+                  <span className="font-semibold text-slate-800">14 Active Classes</span>
+                </div>
+                <div className="flex items-center justify-between font-medium text-slate-600">
+                  <span>Unchecked Faculty:</span>
+                  <span className="font-semibold text-amber-700">{telemetry.pendingStaffCheckins} Members Pending</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -909,9 +947,16 @@ export function ExecutiveDirectorCockpit({
                   0 Alerts
                 </Badge>
               </div>
-              <p className="text-[10px] font-medium text-slate-500 line-clamp-1 border-t border-slate-100 pt-1">
-                {staff.length || 24} staff | {students.length || 487} students
-              </p>
+              <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
+                <div className="flex items-center justify-between font-medium text-slate-600">
+                  <span>Active Faculty:</span>
+                  <span className="font-semibold text-slate-800">{staff.length || 24} Staff Members</span>
+                </div>
+                <div className="flex items-center justify-between font-medium text-slate-600">
+                  <span>Enrolled Roster:</span>
+                  <span className="font-semibold text-sky-700">{students.length || 487} Students</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
