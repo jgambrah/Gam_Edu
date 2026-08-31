@@ -280,8 +280,8 @@ export function ExecutiveDirectorCockpit({
   const age90Bucket = debtAgingStats.age90 || 79856;
 
   const grossTotalDebt = currentBucket + age30Bucket + age60Bucket + age90Bucket; // 131,973
-  const advancePaymentsCredit = debtAgingStats.advancePayments || 16800; // Parent Advance Tuition & Overpayment Credits (GH₵ 16,800)
-  const netOutstandingDebt = debtAgingStats.netTotal || (grossTotalDebt - advancePaymentsCredit); // 115,173 Net Arrears
+  const advancePaymentsCredit = debtAgingStats.advancePayments || 28450; // Parent Advance Tuition & Overpayment Credits (GH₵ 28,450)
+  const netOutstandingDebt = debtAgingStats.netTotal || (grossTotalDebt - advancePaymentsCredit); // 103,523 Net Arrears
 
   const agingData = [
     { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossTotalDebt) * 100), color: '#3b82f6', label: 'Current', accountCount: 5 },
