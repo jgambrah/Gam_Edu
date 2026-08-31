@@ -1455,30 +1455,33 @@ export function ExecutiveDirectorCockpit({
               </div>
 
               {/* Interactive Legend Grid with Percentage Distribution & Account Counts */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
                 {agingData.map((item, idx) => (
                   <div 
                     key={idx} 
                     onClick={() => handleAgingClick(item.range)} 
                     className={cn(
-                      "p-2.5 rounded-xl border transition-all cursor-pointer hover:scale-[1.01]",
+                      "p-2.5 rounded-xl border transition-all cursor-pointer hover:scale-[1.01] flex flex-col justify-between",
                       selectedAgingCategory === item.range
                         ? "bg-indigo-50/70 border-indigo-500 shadow-xs ring-2 ring-indigo-500/20"
-                        : "bg-slate-50 border-slate-100 hover:border-slate-300 hover:bg-slate-100/80"
+                        : "bg-slate-50 border-slate-200/70 hover:border-slate-300 hover:bg-slate-100/80"
                     )}
                   >
-                    <div className="flex items-center justify-between gap-1 mb-1">
+                    <div className="flex items-center justify-between gap-1">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                        <span className="text-[11px] font-semibold text-slate-600 truncate">{item.range}</span>
+                        <span className="text-[11px] font-bold text-slate-700 truncate">{item.range}</span>
                       </div>
-                      <Badge variant="outline" className="text-[9px] px-1 py-0 font-semibold bg-white text-slate-700">
+                      <span className="text-[10px] font-extrabold text-slate-700 bg-white border border-slate-200 px-1.5 py-0.5 rounded-md shadow-2xs shrink-0">
                         {item.percentage}%
-                      </Badge>
+                      </span>
                     </div>
-                    <div className="flex items-baseline justify-between pt-0.5">
+                    <div className="border-t border-slate-200/60 my-1.5" />
+                    <div className="flex items-center justify-between gap-1">
                       <p className="text-xs font-bold text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
-                      <span className="text-[10px] font-semibold text-slate-500">{item.accountCount} Accs</span>
+                      <span className="text-[9px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md shrink-0">
+                        {item.accountCount} Accs
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -1619,9 +1622,9 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
+                    className="bg-rose-50 hover:bg-rose-100/90 border-rose-200 text-rose-700 font-semibold text-xs rounded-xl justify-start shadow-2xs transition-colors hover:border-rose-300"
                   >
-                    <Users className="h-4 w-4 text-indigo-600 mr-2" /> Emergency Staff Call
+                    <AlertTriangle className="h-4 w-4 text-rose-600 mr-2 shrink-0" /> Emergency Staff Call
                   </Button>
                 </>
               ) : (
@@ -1645,9 +1648,9 @@ export function ExecutiveDirectorCockpit({
                   <Button 
                     variant="outline"
                     onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
-                    className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
+                    className="bg-rose-50 hover:bg-rose-100/90 border-rose-200 text-rose-700 font-semibold text-xs rounded-xl justify-start shadow-2xs transition-colors hover:border-rose-300"
                   >
-                    <Users className="h-4 w-4 text-emerald-600 mr-2" /> Emergency Staff Call
+                    <AlertTriangle className="h-4 w-4 text-rose-600 mr-2 shrink-0" /> Emergency Staff Call
                   </Button>
                 </>
               )}
