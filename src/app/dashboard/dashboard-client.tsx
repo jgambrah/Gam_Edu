@@ -1416,14 +1416,14 @@ function AdminDashboard({
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
-            <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/10 text-indigo-600 px-3.5 py-1.5 rounded-full uppercase">Administrator Suite</span>
+            <span className="text-[10px] font-semibold tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 py-1 rounded-full uppercase">Administrator Suite</span>
             {/* Explicit Academic Term Temporal Context Badge */}
-            <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wide bg-slate-100/90 text-slate-700 border border-slate-200/80 px-3 py-1 rounded-full shadow-xs">
+            <span className="flex items-center gap-1.5 text-[10px] font-medium tracking-wide bg-slate-100/90 text-slate-700 border border-slate-200/80 px-3 py-1 rounded-full shadow-xs">
               <Calendar className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
               <span>Term 2 • 2025/2026 Academic Year • Week 8</span>
             </span>
           </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Operations <span className="text-indigo-600">Console</span></h1>
+          <h1 className="text-2.5xl font-bold text-slate-900 tracking-tight">Operations <span className="text-indigo-600">Console</span></h1>
         </div>
         
         {/* Navigation & Controls */}
@@ -1432,7 +1432,7 @@ function AdminDashboard({
           {/* Global Omni-Search (⌘K Command Palette Trigger Button) */}
           <button
             onClick={() => setIsOmniSearchOpen(true)}
-            className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium text-slate-500 transition-all shadow-xs cursor-pointer group"
+            className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium text-slate-500 transition-all shadow-xs cursor-pointer group"
           >
             <Search className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
             <span className="text-slate-600 font-semibold hidden sm:inline">Search students, invoices, staff...</span>
@@ -1442,24 +1442,31 @@ function AdminDashboard({
             </kbd>
           </button>
 
-          {/* Custom Tab Bar */}
-          <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'academics', 'attendance', 'students', 'staff', 'canteen', 'satisfaction', 'system'] as const).map((tab) => {
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={cn(
-                    "px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300 cursor-pointer",
-                    activeTab === tab 
-                      ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02]"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
-                  )}
-                >
-                  {tab}
-                </button>
-              );
-            })}
+          {/* Segmented Control Tab Bar */}
+          <div className="flex items-center gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 shadow-xs">
+            {([
+              { id: 'overview', label: 'Overview' },
+              { id: 'academics', label: 'Academics' },
+              { id: 'attendance', label: 'Attendance' },
+              { id: 'students', label: 'Students' },
+              { id: 'staff', label: 'Staff & Faculty' },
+              { id: 'canteen', label: 'Canteen & Stores' },
+              { id: 'satisfaction', label: 'Satisfaction' },
+              { id: 'system', label: 'System' }
+            ] as const).map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer whitespace-nowrap",
+                  activeTab === tab.id 
+                    ? "bg-white text-slate-900 shadow-xs border border-slate-200/60 font-bold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
           {/* AI Auditor Trigger Button */}
@@ -1560,18 +1567,19 @@ function AdminDashboard({
         </DialogContent>
       </Dialog>
 
-      {/* Colorful Gradient Banner Header */}
-      <div className={cn("relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r transition-all duration-500", banners.gradient)}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-        <div className="space-y-3 relative z-10 max-w-xl">
-          <span className={cn("text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase", banners.badgeColor)}>
-            {banners.badge}
-          </span>
-          <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">{banners.title}</h2>
-          <p className="text-xs text-slate-300 leading-relaxed font-medium">{banners.description}</p>
+      {/* Enterprise Executive Banner Header */}
+      <div className="relative p-6 xl:p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 transition-all duration-300">
+        <div className="space-y-2 relative z-10 max-w-2xl">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-semibold tracking-wider px-2.5 py-0.5 rounded-full uppercase bg-slate-100 text-slate-700 border border-slate-200">
+              {banners.badge}
+            </span>
+          </div>
+          <h2 className="text-xl xl:text-2xl font-bold tracking-tight text-slate-900 mt-1">{banners.title}</h2>
+          <p className="text-xs text-slate-500 font-medium leading-relaxed">{banners.description}</p>
         </div>
-        <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
-          <banners.icon className="h-10 w-10 text-white opacity-80" />
+        <div className="hidden xl:flex p-4 bg-slate-50 border border-slate-200/80 rounded-xl relative z-10 shrink-0 text-slate-700">
+          <banners.icon className="h-7 w-7 text-indigo-600" />
         </div>
       </div>
 

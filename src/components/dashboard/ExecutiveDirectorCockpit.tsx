@@ -814,12 +814,12 @@ export function ExecutiveDirectorCockpit({
             {/* Metric 1: Financial Collection Rate */}
             <Card 
               onClick={() => setActiveHeroModal('financial')}
-              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-emerald-500 overflow-hidden relative group bg-white"
+              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Collection Rate</span>
-                  <div className="p-1.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Collection Rate</span>
+                  <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                     <Banknote className="h-4 w-4" />
                   </div>
                 </div>
@@ -847,18 +847,18 @@ export function ExecutiveDirectorCockpit({
               </CardContent>
             </Card>
 
-            {/* Metric 2: Daily Cash Collections (Today - Neutral Zero-State Indicator) */}
+            {/* Metric 2: Daily Cash Collections */}
             <Card 
               onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
-              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-emerald-600 overflow-hidden relative group bg-white"
+              className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Collected Today</span>
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Collected Today</span>
                     <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
-                  <div className="p-1.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-105 transition-transform">
+                  <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                     <Banknote className="h-4 w-4" />
                   </div>
                 </div>
@@ -905,12 +905,12 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 3: Academic Health Index */}
         <Card 
           onClick={() => setActiveHeroModal('academic')}
-          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-indigo-500 overflow-hidden relative group bg-white"
+          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Academic Health</span>
-              <div className="p-1.5 rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-105 transition-transform">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Academic Health</span>
+              <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                 <Award className="h-4 w-4" />
               </div>
             </div>
@@ -923,7 +923,7 @@ export function ExecutiveDirectorCockpit({
                 <span className="font-semibold text-indigo-600 flex items-center">
                   <TrendingUp className="h-3 w-3 mr-0.5" /> +2.1% Δ vs last month
                 </span>
-                <Badge variant="outline" className="text-[9px] bg-indigo-50 text-indigo-700 border-indigo-200 font-semibold px-1 py-0">
+                <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
                   Gap: -11%
                 </Badge>
               </div>
@@ -944,12 +944,12 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 4: Attendance Pulse */}
         <Card 
           onClick={() => setActiveHeroModal('attendance')}
-          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-amber-500 overflow-hidden relative group bg-white"
+          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Attendance Pulse</span>
-              <div className="p-1.5 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-105 transition-transform">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Attendance Pulse</span>
+              <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                 <Clock className="h-4 w-4" />
               </div>
             </div>
@@ -962,7 +962,7 @@ export function ExecutiveDirectorCockpit({
                 <span className="font-semibold text-amber-700 flex items-center">
                   <TrendingUp className="h-3 w-3 mr-0.5" /> +1.8% Δ Punctuality
                 </span>
-                <Badge variant="outline" className="text-[9px] bg-amber-50 text-amber-700 border-amber-200 font-semibold px-1 py-0">
+                <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
                   Pending Verification
                 </Badge>
               </div>
@@ -983,12 +983,12 @@ export function ExecutiveDirectorCockpit({
         {/* Metric 5: Faculty Ratio & Safety */}
         <Card 
           onClick={() => setActiveHeroModal('faculty')}
-          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 border-l-4 border-l-sky-500 overflow-hidden relative group bg-white"
+          className="hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
         >
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Faculty & Safety</span>
-              <div className="p-1.5 rounded-xl bg-sky-50 text-sky-600 group-hover:scale-105 transition-transform">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Faculty & Safety</span>
+              <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                 <Users className="h-4 w-4" />
               </div>
             </div>
@@ -998,10 +998,10 @@ export function ExecutiveDirectorCockpit({
                 <Sparkline points={[24, 24, 24, 24, 24]} color="#0284c7" />
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-semibold text-sky-700 flex items-center">
+                <span className="font-semibold text-slate-700 flex items-center">
                   100% Compliant Ratio
                 </span>
-                <Badge variant="outline" className="text-[9px] bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold px-1 py-0">
+                <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
                   0 Alerts
                 </Badge>
               </div>
@@ -1012,7 +1012,7 @@ export function ExecutiveDirectorCockpit({
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Enrolled Roster:</span>
-                  <span className="font-semibold text-sky-700">{students.length || 487} Students</span>
+                  <span className="font-semibold text-slate-800">{students.length || 487} Students</span>
                 </div>
               </div>
             </div>
