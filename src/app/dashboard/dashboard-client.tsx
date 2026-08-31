@@ -1412,8 +1412,8 @@ function AdminDashboard({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 relative pb-16">
-      {/* Header bar */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+      {/* Header Bar: Title Context, Search Palette & User Profile */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 pb-2 border-b border-slate-100">
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <span className="text-[10px] font-semibold tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 py-1 rounded-full uppercase">Administrator Suite</span>
@@ -1426,8 +1426,8 @@ function AdminDashboard({
           <h1 className="text-2.5xl font-bold text-slate-900 tracking-tight">Operations <span className="text-indigo-600">Console</span></h1>
         </div>
         
-        {/* Navigation & Controls */}
-        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+        {/* Top Header Right Controls: Omnisearch & User Profile */}
+        <div className="flex items-center gap-3 w-full xl:w-auto">
           
           {/* Global Omni-Search (⌘K Command Palette Trigger Button) */}
           <button
@@ -1444,45 +1444,10 @@ function AdminDashboard({
             </kbd>
           </button>
 
-          {/* Segmented Control Tab Bar */}
-          <div className="flex items-center gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto">
-            {([
-              { id: 'overview', label: 'Overview' },
-              { id: 'academics', label: 'Academics' },
-              { id: 'attendance', label: 'Attendance' },
-              { id: 'students', label: 'Students' },
-              { id: 'staff', label: 'Staff & Faculty' },
-              { id: 'canteen', label: 'Canteen & Stores' },
-              { id: 'satisfaction', label: 'Satisfaction' },
-              { id: 'system', label: 'System' }
-            ] as const).map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={cn(
-                  "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer whitespace-nowrap",
-                  activeTab === tab.id 
-                    ? "bg-white text-slate-900 shadow-xs border border-slate-200/60 font-bold"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
-
-            <button
-              onClick={handleRunAudit}
-              className="px-3 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white flex items-center gap-1.5 transition-all shadow-xs cursor-pointer whitespace-nowrap ml-1 shrink-0"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
-              <span>AI Auditor</span>
-            </button>
-          </div>
-
           {/* Consolidated Top-Right User Account Dropdown Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2.5 p-1 rounded-2xl hover:bg-slate-100 border border-slate-200/80 transition-all cursor-pointer bg-white shadow-xs">
+              <button className="flex items-center gap-2.5 p-1 rounded-2xl hover:bg-slate-100 border border-slate-200/80 transition-all cursor-pointer bg-white shadow-xs shrink-0">
                 <Avatar className="h-8 w-8 border border-indigo-200 shadow-xs shrink-0">
                   <AvatarImage src={profile?.photoURL || user?.photoURL || ''} alt="User Avatar" className="object-cover" />
                   <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs">{getInitials(user?.email)}</AvatarFallback>
@@ -1499,15 +1464,58 @@ function AdminDashboard({
                 {profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}` : user?.email}
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-100" />
-              <DropdownMenuItem onClick={() => router.push('/dashboard/profile')} className="rounded-xl text-xs font-medium cursor-pointer">
-                <User className="h-4 w-4 mr-2 text-indigo-600" /> View Profile & Settings
+              <DropdownMenuItem onClick={() => setActiveTab('overview')} className="text-xs font-medium cursor-pointer rounded-xl">
+                Dashboard Overview
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleSignOut} className="rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 cursor-pointer">
-                <LogOut className="h-4 w-4 mr-2 text-red-600" /> Sign Out Account
+              <DropdownMenuItem onClick={() => setActiveTab('system')} className="text-xs font-medium cursor-pointer rounded-xl">
+                System Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-slate-100" />
+              <DropdownMenuItem onClick={handleSignOut} className="text-xs font-semibold text-rose-600 hover:bg-rose-50 cursor-pointer rounded-xl">
+                <LogOut className="h-3.5 w-3.5 mr-2" /> Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
+        </div>
+      </div>
+
+      {/* Dedicated Sticky Sub-Header Bar (Enterprise SaaS Standard) */}
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 -mx-6 px-6 py-2.5 shadow-xs flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
+        {/* Segmented Control Tab Bar */}
+        <div className="flex items-center gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto no-scrollbar">
+          {([
+            { id: 'overview', label: 'Overview' },
+            { id: 'academics', label: 'Academics' },
+            { id: 'attendance', label: 'Attendance' },
+            { id: 'students', label: 'Students' },
+            { id: 'staff', label: 'Staff & Faculty' },
+            { id: 'canteen', label: 'Canteen & Stores' },
+            { id: 'satisfaction', label: 'Satisfaction' },
+            { id: 'system', label: 'System' }
+          ] as const).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-150 cursor-pointer whitespace-nowrap",
+                activeTab === tab.id 
+                  ? "bg-white text-slate-900 shadow-xs border border-slate-200/60 font-bold"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+
+          {/* AI Auditor Intelligent Assistant Badge Pill */}
+          <button
+            onClick={handleRunAudit}
+            className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white flex items-center gap-1.5 transition-all shadow-xs cursor-pointer whitespace-nowrap ml-1 shrink-0 group"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse group-hover:rotate-12 transition-transform" />
+            <span>AI Auditor</span>
+          </button>
         </div>
       </div>
 
