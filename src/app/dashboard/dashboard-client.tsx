@@ -1615,21 +1615,6 @@ function AdminDashboard({
         )}
 
 
-        {activeTab === 'academics' && (
-          <AcademicPerformanceDashboardView 
-            students={students}
-            classes={classes}
-            recentAssessments={recentAssessments}
-            performanceReviews={performanceReviews}
-            staff={staff}
-            subjects={subjects}
-            rooms={rooms}
-            behavioralRecords={behavioralRecords}
-            financialRecords={financialRecords}
-            schoolData={schoolData}
-          />
-        )}
-
         {activeTab === 'attendance' && (
           <AttendanceAnalyticsView 
             students={students}

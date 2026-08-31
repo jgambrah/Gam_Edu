@@ -554,12 +554,12 @@ export function AcademicPerformanceDashboardView({
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                    <th className="pb-3 px-3.5 w-1/4 min-w-[180px]">Student Name</th>
-                    <th className="pb-3 px-3.5 min-w-[130px]">Class Stream</th>
-                    <th className="pb-3 px-3.5 min-w-[100px]">Overall Avg</th>
-                    <th className="pb-3 px-3.5 w-1/3 min-w-[220px]">Failing Subject(s)</th>
-                    <th className="pb-3 px-3.5 min-w-[110px]">Risk Level</th>
-                    <th className="pb-3 px-3.5 text-right min-w-[300px]">Intervention Actions</th>
+                    <th className="pb-3 px-3 text-left min-w-[140px]">Student Name</th>
+                    <th className="pb-3 px-3 text-left whitespace-nowrap min-w-[100px]">Class Stream</th>
+                    <th className="pb-3 px-3 text-center whitespace-nowrap min-w-[90px]">Overall Avg</th>
+                    <th className="pb-3 px-3 text-left min-w-[160px]">Failing Subject(s)</th>
+                    <th className="pb-3 px-3 text-center whitespace-nowrap min-w-[100px]">Risk Level</th>
+                    <th className="pb-3 px-3 text-right whitespace-nowrap min-w-[240px]">Intervention Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
@@ -574,10 +574,10 @@ export function AcademicPerformanceDashboardView({
                       )}
                     >
                       <td className="py-3 px-3 font-bold text-slate-900">{s.name}</td>
-                      <td className="py-3 px-3 text-slate-600">{s.class}</td>
-                      <td className="py-3 px-3 font-black text-red-600">{s.average}</td>
+                      <td className="py-3 px-3 text-slate-600 whitespace-nowrap">{s.class}</td>
+                      <td className="py-3 px-3 font-black text-red-600 text-center">{s.average}</td>
                       <td className="py-3 px-3 text-slate-600 max-w-xs truncate">{s.subjects}</td>
-                      <td className="py-3 px-3">
+                      <td className="py-3 px-3 text-center">
                         <Badge 
                           variant="outline" 
                           className={cn(
@@ -591,19 +591,19 @@ export function AcademicPerformanceDashboardView({
                         </Badge>
                       </td>
                       <td className="py-3 px-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5 whitespace-nowrap">
                           <Button 
                             size="sm" 
                             variant="outline" 
                             onClick={() => handleDraftParentAlert(s)}
-                            className="h-7 text-[10px] font-bold border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-xl shrink-0"
+                            className="h-7 text-[10px] font-bold border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-xl shrink-0 px-2 py-1"
                           >
                             <Send className="h-3 w-3 mr-1" /> Draft Parent SMS
                           </Button>
                           <Button 
                             size="sm" 
                             onClick={() => handleRecommendRemediation(s)}
-                            className="h-7 text-[10px] font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-xl shrink-0"
+                            className="h-7 text-[10px] font-bold bg-slate-900 text-white hover:bg-slate-800 rounded-xl shrink-0 px-2.5 py-1"
                           >
                             <Sparkles className="h-3 w-3 mr-1 text-amber-400" /> Remediation Plan
                           </Button>
@@ -636,13 +636,13 @@ export function AcademicPerformanceDashboardView({
             <CardDescription className="text-xs text-slate-500">School-wide academic growth tracking across terms</CardDescription>
           </CardHeader>
           <CardContent className="pt-3">
-            <div className="h-64 w-full">
+            <div className="h-72 w-full pb-2">
               {computed.examPerformanceTrends && computed.examPerformanceTrends.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={computed.examPerformanceTrends} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+                  <LineChart data={computed.examPerformanceTrends} margin={{ top: 15, right: 25, left: -10, bottom: 25 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="term" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                    <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="term" dy={10} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                    <YAxis domain={[40, 100]} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                     <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '12px' }} />
                     <Line type="monotone" dataKey="average" stroke="#6366f1" strokeWidth={3} dot={{ r: 5, fill: '#4f46e5' }} />
                   </LineChart>
