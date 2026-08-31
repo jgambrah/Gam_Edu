@@ -369,7 +369,6 @@ function AdminDashboard({
     return results.slice(0, 8);
   }, [omniSearchQuery, students, staff, financialRecords, setActiveTab]);
   const firestore = useFirestore();
-  const { toast } = useToast();
   const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Administrator';
   const arrearsThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
 
