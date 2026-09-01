@@ -3858,26 +3858,21 @@ function DirectorDashboard({
 
       {/* Secondary Sub-Pill Navigation (Rendered when active domain has sub-tabs) */}
       {activeDomain.subTabs.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-50/90 rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 border-r border-slate-200 py-1">
-            {activeDomain.label}
-          </span>
-          <div className="flex flex-wrap items-center gap-1">
-            {activeDomain.subTabs.map((st) => (
-              <button
-                key={st.id}
-                onClick={() => setActiveTab(st.id as any)}
-                className={cn(
-                  "px-4 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
-                  activeTab === st.id
-                    ? "bg-indigo-600 text-white shadow-sm font-black scale-[1.01]"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-                )}
-              >
-                {st.label}
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-wrap items-center gap-1 p-1.5 bg-slate-50/90 rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200 w-fit">
+          {activeDomain.subTabs.map((st) => (
+            <button
+              key={st.id}
+              onClick={() => setActiveTab(st.id as any)}
+              className={cn(
+                "px-4 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                activeTab === st.id
+                  ? "bg-indigo-600 text-white shadow-sm font-black scale-[1.01]"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              )}
+            >
+              {st.label}
+            </button>
+          ))}
         </div>
       )}
 
