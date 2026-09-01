@@ -518,12 +518,14 @@ export function FinancialDashboardView({
             <div>
               <div className="flex items-center gap-2">
                 <Flame className="h-5 w-5 text-rose-500" />
-                <h3 className="text-base font-extrabold text-slate-900">Class Arrears Risk Heatmap</h3>
+                <h3 className="text-base font-extrabold text-slate-900">Top Arrears by Class</h3>
               </div>
-              <p className="text-xs text-slate-500 font-medium mt-1">Class-by-class fee recovery ranking to pinpoint high-risk classes.</p>
+              <p className="text-xs text-slate-500 font-medium mt-1">
+                Class-by-class fee recovery ranking for top delinquent classes (Total Gross Debt across all {classes?.length || 14} classes: <strong className="text-slate-800 font-bold">GH₵ {metrics.grossReceivables.toLocaleString()}</strong>).
+              </p>
             </div>
-            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider text-rose-600 border-rose-100 bg-rose-50">
-              Sorted by Highest Arrears
+            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider text-rose-600 border-rose-100 bg-rose-50 shrink-0">
+              Top Delinquent Classes
             </Badge>
           </div>
 
