@@ -3805,19 +3805,21 @@ function DirectorDashboard({
       </div>
 
       {/* Colorful Gradient Banner Header */}
-      <div className={cn("relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-gradient-to-r border", banners.gradient)}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-        <div className="space-y-3 relative z-10 max-w-xl">
-          <span className={cn("text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase", banners.badgeColor)}>
-            {banners.badge}
-          </span>
-          <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">{banners.title}</h2>
-          <p className="text-xs text-slate-300 leading-relaxed font-medium">{banners.description}</p>
+      {activeTab !== 'academics' && (
+        <div className={cn("relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-gradient-to-r border", banners.gradient)}>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
+          <div className="space-y-3 relative z-10 max-w-xl">
+            <span className={cn("text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase", banners.badgeColor)}>
+              {banners.badge}
+            </span>
+            <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">{banners.title}</h2>
+            <p className="text-xs text-slate-300 leading-relaxed font-medium">{banners.description}</p>
+          </div>
+          <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
+            <banners.icon className="h-10 w-10 text-white opacity-80" />
+          </div>
         </div>
-        <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
-          <banners.icon className="h-10 w-10 text-white opacity-80" />
-        </div>
-      </div>
+      )}
 
       {/* Main Tabs Container */}
       <div className="mt-8">
