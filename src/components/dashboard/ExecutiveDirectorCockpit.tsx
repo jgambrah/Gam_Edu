@@ -188,8 +188,8 @@ export function ExecutiveDirectorCockpit({
   }, [todayTeacherAttendance, staff, unifiedMetrics, age60Bucket, age90Bucket, overdue60PlusSum, overdue60PlusCount]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
-  const activeFacultyCount = staff?.length || 22;
-  const enrolledStudentCount = students?.length || 253;
+  const activeFacultyCount = staff?.length || 0;
+  const enrolledStudentCount = students?.length || 0;
   const dynamicStudentTeacherRatio = `${(enrolledStudentCount / Math.max(1, activeFacultyCount)).toFixed(1)}:1`;
 
   const currentBucket = telemetry.currentBucket;
@@ -1284,11 +1284,11 @@ export function ExecutiveDirectorCockpit({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Active Faculty & Staff</p>
-                      <p className="font-black text-base text-slate-900">{staff.length || 24}</p>
+                      <p className="font-black text-base text-slate-900">{staff?.length || 0}</p>
                     </div>
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Enrolled Students</p>
-                      <p className="font-black text-base text-slate-900">{students.length || 487}</p>
+                      <p className="font-black text-base text-slate-900">{students?.length || 0}</p>
                     </div>
                   </div>
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('staff'); }} className="w-full bg-slate-900 text-white font-bold rounded-xl">
