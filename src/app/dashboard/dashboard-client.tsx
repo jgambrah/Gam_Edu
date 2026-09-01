@@ -3858,7 +3858,7 @@ function DirectorDashboard({
 
       {/* Secondary Sub-Pill Navigation (Rendered when active domain has sub-tabs) */}
       {activeDomain.subTabs.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1 p-1.5 bg-slate-50/90 rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200 w-fit">
+        <div className="-mt-3 mb-1 flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200 w-fit">
           {activeDomain.subTabs.map((st) => (
             <button
               key={st.id}
