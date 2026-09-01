@@ -3761,6 +3761,55 @@ function DirectorDashboard({
     ? `${window.location.origin}/s/${schoolData.slug}`
     : null;
 
+  const domainTabs = useMemo(() => [
+    {
+      id: 'executive_summary',
+      label: 'Executive Summary',
+      subTabs: [
+        { id: 'overview', label: 'Overview' },
+        { id: 'general', label: 'General' },
+      ]
+    },
+    {
+      id: 'academic_affairs',
+      label: 'Academic Affairs',
+      subTabs: [
+        { id: 'academics', label: 'Academics' },
+        { id: 'students', label: 'Students' },
+        { id: 'attendance', label: 'Attendance' },
+      ]
+    },
+    {
+      id: 'operations_people',
+      label: 'Operations & People',
+      subTabs: [
+        { id: 'staff', label: 'Staff' },
+        { id: 'canteen', label: 'Canteen' },
+        { id: 'satisfaction', label: 'Satisfaction' },
+      ]
+    },
+    {
+      id: 'financials',
+      label: 'Financials',
+      subTabs: []
+    }
+  ], []);
+
+  const activeDomain = useMemo(() => {
+    return domainTabs.find(d => d.subTabs.some(st => st.id === activeTab) || d.id === activeTab) || domainTabs[0];
+  }, [domainTabs, activeTab]);
+
+  const handleDomainSelect = (domain: typeof domainTabs[number]) => {
+    if (domain.subTabs.length > 0) {
+      const isAlreadyInDomain = domain.subTabs.some(st => st.id === activeTab);
+      if (!isAlreadyInDomain) {
+        setActiveTab(domain.subTabs[0].id as any);
+      }
+    } else {
+      setActiveTab(domain.id as any);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500 relative pb-16">
       {/* Header bar */}
@@ -3773,29 +3822,32 @@ function DirectorDashboard({
         </div>
         
         {/* Navigation & Controls */}
-        <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
-          {/* Custom Silicon Valley Tab Bar */}
-          <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner">
-            {(['overview', 'academics', 'attendance', 'students', 'staff', 'financials', 'canteen', 'satisfaction', 'general'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
-                  activeTab === tab 
-                    ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02]"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
-                )}
-              >
-                {tab}
-              </button>
-            ))}
+        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+          {/* Primary Domain Segmented Control */}
+          <div className="flex flex-wrap p-1.5 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-inner gap-1">
+            {domainTabs.map((domain) => {
+              const isSelected = activeDomain.id === domain.id;
+              return (
+                <button
+                  key={domain.id}
+                  onClick={() => handleDomainSelect(domain)}
+                  className={cn(
+                    "px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
+                    isSelected 
+                      ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02] border border-indigo-100/50"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
+                  )}
+                >
+                  {domain.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* AI Auditor Trigger Button */}
           <Button 
             onClick={handleRunAudit}
-            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-11 px-6 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden"
+            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-11 px-6 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden shrink-0"
           >
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             <Sparkles className="h-4 w-4 animate-pulse group-hover:rotate-12 transition-transform" />
@@ -3803,6 +3855,31 @@ function DirectorDashboard({
           </Button>
         </div>
       </div>
+
+      {/* Secondary Sub-Pill Navigation (Rendered when active domain has sub-tabs) */}
+      {activeDomain.subTabs.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-50/90 rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3 border-r border-slate-200 py-1">
+            {activeDomain.label}
+          </span>
+          <div className="flex flex-wrap items-center gap-1">
+            {activeDomain.subTabs.map((st) => (
+              <button
+                key={st.id}
+                onClick={() => setActiveTab(st.id as any)}
+                className={cn(
+                  "px-4 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                  activeTab === st.id
+                    ? "bg-indigo-600 text-white shadow-sm font-black scale-[1.01]"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                )}
+              >
+                {st.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Colorful Gradient Banner Header */}
       {activeTab !== 'academics' && (
