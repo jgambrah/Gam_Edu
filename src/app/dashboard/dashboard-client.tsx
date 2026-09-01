@@ -4036,53 +4036,14 @@ function DirectorDashboard({
 
         {activeTab === 'staff' && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner w-fit">
-              <button
-                onClick={() => setStaffSubTab('directory')}
-                className={cn(
-                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
-                  staffSubTab === 'directory' 
-                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
-                    : "text-slate-500 hover:text-slate-900"
-                )}
-              >
-                Staff Directory
-              </button>
-              <button
-                onClick={() => setStaffSubTab('performance')}
-                className={cn(
-                  "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
-                  staffSubTab === 'performance' 
-                    ? "bg-white text-indigo-650 shadow-md font-black scale-[1.02]"
-                    : "text-slate-500 hover:text-slate-900"
-                )}
-              >
-                Staff Performance
-              </button>
-            </div>
-
-            {staffSubTab === 'directory' ? (
-              <StaffDirectoryDashboardView 
-                staff={staff}
-                staffAttendance={staffAttendance}
-                classes={classes}
-                students={students}
-                schoolData={schoolData}
-                performanceReviews={performanceReviews}
-              />
-            ) : (
-              <StaffPerformanceDashboardView 
-                staff={staff}
-                performanceReviews={performanceReviews}
-                staffAttendance={staffAttendance}
-                classes={classes}
-                students={students}
-                recentAssessments={recentAssessments}
-                lessonPlans={lessonPlans}
-                assignments={assignments}
-                submissions={submissions}
-              />
-            )}
+            <StaffDirectoryDashboardView 
+              staff={staff}
+              staffAttendance={staffAttendance}
+              classes={classes}
+              students={students}
+              schoolData={schoolData}
+              performanceReviews={performanceReviews}
+            />
           </div>
         )}
 

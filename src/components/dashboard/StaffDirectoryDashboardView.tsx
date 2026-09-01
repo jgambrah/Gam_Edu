@@ -42,6 +42,7 @@ export function StaffDirectoryDashboardView({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('all');
   const [selectedStaffProfile, setSelectedStaffProfile] = useState<any | null>(null);
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   // Sync Staff Analytics to Firestore dashboard_summaries
   const handleSyncStaffSummary = async () => {
@@ -484,8 +485,11 @@ export function StaffDirectoryDashboardView({
       {/* ─────────────────────────────────────────────────────────────
           ZONE 5: FACULTY DIRECTORY & CLOCK-IN AUDIT LOG
           ───────────────────────────────────────────────────────────── */}
+      {/* ─────────────────────────────────────────────────────────────
+          ZONE 5: FACULTY DIRECTORY & CLOCK-IN AUDIT LOG
+          ───────────────────────────────────────────────────────────── */}
       <Card className="rounded-3xl border border-slate-100 shadow-sm bg-white p-6">
-        <div className="flex justify-between items-center border-b pb-4 mb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-4 gap-3">
           <div>
             <CardTitle className="text-base font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
               <IdCard className="h-5 w-5 text-indigo-600" /> Staff Directory & Attendance Audit
@@ -494,62 +498,122 @@ export function StaffDirectoryDashboardView({
               Active workforce roster and today's clock-in timestamps
             </CardDescription>
           </div>
-          <Badge variant="outline" className="bg-indigo-50 text-indigo-800 border-indigo-200 font-black text-xs px-3 py-1 rounded-full">
-            {stats.totalStaffCount} Total Staff
-          </Badge>
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <div className="flex p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 text-xs font-bold gap-1">
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                className={cn(
+                  "px-3 py-1 rounded-lg transition-all text-xs font-bold cursor-pointer",
+                  viewMode === 'table' 
+                    ? "bg-white text-indigo-600 shadow-xs font-black" 
+                    : "text-slate-500 hover:text-slate-800"
+                )}
+              >
+                Table View
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('cards')}
+                className={cn(
+                  "px-3 py-1 rounded-lg transition-all text-xs font-bold cursor-pointer",
+                  viewMode === 'cards' 
+                    ? "bg-white text-indigo-600 shadow-xs font-black" 
+                    : "text-slate-500 hover:text-slate-800"
+                )}
+              >
+                Card Grid
+              </button>
+            </div>
+            <Badge variant="outline" className="bg-indigo-50 text-indigo-800 border-indigo-200 font-black text-xs px-3 py-1 rounded-full shrink-0">
+              {stats.totalStaffCount} Total Staff
+            </Badge>
+          </div>
         </div>
 
         {filteredStaffList.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-bold">
-              <thead>
-                <tr className="border-b border-slate-100 text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                  <th className="pb-3">Staff Name</th>
-                  <th className="pb-3">Role / Position</th>
-                  <th className="pb-3">Email Address</th>
-                  <th className="pb-3">Today's Clock-In</th>
-                  <th className="pb-3">Status</th>
-                  <th className="pb-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {filteredStaffList.map((s: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="py-3 text-slate-900 font-black">{s.name}</td>
-                    <td className="py-3 text-slate-600">{s.role}</td>
-                    <td className="py-3 text-slate-500">{s.email}</td>
-                    <td className="py-3">
-                      {s.isCheckedIn ? (
-                        <Badge variant="outline" className={cn(
-                          "text-[9px] font-black uppercase",
-                          s.isLate ? "bg-amber-50 text-amber-800 border-amber-200" : "bg-emerald-50 text-emerald-800 border-emerald-200"
-                        )}>
-                          {s.clockInTime} {s.isLate ? "(Late)" : ""}
-                        </Badge>
-                      ) : (
-                        <span className="text-slate-400 text-[11px] font-medium italic">Not Checked In</span>
-                      )}
-                    </td>
-                    <td className="py-3">
-                      <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200 text-[9px] font-black uppercase">
-                        {s.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3 text-right">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setSelectedStaffProfile(s)}
-                        className="h-7 text-[10px] font-black text-indigo-600 hover:bg-indigo-50"
-                      >
-                        View Profile
-                      </Button>
-                    </td>
+          viewMode === 'table' ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs font-bold">
+                <thead>
+                  <tr className="border-b border-slate-100 text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                    <th className="pb-3">Staff Name</th>
+                    <th className="pb-3">Role / Position</th>
+                    <th className="pb-3">Email Address</th>
+                    <th className="pb-3">Today's Clock-In</th>
+                    <th className="pb-3">Status</th>
+                    <th className="pb-3 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {filteredStaffList.map((s: any, idx: number) => (
+                    <tr key={idx} className="hover:bg-slate-50/50">
+                      <td className="py-3 text-slate-900 font-black">{s.name}</td>
+                      <td className="py-3 text-slate-600">{s.role}</td>
+                      <td className="py-3 text-slate-500">{s.email}</td>
+                      <td className="py-3">
+                        {s.isCheckedIn ? (
+                          <Badge variant="outline" className={cn(
+                            "text-[9px] font-black uppercase",
+                            s.isLate ? "bg-amber-50 text-amber-800 border-amber-200" : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                          )}>
+                            {s.clockInTime} {s.isLate ? "(Late)" : ""}
+                          </Badge>
+                        ) : (
+                          <span className="text-slate-400 text-[11px] font-medium italic">Not Checked In</span>
+                        )}
+                      </td>
+                      <td className="py-3">
+                        <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200 text-[9px] font-black uppercase">
+                          {s.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3 text-right">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setSelectedStaffProfile(s)}
+                          className="h-7 text-[10px] font-black text-indigo-600 hover:bg-indigo-50"
+                        >
+                          View Profile
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredStaffList.map((s: any, idx: number) => (
+                <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 hover:border-indigo-200 transition-all">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-black text-slate-900 text-sm">{s.name}</h4>
+                      <p className="text-xs text-slate-500 font-medium">{s.role}</p>
+                    </div>
+                    <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200 text-[9px] font-black uppercase">
+                      {s.status}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-slate-500 truncate">{s.email}</div>
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-200/60">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">
+                      {s.isCheckedIn ? `Clock-in: ${s.clockInTime}` : 'Not Checked In'}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setSelectedStaffProfile(s)}
+                      className="h-7 text-[10px] font-black text-indigo-600 hover:bg-indigo-50"
+                    >
+                      View Profile
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         ) : (
           <div className="py-12 text-center text-slate-400 font-bold uppercase tracking-wider text-xs">
             No staff members match the search query
