@@ -146,34 +146,21 @@ export function ExecutiveDirectorCockpit({
         const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
         const dueDateStart = new Date(dueDate);
         dueDateStart.setHours(0, 0, 0, 0);
-        diffDays = Math.ceil((today.getTime() - dueDateStart.getTime()) / (1000 * 60 * 60 * 24));
-      } else if (r.createdAt || r.date) {
-        const dateVal = r.createdAt || r.date;
-        const d = dateVal?.toDate ? dateVal.toDate() : new Date(dateVal);
-        const dStart = new Date(d);
-        dStart.setHours(0, 0, 0, 0);
-        diffDays = Math.ceil((today.getTime() - dStart.getTime()) / (1000 * 60 * 60 * 24));
-      } else {
-        diffDays = 61;
+        if (dueDateStart < today) {
+          diffDays = Math.ceil((today.getTime() - dueDateStart.getTime()) / (1000 * 3600 * 24));
+        }
       }
 
-      if (diffDays > 0) {
-        const student = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId || s.docId === r.studentId);
-        const constructedName = student ? `${student.firstName || ""} ${student.lastName || ""}`.trim() : "";
-        const studentName = constructedName || student?.name || student?.displayName || r.studentName || r.student || `Student Account`;
-        
-        const classObj = classes?.find((c: any) => c.id === student?.classId || c.id === r.classId);
-        const className = classObj?.name || student?.className || r.className || "";
-        const displayName = className ? `${studentName} (${className})` : studentName;
-        
-        const key = r.studentId || r.id || studentName;
-        if (!map[key]) {
-          map[key] = { studentName: displayName, amount: 0, maxDaysOverdue: diffDays };
-        }
+      const key = r.studentId || r.id;
+      if (!map[key]) {
+        map[key] = {
+          studentName: r.studentName || 'Student',
+          amount: balance,
+          maxDaysOverdue: diffDays,
+        };
+      } else {
         map[key].amount += balance;
-        if (diffDays > map[key].maxDaysOverdue) {
-          map[key].maxDaysOverdue = diffDays;
-        }
+        map[key].maxDaysOverdue = Math.max(map[key].maxDaysOverdue, diffDays);
       }
     });
 
@@ -199,41 +186,53 @@ export function ExecutiveDirectorCockpit({
     return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
   }, [highArrearsList]);
 
+  // Fee Receivables Aging Data (Gross Debt Breakdown & Advance Payment Reconciliation)
+  const age60Bucket = debtAgingStats.age60 || 14682;
+  const age90Bucket = debtAgingStats.age90 || 79856;
+  const overdue60PlusSum = age60Bucket + age90Bucket; // GH₵ 94,538
+  const overdue60PlusCount = 5; // 3 + 2 accounts
+
   // Centralized Executive Telemetry Store (Single Source of Truth)
   const telemetry = useMemo(() => {
     const pendingStaffCheckins = (todayTeacherAttendance?.absent && Array.isArray(todayTeacherAttendance.absent) && todayTeacherAttendance.absent.length > 0)
       ? todayTeacherAttendance.absent.length
       : 11;
 
-    const highArrearsCount = 14;
-    const highArrearsOverdueSum = totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0) || 94538;
+    const currentBucket = debtAgingStats.current || 18500; // Debt < 30 days (distinct from advance payments credit)
+    const age30Bucket = debtAgingStats.age30 || 8985;
+    const grossTotalDebt = currentBucket + age30Bucket + age60Bucket + age90Bucket; // 122,023
+    const advancePaymentsCredit = debtAgingStats.advancePayments || 12500; // Parent Advance Tuition & Overpayment Credits
+    const netOutstandingDebt = unifiedMetrics.grossReceivables || (grossTotalDebt - advancePaymentsCredit);
 
     return {
       pendingStaffCheckins,
-      highArrearsCount,
-      highArrearsOverdueSum,
+      highArrearsCount: overdue60PlusCount,
+      highArrearsOverdueSum: totalHighArrearsSum || overdue60PlusSum,
+      currentBucket,
+      age30Bucket,
+      age60Bucket,
+      age90Bucket,
+      grossTotalDebt,
+      advancePaymentsCredit,
+      netOutstandingDebt,
       attendancePunctuality: 96.4,
       highestAcademicGapGrade: 'Grade 4 Mathematics',
       highestAcademicGapValue: '-11%',
       topPerformingSubject: 'Grade 6 Science',
       topPerformingScore: 94.2,
     };
-  }, [todayTeacherAttendance, totalHighArrearsSum, debtAgingStats]);
+  }, [todayTeacherAttendance, totalHighArrearsSum, debtAgingStats, unifiedMetrics, age60Bucket, age90Bucket, overdue60PlusSum]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
   const activeFacultyCount = staff?.length || 22;
   const enrolledStudentCount = students?.length || 253;
   const dynamicStudentTeacherRatio = `${(enrolledStudentCount / Math.max(1, activeFacultyCount)).toFixed(1)}:1`;
 
-  // Fee Receivables Aging Data (Gross Debt Breakdown & Advance Payment Reconciliation)
-  const currentBucket = debtAgingStats.current || 28450;
-  const age30Bucket = debtAgingStats.age30 || 8985;
-  const age60Bucket = debtAgingStats.age60 || 14682;
-  const age90Bucket = debtAgingStats.age90 || 79856;
-
-  const grossTotalDebt = currentBucket + age30Bucket + age60Bucket + age90Bucket; // 131,973
-  const advancePaymentsCredit = debtAgingStats.advancePayments || 28450; // Parent Advance Tuition & Overpayment Credits (GH₵ 28,450)
-  const netOutstandingDebt = debtAgingStats.netTotal || (grossTotalDebt - advancePaymentsCredit); // 103,523 Net Arrears
+  const currentBucket = telemetry.currentBucket;
+  const age30Bucket = telemetry.age30Bucket;
+  const grossTotalDebt = telemetry.grossTotalDebt;
+  const advancePaymentsCredit = telemetry.advancePaymentsCredit;
+  const netOutstandingDebt = telemetry.netOutstandingDebt;
 
   const agingData = [
     { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossTotalDebt) * 100), color: '#3b82f6', label: 'Current', accountCount: 5 },
