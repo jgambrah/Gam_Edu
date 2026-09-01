@@ -201,8 +201,8 @@ export function ExecutiveDirectorCockpit({
     const currentBucket = debtAgingStats.current || 18500; // Debt < 30 days (distinct from advance payments credit)
     const age30Bucket = debtAgingStats.age30 || 8985;
     const grossTotalDebt = currentBucket + age30Bucket + age60Bucket + age90Bucket; // 122,023
-    const advancePaymentsCredit = debtAgingStats.advancePayments || 12500; // Parent Advance Tuition & Overpayment Credits
-    const netOutstandingDebt = unifiedMetrics.grossReceivables || (grossTotalDebt - advancePaymentsCredit);
+    const advancePaymentsCredit = debtAgingStats.advancePayments || 12500; // Parent Advance Tuition & Overpayment Credits (12,500)
+    const netOutstandingDebt = grossTotalDebt - advancePaymentsCredit; // 109,523 Net Arrears
 
     return {
       pendingStaffCheckins,

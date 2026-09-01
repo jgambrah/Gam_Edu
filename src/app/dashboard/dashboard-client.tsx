@@ -3811,30 +3811,83 @@ function DirectorDashboard({
       )}
 
       {/* Standardized Reusable Hero Banner */}
-      {activeTab !== 'academics' && banners && (
-        <HeroBanner
-          tag={banners.badge}
-          title={banners.title}
-          description={banners.description}
-          icon={banners.icon}
-          statusBadge={
-            <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              Live Executive Data
-            </span>
-          }
-          actions={
-            <Button
-              size="sm"
-              onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
-              className="bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-sm border border-slate-200"
-            >
-              <Download className="h-3.5 w-3.5 text-slate-700" />
-              <span>Export PDF</span>
-            </Button>
-          }
-        />
-      )}
+      {activeTab !== 'academics' && (() => {
+        const tabBanners: Record<string, { tag: string; title: string; description: string; icon: any }> = {
+          overview: {
+            tag: "OVERVIEW HUB",
+            title: "EXECUTIVE DIRECTOR COCKPIT",
+            description: "Real-time telemetry, financial health, academic velocity, and executive action desk.",
+            icon: BrainCircuit,
+          },
+          general: {
+            tag: "SYSTEM CONTROL",
+            title: "GENERAL SCHOOL OPERATIONS",
+            description: "School bulletins, public web settings, global noticeboard, and system security logs.",
+            icon: School,
+          },
+          students: {
+            tag: "STUDENT REGISTRY",
+            title: "STUDENT ENROLLMENT & ACADEMIC AUDIT",
+            description: "Active student roster, health records, admissions status, and class assignments.",
+            icon: GraduationCap,
+          },
+          attendance: {
+            tag: "ATTENDANCE PULSE",
+            title: "INSTITUTIONAL ATTENDANCE CONTROL",
+            description: "Daily student and staff check-in metrics, punctuality tracking, and absence alerts.",
+            icon: CalendarCheck,
+          },
+          staff: {
+            tag: "STAFF DIRECTORY",
+            title: "STAFFING & FACULTY CONTROL",
+            description: "Workforce directory, role allocation, teacher attendance audit, and performance reviews.",
+            icon: Users,
+          },
+          canteen: {
+            tag: "CANTEEN OPERATIONS",
+            title: "CANTEEN PANTRY & REQUISITIONS",
+            description: "Kitchen inventory tracking, daily menu requisitions, and supply approvals.",
+            icon: ChefHat,
+          },
+          satisfaction: {
+            tag: "SATISFACTION CONSOLE",
+            title: "PARENT SATISFACTION & FEEDBACK",
+            description: "Parent satisfaction metrics, service feedback, and communication logs.",
+            icon: Star,
+          },
+          financials: {
+            tag: "FINANCIALS CONSOLE",
+            title: "FINANCIAL INTELLIGENCE & AUDIT",
+            description: "Revenue collection, fee arrears breakdown, expenditure ledger, and 30-day cash flow projections.",
+            icon: Banknote,
+          },
+        };
+        const banner = tabBanners[activeTab] || tabBanners.overview;
+        return (
+          <HeroBanner
+            tag={banner.tag}
+            title={banner.title}
+            description={banner.description}
+            icon={banner.icon}
+            statusBadge={
+              <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                Live Executive Data
+              </span>
+            }
+            actions={
+              <Button
+                size="sm"
+                onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
+                className="bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-sm border border-slate-200"
+              >
+                <Download className="h-3.5 w-3.5 text-slate-700" />
+                <span>Export PDF</span>
+              </Button>
+            }
+          />
+        );
+      })()}
 
       {/* Main Tabs Container */}
       <div className="mt-8">
