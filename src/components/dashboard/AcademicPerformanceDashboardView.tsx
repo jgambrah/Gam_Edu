@@ -425,29 +425,28 @@ export function AcademicPerformanceDashboardView({
           ZONE 1: ACADEMIC INTELLIGENCE HUB DARK BANNER
           ───────────────────────────────────────────────────────────── */}
       <HeroBanner
-        eyebrow="Academics Pulse"
+        tag="Academics Pulse"
         title="ACADEMIC INTELLIGENCE HUB"
         description="Class sizes skew, teacher staffing ratio distributions, and student score variance analytics."
-        badgeColor="bg-purple-500/20 text-purple-300 border-purple-500/30"
         icon={GraduationCap}
-        actions={
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex flex-col items-end text-right pr-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Term-over-Term Velocity</span>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
-                <TrendingUp className="h-3.5 w-3.5" />
-                <span>+3.2% Subject Score Growth</span>
-              </div>
+        statusBadge={
+          <div className="hidden md:flex flex-col items-end text-right pr-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Term-over-Term Velocity</span>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
+              <TrendingUp className="h-3.5 w-3.5" />
+              <span>+3.2% Subject Score Growth</span>
             </div>
-            <Button
-              onClick={handleSyncAcademicSummary}
-              disabled={isSyncingAcademics}
-              className="bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs cursor-pointer"
-            >
-              <FileText className="h-3.5 w-3.5" />
-              <span>Generate Executive Term Report</span>
-            </Button>
           </div>
+        }
+        actions={
+          <Button
+            onClick={handleSyncAcademicSummary}
+            disabled={isSyncingAcademics}
+            className="bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs cursor-pointer"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span>Generate Executive Term Report</span>
+          </Button>
         }
       />
 

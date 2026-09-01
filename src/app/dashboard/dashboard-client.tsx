@@ -3881,28 +3881,26 @@ function DirectorDashboard({
       {/* Standardized Reusable Hero Banner */}
       {activeTab !== 'academics' && banners && (
         <HeroBanner
-          eyebrow={banners.badge}
+          tag={banners.badge}
           title={banners.title}
           description={banners.description}
-          badgeColor={banners.badgeColor}
-          gradient={`bg-gradient-to-r ${banners.gradient}`}
           icon={banners.icon}
+          statusBadge={
+            <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Live Executive Data
+            </span>
+          }
           actions={
-            <div className="flex items-center gap-2.5">
-              <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white/90 px-3 py-1.5 rounded-xl border border-white/15 items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                Live Executive Data
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
-                className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-xs"
-              >
-                <Download className="h-3.5 w-3.5" />
-                <span>Export PDF</span>
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-xs"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Export PDF</span>
+            </Button>
           }
         />
       )}
