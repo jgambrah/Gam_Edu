@@ -3448,65 +3448,14 @@ function DirectorDashboard({
 
 
   const debtAgingStats = useMemo(() => {
-
-    if (dashboardSummary?.debtAging !== undefined) {
-      return {
-        current: dashboardSummary.debtAging.current ?? 0,
-        age30: dashboardSummary.debtAging.age30 ?? 0,
-        age60: dashboardSummary.debtAging.age60 ?? 0,
-        age90: dashboardSummary.debtAging.age90 ?? 0,
-        overpayments: dashboardSummary.debtAging.overpayments ?? 0,
-        total: (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0) - (dashboardSummary.debtAging.overpayments ?? 0),
-        grossTotal: (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0)
-      };
-    }
-
-    if (!financialRecords || !activeStudents || activeStudents.length === 0) {
-      return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
-    }
-    
-    const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
-    const today = startOfDay(new Date());
-
-    let current = 0; // Due date in the future or today
-    let age30 = 0;   // Overdue 1-30 days
-    let age60 = 0;   // Overdue 31-60 days
-    let age90 = 0;   // Overdue 61+ days
-    let overpayments = 0;
-
-    financialRecords.forEach((r: any) => {
-      if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
-      
-      const billed = Number(r.billedAmount) || 0;
-      const paid = Number(r.amountPaid) || 0;
-      const waiver = Number(r.waiverAmount) || 0;
-      const balance = billed - paid - waiver;
-
-      if (balance < 0) {
-        overpayments += Math.abs(balance);
-        return;
-      }
-      if (balance <= 0.01) return;
-
-      const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
-      const diffTime = today.getTime() - startOfDay(dueDate).getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays <= 0) {
-        current += balance;
-      } else if (diffDays <= 30) {
-        age30 += balance;
-      } else if (diffDays <= 60) {
-        age60 += balance;
-      } else {
-        age90 += balance;
-      }
+    const calculated = computeFinancialMetrics({
+      financialRecords: financialRecords || [],
+      payments: payments || [],
+      students: activeStudents || [],
+      classes,
     });
-
-    const total = current + age30 + age60 + age90 - overpayments;
-    const grossTotal = current + age30 + age60 + age90;
-    return { current, age30, age60, age90, total, overpayments, grossTotal };
-  }, [financialRecords, activeStudents, dashboardSummary]);
+    return calculated.debtAgingStats;
+  }, [financialRecords, activeStudents, payments, classes]);
 
 
 
@@ -11616,7 +11565,7 @@ export default function DashboardClient() {
       return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', parentStudentIds.slice(0, 30)));
     }
     if (isStaff) {
-      return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(300));
+      return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
     }
     return null;
   }, [firestore, schoolId, isStaff, isParent, parentStudentIds]);
@@ -11631,11 +11580,11 @@ export default function DashboardClient() {
   // Financial records loaded for Accountant, Director, and Admin on Overview or Financials tabs
   const isFinancialNeeded = isAccountant || role === 'Director' || role === 'Administrator';
 
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(500)) : null, [firestore, schoolId, isFinancialNeeded]);
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isFinancialNeeded]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
   // collectionGroup scan only loaded when viewing Financials tab or for Accountant.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId), limit(250)) : null, [firestore, schoolId, isFinancialNeeded]);
+  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isFinancialNeeded]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);

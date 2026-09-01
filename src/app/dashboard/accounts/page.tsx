@@ -3513,18 +3513,25 @@ export default function AccountsPage() {
       }
       if (balance <= 0.01) return;
 
-      const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
-      const diffTime = today.getTime() - startOfDay(dueDate).getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const rawDueDate = r.dueDate || r.date || r.createdAt;
+      const dueDate = rawDueDate?.toDate ? rawDueDate.toDate() : (rawDueDate ? new Date(rawDueDate) : null);
+      const validDueDate = (dueDate && !isNaN(dueDate.getTime())) ? dueDate : null;
 
-      if (diffDays <= 0) {
+      if (!validDueDate) {
         current += balance;
-      } else if (diffDays <= 30) {
-        age30 += balance;
-      } else if (diffDays <= 60) {
-        age60 += balance;
       } else {
-        age90 += balance;
+        const diffTime = today.getTime() - startOfDay(validDueDate).getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 0) {
+          current += balance;
+        } else if (diffDays <= 30) {
+          age30 += balance;
+        } else if (diffDays <= 60) {
+          age60 += balance;
+        } else {
+          age90 += balance;
+        }
       }
     });
 

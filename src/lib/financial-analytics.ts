@@ -276,7 +276,8 @@ export function computeFinancialMetrics({
     if (!targetCampusId || targetCampusId === 'all' || !recordCampusId) return true;
     const rCamp = recordCampusId.toString().toLowerCase();
     const cId = targetCampusId.toString().toLowerCase();
-    return rCamp === cId || rCamp.includes(cId) || cId.includes(rCamp) || (cId.includes('main') && rCamp.includes('main'));
+    if (cId.includes('all') || cId.includes('main')) return true;
+    return rCamp === cId || rCamp.includes(cId) || cId.includes(rCamp);
   };
 
   // Filter financial records by campus, term, and academic year
@@ -524,8 +525,8 @@ export function computeFinancialMetrics({
 
     const dueDate = safeParseDate(r.dueDate || r.date || r.createdAt);
     if (!dueDate) {
-      aging30 += balance;
-      countMap.age30++;
+      agingCurrent += balance;
+      countMap.current++;
       return;
     }
 
@@ -620,11 +621,12 @@ export function computeFinancialMetrics({
  */
 function useMemoFilterStudents(students: any[], campusId?: string): any[] {
   if (!students || students.length === 0) return [];
-  if (!campusId || campusId === 'all') return students;
+  if (!campusId || campusId === 'all' || campusId.toLowerCase().includes('all') || campusId.toLowerCase().includes('main')) return students;
   return students.filter((s: any) => {
     const sCampus = (s.campusId || s.campus || s.branch || '').toString().toLowerCase();
     const cId = campusId.toString().toLowerCase();
-    return sCampus === cId || (cId === 'main' && (sCampus.includes('main') || !sCampus));
+    if (!sCampus) return true;
+    return sCampus === cId || sCampus.includes(cId) || cId.includes(sCampus);
   });
 }
 
