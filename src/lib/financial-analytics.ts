@@ -264,19 +264,26 @@ export function computeFinancialMetrics({
 
   // Filter students by campus if specified
   const filteredStudents = useMemoFilterStudents(students, campusId);
-  const activeStudentIds = new Set(
+  const allStudentIds = new Set(
     filteredStudents
       ? filteredStudents
-          .filter((s: any) => s.enrollmentStatus === 'Active' && s.status !== 'Inactive' && s.isActive !== false)
-          .map((s: any) => s.uid || s.id)
+          .map((s: any) => s.uid || s.id || s.studentId)
+          .filter(Boolean)
       : []
   );
+
+  const isCampusMatch = (recordCampusId: any, targetCampusId: string) => {
+    if (!targetCampusId || targetCampusId === 'all' || !recordCampusId) return true;
+    const rCamp = recordCampusId.toString().toLowerCase();
+    const cId = targetCampusId.toString().toLowerCase();
+    return rCamp === cId || rCamp.includes(cId) || cId.includes(rCamp) || (cId.includes('main') && rCamp.includes('main'));
+  };
 
   // Filter financial records by campus, term, and academic year
   const filteredRecords = financialRecords.filter((r: any) => {
     if (r.status === 'Pending Reversal') return false;
-    if (activeStudentIds.size > 0 && r.studentId && !activeStudentIds.has(r.studentId)) return false;
-    if (campusId && campusId !== 'all' && r.campusId && r.campusId !== campusId) return false;
+    if (allStudentIds.size > 0 && r.studentId && !allStudentIds.has(r.studentId) && students.length > 0) return false;
+    if (campusId && !isCampusMatch(r.campusId, campusId)) return false;
     if (termId && r.termId && r.termId !== termId) return false;
     if (academicYear && r.academicYear && r.academicYear !== academicYear) return false;
     return true;
@@ -285,8 +292,8 @@ export function computeFinancialMetrics({
   // Filter payments by term, academic year, campus
   const filteredPayments = payments.filter((p: any) => {
     if (p.status === 'Reversed' || p.status === 'Cancelled' || p.status === 'Pending Reversal') return false;
-    if (activeStudentIds.size > 0 && p.studentId && !activeStudentIds.has(p.studentId)) return false;
-    if (campusId && campusId !== 'all' && p.campusId && p.campusId !== campusId) return false;
+    if (allStudentIds.size > 0 && p.studentId && !allStudentIds.has(p.studentId) && students.length > 0) return false;
+    if (campusId && !isCampusMatch(p.campusId, campusId)) return false;
     if (termId && p.termId && p.termId !== termId) return false;
     if (academicYear && p.academicYear && p.academicYear !== academicYear) return false;
     return true;
