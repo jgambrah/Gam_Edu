@@ -425,26 +425,23 @@ export function AcademicPerformanceDashboardView({
           ZONE 1: ACADEMIC INTELLIGENCE HUB DARK BANNER
           ───────────────────────────────────────────────────────────── */}
       <HeroBanner
-        tag="Academics Pulse"
+        tag="ACADEMICS PULSE"
         title="ACADEMIC INTELLIGENCE HUB"
         description="Class sizes skew, teacher staffing ratio distributions, and student score variance analytics."
         icon={GraduationCap}
         statusBadge={
-          <div className="hidden md:flex flex-col items-end text-right pr-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Term-over-Term Velocity</span>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
-              <TrendingUp className="h-3.5 w-3.5" />
-              <span>+3.2% Subject Score Growth</span>
-            </div>
-          </div>
+          <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5 shrink-0">
+            <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Term Velocity: +3.2% Growth</span>
+          </span>
         }
         actions={
           <Button
             onClick={handleSyncAcademicSummary}
             disabled={isSyncingAcademics}
-            className="bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs cursor-pointer"
+            className="bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-sm border border-slate-200"
           >
-            <FileText className="h-3.5 w-3.5" />
+            <FileText className="h-3.5 w-3.5 text-slate-700" />
             <span>Generate Executive Term Report</span>
           </Button>
         }

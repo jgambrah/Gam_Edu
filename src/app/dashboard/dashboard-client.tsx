@@ -3893,12 +3893,11 @@ function DirectorDashboard({
           }
           actions={
             <Button
-              variant="outline"
               size="sm"
               onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
-              className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-xs"
+              className="bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-sm border border-slate-200"
             >
-              <Download className="h-3.5 w-3.5" />
+              <Download className="h-3.5 w-3.5 text-slate-700" />
               <span>Export PDF</span>
             </Button>
           }
