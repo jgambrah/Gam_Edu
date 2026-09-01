@@ -352,7 +352,7 @@ export function computeFinancialMetrics({
 
   const activeStudentIds = new Set(
     students
-      ? students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).map((s: any) => s.uid || s.id)
+      ? students.filter((s: any) => s.enrollmentStatus === 'Active' && s.status !== 'Inactive' && s.isActive !== false).map((s: any) => s.uid || s.id)
       : []
   );
 
