@@ -13,7 +13,7 @@ import {
   Zap, Layers, Flame, Activity, CheckCircle2, ShieldAlert
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { computeFinancialMetrics, safeParseDate } from '@/lib/financial-analytics';
+import { computeFinancialMetrics, getActiveTermBounds, safeParseDate } from '@/lib/financial-analytics';
 
 interface FinancialDashboardViewProps {
   students: any[];
