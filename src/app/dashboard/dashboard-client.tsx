@@ -5,6 +5,8 @@ import StudentLearningResourcesView from './StudentLearningResourcesView';
 import StudentTimetableView from './StudentTimetableView';
 import StudentCalendarView from './StudentCalendarView';
 import { AcademicPerformanceDashboardView } from '@/components/dashboard/AcademicPerformanceDashboardView';
+import { HeroBanner } from '@/components/dashboard/HeroBanner';
+import { Download } from 'lucide-react';
 import { AttendanceAnalyticsView } from '@/components/dashboard/AttendanceAnalyticsView';
 import { StudentRegistryDashboardView } from '@/components/dashboard/StudentRegistryDashboardView';
 import { StaffDirectoryDashboardView } from '@/components/dashboard/StaffDirectoryDashboardView';
@@ -3876,21 +3878,33 @@ function DirectorDashboard({
         </div>
       )}
 
-      {/* Colorful Gradient Banner Header */}
-      {activeTab !== 'academics' && (
-        <div className={cn("relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-gradient-to-r border", banners.gradient)}>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-          <div className="space-y-3 relative z-10 max-w-xl">
-            <span className={cn("text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase", banners.badgeColor)}>
-              {banners.badge}
-            </span>
-            <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">{banners.title}</h2>
-            <p className="text-xs text-slate-300 leading-relaxed font-medium">{banners.description}</p>
-          </div>
-          <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
-            <banners.icon className="h-10 w-10 text-white opacity-80" />
-          </div>
-        </div>
+      {/* Standardized Reusable Hero Banner */}
+      {activeTab !== 'academics' && banners && (
+        <HeroBanner
+          eyebrow={banners.badge}
+          title={banners.title}
+          description={banners.description}
+          badgeColor={banners.badgeColor}
+          gradient={`bg-gradient-to-r ${banners.gradient}`}
+          icon={banners.icon}
+          actions={
+            <div className="flex items-center gap-2.5">
+              <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white/90 px-3 py-1.5 rounded-xl border border-white/15 items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                Live Executive Data
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-xs"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Export PDF</span>
+              </Button>
+            </div>
+          }
+        />
       )}
 
       {/* Main Tabs Container */}

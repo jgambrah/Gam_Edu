@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { HeroBanner } from './HeroBanner';
 
 export function AcademicPerformanceDashboardView({
   students: rawStudents,
@@ -423,41 +424,32 @@ export function AcademicPerformanceDashboardView({
       {/* ─────────────────────────────────────────────────────────────
           ZONE 1: ACADEMIC INTELLIGENCE HUB DARK BANNER
           ───────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 shadow-md gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 shrink-0">
-            <GraduationCap className="h-6 w-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-md border border-purple-500/30">
-                Academics Pulse
-              </span>
+      <HeroBanner
+        eyebrow="Academics Pulse"
+        title="ACADEMIC INTELLIGENCE HUB"
+        description="Class sizes skew, teacher staffing ratio distributions, and student score variance analytics."
+        badgeColor="bg-purple-500/20 text-purple-300 border-purple-500/30"
+        icon={GraduationCap}
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex flex-col items-end text-right pr-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Term-over-Term Velocity</span>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
+                <TrendingUp className="h-3.5 w-3.5" />
+                <span>+3.2% Subject Score Growth</span>
+              </div>
             </div>
-            <h3 className="text-lg font-black text-white tracking-tight mt-1">ACADEMIC INTELLIGENCE HUB</h3>
-            <p className="text-xs text-slate-400 font-medium">Class sizes skew, teacher staffing ratio distributions, and student score variance analytics.</p>
+            <Button
+              onClick={handleSyncAcademicSummary}
+              disabled={isSyncingAcademics}
+              className="bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs cursor-pointer"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              <span>Generate Executive Term Report</span>
+            </Button>
           </div>
-        </div>
-
-        {/* Right side space: Quick stat sparkline & action trigger */}
-        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-slate-800 pt-3 sm:pt-0">
-          <div className="hidden md:flex flex-col items-end text-right pr-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Term-over-Term Velocity</span>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
-              <TrendingUp className="h-3.5 w-3.5" />
-              <span>+3.2% Subject Score Growth</span>
-            </div>
-          </div>
-          <Button
-            onClick={handleSyncAcademicSummary}
-            disabled={isSyncingAcademics}
-            className="bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs cursor-pointer"
-          >
-            <FileText className="h-3.5 w-3.5" />
-            <span>Generate Executive Term Report</span>
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* ─────────────────────────────────────────────────────────────
           ZONE 2: 6 VITAL ACADEMIC KPI CARDS
