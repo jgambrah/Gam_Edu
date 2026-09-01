@@ -152,8 +152,9 @@ export function ExecutiveDirectorCockpit({
 
   // Fee Receivables Aging Data (Gross Debt Breakdown & Advance Payment Reconciliation)
   const age60Bucket = unifiedMetrics.debtAgingStats.age60;
-  const age90Bucket = unifiedMetrics.debtAgingStats.age90 + unifiedMetrics.debtAgingStats.over90;
-  const overdue60PlusSum = age60Bucket + age90Bucket;
+  const age90Bucket = unifiedMetrics.debtAgingStats.age90;
+  const over90Bucket = unifiedMetrics.debtAgingStats.over90;
+  const overdue60PlusSum = age60Bucket + age90Bucket + over90Bucket;
   const overdue60PlusCount = unifiedMetrics.debtAgingStats.accountCounts.overdue60Plus;
 
   // Centralized Executive Telemetry Store (Single Source of Truth)
@@ -164,6 +165,7 @@ export function ExecutiveDirectorCockpit({
 
     const currentBucket = unifiedMetrics.debtAgingStats.current;
     const age30Bucket = unifiedMetrics.debtAgingStats.age30;
+    const lessThan30Bucket = currentBucket + age30Bucket;
     const grossTotalDebt = unifiedMetrics.debtAgingStats.grossTotal;
     const advancePaymentsCredit = unifiedMetrics.debtAgingStats.advancePayments;
     const netOutstandingDebt = unifiedMetrics.debtAgingStats.netTotal;
@@ -174,8 +176,10 @@ export function ExecutiveDirectorCockpit({
       highArrearsOverdueSum: overdue60PlusSum,
       currentBucket,
       age30Bucket,
+      lessThan30Bucket,
       age60Bucket,
       age90Bucket,
+      over90Bucket,
       grossTotalDebt,
       advancePaymentsCredit,
       netOutstandingDebt,
@@ -185,25 +189,52 @@ export function ExecutiveDirectorCockpit({
       topPerformingSubject: 'Grade 6 Science',
       topPerformingScore: 94.2,
     };
-  }, [todayTeacherAttendance, staff, unifiedMetrics, age60Bucket, age90Bucket, overdue60PlusSum, overdue60PlusCount]);
+  }, [todayTeacherAttendance, staff, unifiedMetrics, age60Bucket, age90Bucket, over90Bucket, overdue60PlusSum, overdue60PlusCount]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
   const activeFacultyCount = staff?.length || 0;
   const enrolledStudentCount = students?.length || 0;
   const dynamicStudentTeacherRatio = `${(enrolledStudentCount / Math.max(1, activeFacultyCount)).toFixed(1)}:1`;
 
-  const currentBucket = telemetry.currentBucket;
-  const age30Bucket = telemetry.age30Bucket;
+  const lessThan30Bucket = telemetry.lessThan30Bucket;
   const grossTotalDebt = telemetry.grossTotalDebt;
   const advancePaymentsCredit = telemetry.advancePaymentsCredit;
   const netOutstandingDebt = telemetry.netOutstandingDebt;
 
   const grossDebtForPct = grossTotalDebt > 0 ? grossTotalDebt : 1;
   const agingData = [
-    { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossDebtForPct) * 100), color: '#3b82f6', label: 'Current', accountCount: unifiedMetrics.debtAgingStats.accountCounts.current },
-    { range: '30 - 60 Days', amount: age30Bucket, percentage: Math.round((age30Bucket / grossDebtForPct) * 100), color: '#f59e0b', label: 'Moderate', accountCount: unifiedMetrics.debtAgingStats.accountCounts.age30 },
-    { range: '60 - 90 Days', amount: age60Bucket, percentage: Math.round((age60Bucket / grossDebtForPct) * 100), color: '#f97316', label: 'High Priority', accountCount: unifiedMetrics.debtAgingStats.accountCounts.age60 },
-    { range: '> 90 Days', amount: age90Bucket, percentage: Math.round((age90Bucket / grossDebtForPct) * 100), color: '#ef4444', label: 'Critical Arrears', accountCount: unifiedMetrics.debtAgingStats.accountCounts.age90 + unifiedMetrics.debtAgingStats.accountCounts.over90 },
+    { 
+      range: '< 30 Days', 
+      amount: lessThan30Bucket, 
+      percentage: Math.round((lessThan30Bucket / grossDebtForPct) * 100), 
+      color: '#3b82f6', 
+      label: 'Current & < 30 Days', 
+      accountCount: (unifiedMetrics.debtAgingStats.accountCounts.current || 0) + (unifiedMetrics.debtAgingStats.accountCounts.age30 || 0) 
+    },
+    { 
+      range: '30 - 60 Days', 
+      amount: telemetry.age60Bucket, 
+      percentage: Math.round((telemetry.age60Bucket / grossDebtForPct) * 100), 
+      color: '#f59e0b', 
+      label: '30 - 60 Days Overdue', 
+      accountCount: unifiedMetrics.debtAgingStats.accountCounts.age60 || 0 
+    },
+    { 
+      range: '60 - 90 Days', 
+      amount: telemetry.age90Bucket, 
+      percentage: Math.round((telemetry.age90Bucket / grossDebtForPct) * 100), 
+      color: '#f97316', 
+      label: '60 - 90 Days Overdue', 
+      accountCount: unifiedMetrics.debtAgingStats.accountCounts.age90 || 0 
+    },
+    { 
+      range: '> 90 Days', 
+      amount: telemetry.over90Bucket, 
+      percentage: Math.round((telemetry.over90Bucket / grossDebtForPct) * 100), 
+      color: '#ef4444', 
+      label: 'Critical (> 90 Days)', 
+      accountCount: unifiedMetrics.debtAgingStats.accountCounts.over90 || 0 
+    },
   ];
 
   // Inline Micro Sparkline SVG Component for KPI cards
