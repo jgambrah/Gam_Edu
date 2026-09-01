@@ -13,6 +13,7 @@ import {
   Zap, Layers, Flame, Activity, CheckCircle2, ShieldAlert
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
+import { computeFinancialMetrics, safeParseDate } from '@/lib/financial-analytics';
 
 interface FinancialDashboardViewProps {
   students: any[];
@@ -26,23 +27,6 @@ interface FinancialDashboardViewProps {
   schoolSettings: any;
   arrearsThreshold: number;
 }
-
-const safeParseDate = (dateVal: any): Date | null => {
-  if (!dateVal) return null;
-  try {
-    if (typeof dateVal.toDate === 'function') return dateVal.toDate();
-    if (dateVal instanceof Date) return isNaN(dateVal.getTime()) ? null : dateVal;
-    if (typeof dateVal === 'number') return new Date(dateVal.toString().length === 10 ? dateVal * 1000 : dateVal);
-    if (dateVal.seconds) return new Date(dateVal.seconds * 1000);
-    if (typeof dateVal === 'string') {
-      const parsed = new Date(dateVal);
-      return isNaN(parsed.getTime()) ? null : parsed;
-    }
-  } catch (e) {
-    return null;
-  }
-  return null;
-};
 
 export function FinancialDashboardView({
   students,
@@ -58,221 +42,27 @@ export function FinancialDashboardView({
 }: FinancialDashboardViewProps) {
   const today = new Date();
 
-  // 1. Resolve Active Term Bounds
-  const activeBudget = useMemo(() => {
-    if (!budgets) return null;
-    return budgets.find((b: any) => {
-      if (b.status !== 'Approved') return false;
-      const start = b.startDate?.toDate ? b.startDate.toDate() : new Date(b.startDate);
-      const end = b.endDate?.toDate ? b.endDate.toDate() : new Date(b.endDate);
-      return today >= start && today <= end;
-    }) || null;
-  }, [budgets, today]);
-
-  const termDates = useMemo(() => {
-    if (activeBudget) {
-      const start = activeBudget.startDate?.toDate ? activeBudget.startDate.toDate() : new Date(activeBudget.startDate);
-      const end = activeBudget.endDate?.toDate ? activeBudget.endDate.toDate() : new Date(activeBudget.endDate);
-      return { start, end, label: activeBudget.name || activeBudget.term || "Current Term" };
-    }
-    // Fallback standard basic school terms in Ghana:
-    // Term 1: Jan 1 - Apr 30
-    // Term 2: May 1 - Aug 31
-    // Term 3: Sep 1 - Dec 31
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth(); // 0-indexed
-    if (currentMonth <= 3) {
-      return { start: new Date(currentYear, 0, 1), end: new Date(currentYear, 3, 30, 23, 59, 59), label: "First Term" };
-    } else if (currentMonth <= 7) {
-      return { start: new Date(currentYear, 4, 1), end: new Date(currentYear, 7, 31, 23, 59, 59), label: "Second Term" };
-    } else {
-      return { start: new Date(currentYear, 8, 1), end: new Date(currentYear, 11, 31, 23, 59, 59), label: "Third Term" };
-    }
-  }, [activeBudget, today]);
-
-  // 2. Revenue Aggregates
-  const revenueStats = useMemo(() => {
-    const startOfToday = startOfDay(today);
-    const startOfThisMonth = startOfMonth(today);
-    const startOfThisYear = startOfYear(today);
-
-    let collectedToday = 0;
-    let collectedThisMonth = 0;
-    let collectedThisTerm = 0;
-    let collectedThisYear = 0;
-
-    // 1. Process explicit payments array
-    if (payments && payments.length > 0) {
-      payments.forEach((p: any) => {
-        const amount = Number(p.amount) || Number(p.amountPaid) || 0;
-        if (amount <= 0) return;
-
-        const d = safeParseDate(p.paidAt || p.createdAt || p.date || p.timestamp);
-        if (!d) {
-          collectedThisTerm += amount;
-          collectedThisYear += amount;
-          return;
-        }
-
-        if (d >= startOfToday) collectedToday += amount;
-        if (d >= startOfThisMonth) collectedThisMonth += amount;
-        if (d >= termDates.start && d <= termDates.end) collectedThisTerm += amount;
-        if (d >= startOfThisYear) collectedThisYear += amount;
-      });
-    }
-    
-    // 2. Process student financialRecords (amountPaid) if payments collection is empty or missing timestamps
-    if (financialRecords && financialRecords.length > 0) {
-      financialRecords.forEach((r: any) => {
-        if (r.status === 'Pending Reversal') return;
-        const amountPaid = Number(r.amountPaid) || 0;
-        if (amountPaid <= 0) return;
-
-        if (!payments || payments.length === 0) {
-          const d = safeParseDate(r.lastPaymentDate || r.paidAt || r.updatedAt || r.createdAt || r.date);
-          if (!d) {
-            collectedThisTerm += amountPaid;
-            collectedThisYear += amountPaid;
-            return;
-          }
-
-          if (d >= startOfToday) collectedToday += amountPaid;
-          if (d >= startOfThisMonth) collectedThisMonth += amountPaid;
-          if (d >= termDates.start && d <= termDates.end) collectedThisTerm += amountPaid;
-          if (d >= startOfThisYear) collectedThisYear += amountPaid;
-        }
-      });
-    }
-
-    return {
-      collectedToday,
-      collectedThisMonth,
-      collectedThisTerm,
-      collectedThisYear,
-    };
-  }, [payments, financialRecords, termDates, today]);
-
-  // 2.5 Granular Revenue Stream Breakdown (In-Memory Aggregator: 0 extra Firestore reads)
-  const streamStats = useMemo(() => {
-    let tuition = 0;
-    let canteen = 0;
-    let transport = 0;
-    let boarding = 0;
-    let uniformsBooks = 0;
-    let other = 0;
-
-    const itemsToProcess = (payments && payments.length > 0) ? payments : (financialRecords || []);
-
-    itemsToProcess.forEach((p: any) => {
-      const amount = Number(p.amount) || Number(p.amountPaid) || 0;
-      if (amount <= 0) return;
-      const cat = (p.category || p.description || p.feeType || '').toLowerCase();
-
-      if (cat.includes('tuition') || cat.includes('school fee') || cat.includes('academic') || !cat) {
-        tuition += amount;
-      } else if (cat.includes('canteen') || cat.includes('feed') || cat.includes('lunch') || cat.includes('meal')) {
-        canteen += amount;
-      } else if (cat.includes('bus') || cat.includes('transport') || cat.includes('fare') || cat.includes('shuttle')) {
-        transport += amount;
-      } else if (cat.includes('boarding') || cat.includes('hostel') || cat.includes('dorm')) {
-        boarding += amount;
-      } else if (cat.includes('uniform') || cat.includes('book') || cat.includes('textbook') || cat.includes('stationery')) {
-        uniformsBooks += amount;
-      } else {
-        other += amount;
-      }
+  // Unified Financial Analytics Engine (Single Source of Truth)
+  const metrics = useMemo(() => {
+    return computeFinancialMetrics({
+      financialRecords,
+      payments,
+      students,
+      classes,
+      budgets,
+      arrearsThreshold,
     });
+  }, [financialRecords, payments, students, classes, budgets, arrearsThreshold]);
 
-    const total = tuition + canteen + transport + boarding + uniformsBooks + other;
-    return { tuition, canteen, transport, boarding, uniformsBooks, other, total };
-  }, [payments, financialRecords]);
+  const revenueStats = useMemo(() => ({
+    collectedToday: metrics.collectedToday,
+    collectedThisMonth: metrics.collectedThisMonth,
+    collectedThisTerm: metrics.collectedThisTerm,
+    collectedThisYear: metrics.collectedThisYear,
+  }), [metrics]);
 
-  // 2.6 Class Arrears Risk Heatmap (In-Memory Aggregator: 0 extra Firestore reads)
-  const classArrearsHeatmap = useMemo(() => {
-    if (!classes || !students || !financialRecords) return [];
-
-    const classMap = new Map<string, { id: string; name: string; billed: number; paid: number; balance: number; studentCount: number }>();
-
-    classes.forEach((c: any) => {
-      classMap.set(c.id, { id: c.id, name: c.name || 'Class', billed: 0, paid: 0, balance: 0, studentCount: 0 });
-    });
-
-    const recordsByStudent: Record<string, any[]> = {};
-    financialRecords.forEach((r: any) => {
-      if (r.status === 'Pending Reversal') return;
-      const key = r.studentId;
-      if (!recordsByStudent[key]) recordsByStudent[key] = [];
-      recordsByStudent[key].push(r);
-    });
-
-    students.forEach((s: any) => {
-      const isActive = s.enrollmentStatus === 'Active' || !s.enrollmentStatus;
-      if (!isActive) return;
-      const cId = s.classId;
-      const classData = classMap.get(cId);
-      if (!classData) return;
-
-      classData.studentCount++;
-      const sRecords = recordsByStudent[s.uid] || recordsByStudent[s.id] || [];
-      sRecords.forEach(r => {
-        const billed = Number(r.billedAmount) || 0;
-        const paid = (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0);
-        classData.billed += billed;
-        classData.paid += paid;
-        classData.balance += (billed - paid);
-      });
-    });
-
-    return Array.from(classMap.values())
-      .map(c => {
-        const rate = c.billed > 0 ? Math.round((c.paid / c.billed) * 100) : 100;
-        return { ...c, collectionRate: rate };
-      })
-      .sort((a, b) => b.balance - a.balance);
-  }, [classes, students, financialRecords]);
-
-  // 2.7 Live Real-Time Payment Stream Feed (In-Memory Filter: 0 extra Firestore reads)
-  const recentPaymentStream = useMemo(() => {
-    const list: any[] = [];
-
-    if (payments && payments.length > 0) {
-      payments.forEach((p: any) => {
-        const studentObj = students?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
-        const classObj = classes?.find((c: any) => c.id === studentObj?.classId);
-        const date = safeParseDate(p.paidAt || p.createdAt || p.date) || new Date();
-        list.push({
-          id: p.id || Math.random().toString(),
-          amount: Number(p.amount) || Number(p.amountPaid) || 0,
-          studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : (p.studentName || 'Student'),
-          className: classObj?.name || p.className || 'Class',
-          category: p.category || p.feeType || 'Tuition',
-          method: p.method || p.paymentMethod || 'Paystack / Cash',
-          date
-        });
-      });
-    } else if (financialRecords && financialRecords.length > 0) {
-      financialRecords.forEach((r: any) => {
-        const amountPaid = Number(r.amountPaid) || 0;
-        if (amountPaid <= 0 || r.status === 'Pending Reversal') return;
-        const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
-        const classObj = classes?.find((c: any) => c.id === studentObj?.classId);
-        const date = safeParseDate(r.lastPaymentDate || r.paidAt || r.updatedAt || r.createdAt) || new Date();
-        list.push({
-          id: r.id || Math.random().toString(),
-          amount: amountPaid,
-          studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : 'Student',
-          className: classObj?.name || 'Class',
-          category: r.feeType || 'Tuition Fees',
-          method: 'Direct Receipt',
-          date
-        });
-      });
-    }
-
-    return list
-      .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0))
-      .slice(0, 5);
-  }, [payments, financialRecords, students, classes]);
+  const streamStats = metrics.streamStats;
+  const recentPaymentStream = metrics.livePaymentStream;
 
   // 3. Expenditure Category Breakdown
   const expensesByCategory = useMemo(() => {

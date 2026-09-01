@@ -84,6 +84,7 @@ import { ParentSatisfactionDashboardView } from './parent-satisfaction-dashboard
 import { TeacherDashboardView } from '@/components/dashboard/TeacherDashboardView';
 import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
 import { ExecutiveDirectorCockpit } from '@/components/dashboard/ExecutiveDirectorCockpit';
+import { computeFinancialMetrics } from '@/lib/financial-analytics';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
@@ -1133,52 +1134,22 @@ function AdminDashboard({
 
     if (!financialRecords || activeStudents.length === 0) return { totalOutstanding: 0, totalRevenue: 0, collectionRate: 0, totalBilled: 0, revenueByType: [] };
     
-    const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid || s.id));
-    const activeRecords = financialRecords.filter((r: any) => 
-      (activeStudentIds.has(r.studentId) || activeStudentIds.has(r.userId)) && 
-      r.status !== 'Pending Reversal'
-    );
-
-    let totalBilled = 0;
-    let totalPaid = 0;
-    let totalWaivers = 0;
-    let totalOutstanding = 0;
-    const types: Record<string, number> = {};
-
-    activeRecords.forEach((r: any) => {
-      const billed = Number(r.billedAmount) || 0;
-      const paid = Number(r.amountPaid) || 0;
-      const waiver = Number(r.waiverAmount) || 0;
-      
-      totalBilled += billed;
-      totalPaid += paid;
-      totalWaivers += waiver;
-
-      const balance = billed - paid - waiver;
-      if (balance > 0) {
-        totalOutstanding += balance;
-      }
-
-      if (paid > 0) {
-        const type = r.type || 'Other';
-        types[type] = (types[type] || 0) + paid;
-      }
+    const calculated = computeFinancialMetrics({
+      financialRecords,
+      payments: syncedFinancialData?.payments || [],
+      students: activeStudents,
+      classes,
+      budgets,
     });
 
-    const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
-
-    const revenueByType = Object.entries(types).map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
-
     return { 
-      totalOutstanding, 
-      totalRevenue: totalPaid, 
-      totalBilled,
-      collectionRate, 
-      revenueByType 
+      totalOutstanding: calculated.grossReceivables, 
+      totalRevenue: calculated.totalRevenue, 
+      totalBilled: calculated.totalBilled,
+      collectionRate: calculated.collectionRate, 
+      revenueByType: calculated.revenueByType 
     };
-  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData]);
+  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData, classes, budgets]);
 
   const debtAgingStats = useMemo(() => {
     if ((!financialRecords || financialRecords.length === 0) && dashboardSummary?.debtAging !== undefined) {

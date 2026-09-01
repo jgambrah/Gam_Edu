@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { computeFinancialMetrics } from '@/lib/financial-analytics';
 
 export function ExecutiveDirectorCockpit({
   profile,
@@ -109,69 +110,20 @@ export function ExecutiveDirectorCockpit({
     });
   };
 
-  // Calculate Daily Cash Collections (Today) - resets automatically at midnight
-  const todayCashCollected = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // Unified Financial Analytics Engine (Single Source of Truth)
+  const unifiedMetrics = useMemo(() => {
+    return computeFinancialMetrics({
+      financialRecords,
+      payments,
+      students,
+      classes,
+    });
+  }, [financialRecords, payments, students, classes]);
 
-    let total = 0;
-    let count = 0;
-
-    if (payments && payments.length > 0) {
-      payments.forEach((p: any) => {
-        if (p.status === 'Reversed' || p.status === 'Cancelled') return;
-        const rawDate = p.createdAt || p.date || p.timestamp || p.paymentDate;
-        if (!rawDate) return;
-        const pDate = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate);
-        if (!isNaN(pDate.getTime())) {
-          const pStart = new Date(pDate);
-          pStart.setHours(0, 0, 0, 0);
-          if (pStart.getTime() === today.getTime()) {
-            total += Number(p.amount) || Number(p.amountPaid) || 0;
-            count++;
-          }
-        }
-      });
-    }
-
-    if (financialRecords && financialRecords.length > 0) {
-      financialRecords.forEach((r: any) => {
-        if (r.status === 'Pending Reversal') return;
-        if (r.payments && Array.isArray(r.payments)) {
-          r.payments.forEach((p: any) => {
-            const rawDate = p.date || p.createdAt || p.timestamp;
-            if (!rawDate) return;
-            const pDate = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate);
-            if (!isNaN(pDate.getTime())) {
-              const pStart = new Date(pDate);
-              pStart.setHours(0, 0, 0, 0);
-              if (pStart.getTime() === today.getTime()) {
-                if (!payments?.some((existing: any) => existing.id === p.id)) {
-                  total += Number(p.amount) || 0;
-                  count++;
-                }
-              }
-            }
-          });
-        } else if (r.lastPaymentDate) {
-          const rawDate = r.lastPaymentDate;
-          const pDate = rawDate?.toDate ? rawDate.toDate() : new Date(rawDate);
-          if (!isNaN(pDate.getTime())) {
-            const pStart = new Date(pDate);
-            pStart.setHours(0, 0, 0, 0);
-            if (pStart.getTime() === today.getTime()) {
-              if (!payments || payments.length === 0) {
-                total += Number(r.lastPaymentAmount) || Number(r.amountPaid) || 0;
-                count++;
-              }
-            }
-          }
-        }
-      });
-    }
-
-    return { total, count };
-  }, [payments, financialRecords]);
+  const todayCashCollected = useMemo(() => ({
+    total: unifiedMetrics.collectedToday,
+    count: unifiedMetrics.todayCount,
+  }), [unifiedMetrics]);
 
   // Calculate student fee arrears dynamically from real student records
   const allArrearsList = useMemo(() => {
