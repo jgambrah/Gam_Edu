@@ -64,6 +64,63 @@ export function FinancialDashboardView({
   const streamStats = metrics.streamStats;
   const recentPaymentStream = metrics.livePaymentStream;
 
+  const termDates = useMemo(() => {
+    return getActiveTermBounds(budgets);
+  }, [budgets]);
+
+  const activeBudget = useMemo(() => {
+    if (!budgets) return null;
+    return budgets.find((b: any) => {
+      if (b.status !== 'Approved') return false;
+      const start = safeParseDate(b.startDate);
+      const end = safeParseDate(b.endDate);
+      return start && end && today >= start && today <= end;
+    }) || null;
+  }, [budgets, today]);
+
+  const classArrearsHeatmap = useMemo(() => {
+    if (!classes || !students || !financialRecords) return [];
+
+    const classMap = new Map<string, { id: string; name: string; billed: number; paid: number; balance: number; studentCount: number }>();
+
+    classes.forEach((c: any) => {
+      classMap.set(c.id, { id: c.id, name: c.name || 'Class', billed: 0, paid: 0, balance: 0, studentCount: 0 });
+    });
+
+    const recordsByStudent: Record<string, any[]> = {};
+    financialRecords.forEach((r: any) => {
+      if (r.status === 'Pending Reversal') return;
+      const key = r.studentId;
+      if (!recordsByStudent[key]) recordsByStudent[key] = [];
+      recordsByStudent[key].push(r);
+    });
+
+    students.forEach((s: any) => {
+      const isActive = s.enrollmentStatus === 'Active' || !s.enrollmentStatus;
+      if (!isActive) return;
+      const cId = s.classId;
+      const classData = classMap.get(cId);
+      if (!classData) return;
+
+      classData.studentCount++;
+      const sRecords = recordsByStudent[s.uid] || recordsByStudent[s.id] || [];
+      sRecords.forEach((r: any) => {
+        const billed = Number(r.billedAmount) || 0;
+        const paid = (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0);
+        classData.billed += billed;
+        classData.paid += paid;
+        classData.balance += (billed - paid);
+      });
+    });
+
+    return Array.from(classMap.values())
+      .map((c: any) => {
+        const rate = c.billed > 0 ? Math.round((c.paid / c.billed) * 100) : 100;
+        return { ...c, collectionRate: rate };
+      })
+      .sort((a: any, b: any) => b.balance - a.balance);
+  }, [classes, students, financialRecords]);
+
   // 3. Expenditure Category Breakdown
   const expensesByCategory = useMemo(() => {
     let payroll = 0;
