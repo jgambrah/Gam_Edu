@@ -320,66 +320,8 @@ export function FinancialDashboardView({
     return list.slice(0, 5);
   }, [financialRecords, students, classes, arrearsThreshold, schoolSettings]);
 
-  // 6. Debt Aging Analysis
-  const debtAgingStats = useMemo(() => {
-    let current = 0;
-    let age30 = 0;
-    let age60 = 0;
-    let age90 = 0;
-    let overpayments = 0;
-    
-    if (!financialRecords) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
-    
-    const todayVal = startOfDay(new Date());
-
-    financialRecords.forEach((r: any) => {
-      if (r.status === 'Pending Reversal') return;
-      
-      const studentObj = students?.find((s: any) => 
-        s.uid === r.studentId || 
-        s.id === r.studentId || 
-        s.studentId === r.studentId || 
-        s.admissionNo === r.studentId
-      );
-      if (studentObj && studentObj.enrollmentStatus && studentObj.enrollmentStatus !== 'Active') return;
-      if (studentObj && studentObj.isSponsored) return;
-      
-      const billed = Number(r.billedAmount) || 0;
-      const paid = Number(r.amountPaid) || 0;
-      const waiver = Number(r.waiverAmount) || 0;
-      const balance = billed - paid - waiver;
-
-      if (balance < 0) {
-        overpayments += Math.abs(balance);
-        return;
-      }
-      if (balance <= 0.01) return;
-
-      const dueDate = safeParseDate(r.dueDate || r.date || r.createdAt);
-      if (!dueDate) {
-        // Fallback: If no due date, categorize under 1-30 Days
-        age30 += balance;
-        return;
-      }
-
-      const diffTime = todayVal.getTime() - startOfDay(dueDate).getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays <= 0) {
-        current += balance;
-      } else if (diffDays <= 30) {
-        age30 += balance;
-      } else if (diffDays <= 60) {
-        age60 += balance;
-      } else {
-        age90 += balance;
-      }
-    });
-
-    const total = current + age30 + age60 + age90 - overpayments;
-    const grossTotal = current + age30 + age60 + age90;
-    return { current, age30, age60, age90, total, overpayments, grossTotal };
-  }, [financialRecords, students]);
+  // 6. Debt Aging Analysis (Single Source of Truth from computeFinancialMetrics)
+  const debtAgingStats = metrics.debtAgingStats;
 
   // Chart Data Preparation
   const expenseChartData = [
@@ -758,11 +700,11 @@ export function FinancialDashboardView({
                       title={`31-60 Days: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
                     />
                   )}
-                  {debtAgingStats.age90 > 0 && (
+                  {(debtAgingStats.age90 + (debtAgingStats.over90 || 0)) > 0 && (
                     <div 
-                      style={{ width: `${(debtAgingStats.age90 / debtAgingStats.grossTotal) * 100}%` }} 
+                      style={{ width: `${((debtAgingStats.age90 + (debtAgingStats.over90 || 0)) / debtAgingStats.grossTotal) * 100}%` }} 
                       className="bg-rose-600 transition-all duration-500 hover:opacity-90 cursor-pointer"
-                      title={`61+ Days: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
+                      title={`61+ Days: GH₵ ${(debtAgingStats.age90 + (debtAgingStats.over90 || 0)).toFixed(2)}`}
                     />
                   )}
                 </>
@@ -806,10 +748,10 @@ export function FinancialDashboardView({
               <div className="p-5 border-l-4 border-l-rose-600 bg-slate-50/50 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
                 <p className="text-[10px] uppercase font-black text-slate-400 tracking-wider">61+ Days</p>
                 <p className="text-lg font-black text-rose-600 mt-2">
-                  GH₵ {debtAgingStats.age90.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  GH₵ {(debtAgingStats.age90 + (debtAgingStats.over90 || 0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight mt-1">
-                  {debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age90 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross
+                  {debtAgingStats.grossTotal > 0 ? (((debtAgingStats.age90 + (debtAgingStats.over90 || 0)) / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross
                 </p>
               </div>
 

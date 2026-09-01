@@ -117,8 +117,9 @@ export function ExecutiveDirectorCockpit({
       payments,
       students,
       classes,
+      campusId: selectedCampus,
     });
-  }, [financialRecords, payments, students, classes]);
+  }, [financialRecords, payments, students, classes, selectedCampus]);
 
   const todayCashCollected = useMemo(() => ({
     total: unifiedMetrics.collectedToday,
@@ -127,57 +128,20 @@ export function ExecutiveDirectorCockpit({
 
   // Calculate student fee arrears dynamically from real student records
   const allArrearsList = useMemo(() => {
-    if (!financialRecords || financialRecords.length === 0) return [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const map: Record<string, { studentName: string; amount: number; maxDaysOverdue: number }> = {};
-
-    financialRecords.forEach((r: any) => {
-      if (r.status === 'Pending Reversal') return;
-      const billed = Number(r.billedAmount) || 0;
-      const paid = Number(r.amountPaid) || 0;
-      const waiver = Number(r.waiverAmount) || 0;
-      const balance = billed - paid - waiver;
-      if (balance <= 0.01) return;
-
-      let diffDays = 0;
-      if (r.dueDate) {
-        const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
-        const dueDateStart = new Date(dueDate);
-        dueDateStart.setHours(0, 0, 0, 0);
-        if (dueDateStart < today) {
-          diffDays = Math.ceil((today.getTime() - dueDateStart.getTime()) / (1000 * 3600 * 24));
-        }
-      }
-
-      const key = r.studentId || r.id;
-      if (!map[key]) {
-        map[key] = {
-          studentName: r.studentName || 'Student',
-          amount: balance,
-          maxDaysOverdue: diffDays,
-        };
-      } else {
-        map[key].amount += balance;
-        map[key].maxDaysOverdue = Math.max(map[key].maxDaysOverdue, diffDays);
-      }
-    });
-
-    return Object.values(map).sort((a, b) => b.amount - a.amount);
-  }, [financialRecords, students, classes]);
+    return unifiedMetrics.arrearsRoster;
+  }, [unifiedMetrics]);
 
   const highArrearsList = useMemo(() => {
-    return allArrearsList.filter(item => item.maxDaysOverdue > 60);
+    return allArrearsList.filter(item => item.daysOverdue > 60);
   }, [allArrearsList]);
 
   const displayedArrearsList = useMemo(() => {
     if (!selectedAgingCategory) return highArrearsList;
     return allArrearsList.filter(item => {
-      if (selectedAgingCategory === '< 30 Days') return item.maxDaysOverdue <= 30;
-      if (selectedAgingCategory === '30 - 60 Days') return item.maxDaysOverdue > 30 && item.maxDaysOverdue <= 60;
-      if (selectedAgingCategory === '60 - 90 Days') return item.maxDaysOverdue > 60 && item.maxDaysOverdue <= 90;
-      if (selectedAgingCategory === '> 90 Days') return item.maxDaysOverdue > 90;
+      if (selectedAgingCategory === '< 30 Days') return item.daysOverdue <= 30;
+      if (selectedAgingCategory === '30 - 60 Days') return item.daysOverdue > 30 && item.daysOverdue <= 60;
+      if (selectedAgingCategory === '60 - 90 Days') return item.daysOverdue > 60 && item.daysOverdue <= 90;
+      if (selectedAgingCategory === '> 90 Days') return item.daysOverdue > 90;
       return true;
     });
   }, [allArrearsList, highArrearsList, selectedAgingCategory]);
@@ -187,27 +151,27 @@ export function ExecutiveDirectorCockpit({
   }, [highArrearsList]);
 
   // Fee Receivables Aging Data (Gross Debt Breakdown & Advance Payment Reconciliation)
-  const age60Bucket = debtAgingStats.age60 || 14682;
-  const age90Bucket = debtAgingStats.age90 || 79856;
-  const overdue60PlusSum = age60Bucket + age90Bucket; // GH₵ 94,538
-  const overdue60PlusCount = 5; // 3 + 2 accounts
+  const age60Bucket = unifiedMetrics.debtAgingStats.age60;
+  const age90Bucket = unifiedMetrics.debtAgingStats.age90 + unifiedMetrics.debtAgingStats.over90;
+  const overdue60PlusSum = age60Bucket + age90Bucket;
+  const overdue60PlusCount = unifiedMetrics.debtAgingStats.accountCounts.overdue60Plus;
 
   // Centralized Executive Telemetry Store (Single Source of Truth)
   const telemetry = useMemo(() => {
     const pendingStaffCheckins = (todayTeacherAttendance?.absent && Array.isArray(todayTeacherAttendance.absent) && todayTeacherAttendance.absent.length > 0)
       ? todayTeacherAttendance.absent.length
-      : 11;
+      : (staff?.length ? Math.round(staff.length * 0.1) : 0);
 
-    const currentBucket = debtAgingStats.current || 18500; // Debt < 30 days (distinct from advance payments credit)
-    const age30Bucket = debtAgingStats.age30 || 8985;
-    const grossTotalDebt = currentBucket + age30Bucket + age60Bucket + age90Bucket; // 122,023
-    const advancePaymentsCredit = debtAgingStats.advancePayments || 12500; // Parent Advance Tuition & Overpayment Credits (12,500)
-    const netOutstandingDebt = grossTotalDebt - advancePaymentsCredit; // 109,523 Net Arrears
+    const currentBucket = unifiedMetrics.debtAgingStats.current;
+    const age30Bucket = unifiedMetrics.debtAgingStats.age30;
+    const grossTotalDebt = unifiedMetrics.debtAgingStats.grossTotal;
+    const advancePaymentsCredit = unifiedMetrics.debtAgingStats.advancePayments;
+    const netOutstandingDebt = unifiedMetrics.debtAgingStats.netTotal;
 
     return {
       pendingStaffCheckins,
       highArrearsCount: overdue60PlusCount,
-      highArrearsOverdueSum: totalHighArrearsSum || overdue60PlusSum,
+      highArrearsOverdueSum: overdue60PlusSum,
       currentBucket,
       age30Bucket,
       age60Bucket,
@@ -221,7 +185,7 @@ export function ExecutiveDirectorCockpit({
       topPerformingSubject: 'Grade 6 Science',
       topPerformingScore: 94.2,
     };
-  }, [todayTeacherAttendance, totalHighArrearsSum, debtAgingStats, unifiedMetrics, age60Bucket, age90Bucket, overdue60PlusSum]);
+  }, [todayTeacherAttendance, staff, unifiedMetrics, age60Bucket, age90Bucket, overdue60PlusSum, overdue60PlusCount]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
   const activeFacultyCount = staff?.length || 22;
@@ -234,11 +198,12 @@ export function ExecutiveDirectorCockpit({
   const advancePaymentsCredit = telemetry.advancePaymentsCredit;
   const netOutstandingDebt = telemetry.netOutstandingDebt;
 
+  const grossDebtForPct = grossTotalDebt > 0 ? grossTotalDebt : 1;
   const agingData = [
-    { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossTotalDebt) * 100), color: '#3b82f6', label: 'Current', accountCount: 5 },
-    { range: '30 - 60 Days', amount: age30Bucket, percentage: Math.round((age30Bucket / grossTotalDebt) * 100), color: '#f59e0b', label: 'Moderate', accountCount: 4 },
-    { range: '60 - 90 Days', amount: age60Bucket, percentage: Math.round((age60Bucket / grossTotalDebt) * 100), color: '#f97316', label: 'High Priority', accountCount: 3 },
-    { range: '> 90 Days', amount: age90Bucket, percentage: Math.round((age90Bucket / grossTotalDebt) * 100), color: '#ef4444', label: 'Critical Arrears', accountCount: 2 },
+    { range: '< 30 Days', amount: currentBucket, percentage: Math.round((currentBucket / grossDebtForPct) * 100), color: '#3b82f6', label: 'Current', accountCount: unifiedMetrics.debtAgingStats.accountCounts.current },
+    { range: '30 - 60 Days', amount: age30Bucket, percentage: Math.round((age30Bucket / grossDebtForPct) * 100), color: '#f59e0b', label: 'Moderate', accountCount: unifiedMetrics.debtAgingStats.accountCounts.age30 },
+    { range: '60 - 90 Days', amount: age60Bucket, percentage: Math.round((age60Bucket / grossDebtForPct) * 100), color: '#f97316', label: 'High Priority', accountCount: unifiedMetrics.debtAgingStats.accountCounts.age60 },
+    { range: '> 90 Days', amount: age90Bucket, percentage: Math.round((age90Bucket / grossDebtForPct) * 100), color: '#ef4444', label: 'Critical Arrears', accountCount: unifiedMetrics.debtAgingStats.accountCounts.age90 + unifiedMetrics.debtAgingStats.accountCounts.over90 },
   ];
 
   // Inline Micro Sparkline SVG Component for KPI cards
@@ -653,7 +618,7 @@ export function ExecutiveDirectorCockpit({
                 Tuition Arrears
               </span>
               <p className="text-xs text-slate-700 font-medium truncate">
-                GH₵ {Math.round((totalHighArrearsSum || 50000) / 1000)}k+ overdue across 14 accounts (&gt;60 days)
+                GH₵ {Math.round(overdue60PlusSum).toLocaleString()} overdue across {overdue60PlusCount} accounts (&gt;60 days)
               </p>
             </div>
             <DropdownMenu>
@@ -669,7 +634,7 @@ export function ExecutiveDirectorCockpit({
                   className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
                 >
                   <Send className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-                  <span>Dispatch All Notices (14 Accounts)</span>
+                  <span>Dispatch All Notices ({overdue60PlusCount} Accounts)</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => {
@@ -1036,22 +1001,22 @@ export function ExecutiveDirectorCockpit({
                 </div>
                 <div className="mt-2 space-y-1.5">
                   <div className="flex items-baseline justify-between gap-1">
-                    <h3 className="text-2xl font-bold text-slate-900">{financials.collectionRate || 74}%</h3>
-                    <Sparkline points={[68, 70, 71, 72, 74]} color="#10b981" />
+                    <h3 className="text-2xl font-bold text-slate-900">{unifiedMetrics.collectionRate}%</h3>
+                    <Sparkline points={[68, 70, 71, 72, unifiedMetrics.collectionRate]} color="#10b981" />
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="font-semibold text-emerald-600 flex items-center">
-                      <TrendingUp className="h-3 w-3 mr-0.5" /> +4.2% Δ vs last term
+                      <TrendingUp className="h-3 w-3 mr-0.5" /> Collection Target Status
                     </span>
                   </div>
                   <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
                     <div className="flex items-center justify-between font-medium text-slate-600">
                       <span>Billed Target:</span>
-                      <span className="font-semibold text-slate-800">GH₵ {Math.round((financials.totalBilled || 252100) / 1000)}k</span>
+                      <span className="font-semibold text-slate-800">GH₵ {Math.round(unifiedMetrics.totalBilled).toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between font-medium text-slate-600">
                       <span>Collected Revenue:</span>
-                      <span className="font-semibold text-emerald-700">GH₵ {financials.collectedThisTerm ? Math.round(financials.collectedThisTerm).toLocaleString() : (financials.totalRevenue ? Math.round(financials.totalRevenue / 1000) + 'k' : '85,684')}</span>
+                      <span className="font-semibold text-emerald-700">GH₵ {Math.round(unifiedMetrics.collectedThisTerm || unifiedMetrics.totalRevenue).toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -1258,15 +1223,15 @@ export function ExecutiveDirectorCockpit({
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Total Billed</p>
-                      <p className="font-black text-sm text-slate-800">GH₵ {Math.round(financials.totalBilled || 252100).toLocaleString()}</p>
+                      <p className="font-black text-sm text-slate-800">GH₵ {Math.round(unifiedMetrics.totalBilled).toLocaleString()}</p>
                     </div>
                     <div className="p-3 bg-emerald-50 rounded-xl">
                       <p className="text-[10px] text-emerald-700">Collected</p>
-                      <p className="font-black text-sm text-emerald-700">GH₵ {Math.round(financials.totalRevenue || 187800).toLocaleString()}</p>
+                      <p className="font-black text-sm text-emerald-700">GH₵ {Math.round(unifiedMetrics.totalRevenue).toLocaleString()}</p>
                     </div>
                     <div className="p-3 bg-red-50 rounded-xl">
                       <p className="text-[10px] text-red-700">Total Arrears</p>
-                      <p className="font-black text-sm text-red-700">GH₵ {Math.round(debtAgingStats.grossTotal || 103500).toLocaleString()}</p>
+                      <p className="font-black text-sm text-red-700">GH₵ {Math.round(unifiedMetrics.grossReceivables).toLocaleString()}</p>
                     </div>
                   </div>
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('financials'); }} className="w-full bg-slate-900 text-white font-bold rounded-xl">

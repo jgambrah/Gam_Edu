@@ -68,11 +68,33 @@ export interface DebtAgingBreakdown {
   age30: number;
   age60: number;
   age90: number;
+  over90: number;
   overpayments: number;
   advancePayments: number;
   total: number;
   grossTotal: number;
   netTotal: number;
+  accountCounts: {
+    current: number;
+    age30: number;
+    age60: number;
+    age90: number;
+    over90: number;
+    totalOverdue: number;
+    overdue60Plus: number;
+  };
+}
+
+export interface FinancialMetricsFilterOptions {
+  financialRecords?: any[];
+  payments?: any[];
+  students?: any[];
+  classes?: any[];
+  budgets?: any[];
+  campusId?: string;
+  termId?: string;
+  academicYear?: string;
+  arrearsThreshold?: number;
 }
 
 export interface FinancialMetricsResult {
@@ -228,20 +250,46 @@ export function computeFinancialMetrics({
   students = [],
   classes = [],
   budgets = [],
+  campusId,
+  termId,
+  academicYear,
   arrearsThreshold = 0,
-}: {
-  financialRecords?: any[];
-  payments?: any[];
-  students?: any[];
-  classes?: any[];
-  budgets?: any[];
-  arrearsThreshold?: number;
-}): FinancialMetricsResult {
+}: FinancialMetricsFilterOptions): FinancialMetricsResult {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
   const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
   const startOfThisYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
   const termBounds = getActiveTermBounds(budgets);
+
+  // Filter students by campus if specified
+  const filteredStudents = useMemoFilterStudents(students, campusId);
+  const activeStudentIds = new Set(
+    filteredStudents
+      ? filteredStudents
+          .filter((s: any) => s.enrollmentStatus === 'Active' && s.status !== 'Inactive' && s.isActive !== false)
+          .map((s: any) => s.uid || s.id)
+      : []
+  );
+
+  // Filter financial records by campus, term, and academic year
+  const filteredRecords = financialRecords.filter((r: any) => {
+    if (r.status === 'Pending Reversal') return false;
+    if (activeStudentIds.size > 0 && r.studentId && !activeStudentIds.has(r.studentId)) return false;
+    if (campusId && campusId !== 'all' && r.campusId && r.campusId !== campusId) return false;
+    if (termId && r.termId && r.termId !== termId) return false;
+    if (academicYear && r.academicYear && r.academicYear !== academicYear) return false;
+    return true;
+  });
+
+  // Filter payments by term, academic year, campus
+  const filteredPayments = payments.filter((p: any) => {
+    if (p.status === 'Reversed' || p.status === 'Cancelled' || p.status === 'Pending Reversal') return false;
+    if (activeStudentIds.size > 0 && p.studentId && !activeStudentIds.has(p.studentId)) return false;
+    if (campusId && campusId !== 'all' && p.campusId && p.campusId !== campusId) return false;
+    if (termId && p.termId && p.termId !== termId) return false;
+    if (academicYear && p.academicYear && p.academicYear !== academicYear) return false;
+    return true;
+  });
 
   let collectedToday = 0;
   let todayCount = 0;
@@ -293,7 +341,7 @@ export function computeFinancialMetrics({
     else otherStream += amount;
 
     // Student & Class Name Lookup
-    const studentObj = students?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
+    const studentObj = filteredStudents?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
     const classObj = classes?.find((c: any) => c.id === (studentObj?.classId || p.classId));
 
     const categoryLabelMap: Record<string, string> = {
@@ -322,14 +370,13 @@ export function computeFinancialMetrics({
   };
 
   // 1. Process explicit payments array
-  if (payments && payments.length > 0) {
-    payments.forEach(p => processPaymentEntry(p));
+  if (filteredPayments && filteredPayments.length > 0) {
+    filteredPayments.forEach(p => processPaymentEntry(p));
   }
 
   // 2. Process financialRecords subcollections and lastPaymentDate if not already processed
-  if (financialRecords && financialRecords.length > 0) {
-    financialRecords.forEach((r: any) => {
-      if (r.status === 'Pending Reversal') return;
+  if (filteredRecords && filteredRecords.length > 0) {
+    filteredRecords.forEach((r: any) => {
       if (r.payments && Array.isArray(r.payments) && r.payments.length > 0) {
         r.payments.forEach((p: any) => {
           processPaymentEntry({
@@ -365,16 +412,7 @@ export function computeFinancialMetrics({
 
   const arrearsRoster: FinancialMetricsResult['arrearsRoster'] = [];
 
-  const activeStudentIds = new Set(
-    students
-      ? students.filter((s: any) => s.enrollmentStatus === 'Active' && s.status !== 'Inactive' && s.isActive !== false).map((s: any) => s.uid || s.id)
-      : []
-  );
-
-  financialRecords.forEach((r: any) => {
-    if (r.status === 'Pending Reversal') return;
-    if (activeStudentIds.size > 0 && r.studentId && !activeStudentIds.has(r.studentId)) return;
-
+  filteredRecords.forEach((r: any) => {
     const billed = Number(r.billedAmount) || 0;
     const paid = Number(r.amountPaid) || 0;
     const waiver = Number(r.waiverAmount) || 0;
@@ -393,7 +431,7 @@ export function computeFinancialMetrics({
       else if (cat === 'transport') outstandingTransport += balance;
       else outstandingOther += balance;
 
-      const studentObj = students?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
+      const studentObj = filteredStudents?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
       const classObj = classes?.find((c: any) => c.id === (studentObj?.classId || r.classId));
       const dueDate = safeParseDate(r.dueDate);
       const daysOverdue = dueDate && dueDate < now ? Math.ceil((now.getTime() - dueDate.getTime()) / (1000 * 3600 * 24)) : 0;
@@ -413,7 +451,6 @@ export function computeFinancialMetrics({
   });
 
   const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
-  const netReceivables = Math.max(0, grossReceivables - totalWaivers);
 
   // Stream stats totals
   const streamStats: RevenueStreamBreakdown = {
@@ -443,7 +480,7 @@ export function computeFinancialMetrics({
   // 30-Day Liquidity Buffer & Cash Flow Projections
   const dailyRunRate = collectedThisMonth > 0 ? collectedThisMonth / Math.max(1, now.getDate()) : totalRevenue / 30;
   const thirtyDayInflowProjection = Math.round(dailyRunRate * 30);
-  const liquidityBufferAmount = totalRevenue > 0 ? totalRevenue * 0.35 : 15000;
+  const liquidityBufferAmount = totalRevenue > 0 ? totalRevenue * 0.35 : 0;
   const liquidityCoverageMonths = 2.4;
 
   // Sort live payment stream newest first
@@ -454,12 +491,18 @@ export function computeFinancialMetrics({
   let aging30 = 0;
   let aging60 = 0;
   let aging90 = 0;
+  let agingOver90 = 0;
   let overpayments = 0;
 
-  financialRecords.forEach((r: any) => {
-    if (r.status === 'Pending Reversal') return;
-    if (activeStudentIds.size > 0 && r.studentId && !activeStudentIds.has(r.studentId)) return;
+  const countMap = {
+    current: 0,
+    age30: 0,
+    age60: 0,
+    age90: 0,
+    over90: 0,
+  };
 
+  filteredRecords.forEach((r: any) => {
     const billed = Number(r.billedAmount) || 0;
     const paid = Number(r.amountPaid) || 0;
     const waiver = Number(r.waiverAmount) || 0;
@@ -474,36 +517,60 @@ export function computeFinancialMetrics({
     const dueDate = safeParseDate(r.dueDate || r.date || r.createdAt);
     if (!dueDate) {
       aging30 += balance;
+      countMap.age30++;
       return;
     }
 
     const diffDays = Math.ceil((now.getTime() - startOfDay(dueDate).getTime()) / (1000 * 3600 * 24));
     if (diffDays <= 0) {
       agingCurrent += balance;
+      countMap.current++;
     } else if (diffDays <= 30) {
       aging30 += balance;
+      countMap.age30++;
     } else if (diffDays <= 60) {
       aging60 += balance;
-    } else {
+      countMap.age60++;
+    } else if (diffDays <= 90) {
       aging90 += balance;
+      countMap.age90++;
+    } else {
+      agingOver90 += balance;
+      countMap.over90++;
     }
   });
 
-  const grossAgingTotal = (agingCurrent || 18500) + (aging30 || 8985) + (aging60 || 14682) + (aging90 || 79856);
-  const advancePaymentsCredit = overpayments > 0 ? overpayments : 12500;
-  const netAgingTotal = grossAgingTotal - advancePaymentsCredit;
+  const grossAgingTotal = agingCurrent + aging30 + aging60 + aging90 + agingOver90;
+  const advancePaymentsCredit = overpayments;
+  const netAgingTotal = Math.max(0, grossAgingTotal - advancePaymentsCredit);
+
+  const totalOverdueAccounts = countMap.age30 + countMap.age60 + countMap.age90 + countMap.over90;
+  const overdue60PlusAccounts = countMap.age60 + countMap.age90 + countMap.over90;
 
   const debtAgingStats: DebtAgingBreakdown = {
-    current: agingCurrent || 18500,
-    age30: aging30 || 8985,
-    age60: aging60 || 14682,
-    age90: aging90 || 79856,
+    current: agingCurrent,
+    age30: aging30,
+    age60: aging60,
+    age90: aging90,
+    over90: agingOver90,
     overpayments: advancePaymentsCredit,
     advancePayments: advancePaymentsCredit,
     total: netAgingTotal,
     grossTotal: grossAgingTotal,
-    netTotal: netAgingTotal
+    netTotal: netAgingTotal,
+    accountCounts: {
+      current: countMap.current,
+      age30: countMap.age30,
+      age60: countMap.age60,
+      age90: countMap.age90,
+      over90: countMap.over90,
+      totalOverdue: totalOverdueAccounts,
+      overdue60Plus: overdue60PlusAccounts,
+    }
   };
+
+  const calculatedGrossReceivables = grossReceivables || grossAgingTotal;
+  const calculatedNetReceivables = Math.max(0, calculatedGrossReceivables - advancePaymentsCredit);
 
   return {
     collectedToday,
@@ -516,8 +583,8 @@ export function computeFinancialMetrics({
     totalBilled,
     totalPaid,
     totalWaivers,
-    grossReceivables: grossReceivables || grossAgingTotal,
-    netReceivables: Math.max(0, (grossReceivables || grossAgingTotal) - advancePaymentsCredit),
+    grossReceivables: calculatedGrossReceivables,
+    netReceivables: calculatedNetReceivables,
     collectionRate,
     debtAgingStats,
 
@@ -537,3 +604,17 @@ export function computeFinancialMetrics({
     arrearsRoster: arrearsRoster.sort((a, b) => b.amount - a.amount)
   };
 }
+
+/**
+ * Helper to filter student array by campus identifier
+ */
+function useMemoFilterStudents(students: any[], campusId?: string): any[] {
+  if (!students || students.length === 0) return [];
+  if (!campusId || campusId === 'all') return students;
+  return students.filter((s: any) => {
+    const sCampus = (s.campusId || s.campus || s.branch || '').toString().toLowerCase();
+    const cId = campusId.toString().toLowerCase();
+    return sCampus === cId || (cId === 'main' && (sCampus.includes('main') || !sCampus));
+  });
+}
+

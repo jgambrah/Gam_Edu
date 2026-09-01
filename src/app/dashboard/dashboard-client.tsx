@@ -1126,7 +1126,7 @@ function AdminDashboard({
       return {
         totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
         totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
-        collectedThisTerm: dashboardSummary.financials.collectedThisTerm ?? 85684,
+        collectedThisTerm: dashboardSummary.financials.collectedThisTerm ?? 0,
         collectedToday: dashboardSummary.financials.collectedToday ?? 0,
         collectedThisMonth: dashboardSummary.financials.collectedThisMonth ?? 0,
         totalBilled: dashboardSummary.financials.totalBilled ?? 0,
@@ -1159,18 +1159,28 @@ function AdminDashboard({
 
   const debtAgingStats = useMemo(() => {
     if ((!financialRecords || financialRecords.length === 0) && dashboardSummary?.debtAging !== undefined) {
-      const g = (dashboardSummary.debtAging.current ?? 18500) + (dashboardSummary.debtAging.age30 ?? 8985) + (dashboardSummary.debtAging.age60 ?? 14682) + (dashboardSummary.debtAging.age90 ?? 79856);
-      const adv = dashboardSummary.debtAging.overpayments ?? 12500;
+      const g = (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0);
+      const adv = dashboardSummary.debtAging.overpayments ?? 0;
       return {
-        current: dashboardSummary.debtAging.current ?? 18500,
-        age30: dashboardSummary.debtAging.age30 ?? 8985,
-        age60: dashboardSummary.debtAging.age60 ?? 14682,
-        age90: dashboardSummary.debtAging.age90 ?? 79856,
+        current: dashboardSummary.debtAging.current ?? 0,
+        age30: dashboardSummary.debtAging.age30 ?? 0,
+        age60: dashboardSummary.debtAging.age60 ?? 0,
+        age90: dashboardSummary.debtAging.age90 ?? 0,
+        over90: 0,
         overpayments: adv,
         advancePayments: adv,
-        total: g - adv,
+        total: Math.max(0, g - adv),
         grossTotal: g,
-        netTotal: g - adv
+        netTotal: Math.max(0, g - adv),
+        accountCounts: {
+          current: 0,
+          age30: 0,
+          age60: 0,
+          age90: 0,
+          over90: 0,
+          totalOverdue: 0,
+          overdue60Plus: 0,
+        }
       };
     }
 
