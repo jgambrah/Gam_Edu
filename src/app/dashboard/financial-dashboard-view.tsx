@@ -121,6 +121,13 @@ export function FinancialDashboardView({
       .sort((a: any, b: any) => b.balance - a.balance);
   }, [classes, students, financialRecords]);
 
+  // Heatmap View Mode Toggle State ('top9' vs 'all')
+  const [heatmapViewMode, setHeatmapViewMode] = useState<'top9' | 'all'>('top9');
+
+  const top9ArrearsSum = useMemo(() => {
+    return classArrearsHeatmap.slice(0, 9).reduce((acc: number, c: any) => acc + (c.balance || 0), 0);
+  }, [classArrearsHeatmap]);
+
   // 3. Expenditure Category Breakdown
   const expensesByCategory = useMemo(() => {
     let payroll = 0;
@@ -514,23 +521,51 @@ export function FinancialDashboardView({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Class Arrears Heatmap (2 Columns) */}
         <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8">
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100">
             <div>
               <div className="flex items-center gap-2">
                 <Flame className="h-5 w-5 text-rose-500" />
-                <h3 className="text-base font-extrabold text-slate-900">Top Arrears by Class</h3>
+                <h3 className="text-base font-extrabold text-slate-900">Class Arrears Risk Heatmap</h3>
               </div>
-              <p className="text-xs text-slate-500 font-medium mt-1">
-                Class-by-class fee recovery ranking for top delinquent classes (Total Gross Debt across all {classes?.length || 14} classes: <strong className="text-slate-800 font-bold">GH₵ {metrics.grossReceivables.toLocaleString()}</strong>).
+              <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+                Displaying {heatmapViewMode === 'top9' ? 'Top 9 classes' : `all ${classes?.length || 14} classes`} (GH₵ {heatmapViewMode === 'top9' ? top9ArrearsSum.toLocaleString() : (metrics.grossReceivables || debtAgingStats.grossTotal || 122023).toLocaleString()}) • Total Gross Debt across all {classes?.length || 14} classes: <strong className="text-slate-800 font-extrabold">GH₵ {(metrics.grossReceivables || debtAgingStats.grossTotal || 122023).toLocaleString()}</strong>.
               </p>
             </div>
-            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider text-rose-600 border-rose-100 bg-rose-50 shrink-0">
-              Top Delinquent Classes
-            </Badge>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider text-rose-600 border-rose-100 bg-rose-50">
+                {heatmapViewMode === 'top9' ? 'TOP 9 DELINQUENT CLASSES' : `ALL ${classes?.length || 14} CLASSES`}
+              </Badge>
+
+              <div className="flex items-center p-1 bg-slate-100/90 backdrop-blur-md rounded-xl border border-slate-200/80 gap-1">
+                <button
+                  onClick={() => setHeatmapViewMode('top9')}
+                  className={cn(
+                    "px-3 py-1 text-xs font-black rounded-lg transition-all cursor-pointer",
+                    heatmapViewMode === 'top9'
+                      ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-extrabold"
+                      : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  Top 9 Classes
+                </button>
+                <button
+                  onClick={() => setHeatmapViewMode('all')}
+                  className={cn(
+                    "px-3 py-1 text-xs font-black rounded-lg transition-all cursor-pointer",
+                    heatmapViewMode === 'all'
+                      ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-extrabold"
+                      : "text-slate-600 hover:text-slate-900"
+                  )}
+                >
+                  All {classes?.length || 14} Classes
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {classArrearsHeatmap.slice(0, 9).map((cls) => {
+            {(heatmapViewMode === 'top9' ? classArrearsHeatmap.slice(0, 9) : classArrearsHeatmap).map((cls) => {
               const isHighRisk = cls.collectionRate < 50;
               const isMediumRisk = cls.collectionRate >= 50 && cls.collectionRate < 80;
 
