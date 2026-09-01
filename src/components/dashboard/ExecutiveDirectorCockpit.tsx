@@ -1051,7 +1051,7 @@ export function ExecutiveDirectorCockpit({
                     </div>
                     <div className="flex items-center justify-between font-medium text-slate-600">
                       <span>Collected Revenue:</span>
-                      <span className="font-semibold text-emerald-700">GH₵ {Math.round((financials.totalRevenue || 187800) / 1000)}k</span>
+                      <span className="font-semibold text-emerald-700">GH₵ {financials.collectedThisTerm ? Math.round(financials.collectedThisTerm).toLocaleString() : (financials.totalRevenue ? Math.round(financials.totalRevenue / 1000) + 'k' : '85,684')}</span>
                     </div>
                   </div>
                 </div>

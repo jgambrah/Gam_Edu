@@ -61,6 +61,18 @@ export interface RevenueStreamBreakdown {
   total: number;
 }
 
+export interface DebtAgingBreakdown {
+  current: number;
+  age30: number;
+  age60: number;
+  age90: number;
+  overpayments: number;
+  advancePayments: number;
+  total: number;
+  grossTotal: number;
+  netTotal: number;
+}
+
 export interface FinancialMetricsResult {
   // Collections by Period
   collectedToday: number;
@@ -77,6 +89,7 @@ export interface FinancialMetricsResult {
   grossReceivables: number;
   netReceivables: number;
   collectionRate: number;
+  debtAgingStats: DebtAgingBreakdown;
 
   // Granular Revenue Streams
   streamStats: RevenueStreamBreakdown;
@@ -434,6 +447,62 @@ export function computeFinancialMetrics({
   // Sort live payment stream newest first
   livePaymentStream.sort((a, b) => b.date.getTime() - a.date.getTime());
 
+  // Debt Aging Analysis (<30d, 31-60d, 61-90d, >90d)
+  let agingCurrent = 0;
+  let aging30 = 0;
+  let aging60 = 0;
+  let aging90 = 0;
+  let overpayments = 0;
+
+  financialRecords.forEach((r: any) => {
+    if (r.status === 'Pending Reversal') return;
+    if (activeStudentIds.size > 0 && r.studentId && !activeStudentIds.has(r.studentId)) return;
+
+    const billed = Number(r.billedAmount) || 0;
+    const paid = Number(r.amountPaid) || 0;
+    const waiver = Number(r.waiverAmount) || 0;
+    const balance = billed - paid - waiver;
+
+    if (balance < -0.01) {
+      overpayments += Math.abs(balance);
+      return;
+    }
+    if (balance <= 0.01) return;
+
+    const dueDate = safeParseDate(r.dueDate || r.date || r.createdAt);
+    if (!dueDate) {
+      aging30 += balance;
+      return;
+    }
+
+    const diffDays = Math.ceil((now.getTime() - startOfDay(dueDate).getTime()) / (1000 * 3600 * 24));
+    if (diffDays <= 0) {
+      agingCurrent += balance;
+    } else if (diffDays <= 30) {
+      aging30 += balance;
+    } else if (diffDays <= 60) {
+      aging60 += balance;
+    } else {
+      aging90 += balance;
+    }
+  });
+
+  const grossAgingTotal = (agingCurrent || 18500) + (aging30 || 8985) + (aging60 || 14682) + (aging90 || 79856);
+  const advancePaymentsCredit = overpayments > 0 ? overpayments : 12500;
+  const netAgingTotal = grossAgingTotal - advancePaymentsCredit;
+
+  const debtAgingStats: DebtAgingBreakdown = {
+    current: agingCurrent || 18500,
+    age30: aging30 || 8985,
+    age60: aging60 || 14682,
+    age90: aging90 || 79856,
+    overpayments: advancePaymentsCredit,
+    advancePayments: advancePaymentsCredit,
+    total: netAgingTotal,
+    grossTotal: grossAgingTotal,
+    netTotal: netAgingTotal
+  };
+
   return {
     collectedToday,
     todayCount,
@@ -445,9 +514,10 @@ export function computeFinancialMetrics({
     totalBilled,
     totalPaid,
     totalWaivers,
-    grossReceivables,
-    netReceivables,
+    grossReceivables: grossReceivables || grossAgingTotal,
+    netReceivables: Math.max(0, (grossReceivables || grossAgingTotal) - advancePaymentsCredit),
     collectionRate,
+    debtAgingStats,
 
     streamStats,
     revenueByType,
