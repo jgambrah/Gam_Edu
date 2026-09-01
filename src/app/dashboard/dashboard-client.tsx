@@ -1075,14 +1075,7 @@ function AdminDashboard({
       const netOutstanding = Math.max(0, grossOutstanding - overpayments);
       const totalOutstanding = grossOutstanding || netOutstanding;
 
-      if (totalBilled === 0 && dashboardSummary?.financials?.totalBilled) {
-        totalBilled = dashboardSummary.financials.totalBilled;
-      }
-      if (totalPaid === 0 && dashboardSummary?.financials?.totalRevenue) {
-        totalPaid = dashboardSummary.financials.totalRevenue;
-      }
-
-      const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : (dashboardSummary?.financials?.collectionRate ?? 73);
+      const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
 
       const computed = {
         totalOutstanding,
@@ -1122,18 +1115,6 @@ function AdminDashboard({
 
   const financials = useMemo(() => {
     if (syncedFinancialData) return syncedFinancialData;
-    if ((!financialRecords || financialRecords.length === 0) && dashboardSummary?.financials?.totalBilled !== undefined) {
-      return {
-        totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
-        totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
-        collectedThisTerm: dashboardSummary.financials.collectedThisTerm ?? 0,
-        collectedToday: dashboardSummary.financials.collectedToday ?? 0,
-        collectedThisMonth: dashboardSummary.financials.collectedThisMonth ?? 0,
-        totalBilled: dashboardSummary.financials.totalBilled ?? 0,
-        collectionRate: dashboardSummary.financials.collectionRate ?? 0,
-        revenueByType: []
-      };
-    }
 
     const calculated = computeFinancialMetrics({
       financialRecords: financialRecords || [],
@@ -1158,32 +1139,6 @@ function AdminDashboard({
   }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData, payments, classes, budgets]);
 
   const debtAgingStats = useMemo(() => {
-    if ((!financialRecords || financialRecords.length === 0) && dashboardSummary?.debtAging !== undefined) {
-      const g = (dashboardSummary.debtAging.current ?? 0) + (dashboardSummary.debtAging.age30 ?? 0) + (dashboardSummary.debtAging.age60 ?? 0) + (dashboardSummary.debtAging.age90 ?? 0);
-      const adv = dashboardSummary.debtAging.overpayments ?? 0;
-      return {
-        current: dashboardSummary.debtAging.current ?? 0,
-        age30: dashboardSummary.debtAging.age30 ?? 0,
-        age60: dashboardSummary.debtAging.age60 ?? 0,
-        age90: dashboardSummary.debtAging.age90 ?? 0,
-        over90: 0,
-        overpayments: adv,
-        advancePayments: adv,
-        total: Math.max(0, g - adv),
-        grossTotal: g,
-        netTotal: Math.max(0, g - adv),
-        accountCounts: {
-          current: 0,
-          age30: 0,
-          age60: 0,
-          age90: 0,
-          over90: 0,
-          totalOverdue: 0,
-          overdue60Plus: 0,
-        }
-      };
-    }
-
     const calculated = computeFinancialMetrics({
       financialRecords: financialRecords || [],
       payments: syncedFinancialData?.payments || payments || [],
