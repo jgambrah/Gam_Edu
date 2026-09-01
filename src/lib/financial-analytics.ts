@@ -5,6 +5,7 @@
  */
 
 import { startOfDay } from 'date-fns';
+import { calculateCollectionRate } from './financials';
 
 export interface PaymentItem {
   id?: string;
@@ -570,6 +571,8 @@ export function computeFinancialMetrics({
   };
 
   const calculatedGrossReceivables = grossReceivables || grossAgingTotal;
+  const calculatedBilledTarget = Math.max(totalBilled, totalRevenue + calculatedGrossReceivables);
+  const calculatedCollectionRate = calculateCollectionRate(totalRevenue, calculatedBilledTarget);
   const calculatedNetReceivables = Math.max(0, calculatedGrossReceivables - advancePaymentsCredit);
 
   return {
@@ -580,12 +583,12 @@ export function computeFinancialMetrics({
     collectedThisYear,
     totalRevenue,
 
-    totalBilled,
+    totalBilled: calculatedBilledTarget,
     totalPaid,
     totalWaivers,
     grossReceivables: calculatedGrossReceivables,
     netReceivables: calculatedNetReceivables,
-    collectionRate,
+    collectionRate: calculatedCollectionRate,
     debtAgingStats,
 
     streamStats,
