@@ -133,9 +133,9 @@ export function FinancialDashboardView({
     return uniquePaymentStream;
   }, [uniquePaymentStream, streamFilter]);
 
-  // DOM Optimization: Limit card feed view to top 25 entries
+  // DOM Optimization: Limit card feed view to top 30 entries (handles 22,000+ records smoothly)
   const cardDisplayedStream = useMemo(() => {
-    return streamDisplayItems.slice(0, 25);
+    return streamDisplayItems.slice(0, 30);
   }, [streamDisplayItems]);
 
   // Paginated Audit Modal Filtering
@@ -355,13 +355,22 @@ export function FinancialDashboardView({
     };
   }, [accounts, financialRecords, activeBudget, expensesByCategory, students]);
 
-  // 4.5 30-Day Cash Flow Forecast (In-Memory Calculator: 0 extra Firestore reads)
+  // 4.5 30-Day Cash Flow Forecast (Reconciled Liquidity Calculator)
   const cashFlowForecast = useMemo(() => {
     const liquidCash = cashPosition.cashBalance + cashPosition.bankBalance;
     const expectedMonthlyReceipts = Math.round(cashPosition.totalReceivables * 0.35); // 35% estimated monthly collection
     const upcomingMonthlyCommitments = expensesByCategory.total > 0 ? expensesByCategory.total : (cashPosition.budgetedExpenses / 3 || 5000);
     const projectedLiquidity = (liquidCash + expectedMonthlyReceipts) - upcomingMonthlyCommitments;
-    const coverageRatio = upcomingMonthlyCommitments > 0 ? Math.round(((liquidCash + expectedMonthlyReceipts) / upcomingMonthlyCommitments) * 100) : 100;
+    
+    // Check if cash & bank balances are unlinked or un-reconciled (both 0.00)
+    const isUnreconciled = (cashPosition.cashBalance === 0 && cashPosition.bankBalance === 0);
+
+    // Prevent misleading 900%+ health flags when operating cash is GH₵ 0.00
+    const coverageRatio = upcomingMonthlyCommitments > 0
+      ? (isUnreconciled ? 0 : Math.round(((liquidCash + expectedMonthlyReceipts) / upcomingMonthlyCommitments) * 100))
+      : 100;
+
+    const isHealthy = !isUnreconciled && projectedLiquidity >= 0;
 
     return {
       liquidCash,
@@ -369,7 +378,8 @@ export function FinancialDashboardView({
       upcomingMonthlyCommitments,
       projectedLiquidity,
       coverageRatio,
-      isHealthy: projectedLiquidity >= 0
+      isUnreconciled,
+      isHealthy
     };
   }, [cashPosition, expensesByCategory]);
 
@@ -560,7 +570,7 @@ export function FinancialDashboardView({
       {/* Class Arrears Risk Heatmap & Real-Time Payment Stream Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Class Arrears Heatmap (2 Columns) */}
-        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8 h-[580px] max-h-[580px] flex flex-col overflow-hidden relative">
+        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8 h-[560px] max-h-[560px] flex flex-col overflow-hidden relative">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100 shrink-0">
             <div>
               <div className="flex items-center gap-2">
@@ -652,7 +662,7 @@ export function FinancialDashboardView({
         </Card>
 
         {/* Live Real-Time Payment Feed (1 Column) */}
-        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[580px] max-h-[580px] overflow-hidden relative">
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[560px] max-h-[560px] overflow-hidden relative">
           <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex flex-col gap-3 shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -709,7 +719,13 @@ export function FinancialDashboardView({
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
-                    <span className="text-[9px] font-bold text-slate-400 block">{p.method}</span>
+                    {p.method?.toLowerCase().includes('split') ? (
+                      <Badge variant="outline" className="text-[8px] font-black uppercase text-indigo-700 bg-indigo-50 border-indigo-200 mt-0.5">
+                        Split: Cash + MoMo
+                      </Badge>
+                    ) : (
+                      <span className="text-[9px] font-bold text-slate-400 block">{p.method}</span>
+                    )}
                   </div>
                 </div>
               ))
@@ -765,7 +781,7 @@ export function FinancialDashboardView({
           </Card>
 
           {/* Top Debtors Card */}
-          <Card className="lg:col-span-2 rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 max-h-[300px] h-[300px] flex flex-col overflow-hidden relative">
+          <Card className="lg:col-span-2 rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 max-h-[360px] h-[360px] flex flex-col overflow-hidden relative">
             <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex items-center justify-between shrink-0">
               <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                 <Users className="h-4 w-4 text-rose-500" /> Top debtors
@@ -1056,15 +1072,31 @@ export function FinancialDashboardView({
                   <Zap className="h-5 w-5 text-amber-500" />
                   <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">30-Day Cash Flow Forecast</h3>
                 </div>
-                <Badge className={cn("font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase", cashFlowForecast.isHealthy ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800')}>
-                  {cashFlowForecast.isHealthy ? 'Healthy Liquidity' : 'Budget Warning'}
+                <Badge className={cn(
+                  "font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase border",
+                  cashFlowForecast.isUnreconciled
+                    ? 'bg-amber-50 text-amber-800 border-amber-200'
+                    : cashFlowForecast.isHealthy
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      : 'bg-rose-50 text-rose-800 border-rose-200'
+                )}>
+                  {cashFlowForecast.isUnreconciled
+                    ? 'Unreconciled / Bank Accounts Unlinked'
+                    : cashFlowForecast.isHealthy
+                      ? 'Healthy Liquidity'
+                      : 'Budget Warning'}
                 </Badge>
               </div>
 
               <div className="space-y-3">
                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex justify-between items-center text-xs">
                   <span className="text-slate-500 font-bold">Liquid Cash Available:</span>
-                  <span className="font-mono font-black text-slate-900">GH₵ {cashFlowForecast.liquidCash.toLocaleString()}</span>
+                  <span className="font-mono font-black text-slate-900">
+                    GH₵ {cashFlowForecast.liquidCash.toLocaleString()}
+                    {cashFlowForecast.isUnreconciled && (
+                      <span className="text-[9px] text-amber-600 ml-1 font-sans font-semibold">(Unlinked)</span>
+                    )}
+                  </span>
                 </div>
                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex justify-between items-center text-xs">
                   <span className="text-slate-500 font-bold">+ Est. Monthly Collections (35%):</span>
@@ -1078,10 +1110,16 @@ export function FinancialDashboardView({
 
               <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-1 text-center">
                 <span className="text-[10px] font-black uppercase text-indigo-700 tracking-wider">Projected 30-Day Liquidity Buffer</span>
-                <h4 className={cn("text-xl font-black font-mono", cashFlowForecast.projectedLiquidity >= 0 ? "text-emerald-700" : "text-rose-600")}>
+                <h4 className={cn("text-xl font-black font-mono", cashFlowForecast.projectedLiquidity >= 0 && !cashFlowForecast.isUnreconciled ? "text-emerald-700" : "text-rose-600")}>
                   {cashFlowForecast.projectedLiquidity >= 0 ? '+' : ''}GH₵ {cashFlowForecast.projectedLiquidity.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </h4>
-                <p className="text-[10px] text-slate-500 font-medium">Coverage Ratio: <strong className="text-slate-800">{cashFlowForecast.coverageRatio}%</strong> of monthly obligations covered.</p>
+                <p className="text-[10px] text-slate-500 font-medium">
+                  {cashFlowForecast.isUnreconciled ? (
+                    <span className="text-amber-700 font-bold">Bank accounts unlinked. Reconcile GL cash accounts for live liquidity telemetry.</span>
+                  ) : (
+                    <>Coverage Ratio: <strong className="text-slate-800">{cashFlowForecast.coverageRatio}%</strong> of monthly obligations covered.</>
+                  )}
+                </p>
               </div>
             </div>
           </Card>
