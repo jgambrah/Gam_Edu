@@ -595,9 +595,9 @@ export function FinancialDashboardView({
         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 font-bold">
           <Clock className="h-4 w-4 text-rose-500" /> Receivables
         </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
           {/* Outstanding Fees Card */}
-          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-fit hover:shadow-md transition-shadow">
             <div>
               <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest font-bold">Outstanding fees</p>
               <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {cashPosition.totalReceivables.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
@@ -609,7 +609,7 @@ export function FinancialDashboardView({
           </Card>
 
           {/* Sponsored NGO Outstanding Fees Card */}
-          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-fit hover:shadow-md transition-shadow">
             <div>
               <p className="text-[9px] font-black text-indigo-650 uppercase tracking-widest font-bold">NGO / Sponsor Receivables</p>
               <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {cashPosition.totalSponsoredReceivables.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
@@ -621,29 +621,39 @@ export function FinancialDashboardView({
           </Card>
 
           {/* Top Debtors Card */}
-          <Card className="lg:col-span-2 rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6">
-            <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
-              <Users className="h-4 w-4 text-rose-500" /> Top debtors
-            </h3>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {topDebtors.length > 0 ? (
-                topDebtors.map(debtor => (
-                  <div key={debtor.studentId} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between hover:scale-[1.01] transition-transform duration-300">
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold text-slate-700">{debtor.name}</p>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">{debtor.className}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-black text-rose-600 font-mono">GH₵ {debtor.outstanding.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
-                      <Badge variant="outline" className="text-[8px] font-black uppercase tracking-wider text-rose-500 border-rose-200 bg-rose-50/50 mt-0.5">
-                        {debtor.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="col-span-2 text-center py-6 text-slate-400 italic text-xs uppercase tracking-widest font-black">All student accounts fully settled</div>
+          <Card className="lg:col-span-2 rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 max-h-[300px] h-[300px] flex flex-col overflow-hidden relative">
+            <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex items-center justify-between shrink-0">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                <Users className="h-4 w-4 text-rose-500" /> Top debtors
+              </h3>
+              {topDebtors.length > 0 && (
+                <Badge variant="outline" className="text-[9px] font-extrabold uppercase tracking-wider text-rose-600 border-rose-100 bg-rose-50">
+                  {topDebtors.length} Account{topDebtors.length === 1 ? '' : 's'}
+                </Badge>
               )}
+            </div>
+
+            <div className="flex-1 overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {topDebtors.length > 0 ? (
+                  topDebtors.map(debtor => (
+                    <div key={debtor.studentId} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between hover:scale-[1.01] transition-transform duration-300">
+                      <div className="space-y-0.5 min-w-0 pr-2">
+                        <p className="text-xs font-bold text-slate-700 truncate">{debtor.name}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase truncate">{debtor.className}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-black text-rose-600 font-mono">GH₵ {debtor.outstanding.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                        <Badge variant="outline" className="text-[8px] font-black uppercase tracking-wider text-rose-500 border-rose-200 bg-rose-50/50 mt-0.5">
+                          {debtor.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-2 text-center py-6 text-slate-400 italic text-xs uppercase tracking-widest font-black">All student accounts fully settled</div>
+                )}
+              </div>
             </div>
           </Card>
         </div>
