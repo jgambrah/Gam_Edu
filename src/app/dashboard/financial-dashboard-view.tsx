@@ -5,12 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { format, startOfDay, startOfMonth, startOfYear } from 'date-fns';
 import { 
   Landmark, Banknote, TrendingUp, DollarSign, Wallet, Calculator, 
   ArrowUpRight, AlertTriangle, Scale, Clock, Users, ArrowDownRight, Award,
-  Zap, Layers, Flame, Activity, CheckCircle2, ShieldAlert
+  Zap, Layers, Flame, Activity, CheckCircle2, ShieldAlert,
+  Search, SlidersHorizontal, ChevronLeft, ChevronRight, ExternalLink, Layers3
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { computeFinancialMetrics, getActiveTermBounds, safeParseDate } from '@/lib/financial-analytics';
@@ -63,6 +66,101 @@ export function FinancialDashboardView({
 
   const streamStats = metrics.streamStats;
   const recentPaymentStream = metrics.livePaymentStream;
+
+  // Live Stream & Executive Rollup State
+  const [streamFilter, setStreamFilter] = useState<'all' | 'tuition' | 'batches'>('all');
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+  const [modalSearch, setModalSearch] = useState('');
+  const [modalCategory, setModalCategory] = useState('all');
+  const [modalPage, setModalPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Deduplicated raw stream
+  const uniquePaymentStream = useMemo(() => {
+    const map = new Map<string, any>();
+    (recentPaymentStream || []).forEach((p: any) => {
+      const key = p.id || `${p.studentId || 'std'}-${p.amount}-${p.dateFormatted}`;
+      if (!map.has(key)) {
+        map.set(key, p);
+      }
+    });
+    return Array.from(map.values());
+  }, [recentPaymentStream]);
+
+  // Executive Rollup & Segment Filtering
+  const streamDisplayItems = useMemo(() => {
+    if (streamFilter === 'tuition') {
+      return uniquePaymentStream.filter((p: any) => p.category === 'tuition');
+    }
+
+    if (streamFilter === 'batches') {
+      const batchMap = new Map<string, { id: string; className: string; category: string; categoryLabel: string; count: number; totalAmount: number; dateFormatted: string; date: Date }>();
+
+      uniquePaymentStream.forEach((p: any) => {
+        const groupKey = `${p.className || 'General'}_${p.category}_${p.dateFormatted.split(' at ')[0]}`;
+        const existing = batchMap.get(groupKey);
+        if (existing) {
+          existing.count++;
+          existing.totalAmount += p.amount;
+        } else {
+          batchMap.set(groupKey, {
+            id: `batch-${groupKey}`,
+            className: p.className || 'General',
+            category: p.category,
+            categoryLabel: p.categoryLabel || p.category,
+            count: 1,
+            totalAmount: p.amount,
+            dateFormatted: p.dateFormatted,
+            date: p.date
+          });
+        }
+      });
+
+      return Array.from(batchMap.values()).map(batch => ({
+        id: batch.id,
+        isBatch: true,
+        studentName: `${batch.className} – ${batch.categoryLabel} Batch (${batch.count} transaction${batch.count === 1 ? '' : 's'})`,
+        className: batch.className,
+        category: batch.category,
+        categoryLabel: batch.categoryLabel,
+        amount: batch.totalAmount,
+        method: `Batch Consolidation`,
+        dateFormatted: batch.dateFormatted,
+        date: batch.date
+      }));
+    }
+
+    return uniquePaymentStream;
+  }, [uniquePaymentStream, streamFilter]);
+
+  // DOM Optimization: Limit card feed view to top 25 entries
+  const cardDisplayedStream = useMemo(() => {
+    return streamDisplayItems.slice(0, 25);
+  }, [streamDisplayItems]);
+
+  // Paginated Audit Modal Filtering
+  const filteredAuditStream = useMemo(() => {
+    let list = uniquePaymentStream;
+    if (modalSearch.trim()) {
+      const q = modalSearch.toLowerCase();
+      list = list.filter((p: any) => 
+        (p.studentName || '').toLowerCase().includes(q) ||
+        (p.className || '').toLowerCase().includes(q) ||
+        (p.narration || '').toLowerCase().includes(q) ||
+        (p.method || '').toLowerCase().includes(q)
+      );
+    }
+    if (modalCategory !== 'all') {
+      list = list.filter((p: any) => p.category === modalCategory);
+    }
+    return list;
+  }, [uniquePaymentStream, modalSearch, modalCategory]);
+
+  const totalAuditPages = Math.max(1, Math.ceil(filteredAuditStream.length / itemsPerPage));
+  const paginatedAuditStream = useMemo(() => {
+    const start = (modalPage - 1) * itemsPerPage;
+    return filteredAuditStream.slice(start, start + itemsPerPage);
+  }, [filteredAuditStream, modalPage]);
 
   const termDates = useMemo(() => {
     return getActiveTermBounds(budgets);
@@ -460,10 +558,10 @@ export function FinancialDashboardView({
       </div>
 
       {/* Class Arrears Risk Heatmap & Real-Time Payment Stream Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Class Arrears Heatmap (2 Columns) */}
-        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100">
+        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8 h-[580px] max-h-[580px] flex flex-col overflow-hidden relative">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100 shrink-0">
             <div>
               <div className="flex items-center gap-2">
                 <Flame className="h-5 w-5 text-rose-500" />
@@ -506,72 +604,110 @@ export function FinancialDashboardView({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {(heatmapViewMode === 'top9' ? classArrearsHeatmap.slice(0, 9) : classArrearsHeatmap).map((cls) => {
-              const isHighRisk = cls.collectionRate < 50;
-              const isMediumRisk = cls.collectionRate >= 50 && cls.collectionRate < 80;
+          <div className="flex-1 overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {(heatmapViewMode === 'top9' ? classArrearsHeatmap.slice(0, 9) : classArrearsHeatmap).map((cls) => {
+                const isHighRisk = cls.collectionRate < 50;
+                const isMediumRisk = cls.collectionRate >= 50 && cls.collectionRate < 80;
 
-              return (
-                <div
-                  key={cls.id}
-                  className={cn(
-                    "p-4 rounded-2xl border transition-all space-y-2",
-                    isHighRisk ? "bg-rose-50/50 border-rose-100 hover:bg-rose-50" :
-                    isMediumRisk ? "bg-amber-50/50 border-amber-100 hover:bg-amber-50" :
-                    "bg-emerald-50/40 border-emerald-100 hover:bg-emerald-50"
-                  )}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="font-extrabold text-slate-900 text-sm">{cls.name}</span>
-                    <Badge
-                      className={cn(
-                        "font-extrabold text-[10px] rounded-lg px-2 py-0.5 shadow-none border",
-                        isHighRisk ? "bg-rose-100 text-rose-800 border-rose-200" :
-                        isMediumRisk ? "bg-amber-100 text-amber-800 border-amber-200" :
-                        "bg-emerald-100 text-emerald-800 border-emerald-200"
-                      )}
-                    >
-                      {cls.collectionRate}% Paid
-                    </Badge>
-                  </div>
-                  <div className="text-xs text-slate-600 space-y-0.5">
-                    <div className="flex justify-between">
-                      <span>Unpaid Balance:</span>
-                      <strong className="text-slate-900 font-black">GH₵ {cls.balance.toLocaleString()}</strong>
+                return (
+                  <div
+                    key={cls.id}
+                    className={cn(
+                      "p-4 rounded-2xl border transition-all space-y-2",
+                      isHighRisk ? "bg-rose-50/50 border-rose-100 hover:bg-rose-50" :
+                      isMediumRisk ? "bg-amber-50/50 border-amber-100 hover:bg-amber-50" :
+                      "bg-emerald-50/40 border-emerald-100 hover:bg-emerald-50"
+                    )}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-extrabold text-slate-900 text-sm">{cls.name}</span>
+                      <Badge
+                        className={cn(
+                          "font-extrabold text-[10px] rounded-lg px-2 py-0.5 shadow-none border",
+                          isHighRisk ? "bg-rose-100 text-rose-800 border-rose-200" :
+                          isMediumRisk ? "bg-amber-100 text-amber-800 border-amber-200" :
+                          "bg-emerald-100 text-emerald-800 border-emerald-200"
+                        )}
+                      >
+                        {cls.collectionRate}% Paid
+                      </Badge>
                     </div>
-                    <div className="flex justify-between text-[10px] text-slate-400">
-                      <span>Enrolled Students:</span>
-                      <span>{cls.studentCount} students</span>
+                    <div className="text-xs text-slate-600 space-y-0.5">
+                      <div className="flex justify-between">
+                        <span>Unpaid Balance:</span>
+                        <strong className="text-slate-900 font-black">GH₵ {cls.balance.toLocaleString()}</strong>
+                      </div>
+                      <div className="flex justify-between text-[10px] text-slate-400">
+                        <span>Enrolled Students:</span>
+                        <span>{cls.studentCount} students</span>
+                      </div>
                     </div>
+                    <Progress value={cls.collectionRate} className="h-1.5 bg-white/80" indicatorClassName={isHighRisk ? 'bg-rose-500' : isMediumRisk ? 'bg-amber-500' : 'bg-emerald-500'} />
                   </div>
-                  <Progress value={cls.collectionRate} className="h-1.5 bg-white/80" indicatorClassName={isHighRisk ? 'bg-rose-500' : isMediumRisk ? 'bg-amber-500' : 'bg-emerald-500'} />
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </Card>
 
         {/* Live Real-Time Payment Feed (1 Column) */}
-        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[520px] max-h-[520px] overflow-hidden relative">
-          <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-emerald-600 animate-pulse" />
-              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Live Payment Stream</h3>
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[580px] max-h-[580px] overflow-hidden relative">
+          <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex flex-col gap-3 shrink-0">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-emerald-600 animate-pulse" />
+                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Live Payment Stream</h3>
+              </div>
+              <Badge className="bg-emerald-500 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase animate-pulse">
+                Real-Time
+              </Badge>
             </div>
-            <Badge className="bg-emerald-500 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase animate-pulse">
-              Real-Time
-            </Badge>
+
+            {/* Segmented Control / Executive Rollup Filters */}
+            <div className="flex items-center p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 gap-1 text-[11px]">
+              <button
+                onClick={() => setStreamFilter('all')}
+                className={cn(
+                  "flex-1 py-1 px-2 font-extrabold rounded-lg transition-all text-center cursor-pointer",
+                  streamFilter === 'all' ? "bg-white text-emerald-700 shadow-xs border border-slate-200/60 font-black" : "text-slate-600 hover:text-slate-900"
+                )}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setStreamFilter('tuition')}
+                className={cn(
+                  "flex-1 py-1 px-2 font-extrabold rounded-lg transition-all text-center cursor-pointer",
+                  streamFilter === 'tuition' ? "bg-white text-emerald-700 shadow-xs border border-slate-200/60 font-black" : "text-slate-600 hover:text-slate-900"
+                )}
+              >
+                Tuition
+              </button>
+              <button
+                onClick={() => setStreamFilter('batches')}
+                className={cn(
+                  "flex-1 py-1 px-2 font-extrabold rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
+                  streamFilter === 'batches' ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-black" : "text-slate-600 hover:text-slate-900"
+                )}
+              >
+                <Layers3 className="h-3 w-3" /> Batches
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-1.5 space-y-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
-            {recentPaymentStream.length > 0 ? (
-              recentPaymentStream.map((p: any) => (
-                <div key={p.id} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between hover:bg-slate-100/80 transition-colors">
-                  <div>
-                    <p className="text-xs font-bold text-slate-900">{p.studentName}</p>
-                    <p className="text-[10px] text-slate-500 font-medium">{p.className} • {p.categoryLabel || p.category}</p>
+            {cardDisplayedStream.length > 0 ? (
+              cardDisplayedStream.map((p: any) => (
+                <div key={p.id} className={cn(
+                  "p-3 rounded-2xl flex items-center justify-between transition-colors border",
+                  p.isBatch ? "bg-indigo-50/50 border-indigo-100 hover:bg-indigo-50" : "bg-slate-50 border-slate-100 hover:bg-slate-100/80"
+                )}>
+                  <div className="min-w-0 pr-2">
+                    <p className="text-xs font-bold text-slate-900 truncate">{p.studentName}</p>
+                    <p className="text-[10px] text-slate-500 font-medium truncate">{p.className} • {p.categoryLabel || p.category}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
                     <span className="text-[9px] font-bold text-slate-400 block">{p.method}</span>
                   </div>
@@ -579,13 +715,21 @@ export function FinancialDashboardView({
               ))
             ) : (
               <div className="p-6 text-center text-xs text-slate-400 italic bg-slate-50 border border-dashed rounded-2xl">
-                No recent payment transactions recorded.
+                No transactions recorded for selected filter.
               </div>
             )}
           </div>
 
-          <div className="pt-3 mt-3 border-t border-slate-100 text-center shrink-0 bg-white">
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Zero Extra Firestore Read Cost</span>
+          <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between shrink-0 bg-white">
+            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+              {streamDisplayItems.length} Logged
+            </span>
+            <button
+              onClick={() => { setModalPage(1); setIsAuditModalOpen(true); }}
+              className="text-[11px] font-black text-emerald-700 hover:text-emerald-800 flex items-center gap-1 hover:underline cursor-pointer"
+            >
+              View All Log <ExternalLink className="h-3 w-3" />
+            </button>
           </div>
         </Card>
       </div>
@@ -944,6 +1088,123 @@ export function FinancialDashboardView({
         </div>
       </div>
 
+      {/* Complete Financial Payment Audit Log Modal */}
+      <Dialog open={isAuditModalOpen} onOpenChange={setIsAuditModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-6 rounded-[2rem] bg-white border border-slate-200 shadow-2xl">
+          <DialogHeader className="pb-4 border-b border-slate-100 shrink-0">
+            <DialogTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
+              <Activity className="h-5 w-5 text-emerald-600" />
+              Complete Financial Payment Audit Log
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 font-medium mt-1">
+              Search, filter, and inspect all {uniquePaymentStream.length} verified live payment transactions.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Controls: Search & Category Filter */}
+          <div className="py-3 flex flex-col sm:flex-row items-center gap-3 shrink-0">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search student, class, method or narration..."
+                value={modalSearch}
+                onChange={(e) => { setModalSearch(e.target.value); setModalPage(1); }}
+                className="pl-9 text-xs rounded-xl bg-slate-50 border-slate-200"
+              />
+            </div>
+            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+              <SlidersHorizontal className="h-4 w-4 text-slate-400" />
+              <select
+                value={modalCategory}
+                onChange={(e) => { setModalCategory(e.target.value); setModalPage(1); }}
+                className="text-xs px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-semibold focus:outline-none"
+              >
+                <option value="all">All Fee Categories</option>
+                <option value="tuition">Tuition Fees</option>
+                <option value="canteen">Canteen & Catering</option>
+                <option value="transport">Transport & Bus</option>
+                <option value="boarding">Boarding & Hostel</option>
+                <option value="uniforms">Uniforms & Books</option>
+                <option value="other">Other Auxiliary</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Table Container */}
+          <div className="flex-1 overflow-y-auto border border-slate-100 rounded-2xl">
+            <Table>
+              <TableHeader className="bg-slate-50 sticky top-0 z-10">
+                <TableRow>
+                  <TableHead className="text-[10px] font-black uppercase text-slate-500">Student & Class</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase text-slate-500">Category</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase text-slate-500">Payment Method</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase text-slate-500 text-right">Amount Paid</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase text-slate-500 text-right">Date & Time</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedAuditStream.length > 0 ? (
+                  paginatedAuditStream.map((p: any) => (
+                    <TableRow key={p.id} className="hover:bg-slate-50/80">
+                      <TableCell className="py-2.5">
+                        <p className="text-xs font-bold text-slate-900">{p.studentName}</p>
+                        <p className="text-[10px] text-slate-400 font-medium">{p.className}</p>
+                      </TableCell>
+                      <TableCell className="py-2.5">
+                        <Badge variant="outline" className="text-[9px] font-extrabold uppercase text-indigo-700 bg-indigo-50 border-indigo-100">
+                          {p.categoryLabel || p.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2.5 text-xs text-slate-600 font-medium">
+                        {p.method}
+                      </TableCell>
+                      <TableCell className="py-2.5 text-right font-mono font-black text-xs text-emerald-700">
+                        +GH₵{p.amount.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="py-2.5 text-right text-[10px] text-slate-500 font-medium">
+                        {p.dateFormatted}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8 text-xs text-slate-400 italic">
+                      No transaction records found matching criteria.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Footer & Pagination */}
+          <div className="pt-4 border-t border-slate-100 flex items-center justify-between shrink-0 text-xs">
+            <span className="text-slate-500 font-medium">
+              Showing {filteredAuditStream.length === 0 ? 0 : (modalPage - 1) * itemsPerPage + 1} to {Math.min(filteredAuditStream.length, modalPage * itemsPerPage)} of {filteredAuditStream.length} transactions
+            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                disabled={modalPage <= 1}
+                onClick={() => setModalPage(p => Math.max(1, p - 1))}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <span className="font-bold text-slate-700 text-xs">
+                Page {modalPage} of {totalAuditPages}
+              </span>
+              <button
+                disabled={modalPage >= totalAuditPages}
+                onClick={() => setModalPage(p => Math.min(totalAuditPages, p + 1))}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

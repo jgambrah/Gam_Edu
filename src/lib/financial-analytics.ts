@@ -324,11 +324,20 @@ export function computeFinancialMetrics({
     const amount = Number(p.amount) || Number(p.amountPaid) || Number(p.lastPaymentAmount) || 0;
     if (amount <= 0) return;
 
-    const pId = p.id || `${p.studentId}-${p.paidAt || p.createdAt || p.date}-${amount}`;
-    if (processedPaymentIds.has(pId)) return;
-    processedPaymentIds.add(pId);
-
     const d = safeParseDate(p.paidAt || p.createdAt || p.date || p.timestamp || p.paymentDate || p.lastPaymentDate) || now;
+    const dateMinuteStr = d.toISOString().substring(0, 16);
+    const cat = classifyFeeCategory(p);
+
+    // Canonical ID / composite deduplication key
+    const refNo = p.referenceNo || p.reference_no || p.transactionId || p.receiptNo;
+    const canonicalKey = refNo 
+      ? `ref-${refNo}` 
+      : p.id && !p.id.startsWith('rec-') 
+        ? p.id 
+        : `${p.studentId || 'std'}-${dateMinuteStr}-${amount.toFixed(2)}-${cat}`;
+
+    if (processedPaymentIds.has(canonicalKey)) return;
+    processedPaymentIds.add(canonicalKey);
 
     // Date aggregations
     if (d >= startOfToday) {
@@ -341,7 +350,6 @@ export function computeFinancialMetrics({
     totalRevenue += amount;
 
     // Revenue Stream Categorization
-    const cat = classifyFeeCategory(p);
     if (cat === 'tuition') tuitionStream += amount;
     else if (cat === 'canteen') canteenStream += amount;
     else if (cat === 'transport') transportStream += amount;
@@ -362,13 +370,19 @@ export function computeFinancialMetrics({
       other: 'Other Auxiliary'
     };
 
+    // Normalize payment method label (e.g. Split Cash + MoMo)
+    let rawMethod = (p.method || p.paymentMethod || 'Cash / MoMo').trim();
+    if (p.isSplitPayment || rawMethod.toLowerCase().includes('split')) {
+      rawMethod = 'Split: Cash + MoMo';
+    }
+
     livePaymentStream.push({
-      id: pId,
+      id: canonicalKey,
       studentId: p.studentId,
       studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : (p.studentName || 'Student'),
       className: classObj?.name || p.className || 'Class',
       amount,
-      method: p.method || p.paymentMethod || 'Cash / MoMo',
+      method: rawMethod,
       date: d,
       dateFormatted: d >= startOfToday ? `Today at ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : d.toLocaleDateString(),
       category: cat,
