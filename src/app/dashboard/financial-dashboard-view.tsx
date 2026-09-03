@@ -552,33 +552,31 @@ export function FinancialDashboardView({
         </Card>
 
         {/* Live Real-Time Payment Feed (1 Column) */}
-        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4 border-b pb-3">
-              <div className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-emerald-600 animate-pulse" />
-                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Live Payment Stream</h3>
-              </div>
-              <Badge className="bg-emerald-500 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase animate-pulse">
-                Real-Time
-              </Badge>
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[520px] max-h-[520px] overflow-hidden relative">
+          <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-emerald-600 animate-pulse" />
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Live Payment Stream</h3>
             </div>
+            <Badge className="bg-emerald-500 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase animate-pulse">
+              Real-Time
+            </Badge>
+          </div>
 
+          <div className="flex-1 overflow-y-auto pr-1.5 space-y-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
             {recentPaymentStream.length > 0 ? (
-              <div className="space-y-3">
-                {recentPaymentStream.map((p: any) => (
-                  <div key={p.id} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-900">{p.studentName}</p>
-                      <p className="text-[10px] text-slate-500 font-medium">{p.className} • {p.category}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
-                      <span className="text-[9px] font-bold text-slate-400 block">{p.method}</span>
-                    </div>
+              recentPaymentStream.map((p: any) => (
+                <div key={p.id} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between hover:bg-slate-100/80 transition-colors">
+                  <div>
+                    <p className="text-xs font-bold text-slate-900">{p.studentName}</p>
+                    <p className="text-[10px] text-slate-500 font-medium">{p.className} • {p.categoryLabel || p.category}</p>
                   </div>
-                ))}
-              </div>
+                  <div className="text-right">
+                    <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
+                    <span className="text-[9px] font-bold text-slate-400 block">{p.method}</span>
+                  </div>
+                </div>
+              ))
             ) : (
               <div className="p-6 text-center text-xs text-slate-400 italic bg-slate-50 border border-dashed rounded-2xl">
                 No recent payment transactions recorded.
@@ -586,7 +584,7 @@ export function FinancialDashboardView({
             )}
           </div>
 
-          <div className="pt-4 border-t border-slate-100 text-center">
+          <div className="pt-3 mt-3 border-t border-slate-100 text-center shrink-0 bg-white">
             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Zero Extra Firestore Read Cost</span>
           </div>
         </Card>
