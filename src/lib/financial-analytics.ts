@@ -325,18 +325,39 @@ export function computeFinancialMetrics({
     if (amount <= 0) return;
 
     const d = safeParseDate(p.paidAt || p.createdAt || p.date || p.timestamp || p.paymentDate || p.lastPaymentDate) || now;
-    const dateMinuteStr = d.toISOString().substring(0, 16);
+    const dayStr = d.toISOString().substring(0, 10);
     const cat = classifyFeeCategory(p);
 
-    // Canonical ID / composite deduplication key
+    // Student & Class Name Lookup
+    const studentObj = filteredStudents?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
+    const resolvedStudentName = studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : (p.studentName || 'Student');
+    const classObj = classes?.find((c: any) => c.id === (studentObj?.classId || p.classId));
+    const sKey = (resolvedStudentName || p.studentId || 'std').toLowerCase().trim();
+
+    // Canonical composite key for deduplication (student + day + amount + category)
     const refNo = p.referenceNo || p.reference_no || p.transactionId || p.receiptNo;
     const canonicalKey = refNo 
       ? `ref-${refNo}` 
-      : p.id && !p.id.startsWith('rec-') 
-        ? p.id 
-        : `${p.studentId || 'std'}-${dateMinuteStr}-${amount.toFixed(2)}-${cat}`;
+      : `${sKey}-${dayStr}-${amount.toFixed(2)}-${cat}`;
 
-    if (processedPaymentIds.has(canonicalKey)) return;
+    let rawMethod = (p.method || p.paymentMethod || 'Cash / MoMo').trim();
+    if (p.isSplitPayment || rawMethod.toLowerCase().includes('split') || rawMethod.includes('/')) {
+      rawMethod = 'Split: Cash + MoMo';
+    }
+
+    if (processedPaymentIds.has(canonicalKey)) {
+      const existing = livePaymentStream.find(item => item.id === canonicalKey);
+      if (existing) {
+        const m1 = existing.method.toLowerCase();
+        const m2 = rawMethod.toLowerCase();
+        if ((m1.includes('cash') && (m2.includes('momo') || m2.includes('mobile'))) || 
+            ((m1.includes('momo') || m1.includes('mobile')) && m2.includes('cash')) || 
+            m2.includes('/') || m2.includes('split')) {
+          existing.method = 'Split: Cash + MoMo';
+        }
+      }
+      return;
+    }
     processedPaymentIds.add(canonicalKey);
 
     // Date aggregations
@@ -357,10 +378,6 @@ export function computeFinancialMetrics({
     else if (cat === 'uniforms') uniformsStream += amount;
     else otherStream += amount;
 
-    // Student & Class Name Lookup
-    const studentObj = filteredStudents?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
-    const classObj = classes?.find((c: any) => c.id === (studentObj?.classId || p.classId));
-
     const categoryLabelMap: Record<string, string> = {
       tuition: 'Tuition Fees',
       canteen: 'Canteen & Catering',
@@ -370,16 +387,10 @@ export function computeFinancialMetrics({
       other: 'Other Auxiliary'
     };
 
-    // Normalize payment method label (e.g. Split Cash + MoMo)
-    let rawMethod = (p.method || p.paymentMethod || 'Cash / MoMo').trim();
-    if (p.isSplitPayment || rawMethod.toLowerCase().includes('split')) {
-      rawMethod = 'Split: Cash + MoMo';
-    }
-
     livePaymentStream.push({
       id: canonicalKey,
       studentId: p.studentId,
-      studentName: studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : (p.studentName || 'Student'),
+      studentName: resolvedStudentName,
       className: classObj?.name || p.className || 'Class',
       amount,
       method: rawMethod,

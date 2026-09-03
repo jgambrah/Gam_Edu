@@ -75,16 +75,65 @@ export function FinancialDashboardView({
   const [modalPage, setModalPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Deduplicated raw stream
+  // Robust Deduplication & Split-Method Consolidation
   const uniquePaymentStream = useMemo(() => {
-    const map = new Map<string, any>();
-    (recentPaymentStream || []).forEach((p: any) => {
-      const key = p.id || `${p.studentId || 'std'}-${p.amount}-${p.dateFormatted}`;
-      if (!map.has(key)) {
-        map.set(key, p);
+    if (!recentPaymentStream || recentPaymentStream.length === 0) return [];
+
+    const mergedMap = new Map<string, { item: any; methodsSet: Set<string> }>();
+
+    recentPaymentStream.forEach((p: any) => {
+      // Create canonical student key
+      const sKey = (p.studentName || p.studentId || 'student').toLowerCase().trim();
+      const amtKey = (Number(p.amount) || 0).toFixed(2);
+      const catKey = (p.category || 'tuition').toLowerCase();
+      
+      // Extract date string (YYYY-MM-DD or dateFormatted date portion)
+      const d = p.date ? safeParseDate(p.date) : null;
+      const dayStr = d ? d.toISOString().substring(0, 10) : (p.dateFormatted || '').split(' at ')[0] || 'today';
+
+      // Composite signature key
+      const compositeKey = `${sKey}_${amtKey}_${catKey}_${dayStr}`;
+
+      const rawMethod = (p.method || p.paymentMethod || 'Cash / MoMo').trim();
+
+      if (!mergedMap.has(compositeKey)) {
+        const methodsSet = new Set<string>();
+        if (rawMethod) methodsSet.add(rawMethod);
+        mergedMap.set(compositeKey, {
+          item: { ...p },
+          methodsSet
+        });
+      } else {
+        const existing = mergedMap.get(compositeKey)!;
+        if (rawMethod) existing.methodsSet.add(rawMethod);
+        // Prefer more complete studentName or className if available
+        if (p.studentName && p.studentName !== 'Student') {
+          existing.item.studentName = p.studentName;
+        }
+        if (p.className && p.className !== 'Class') {
+          existing.item.className = p.className;
+        }
       }
     });
-    return Array.from(map.values());
+
+    return Array.from(mergedMap.values()).map(({ item, methodsSet }) => {
+      const methodsArr = Array.from(methodsSet);
+      const hasCash = methodsArr.some(m => m.toLowerCase().includes('cash'));
+      const hasMomo = methodsArr.some(m => m.toLowerCase().includes('momo') || m.toLowerCase().includes('mobile'));
+      const hasSlashOrSplit = methodsArr.some(m => m.includes('/') || m.toLowerCase().includes('split'));
+
+      let finalMethod = item.method || 'Cash';
+      if ((hasCash && hasMomo) || hasSlashOrSplit) {
+        finalMethod = 'Split: Cash + MoMo';
+      } else if (methodsArr.length > 0) {
+        finalMethod = methodsArr[0];
+      }
+
+      return {
+        ...item,
+        method: finalMethod
+      };
+    });
   }, [recentPaymentStream]);
 
   // Executive Rollup & Segment Filtering
@@ -570,7 +619,7 @@ export function FinancialDashboardView({
       {/* Class Arrears Risk Heatmap & Real-Time Payment Stream Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Class Arrears Heatmap (2 Columns) */}
-        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8 h-[560px] max-h-[560px] flex flex-col overflow-hidden relative">
+        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-[540px] min-h-[540px] max-h-[540px] flex flex-col overflow-hidden relative">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100 shrink-0">
             <div>
               <div className="flex items-center gap-2">
@@ -662,7 +711,7 @@ export function FinancialDashboardView({
         </Card>
 
         {/* Live Real-Time Payment Feed (1 Column) */}
-        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[560px] max-h-[560px] overflow-hidden relative">
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[540px] min-h-[540px] max-h-[540px] overflow-hidden relative">
           <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex flex-col gap-3 shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -719,7 +768,7 @@ export function FinancialDashboardView({
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
-                    {p.method?.toLowerCase().includes('split') ? (
+                    {p.method?.toLowerCase().includes('split') || p.method?.includes('/') ? (
                       <Badge variant="outline" className="text-[8px] font-black uppercase text-indigo-700 bg-indigo-50 border-indigo-200 mt-0.5">
                         Split: Cash + MoMo
                       </Badge>
