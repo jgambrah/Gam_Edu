@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc, runTransaction } from 'firebase/firestore';
-import { format, isPast, startOfDay, endOfDay, startOfMonth } from 'date-fns';
+import { format, isPast, startOfDay, endOfDay, startOfMonth, isAfter, isToday, differenceInDays } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -3537,11 +3537,14 @@ export default function AccountsPage() {
       }
       if (balance <= 0.01) return;
 
-      const dueDate = r.dueDate ? new Date(r.dueDate) : null;
-      if (!dueDate || isAfter(dueDate, today) || isToday(dueDate)) {
+      const rawDueDate = r.dueDate || r.date || r.createdAt;
+      const dueDate = rawDueDate?.toDate ? rawDueDate.toDate() : (rawDueDate ? new Date(rawDueDate) : null);
+      const validDueDate = (dueDate && !isNaN(dueDate.getTime())) ? dueDate : null;
+
+      if (!validDueDate || isAfter(validDueDate, today) || isToday(validDueDate)) {
         current += balance;
       } else {
-        const days = differenceInDays(today, dueDate);
+        const days = differenceInDays(today, validDueDate);
         if (days <= 30) age30 += balance;
         else if (days <= 60) age60 += balance;
         else age90 += balance;
