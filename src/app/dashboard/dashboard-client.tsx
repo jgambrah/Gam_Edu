@@ -1444,7 +1444,7 @@ function AdminDashboard({
               staff={staff}
               classes={classes}
               financials={financials}
-              financialRecords={allRecords || []}
+              financialRecords={financialRecords || []}
               payments={payments}
               debtAgingStats={debtAgingStats}
               dashboardSummary={dashboardSummary}
@@ -3760,7 +3760,7 @@ function DirectorDashboard({
               staff={staff}
               classes={classes}
               financials={financials}
-              financialRecords={allRecords || []}
+              financialRecords={financialRecords || []}
               payments={payments}
               debtAgingStats={debtAgingStats}
               dashboardSummary={dashboardSummary}
