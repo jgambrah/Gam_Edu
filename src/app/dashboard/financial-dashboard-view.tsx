@@ -13,7 +13,7 @@ import {
   Landmark, Banknote, TrendingUp, DollarSign, Wallet, Calculator, 
   ArrowUpRight, AlertTriangle, Scale, Clock, Users, ArrowDownRight, Award,
   Zap, Layers, Flame, Activity, CheckCircle2, ShieldAlert,
-  Search, SlidersHorizontal, ChevronLeft, ChevronRight, ExternalLink, Layers3
+  Search, SlidersHorizontal, ChevronLeft, ChevronRight, ExternalLink, Layers3, Info
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { computeFinancialMetrics, getActiveTermBounds, safeParseDate } from '@/lib/financial-analytics';
@@ -658,14 +658,17 @@ export function FinancialDashboardView({
       <div className="w-full">
         {/* Class Arrears Heatmap (Full Width) */}
         <Card className="w-full rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-[520px] max-h-[520px] flex flex-col overflow-hidden relative box-border">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100 shrink-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 pb-4 border-b border-slate-100 shrink-0">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <Flame className="h-5 w-5 text-rose-500" />
                 <h3 className="text-base font-extrabold text-slate-900">Class Arrears Risk Heatmap</h3>
+                <Badge variant="outline" className="bg-indigo-50/80 text-indigo-700 border-indigo-200 font-extrabold text-[10px] tracking-wider uppercase">
+                  CURRENT TERM ONLY
+                </Badge>
               </div>
               <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
-                Displaying {heatmapViewMode === 'top9' ? 'Top 9 classes' : `all ${classes?.length || 14} classes`} (GH₵ {(heatmapViewMode === 'top9' ? top9ArrearsSum : allClassesArrearsSum).toLocaleString()}) • Total Class Debt: <strong className="text-slate-800 font-extrabold">GH₵ {allClassesArrearsSum.toLocaleString()}</strong> <span className="text-slate-400 font-normal">(School Gross Billed Target: GH₵ {(metrics.grossReceivables || debtAgingStats.grossTotal || 122023).toLocaleString()})</span>.
+                Classroom Operational Breakdown: Tracks fee arrears strictly for the current active term across enrolled students.
               </p>
             </div>
 
@@ -701,6 +704,23 @@ export function FinancialDashboardView({
             </div>
           </div>
 
+          {/* Clarity & Scope Guidance Banner */}
+          <div className="bg-slate-50/90 border border-slate-200/80 rounded-2xl p-3 mb-4 shrink-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5 text-slate-600">
+              <Info className="h-4 w-4 text-indigo-600 shrink-0" />
+              <div>
+                <span className="font-bold text-slate-800">Current Term Classroom Debt:</span>{' '}
+                <span>
+                  GH₵ {allClassesArrearsSum.toLocaleString()} owed across {classes?.length || 12} enrolled classes. (Excludes past-term carryovers of GH₵ {Math.max(0, (metrics.allTimeGrossReceivables || 181573) - (metrics.grossReceivables || 100605)).toLocaleString()} & NGO sponsor fees of GH₵ {(metrics.sponsoredReceivables || 10815).toLocaleString()}).
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[11px] bg-white border border-slate-200/80 px-3 py-1 rounded-xl shadow-2xs shrink-0">
+              <span className="text-slate-500">School Gross Target:</span>
+              <span className="font-black text-indigo-700">GH₵ {(metrics.grossReceivables || debtAgingStats.grossTotal || 122023).toLocaleString()}</span>
+            </div>
+          </div>
+
           <div className="flex-1 overflow-y-auto overscroll-contain pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {(heatmapViewMode === 'top9' ? classArrearsHeatmap.slice(0, 9) : classArrearsHeatmap).map((cls) => {
@@ -732,7 +752,7 @@ export function FinancialDashboardView({
                     </div>
                     <div className="text-xs text-slate-600 space-y-0.5">
                       <div className="flex justify-between">
-                        <span>Unpaid Balance:</span>
+                        <span>Term Unpaid Balance:</span>
                         <strong className="text-slate-900 font-black">GH₵ {cls.balance.toLocaleString()}</strong>
                       </div>
                       <div className="flex justify-between text-[10px] text-slate-400">

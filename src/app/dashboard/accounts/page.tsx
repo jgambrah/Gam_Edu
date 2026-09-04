@@ -3446,8 +3446,25 @@ export default function AccountsPage() {
 
   const isLoading = isLoadingRecords || isLoadingStudents;
 
+  const advisoryActiveRecords = useMemo(() => {
+    if (!records || !students) return [];
+    const activeStudentIds = new Set(students.map(s => s.uid || s.id));
+    const currentTermId = (schoolSettings?.currentTerm || schoolSettings?.term || '').toString().toLowerCase();
+
+    return records.filter(r => {
+      if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return false;
+      if (advisoryScope === 'current-term' && currentTermId) {
+        const rTermId = (r.termId || '').toString().toLowerCase();
+        const rTerm = (r.term || '').toString().toLowerCase();
+        if (rTermId && !rTermId.includes(currentTermId) && !currentTermId.includes(rTermId)) return false;
+        if (rTerm && !rTerm.includes(currentTermId) && !currentTermId.includes(rTerm)) return false;
+      }
+      return true;
+    });
+  }, [records, students, advisoryScope, schoolSettings]);
+
   const dashboardStats = useMemo(() => {
-    if (!records || !students) return { 
+    if (!advisoryActiveRecords.length) return { 
       totalRevenue: 0, 
       totalOutstanding: 0, 
       advancePayments: 0,
@@ -3458,26 +3475,11 @@ export default function AccountsPage() {
       otherDebt: 0, 
       totalBilled: 0 
     };
-    
-    const activeStudentIds = new Set(students.map(s => s.uid || s.id));
-    const currentTermId = (schoolSettings?.currentTerm || schoolSettings?.term || '').toString().toLowerCase();
-
-    // Filter by active students and optionally by term
-    const activeRecords = records.filter(r => {
-      if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return false;
-      if (advisoryScope === 'current-term' && currentTermId) {
-        const rTermId = (r.termId || '').toString().toLowerCase();
-        const rTerm = (r.term || '').toString().toLowerCase();
-        if (rTermId && !rTermId.includes(currentTermId) && !currentTermId.includes(rTermId)) return false;
-        if (rTerm && !rTerm.includes(currentTermId) && !currentTermId.includes(rTerm)) return false;
-      }
-      return true;
-    });
 
     let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0, totalBilled = 0;
     let advancePayments = 0;
 
-    for (const record of activeRecords) {
+    for (const record of advisoryActiveRecords) {
         const billed = Number(record.billedAmount) || 0;
         const paid = Number(record.amountPaid) || 0;
         const waiver = Number(record.waiverAmount) || 0;
@@ -3509,13 +3511,12 @@ export default function AccountsPage() {
         otherDebt,
         totalBilled
     };
-  }, [records, students, advisoryScope, schoolSettings]);
+  }, [advisoryActiveRecords]);
 
   // --- DEBT AGING CALCULATION ---
   const debtAgingStats = useMemo(() => {
-    if (!records || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
+    if (!advisoryActiveRecords.length || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
     
-    const activeStudentIds = new Set(students.map(s => s.uid));
     const today = startOfDay(new Date());
 
     let current = 0; // Due date in the future or today
@@ -3524,9 +3525,7 @@ export default function AccountsPage() {
     let age90 = 0;   // Overdue 61+ days
     let overpayments = 0;
 
-    records.forEach(r => {
-      if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
-      
+    advisoryActiveRecords.forEach(r => {
       const billed = Number(r.billedAmount) || 0;
       const paid = Number(r.amountPaid) || 0;
       const waiver = Number(r.waiverAmount) || 0;
@@ -3538,38 +3537,26 @@ export default function AccountsPage() {
       }
       if (balance <= 0.01) return;
 
-      const rawDueDate = r.dueDate || r.date || r.createdAt;
-      const dueDate = rawDueDate?.toDate ? rawDueDate.toDate() : (rawDueDate ? new Date(rawDueDate) : null);
-      const validDueDate = (dueDate && !isNaN(dueDate.getTime())) ? dueDate : null;
-
-      if (!validDueDate) {
+      const dueDate = r.dueDate ? new Date(r.dueDate) : null;
+      if (!dueDate || isAfter(dueDate, today) || isToday(dueDate)) {
         current += balance;
       } else {
-        const diffTime = today.getTime() - startOfDay(validDueDate).getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays <= 0) {
-          current += balance;
-        } else if (diffDays <= 30) {
-          age30 += balance;
-        } else if (diffDays <= 60) {
-          age60 += balance;
-        } else {
-          age90 += balance;
-        }
+        const days = differenceInDays(today, dueDate);
+        if (days <= 30) age30 += balance;
+        else if (days <= 60) age60 += balance;
+        else age90 += balance;
       }
     });
 
     const total = current + age30 + age60 + age90 - overpayments;
     const grossTotal = current + age30 + age60 + age90;
     return { current, age30, age60, age90, total, overpayments, grossTotal };
-  }, [records, students]);
+  }, [advisoryActiveRecords, students]);
 
   // --- CLASS COLLECTIONS PACE CALCULATION ---
   const classCollectionsStats = useMemo(() => {
-    if (!records || !students || !classes) return [];
+    if (!advisoryActiveRecords.length || !students || !classes) return [];
 
-    const activeStudentIds = new Set(students.map(s => s.uid));
     const studentsByClass: Record<string, Student[]> = {};
     students.forEach(s => {
       if (!studentsByClass[s.classId]) studentsByClass[s.classId] = [];
@@ -3577,7 +3564,7 @@ export default function AccountsPage() {
     });
 
     const recordsByStudent: Record<string, FinancialRecord[]> = {};
-    records.forEach(r => {
+    advisoryActiveRecords.forEach(r => {
       if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = [];
       recordsByStudent[r.studentId].push(r);
     });
@@ -3591,7 +3578,6 @@ export default function AccountsPage() {
       classStudents.forEach(s => {
         const studentRecs = recordsByStudent[s.uid] || [];
         studentRecs.forEach(r => {
-          if (r.status === 'Pending Reversal') return;
           totalBilled += Number(r.billedAmount) || 0;
           totalPaid += Number(r.amountPaid) || 0;
           totalWaivers += Number(r.waiverAmount) || 0;
@@ -3613,7 +3599,7 @@ export default function AccountsPage() {
         rate
       };
     }).sort((a, b) => b.rate - a.rate); // default sort by collection rate descending
-  }, [records, students, classes]);
+  }, [advisoryActiveRecords, students, classes]);
 
   const studentFinancials = useMemo(() => {
     if (!records || !students) return [];
@@ -3639,10 +3625,7 @@ export default function AccountsPage() {
   }, [dashboardStats]);
 
   const categoryCollections = useMemo(() => {
-    if (!records || !students) return [];
-    
-    const activeStudentIds = new Set(students.map(s => s.uid));
-    const activeRecords = records.filter(r => activeStudentIds.has(r.studentId) && r.status !== 'Pending Reversal');
+    if (!advisoryActiveRecords.length) return [];
     
     const categories: Record<string, { billed: number, paid: number, waived: number }> = {
         'Tuition': { billed: 0, paid: 0, waived: 0 },
@@ -3652,8 +3635,8 @@ export default function AccountsPage() {
         'Other': { billed: 0, paid: 0, waived: 0 }
     };
     
-    activeRecords.forEach(r => {
-        const type = r.type.toLowerCase();
+    advisoryActiveRecords.forEach(r => {
+        const type = (r.type || '').toLowerCase();
         let cat = 'Other';
         if (type.includes('tuition')) cat = 'Tuition';
         else if (type.includes('canteen')) cat = 'Canteen';
@@ -3677,7 +3660,7 @@ export default function AccountsPage() {
             rate
         };
     });
-  }, [records, students]);
+  }, [advisoryActiveRecords]);
 
   const topDebtors = useMemo(() => {
       const actualThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
