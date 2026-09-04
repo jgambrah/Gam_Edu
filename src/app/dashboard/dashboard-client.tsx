@@ -1444,9 +1444,10 @@ function AdminDashboard({
               staff={staff}
               classes={classes}
               financials={financials}
-              financialRecords={financialRecords}
+              financialRecords={allRecords || []}
               payments={payments}
               debtAgingStats={debtAgingStats}
+              dashboardSummary={dashboardSummary}
               attendanceRate={attendanceRate}
               studentTeacherRatio={studentTeacherRatio}
               academicTidbits={academicTidbits}
@@ -3759,9 +3760,10 @@ function DirectorDashboard({
               staff={staff}
               classes={classes}
               financials={financials}
-              financialRecords={financialRecords}
+              financialRecords={allRecords || []}
               payments={payments}
               debtAgingStats={debtAgingStats}
+              dashboardSummary={dashboardSummary}
               attendanceRate={todayAttendanceRate}
               studentTeacherRatio={studentTeacherRatio}
               academicTidbits={academicTidbits}
@@ -11550,16 +11552,16 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Financial records & payment streams loaded only when viewing Financials tab or for Accountant
-  const isFinancialTabActive = isAccountant || 
-    (role === 'Director' && directorActiveTab === 'financials') || 
-    (role === 'Administrator' && adminActiveTab === 'financials');
+  // Financial records loaded when viewing Overview or Financials tab
+  const isRecordsNeeded = isAccountant || 
+    (role === 'Director' && (directorActiveTab === 'financials' || directorActiveTab === 'overview' || activeTab === 'overview')) || 
+    (role === 'Administrator' && (adminActiveTab === 'financials' || adminActiveTab === 'overview' || activeTab === 'overview'));
 
   const recordsQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isFinancialTabActive) 
+    (firestore && schoolId && isRecordsNeeded) 
       ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(1000)) 
       : null, 
-  [firestore, schoolId, isFinancialTabActive]);
+  [firestore, schoolId, isRecordsNeeded]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
   // Bounded collectionGroup query disabled to eliminate Firestore data read costs completely

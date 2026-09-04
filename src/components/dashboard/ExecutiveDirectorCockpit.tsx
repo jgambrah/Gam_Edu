@@ -28,6 +28,7 @@ export function ExecutiveDirectorCockpit({
   financialRecords = [],
   payments = [],
   debtAgingStats = {},
+  dashboardSummary,
   attendanceRate = 83,
   studentTeacherRatio = 20.3,
   academicTidbits = {},
@@ -122,9 +123,9 @@ export function ExecutiveDirectorCockpit({
   }, [financialRecords, payments, students, classes, selectedCampus]);
 
   const todayCashCollected = useMemo(() => ({
-    total: unifiedMetrics.collectedToday,
+    total: financialSummary.collectedToday || unifiedMetrics.collectedToday,
     count: unifiedMetrics.todayCount,
-  }), [unifiedMetrics]);
+  }), [financialSummary, unifiedMetrics]);
 
   // Calculate student fee arrears dynamically from real student records
   const allArrearsList = useMemo(() => {
@@ -150,12 +151,57 @@ export function ExecutiveDirectorCockpit({
     return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
   }, [highArrearsList]);
 
-  // Fee Receivables Aging Data (Gross Debt Breakdown & Advance Payment Reconciliation)
-  const age60Bucket = unifiedMetrics.debtAgingStats.age60;
-  const age90Bucket = unifiedMetrics.debtAgingStats.age90;
-  const over90Bucket = unifiedMetrics.debtAgingStats.over90;
+  // Effective Debt Aging Resolution (server summary document or fallback to unifiedMetrics)
+  const resolvedAging = useMemo(() => {
+    if (dashboardSummary?.debtAging) {
+      const da = dashboardSummary.debtAging;
+      const grossTotal = (da.current || 0) + (da.age30 || 0) + (da.age60 || 0) + (da.age90 || 0);
+      if (grossTotal > 0 || (da.overpayments || 0) > 0) {
+        const advancePayments = da.overpayments || 0;
+        const netTotal = Math.max(0, grossTotal - advancePayments);
+        return {
+          current: da.current || 0,
+          age30: da.age30 || 0,
+          age60: da.age60 || 0,
+          age90: da.age90 || 0,
+          over90: 0,
+          grossTotal,
+          netTotal,
+          advancePayments,
+          accountCounts: unifiedMetrics.debtAgingStats.accountCounts || { current: 0, age30: 0, age60: 0, age90: 0, over90: 0, totalOverdue: 0, overdue60Plus: 0 }
+        };
+      }
+    }
+    return unifiedMetrics.debtAgingStats;
+  }, [dashboardSummary, unifiedMetrics.debtAgingStats]);
+
+  const age60Bucket = resolvedAging.age60;
+  const age90Bucket = resolvedAging.age90;
+  const over90Bucket = resolvedAging.over90;
   const overdue60PlusSum = age60Bucket + age90Bucket + over90Bucket;
-  const overdue60PlusCount = unifiedMetrics.debtAgingStats.accountCounts.overdue60Plus;
+  const overdue60PlusCount = resolvedAging.accountCounts?.overdue60Plus || 0;
+
+  // Executive Financial Metrics Sourcing
+  const financialSummary = useMemo(() => {
+    if (dashboardSummary?.financials) {
+      const f = dashboardSummary.financials;
+      const totalBilled = f.totalBilled || unifiedMetrics.totalBilled || 0;
+      const totalRevenue = f.totalRevenue || f.totalCollectedThisTerm || unifiedMetrics.collectedThisTerm || unifiedMetrics.totalRevenue || 0;
+      const collectionRate = f.collectionRate !== undefined ? f.collectionRate : (totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0);
+      return {
+        totalBilled,
+        totalRevenue,
+        collectionRate,
+        collectedToday: f.totalCollectedToday || unifiedMetrics.collectedToday || 0,
+      };
+    }
+    return {
+      totalBilled: unifiedMetrics.totalBilled,
+      totalRevenue: unifiedMetrics.collectedThisTerm || unifiedMetrics.totalRevenue,
+      collectionRate: unifiedMetrics.collectionRate,
+      collectedToday: unifiedMetrics.collectedToday,
+    };
+  }, [dashboardSummary, unifiedMetrics]);
 
   // Centralized Executive Telemetry Store (Single Source of Truth)
   const telemetry = useMemo(() => {
@@ -163,12 +209,12 @@ export function ExecutiveDirectorCockpit({
       ? todayTeacherAttendance.absent.length
       : (staff?.length ? Math.round(staff.length * 0.1) : 0);
 
-    const currentBucket = unifiedMetrics.debtAgingStats.current;
-    const age30Bucket = unifiedMetrics.debtAgingStats.age30;
+    const currentBucket = resolvedAging.current;
+    const age30Bucket = resolvedAging.age30;
     const lessThan30Bucket = currentBucket + age30Bucket;
-    const grossTotalDebt = unifiedMetrics.debtAgingStats.grossTotal;
-    const advancePaymentsCredit = unifiedMetrics.debtAgingStats.advancePayments;
-    const netOutstandingDebt = unifiedMetrics.debtAgingStats.netTotal;
+    const grossTotalDebt = resolvedAging.grossTotal;
+    const advancePaymentsCredit = resolvedAging.advancePayments;
+    const netOutstandingDebt = resolvedAging.netTotal;
 
     return {
       pendingStaffCheckins,
@@ -189,7 +235,7 @@ export function ExecutiveDirectorCockpit({
       topPerformingSubject: 'Grade 6 Science',
       topPerformingScore: 94.2,
     };
-  }, [todayTeacherAttendance, staff, unifiedMetrics, age60Bucket, age90Bucket, over90Bucket, overdue60PlusSum, overdue60PlusCount]);
+  }, [todayTeacherAttendance, staff, resolvedAging, age60Bucket, age90Bucket, over90Bucket, overdue60PlusSum, overdue60PlusCount]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
   const activeFacultyCount = staff?.length || 0;
@@ -209,7 +255,7 @@ export function ExecutiveDirectorCockpit({
       percentage: Math.round((lessThan30Bucket / grossDebtForPct) * 100), 
       color: '#3b82f6', 
       label: 'Current & < 30 Days', 
-      accountCount: (unifiedMetrics.debtAgingStats.accountCounts.current || 0) + (unifiedMetrics.debtAgingStats.accountCounts.age30 || 0) 
+      accountCount: (resolvedAging.accountCounts?.current || 0) + (resolvedAging.accountCounts?.age30 || 0) 
     },
     { 
       range: '30 - 60 Days', 
@@ -217,7 +263,7 @@ export function ExecutiveDirectorCockpit({
       percentage: Math.round((telemetry.age60Bucket / grossDebtForPct) * 100), 
       color: '#f59e0b', 
       label: '30 - 60 Days Overdue', 
-      accountCount: unifiedMetrics.debtAgingStats.accountCounts.age60 || 0 
+      accountCount: resolvedAging.accountCounts?.age60 || 0 
     },
     { 
       range: '60 - 90 Days', 
@@ -225,7 +271,7 @@ export function ExecutiveDirectorCockpit({
       percentage: Math.round((telemetry.age90Bucket / grossDebtForPct) * 100), 
       color: '#f97316', 
       label: '60 - 90 Days Overdue', 
-      accountCount: unifiedMetrics.debtAgingStats.accountCounts.age90 || 0 
+      accountCount: resolvedAging.accountCounts?.age90 || 0 
     },
     { 
       range: '> 90 Days', 
@@ -233,7 +279,7 @@ export function ExecutiveDirectorCockpit({
       percentage: Math.round((telemetry.over90Bucket / grossDebtForPct) * 100), 
       color: '#ef4444', 
       label: 'Critical (> 90 Days)', 
-      accountCount: unifiedMetrics.debtAgingStats.accountCounts.over90 || 0 
+      accountCount: resolvedAging.accountCounts?.over90 || 0 
     },
   ];
 
@@ -1032,8 +1078,8 @@ export function ExecutiveDirectorCockpit({
                 </div>
                 <div className="mt-2 space-y-1.5">
                   <div className="flex items-baseline justify-between gap-1">
-                    <h3 className="text-2xl font-bold text-slate-900">{unifiedMetrics.collectionRate}%</h3>
-                    <Sparkline points={[68, 70, 71, 72, unifiedMetrics.collectionRate]} color="#10b981" />
+                    <h3 className="text-2xl font-bold text-slate-900">{financialSummary.collectionRate}%</h3>
+                    <Sparkline points={[68, 70, 71, 72, financialSummary.collectionRate]} color="#10b981" />
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="font-semibold text-emerald-600 flex items-center">
@@ -1043,11 +1089,11 @@ export function ExecutiveDirectorCockpit({
                   <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
                     <div className="flex items-center justify-between font-medium text-slate-600">
                       <span>Billed Target:</span>
-                      <span className="font-semibold text-slate-800">GH₵ {Math.round(unifiedMetrics.totalBilled).toLocaleString()}</span>
+                      <span className="font-semibold text-slate-800">GH₵ {Math.round(financialSummary.totalBilled).toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between font-medium text-slate-600">
                       <span>Collected Revenue:</span>
-                      <span className="font-semibold text-emerald-700">GH₵ {Math.round(unifiedMetrics.collectedThisTerm || unifiedMetrics.totalRevenue).toLocaleString()}</span>
+                      <span className="font-semibold text-emerald-700">GH₵ {Math.round(financialSummary.totalRevenue).toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
