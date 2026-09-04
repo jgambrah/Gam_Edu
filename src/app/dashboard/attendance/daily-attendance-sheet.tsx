@@ -19,13 +19,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText, AlertCircle, Sparkles } from 'lucide-react'; 
+import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText, AlertCircle, Sparkles, CheckCheck, RotateCcw, UtensilsCrossed } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { format, startOfDay, differenceInDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, writeBatch, doc, serverTimestamp, Timestamp, setDoc } from 'firebase/firestore';
 import { type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
@@ -122,10 +122,14 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         name: "records",
     });
 
+    const [canteenSyncedMeals, setCanteenSyncedMeals] = useState<number | null>(null);
+    const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
+
     const handleLoadStudents = useCallback(async () => {
         if (!selectedClassId || !firestore || !schoolId) return;
         setIsLoading(true);
         setStudentsLoaded(false);
+        setCanteenSyncedMeals(null);
 
         try {
             const studentQuery = query(
@@ -149,30 +153,78 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 return;
             }
 
-            const attendanceQuery = query(
-                collection(firestore, 'attendance'),
-                where('schoolId', '==', schoolId),
-                where('classId', '==', selectedClassId),
-                where('date', '==', startOfDay(selectedDate))
-            );
-            const attendanceSnapshot = await getDocs(attendanceQuery);
-            const existingRecords = attendanceSnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() }))
-                .filter((r: any) => r.isArchived !== true) as AttendanceRecord[];
+            const dateStr = format(selectedDate, 'yyyy-MM-dd');
+            const aggDocId = `${schoolId}_${selectedClassId}_${dateStr}`;
+            const aggDocRef = doc(firestore, 'attendance', aggDocId);
+            const aggDocSnap = await getDoc(aggDocRef);
 
-            setHasExistingRecords(existingRecords.length > 0);
+            let existingRecordsMap: Record<string, { status: string; notes?: string }> = {};
+            let foundExisting = false;
+
+            if (aggDocSnap.exists()) {
+                const aggData = aggDocSnap.data();
+                if (aggData && aggData.studentsMap) {
+                    existingRecordsMap = aggData.studentsMap;
+                    foundExisting = true;
+                    if (typeof aggData.canteenMealsCount === 'number') {
+                        setCanteenSyncedMeals(aggData.canteenMealsCount);
+                    }
+                }
+            }
+
+            if (!foundExisting) {
+                const attendanceQuery = query(
+                    collection(firestore, 'attendance'),
+                    where('schoolId', '==', schoolId),
+                    where('classId', '==', selectedClassId),
+                    where('date', '==', startOfDay(selectedDate))
+                );
+                const attendanceSnapshot = await getDocs(attendanceQuery);
+                const existingDocs = attendanceSnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .filter((r: any) => r.isArchived !== true) as AttendanceRecord[];
+
+                if (existingDocs.length > 0) {
+                    foundExisting = true;
+                    existingDocs.forEach((r: any) => {
+                        if (r.studentId) {
+                            existingRecordsMap[r.studentId] = {
+                                status: r.status,
+                                notes: r.notes || ''
+                            };
+                        }
+                    });
+                }
+            }
+
+            // Check if there is an in-progress local session draft for this class & date
+            const draftKey = `attendance_draft_${schoolId}_${selectedClassId}_${dateStr}`;
+            let draftRecordsMap: Record<string, { status: string; notes?: string }> | null = null;
+            try {
+                if (typeof window !== 'undefined') {
+                    const savedDraft = sessionStorage.getItem(draftKey);
+                    if (savedDraft) {
+                        draftRecordsMap = JSON.parse(savedDraft);
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to read draft from sessionStorage", e);
+            }
+
+            setHasExistingRecords(foundExisting);
 
             const formRecords = studentList.map(student => {
-                const existingRecord = existingRecords.find(r => r.studentId === student.uid);
+                const savedStatus = draftRecordsMap?.[student.uid]?.status || existingRecordsMap[student.uid]?.status || 'Present';
+                const savedNotes = draftRecordsMap?.[student.uid]?.notes ?? existingRecordsMap[student.uid]?.notes ?? '';
                 const studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim();
                 
                 return {
-                    id: existingRecord?.id,
+                    id: undefined,
                     studentId: student.uid,
                     studentName: studentName,
                     classId: selectedClassId,
-                    status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
-                    notes: existingRecord?.notes || '',
+                    status: savedStatus as "Present" | "Absent" | "Late" | "Excused",
+                    notes: savedNotes,
                     usesBusService: String(student.usesBusService || false),
                     usesCanteen: String(student.usesCanteen !== false),
                 };
@@ -238,7 +290,37 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const batch = writeBatch(firestore);
             const dateStr = format(selectedDate, 'yyyy-MM-dd');
             
+            // 1. Prepare aggregated metrics & student map
+            const studentsMap: Record<string, any> = {};
+            let presentCount = 0;
+            let absentCount = 0;
+            let lateCount = 0;
+            let excusedCount = 0;
+            let canteenMealsCount = 0;
+
             data.records.forEach(record => {
+                const student = students.find(s => s.uid === record.studentId);
+                const isPresentOrLate = record.status === 'Present' || record.status === 'Late';
+                const isCanteenEligible = isPresentOrLate && (student?.usesCanteen !== false);
+
+                if (record.status === 'Present') presentCount++;
+                else if (record.status === 'Absent') absentCount++;
+                else if (record.status === 'Late') lateCount++;
+                else if (record.status === 'Excused') excusedCount++;
+
+                if (isCanteenEligible) canteenMealsCount++;
+
+                studentsMap[record.studentId] = {
+                    studentId: record.studentId,
+                    studentName: record.studentName,
+                    status: record.status,
+                    notes: record.notes || '',
+                    usesBusService: String(student?.usesBusService || false),
+                    usesCanteen: String(student?.usesCanteen !== false),
+                    canteenEligible: isCanteenEligible
+                };
+
+                // Dual-write individual document for backward compatibility with existing reporting/parent portals
                 const deterministicId = `att-${schoolId}-${selectedClassId}-${record.studentId}-${dateStr}`;
                 const recordRef = doc(firestore, 'attendance', deterministicId);
                 const { usesBusService, usesCanteen, id, ...dataToSave } = record; 
@@ -260,8 +342,61 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 }
             });
 
+            // 2. Primary aggregated attendance document: attendance/${schoolId}_${classId}_${dateStr}
+            const aggDocId = `${schoolId}_${selectedClassId}_${dateStr}`;
+            const aggDocRef = doc(firestore, 'attendance', aggDocId);
+            const className = visibleClasses?.find((c: any) => c.id === selectedClassId)?.name || selectedClassId;
+
+            batch.set(aggDocRef, {
+                id: aggDocId,
+                schoolId,
+                classId: selectedClassId,
+                className,
+                date: startOfDay(selectedDate),
+                dateStr,
+                totalStudents: data.records.length,
+                presentCount,
+                absentCount,
+                lateCount,
+                excusedCount,
+                canteenMealsCount,
+                studentsMap,
+                updatedAt: serverTimestamp(),
+                updatedBy: user?.uid
+            }, { merge: true });
+
+            // 3. Centralized Canteen Headcount Handoff: canteen_headcounts/${schoolId}_${dateStr}
+            const canteenDocId = `${schoolId}_${dateStr}`;
+            const canteenDocRef = doc(firestore, 'canteen_headcounts', canteenDocId);
+            batch.set(canteenDocRef, {
+                schoolId,
+                date: dateStr,
+                updatedAt: serverTimestamp(),
+                [`classes.${selectedClassId}`]: {
+                    classId: selectedClassId,
+                    className,
+                    totalEnrolled: data.records.length,
+                    presentCount: presentCount + lateCount,
+                    canteenEligibleCount: canteenMealsCount,
+                    updatedBy: user?.uid || 'teacher',
+                    updatedAt: new Date()
+                }
+            }, { merge: true });
+
             await batch.commit();
             setHasExistingRecords(true);
+            setCanteenSyncedMeals(canteenMealsCount);
+            setLastSavedTime(format(new Date(), 'h:mm a'));
+
+            // Clear in-progress session draft on successful commit
+            try {
+                if (typeof window !== 'undefined') {
+                    const draftKey = `attendance_draft_${schoolId}_${selectedClassId}_${dateStr}`;
+                    sessionStorage.removeItem(draftKey);
+                }
+            } catch (e) {
+                console.error("Failed to remove draft from sessionStorage", e);
+            }
 
             // Trigger gamification badge updates (0 extra reads)
             data.records.forEach(record => {
@@ -273,18 +408,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             });
 
             try {
-                const className = visibleClasses?.find((c: any) => c.id === selectedClassId)?.name || selectedClassId;
-                const pCount = data.records.filter(r => r.status === 'Present').length;
-                const aCount = data.records.filter(r => r.status === 'Absent').length;
-                const lCount = data.records.filter(r => r.status === 'Late').length;
-                const eCount = data.records.filter(r => r.status === 'Excused').length;
-                
                 await logAuditEvent({
                     firestore,
                     schoolId,
                     userName: user?.displayName || user?.email || 'Staff Member',
                     action: 'STUDENT_ATTENDANCE_TAKEN',
-                    details: `Class: ${className} | Date: ${dateStr} | Summary - Present: ${pCount}, Absent: ${aCount}, Late: ${lCount}, Excused: ${eCount}`,
+                    details: `Class: ${className} | Date: ${dateStr} | Summary - Present: ${presentCount}, Absent: ${absentCount}, Late: ${lateCount}, Excused: ${excusedCount} | Canteen Meals: ${canteenMealsCount}`,
                     userId: user?.uid
                 });
             } catch (auditErr) {
@@ -300,7 +429,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 "/dashboard/my-attendance"
             ).catch(err => console.error("Notification failed:", err));
 
-            // --- AUTOMATED WHATSAPP ALERTS (Fire and forget) ---
+            // --- ABSENCE NOTIFICATION QUEUE & DEDUPLICATED WHATSAPP ALERTS ---
             const alertRecords = data.records.filter(r => r.status === 'Absent' || r.status === 'Late');
             
             if (alertRecords.length > 0) {
@@ -312,7 +441,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     chunks.push(alertedStudentIds.slice(i, i + 30));
                 }
 
-                // Execute queries in parallel
+                // Execute queries in parallel to find parents
                 const parentResults = await Promise.all(chunks.map(chunk => 
                     getDocs(query(
                         collection(firestore, 'parents'), 
@@ -326,21 +455,64 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 parentResults.forEach(snap => {
                     snap.docs.forEach(d => parentsMap.set(d.id, d.data()));
                 });
-                
-                parentsMap.forEach(parent => {
-                    if (!parent.phone) return;
 
-                    const childAlerts = alertRecords.filter(r => parent.studentIds?.includes(r.studentId));
+                // Deduplicated queue write & WhatsApp dispatch
+                for (const alert of alertRecords) {
+                    const queueDocId = `absent_${schoolId}_${alert.studentId}_${dateStr}`;
+                    const queueDocRef = doc(firestore, 'notification_queue', queueDocId);
                     
-                    childAlerts.forEach(alert => {
-                        const timeStr = format(new Date(), 'h:mm a');
-                        const message = alert.status === 'Absent' 
-                            ? `🚨 *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, was marked *ABSENT* today at ${timeStr}. Please contact the school if you are unaware of this.`
-                            : `⚠️ *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, arrived *LATE* to school today at ${timeStr}.`;
+                    try {
+                        const existingQueueDoc = await getDoc(queueDocRef);
+                        const alreadyAlerted = existingQueueDoc.exists();
 
-                        sendSchoolWhatsApp(schoolId, parent.phone, message).catch(err => console.error("WhatsApp Send Failed:", err));
-                    });
-                });
+                        // Find parent contact
+                        let matchedParentId: string | null = null;
+                        let matchedParentPhone: string | null = null;
+                        for (const [parentId, parentData] of parentsMap.entries()) {
+                            if (parentData.studentIds?.includes(alert.studentId)) {
+                                matchedParentId = parentId;
+                                matchedParentPhone = parentData.phone || null;
+                                break;
+                            }
+                        }
+
+                        // Write/upsert to notification_queue
+                        await setDoc(queueDocRef, {
+                            schoolId,
+                            date: dateStr,
+                            studentId: alert.studentId,
+                            studentName: alert.studentName,
+                            classId: selectedClassId,
+                            className,
+                            status: alert.status,
+                            queueStatus: alreadyAlerted ? (existingQueueDoc.data()?.queueStatus || "sent") : "pending",
+                            parentId: matchedParentId,
+                            parentContact: matchedParentPhone,
+                            type: "ABSENCE_ALERT",
+                            createdAt: serverTimestamp(),
+                            queuedBy: user?.uid || 'teacher'
+                        }, { merge: true });
+
+                        // Send WhatsApp only if NOT already alerted today (Duplicate prevention)
+                        if (!alreadyAlerted && matchedParentPhone) {
+                            const timeStr = format(new Date(), 'h:mm a');
+                            const message = alert.status === 'Absent' 
+                                ? `🚨 *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, was marked *ABSENT* today at ${timeStr}. Please contact the school if you are unaware of this.`
+                                : `⚠️ *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, arrived *LATE* to school today at ${timeStr}.`;
+
+                            sendSchoolWhatsApp(schoolId, matchedParentPhone, message)
+                                .then(async () => {
+                                    await setDoc(queueDocRef, { queueStatus: "sent", sentAt: serverTimestamp() }, { merge: true });
+                                })
+                                .catch(async (err) => {
+                                    console.error("WhatsApp Send Failed:", err);
+                                    await setDoc(queueDocRef, { queueStatus: "failed", error: String(err) }, { merge: true });
+                                });
+                        }
+                    } catch (queueErr) {
+                        console.error("Error writing to notification_queue:", queueErr);
+                    }
+                }
             }
 
             toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
@@ -364,17 +536,20 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     
                     toast({
                         title: 'Attendance Saved 📅',
-                        description: `Attendance updated successfully. ${billingResult.successful} billed for daily services.`
+                        description: `Attendance updated successfully. ${billingResult.successful} billed for daily services. Canteen headcount synced (${canteenMealsCount} meals).`
                     });
                 } catch (billingErr: any) {
                     console.error("Billing post-processing failed:", billingErr);
                     toast({
                         title: 'Attendance Saved 📅',
-                        description: 'Student attendance status has been updated successfully.'
+                        description: `Student attendance status updated. Canteen headcount synced (${canteenMealsCount} meals).`
                     });
                 }
             } else {
-                toast({ title: 'Attendance Saved 📅', description: 'Attendance status updated successfully.' });
+                toast({ 
+                    title: 'Attendance Saved 📅', 
+                    description: `Attendance status updated successfully. Canteen headcount synced (${canteenMealsCount} meals).` 
+                });
             }
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -399,6 +574,63 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
 
     const records = form.watch("records") || [];
     
+    // Live summary counts
+    const totalEnrolledCount = students.length;
+    const presentCount = records.filter(r => r.status === 'Present').length;
+    const lateCount = records.filter(r => r.status === 'Late').length;
+    const absentCount = records.filter(r => r.status === 'Absent').length;
+    const excusedCount = records.filter(r => r.status === 'Excused').length;
+    const unmarkedCount = records.filter(r => !r.status).length;
+    const totalPresentAndLate = presentCount + lateCount;
+
+    // Save in-progress draft to sessionStorage whenever records change
+    useEffect(() => {
+        if (!selectedClassId || !selectedDate || !schoolId || !studentsLoaded || records.length === 0) return;
+        try {
+            const dateStr = format(selectedDate, 'yyyy-MM-dd');
+            const draftKey = `attendance_draft_${schoolId}_${selectedClassId}_${dateStr}`;
+            const draftMap: Record<string, { status: string; notes?: string }> = {};
+            records.forEach(r => {
+                draftMap[r.studentId] = {
+                    status: r.status,
+                    notes: r.notes || ''
+                };
+            });
+            sessionStorage.setItem(draftKey, JSON.stringify(draftMap));
+        } catch (e) {
+            // ignore sessionStorage quota or private browsing errors
+        }
+    }, [records, selectedClassId, selectedDate, schoolId, studentsLoaded]);
+
+    const handleMarkAllPresent = useCallback(() => {
+        if (isLocked) return;
+        const currentRecords = form.getValues('records') || [];
+        const updated = currentRecords.map(r => ({
+            ...r,
+            status: 'Present' as const
+        }));
+        replace(updated);
+        toast({
+            title: "All Marked Present ✅",
+            description: `Set all ${currentRecords.length} active students to 'Present'.`
+        });
+    }, [isLocked, form, replace, toast]);
+
+    const handleResetAll = useCallback(() => {
+        if (isLocked) return;
+        const currentRecords = form.getValues('records') || [];
+        const updated = currentRecords.map(r => ({
+            ...r,
+            status: 'Present' as const,
+            notes: ''
+        }));
+        replace(updated);
+        toast({
+            title: "Roster Reset",
+            description: "Reset status for all students."
+        });
+    }, [isLocked, form, replace, toast]);
+
     const billingBusCount = records.filter((r) => {
         const student = students.find(s => s.uid === r.studentId);
         const transportMode = (student as any)?.transportBillingModel || 'Daily';
@@ -478,14 +710,94 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 )}
 
                 {studentsLoaded && (
-                    <div className="relative w-full md:max-w-sm mb-6 flex-shrink-0">
-                        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
-                        <Input 
-                            placeholder="Filter student roster by name..." 
-                            className="pl-10 pr-4 bg-white border-slate-200/80 rounded-xl h-11 shadow-sm focus-visible:ring-teal-500" 
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                        />
+                    <div className="space-y-4 mb-6 flex-shrink-0">
+                        {/* Live Summary Counter Widget */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between">
+                                <div>
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Total Enrolled</span>
+                                    <span className="text-2xl font-black text-slate-800">{totalEnrolledCount}</span>
+                                </div>
+                                <div className="h-10 w-10 rounded-xl bg-slate-200/60 flex items-center justify-center text-slate-600 font-black">
+                                    {totalEnrolledCount}
+                                </div>
+                            </div>
+                            <div className="bg-emerald-50/60 border border-emerald-200/70 rounded-2xl p-3.5 flex items-center justify-between">
+                                <div>
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 block">Present / Late</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-2xl font-black text-emerald-700">{totalPresentAndLate}</span>
+                                        {lateCount > 0 && <span className="text-xs font-semibold text-amber-600">({lateCount} late)</span>}
+                                    </div>
+                                </div>
+                                <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                                    <Check className="h-5 w-5" />
+                                </div>
+                            </div>
+                            <div className="bg-rose-50/60 border border-rose-200/70 rounded-2xl p-3.5 flex items-center justify-between">
+                                <div>
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-rose-600 block">Absent</span>
+                                    <span className="text-2xl font-black text-rose-700">{absentCount}</span>
+                                </div>
+                                <div className="h-10 w-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-700 font-bold">
+                                    <X className="h-5 w-5" />
+                                </div>
+                            </div>
+                            <div className="bg-sky-50/60 border border-sky-200/70 rounded-2xl p-3.5 flex items-center justify-between">
+                                <div>
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 block">Unmarked</span>
+                                    <span className="text-2xl font-black text-sky-700">{unmarkedCount}</span>
+                                </div>
+                                <div className="h-10 w-10 rounded-xl bg-sky-100 flex items-center justify-center text-sky-700 font-bold">
+                                    <Clock className="h-5 w-5" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Operational Bar: Search, Mark All Present Toggle, and Canteen Synced Badge */}
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-200/70 shadow-sm">
+                            <div className="relative flex-1 max-w-sm">
+                                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+                                <Input 
+                                    placeholder="Filter student roster by name..." 
+                                    className="pl-10 pr-4 bg-slate-50/50 border-slate-200/80 rounded-xl h-10 shadow-none focus-visible:ring-teal-500 text-xs" 
+                                    value={searchTerm}
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2">
+                                {canteenSyncedMeals !== null && (
+                                    <Badge className="bg-orange-100/80 text-orange-800 border-orange-200 font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-none">
+                                        <UtensilsCrossed className="h-3.5 w-3.5 text-orange-600" />
+                                        <span>Canteen Headcount Synced ({canteenSyncedMeals} Meals)</span>
+                                    </Badge>
+                                )}
+                                
+                                <Button
+                                    type="button"
+                                    onClick={handleMarkAllPresent}
+                                    disabled={isLocked}
+                                    variant="outline"
+                                    className="h-10 px-4 rounded-xl border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"
+                                >
+                                    <CheckCheck className="h-4 w-4 text-emerald-600" />
+                                    Mark All Present
+                                </Button>
+
+                                <Button
+                                    type="button"
+                                    onClick={handleResetAll}
+                                    disabled={isLocked}
+                                    variant="ghost"
+                                    className="h-10 px-3 rounded-xl text-slate-500 hover:bg-slate-100 font-semibold text-xs flex items-center gap-1.5"
+                                    title="Reset roll call"
+                                >
+                                    <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
+                                    Reset
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 )}
 

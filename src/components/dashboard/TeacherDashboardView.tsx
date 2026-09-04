@@ -17,7 +17,9 @@ import {
   Check,
   X,
   Plus,
-  Info
+  Info,
+  CheckCheck,
+  UtensilsCrossed
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -768,11 +770,24 @@ export function TeacherDashboardView({
                         {/* Roster Tab */}
                         {activeTab === 'roster' && (
                             <div className="space-y-4 animate-in fade-in duration-300">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                                    <h4 className="font-black text-sm uppercase tracking-tight text-slate-800">Class Roster List</h4>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                        Showing {classStudents.length} Students
-                                    </span>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+                                    <div>
+                                        <h4 className="font-black text-sm uppercase tracking-tight text-slate-800">Class Roster List</h4>
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                            Showing {classStudents.length} Students
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Link href="/dashboard/attendance">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-8 px-3 rounded-xl border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50"
+                                            >
+                                                Open Full Attendance Cockpit
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </div>
                                 <p className="text-[10px] font-bold text-slate-450 uppercase tracking-wider pl-1 text-slate-400">
                                     💡 Quick check: click the circle beside a student to mark Present/Absent for today.
