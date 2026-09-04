@@ -1043,6 +1043,28 @@ function AbcMatcherGame({
         setChoices(allChoices);
     }, [alphabet, mergedDict]);
 
+    // Keep internal currentLetter in sync if parent selectedLetter changes externally
+    useEffect(() => {
+        if (selectedLetter && selectedLetter.toUpperCase() !== currentLetter.toUpperCase()) {
+            if (matcherMode === 'confusing-pairs') {
+                const trickyKeys = Object.keys(CONFUSING_PAIRS_MAP);
+                const lower = selectedLetter.toLowerCase();
+                if (trickyKeys.includes(lower)) {
+                    setCurrentLetter(lower);
+                }
+            } else {
+                setCurrentLetter(selectedLetter.toUpperCase());
+            }
+        }
+    }, [selectedLetter, matcherMode]);
+
+    // Ensure parent selectedLetter is always in sync with currentLetter for alphabet grid highlighting
+    useEffect(() => {
+        if (currentLetter) {
+            onLetterChange(currentLetter.toUpperCase());
+        }
+    }, [currentLetter, onLetterChange]);
+
     // Handle incoming letter changes from parent or internal round progression
     useEffect(() => {
         if (matcherMode === 'confusing-pairs') {
@@ -1050,12 +1072,13 @@ function AbcMatcherGame({
             if (!trickyKeys.includes(currentLetter.toLowerCase())) {
                 const initialTricky = trickyKeys[0];
                 setCurrentLetter(initialTricky);
+                onLetterChange(initialTricky.toUpperCase());
                 generateQuestion(matcherMode, initialTricky);
                 return;
             }
         }
         generateQuestion(matcherMode, currentLetter);
-    }, [matcherMode, currentLetter, generateQuestion]);
+    }, [matcherMode, currentLetter, generateQuestion, onLetterChange]);
 
     // Read audio prompt aloud for sound-to-letter mode
     const currentPhonic = useMemo(() => {
@@ -1190,7 +1213,7 @@ function AbcMatcherGame({
     return (
         <div className="p-3 sm:p-5 space-y-3.5 sm:space-y-4 animate-in fade-in max-w-xl mx-auto">
             {/* 1. ROUNDED PILL MODE SELECTOR (SINGLE ROW, NO WRAP) */}
-            <div className="flex flex-nowrap items-center justify-start sm:justify-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-green-50/80 rounded-2xl border border-green-200/80 shadow-inner overflow-x-auto scrollbar-none">
+            <div className="w-full flex flex-nowrap items-center justify-between sm:justify-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-green-50/80 rounded-2xl border border-green-200/80 shadow-inner overflow-x-auto scrollbar-none">
                 {[
                     { id: 'upper-to-lower', icon: '🔤', label: 'Upper ➔ Lower' },
                     { id: 'letter-to-object', icon: '🍎', label: 'Letter ➔ Picture' },
@@ -1201,7 +1224,7 @@ function AbcMatcherGame({
                         key={modeTab.id}
                         onClick={() => handleModeChange(modeTab.id as MatcherMode)}
                         className={cn(
-                            "px-2.5 sm:px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm whitespace-nowrap shrink-0 transition-all flex items-center gap-1 sm:gap-1.5 shadow-sm active:scale-95",
+                            "px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl font-black text-xs whitespace-nowrap shrink-0 transition-all flex items-center gap-1 shadow-sm active:scale-95",
                             matcherMode === modeTab.id
                                 ? "bg-white text-green-700 shadow-md border border-green-300 scale-102"
                                 : "text-slate-600 hover:text-green-700 hover:bg-white/60"
@@ -1531,7 +1554,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                                 onClick={() => handleLetterClick(letter)}
                                 className={cn(
                                   "aspect-square rounded-[20px] font-black text-xl transition-all border-2 border-b-6 active:translate-y-0.5 active:border-b-2 shadow-sm",
-                                  selectedLetter === letter 
+                                  selectedLetter?.toUpperCase() === letter.toUpperCase()
                                     ? 'bg-gradient-to-b from-green-400 to-emerald-500 text-white border-green-600 shadow-md -translate-y-0.5' 
                                     : 'bg-white text-slate-500 border-slate-200 hover:bg-green-50/50 hover:text-green-600'
                                 )}
