@@ -219,17 +219,24 @@ export function getActiveTermBounds(budgets: any[] = [], schoolSettings: any = {
   const now = new Date();
 
   // 1. Configured term label from School Settings / Profile
-  const configuredTerm = schoolSettings?.term || schoolSettings?.activeTerm || schoolSettings?.currentTerm || schoolSettings?.currentTermId;
+  const configuredTerm = schoolSettings?.term || 
+    schoolSettings?.activeTerm || 
+    schoolSettings?.currentTerm || 
+    schoolSettings?.currentTermId || 
+    schoolSettings?.termName || 
+    schoolSettings?.academicTerm;
 
   // 2. Direct term start & end dates in School Profile / Settings if configured
   const profileStart = safeParseDate(schoolSettings?.termStartDate || schoolSettings?.startDate);
   const profileEnd = safeParseDate(schoolSettings?.termEndDate || schoolSettings?.endDate);
 
+  const fallbackLabel = configuredTerm || "Current Term";
+
   if (profileStart && profileEnd) {
     return {
       start: profileStart,
       end: profileEnd,
-      label: configuredTerm || schoolSettings?.termName || "Current Term"
+      label: fallbackLabel
     };
   }
 
@@ -244,7 +251,7 @@ export function getActiveTermBounds(budgets: any[] = [], schoolSettings: any = {
     if (activeBudget) {
       const start = safeParseDate(activeBudget.startDate) || new Date(now.getFullYear(), 0, 1);
       const end = safeParseDate(activeBudget.endDate) || new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-      return { start, end, label: activeBudget.name || activeBudget.term || configuredTerm || "Current Term" };
+      return { start, end, label: activeBudget.name || activeBudget.term || fallbackLabel };
     }
   }
 
@@ -261,7 +268,7 @@ export function getActiveTermBounds(budgets: any[] = [], schoolSettings: any = {
     return { start: new Date(currentYear, 0, 1, 0, 0, 0, 0), end: new Date(currentYear, 11, 31, 23, 59, 59, 999), label: configuredTerm };
   }
 
-  // Fallback basic school terms in Ghana
+  // Fallback term bounds (Never hardcode "Third Term" as static string)
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
   if (currentMonth <= 3) {
@@ -269,7 +276,7 @@ export function getActiveTermBounds(budgets: any[] = [], schoolSettings: any = {
   } else if (currentMonth <= 7) {
     return { start: new Date(currentYear, 4, 1, 0, 0, 0, 0), end: new Date(currentYear, 7, 31, 23, 59, 59, 999), label: "Second Term" };
   } else {
-    return { start: new Date(currentYear, 8, 1, 0, 0, 0, 0), end: new Date(currentYear, 11, 31, 23, 59, 59, 999), label: "Third Term" };
+    return { start: new Date(currentYear, 8, 1, 0, 0, 0, 0), end: new Date(currentYear, 11, 31, 23, 59, 59, 999), label: "Active Term" };
   }
 }
 
