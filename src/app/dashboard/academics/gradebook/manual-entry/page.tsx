@@ -1334,17 +1334,17 @@ export default function GradebookPage() {
                                         <p className="font-semibold text-sm">Loading roster...</p>
                                     </div>
                                 ) : (
-                                    <Table className="min-w-[1250px]">
+                                    <Table className="w-full min-w-0">
                                         <TableHeader>
                                             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 border-b border-slate-200">
-                                                <TableHead className="font-bold text-slate-700 w-[280px] min-w-[260px]">Student Name</TableHead>
+                                                <TableHead className="font-bold text-slate-700 w-[190px] sm:w-[210px] min-w-[170px] px-2 text-xs">Student Name</TableHead>
                                                 
                                                 {/* Dynamic Test Columns */}
                                                 {testColumns.map((tc, colIdx) => (
-                                                    <TableHead key={tc.id} className="text-center w-[105px]">
-                                                        <div className="flex flex-col items-center gap-1">
-                                                            <div className="flex items-center gap-1">
-                                                                <span className="font-bold text-slate-700 text-xs">{tc.name}</span>
+                                                    <TableHead key={tc.id} className="text-center w-[60px] sm:w-[66px] min-w-[54px] px-1">
+                                                        <div className="flex flex-col items-center gap-0.5">
+                                                            <div className="flex items-center gap-0.5">
+                                                                <span className="font-bold text-slate-700 text-[11px] truncate max-w-[44px]" title={tc.name}>{tc.name}</span>
                                                                 {testColumns.length > 1 && colIdx > 0 && (
                                                                     <button
                                                                         type="button"
@@ -1352,16 +1352,16 @@ export default function GradebookPage() {
                                                                         className="text-slate-400 hover:text-rose-600 transition-colors p-0.5"
                                                                         title={`Remove ${tc.name}`}
                                                                     >
-                                                                        <X className="h-3 w-3" />
+                                                                        <X className="h-2.5 w-2.5" />
                                                                     </button>
                                                                 )}
                                                             </div>
                                                             <div className="flex items-center gap-1">
-                                                                <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.classTest}</span>
+                                                                <span className="text-[9px] font-black text-slate-400">/{matrixMaxScores.classTest}</span>
                                                                 <button 
                                                                     type="button"
                                                                     onClick={() => { setFillTarget({ type: 'test', colId: tc.id, label: tc.name, max: matrixMaxScores.classTest }); setFillColValue(''); }}
-                                                                    className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
+                                                                    className="text-[8px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
                                                                     title="Fill all students"
                                                                 >
                                                                     Fill
@@ -1372,15 +1372,15 @@ export default function GradebookPage() {
                                                 ))}
 
                                                 {/* Homework Header */}
-                                                <TableHead className="text-center w-[105px]">
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <span className="font-bold text-slate-700 text-xs">Homework</span>
+                                                <TableHead className="text-center w-[60px] sm:w-[66px] min-w-[54px] px-1">
+                                                    <div className="flex flex-col items-center gap-0.5">
+                                                        <span className="font-bold text-slate-700 text-[11px]">Homework</span>
                                                         <div className="flex items-center gap-1">
-                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.homework}</span>
+                                                            <span className="text-[9px] font-black text-slate-400">/{matrixMaxScores.homework}</span>
                                                             <button 
                                                                 type="button"
                                                                 onClick={() => { setFillTarget({ type: 'homework', label: 'Homework', max: matrixMaxScores.homework }); setFillColValue(''); }}
-                                                                className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
+                                                                className="text-[8px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
                                                                 Fill
@@ -1390,15 +1390,15 @@ export default function GradebookPage() {
                                                 </TableHead>
 
                                                 {/* Project / Practical Header (Restored) */}
-                                                <TableHead className="text-center w-[105px]">
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <span className="font-bold text-slate-700 text-xs">Project / CW</span>
+                                                <TableHead className="text-center w-[60px] sm:w-[66px] min-w-[54px] px-1">
+                                                    <div className="flex flex-col items-center gap-0.5">
+                                                        <span className="font-bold text-slate-700 text-[11px]">Project</span>
                                                         <div className="flex items-center gap-1">
-                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.project}</span>
+                                                            <span className="text-[9px] font-black text-slate-400">/{matrixMaxScores.project}</span>
                                                             <button 
                                                                 type="button"
                                                                 onClick={() => { setFillTarget({ type: 'project', label: 'Project / CW', max: matrixMaxScores.project }); setFillColValue(''); }}
-                                                                className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
+                                                                className="text-[8px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
                                                                 Fill
@@ -1408,15 +1408,15 @@ export default function GradebookPage() {
                                                 </TableHead>
 
                                                 {/* Mid-Term Header */}
-                                                <TableHead className="text-center w-[105px]">
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <span className="font-bold text-slate-700 text-xs">Mid-Term</span>
+                                                <TableHead className="text-center w-[60px] sm:w-[66px] min-w-[54px] px-1">
+                                                    <div className="flex flex-col items-center gap-0.5">
+                                                        <span className="font-bold text-slate-700 text-[11px]">Mid-Term</span>
                                                         <div className="flex items-center gap-1">
-                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.midTerm}</span>
+                                                            <span className="text-[9px] font-black text-slate-400">/{matrixMaxScores.midTerm}</span>
                                                             <button 
                                                                 type="button"
                                                                 onClick={() => { setFillTarget({ type: 'midTerm', label: 'Mid-Term', max: matrixMaxScores.midTerm }); setFillColValue(''); }}
-                                                                className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
+                                                                className="text-[8px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
                                                                 Fill
@@ -1426,23 +1426,23 @@ export default function GradebookPage() {
                                                 </TableHead>
 
                                                 {/* SBA Scaled Header */}
-                                                <TableHead className="text-center w-[100px] bg-indigo-50/50 border-x border-indigo-100/50">
+                                                <TableHead className="text-center w-[62px] sm:w-[68px] min-w-[56px] px-1 bg-indigo-50/50 border-x border-indigo-100/50">
                                                     <div className="flex flex-col items-center">
-                                                        <span className="font-black text-indigo-900 text-xs">C.A. Scaled</span>
-                                                        <span className="text-[10px] font-bold text-indigo-600">({caWeight}%)</span>
+                                                        <span className="font-black text-indigo-900 text-[11px] leading-tight">CA Scaled</span>
+                                                        <span className="text-[9px] font-bold text-indigo-600">({caWeight}%)</span>
                                                     </div>
                                                 </TableHead>
 
                                                 {/* Exam Header */}
-                                                <TableHead className="text-center w-[105px]">
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <span className="font-bold text-slate-700 text-xs">Terminal Exam</span>
+                                                <TableHead className="text-center w-[60px] sm:w-[66px] min-w-[54px] px-1">
+                                                    <div className="flex flex-col items-center gap-0.5">
+                                                        <span className="font-bold text-slate-700 text-[11px]">Exam</span>
                                                         <div className="flex items-center gap-1">
-                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.exam}</span>
+                                                            <span className="text-[9px] font-black text-slate-400">/{matrixMaxScores.exam}</span>
                                                             <button 
                                                                 type="button"
                                                                 onClick={() => { setFillTarget({ type: 'exam', label: 'Terminal Exam', max: matrixMaxScores.exam }); setFillColValue(''); }}
-                                                                className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
+                                                                className="text-[8px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
                                                                 Fill
@@ -1452,25 +1452,25 @@ export default function GradebookPage() {
                                                 </TableHead>
 
                                                 {/* Exam Scaled Header */}
-                                                <TableHead className="text-center w-[100px] bg-slate-50 border-r border-slate-200/80">
+                                                <TableHead className="text-center w-[62px] sm:w-[68px] min-w-[56px] px-1 bg-slate-50 border-r border-slate-200/80">
                                                     <div className="flex flex-col items-center">
-                                                        <span className="font-black text-slate-800 text-xs">Exam Scaled</span>
-                                                        <span className="text-[10px] font-bold text-slate-500">({examWeight}%)</span>
+                                                        <span className="font-black text-slate-800 text-[11px] leading-tight">Ex Scaled</span>
+                                                        <span className="text-[9px] font-bold text-slate-500">({examWeight}%)</span>
                                                     </div>
                                                 </TableHead>
 
                                                 {/* Total Percent Header */}
-                                                <TableHead className="text-center w-[90px] bg-indigo-900 text-white font-black text-xs">
+                                                <TableHead className="text-center w-[54px] sm:w-[60px] min-w-[50px] px-1 bg-indigo-900 text-white font-black text-[11px]">
                                                     Total %
                                                 </TableHead>
 
                                                 {/* Grade Header */}
-                                                <TableHead className="text-center w-[75px] font-black text-slate-700 text-xs">
+                                                <TableHead className="text-center w-[44px] sm:w-[48px] min-w-[40px] px-1 font-black text-slate-700 text-[11px]">
                                                     Grade
                                                 </TableHead>
 
                                                 {/* Teacher Remark Header */}
-                                                <TableHead className="font-bold text-slate-700 min-w-[260px] pr-10">
+                                                <TableHead className="font-bold text-slate-700 min-w-[150px] px-2 pr-4 text-xs">
                                                     Teacher Remark
                                                 </TableHead>
                                             </TableRow>
@@ -1534,14 +1534,14 @@ export default function GradebookPage() {
                                                 return (
                                                     <TableRow key={s.uid} className="hover:bg-slate-50/50 transition-colors border-b border-slate-150">
                                                         {/* Student Name */}
-                                                        <TableCell className="font-semibold text-slate-800">
-                                                            <div className="flex items-center gap-2.5">
-                                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 text-xs font-black border border-indigo-100 shadow-xs">
+                                                        <TableCell className="font-semibold text-slate-800 py-1.5 px-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-black border border-indigo-100 shadow-xs">
                                                                     {initials}
                                                                 </div>
-                                                                <div className="min-w-0 pr-1">
-                                                                    <p className="font-bold text-xs text-slate-800 leading-snug whitespace-normal break-words">{s.firstName} {s.lastName}</p>
-                                                                    <p className="text-[10px] text-slate-400 font-mono">{s.studentId || ''}</p>
+                                                                <div className="min-w-0 pr-0.5">
+                                                                    <p className="font-bold text-xs text-slate-800 leading-tight whitespace-normal break-words">{s.firstName} {s.lastName}</p>
+                                                                    <p className="text-[9px] text-slate-400 font-mono leading-none">{s.studentId || ''}</p>
                                                                 </div>
                                                             </div>
                                                         </TableCell>
@@ -1551,7 +1551,7 @@ export default function GradebookPage() {
                                                             const testVal = studentTests[tc.id];
                                                             const isOver = testVal !== '' && testVal !== undefined && Number(testVal) > matrixMaxScores.classTest;
                                                             return (
-                                                                <TableCell key={tc.id} className="p-1.5">
+                                                                <TableCell key={tc.id} className="p-1 text-center">
                                                                     <Input 
                                                                         type="number"
                                                                         min="0"
@@ -1561,7 +1561,7 @@ export default function GradebookPage() {
                                                                         onKeyDown={e => handleMatrixKeyDown(e, idx, `test_${tc.id}`)}
                                                                         data-matrix-row={idx}
                                                                         data-matrix-col={`test_${tc.id}`}
-                                                                        className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
+                                                                        className={`w-14 sm:w-16 max-w-[64px] h-8 px-1 font-black text-center mx-auto rounded-lg text-xs shadow-xs ${
                                                                             isOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
                                                                         }`}
                                                                     />
@@ -1570,7 +1570,7 @@ export default function GradebookPage() {
                                                         })}
 
                                                         {/* Homework Input */}
-                                                        <TableCell className="p-1.5">
+                                                        <TableCell className="p-1 text-center">
                                                             <Input 
                                                                 type="number"
                                                                 min="0"
@@ -1580,14 +1580,14 @@ export default function GradebookPage() {
                                                                 onKeyDown={e => handleMatrixKeyDown(e, idx, 'homework')}
                                                                 data-matrix-row={idx}
                                                                 data-matrix-col="homework"
-                                                                className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
+                                                                className={`w-14 sm:w-16 max-w-[64px] h-8 px-1 font-black text-center mx-auto rounded-lg text-xs shadow-xs ${
                                                                     hwOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
                                                                 }`}
                                                             />
                                                         </TableCell>
 
                                                         {/* Project / Practical Input (Restored) */}
-                                                        <TableCell className="p-1.5">
+                                                        <TableCell className="p-1 text-center">
                                                             <Input 
                                                                 type="number"
                                                                 min="0"
@@ -1597,14 +1597,14 @@ export default function GradebookPage() {
                                                                 onKeyDown={e => handleMatrixKeyDown(e, idx, 'project')}
                                                                 data-matrix-row={idx}
                                                                 data-matrix-col="project"
-                                                                className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
+                                                                className={`w-14 sm:w-16 max-w-[64px] h-8 px-1 font-black text-center mx-auto rounded-lg text-xs shadow-xs ${
                                                                     prOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
                                                                 }`}
                                                             />
                                                         </TableCell>
 
                                                         {/* Mid-Term Input */}
-                                                        <TableCell className="p-1.5">
+                                                        <TableCell className="p-1 text-center">
                                                             <Input 
                                                                 type="number"
                                                                 min="0"
@@ -1614,22 +1614,22 @@ export default function GradebookPage() {
                                                                 onKeyDown={e => handleMatrixKeyDown(e, idx, 'midTerm')}
                                                                 data-matrix-row={idx}
                                                                 data-matrix-col="midTerm"
-                                                                className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
+                                                                className={`w-14 sm:w-16 max-w-[64px] h-8 px-1 font-black text-center mx-auto rounded-lg text-xs shadow-xs ${
                                                                     mtOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
                                                                 }`}
                                                             />
                                                         </TableCell>
 
                                                         {/* Scaled CA Badge */}
-                                                        <TableCell className="text-center bg-indigo-50/30 border-x border-indigo-100/40 p-1.5">
-                                                            <div className="font-black text-xs text-indigo-900">
+                                                        <TableCell className="text-center bg-indigo-50/30 border-x border-indigo-100/40 p-1">
+                                                            <div className="font-black text-xs text-indigo-900 leading-tight">
                                                                 {hasAnyScore ? caWeighted.toFixed(1) : '-'}
                                                             </div>
-                                                            <span className="text-[9px] text-indigo-500 font-bold">/{caWeight}</span>
+                                                            <span className="text-[9px] text-indigo-500 font-bold leading-none">/{caWeight}</span>
                                                         </TableCell>
 
                                                         {/* Exam Input */}
-                                                        <TableCell className="p-1.5">
+                                                        <TableCell className="p-1 text-center">
                                                             <Input 
                                                                 type="number"
                                                                 min="0"
@@ -1639,31 +1639,31 @@ export default function GradebookPage() {
                                                                 onKeyDown={e => handleMatrixKeyDown(e, idx, 'exam')}
                                                                 data-matrix-row={idx}
                                                                 data-matrix-col="exam"
-                                                                className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
+                                                                className={`w-14 sm:w-16 max-w-[64px] h-8 px-1 font-black text-center mx-auto rounded-lg text-xs shadow-xs ${
                                                                     exOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
                                                                 }`}
                                                             />
                                                         </TableCell>
 
                                                         {/* Scaled Exam Badge */}
-                                                        <TableCell className="text-center bg-slate-50/50 border-r border-slate-200/60 p-1.5">
-                                                            <div className="font-black text-xs text-slate-800">
+                                                        <TableCell className="text-center bg-slate-50/50 border-r border-slate-200/60 p-1">
+                                                            <div className="font-black text-xs text-slate-800 leading-tight">
                                                                 {row.exam !== '' ? examWeighted.toFixed(1) : '-'}
                                                             </div>
-                                                            <span className="text-[9px] text-slate-400 font-bold">/{examWeight}</span>
+                                                            <span className="text-[9px] text-slate-400 font-bold leading-none">/{examWeight}</span>
                                                         </TableCell>
 
                                                         {/* Total % Badge */}
-                                                        <TableCell className="text-center p-1.5">
-                                                            <Badge className="bg-indigo-950 text-white font-black text-xs py-1 px-2 rounded-lg shadow-xs">
+                                                        <TableCell className="text-center p-1">
+                                                            <Badge className="bg-indigo-950 text-white font-black text-[11px] py-0.5 px-1.5 rounded-md shadow-xs">
                                                                 {hasAnyScore ? `${totalPercent}%` : '-'}
                                                             </Badge>
                                                         </TableCell>
 
                                                         {/* Grade Badge */}
-                                                        <TableCell className="text-center p-1.5">
+                                                        <TableCell className="text-center p-1">
                                                             {hasAnyScore ? (
-                                                                <span className={`inline-flex items-center justify-center font-black text-xs w-7 h-7 rounded-lg border shadow-xs ${gradeColor}`}>
+                                                                <span className={`inline-flex items-center justify-center font-black text-xs w-6 h-6 rounded-md border shadow-xs ${gradeColor}`}>
                                                                     {grade}
                                                                 </span>
                                                             ) : (
@@ -1672,7 +1672,7 @@ export default function GradebookPage() {
                                                         </TableCell>
 
                                                         {/* Remark Input & Quick Chips */}
-                                                        <TableCell className="p-1.5 pr-10">
+                                                        <TableCell className="p-1 pr-4">
                                                             <div className="space-y-1">
                                                                 <Input 
                                                                     type="text"
@@ -1682,7 +1682,7 @@ export default function GradebookPage() {
                                                                     onKeyDown={e => handleMatrixKeyDown(e, idx, 'remark')}
                                                                     data-matrix-row={idx}
                                                                     data-matrix-col="remark"
-                                                                    className="h-9 text-xs rounded-lg border-slate-200 text-slate-700 shadow-xs"
+                                                                    className="h-8 text-xs rounded-lg border-slate-200 text-slate-700 shadow-xs"
                                                                 />
                                                                 {/* Quick Suggestion Chips if Remark is empty */}
                                                                 {!row.remark && autoRemark && (
