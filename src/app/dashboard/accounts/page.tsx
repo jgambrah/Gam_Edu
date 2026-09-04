@@ -3179,6 +3179,7 @@ export default function AccountsPage() {
   const [minDebt, setMinDebt] = useState<number>(1); 
   const [activeTab, setActiveTab] = useState('billing');
   const [analyticsTab, setAnalyticsTab] = useState('summary');
+  const [advisoryScope, setAdvisoryScope] = useState<'all-time' | 'current-term'>('all-time');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
   const [isProcessingWaiver, setIsProcessingWaiver] = useState<string | null>(null);
   
@@ -3446,17 +3447,35 @@ export default function AccountsPage() {
   const isLoading = isLoadingRecords || isLoadingStudents;
 
   const dashboardStats = useMemo(() => {
-    if (!records || !students) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0, totalBilled: 0 };
+    if (!records || !students) return { 
+      totalRevenue: 0, 
+      totalOutstanding: 0, 
+      advancePayments: 0,
+      netOutstanding: 0,
+      outstandingTuition: 0, 
+      outstandingCanteen: 0, 
+      outstandingTransport: 0, 
+      otherDebt: 0, 
+      totalBilled: 0 
+    };
     
-    const activeStudentIds = new Set(students.map(s => s.uid));
+    const activeStudentIds = new Set(students.map(s => s.uid || s.id));
+    const currentTermId = (schoolSettings?.currentTerm || schoolSettings?.term || '').toString().toLowerCase();
 
-    // Consolidate filters for accuracy
-    const activeRecords = records.filter(r => 
-        activeStudentIds.has(r.studentId) && 
-        r.status !== 'Pending Reversal'
-    );
+    // Filter by active students and optionally by term
+    const activeRecords = records.filter(r => {
+      if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return false;
+      if (advisoryScope === 'current-term' && currentTermId) {
+        const rTermId = (r.termId || '').toString().toLowerCase();
+        const rTerm = (r.term || '').toString().toLowerCase();
+        if (rTermId && !rTermId.includes(currentTermId) && !currentTermId.includes(rTermId)) return false;
+        if (rTerm && !rTerm.includes(currentTermId) && !currentTermId.includes(rTerm)) return false;
+      }
+      return true;
+    });
 
     let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0, totalBilled = 0;
+    let advancePayments = 0;
 
     for (const record of activeRecords) {
         const billed = Number(record.billedAmount) || 0;
@@ -3466,25 +3485,31 @@ export default function AccountsPage() {
         totalPaid += paid;
         totalBilled += billed;
         
-        if (balance > 0) {
-            const type = record.type.toLowerCase();
+        if (balance > 0.01) {
+            const type = (record.type || '').toLowerCase();
             if (type.includes('tuition')) outstandingTuition += balance;
             else if (type.includes('canteen')) outstandingCanteen += balance;
             else if (type.includes('transport')) outstandingTransport += balance;
             else otherDebt += balance;
+        } else if (balance < -0.01) {
+            advancePayments += Math.abs(balance);
         }
     }
     const totalOutstanding = outstandingTuition + outstandingCanteen + outstandingTransport + otherDebt;
+    const netOutstanding = Math.max(0, totalOutstanding - advancePayments);
+
     return { 
         totalRevenue: totalPaid, 
         totalOutstanding, 
+        advancePayments,
+        netOutstanding,
         outstandingTuition, 
         outstandingCanteen, 
         outstandingTransport, 
         otherDebt,
         totalBilled
     };
-  }, [records, students]);
+  }, [records, students, advisoryScope, schoolSettings]);
 
   // --- DEBT AGING CALCULATION ---
   const debtAgingStats = useMemo(() => {
@@ -3959,7 +3984,35 @@ export default function AccountsPage() {
                     <div className="lg:col-span-2 bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
                         <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-3 mb-4">
-                                <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Collections Advisory Desk</h3>
+                                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Collections Advisory Desk</h3>
+                                    <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border text-xs">
+                                        <button
+                                            type="button"
+                                            onClick={() => setAdvisoryScope('all-time')}
+                                            className={cn(
+                                                "px-2 py-0.5 rounded-md font-semibold transition-all text-[11px]",
+                                                advisoryScope === 'all-time' 
+                                                    ? "bg-white text-indigo-700 shadow-xs border font-bold" 
+                                                    : "text-slate-500 hover:text-slate-800"
+                                            )}
+                                        >
+                                            All-Time Ledger
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setAdvisoryScope('current-term')}
+                                            className={cn(
+                                                "px-2 py-0.5 rounded-md font-semibold transition-all text-[11px]",
+                                                advisoryScope === 'current-term' 
+                                                    ? "bg-white text-indigo-700 shadow-xs border font-bold" 
+                                                    : "text-slate-500 hover:text-slate-800"
+                                            )}
+                                        >
+                                            Current Term Only
+                                        </button>
+                                    </div>
+                                </div>
                                 <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
                                     <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
                                     <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md">Aged Debt Call List</TabsTrigger>
@@ -3969,59 +4022,97 @@ export default function AccountsPage() {
                             </div>
                             
                             <TabsContent value="summary" className="mt-0 space-y-6 animate-in fade-in-50">
-                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                {/* Top Reconciled Metric Cards */}
+                                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                     <Card className="border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Outstanding</CardTitle>
+                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <div>
+                                          <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Gross Outstanding</CardTitle>
+                                          <p className="text-[9px] text-slate-400 font-medium">Before advance credits</p>
+                                        </div>
                                         <Wallet className="h-4 w-4 text-rose-500" />
                                       </CardHeader>
-                                      <CardContent className="p-4 pt-1">
-                                        <div className="text-xl font-extrabold text-rose-600">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div>
+                                      <CardContent className="p-3.5 pt-1">
+                                        <div className="text-lg font-black text-rose-600">GH₵{dashboardStats.totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                       </CardContent>
                                     </Card>
+
                                     <Card className="border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
-                                        <DollarSign className="h-4 w-4 text-emerald-500" />
+                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <div>
+                                          <CardTitle className="text-[10px] font-bold text-emerald-700 uppercase">Advance Credits</CardTitle>
+                                          <p className="text-[9px] text-emerald-600 font-medium">Prepayments & deposits</p>
+                                        </div>
+                                        <HandCoins className="h-4 w-4 text-emerald-500" />
                                       </CardHeader>
-                                      <CardContent className="p-4 pt-1">
-                                        <div className="text-xl font-extrabold text-emerald-600">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div>
+                                      <CardContent className="p-3.5 pt-1">
+                                        <div className="text-lg font-black text-emerald-600">(GH₵{dashboardStats.advancePayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
                                       </CardContent>
                                     </Card>
-                                    <Card className="border-l-4 border-l-blue-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Tuition Debt</CardTitle>
-                                        <BookOpen className="h-4 w-4 text-blue-500" />
+
+                                    <Card className="border-l-4 border-l-red-600 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-rose-50/20">
+                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <div>
+                                          <CardTitle className="text-[10px] font-bold text-red-700 uppercase">Net Collectible</CardTitle>
+                                          <p className="text-[9px] text-red-500 font-medium">Gross less deposits</p>
+                                        </div>
+                                        <AlertCircle className="h-4 w-4 text-red-600" />
                                       </CardHeader>
-                                      <CardContent className="p-4 pt-1">
-                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div>
+                                      <CardContent className="p-3.5 pt-1">
+                                        <div className="text-lg font-black text-red-700">GH₵{dashboardStats.netOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                       </CardContent>
                                     </Card>
-                                    <Card className="border-l-4 border-l-orange-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Canteen Debt</CardTitle>
-                                        <Utensils className="h-4 w-4 text-orange-500" />
+
+                                    <Card className="border-l-4 border-l-indigo-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <div>
+                                          <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
+                                          <p className="text-[9px] text-slate-400 font-medium">Paid to date ({advisoryScope === 'current-term' ? 'Term' : 'All-time'})</p>
+                                        </div>
+                                        <DollarSign className="h-4 w-4 text-indigo-500" />
                                       </CardHeader>
-                                      <CardContent className="p-4 pt-1">
-                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div>
+                                      <CardContent className="p-3.5 pt-1">
+                                        <div className="text-lg font-black text-indigo-600">GH₵{dashboardStats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                       </CardContent>
                                     </Card>
-                                    <Card className="border-l-4 border-l-amber-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Transport Debt</CardTitle>
-                                        <BusIcon className="h-4 w-4 text-amber-500" />
+                                </div>
+
+                                {/* Fee Stream Breakdown Cards */}
+                                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-1">
+                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
+                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Tuition Debt</CardTitle>
+                                        <BookOpen className="h-3.5 w-3.5 text-blue-500" />
                                       </CardHeader>
-                                      <CardContent className="p-4 pt-1">
-                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div>
+                                      <CardContent className="p-3 pt-1">
+                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                       </CardContent>
                                     </Card>
-                                    <Card className="border-l-4 border-l-slate-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-4 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-medium text-muted-foreground">Other Fees</CardTitle>
-                                        <HandCoins className="h-4 w-4 text-slate-400" />
+                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
+                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Canteen Debt</CardTitle>
+                                        <Utensils className="h-3.5 w-3.5 text-orange-500" />
                                       </CardHeader>
-                                      <CardContent className="p-4 pt-1">
-                                        <div className="text-lg font-bold text-slate-800">GH₵{dashboardStats.otherDebt.toFixed(2)}</div>
+                                      <CardContent className="p-3 pt-1">
+                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
+                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Transport Debt</CardTitle>
+                                        <BusIcon className="h-3.5 w-3.5 text-amber-500" />
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-1">
+                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                      </CardContent>
+                                    </Card>
+                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
+                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Other Fees</CardTitle>
+                                        <HandCoins className="h-3.5 w-3.5 text-slate-400" />
+                                      </CardHeader>
+                                      <CardContent className="p-3 pt-1">
+                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                       </CardContent>
                                     </Card>
                                 </div>

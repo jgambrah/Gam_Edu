@@ -114,6 +114,11 @@ export interface FinancialMetricsResult {
   totalWaivers: number;
   grossReceivables: number;
   netReceivables: number;
+  parentReceivables: number;
+  sponsoredReceivables: number;
+  allTimeGrossReceivables: number;
+  allTimeNetReceivables: number;
+  allTimeAdvancePayments: number;
   collectionRate: number;
   debtAgingStats: DebtAgingBreakdown;
 
@@ -482,6 +487,8 @@ export function computeFinancialMetrics({
   let totalPaid = 0;
   let totalWaivers = 0;
   let grossReceivables = 0;
+  let parentReceivables = 0;
+  let sponsoredReceivables = 0;
 
   let outstandingTuition = 0;
   let outstandingCanteen = 0;
@@ -503,13 +510,25 @@ export function computeFinancialMetrics({
     if (balance > 0.01) {
       grossReceivables += balance;
 
+      const studentObj = filteredStudents?.find((s: any) => 
+        s.uid === r.studentId || 
+        s.id === r.studentId || 
+        s.studentId === r.studentId || 
+        s.admissionNo === r.studentId
+      );
+
+      if (studentObj && studentObj.isSponsored) {
+        sponsoredReceivables += balance;
+      } else {
+        parentReceivables += balance;
+      }
+
       const cat = classifyFeeCategory(r);
       if (cat === 'tuition') outstandingTuition += balance;
       else if (cat === 'canteen') outstandingCanteen += balance;
       else if (cat === 'transport') outstandingTransport += balance;
       else outstandingOther += balance;
 
-      const studentObj = filteredStudents?.find((s: any) => s.uid === r.studentId || s.id === r.studentId);
       const classObj = classes?.find((c: any) => c.id === (studentObj?.classId || r.classId));
       const dueDate = safeParseDate(r.dueDate);
       const daysOverdue = dueDate && dueDate < now ? Math.ceil((now.getTime() - dueDate.getTime()) / (1000 * 3600 * 24)) : 0;
@@ -647,6 +666,25 @@ export function computeFinancialMetrics({
     }
   };
 
+  // All-time receivables across entire school record history (cumulative ledger)
+  let allTimeGrossReceivables = 0;
+  let allTimeAdvancePayments = 0;
+  if (Array.isArray(financialRecords)) {
+    financialRecords.forEach((r: any) => {
+      if (r.status === 'Pending Reversal') return;
+      const billed = Number(r.billedAmount ?? r.amount ?? 0);
+      const paid = Number(r.amountPaid ?? 0);
+      const waiver = Number(r.waiverAmount ?? 0);
+      const balance = billed - paid - waiver;
+      if (balance > 0.01) {
+        allTimeGrossReceivables += balance;
+      } else if (balance < -0.01) {
+        allTimeAdvancePayments += Math.abs(balance);
+      }
+    });
+  }
+  const allTimeNetReceivables = Math.max(0, allTimeGrossReceivables - allTimeAdvancePayments);
+
   const calculatedGrossReceivables = grossReceivables || grossAgingTotal;
   const calculatedBilledTarget = Math.max(totalBilled, totalRevenue + calculatedGrossReceivables);
   const calculatedCollectionRate = calculateCollectionRate(totalRevenue, calculatedBilledTarget);
@@ -665,6 +703,11 @@ export function computeFinancialMetrics({
     totalWaivers,
     grossReceivables: calculatedGrossReceivables,
     netReceivables: calculatedNetReceivables,
+    parentReceivables,
+    sponsoredReceivables,
+    allTimeGrossReceivables: allTimeGrossReceivables || calculatedGrossReceivables,
+    allTimeNetReceivables: allTimeNetReceivables || calculatedNetReceivables,
+    allTimeAdvancePayments: allTimeAdvancePayments || advancePaymentsCredit,
     collectionRate: calculatedCollectionRate,
     debtAgingStats,
 

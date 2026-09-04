@@ -1390,8 +1390,11 @@ export function ExecutiveDirectorCockpit({
             <CardHeader className="pb-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <CardTitle className="text-sm font-semibold text-slate-900">Financial Receivables Aging & Credit Balance Reconciliation</CardTitle>
-                  <CardDescription className="text-xs text-slate-500 font-medium">Gross debt breakdown vs parent advance tuition deposits & credit balances</CardDescription>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-sm font-semibold text-slate-900">Financial Receivables Aging & Credit Balance Reconciliation</CardTitle>
+                    <Badge variant="outline" className="text-[9px] font-bold text-slate-600 bg-slate-50 border-slate-200">All-Time Cumulative</Badge>
+                  </div>
+                  <CardDescription className="text-xs text-slate-500 font-medium">All-time student ledger debt breakdown (all terms) vs parent advance tuition deposits & credit balances</CardDescription>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
                   <button
@@ -1408,9 +1411,12 @@ export function ExecutiveDirectorCockpit({
               {/* Accounting Reconciliation Header Bar */}
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Gross Debt (Tiers 1-4)</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Gross Debt (Tiers 1-4)</span>
+                    <span className="text-[9px] text-indigo-600 font-semibold">Term: GH₵{unifiedMetrics.grossReceivables.toLocaleString()}</span>
+                  </div>
                   <p className="font-bold text-slate-900 text-sm mt-0.5">GH₵ {grossTotalDebt.toLocaleString()}</p>
-                  <span className="text-[10px] text-slate-500 font-medium">Sum of all aging buckets</span>
+                  <span className="text-[10px] text-slate-500 font-medium">All-time aging buckets sum</span>
                 </div>
                 <div>
                   <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">Less: Advance Payments / Credits</span>

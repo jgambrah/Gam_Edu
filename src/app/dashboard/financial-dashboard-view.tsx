@@ -331,6 +331,10 @@ export function FinancialDashboardView({
     return classArrearsHeatmap.slice(0, 9).reduce((acc: number, c: any) => acc + (c.balance || 0), 0);
   }, [classArrearsHeatmap]);
 
+  const allClassesArrearsSum = useMemo(() => {
+    return classArrearsHeatmap.reduce((acc: number, c: any) => acc + (c.balance || 0), 0);
+  }, [classArrearsHeatmap]);
+
   // 3. Expenditure Category Breakdown
   const expensesByCategory = useMemo(() => {
     let payroll = 0;
@@ -450,15 +454,24 @@ export function FinancialDashboardView({
       }
     }
 
+    const parentReceivables = metrics.parentReceivables !== undefined ? metrics.parentReceivables : totalOutstanding;
+    const sponsoredReceivables = metrics.sponsoredReceivables !== undefined ? metrics.sponsoredReceivables : totalSponsoredOutstanding;
+    const totalTermReceivables = metrics.grossReceivables || (parentReceivables + sponsoredReceivables);
+    const allTimeGross = metrics.allTimeGrossReceivables || totalTermReceivables;
+    const allTimeNet = metrics.allTimeNetReceivables || metrics.netReceivables;
+
     return {
       cashBalance,
       bankBalance,
-      totalReceivables: totalOutstanding,
-      totalSponsoredReceivables: totalSponsoredOutstanding,
+      totalReceivables: parentReceivables,
+      totalSponsoredReceivables: sponsoredReceivables,
+      totalTermReceivables,
+      allTimeGrossReceivables: allTimeGross,
+      allTimeNetReceivables: allTimeNet,
       budgetUtilization,
       budgetedExpenses,
     };
-  }, [accounts, financialRecords, activeBudget, expensesByCategory, students]);
+  }, [accounts, financialRecords, activeBudget, expensesByCategory, students, metrics]);
 
   // 4.5 30-Day Cash Flow Forecast (Reconciled Liquidity Calculator)
   const cashFlowForecast = useMemo(() => {
@@ -652,7 +665,7 @@ export function FinancialDashboardView({
                 <h3 className="text-base font-extrabold text-slate-900">Class Arrears Risk Heatmap</h3>
               </div>
               <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
-                Displaying {heatmapViewMode === 'top9' ? 'Top 9 classes' : `all ${classes?.length || 14} classes`} (GH₵ {heatmapViewMode === 'top9' ? top9ArrearsSum.toLocaleString() : (metrics.grossReceivables || debtAgingStats.grossTotal || 122023).toLocaleString()}) • Total Gross Debt across all {classes?.length || 14} classes: <strong className="text-slate-800 font-extrabold">GH₵ {(metrics.grossReceivables || debtAgingStats.grossTotal || 122023).toLocaleString()}</strong>.
+                Displaying {heatmapViewMode === 'top9' ? 'Top 9 classes' : `all ${classes?.length || 14} classes`} (GH₵ {(heatmapViewMode === 'top9' ? top9ArrearsSum : allClassesArrearsSum).toLocaleString()}) • Total Class Debt: <strong className="text-slate-800 font-extrabold">GH₵ {allClassesArrearsSum.toLocaleString()}</strong> <span className="text-slate-400 font-normal">(School Gross Billed Target: GH₵ {(metrics.grossReceivables || debtAgingStats.grossTotal || 122023).toLocaleString()})</span>.
               </p>
             </div>
 
@@ -889,9 +902,49 @@ export function FinancialDashboardView({
                   </TableCell>
                 </TableRow>
                 <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
-                  <TableCell className="font-bold text-slate-700 py-4 pl-8">Total Receivables</TableCell>
-                  <TableCell className="font-mono text-rose-600 font-bold py-4 pr-8 text-right">
+                  <TableCell className="font-bold text-slate-700 py-3.5 pl-8">
+                    <div>
+                      <span className="text-sm">Private Parent Receivables</span>
+                      <span className="block text-[10px] text-slate-400 font-normal">Active fee-paying parents (Current Term)</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-rose-600 font-bold py-3.5 pr-8 text-right">
                     GH₵ {cashPosition.totalReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
+                  <TableCell className="font-bold text-slate-700 py-3.5 pl-8">
+                    <div>
+                      <span className="text-sm">NGO / Sponsor Receivables</span>
+                      <span className="block text-[10px] text-slate-400 font-normal">Pledged scholarship fees (Current Term)</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-indigo-600 font-bold py-3.5 pr-8 text-right">
+                    GH₵ {cashPosition.totalSponsoredReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="hover:bg-slate-50/30 border-b border-slate-100 bg-slate-50/50">
+                  <TableCell className="font-bold text-slate-900 py-3.5 pl-8">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-extrabold">Total Term Gross Receivables</span>
+                      <Badge variant="outline" className="text-[9px] font-bold text-slate-600 bg-white border-slate-200">Current Term</Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-slate-900 font-extrabold py-3.5 pr-8 text-right">
+                    GH₵ {cashPosition.totalTermReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="hover:bg-slate-50/30 border-b border-slate-100 bg-slate-50/20">
+                  <TableCell className="font-semibold text-slate-600 py-3 pl-8 text-xs">
+                    <div>
+                      <span>Cumulative All-Time Ledger Arrears</span>
+                      <span className="block text-[10px] text-slate-400 font-normal">
+                        Includes historical previous-term carryovers (Gross: GH₵ {cashPosition.allTimeGrossReceivables.toLocaleString(undefined, { minimumFractionDigits: 2 })} • Net: GH₵ {cashPosition.allTimeNetReceivables.toLocaleString(undefined, { minimumFractionDigits: 2 })})
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-slate-600 font-bold py-3 pr-8 text-right text-xs">
+                    GH₵ {cashPosition.allTimeGrossReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </TableCell>
                 </TableRow>
                 <TableRow className="hover:bg-slate-50/30">
