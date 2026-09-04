@@ -33,8 +33,11 @@ service cloud.firestore {
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
 
     function isSuperAdmin() {
-      return request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" ||
-             request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
+      return isSignedIn() && (
+        request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" ||
+        request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2" ||
+        (request.auth.token != null && request.auth.token.email == "jamesgambrah@gmail.com")
+      );
     }
 
     function getUserSchoolId() {
@@ -388,11 +391,13 @@ service cloud.firestore {
 
     // Collection Group rule for payments
     match /{path=**}/payments/{paymentId} {
-      allow read: if isSignedIn() && (
-        isSuperAdmin() || (getUserSchoolId() == resource.data.schoolId && (
-          isFinanceStaff() || 
-          isAdmin() || 
-          isTeacher() || 
+      allow read, list: if isSignedIn() && (
+        isSuperAdmin() || 
+        isFinanceStaff() || 
+        isAdmin() || 
+        isStaff() ||
+        (resource != null && (
+          getUserSchoolId() == resource.data.schoolId || 
           resource.data.studentId == request.auth.uid || 
           parentOwnsStudent(resource.data.studentId)
         ))

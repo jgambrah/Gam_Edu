@@ -324,12 +324,16 @@ service cloud.firestore {
 
     // Collection Group rule for payments
     match /{path=**}/payments/{paymentId} {
-      allow read: if isSignedIn() && (
+      allow read, list: if isSignedIn() && (
+        isSuperAdmin() || 
         isFinanceStaff() || 
         isAdmin() || 
-        isTeacher() || 
-        resource.data.studentId == request.auth.uid || 
-        parentOwnsStudent(resource.data.studentId)
+        isStaff() ||
+        (resource != null && (
+          getUserSchoolId() == resource.data.schoolId || 
+          resource.data.studentId == request.auth.uid || 
+          parentOwnsStudent(resource.data.studentId)
+        ))
       );
     }
 

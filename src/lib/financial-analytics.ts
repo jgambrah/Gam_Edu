@@ -334,11 +334,11 @@ export function computeFinancialMetrics({
     const classObj = classes?.find((c: any) => c.id === (studentObj?.classId || p.classId));
     const sKey = (resolvedStudentName || p.studentId || 'std').toLowerCase().trim();
 
-    // Canonical composite key for deduplication (student + day + amount + category)
+    // Canonical composite key for deduplication (student + day + category or refNo)
     const refNo = p.referenceNo || p.reference_no || p.transactionId || p.receiptNo;
     const canonicalKey = refNo 
       ? `ref-${refNo}` 
-      : `${sKey}-${dayStr}-${amount.toFixed(2)}-${cat}`;
+      : `${sKey}-${dayStr}-${cat}`;
 
     let rawMethod = (p.method || p.paymentMethod || 'Cash / MoMo').trim();
     if (p.isSplitPayment || rawMethod.toLowerCase().includes('split') || rawMethod.includes('/')) {
@@ -348,6 +348,7 @@ export function computeFinancialMetrics({
     if (processedPaymentIds.has(canonicalKey)) {
       const existing = livePaymentStream.find(item => item.id === canonicalKey);
       if (existing) {
+        existing.amount += amount;
         const m1 = existing.method.toLowerCase();
         const m2 = rawMethod.toLowerCase();
         if ((m1.includes('cash') && (m2.includes('momo') || m2.includes('mobile'))) || 

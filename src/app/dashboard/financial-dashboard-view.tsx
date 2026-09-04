@@ -29,6 +29,7 @@ interface FinancialDashboardViewProps {
   journals: any[];
   schoolSettings: any;
   arrearsThreshold: number;
+  dashboardSummary?: any;
 }
 
 export function FinancialDashboardView({
@@ -42,6 +43,7 @@ export function FinancialDashboardView({
   journals,
   schoolSettings,
   arrearsThreshold,
+  dashboardSummary,
 }: FinancialDashboardViewProps) {
   const today = new Date();
 
@@ -57,56 +59,93 @@ export function FinancialDashboardView({
     });
   }, [financialRecords, payments, students, classes, budgets, arrearsThreshold]);
 
-  const revenueStats = useMemo(() => ({
-    collectedToday: metrics.collectedToday,
-    collectedThisMonth: metrics.collectedThisMonth,
-    collectedThisTerm: metrics.collectedThisTerm,
-    collectedThisYear: metrics.collectedThisYear,
-  }), [metrics]);
+  // Executive KPI Sourcing: Prefer pre-aggregated server-side summary document for true school-wide totals
+  const revenueStats = useMemo(() => {
+    if (dashboardSummary?.financials) {
+      const f = dashboardSummary.financials;
+      return {
+        collectedToday: f.totalCollectedToday || 0,
+        collectedThisMonth: f.totalCollectedThisMonth || 0,
+        collectedThisTerm: f.totalCollectedThisTerm || f.totalRevenue || 0,
+        collectedThisYear: f.totalCollectedThisYear || f.totalRevenue || 0,
+      };
+    }
+    return {
+      collectedToday: metrics.collectedToday,
+      collectedThisMonth: metrics.collectedThisMonth,
+      collectedThisTerm: metrics.collectedThisTerm,
+      collectedThisYear: metrics.collectedThisYear,
+    };
+  }, [dashboardSummary, metrics]);
 
-  const streamStats = metrics.streamStats;
+  const streamStats = useMemo(() => {
+    if (dashboardSummary?.financials?.streamBreakdown) {
+      const sb = dashboardSummary.financials.streamBreakdown;
+      const t = (sb.tuition || 0) + (sb.canteen || 0) + (sb.transport || 0) + (sb.auxiliary || 0);
+      return {
+        tuition: sb.tuition || 0,
+        canteen: sb.canteen || 0,
+        transport: sb.transport || 0,
+        boarding: 0,
+        uniformsBooks: 0,
+        other: sb.auxiliary || 0,
+        total: t || dashboardSummary.financials.totalRevenue || metrics.streamStats.total
+      };
+    }
+    return metrics.streamStats;
+  }, [dashboardSummary, metrics.streamStats]);
+
   const recentPaymentStream = metrics.livePaymentStream;
 
   // Live Stream & Executive Rollup State
-  const [streamFilter, setStreamFilter] = useState<'all' | 'tuition' | 'batches'>('all');
+  const [streamFilter, setStreamFilter] = useState<'all' | 'tuition' | 'batches'>('tuition');
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [modalSearch, setModalSearch] = useState('');
   const [modalCategory, setModalCategory] = useState('all');
   const [modalPage, setModalPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Robust Deduplication & Split-Method Consolidation
+  // Robust Split-Payment Consolidation & Event Deduplication
   const uniquePaymentStream = useMemo(() => {
     if (!recentPaymentStream || recentPaymentStream.length === 0) return [];
 
-    const mergedMap = new Map<string, { item: any; methodsSet: Set<string> }>();
+    const mergedMap = new Map<string, { 
+      item: any; 
+      totalAmount: number;
+      methodAmounts: Map<string, number>;
+    }>();
 
     recentPaymentStream.forEach((p: any) => {
-      // Create canonical student key
       const sKey = (p.studentName || p.studentId || 'student').toLowerCase().trim();
-      const amtKey = (Number(p.amount) || 0).toFixed(2);
       const catKey = (p.category || 'tuition').toLowerCase();
       
-      // Extract date string (YYYY-MM-DD or dateFormatted date portion)
       const d = p.date ? safeParseDate(p.date) : null;
       const dayStr = d ? d.toISOString().substring(0, 10) : (p.dateFormatted || '').split(' at ')[0] || 'today';
 
-      // Composite signature key
-      const compositeKey = `${sKey}_${amtKey}_${catKey}_${dayStr}`;
+      // Grouping key: receipt/refNo or student + category + date (no amount key so sub-payments merge)
+      const refNo = p.referenceNo || p.reference_no || p.transactionId || p.receiptNo;
+      const compositeKey = refNo ? `ref-${refNo}` : `${sKey}_${catKey}_${dayStr}`;
 
-      const rawMethod = (p.method || p.paymentMethod || 'Cash / MoMo').trim();
+      const amount = Number(p.amount) || 0;
+      let rawMethod = (p.method || p.paymentMethod || 'Cash').trim();
 
       if (!mergedMap.has(compositeKey)) {
-        const methodsSet = new Set<string>();
-        if (rawMethod) methodsSet.add(rawMethod);
+        const methodAmounts = new Map<string, number>();
+        if (rawMethod) methodAmounts.set(rawMethod, amount);
+
         mergedMap.set(compositeKey, {
           item: { ...p },
-          methodsSet
+          totalAmount: amount,
+          methodAmounts
         });
       } else {
         const existing = mergedMap.get(compositeKey)!;
-        if (rawMethod) existing.methodsSet.add(rawMethod);
-        // Prefer more complete studentName or className if available
+        existing.totalAmount += amount;
+
+        const currentMethodAmt = existing.methodAmounts.get(rawMethod) || 0;
+        existing.methodAmounts.set(rawMethod, currentMethodAmt + amount);
+
+        // Prefer complete studentName and className if available
         if (p.studentName && p.studentName !== 'Student') {
           existing.item.studentName = p.studentName;
         }
@@ -116,22 +155,35 @@ export function FinancialDashboardView({
       }
     });
 
-    return Array.from(mergedMap.values()).map(({ item, methodsSet }) => {
-      const methodsArr = Array.from(methodsSet);
-      const hasCash = methodsArr.some(m => m.toLowerCase().includes('cash'));
-      const hasMomo = methodsArr.some(m => m.toLowerCase().includes('momo') || m.toLowerCase().includes('mobile'));
-      const hasSlashOrSplit = methodsArr.some(m => m.includes('/') || m.toLowerCase().includes('split'));
+    return Array.from(mergedMap.values()).map(({ item, totalAmount, methodAmounts }) => {
+      const methodsList = Array.from(methodAmounts.entries());
+      const hasMultipleMethods = methodsList.length > 1;
+      const hasCash = methodsList.some(([m]) => m.toLowerCase().includes('cash'));
+      const hasMomo = methodsList.some(([m]) => m.toLowerCase().includes('momo') || m.toLowerCase().includes('mobile'));
+      const hasSplitWord = methodsList.some(([m]) => m.toLowerCase().includes('split') || m.includes('/'));
+
+      const isSplit = hasMultipleMethods || (hasCash && hasMomo) || hasSplitWord || item.isSplitPayment;
 
       let finalMethod = item.method || 'Cash';
-      if ((hasCash && hasMomo) || hasSlashOrSplit) {
+      let breakdownSubtext = '';
+
+      if (isSplit) {
         finalMethod = 'Split: Cash + MoMo';
-      } else if (methodsArr.length > 0) {
-        finalMethod = methodsArr[0];
+        if (methodsList.length > 0) {
+          breakdownSubtext = methodsList
+            .map(([m, amt]) => `${m.replace(/split:?/i, '').replace(/\//g, '&').trim()}: GH₵${amt.toFixed(0)}`)
+            .join(' | ');
+        }
+      } else if (methodsList.length > 0) {
+        finalMethod = methodsList[0][0];
       }
 
       return {
         ...item,
-        method: finalMethod
+        amount: totalAmount,
+        method: finalMethod,
+        isSplit,
+        breakdownSubtext
       };
     });
   }, [recentPaymentStream]);
@@ -432,7 +484,7 @@ export function FinancialDashboardView({
     };
   }, [cashPosition, expensesByCategory]);
 
-  // 5. Top Debtors
+  // 5. Top Debtors (All delinquent student accounts sorted by outstanding balance DESC)
   const topDebtors = useMemo(() => {
     if (!financialRecords || !students) return [];
 
@@ -450,9 +502,15 @@ export function FinancialDashboardView({
       .filter((student: any) => (student.enrollmentStatus === 'Active' || !student.enrollmentStatus) && !student.isSponsored)
       .map((student: any) => {
         const studentRecords = recordsByStudent[student.uid] || recordsByStudent[student.id] || recordsByStudent[student.studentId] || [];
-        const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
-        const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
-        const outstanding = totalBilled - totalPaid;
+        
+        let outstanding = 0;
+        if (studentRecords.length > 0) {
+          const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount ?? r.amount) || 0), 0);
+          const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
+          outstanding = totalBilled - totalPaid;
+        } else if (student.balance && Number(student.balance) > 0) {
+          outstanding = Number(student.balance);
+        }
 
         const classObj = classes?.find((c: any) => c.id === student.classId);
         const hasOverdue = studentRecords.some(r => r.status === 'Overdue');
@@ -469,16 +527,32 @@ export function FinancialDashboardView({
       .filter((d: any) => d.outstanding > 0.01)
       .sort((a: any, b: any) => b.outstanding - a.outstanding);
 
-    const actualThreshold = (arrearsThreshold ?? Number(schoolSettings?.highArrearsThreshold)) || 10000;
-    const exceeding = list.filter((d: any) => d.outstanding >= actualThreshold);
-    if (exceeding.length > 0) {
-      return exceeding;
-    }
-    return list.slice(0, 5);
-  }, [financialRecords, students, classes, arrearsThreshold, schoolSettings]);
+    return list;
+  }, [financialRecords, students, classes]);
 
-  // 6. Debt Aging Analysis (Single Source of Truth from computeFinancialMetrics)
-  const debtAgingStats = metrics.debtAgingStats;
+  // 6. Debt Aging Analysis (Use dashboardSummary if non-zero, otherwise compute dynamically from financialRecords)
+  const debtAgingStats = useMemo(() => {
+    if (dashboardSummary?.debtAging) {
+      const da = dashboardSummary.debtAging;
+      const grossTotal = (da.current || 0) + (da.age30 || 0) + (da.age60 || 0) + (da.age90 || 0);
+      if (grossTotal > 0 || da.overpayments > 0) {
+        const netTotal = Math.max(0, grossTotal - (da.overpayments || 0));
+        return {
+          current: da.current || 0,
+          age30: da.age30 || 0,
+          age60: da.age60 || 0,
+          age90: da.age90 || 0,
+          over90: 0,
+          grossTotal,
+          total: netTotal,
+          overpayments: da.overpayments || 0,
+          advancePayments: da.overpayments || 0,
+          accountCounts: metrics.debtAgingStats.accountCounts
+        };
+      }
+    }
+    return metrics.debtAgingStats;
+  }, [dashboardSummary, metrics.debtAgingStats]);
 
   // Chart Data Preparation
   const expenseChartData = [
@@ -617,9 +691,9 @@ export function FinancialDashboardView({
       </div>
 
       {/* Class Arrears Risk Heatmap & Real-Time Payment Stream Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         {/* Class Arrears Heatmap (2 Columns) */}
-        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-[540px] min-h-[540px] max-h-[540px] flex flex-col overflow-hidden relative">
+        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-[520px] max-h-[520px] flex flex-col overflow-hidden relative box-border">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100 shrink-0">
             <div>
               <div className="flex items-center gap-2">
@@ -663,7 +737,7 @@ export function FinancialDashboardView({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
+          <div className="flex-1 overflow-y-auto overscroll-contain pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {(heatmapViewMode === 'top9' ? classArrearsHeatmap.slice(0, 9) : classArrearsHeatmap).map((cls) => {
                 const isHighRisk = cls.collectionRate < 50;
@@ -711,7 +785,7 @@ export function FinancialDashboardView({
         </Card>
 
         {/* Live Real-Time Payment Feed (1 Column) */}
-        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[540px] min-h-[540px] max-h-[540px] overflow-hidden relative">
+        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[520px] max-h-[520px] overflow-hidden relative box-border">
           <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex flex-col gap-3 shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -755,7 +829,7 @@ export function FinancialDashboardView({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1.5 space-y-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
+          <div className="flex-1 overflow-y-auto overscroll-contain pr-1.5 space-y-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
             {cardDisplayedStream.length > 0 ? (
               cardDisplayedStream.map((p: any) => (
                 <div key={p.id} className={cn(
@@ -764,11 +838,16 @@ export function FinancialDashboardView({
                 )}>
                   <div className="min-w-0 pr-2">
                     <p className="text-xs font-bold text-slate-900 truncate">{p.studentName}</p>
-                    <p className="text-[10px] text-slate-500 font-medium truncate">{p.className} • {p.categoryLabel || p.category}</p>
+                    <p className="text-[10px] text-slate-500 font-medium truncate">
+                      {p.className} • {p.categoryLabel || p.category}
+                      {p.breakdownSubtext && (
+                        <span className="block text-[9px] text-slate-400 font-semibold mt-0.5">{p.breakdownSubtext}</span>
+                      )}
+                    </p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
-                    {p.method?.toLowerCase().includes('split') || p.method?.includes('/') ? (
+                    {p.isSplit || p.method?.toLowerCase().includes('split') || p.method?.includes('/') ? (
                       <Badge variant="outline" className="text-[8px] font-black uppercase text-indigo-700 bg-indigo-50 border-indigo-200 mt-0.5">
                         Split: Cash + MoMo
                       </Badge>
@@ -842,7 +921,7 @@ export function FinancialDashboardView({
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="flex-1 overflow-y-auto overscroll-contain pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
               <div className="grid gap-3 sm:grid-cols-2">
                 {topDebtors.length > 0 ? (
                   topDebtors.map(debtor => (
@@ -1218,7 +1297,7 @@ export function FinancialDashboardView({
           </div>
 
           {/* Table Container */}
-          <div className="flex-1 overflow-y-auto border border-slate-100 rounded-2xl">
+          <div className="flex-1 overflow-y-auto overscroll-contain border border-slate-100 rounded-2xl">
             <Table>
               <TableHeader className="bg-slate-50 sticky top-0 z-10">
                 <TableRow>

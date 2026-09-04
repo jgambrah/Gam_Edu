@@ -1014,93 +1014,65 @@ function AdminDashboard({
   const [isSyncingFinancials, setIsSyncingFinancials] = useState(false);
   const [syncedFinancialData, setSyncedFinancialData] = useState<any>(null);
 
-  const handleSyncFinancialSummary = async () => {
+  const handleSyncFinancials = async () => {
     if (!firestore || !schoolId) return;
     setIsSyncingFinancials(true);
     try {
-      const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
       const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
       const recordsSnap = await getDocs(recordsQ);
+      const finRecords = recordsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-      let totalBilled = 0;
-      let totalPaid = 0;
-      let totalWaivers = 0;
-      let overpayments = 0;
+      let paymentsData: any[] = [];
+      try {
+        const paymentsQ = query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId));
+        const paymentsSnap = await getDocs(paymentsQ);
+        paymentsData = paymentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (e) {
+        console.warn('Could not fetch collectionGroup payments for sync', e);
+      }
 
-      let current = 0;
-      let age30 = 0;
-      let age60 = 0;
-      let age90 = 0;
-      const today = startOfDay(new Date());
-
-      recordsSnap.docs.forEach((d) => {
-        const r = d.data();
-        if (r.status === 'Pending Reversal') return;
-        
-        // Exclude inactive / withdrawn / graduated students
-        if (r.studentId && activeStudentIds.size > 0 && !activeStudentIds.has(r.studentId)) {
-          return;
-        }
-
-        const billed = Number(r.billedAmount || r.totalBilled || r.amount || 0);
-        const paid = Number(r.amountPaid || r.totalPaid || r.paid || 0);
-        const waiver = Number(r.waiverAmount || r.waiver || 0);
-
-        totalBilled += billed;
-        totalPaid += paid;
-        totalWaivers += waiver;
-
-        const balance = billed - paid - waiver;
-
-        if (balance < 0) {
-          overpayments += Math.abs(balance);
-        } else if (balance > 0.01) {
-          const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : (r.dueDate ? new Date(r.dueDate) : today);
-          const diffTime = today.getTime() - startOfDay(dueDate).getTime();
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-          if (diffDays <= 0) {
-            current += balance;
-          } else if (diffDays <= 30) {
-            age30 += balance;
-          } else if (diffDays <= 60) {
-            age60 += balance;
-          } else {
-            age90 += balance;
-          }
-        }
+      const calculated = computeFinancialMetrics({
+        financialRecords: finRecords,
+        payments: paymentsData,
+        students: activeStudents || [],
+        classes,
+        budgets,
       });
 
-      const grossOutstanding = current + age30 + age60 + age90;
-      const netOutstanding = Math.max(0, grossOutstanding - overpayments);
-      const totalOutstanding = grossOutstanding || netOutstanding;
-
-      const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
-
       const computed = {
-        totalOutstanding,
-        totalRevenue: totalPaid,
-        totalBilled,
-        collectionRate,
-        revenueByType: []
+        totalOutstanding: calculated.grossReceivables,
+        totalRevenue: calculated.totalRevenue,
+        totalBilled: calculated.totalBilled,
+        collectionRate: calculated.collectionRate,
+        collectedThisTerm: calculated.collectedThisTerm,
+        collectedThisYear: calculated.collectedThisYear,
+        collectedToday: calculated.collectedToday,
+        collectedThisMonth: calculated.collectedThisMonth,
+        revenueByType: calculated.revenueByType,
+        streamBreakdown: {
+          tuition: calculated.streamStats.tuition,
+          canteen: calculated.streamStats.canteen,
+          transport: calculated.streamStats.transport,
+          auxiliary: calculated.streamStats.boarding + calculated.streamStats.uniformsBooks + calculated.streamStats.other,
+        }
       };
 
       setSyncedFinancialData(computed);
 
       await setDoc(doc(firestore, 'dashboard_summaries', schoolId), {
         financials: {
-          totalBilled,
-          totalRevenue: totalPaid,
-          totalOutstanding,
-          collectionRate
+          totalBilled: calculated.totalBilled,
+          totalRevenue: calculated.totalRevenue,
+          totalCollectedToday: calculated.collectedToday,
+          totalCollectedThisMonth: calculated.collectedThisMonth,
+          totalCollectedThisTerm: calculated.collectedThisTerm,
+          totalCollectedThisYear: calculated.collectedThisYear,
+          totalOutstanding: calculated.grossReceivables,
+          collectionRate: calculated.collectionRate,
+          arrearsCount: calculated.arrearsRoster?.length || 0,
+          streamBreakdown: computed.streamBreakdown
         },
-        debtAging: {
-          current,
-          age30,
-          age60,
-          age90,
-          overpayments
-        },
+        debtAging: calculated.debtAgingStats,
         lastUpdated: serverTimestamp()
       }, { merge: true });
 
@@ -3932,6 +3904,7 @@ function DirectorDashboard({
             journals={journals || []}
             schoolSettings={schoolSettings}
             arrearsThreshold={arrearsThreshold}
+            dashboardSummary={dashboardSummary}
           />
         )}
 
@@ -11577,14 +11550,29 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Financial records loaded for Accountant, Director, and Admin on Overview or Financials tabs
-  const isFinancialNeeded = isAccountant || role === 'Director' || role === 'Administrator';
+  // Financial records & payment streams loaded only when viewing Financials tab or for Accountant
+  const isFinancialTabActive = isAccountant || 
+    (role === 'Director' && directorActiveTab === 'financials') || 
+    (role === 'Administrator' && adminActiveTab === 'financials');
 
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isFinancialNeeded]);
+  const recordsQuery = useMemoFirebase(() => 
+    (firestore && schoolId && isFinancialTabActive) 
+      ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(1000)) 
+      : null, 
+  [firestore, schoolId, isFinancialTabActive]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
-  // collectionGroup scan only loaded when viewing Financials tab or for Accountant.
-  const paymentsQuery = useMemoFirebase(() => (firestore && schoolId && isFinancialNeeded) ? query(collectionGroup(firestore, 'payments'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isFinancialNeeded]);
+  // Bounded collectionGroup query capped at limit(30) ordered by timestamp DESC for live stream
+  const paymentsQuery = useMemoFirebase(() => 
+    (firestore && schoolId && isFinancialTabActive) 
+      ? query(
+          collectionGroup(firestore, 'payments'), 
+          where('schoolId', '==', schoolId), 
+          orderBy('timestamp', 'desc'), 
+          limit(30)
+        ) 
+      : null, 
+  [firestore, schoolId, isFinancialTabActive]);
   const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);

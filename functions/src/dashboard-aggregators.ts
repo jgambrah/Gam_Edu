@@ -37,6 +37,29 @@ function getYYYYMMDD(val: any): string {
 }
 
 /** Helper to recalculate financial metrics for a school considering active students */
+function classifyCategory(item: any): 'tuition' | 'canteen' | 'transport' | 'boarding' | 'uniforms' | 'other' {
+  if (!item) return 'tuition';
+  const text = `${item.type || ''} ${item.category || ''} ${item.description || ''} ${item.feeType || ''} ${item.notes || ''} ${item.name || ''} ${item.title || ''} ${item.paymentType || ''} ${item.narration || ''} ${item.paymentNarration || ''} ${item.item || ''}`.toLowerCase();
+
+  if (text.includes('canteen') || text.includes('feed') || text.includes('lunch') || text.includes('meal') || text.includes('food') || text.includes('cafeteria')) {
+    return 'canteen';
+  }
+  if (text.includes('bus') || text.includes('transport') || text.includes('fare') || text.includes('shuttle') || text.includes('transit') || text.includes('vehicle')) {
+    return 'transport';
+  }
+  if (text.includes('boarding') || text.includes('hostel') || text.includes('dorm') || text.includes('accommodation')) {
+    return 'boarding';
+  }
+  if (text.includes('uniform') || text.includes('book') || text.includes('textbook') || text.includes('stationery') || text.includes('crest') || text.includes('jersey') || text.includes('exercise')) {
+    return 'uniforms';
+  }
+  if (text.includes('rent') || text.includes('hire') || text.includes('fine') || text.includes('penalty') || text.includes('transcript') || text.includes('certificate')) {
+    return 'other';
+  }
+  return 'tuition';
+}
+
+/** Helper to recalculate financial metrics for a school considering active students */
 async function recalculateSchoolFinancials(schoolId: string, eventTermId?: string): Promise<void> {
   // Fetch active students first (excluding archived students)
   let studentsQuery = db.collection('students')
@@ -75,6 +98,13 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
 
   const paymentsSnap = await paymentsQuery.get();
 
+  let tillsTransactionsSnap: any;
+  try {
+    tillsTransactionsSnap = await db.collectionGroup('transactions').where('schoolId', '==', schoolId).get();
+  } catch (e) {
+    tillsTransactionsSnap = { docs: [] };
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -95,6 +125,13 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
   let lastPaymentAmount = 0;
   let lastPaymentAt: Timestamp | null = null;
 
+  let tuitionStream = 0;
+  let canteenStream = 0;
+  let transportStream = 0;
+  let boardingStream = 0;
+  let uniformsStream = 0;
+  let otherStream = 0;
+
   const todayMs = todayStartMs();
   const monthStart = new Date();
   monthStart.setUTCDate(1);
@@ -105,7 +142,7 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
   snap.forEach(doc => {
     const r = doc.data();
     if (r.status === 'Pending Reversal') return;
-    if (!activeStudentIds.has(r.studentId)) return;
+    if (r.studentId && !activeStudentIds.has(r.studentId) && activeStudentIds.size > 0) return;
 
     const billed = Number(r.billedAmount ?? r.amount ?? 0);
     const paid = Number(r.amountPaid ?? 0);
@@ -113,7 +150,6 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
     const balance = billed - paid - waiver;
 
     totalBilled += billed;
-    totalRevenue += paid;
 
     if (balance < 0) {
       overpayments += Math.abs(balance);
@@ -141,32 +177,66 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
     }
   });
 
-  // 2. Process payments for actual collection sums (today, this month, this term)
-  paymentsSnap.forEach(pDoc => {
-    const p = pDoc.data();
-    if (p.studentId && !activeStudentIds.has(p.studentId)) return;
+  const processedKeys = new Set<string>();
 
-    const amount = Number(p.amount) || 0;
+  const processItem = (p: any, docId: string) => {
+    if (!p) return;
+    if (p.status === 'Reversed' || p.status === 'Cancelled' || p.status === 'Pending Reversal') return;
+    const amount = Number(p.amount) || Number(p.amountPaid) || Number(p.totalAmount) || 0;
     if (amount <= 0) return;
 
-    const dateVal = p.paidAt || p.createdAt || p.date;
-    if (!dateVal) return;
+    const refNo = p.referenceNo || p.reference_no || p.transactionId || p.receiptNo || docId;
+    if (processedKeys.has(refNo)) return;
+    processedKeys.add(refNo);
 
-    const pTs = dateVal as Timestamp;
-    const pMs = pTs.toMillis?.() ?? (dateVal ? new Date(dateVal).getTime() : 0);
-
-    if (pMs >= todayMs) {
-      totalCollectedToday += amount;
-      if (amount > lastPaymentAmount) {
+    const dateVal = p.paidAt || p.createdAt || p.date || p.timestamp;
+    let pMs = 0;
+    if (dateVal) {
+      const pTs = dateVal as Timestamp;
+      pMs = pTs.toMillis?.() ?? new Date(dateVal).getTime();
+      if (pMs >= todayMs && amount > lastPaymentAmount) {
         lastPaymentAmount = amount;
         lastPaymentAt = pTs;
       }
     }
-    if (pMs >= monthMs) {
-      totalCollectedThisMonth += amount;
+
+    totalRevenue += amount;
+
+    if (pMs >= todayMs) totalCollectedToday += amount;
+    if (pMs >= monthMs) totalCollectedThisMonth += amount;
+    totalCollectedThisTerm += amount;
+
+    const cat = classifyCategory(p);
+    if (cat === 'tuition') tuitionStream += amount;
+    else if (cat === 'canteen') canteenStream += amount;
+    else if (cat === 'transport') transportStream += amount;
+    else if (cat === 'boarding') boardingStream += amount;
+    else if (cat === 'uniforms') uniformsStream += amount;
+    else otherStream += amount;
+  };
+
+  // 2. Process payments for actual collection sums & category streams
+  if (paymentsSnap.docs) {
+    paymentsSnap.docs.forEach((pDoc: any) => processItem(pDoc.data(), pDoc.id));
+  }
+
+  if (tillsTransactionsSnap.docs) {
+    tillsTransactionsSnap.docs.forEach((tDoc: any) => processItem(tDoc.data(), tDoc.id));
+  }
+
+  snap.forEach(doc => {
+    const r = doc.data();
+    if (r.payments && Array.isArray(r.payments) && r.payments.length > 0) {
+      r.payments.forEach((p: any) => processItem(p, p.id || doc.id));
+    } else if (r.amountPaid && Number(r.amountPaid) > 0) {
+      processItem({
+        amount: Number(r.amountPaid),
+        paidAt: r.lastPaymentDate || r.createdAt || r.date,
+        type: r.type || r.category || 'Tuition',
+        description: r.description
+      }, `record-${doc.id}`);
     }
   });
-  totalCollectedThisTerm = totalCollectedThisMonth;
 
   const collectionRate = totalBilled > 0 
     ? Math.round((totalRevenue / totalBilled) * 100) 
@@ -178,7 +248,8 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
     financials: {
       totalCollectedToday,
       totalCollectedThisMonth,
-      totalCollectedThisTerm,
+      totalCollectedThisTerm: totalRevenue,
+      totalCollectedThisYear: totalRevenue,
       totalOutstanding,
       totalBilled,
       totalRevenue,
@@ -186,6 +257,12 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
       arrearsCount,
       lastPaymentAmount,
       lastPaymentAt,
+      streamBreakdown: {
+        tuition: tuitionStream,
+        canteen: canteenStream,
+        transport: transportStream,
+        auxiliary: boardingStream + uniformsStream + otherStream
+      }
     },
     debtAging: {
       current,

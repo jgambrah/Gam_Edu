@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -17,10 +17,20 @@ export interface FinancialSummary {
   totalCollectedToday: number;
   totalCollectedThisMonth: number;
   totalCollectedThisTerm: number;
+  totalCollectedThisYear?: number;
+  totalBilled?: number;
+  totalRevenue?: number;
+  collectionRate?: number;
   totalOutstanding: number;
   arrearsCount: number;
   lastPaymentAt: { toDate?: () => Date; seconds?: number } | null;
   lastPaymentAmount: number;
+  streamBreakdown?: {
+    tuition: number;
+    canteen: number;
+    transport: number;
+    auxiliary: number;
+  };
 }
 
 export interface StudentCountSummary {
