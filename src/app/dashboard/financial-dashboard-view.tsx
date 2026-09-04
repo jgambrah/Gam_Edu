@@ -741,19 +741,7 @@ export function FinancialDashboardView({
         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 font-bold">
           <Clock className="h-4 w-4 text-rose-500" /> Receivables
         </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-          {/* Outstanding Fees Card */}
-          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-fit hover:shadow-md transition-shadow">
-            <div>
-              <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest font-bold">Outstanding fees</p>
-              <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {cashPosition.totalReceivables.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
-              <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Outstanding Parental Tuition</p>
-            </div>
-            <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl w-fit mt-4">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-          </Card>
-
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Sponsored NGO Outstanding Fees Card */}
           <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-fit hover:shadow-md transition-shadow">
             <div>
