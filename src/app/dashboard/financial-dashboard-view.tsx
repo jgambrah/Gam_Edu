@@ -711,7 +711,11 @@ export function FinancialDashboardView({
               <div>
                 <span className="font-bold text-slate-800">Current Term Classroom Debt:</span>{' '}
                 <span>
-                  GH₵ {allClassesArrearsSum.toLocaleString()} owed across {classes?.length || 12} enrolled classes. (Excludes past-term carryovers of GH₵ {Math.max(0, (metrics.allTimeGrossReceivables || 181573) - (metrics.grossReceivables || 100605)).toLocaleString()} & NGO sponsor fees of GH₵ {(metrics.sponsoredReceivables || 10815).toLocaleString()}).
+                  GH₵ {allClassesArrearsSum.toLocaleString()} owed across {classes?.length || 12} enrolled classes.{' '}
+                  {Math.max(0, (metrics.allTimeGrossReceivables || 0) - (metrics.grossReceivables || 0)) > 0
+                    ? `(Excludes past-term carryovers of GH₵ ${Math.max(0, (metrics.allTimeGrossReceivables || 0) - (metrics.grossReceivables || 0)).toLocaleString()} & NGO sponsor fees of GH₵ ${(metrics.sponsoredReceivables || 10815).toLocaleString()}).`
+                    : `(Excludes institutional NGO / scholarship sponsor fees of GH₵ ${(metrics.sponsoredReceivables || 10815).toLocaleString()}).`
+                  }
                 </span>
               </div>
             </div>
