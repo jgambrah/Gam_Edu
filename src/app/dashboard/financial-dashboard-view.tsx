@@ -456,7 +456,10 @@ export function FinancialDashboardView({
 
     const parentReceivables = metrics.parentReceivables !== undefined ? metrics.parentReceivables : totalOutstanding;
     const sponsoredReceivables = metrics.sponsoredReceivables !== undefined ? metrics.sponsoredReceivables : totalSponsoredOutstanding;
-    const totalTermReceivables = metrics.grossReceivables || (parentReceivables + sponsoredReceivables);
+    const inactiveReceivables = metrics.inactiveStudentReceivables !== undefined 
+      ? metrics.inactiveStudentReceivables 
+      : Math.max(0, (metrics.grossReceivables || 0) - parentReceivables - sponsoredReceivables);
+    const totalTermReceivables = metrics.grossReceivables || (parentReceivables + sponsoredReceivables + inactiveReceivables);
     const allTimeGross = metrics.allTimeGrossReceivables || totalTermReceivables;
     const allTimeNet = metrics.allTimeNetReceivables || metrics.netReceivables;
 
@@ -465,6 +468,7 @@ export function FinancialDashboardView({
       bankBalance,
       totalReceivables: parentReceivables,
       totalSponsoredReceivables: sponsoredReceivables,
+      totalInactiveReceivables: inactiveReceivables,
       totalTermReceivables,
       allTimeGrossReceivables: allTimeGross,
       allTimeNetReceivables: allTimeNet,
@@ -709,13 +713,12 @@ export function FinancialDashboardView({
             <div className="flex items-center gap-2.5 text-slate-600">
               <Info className="h-4 w-4 text-indigo-600 shrink-0" />
               <div>
-                <span className="font-bold text-slate-800">Current Term Classroom Debt:</span>{' '}
+                <span className="font-bold text-slate-800">Current Term Active Classroom Debt:</span>{' '}
                 <span>
-                  GH₵ {allClassesArrearsSum.toLocaleString()} owed across {classes?.length || 12} enrolled classes.{' '}
-                  {Math.max(0, (metrics.allTimeGrossReceivables || 0) - (metrics.grossReceivables || 0)) > 0
-                    ? `(Excludes past-term carryovers of GH₵ ${Math.max(0, (metrics.allTimeGrossReceivables || 0) - (metrics.grossReceivables || 0)).toLocaleString()} & NGO sponsor fees of GH₵ ${(metrics.sponsoredReceivables || 10815).toLocaleString()}).`
-                    : `(Excludes institutional NGO / scholarship sponsor fees of GH₵ ${(metrics.sponsoredReceivables || 10815).toLocaleString()}).`
-                  }
+                  GH₵ {allClassesArrearsSum.toLocaleString()} owed across active students in {classes?.length || 12} enrolled classes.{' '}
+                  {cashPosition.totalInactiveReceivables > 0 && (
+                    <span>(Excludes GH₵ {cashPosition.totalInactiveReceivables.toLocaleString()} from withdrawn/inactive student accounts).</span>
+                  )}
                 </span>
               </div>
             </div>
@@ -928,25 +931,40 @@ export function FinancialDashboardView({
                 <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
                   <TableCell className="font-bold text-slate-700 py-3.5 pl-8">
                     <div>
-                      <span className="text-sm">Private Parent Receivables</span>
-                      <span className="block text-[10px] text-slate-400 font-normal">Active fee-paying parents (Current Term)</span>
+                      <span className="text-sm">Active Enrolled Student Receivables</span>
+                      <span className="block text-[10px] text-slate-400 font-normal">Active fee-paying parents across 12 classes (Current Term)</span>
                     </div>
                   </TableCell>
                   <TableCell className="font-mono text-rose-600 font-bold py-3.5 pr-8 text-right">
                     GH₵ {cashPosition.totalReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </TableCell>
                 </TableRow>
-                <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
-                  <TableCell className="font-bold text-slate-700 py-3.5 pl-8">
-                    <div>
-                      <span className="text-sm">NGO / Sponsor Receivables</span>
-                      <span className="block text-[10px] text-slate-400 font-normal">Pledged scholarship fees (Current Term)</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-indigo-600 font-bold py-3.5 pr-8 text-right">
-                    GH₵ {cashPosition.totalSponsoredReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </TableCell>
-                </TableRow>
+                {cashPosition.totalInactiveReceivables > 0 && (
+                  <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
+                    <TableCell className="font-bold text-slate-700 py-3.5 pl-8">
+                      <div>
+                        <span className="text-sm">Inactive / Withdrawn Student Arrears</span>
+                        <span className="block text-[10px] text-slate-400 font-normal">Unpaid balances from students no longer actively enrolled</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-amber-600 font-bold py-3.5 pr-8 text-right">
+                      GH₵ {cashPosition.totalInactiveReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {cashPosition.totalSponsoredReceivables > 0 && (
+                  <TableRow className="hover:bg-slate-50/30 border-b border-slate-100">
+                    <TableCell className="font-bold text-slate-700 py-3.5 pl-8">
+                      <div>
+                        <span className="text-sm">NGO / Sponsor Receivables</span>
+                        <span className="block text-[10px] text-slate-400 font-normal">Pledged scholarship fees (Current Term)</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-indigo-600 font-bold py-3.5 pr-8 text-right">
+                      GH₵ {cashPosition.totalSponsoredReceivables.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </TableCell>
+                  </TableRow>
+                )}
                 <TableRow className="hover:bg-slate-50/30 border-b border-slate-100 bg-slate-50/50">
                   <TableCell className="font-bold text-slate-900 py-3.5 pl-8">
                     <div className="flex items-center gap-2">

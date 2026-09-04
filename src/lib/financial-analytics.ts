@@ -116,6 +116,7 @@ export interface FinancialMetricsResult {
   netReceivables: number;
   parentReceivables: number;
   sponsoredReceivables: number;
+  inactiveStudentReceivables: number;
   allTimeGrossReceivables: number;
   allTimeNetReceivables: number;
   allTimeAdvancePayments: number;
@@ -489,6 +490,7 @@ export function computeFinancialMetrics({
   let grossReceivables = 0;
   let parentReceivables = 0;
   let sponsoredReceivables = 0;
+  let inactiveStudentReceivables = 0;
 
   let outstandingTuition = 0;
   let outstandingCanteen = 0;
@@ -517,10 +519,14 @@ export function computeFinancialMetrics({
         s.admissionNo === r.studentId
       );
 
+      const isActive = !studentObj || studentObj.enrollmentStatus === 'Active' || !studentObj.enrollmentStatus;
+
       if (studentObj && studentObj.isSponsored) {
         sponsoredReceivables += balance;
-      } else {
+      } else if (isActive) {
         parentReceivables += balance;
+      } else {
+        inactiveStudentReceivables += balance;
       }
 
       const cat = classifyFeeCategory(r);
@@ -705,6 +711,7 @@ export function computeFinancialMetrics({
     netReceivables: calculatedNetReceivables,
     parentReceivables,
     sponsoredReceivables,
+    inactiveStudentReceivables,
     allTimeGrossReceivables: allTimeGrossReceivables || calculatedGrossReceivables,
     allTimeNetReceivables: allTimeNetReceivables || calculatedNetReceivables,
     allTimeAdvancePayments: allTimeAdvancePayments || advancePaymentsCredit,
