@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
     Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History, 
     Sparkles, AlertCircle, Edit3, Sliders, CheckCheck, 
-    Wand2, HelpCircle, Layers, Grid3X3, ListFilter
+    Wand2, Grid3X3, ListFilter, Plus, X
 } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -47,21 +47,25 @@ const ASSESSMENT_TYPES = [
     'End of Term Exam (Exam)'
 ];
 
-const STANDARD_REMARKS = [
-    'Excellent performance',
-    'Very good effort',
-    'Good work, keep improving',
-    'Credit score, more practice needed',
-    'Pass, needs close monitoring',
-    'Needs significant improvement'
-];
+interface TestColumnDef {
+    id: string; // e.g. 'test_1', 'test_2'
+    name: string; // e.g. 'Test 1', 'Test 2'
+}
 
 interface MatrixStudentRow {
-    classTest: number | '';
+    tests: Record<string, number | ''>;
     homework: number | '';
+    project: number | '';
     midTerm: number | '';
     exam: number | '';
     remark: string;
+}
+
+interface FillTarget {
+    type: 'test' | 'homework' | 'project' | 'midTerm' | 'exam';
+    colId?: string;
+    label: string;
+    max: number;
 }
 
 export default function GradebookPage() {
@@ -88,21 +92,27 @@ export default function GradebookPage() {
     const [customExamInput, setCustomExamInput] = useState<number>(70);
     const [isSavingWeight, setIsSavingWeight] = useState(false);
 
+    // Dynamic Multiple Test Columns (e.g. Test 1, Test 2, Test 3)
+    const [testColumns, setTestColumns] = useState<TestColumnDef[]>([
+        { id: 'test_1', name: 'Test 1' }
+    ]);
+
     // Matrix Column Max Scores (Customizable by teachers/schools)
     const [matrixMaxScores, setMatrixMaxScores] = useState({
         classTest: 20,
         homework: 20,
+        project: 20,
         midTerm: 40,
         exam: 100
     });
     const [isMaxScoresModalOpen, setIsMaxScoresModalOpen] = useState(false);
 
     // Fill All Column Modal
-    const [fillColTarget, setFillColTarget] = useState<'classTest' | 'homework' | 'midTerm' | 'exam' | null>(null);
+    const [fillTarget, setFillTarget] = useState<FillTarget | null>(null);
     const [fillColValue, setFillColValue] = useState<number | ''>('');
     const [fillOnlyEmpty, setFillOnlyEmpty] = useState(true);
 
-    // Matrix scores state: studentId -> { classTest, homework, midTerm, exam, remark }
+    // Matrix scores state: studentId -> MatrixStudentRow
     const [matrixScores, setMatrixScores] = useState<Record<string, MatrixStudentRow>>({});
 
     // Classic Single-Batch State
@@ -279,11 +289,33 @@ export default function GradebookPage() {
         return groups;
     }, [rawAssessments]);
 
-    // Populate Matrix from existing rawAssessments
+    // Populate Matrix from existing rawAssessments, detecting multiple test columns dynamically
     useEffect(() => {
         if (!rawAssessments || rawAssessments.length === 0) {
             setMatrixScores({});
             return;
+        }
+
+        // Identify all unique test names under 'Class Exercise (CA)'
+        const testNamesSet = new Set<string>();
+        rawAssessments.forEach((a: any) => {
+            const type = (a.assessmentType || '').toLowerCase();
+            const name = (a.assessmentName || '').toLowerCase();
+            const combined = `${type} ${name}`;
+
+            if (!combined.includes('exam') && !combined.includes('mid') && !combined.includes('home') && !combined.includes('hw') && !combined.includes('proj')) {
+                testNamesSet.add(a.assessmentName || 'Test 1');
+            }
+        });
+
+        let activeTestCols = [...testColumns];
+        if (testNamesSet.size > 0) {
+            const sortedNames = Array.from(testNamesSet).sort();
+            activeTestCols = sortedNames.map((name, idx) => ({
+                id: `test_${idx + 1}`,
+                name
+            }));
+            setTestColumns(activeTestCols);
         }
 
         const newMatrix: Record<string, MatrixStudentRow> = {};
@@ -291,7 +323,7 @@ export default function GradebookPage() {
         rawAssessments.forEach((a: any) => {
             if (!a.studentId) return;
             if (!newMatrix[a.studentId]) {
-                newMatrix[a.studentId] = { classTest: '', homework: '', midTerm: '', exam: '', remark: '' };
+                newMatrix[a.studentId] = { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
             }
 
             const type = (a.assessmentType || '').toLowerCase();
@@ -306,12 +338,19 @@ export default function GradebookPage() {
                 newMatrix[a.studentId].midTerm = a.score !== undefined && a.score !== null ? Number(a.score) : '';
                 if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
                 if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, midTerm: Number(a.maxScore) }));
-            } else if (combined.includes('home') || combined.includes('project') || combined.includes('hw')) {
+            } else if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) {
+                newMatrix[a.studentId].project = a.score !== undefined && a.score !== null ? Number(a.score) : '';
+                if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
+                if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, project: Number(a.maxScore) }));
+            } else if (combined.includes('home') || combined.includes('hw')) {
                 newMatrix[a.studentId].homework = a.score !== undefined && a.score !== null ? Number(a.score) : '';
                 if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
                 if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, homework: Number(a.maxScore) }));
             } else {
-                newMatrix[a.studentId].classTest = a.score !== undefined && a.score !== null ? Number(a.score) : '';
+                // Matched to Class Exercise / Test
+                const matchedCol = activeTestCols.find(c => c.name.toLowerCase() === (a.assessmentName || '').toLowerCase()) || activeTestCols[0];
+                const colId = matchedCol?.id || 'test_1';
+                newMatrix[a.studentId].tests[colId] = a.score !== undefined && a.score !== null ? Number(a.score) : '';
                 if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
                 if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, classTest: Number(a.maxScore) }));
             }
@@ -359,11 +398,41 @@ export default function GradebookPage() {
         }
     }, [rawAssessments, assessmentType, assessmentName]);
 
+    // Add another test column (e.g. Test 2, Test 3)
+    const handleAddTestColumn = () => {
+        const nextNum = testColumns.length + 1;
+        const newId = `test_${Date.now()}`;
+        const newName = `Test ${nextNum}`;
+        setTestColumns(prev => [...prev, { id: newId, name: newName }]);
+        toast({ title: "Test Column Added ➕", description: `Added "${newName}" to the Continuous Assessment roster.` });
+    };
+
+    // Remove a dynamic test column
+    const handleRemoveTestColumn = (colId: string) => {
+        if (testColumns.length <= 1) return;
+        const targetCol = testColumns.find(c => c.id === colId);
+        setTestColumns(prev => prev.filter(c => c.id !== colId));
+
+        setMatrixScores(prev => {
+            const updated = { ...prev };
+            Object.keys(updated).forEach(uid => {
+                if (updated[uid]?.tests) {
+                    const nextTests = { ...updated[uid].tests };
+                    delete nextTests[colId];
+                    updated[uid] = { ...updated[uid], tests: nextTests };
+                }
+            });
+            return updated;
+        });
+
+        toast({ title: "Column Removed", description: `Removed ${targetCol?.name || 'test column'} from view.` });
+    };
+
     // Keyboard navigation helper for high-speed mark entry
     const handleMatrixKeyDown = (
         e: React.KeyboardEvent<HTMLInputElement>,
         rowIndex: number,
-        colKey: 'classTest' | 'homework' | 'midTerm' | 'exam' | 'remark'
+        colKey: string
     ) => {
         if (e.key === 'Enter' || e.key === 'ArrowDown') {
             e.preventDefault();
@@ -386,17 +455,32 @@ export default function GradebookPage() {
         }
     };
 
-    // Matrix cell score updater
+    // Matrix test score change
+    const handleMatrixTestScoreChange = (studentId: string, testId: string, val: string) => {
+        const num = val === '' ? '' : Number(val);
+        setMatrixScores(prev => ({
+            ...prev,
+            [studentId]: {
+                ...(prev[studentId] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' }),
+                tests: {
+                    ...(prev[studentId]?.tests || {}),
+                    [testId]: num
+                }
+            }
+        }));
+    };
+
+    // Matrix standard score change (homework, project, midTerm, exam)
     const handleMatrixScoreChange = (
         studentId: string, 
-        field: 'classTest' | 'homework' | 'midTerm' | 'exam', 
+        field: 'homework' | 'project' | 'midTerm' | 'exam', 
         val: string
     ) => {
         const num = val === '' ? '' : Number(val);
         setMatrixScores(prev => ({
             ...prev,
             [studentId]: {
-                ...(prev[studentId] || { classTest: '', homework: '', midTerm: '', exam: '', remark: '' }),
+                ...(prev[studentId] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' }),
                 [field]: num
             }
         }));
@@ -406,7 +490,7 @@ export default function GradebookPage() {
         setMatrixScores(prev => ({
             ...prev,
             [studentId]: {
-                ...(prev[studentId] || { classTest: '', homework: '', midTerm: '', exam: '', remark: '' }),
+                ...(prev[studentId] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' }),
                 remark: val
             }
         }));
@@ -414,21 +498,39 @@ export default function GradebookPage() {
 
     // Fill all students in a specific matrix column
     const handleExecuteFillColumn = () => {
-        if (!fillColTarget || !students || students.length === 0) return;
+        if (!fillTarget || !students || students.length === 0) return;
         const targetVal = fillColValue === '' ? '' : Number(fillColValue);
         
         let count = 0;
         setMatrixScores(prev => {
             const updated = { ...prev };
             students.forEach((s: any) => {
-                const current = updated[s.uid] || { classTest: '', homework: '', midTerm: '', exam: '', remark: '' };
-                const shouldFill = !fillOnlyEmpty || current[fillColTarget] === '' || current[fillColTarget] === undefined;
-                if (shouldFill) {
-                    updated[s.uid] = {
-                        ...current,
-                        [fillColTarget]: targetVal
-                    };
-                    count++;
+                const current = updated[s.uid] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
+                
+                if (fillTarget.type === 'test' && fillTarget.colId) {
+                    const curVal = current.tests?.[fillTarget.colId];
+                    const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
+                    if (shouldFill) {
+                        updated[s.uid] = {
+                            ...current,
+                            tests: {
+                                ...(current.tests || {}),
+                                [fillTarget.colId]: targetVal
+                            }
+                        };
+                        count++;
+                    }
+                } else if (fillTarget.type !== 'test') {
+                    const field = fillTarget.type;
+                    const curVal = current[field];
+                    const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
+                    if (shouldFill) {
+                        updated[s.uid] = {
+                            ...current,
+                            [field]: targetVal
+                        };
+                        count++;
+                    }
                 }
             });
             return updated;
@@ -436,9 +538,9 @@ export default function GradebookPage() {
 
         toast({
             title: "Column Filled ⚡",
-            description: `Populated ${count} students with score ${targetVal || 0}.`
+            description: `Populated ${count} students with score ${targetVal || 0} for ${fillTarget.label}.`
         });
-        setFillColTarget(null);
+        setFillTarget(null);
         setFillColValue('');
     };
 
@@ -451,17 +553,27 @@ export default function GradebookPage() {
         setMatrixScores(prev => {
             const updated = { ...prev };
             students.forEach((s: any) => {
-                const row = updated[s.uid] || { classTest: '', homework: '', midTerm: '', exam: '', remark: '' };
-                const hasMarks = row.classTest !== '' || row.homework !== '' || row.midTerm !== '' || row.exam !== '';
+                const row = updated[s.uid] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
+                
+                // Calculate valid tests average
+                const studentTests = row.tests || {};
+                const validTests = testColumns
+                    .map(tc => studentTests[tc.id])
+                    .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
+                const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / validTests.length) : 0;
+                const hasAnyTest = validTests.length > 0;
+
+                const hasMarks = hasAnyTest || row.homework !== '' || row.project !== '' || row.midTerm !== '' || row.exam !== '';
                 
                 if (hasMarks && !row.remark) {
-                    const ct = typeof row.classTest === 'number' ? row.classTest : 0;
+                    const ct = hasAnyTest ? testsAvg : 0;
                     const hw = typeof row.homework === 'number' ? row.homework : 0;
+                    const pr = typeof row.project === 'number' ? row.project : 0;
                     const mt = typeof row.midTerm === 'number' ? row.midTerm : 0;
                     const ex = typeof row.exam === 'number' ? row.exam : 0;
 
-                    const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.midTerm;
-                    const caRaw = ct + hw + mt;
+                    const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm;
+                    const caRaw = ct + hw + pr + mt;
                     const caWeighted = caMax > 0 ? (caRaw / caMax) * caWeight : 0;
                     const examWeighted = matrixMaxScores.exam > 0 && row.exam !== '' ? (ex / matrixMaxScores.exam) * examWeight : 0;
                     const totalPct = Math.min(100, Math.round((caWeighted + examWeighted) * 10) / 10);
@@ -527,12 +639,21 @@ export default function GradebookPage() {
             if (!row) continue;
             const studentName = `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Student';
 
-            if (row.classTest !== '' && typeof row.classTest === 'number' && row.classTest > matrixMaxScores.classTest) {
-                toast({ variant: 'destructive', title: "Class Test Score Exceeds Max", description: `${studentName}'s score (${row.classTest}) exceeds max (${matrixMaxScores.classTest}).` });
-                return;
+            // Check tests
+            for (const tc of testColumns) {
+                const testScore = row.tests?.[tc.id];
+                if (testScore !== '' && typeof testScore === 'number' && testScore > matrixMaxScores.classTest) {
+                    toast({ variant: 'destructive', title: `${tc.name} Score Exceeds Max`, description: `${studentName}'s score (${testScore}) exceeds max (${matrixMaxScores.classTest}).` });
+                    return;
+                }
             }
+
             if (row.homework !== '' && typeof row.homework === 'number' && row.homework > matrixMaxScores.homework) {
                 toast({ variant: 'destructive', title: "Homework Score Exceeds Max", description: `${studentName}'s score (${row.homework}) exceeds max (${matrixMaxScores.homework}).` });
+                return;
+            }
+            if (row.project !== '' && typeof row.project === 'number' && row.project > matrixMaxScores.project) {
+                toast({ variant: 'destructive', title: "Project Score Exceeds Max", description: `${studentName}'s score (${row.project}) exceeds max (${matrixMaxScores.project}).` });
                 return;
             }
             if (row.midTerm !== '' && typeof row.midTerm === 'number' && row.midTerm > matrixMaxScores.midTerm) {
@@ -553,20 +674,24 @@ export default function GradebookPage() {
             const updatedStudentIds: string[] = [];
             let totalSavedRecords = 0;
 
-            // Group existing assessments by studentId and normalized category
-            const existingMap: Record<string, { ct?: any; hw?: any; mt?: any; ex?: any }> = {};
+            // Map existing assessments by studentId and normalized category/name
+            const existingMap: Record<string, { tests: Record<string, any>; hw?: any; project?: any; mt?: any; ex?: any }> = {};
             rawAssessments?.forEach((a: any) => {
                 if (!a.studentId) return;
-                if (!existingMap[a.studentId]) existingMap[a.studentId] = {};
+                if (!existingMap[a.studentId]) existingMap[a.studentId] = { tests: {} };
                 const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
+                
                 if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) {
                     existingMap[a.studentId].ex = a;
                 } else if (combined.includes('mid')) {
                     existingMap[a.studentId].mt = a;
-                } else if (combined.includes('home') || combined.includes('project') || combined.includes('hw')) {
+                } else if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) {
+                    existingMap[a.studentId].project = a;
+                } else if (combined.includes('home') || combined.includes('hw')) {
                     existingMap[a.studentId].hw = a;
                 } else {
-                    existingMap[a.studentId].ct = a;
+                    const testKey = (a.assessmentName || 'test 1').toLowerCase();
+                    existingMap[a.studentId].tests[testKey] = a;
                 }
             });
 
@@ -574,36 +699,40 @@ export default function GradebookPage() {
                 const row = matrixScores[s.uid];
                 if (!row) return;
 
-                const hasData = row.classTest !== '' || row.homework !== '' || row.midTerm !== '' || row.exam !== '';
+                const hasTestScore = Object.values(row.tests || {}).some(v => v !== '' && typeof v === 'number');
+                const hasData = hasTestScore || row.homework !== '' || row.project !== '' || row.midTerm !== '' || row.exam !== '';
                 if (!hasData) return;
 
                 const studentName = `${s.firstName || ''} ${s.lastName || ''}`.trim();
                 let studentHadWrites = false;
 
-                // 1. Class Test
-                if (row.classTest !== '' && typeof row.classTest === 'number') {
-                    const existingDoc = existingMap[s.uid]?.ct;
-                    const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
-                    batch.set(ref, {
-                        studentId: s.uid,
-                        studentName,
-                        classId,
-                        subjectId,
-                        schoolId,
-                        teacherId: user.uid,
-                        term,
-                        academicYear,
-                        assessmentType: 'Class Exercise (CA)',
-                        assessmentName: 'Class Exercise',
-                        score: Number(row.classTest),
-                        maxScore: Number(matrixMaxScores.classTest),
-                        teacherRemark: row.remark || '',
-                        createdAt: serverTimestamp(),
-                        assessmentDate: serverTimestamp()
-                    });
-                    studentHadWrites = true;
-                    totalSavedRecords++;
-                }
+                // 1. Dynamic Tests (Individual records persisted for each test column)
+                testColumns.forEach((tc) => {
+                    const testVal = row.tests?.[tc.id];
+                    if (testVal !== '' && typeof testVal === 'number') {
+                        const existingDoc = existingMap[s.uid]?.tests[tc.name.toLowerCase()] || (testColumns.length === 1 ? Object.values(existingMap[s.uid]?.tests || {})[0] : undefined);
+                        const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
+                        batch.set(ref, {
+                            studentId: s.uid,
+                            studentName,
+                            classId,
+                            subjectId,
+                            schoolId,
+                            teacherId: user.uid,
+                            term,
+                            academicYear,
+                            assessmentType: 'Class Exercise (CA)',
+                            assessmentName: tc.name,
+                            score: Number(testVal),
+                            maxScore: Number(matrixMaxScores.classTest),
+                            teacherRemark: row.remark || '',
+                            createdAt: serverTimestamp(),
+                            assessmentDate: serverTimestamp()
+                        });
+                        studentHadWrites = true;
+                        totalSavedRecords++;
+                    }
+                });
 
                 // 2. Homework
                 if (row.homework !== '' && typeof row.homework === 'number') {
@@ -630,7 +759,32 @@ export default function GradebookPage() {
                     totalSavedRecords++;
                 }
 
-                // 3. Mid-Term
+                // 3. Project / Practical (Restored)
+                if (row.project !== '' && typeof row.project === 'number') {
+                    const existingDoc = existingMap[s.uid]?.project;
+                    const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
+                    batch.set(ref, {
+                        studentId: s.uid,
+                        studentName,
+                        classId,
+                        subjectId,
+                        schoolId,
+                        teacherId: user.uid,
+                        term,
+                        academicYear,
+                        assessmentType: 'Project (CA)',
+                        assessmentName: 'Project',
+                        score: Number(row.project),
+                        maxScore: Number(matrixMaxScores.project),
+                        teacherRemark: row.remark || '',
+                        createdAt: serverTimestamp(),
+                        assessmentDate: serverTimestamp()
+                    });
+                    studentHadWrites = true;
+                    totalSavedRecords++;
+                }
+
+                // 4. Mid-Term
                 if (row.midTerm !== '' && typeof row.midTerm === 'number') {
                     const existingDoc = existingMap[s.uid]?.mt;
                     const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
@@ -655,7 +809,7 @@ export default function GradebookPage() {
                     totalSavedRecords++;
                 }
 
-                // 4. Exam
+                // 5. Exam
                 if (row.exam !== '' && typeof row.exam === 'number') {
                     const existingDoc = existingMap[s.uid]?.ex;
                     const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
@@ -699,8 +853,9 @@ export default function GradebookPage() {
                         metadata: {
                             subjectId,
                             subjectName,
-                            classTest: row.classTest,
+                            tests: row.tests,
                             homework: row.homework,
+                            project: row.project,
                             midTerm: row.midTerm,
                             exam: row.exam,
                             remark: row.remark
@@ -895,12 +1050,20 @@ export default function GradebookPage() {
             const scoresData = entryMode === 'matrix' 
                 ? (students?.map((s: any) => {
                     const row = matrixScores[s.uid];
-                    const ct = typeof row?.classTest === 'number' ? row.classTest : 0;
+                    const studentTests = row?.tests || {};
+                    const validTests = testColumns
+                        .map(tc => studentTests[tc.id])
+                        .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
+                    const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / validTests.length) : 0;
+                    
+                    const ct = validTests.length > 0 ? testsAvg : 0;
                     const hw = typeof row?.homework === 'number' ? row.homework : 0;
+                    const pr = typeof row?.project === 'number' ? row.project : 0;
                     const mt = typeof row?.midTerm === 'number' ? row.midTerm : 0;
                     const ex = typeof row?.exam === 'number' ? row.exam : 0;
-                    const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.midTerm;
-                    const caWeighted = caMax > 0 ? ((ct + hw + mt) / caMax) * caWeight : 0;
+                    
+                    const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm;
+                    const caWeighted = caMax > 0 ? ((ct + hw + pr + mt) / caMax) * caWeight : 0;
                     const exWeighted = matrixMaxScores.exam > 0 && row?.exam !== '' ? (ex / matrixMaxScores.exam) * examWeight : 0;
                     const totalPct = Math.round((caWeighted + exWeighted) * 10) / 10;
                     return {
@@ -957,7 +1120,7 @@ export default function GradebookPage() {
                             Batch Entry & Gradebook
                         </h1>
                         <p className="text-indigo-200 text-lg max-w-xl font-light">
-                            High-speed continuous assessment (SBA), live weighting calculation, and terminal grading.
+                            Continuous assessment (SBA), multiple tests averaging, project grading, and terminal results.
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -1118,10 +1281,18 @@ export default function GradebookPage() {
                                         </Badge>
                                     </div>
                                     <CardDescription className="text-slate-400 mt-1">
-                                        Enter marks across SBA components. Press <kbd className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-[10px]">Enter</kbd> or <kbd className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-[10px]">↓</kbd> to jump to next student.
+                                        Continuous assessment with dynamic test averaging, homework, project & terminal exams. Press <kbd className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-[10px]">Enter</kbd> or <kbd className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-[10px]">↓</kbd> to jump to next student.
                                     </CardDescription>
                                 </div>
                                 <div className="flex items-center gap-2 flex-wrap">
+                                    <Button 
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleAddTestColumn}
+                                        className="rounded-xl border-indigo-200 text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 text-xs font-bold h-10 px-3"
+                                    >
+                                        <Plus className="h-4 w-4 mr-1.5 text-indigo-600" /> Add Test Column
+                                    </Button>
                                     <Button 
                                         variant="outline"
                                         size="sm"
@@ -1163,20 +1334,52 @@ export default function GradebookPage() {
                                         <p className="font-semibold text-sm">Loading roster...</p>
                                     </div>
                                 ) : (
-                                    <Table className="min-w-[1180px]">
+                                    <Table className="min-w-[1250px]">
                                         <TableHeader>
                                             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 border-b border-slate-200">
-                                                <TableHead className="font-bold text-slate-700 w-[270px] min-w-[240px]">Student Name</TableHead>
+                                                <TableHead className="font-bold text-slate-700 w-[280px] min-w-[260px]">Student Name</TableHead>
                                                 
-                                                {/* Class Test Header */}
-                                                <TableHead className="text-center w-[110px]">
+                                                {/* Dynamic Test Columns */}
+                                                {testColumns.map((tc, colIdx) => (
+                                                    <TableHead key={tc.id} className="text-center w-[105px]">
+                                                        <div className="flex flex-col items-center gap-1">
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="font-bold text-slate-700 text-xs">{tc.name}</span>
+                                                                {testColumns.length > 1 && colIdx > 0 && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleRemoveTestColumn(tc.id)}
+                                                                        className="text-slate-400 hover:text-rose-600 transition-colors p-0.5"
+                                                                        title={`Remove ${tc.name}`}
+                                                                    >
+                                                                        <X className="h-3 w-3" />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.classTest}</span>
+                                                                <button 
+                                                                    type="button"
+                                                                    onClick={() => { setFillTarget({ type: 'test', colId: tc.id, label: tc.name, max: matrixMaxScores.classTest }); setFillColValue(''); }}
+                                                                    className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
+                                                                    title="Fill all students"
+                                                                >
+                                                                    Fill
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </TableHead>
+                                                ))}
+
+                                                {/* Homework Header */}
+                                                <TableHead className="text-center w-[105px]">
                                                     <div className="flex flex-col items-center gap-1">
-                                                        <span className="font-bold text-slate-700 text-xs">Class Test</span>
+                                                        <span className="font-bold text-slate-700 text-xs">Homework</span>
                                                         <div className="flex items-center gap-1">
-                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.classTest}</span>
+                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.homework}</span>
                                                             <button 
                                                                 type="button"
-                                                                onClick={() => { setFillColTarget('classTest'); setFillColValue(''); }}
+                                                                onClick={() => { setFillTarget({ type: 'homework', label: 'Homework', max: matrixMaxScores.homework }); setFillColValue(''); }}
                                                                 className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
@@ -1186,15 +1389,15 @@ export default function GradebookPage() {
                                                     </div>
                                                 </TableHead>
 
-                                                {/* Homework Header */}
-                                                <TableHead className="text-center w-[110px]">
+                                                {/* Project / Practical Header (Restored) */}
+                                                <TableHead className="text-center w-[105px]">
                                                     <div className="flex flex-col items-center gap-1">
-                                                        <span className="font-bold text-slate-700 text-xs">Homework</span>
+                                                        <span className="font-bold text-slate-700 text-xs">Project / CW</span>
                                                         <div className="flex items-center gap-1">
-                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.homework}</span>
+                                                            <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.project}</span>
                                                             <button 
                                                                 type="button"
-                                                                onClick={() => { setFillColTarget('homework'); setFillColValue(''); }}
+                                                                onClick={() => { setFillTarget({ type: 'project', label: 'Project / CW', max: matrixMaxScores.project }); setFillColValue(''); }}
                                                                 className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
@@ -1205,14 +1408,14 @@ export default function GradebookPage() {
                                                 </TableHead>
 
                                                 {/* Mid-Term Header */}
-                                                <TableHead className="text-center w-[110px]">
+                                                <TableHead className="text-center w-[105px]">
                                                     <div className="flex flex-col items-center gap-1">
                                                         <span className="font-bold text-slate-700 text-xs">Mid-Term</span>
                                                         <div className="flex items-center gap-1">
                                                             <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.midTerm}</span>
                                                             <button 
                                                                 type="button"
-                                                                onClick={() => { setFillColTarget('midTerm'); setFillColValue(''); }}
+                                                                onClick={() => { setFillTarget({ type: 'midTerm', label: 'Mid-Term', max: matrixMaxScores.midTerm }); setFillColValue(''); }}
                                                                 className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
@@ -1231,14 +1434,14 @@ export default function GradebookPage() {
                                                 </TableHead>
 
                                                 {/* Exam Header */}
-                                                <TableHead className="text-center w-[110px]">
+                                                <TableHead className="text-center w-[105px]">
                                                     <div className="flex flex-col items-center gap-1">
                                                         <span className="font-bold text-slate-700 text-xs">Terminal Exam</span>
                                                         <div className="flex items-center gap-1">
                                                             <span className="text-[10px] font-black text-slate-400">/{matrixMaxScores.exam}</span>
                                                             <button 
                                                                 type="button"
-                                                                onClick={() => { setFillColTarget('exam'); setFillColValue(''); }}
+                                                                onClick={() => { setFillTarget({ type: 'exam', label: 'Terminal Exam', max: matrixMaxScores.exam }); setFillColValue(''); }}
                                                                 className="text-[9px] bg-slate-200/80 hover:bg-indigo-100 hover:text-indigo-700 px-1.5 py-0.5 rounded font-bold text-slate-600 transition-colors"
                                                                 title="Fill all students"
                                                             >
@@ -1275,25 +1478,33 @@ export default function GradebookPage() {
                                         <TableBody>
                                             {students?.length === 0 && (
                                                 <TableRow>
-                                                    <TableCell colSpan={10} className="text-center py-10 italic text-slate-400">
+                                                    <TableCell colSpan={9 + testColumns.length} className="text-center py-10 italic text-slate-400">
                                                         No active students enrolled in this class.
                                                     </TableCell>
                                                 </TableRow>
                                             )}
                                             {students?.map((s: any, idx: number) => {
-                                                const row = matrixScores[s.uid] || { classTest: '', homework: '', midTerm: '', exam: '', remark: '' };
+                                                const row = matrixScores[s.uid] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
                                                 
-                                                // Calculations
-                                                const ct = typeof row.classTest === 'number' ? row.classTest : 0;
+                                                // Tests aggregation
+                                                const studentTests = row.tests || {};
+                                                const validTests = testColumns
+                                                    .map(tc => studentTests[tc.id])
+                                                    .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
+                                                const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / validTests.length) : 0;
+                                                const hasAnyTest = validTests.length > 0;
+
+                                                const ct = hasAnyTest ? testsAvg : 0;
                                                 const hw = typeof row.homework === 'number' ? row.homework : 0;
+                                                const pr = typeof row.project === 'number' ? row.project : 0;
                                                 const mt = typeof row.midTerm === 'number' ? row.midTerm : 0;
                                                 const ex = typeof row.exam === 'number' ? row.exam : 0;
 
-                                                const hasAnyScore = row.classTest !== '' || row.homework !== '' || row.midTerm !== '' || row.exam !== '';
+                                                const hasAnyScore = hasAnyTest || row.homework !== '' || row.project !== '' || row.midTerm !== '' || row.exam !== '';
                                                 
                                                 // CA Total Raw & Scaled
-                                                const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.midTerm;
-                                                const caRawObtained = ct + hw + mt;
+                                                const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm;
+                                                const caRawObtained = ct + hw + pr + mt;
                                                 const caWeighted = caMax > 0 ? (caRawObtained / caMax) * caWeight : 0;
 
                                                 // Exam Scaled
@@ -1304,8 +1515,8 @@ export default function GradebookPage() {
                                                 const { grade, autoRemark } = getGradeFromScale(totalPercent, gradingScale);
 
                                                 // Check limits
-                                                const ctOver = row.classTest !== '' && Number(row.classTest) > matrixMaxScores.classTest;
                                                 const hwOver = row.homework !== '' && Number(row.homework) > matrixMaxScores.homework;
+                                                const prOver = row.project !== '' && Number(row.project) > matrixMaxScores.project;
                                                 const mtOver = row.midTerm !== '' && Number(row.midTerm) > matrixMaxScores.midTerm;
                                                 const exOver = row.exam !== '' && Number(row.exam) > matrixMaxScores.exam;
 
@@ -1335,22 +1546,28 @@ export default function GradebookPage() {
                                                             </div>
                                                         </TableCell>
 
-                                                        {/* Class Test Input */}
-                                                        <TableCell className="p-1.5">
-                                                            <Input 
-                                                                type="number"
-                                                                min="0"
-                                                                max={matrixMaxScores.classTest}
-                                                                value={row.classTest ?? ''}
-                                                                onChange={e => handleMatrixScoreChange(s.uid, 'classTest', e.target.value)}
-                                                                onKeyDown={e => handleMatrixKeyDown(e, idx, 'classTest')}
-                                                                data-matrix-row={idx}
-                                                                data-matrix-col="classTest"
-                                                                className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
-                                                                    ctOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
-                                                                }`}
-                                                            />
-                                                        </TableCell>
+                                                        {/* Dynamic Test Inputs */}
+                                                        {testColumns.map((tc) => {
+                                                            const testVal = studentTests[tc.id];
+                                                            const isOver = testVal !== '' && testVal !== undefined && Number(testVal) > matrixMaxScores.classTest;
+                                                            return (
+                                                                <TableCell key={tc.id} className="p-1.5">
+                                                                    <Input 
+                                                                        type="number"
+                                                                        min="0"
+                                                                        max={matrixMaxScores.classTest}
+                                                                        value={testVal ?? ''}
+                                                                        onChange={e => handleMatrixTestScoreChange(s.uid, tc.id, e.target.value)}
+                                                                        onKeyDown={e => handleMatrixKeyDown(e, idx, `test_${tc.id}`)}
+                                                                        data-matrix-row={idx}
+                                                                        data-matrix-col={`test_${tc.id}`}
+                                                                        className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
+                                                                            isOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
+                                                                        }`}
+                                                                    />
+                                                                </TableCell>
+                                                            );
+                                                        })}
 
                                                         {/* Homework Input */}
                                                         <TableCell className="p-1.5">
@@ -1365,6 +1582,23 @@ export default function GradebookPage() {
                                                                 data-matrix-col="homework"
                                                                 className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
                                                                     hwOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
+                                                                }`}
+                                                            />
+                                                        </TableCell>
+
+                                                        {/* Project / Practical Input (Restored) */}
+                                                        <TableCell className="p-1.5">
+                                                            <Input 
+                                                                type="number"
+                                                                min="0"
+                                                                max={matrixMaxScores.project}
+                                                                value={row.project ?? ''}
+                                                                onChange={e => handleMatrixScoreChange(s.uid, 'project', e.target.value)}
+                                                                onKeyDown={e => handleMatrixKeyDown(e, idx, 'project')}
+                                                                data-matrix-row={idx}
+                                                                data-matrix-col="project"
+                                                                className={`font-black text-center h-9 rounded-lg text-xs shadow-xs ${
+                                                                    prOver ? 'border-rose-500 text-rose-600 ring-1 ring-rose-500' : 'border-slate-200'
                                                                 }`}
                                                             />
                                                         </TableCell>
@@ -1510,7 +1744,7 @@ export default function GradebookPage() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="bg-slate-50/70 hover:bg-slate-50/70 border-b border-slate-150">
-                                                <TableHead className="font-bold text-slate-700 w-[270px] min-w-[240px]">Student Name</TableHead>
+                                                <TableHead className="font-bold text-slate-700 w-[280px] min-w-[260px]">Student Name</TableHead>
                                                 <TableHead className="w-[120px] sm:w-[180px] min-w-[120px] font-bold text-slate-700">Score (/{maxScore})</TableHead>
                                                 <TableHead className="font-bold text-slate-700 pr-10">Teacher Remark (Optional)</TableHead>
                                             </TableRow>
@@ -1818,7 +2052,7 @@ export default function GradebookPage() {
 
             {/* Column Max Scores Configuration Modal */}
             <Dialog open={isMaxScoresModalOpen} onOpenChange={setIsMaxScoresModalOpen}>
-                <DialogContent className="sm:max-w-[440px] rounded-[2rem] border-0 shadow-2xl p-6">
+                <DialogContent className="sm:max-w-[480px] rounded-[2rem] border-0 shadow-2xl p-6">
                     <DialogHeader className="border-b border-slate-100 pb-4">
                         <DialogTitle className="flex items-center gap-2 text-slate-900 font-black text-xl">
                             <Sliders className="h-5 w-5 text-indigo-600" /> Column Max Scores
@@ -1828,7 +2062,7 @@ export default function GradebookPage() {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="grid grid-cols-2 gap-3 py-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-3">
                         <div className="space-y-1.5">
                             <Label className="text-xs font-bold text-slate-700">Class Test Max</Label>
                             <Input 
@@ -1846,6 +2080,16 @@ export default function GradebookPage() {
                                 min="1" 
                                 value={matrixMaxScores.homework} 
                                 onChange={e => setMatrixMaxScores(prev => ({ ...prev, homework: Number(e.target.value) || 20 }))}
+                                className="h-10 rounded-xl font-bold text-center border-slate-200"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-bold text-slate-700">Project / CW Max</Label>
+                            <Input 
+                                type="number" 
+                                min="1" 
+                                value={matrixMaxScores.project} 
+                                onChange={e => setMatrixMaxScores(prev => ({ ...prev, project: Number(e.target.value) || 20 }))}
                                 className="h-10 rounded-xl font-bold text-center border-slate-200"
                             />
                         </div>
@@ -1886,14 +2130,14 @@ export default function GradebookPage() {
             </Dialog>
 
             {/* Fill Column Modal */}
-            <Dialog open={!!fillColTarget} onOpenChange={(open) => !open && setFillColTarget(null)}>
+            <Dialog open={!!fillTarget} onOpenChange={(open) => !open && setFillTarget(null)}>
                 <DialogContent className="sm:max-w-[400px] rounded-[2rem] border-0 shadow-2xl p-6">
                     <DialogHeader className="border-b border-slate-100 pb-4">
                         <DialogTitle className="flex items-center gap-2 text-slate-900 font-black text-lg">
                             <CheckCheck className="h-5 w-5 text-indigo-600" /> Fill Column Marks
                         </DialogTitle>
                         <DialogDescription className="text-slate-400 text-xs">
-                            Apply a uniform score across the roster for {fillColTarget ? fillColTarget.toUpperCase() : ''}.
+                            Apply a uniform score across the roster for <strong>{fillTarget?.label}</strong> (Max: {fillTarget?.max}).
                         </DialogDescription>
                     </DialogHeader>
 
@@ -1902,8 +2146,9 @@ export default function GradebookPage() {
                             <Label className="text-xs font-bold text-slate-700">Score to Apply</Label>
                             <Input 
                                 type="number" 
-                                min="0" 
-                                placeholder="e.g. 15 or 80"
+                                min="0"
+                                max={fillTarget?.max || 100}
+                                placeholder={`0 to ${fillTarget?.max || 100}`}
                                 value={fillColValue} 
                                 onChange={e => setFillColValue(e.target.value === '' ? '' : Number(e.target.value))}
                                 className="h-11 rounded-xl font-black text-center text-lg border-slate-200"
@@ -1927,7 +2172,7 @@ export default function GradebookPage() {
                     <DialogFooter className="gap-2">
                         <Button 
                             variant="outline" 
-                            onClick={() => setFillColTarget(null)}
+                            onClick={() => setFillTarget(null)}
                             className="rounded-xl border-slate-200 text-slate-600 font-bold h-10"
                         >
                             Cancel
