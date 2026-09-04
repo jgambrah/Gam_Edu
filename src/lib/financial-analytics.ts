@@ -96,6 +96,7 @@ export interface FinancialMetricsFilterOptions {
   termId?: string;
   academicYear?: string;
   arrearsThreshold?: number;
+  schoolSettings?: any;
 }
 
 export interface FinancialMetricsResult {
@@ -220,6 +221,18 @@ export function getActiveTermBounds(budgets: any[] = [], schoolSettings: any = {
   // 1. Configured term label from School Settings / Profile
   const configuredTerm = schoolSettings?.term || schoolSettings?.activeTerm || schoolSettings?.currentTerm || schoolSettings?.currentTermId;
 
+  // 2. Direct term start & end dates in School Profile / Settings if configured
+  const profileStart = safeParseDate(schoolSettings?.termStartDate || schoolSettings?.startDate);
+  const profileEnd = safeParseDate(schoolSettings?.termEndDate || schoolSettings?.endDate);
+
+  if (profileStart && profileEnd) {
+    return {
+      start: profileStart,
+      end: profileEnd,
+      label: configuredTerm || schoolSettings?.termName || "Current Term"
+    };
+  }
+
   if (budgets && budgets.length > 0) {
     const activeBudget = budgets.find((b: any) => {
       if (b.status !== 'Approved') return false;
@@ -273,12 +286,13 @@ export function computeFinancialMetrics({
   termId,
   academicYear,
   arrearsThreshold = 0,
+  schoolSettings = {},
 }: FinancialMetricsFilterOptions): FinancialMetricsResult {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
   const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
   const startOfThisYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
-  const termBounds = getActiveTermBounds(budgets);
+  const termBounds = getActiveTermBounds(budgets, schoolSettings);
 
   // Filter students by campus if specified
   const filteredStudents = useMemoFilterStudents(students, campusId);
@@ -380,22 +394,26 @@ export function computeFinancialMetrics({
     processedPaymentIds.add(canonicalKey);
 
     // Date aggregations
+    const isInTerm = d >= termBounds.start && d <= termBounds.end;
+
     if (d >= startOfToday) {
       collectedToday += amount;
       todayCount++;
     }
     if (d >= startOfThisMonth) collectedThisMonth += amount;
-    if (d >= termBounds.start && d <= termBounds.end) collectedThisTerm += amount;
+    if (isInTerm) collectedThisTerm += amount;
     if (d >= startOfThisYear) collectedThisYear += amount;
     totalRevenue += amount;
 
-    // Revenue Stream Categorization
-    if (cat === 'tuition') tuitionStream += amount;
-    else if (cat === 'canteen') canteenStream += amount;
-    else if (cat === 'transport') transportStream += amount;
-    else if (cat === 'boarding') boardingStream += amount;
-    else if (cat === 'uniforms') uniformsStream += amount;
-    else otherStream += amount;
+    // Granular Revenue Stream Categorization (Filtered strictly to active term collections)
+    if (isInTerm) {
+      if (cat === 'tuition') tuitionStream += amount;
+      else if (cat === 'canteen') canteenStream += amount;
+      else if (cat === 'transport') transportStream += amount;
+      else if (cat === 'boarding') boardingStream += amount;
+      else if (cat === 'uniforms') uniformsStream += amount;
+      else otherStream += amount;
+    }
 
     const categoryLabelMap: Record<string, string> = {
       tuition: 'Tuition Fees',
@@ -525,9 +543,9 @@ export function computeFinancialMetrics({
     { name: 'Other Auxiliary', value: otherStream }
   ].filter(item => item.value > 0).sort((a, b) => b.value - a.value);
 
-  // Fallback if no payments recorded yet
-  if (revenueByType.length === 0 && totalRevenue > 0) {
-    revenueByType.push({ name: 'Tuition Fees', value: totalRevenue });
+  // Fallback if no payments categorized yet in term
+  if (revenueByType.length === 0 && collectedThisTerm > 0) {
+    revenueByType.push({ name: 'Tuition Fees', value: collectedThisTerm });
   }
 
   // 30-Day Liquidity Buffer & Cash Flow Projections

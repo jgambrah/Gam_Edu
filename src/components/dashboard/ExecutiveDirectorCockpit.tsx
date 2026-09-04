@@ -119,8 +119,9 @@ export function ExecutiveDirectorCockpit({
       students,
       classes,
       campusId: selectedCampus,
+      schoolSettings: schoolProfile,
     });
-  }, [financialRecords, payments, students, classes, selectedCampus]);
+  }, [financialRecords, payments, students, classes, selectedCampus, schoolProfile]);
 
   // Executive Financial Metrics Sourcing
   const financialSummary = useMemo(() => {

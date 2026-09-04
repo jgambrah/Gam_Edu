@@ -55,9 +55,10 @@ export function FinancialDashboardView({
       students,
       classes,
       budgets,
+      schoolSettings,
       arrearsThreshold,
     });
-  }, [financialRecords, payments, students, classes, budgets, arrearsThreshold]);
+  }, [financialRecords, payments, students, classes, budgets, schoolSettings, arrearsThreshold]);
 
   // Executive KPI Sourcing: Prefer pre-aggregated server-side summary document for true school-wide totals
   const revenueStats = useMemo(() => {
@@ -66,8 +67,8 @@ export function FinancialDashboardView({
       return {
         collectedToday: f.totalCollectedToday || 0,
         collectedThisMonth: f.totalCollectedThisMonth || 0,
-        collectedThisTerm: f.totalCollectedThisTerm || f.totalRevenue || 0,
-        collectedThisYear: f.totalCollectedThisYear || f.totalRevenue || 0,
+        collectedThisTerm: f.totalCollectedThisTerm !== undefined ? f.totalCollectedThisTerm : metrics.collectedThisTerm,
+        collectedThisYear: f.totalCollectedThisYear !== undefined ? f.totalCollectedThisYear : metrics.collectedThisYear,
       };
     }
     return {
@@ -79,6 +80,9 @@ export function FinancialDashboardView({
   }, [dashboardSummary, metrics]);
 
   const streamStats = useMemo(() => {
+    if (metrics.streamStats && (financialRecords?.length > 0 || payments?.length > 0)) {
+      return metrics.streamStats;
+    }
     if (dashboardSummary?.financials?.streamBreakdown) {
       const sb = dashboardSummary.financials.streamBreakdown;
       const t = (sb.tuition || 0) + (sb.canteen || 0) + (sb.transport || 0) + (sb.auxiliary || 0);
@@ -89,11 +93,11 @@ export function FinancialDashboardView({
         boarding: 0,
         uniformsBooks: 0,
         other: sb.auxiliary || 0,
-        total: t || dashboardSummary.financials.totalRevenue || metrics.streamStats.total
+        total: t
       };
     }
     return metrics.streamStats;
-  }, [dashboardSummary, metrics.streamStats]);
+  }, [dashboardSummary, metrics.streamStats, financialRecords, payments]);
 
   const recentPaymentStream = metrics.livePaymentStream;
 
