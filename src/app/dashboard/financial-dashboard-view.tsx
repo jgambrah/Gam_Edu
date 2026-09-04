@@ -585,59 +585,6 @@ export function FinancialDashboardView({
         <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 font-bold">
           <TrendingUp className="h-4 w-4 text-emerald-500" /> Revenue
         </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fees collected today</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {revenueStats.collectedToday.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Today's Bankings</p>
-              </div>
-              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
-                <TrendingUp className="h-5 w-5" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fees collected this month</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {revenueStats.collectedThisMonth.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Monthly Intake</p>
-              </div>
-              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
-                <DollarSign className="h-5 w-5" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fees collected this term</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {revenueStats.collectedThisTerm.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">{termDates.label}</p>
-              </div>
-              <div className="p-3 bg-purple-50 text-purple-600 rounded-2xl">
-                <Scale className="h-5 w-5" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="rounded-[2rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fees collected this year</p>
-                <h4 className="text-xl font-black text-slate-800 mt-2">GH₵ {revenueStats.collectedThisYear.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
-                <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Annual Revenue</p>
-              </div>
-              <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
-                <Banknote className="h-5 w-5" />
-              </div>
-            </div>
-          </Card>
-        </div>
 
         {/* Granular Revenue Stream Breakdown Card */}
         <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-8">
