@@ -20,7 +20,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getAuth } from 'firebase/auth';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -1380,6 +1380,8 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
     // Dynamic ABC custom words state
     const [newAbcWord, setNewAbcWord] = useState({ letter: 'A', word: '', emoji: '', phonic: '' });
     const [isAddingAbc, setIsAddingAbc] = useState(false);
+    const [isAddWordModalOpen, setIsAddWordModalOpen] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     const defaultDict: Record<string, { word: string, emoji: string, phonic: string }[]> = {
@@ -1433,6 +1435,10 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
     const handleLetterClick = (letter: string) => {
         setSelectedLetter(letter);
         setWordIndex(0);
+        setIsSpeaking(false);
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
         if (activeTab === 'explorer') {
             const list = mergedDict[letter] || [];
             const data = list[0] || { word: '', emoji: '', phonic: '' };
@@ -1442,6 +1448,43 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
             }
         }
     };
+
+    const handleListen = () => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        
+        setIsSpeaking(true);
+        const letter = selectedLetter.toUpperCase();
+        const list = mergedDict[letter] || [];
+        const data = list[wordIndex] || list[0] || { word: 'Apple', emoji: '🍎', phonic: 'ah' };
+        const word = data.word || 'Apple';
+        const phonic = data.phonic || '';
+        const textToSpeak = `${letter}. ${letter} is for ${word}. ${phonic}!`;
+        
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.rate = 0.88;
+        
+        utterance.onend = () => {
+            setIsSpeaking(false);
+        };
+        utterance.onerror = () => {
+            setIsSpeaking(false);
+        };
+        
+        const maxDuration = Math.max(3000, textToSpeak.length * 130);
+        setTimeout(() => {
+            setIsSpeaking(false);
+        }, maxDuration);
+        
+        window.speechSynthesis.speak(utterance);
+    };
+
+    useEffect(() => {
+        setIsSpeaking(false);
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+    }, [selectedLetter, wordIndex, activeTab]);
 
     const handleAddAbcWord = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -1457,6 +1500,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
             });
             setNewAbcWord({ letter: newAbcWord.letter, word: '', emoji: '', phonic: '' });
             refetchAbc();
+            setIsAddWordModalOpen(false);
             toast({ title: "Word card added to ABC Kingdom!" });
         } catch (err) {
             toast({ title: "Error", description: "Failed to add word card.", variant: "destructive" });
@@ -1539,24 +1583,24 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                 <Button variant={activeTab === 'matcher' ? 'default' : 'ghost'} onClick={() => setActiveTab('matcher')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'matcher' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Matcher Game</Button>
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-8">
+            <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
                 {/* 2. LETTER GRID (SIDEBAR ON DESKTOP) */}
-                <div className="lg:col-span-2 order-2 lg:order-1 space-y-6">
-                    <div className="flex justify-center gap-2 mb-4 bg-slate-50 p-1.5 border border-slate-100 rounded-2xl w-fit mx-auto">
+                <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
+                    <div className="flex justify-center gap-2 bg-slate-50 p-1.5 border border-slate-100 rounded-2xl w-fit mx-auto">
                         <Button size="sm" variant={caseMode === 'upper' ? 'secondary' : 'outline'} onClick={() => setCaseMode('upper')} className="font-extrabold rounded-xl h-8 px-4">ABC</Button>
                         <Button size="sm" variant={caseMode === 'lower' ? 'secondary' : 'outline'} onClick={() => setCaseMode('lower')} className="font-extrabold rounded-xl h-8 px-4">abc</Button>
                         <Button size="sm" variant={caseMode === 'both' ? 'secondary' : 'outline'} onClick={() => setCaseMode('both')} className="font-extrabold rounded-xl h-8 px-4">Aa</Button>
                     </div>
-                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2 bg-green-50/20 p-4 rounded-3xl border border-green-100/50 shadow-inner">
+                    <div className="grid grid-cols-6 sm:grid-cols-7 lg:grid-cols-6 gap-1.5 sm:gap-2 bg-emerald-50/25 p-2.5 sm:p-3 rounded-3xl border border-emerald-100/60 shadow-inner">
                         {alphabet.map(letter => (
                             <button 
                                 key={letter}
                                 onClick={() => handleLetterClick(letter)}
                                 className={cn(
-                                  "aspect-square rounded-[20px] font-black text-xl transition-all border-2 border-b-6 active:translate-y-0.5 active:border-b-2 shadow-sm",
+                                  "aspect-square rounded-2xl font-black text-base sm:text-lg transition-all border-2 border-b-4 active:translate-y-0.5 active:border-b-2 shadow-xs flex items-center justify-center",
                                   selectedLetter?.toUpperCase() === letter.toUpperCase()
-                                    ? 'bg-gradient-to-b from-green-400 to-emerald-500 text-white border-green-600 shadow-md -translate-y-0.5' 
-                                    : 'bg-white text-slate-500 border-slate-200 hover:bg-green-50/50 hover:text-green-600'
+                                    ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400/50 -translate-y-0.5' 
+                                    : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
                                 )}
                             >
                                 {caseMode === 'upper' ? letter : caseMode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
@@ -1564,62 +1608,16 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                         ))}
                     </div>
 
-                    {/* Add Custom Word Form for Teachers */}
+                    {/* Teacher Add Word Modal Trigger */}
                     {canEdit && (
-                        <Card className="p-4 border-2 border-green-200 bg-green-50/30 rounded-3xl space-y-3 shadow-inner">
-                            <h4 className="font-black text-green-800 text-sm flex items-center gap-2">
-                                <PlusCircle className="w-4 h-4 text-green-600" /> Add Word to Letter
-                            </h4>
-                            <form onSubmit={handleAddAbcWord} className="space-y-2">
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label className="text-[9px] font-bold text-slate-400">Letter</label>
-                                        <select 
-                                            value={newAbcWord.letter} 
-                                            onChange={e => setNewAbcWord({...newAbcWord, letter: e.target.value})}
-                                            className="w-full bg-white border border-slate-200 rounded-lg text-sm p-1.5 outline-none font-bold"
-                                        >
-                                            {alphabet.map(l => <option key={l} value={l}>{l}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-[9px] font-bold text-slate-400">Word</label>
-                                        <Input 
-                                            placeholder="e.g. Ant" 
-                                            value={newAbcWord.word} 
-                                            onChange={e => setNewAbcWord({...newAbcWord, word: e.target.value})} 
-                                            className="bg-white rounded-lg h-8 text-xs px-2 animate-none"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label className="text-[9px] font-bold text-slate-400">Emoji</label>
-                                        <Input 
-                                            placeholder="e.g. 🐜" 
-                                            value={newAbcWord.emoji} 
-                                            onChange={e => setNewAbcWord({...newAbcWord, emoji: e.target.value})} 
-                                            className="bg-white rounded-lg h-8 text-xs text-center px-2 animate-none"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-[9px] font-bold text-slate-400">Phonic</label>
-                                        <Input 
-                                            placeholder="e.g. ah" 
-                                            value={newAbcWord.phonic} 
-                                            onChange={e => setNewAbcWord({...newAbcWord, phonic: e.target.value})} 
-                                            className="bg-white rounded-lg h-8 text-xs px-2 animate-none"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                                <Button type="submit" disabled={isAddingAbc} className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold text-xs h-8 shadow-sm">
-                                    {isAddingAbc ? <Loader2 className="animate-spin h-3 w-3" /> : "Save Word Card"}
-                                </Button>
-                            </form>
-                        </Card>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsAddWordModalOpen(true)}
+                            className="w-full py-2.5 px-4 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/40 hover:bg-emerald-100/60 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:border-emerald-400 shadow-xs h-10"
+                        >
+                            <PlusCircle className="w-4 h-4 text-emerald-600" /> + Add Custom Word Card
+                        </Button>
                     )}
                 </div>
 
@@ -1630,7 +1628,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                             
                             {/* EXPLORER MODE */}
                             {activeTab === 'explorer' && (
-                                <div className="p-8 text-center space-y-8 animate-in zoom-in relative group">
+                                <div className="p-6 sm:p-8 text-center space-y-6 animate-in zoom-in relative group">
                                     {currentWordData.isCustom && canEdit && (
                                         <Button 
                                             size="icon" 
@@ -1642,21 +1640,34 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                                         </Button>
                                     )}
 
-                                    <div className="flex justify-center gap-4 items-end">
-                                        <h1 className="text-[180px] font-black text-green-500 leading-none drop-shadow-sm select-none">{selectedLetter}</h1>
-                                        <h2 className="text-[100px] font-black text-green-300 leading-none select-none">{selectedLetter.toLowerCase()}</h2>
+                                    <div className="flex justify-center gap-4 items-baseline">
+                                        <h1 className="text-[110px] sm:text-[140px] font-black text-emerald-500 leading-none drop-shadow-xs select-none">{selectedLetter}</h1>
+                                        <h2 className="text-[70px] sm:text-[90px] font-black text-emerald-300 leading-none select-none">{selectedLetter.toLowerCase()}</h2>
                                     </div>
-                                    <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 p-8 rounded-[40px] border-4 border-green-200 shadow-inner animate-in fade-in duration-300" key={`${selectedLetter}-${wordIndex}`}>
-                                        <div className="text-9xl mb-4 drop-shadow-md hover:scale-110 transition-transform duration-300 cursor-pointer" onClick={() => speak(currentWordData.word)}>{currentWordData.emoji}</div>
-                                        <h3 className="text-5xl font-black text-slate-800">{currentWordData.word}</h3>
-                                        <p className="text-2xl font-black text-green-500 mt-2">Sound: <span className="underline">"{currentWordData.phonic}"</span></p>
+                                    <div className="bg-gradient-to-br from-emerald-50/80 to-green-50/50 p-6 sm:p-8 rounded-[32px] border-2 border-emerald-200 shadow-inner animate-in fade-in duration-300" key={`${selectedLetter}-${wordIndex}`}>
+                                        <div className="text-7xl sm:text-8xl mb-3 drop-shadow-md hover:scale-110 transition-transform duration-300 cursor-pointer select-none" onClick={() => speak(currentWordData.word)}>{currentWordData.emoji}</div>
+                                        <h3 className="text-4xl sm:text-5xl font-black text-slate-800">{currentWordData.word}</h3>
+                                        <p className="text-xl sm:text-2xl font-black text-emerald-600 mt-2">Sound: <span className="underline">"{currentWordData.phonic}"</span></p>
                                     </div>
-                                    <div className="flex gap-4 justify-center">
-                                        <Button onClick={() => {
-                                            speak(selectedLetter);
-                                            setTimeout(() => speak(`${currentWordData.phonic}, as in, ${currentWordData.word}`), 800);
-                                        }} className="h-16 px-12 rounded-full text-xl bg-green-600 hover:bg-green-700 shadow-md">
-                                            <Volume2 className="mr-3" /> Listen
+                                    <div className="flex gap-4 justify-center items-center">
+                                        <Button 
+                                            onClick={handleListen} 
+                                            className={cn(
+                                                "h-14 sm:h-16 px-8 sm:px-12 rounded-full text-lg sm:text-xl font-black shadow-md transition-all",
+                                                isSpeaking 
+                                                    ? "bg-emerald-500 hover:bg-emerald-600 text-white animate-pulse ring-4 ring-emerald-300/60 scale-105" 
+                                                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                                            )}
+                                        >
+                                            {isSpeaking ? (
+                                                <>
+                                                    <Sparkles className="mr-3 w-5 h-5 sm:w-6 sm:h-6 animate-spin" /> Speaking...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Volume2 className="mr-3 w-5 h-5 sm:w-6 sm:h-6" /> Listen
+                                                </>
+                                            )}
                                         </Button>
                                         
                                         {currentWordList.length > 1 && (
@@ -1668,7 +1679,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                                                     speak(data.word);
                                                 }} 
                                                 variant="outline"
-                                                className="h-16 px-8 rounded-full text-xl border-2 border-green-200 text-green-700 font-bold hover:bg-green-50 shadow-sm"
+                                                className="h-14 sm:h-16 px-6 sm:px-8 rounded-full text-lg sm:text-xl border-2 border-emerald-200 text-emerald-700 font-bold hover:bg-emerald-50 shadow-xs"
                                             >
                                                 Next Word ➡️
                                             </Button>
@@ -1727,6 +1738,85 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                     </Card>
                 </div>
             </div>
+
+            {/* Custom Word Modal Dialog for Teachers */}
+            <Dialog open={isAddWordModalOpen} onOpenChange={setIsAddWordModalOpen}>
+                <DialogContent className="sm:max-w-md rounded-3xl p-6">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black text-slate-800 flex items-center gap-2">
+                            <PlusCircle className="w-5 h-5 text-emerald-600" />
+                            Add Custom Word Card
+                        </DialogTitle>
+                        <DialogDescription className="text-xs text-slate-500 font-medium">
+                            Create a custom word card linked to a letter for the ABC Kingdom explorer.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleAddAbcWord} className="space-y-4 mt-2">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold text-slate-600">Letter</Label>
+                                <select 
+                                    value={newAbcWord.letter} 
+                                    onChange={e => setNewAbcWord({...newAbcWord, letter: e.target.value})}
+                                    className="w-full h-9 bg-white border border-slate-200 rounded-xl text-sm px-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500"
+                                >
+                                    {alphabet.map(l => <option key={l} value={l}>{l}</option>)}
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold text-slate-600">Word</Label>
+                                <Input 
+                                    placeholder="e.g. Ant" 
+                                    value={newAbcWord.word} 
+                                    onChange={e => setNewAbcWord({...newAbcWord, word: e.target.value})} 
+                                    className="h-9 rounded-xl text-sm font-semibold"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold text-slate-600">Emoji</Label>
+                                <Input 
+                                    placeholder="e.g. 🐜" 
+                                    value={newAbcWord.emoji} 
+                                    onChange={e => setNewAbcWord({...newAbcWord, emoji: e.target.value})} 
+                                    className="h-9 rounded-xl text-sm text-center font-medium"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold text-slate-600">Phonic Sound</Label>
+                                <Input 
+                                    placeholder="e.g. ah" 
+                                    value={newAbcWord.phonic} 
+                                    onChange={e => setNewAbcWord({...newAbcWord, phonic: e.target.value})} 
+                                    className="h-9 rounded-xl text-sm font-semibold"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-end gap-2 pt-2">
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => setIsAddWordModalOpen(false)}
+                                className="rounded-xl font-bold text-xs h-9 px-4"
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                type="submit" 
+                                disabled={isAddingAbc} 
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs h-9 px-5 shadow-sm"
+                            >
+                                {isAddingAbc ? <Loader2 className="animate-spin h-3.5 w-3.5 mr-1" /> : null}
+                                Save Word Card
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
