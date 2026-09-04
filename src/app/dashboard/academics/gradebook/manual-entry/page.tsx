@@ -1098,7 +1098,7 @@ export default function GradebookPage() {
     const gradingScale = schoolSettings?.gradingSystem || DEFAULT_GRADING_SYSTEM;
 
     return (
-        <div className="p-6 pb-36 space-y-6">
+        <div className="p-6 pb-52 space-y-6">
             {/* Header Banner */}
             <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-12 shadow-2xl border border-white/10 group">
                 <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
@@ -1327,15 +1327,16 @@ export default function GradebookPage() {
                                     </Button>
                                 </div>
                             </CardHeader>
-                            <CardContent className="pt-4 px-2 sm:px-4 pb-16 overflow-x-auto pr-8 sm:pr-12">
+                            <CardContent className="pt-4 px-2 sm:px-4 pb-20 overflow-x-auto pr-8 sm:pr-12">
                                 {loadingStudents ? (
                                     <div className="p-16 flex flex-col items-center justify-center text-slate-400 gap-3">
                                         <Loader2 className="animate-spin h-10 w-10 text-indigo-600"/>
                                         <p className="font-semibold text-sm">Loading roster...</p>
                                     </div>
                                 ) : (
-                                    <Table className="w-full min-w-0">
-                                        <TableHeader>
+                                    <div className="pb-20">
+                                        <Table className="w-full min-w-0">
+                                            <TableHeader>
                                             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 border-b border-slate-200">
                                                 <TableHead className="font-bold text-slate-700 w-[170px] sm:w-[190px] min-w-[150px] px-1.5 text-xs">Student Name</TableHead>
                                                 
@@ -1704,6 +1705,7 @@ export default function GradebookPage() {
                                             })}
                                         </TableBody>
                                     </Table>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
@@ -1734,14 +1736,15 @@ export default function GradebookPage() {
                                     </Button>
                                 </div>
                             </CardHeader>
-                            <CardContent className="pt-6 px-6 pb-8">
+                            <CardContent className="pt-6 px-6 pb-20">
                                 {loadingStudents ? (
                                     <div className="p-16 flex flex-col items-center justify-center text-slate-400 gap-3">
                                         <Loader2 className="animate-spin h-10 w-10 text-indigo-600"/>
                                         <p className="font-semibold text-sm">Loading roster...</p>
                                     </div>
                                 ) : (
-                                    <Table>
+                                    <div className="pb-20">
+                                        <Table>
                                         <TableHeader>
                                             <TableRow className="bg-slate-50/70 hover:bg-slate-50/70 border-b border-slate-150">
                                                 <TableHead className="font-bold text-slate-700 w-[280px] min-w-[260px]">Student Name</TableHead>
@@ -1826,6 +1829,7 @@ export default function GradebookPage() {
                                             })}
                                         </TableBody>
                                     </Table>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
