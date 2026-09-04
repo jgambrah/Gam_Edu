@@ -264,8 +264,8 @@ export function FinancialDashboardView({
   }, [filteredAuditStream, modalPage]);
 
   const termDates = useMemo(() => {
-    return getActiveTermBounds(budgets);
-  }, [budgets]);
+    return getActiveTermBounds(budgets, schoolSettings);
+  }, [budgets, schoolSettings]);
 
   const activeBudget = useMemo(() => {
     if (!budgets) return null;
@@ -641,12 +641,12 @@ export function FinancialDashboardView({
             <div>
               <div className="flex items-center gap-2">
                 <Layers className="h-5 w-5 text-indigo-600" />
-                <h3 className="text-base font-extrabold text-slate-900">Granular Revenue Stream Breakdown</h3>
+                <h3 className="text-base font-extrabold text-slate-900">Granular Revenue Stream Breakdown ({termDates.label})</h3>
               </div>
-              <p className="text-xs text-slate-500 font-medium mt-1">Itemized distribution of collected funds across tuition, canteen, transport, and auxiliary services.</p>
+              <p className="text-xs text-slate-500 font-medium mt-1">Itemized distribution of collected funds for {termDates.label} across tuition, canteen, transport, and auxiliary services.</p>
             </div>
             <Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 font-bold text-xs px-3 py-1 self-start md:self-auto rounded-xl">
-              Total Stream Collection: GH₵ {streamStats.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              Total Stream Collection ({termDates.label}): GH₵ {streamStats.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </Badge>
           </div>
 

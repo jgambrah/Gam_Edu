@@ -214,11 +214,16 @@ export function classifyFeeCategory(p: any): 'tuition' | 'canteen' | 'transport'
 /**
  * Standardize active term date bounds
  */
-export function getActiveTermBounds(budgets: any[] = []): { start: Date; end: Date; label: string } {
+export function getActiveTermBounds(budgets: any[] = [], schoolSettings: any = {}): { start: Date; end: Date; label: string } {
   const now = new Date();
+
+  // 1. Configured term label from School Settings / Profile
+  const configuredTerm = schoolSettings?.term || schoolSettings?.activeTerm || schoolSettings?.currentTerm || schoolSettings?.currentTermId;
+
   if (budgets && budgets.length > 0) {
     const activeBudget = budgets.find((b: any) => {
       if (b.status !== 'Approved') return false;
+      if (configuredTerm && (b.name === configuredTerm || b.term === configuredTerm)) return true;
       const start = safeParseDate(b.startDate);
       const end = safeParseDate(b.endDate);
       return start && end && now >= start && now <= end;
@@ -226,8 +231,21 @@ export function getActiveTermBounds(budgets: any[] = []): { start: Date; end: Da
     if (activeBudget) {
       const start = safeParseDate(activeBudget.startDate) || new Date(now.getFullYear(), 0, 1);
       const end = safeParseDate(activeBudget.endDate) || new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-      return { start, end, label: activeBudget.name || activeBudget.term || "Current Term" };
+      return { start, end, label: activeBudget.name || activeBudget.term || configuredTerm || "Current Term" };
     }
+  }
+
+  if (configuredTerm) {
+    const currentYear = now.getFullYear();
+    const tLower = configuredTerm.toString().toLowerCase();
+    if (tLower.includes('first') || tLower.includes('term 1') || tLower === 'term 1') {
+      return { start: new Date(currentYear, 0, 1, 0, 0, 0, 0), end: new Date(currentYear, 3, 30, 23, 59, 59, 999), label: configuredTerm };
+    } else if (tLower.includes('second') || tLower.includes('term 2') || tLower === 'term 2') {
+      return { start: new Date(currentYear, 4, 1, 0, 0, 0, 0), end: new Date(currentYear, 7, 31, 23, 59, 59, 999), label: configuredTerm };
+    } else if (tLower.includes('third') || tLower.includes('term 3') || tLower === 'term 3') {
+      return { start: new Date(currentYear, 8, 1, 0, 0, 0, 0), end: new Date(currentYear, 11, 31, 23, 59, 59, 999), label: configuredTerm };
+    }
+    return { start: new Date(currentYear, 0, 1, 0, 0, 0, 0), end: new Date(currentYear, 11, 31, 23, 59, 59, 999), label: configuredTerm };
   }
 
   // Fallback basic school terms in Ghana
