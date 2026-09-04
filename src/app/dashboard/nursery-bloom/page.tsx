@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, ArrowLeft, 
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Bot,
-  Hash, Play, Pause, BarChart3, TrendingUp
+  Hash, Play, Pause, BarChart3, TrendingUp, RotateCcw
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction, generateIncompleteSentenceAction, generateMathWordProblemAction } from '@/ai/flows/junior-actions';
@@ -856,6 +856,491 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
     );
 }
 
+// --- 2.9 ABC MATCHER GAME COMPONENT ---
+type MatcherMode = 'upper-to-lower' | 'letter-to-object' | 'sound-to-letter' | 'confusing-pairs';
+
+interface MatcherChoice {
+    id: string;
+    label: string;
+    emoji?: string;
+    isCorrect: boolean;
+}
+
+const CONFUSING_PAIRS_MAP: Record<string, string[]> = {
+    b: ['d', 'p', 'q'],
+    d: ['b', 'p', 'q'],
+    p: ['q', 'b', 'd'],
+    q: ['p', 'b', 'd'],
+    m: ['w', 'n', 'u'],
+    w: ['m', 'u', 'n'],
+    u: ['n', 'w', 'm'],
+    n: ['u', 'm', 'w'],
+};
+
+function AbcMatcherGame({
+    alphabet,
+    mergedDict,
+    selectedLetter,
+    onLetterChange,
+}: {
+    alphabet: string[];
+    mergedDict: Record<string, { word: string; emoji: string; phonic: string }[]>;
+    selectedLetter: string;
+    onLetterChange: (letter: string) => void;
+}) {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+
+    const [matcherMode, setMatcherMode] = useState<MatcherMode>('upper-to-lower');
+    const [currentLetter, setCurrentLetter] = useState<string>(selectedLetter || 'A');
+    const [choices, setChoices] = useState<MatcherChoice[]>([]);
+    const [streak, setStreak] = useState<number>(0);
+    const [disabledIndices, setDisabledIndices] = useState<number[]>([]);
+    const [shakingIndex, setShakingIndex] = useState<number | null>(null);
+    const [correctIndex, setCorrectIndex] = useState<number | null>(null);
+    const [isRoundLocked, setIsRoundLocked] = useState<boolean>(false);
+    const [isCompleted, setIsCompleted] = useState<boolean>(false);
+
+    // Web Audio API Sound Effects
+    const playSuccessChime = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                const start = ctx.currentTime + idx * 0.08;
+                gain.gain.setValueAtTime(0.2, start);
+                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(start);
+                osc.stop(start + 0.35);
+            });
+        } catch (err) {
+            // Audio policy fallback
+        }
+    }, []);
+
+    const playBoingSound = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            const now = ctx.currentTime;
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(130, now + 0.28);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } catch (err) {
+            // ignore
+        }
+    }, []);
+
+    // Generate Question for the current mode and target letter
+    const generateQuestion = useCallback((mode: MatcherMode, target: string) => {
+        setDisabledIndices([]);
+        setShakingIndex(null);
+        setCorrectIndex(null);
+        setIsRoundLocked(false);
+
+        let correctChoice: MatcherChoice;
+        let distractorChoices: MatcherChoice[] = [];
+
+        if (mode === 'confusing-pairs') {
+            const trickyKeys = Object.keys(CONFUSING_PAIRS_MAP);
+            const lowerTarget = target.toLowerCase();
+            const safeTarget = trickyKeys.includes(lowerTarget) ? lowerTarget : trickyKeys[Math.floor(Math.random() * trickyKeys.length)];
+            
+            correctChoice = {
+                id: `correct_${safeTarget}`,
+                label: safeTarget,
+                isCorrect: true,
+            };
+
+            const distractors = CONFUSING_PAIRS_MAP[safeTarget] || ['d', 'p', 'q'];
+            distractorChoices = distractors.map((d, i) => ({
+                id: `distractor_${d}_${i}`,
+                label: d,
+                isCorrect: false,
+            }));
+        } else if (mode === 'letter-to-object') {
+            const upperTarget = target.toUpperCase();
+            const targetWords = mergedDict[upperTarget] || [{ word: 'Apple', emoji: '🍎', phonic: 'ah' }];
+            const correctEntry = targetWords[0] || { word: 'Apple', emoji: '🍎', phonic: 'ah' };
+
+            correctChoice = {
+                id: `correct_${correctEntry.word}`,
+                label: correctEntry.word,
+                emoji: correctEntry.emoji,
+                isCorrect: true,
+            };
+
+            // Distractors: 3 random words from other letters in mergedDict
+            const otherLetters = alphabet.filter(l => l !== upperTarget).sort(() => Math.random() - 0.5).slice(0, 3);
+            distractorChoices = otherLetters.map((l, i) => {
+                const list = mergedDict[l] || [];
+                const item = list[0] || { word: l, emoji: '✨', phonic: '' };
+                return {
+                    id: `distractor_${item.word}_${i}`,
+                    label: item.word,
+                    emoji: item.emoji,
+                    isCorrect: false,
+                };
+            });
+        } else if (mode === 'sound-to-letter') {
+            const upperTarget = target.toUpperCase();
+            correctChoice = {
+                id: `correct_${upperTarget}`,
+                label: upperTarget,
+                isCorrect: true,
+            };
+
+            const otherLetters = alphabet.filter(l => l !== upperTarget).sort(() => Math.random() - 0.5).slice(0, 3);
+            distractorChoices = otherLetters.map((l, i) => ({
+                id: `distractor_${l}_${i}`,
+                label: l,
+                isCorrect: false,
+            }));
+        } else {
+            // 'upper-to-lower'
+            const upperTarget = target.toUpperCase();
+            const lowerTarget = upperTarget.toLowerCase();
+
+            correctChoice = {
+                id: `correct_${lowerTarget}`,
+                label: lowerTarget,
+                isCorrect: true,
+            };
+
+            const otherLetters = alphabet
+                .filter(l => l.toUpperCase() !== upperTarget)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3);
+
+            distractorChoices = otherLetters.map((l, i) => ({
+                id: `distractor_${l.toLowerCase()}_${i}`,
+                label: l.toLowerCase(),
+                isCorrect: false,
+            }));
+        }
+
+        const allChoices = [correctChoice, ...distractorChoices].sort(() => Math.random() - 0.5);
+        setChoices(allChoices);
+    }, [alphabet, mergedDict]);
+
+    // Handle incoming letter changes from parent or internal round progression
+    useEffect(() => {
+        if (matcherMode === 'confusing-pairs') {
+            const trickyKeys = Object.keys(CONFUSING_PAIRS_MAP);
+            if (!trickyKeys.includes(currentLetter.toLowerCase())) {
+                const initialTricky = trickyKeys[0];
+                setCurrentLetter(initialTricky);
+                generateQuestion(matcherMode, initialTricky);
+                return;
+            }
+        }
+        generateQuestion(matcherMode, currentLetter);
+    }, [matcherMode, currentLetter, generateQuestion]);
+
+    // Read audio prompt aloud for sound-to-letter mode
+    const currentPhonic = useMemo(() => {
+        const upper = currentLetter.toUpperCase();
+        return mergedDict[upper]?.[0]?.phonic || 'ah';
+    }, [currentLetter, mergedDict]);
+
+    const playSoundPrompt = useCallback(() => {
+        if (matcherMode === 'sound-to-letter') {
+            speak(currentPhonic, 0.85);
+        }
+    }, [matcherMode, currentPhonic]);
+
+    useEffect(() => {
+        if (matcherMode === 'sound-to-letter') {
+            const timer = setTimeout(() => {
+                speak(currentPhonic, 0.85);
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [matcherMode, currentLetter, currentPhonic]);
+
+    // Handle switching modes
+    const handleModeChange = (newMode: MatcherMode) => {
+        setMatcherMode(newMode);
+        setStreak(0);
+        setIsCompleted(false);
+        if (newMode === 'confusing-pairs') {
+            const trickyKeys = Object.keys(CONFUSING_PAIRS_MAP);
+            const nextL = trickyKeys[Math.floor(Math.random() * trickyKeys.length)];
+            setCurrentLetter(nextL);
+            onLetterChange(nextL.toUpperCase());
+        }
+    };
+
+    // Handle Choice Selection
+    const handleChoiceClick = async (choice: MatcherChoice, index: number) => {
+        if (isRoundLocked || disabledIndices.includes(index)) return;
+
+        if (choice.isCorrect) {
+            setIsRoundLocked(true);
+            setCorrectIndex(index);
+            playSuccessChime();
+            confetti({ particleCount: 70, spread: 65, origin: { y: 0.6 } });
+
+            // Audio speech reinforcement per mode
+            const upper = currentLetter.toUpperCase();
+            const wordData = mergedDict[upper]?.[0] || { word: 'Apple', phonic: 'ah' };
+            if (matcherMode === 'upper-to-lower') {
+                speak(`Correct! Big ${upper} matches small ${upper.toLowerCase()}. ${upper} is for ${wordData.word}!`);
+            } else if (matcherMode === 'letter-to-object') {
+                speak(`Correct! ${upper} is for ${wordData.word}!`);
+            } else if (matcherMode === 'sound-to-letter') {
+                speak(`Correct! The sound ${currentPhonic} is for letter ${upper}!`);
+            } else {
+                speak(`Correct! That is the letter ${currentLetter}!`);
+            }
+
+            const nextStreak = streak + 1;
+
+            // Auto-advance after 1.2s celebratory animation
+            setTimeout(async () => {
+                if (nextStreak >= 5) {
+                    setStreak(5);
+                    setIsCompleted(true);
+                    confetti({ particleCount: 120, spread: 90, origin: { y: 0.5 } });
+
+                    // Award sticker to Sticker Book
+                    if (user && firestore) {
+                        try {
+                            await addDoc(collection(firestore, 'junior_stickers'), {
+                                userId: user.uid,
+                                emoji: '🌟',
+                                name: 'ABC Matcher Champion',
+                                category: 'literacy',
+                                description: 'Mastered 5 rounds in ABC Kingdom Matcher Game!',
+                                earnedAt: serverTimestamp(),
+                                createdAt: serverTimestamp()
+                            });
+                            toast({
+                                title: "🌟 New Sticker Awarded!",
+                                description: "ABC Matcher Champion has been added to your Sticker Book!"
+                            });
+                        } catch (e) {
+                            console.error("Error saving sticker:", e);
+                        }
+                    }
+                } else {
+                    setStreak(nextStreak);
+                    // Advance to next letter
+                    if (matcherMode === 'confusing-pairs') {
+                        const trickyKeys = Object.keys(CONFUSING_PAIRS_MAP);
+                        const filtered = trickyKeys.filter(k => k !== currentLetter.toLowerCase());
+                        const nextTricky = filtered[Math.floor(Math.random() * filtered.length)] || trickyKeys[0];
+                        setCurrentLetter(nextTricky);
+                        onLetterChange(nextTricky.toUpperCase());
+                    } else {
+                        const nextAlphabet = alphabet[Math.floor(Math.random() * alphabet.length)];
+                        setCurrentLetter(nextAlphabet);
+                        onLetterChange(nextAlphabet);
+                    }
+                }
+            }, 1200);
+        } else {
+            // Incorrect choice
+            playBoingSound();
+            speak("Try again!", 1.1);
+            setShakingIndex(index);
+            setTimeout(() => setShakingIndex(null), 400);
+            setDisabledIndices(prev => [...prev, index]);
+        }
+    };
+
+    // Reset game to play another 5-round cycle
+    const handleResetGame = () => {
+        setStreak(0);
+        setIsCompleted(false);
+        if (matcherMode === 'confusing-pairs') {
+            const trickyKeys = Object.keys(CONFUSING_PAIRS_MAP);
+            const nextL = trickyKeys[Math.floor(Math.random() * trickyKeys.length)];
+            setCurrentLetter(nextL);
+            onLetterChange(nextL.toUpperCase());
+        } else {
+            const nextLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+            setCurrentLetter(nextLetter);
+            onLetterChange(nextLetter);
+        }
+    };
+
+    const targetWord = mergedDict[currentLetter.toUpperCase()]?.[0] || { word: 'Apple', emoji: '🍎', phonic: 'ah' };
+
+    return (
+        <div className="p-4 sm:p-8 space-y-6 animate-in fade-in max-w-xl mx-auto">
+            {/* 1. ROUNDED PILL MODE SELECTOR */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 bg-green-50/80 rounded-2xl border border-green-200/80 shadow-inner">
+                {[
+                    { id: 'upper-to-lower', icon: '🔤', label: 'Upper ➔ Lower' },
+                    { id: 'letter-to-object', icon: '🍎', label: 'Letter ➔ Picture' },
+                    { id: 'sound-to-letter', icon: '🔊', label: 'Sound Match' },
+                    { id: 'confusing-pairs', icon: '🎯', label: 'Tricky Pairs' },
+                ].map(modeTab => (
+                    <button
+                        key={modeTab.id}
+                        onClick={() => handleModeChange(modeTab.id as MatcherMode)}
+                        className={cn(
+                            "px-3 py-1.5 rounded-xl font-black text-xs md:text-sm transition-all flex items-center gap-1.5 shadow-sm active:scale-95",
+                            matcherMode === modeTab.id
+                                ? "bg-white text-green-700 shadow-md border border-green-300 scale-105"
+                                : "text-slate-600 hover:text-green-700 hover:bg-white/60"
+                        )}
+                    >
+                        <span>{modeTab.icon}</span>
+                        <span>{modeTab.label}</span>
+                    </button>
+                ))}
+            </div>
+
+            {/* 2. 5-ROUND STREAK & PROGRESS BAR */}
+            <div className="flex items-center justify-between bg-amber-50/90 border border-amber-200 px-5 py-2.5 rounded-2xl shadow-inner">
+                <div className="flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs font-black text-amber-900 uppercase tracking-wider">
+                        {isCompleted ? "5 of 5 Completed!" : `Round ${Math.min(streak + 1, 5)} of 5`}
+                    </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                    {[0, 1, 2, 3, 4].map(idx => (
+                        <span
+                            key={idx}
+                            className={cn(
+                                "text-xl transition-transform duration-300",
+                                idx < streak ? "text-amber-500 scale-110 drop-shadow-sm" : "text-slate-300"
+                            )}
+                        >
+                            {idx < streak ? '⭐' : '☆'}
+                        </span>
+                    ))}
+                </div>
+            </div>
+
+            {/* 3. COMPLETION BANNER / MODAL */}
+            {isCompleted ? (
+                <div className="bg-gradient-to-b from-amber-50 to-orange-50/70 border-4 border-amber-300 rounded-3xl p-8 text-center space-y-5 shadow-xl animate-in zoom-in-95">
+                    <div className="text-6xl animate-bounce">🏆</div>
+                    <div>
+                        <h3 className="text-3xl font-black text-amber-800">ABC Kingdom Champion!</h3>
+                        <p className="text-slate-600 font-bold mt-1 text-sm md:text-base">
+                            Awesome job! You matched all 5 rounds in a row!
+                        </p>
+                    </div>
+
+                    <div className="bg-white/90 border-2 border-amber-200 rounded-2xl p-4 max-w-xs mx-auto shadow-sm flex items-center justify-center gap-3">
+                        <span className="text-4xl">🌟</span>
+                        <div className="text-left">
+                            <p className="text-xs font-black uppercase text-amber-600 tracking-wider">Sticker Earned</p>
+                            <p className="text-base font-black text-slate-800">ABC Matcher Champion</p>
+                            <p className="text-[10px] text-slate-400 font-bold">Added to your Sticker Book!</p>
+                        </div>
+                    </div>
+
+                    <Button
+                        onClick={handleResetGame}
+                        className="h-14 px-8 rounded-2xl text-lg font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg active:scale-95 transition-all"
+                    >
+                        <RotateCcw className="w-5 h-5 mr-2" /> Play Again
+                    </Button>
+                </div>
+            ) : (
+                /* 4. MAIN GAMEPLAY CARD */
+                <div className="space-y-6 text-center">
+                    {/* Prompt Header */}
+                    <div>
+                        <h3 className="text-2xl md:text-3xl font-black text-slate-800">
+                            {matcherMode === 'upper-to-lower' && `Find the Lowercase for "${currentLetter.toUpperCase()}"!`}
+                            {matcherMode === 'letter-to-object' && `What starts with "${currentLetter.toUpperCase()}"?`}
+                            {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
+                            {matcherMode === 'confusing-pairs' && `Find the matching letter "${currentLetter.toLowerCase()}"!`}
+                        </h3>
+                        <p className="text-xs md:text-sm font-bold text-slate-400 mt-0.5">
+                            {matcherMode === 'confusing-pairs' ? 'Look closely! Watch out for tricky letter flips.' : 'Tap the correct matching tile below!'}
+                        </p>
+                    </div>
+
+                    {/* Central Target Display */}
+                    {matcherMode === 'sound-to-letter' ? (
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50/80 border-4 border-green-200 p-6 rounded-3xl max-w-xs mx-auto shadow-inner flex flex-col items-center gap-3">
+                            <Button
+                                onClick={playSoundPrompt}
+                                className="h-16 w-16 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-md active:scale-90 transition-transform flex items-center justify-center p-0"
+                            >
+                                <Volume2 className="w-8 h-8" />
+                            </Button>
+                            <div>
+                                <span className="text-2xl font-black text-green-700 tracking-wide">
+                                    /{currentPhonic}/
+                                </span>
+                                <p className="text-[11px] font-extrabold text-green-600 uppercase tracking-wider mt-0.5">
+                                    Tap speaker to listen
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-[100px] md:text-[110px] font-black text-green-600 bg-green-50/80 w-36 h-36 md:w-40 md:h-40 flex items-center justify-center rounded-3xl mx-auto shadow-sm border-2 border-green-200 select-none">
+                            {matcherMode === 'confusing-pairs' ? currentLetter.toLowerCase() : currentLetter.toUpperCase()}
+                        </div>
+                    )}
+
+                    {/* Choice Grid */}
+                    <div className="grid grid-cols-2 gap-4 max-w-sm sm:max-w-md mx-auto">
+                        {choices.map((choice, i) => {
+                            const isShaking = shakingIndex === i;
+                            const isSelectedCorrect = correctIndex === i;
+                            const isDisabled = disabledIndices.includes(i);
+
+                            return (
+                                <button
+                                    key={choice.id}
+                                    disabled={isDisabled || isRoundLocked}
+                                    onClick={() => handleChoiceClick(choice, i)}
+                                    className={cn(
+                                        "min-h-[80px] md:min-h-[92px] p-3 rounded-2xl md:rounded-3xl border-2 border-b-[6px] transition-all shadow-md flex flex-col items-center justify-center select-none active:translate-y-1 active:border-b-2",
+                                        isShaking && "animate-shake bg-rose-50 border-rose-300 text-rose-500",
+                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 scale-105 shadow-lg",
+                                        isDisabled && "opacity-35 pointer-events-none bg-slate-100 border-slate-200 text-slate-400 line-through",
+                                        !isShaking && !isSelectedCorrect && !isDisabled && "bg-white border-slate-200 text-slate-700 hover:border-green-400 hover:bg-green-50/50"
+                                    )}
+                                >
+                                    {choice.emoji ? (
+                                        <div className="flex flex-col items-center justify-center">
+                                            <span className="text-3xl md:text-4xl mb-0.5">{choice.emoji}</span>
+                                            <span className="text-base md:text-lg font-black tracking-tight">{choice.label}</span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-4xl md:text-5xl font-black">{choice.label}</span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // --- 3. ABC KINGDOM (ALPHABET ACADEMY) ---
 function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTier?: string }) {
     const firestore = useFirestore();
@@ -1207,36 +1692,12 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
 
                             {/* MATCHER GAME */}
                             {activeTab === 'matcher' && (
-                                <div className="p-8 text-center space-y-8 animate-in fade-in" key={selectedLetter}>
-                                    <h3 className="text-3xl font-black text-slate-800">Find the Lower Case!</h3>
-                                    <div className="text-[120px] font-black text-green-600 mb-8 bg-green-50 w-40 h-40 flex items-center justify-center rounded-3xl mx-auto shadow-sm">
-                                        {selectedLetter}
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-                                        {[
-                                            selectedLetter.toLowerCase(), 
-                                            alphabet[(alphabet.indexOf(selectedLetter) + 5) % 26].toLowerCase(),
-                                            alphabet[(alphabet.indexOf(selectedLetter) + 12) % 26].toLowerCase(),
-                                            alphabet[(alphabet.indexOf(selectedLetter) + 19) % 26].toLowerCase(),
-                                        ].sort(() => Math.random() - 0.5).map((char, i) => (
-                                            <button 
-                                                key={i}
-                                                onClick={() => {
-                                                    if (char === selectedLetter.toLowerCase()) {
-                                                        confetti();
-                                                        speak("Correct!");
-                                                        setSelectedLetter(alphabet[Math.floor(Math.random()*26)]);
-                                                    } else {
-                                                        speak("Try again");
-                                                    }
-                                                }}
-                                                className="h-24 bg-white border-2 border-b-[8px] border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-green-400 hover:bg-green-50 active:translate-y-1 active:border-b-2 transition-all shadow-md"
-                                            >
-                                                {char}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                <AbcMatcherGame 
+                                    alphabet={alphabet}
+                                    mergedDict={mergedDict}
+                                    selectedLetter={selectedLetter}
+                                    onLetterChange={setSelectedLetter}
+                                />
                             )}
 
                         </CardContent>
