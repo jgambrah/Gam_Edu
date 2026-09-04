@@ -11554,8 +11554,8 @@ export default function DashboardClient() {
 
   // Financial records loaded when viewing Overview or Financials tab
   const isRecordsNeeded = isAccountant || 
-    (role === 'Director' && (directorActiveTab === 'financials' || directorActiveTab === 'overview' || activeTab === 'overview')) || 
-    (role === 'Administrator' && (adminActiveTab === 'financials' || adminActiveTab === 'overview' || activeTab === 'overview'));
+    (role === 'Director' && (directorActiveTab === 'financials' || directorActiveTab === 'overview')) || 
+    (role === 'Administrator' && (adminActiveTab === 'financials' || adminActiveTab === 'overview'));
 
   const recordsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isRecordsNeeded) 

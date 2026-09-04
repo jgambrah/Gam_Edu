@@ -122,65 +122,6 @@ export function ExecutiveDirectorCockpit({
     });
   }, [financialRecords, payments, students, classes, selectedCampus]);
 
-  const todayCashCollected = useMemo(() => ({
-    total: financialSummary.collectedToday || unifiedMetrics.collectedToday,
-    count: unifiedMetrics.todayCount,
-  }), [financialSummary, unifiedMetrics]);
-
-  // Calculate student fee arrears dynamically from real student records
-  const allArrearsList = useMemo(() => {
-    return unifiedMetrics.arrearsRoster;
-  }, [unifiedMetrics]);
-
-  const highArrearsList = useMemo(() => {
-    return allArrearsList.filter(item => item.daysOverdue > 60);
-  }, [allArrearsList]);
-
-  const displayedArrearsList = useMemo(() => {
-    if (!selectedAgingCategory) return highArrearsList;
-    return allArrearsList.filter(item => {
-      if (selectedAgingCategory === '< 30 Days') return item.daysOverdue <= 30;
-      if (selectedAgingCategory === '30 - 60 Days') return item.daysOverdue > 30 && item.daysOverdue <= 60;
-      if (selectedAgingCategory === '60 - 90 Days') return item.daysOverdue > 60 && item.daysOverdue <= 90;
-      if (selectedAgingCategory === '> 90 Days') return item.daysOverdue > 90;
-      return true;
-    });
-  }, [allArrearsList, highArrearsList, selectedAgingCategory]);
-
-  const totalHighArrearsSum = useMemo(() => {
-    return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
-  }, [highArrearsList]);
-
-  // Effective Debt Aging Resolution (server summary document or fallback to unifiedMetrics)
-  const resolvedAging = useMemo(() => {
-    if (dashboardSummary?.debtAging) {
-      const da = dashboardSummary.debtAging;
-      const grossTotal = (da.current || 0) + (da.age30 || 0) + (da.age60 || 0) + (da.age90 || 0);
-      if (grossTotal > 0 || (da.overpayments || 0) > 0) {
-        const advancePayments = da.overpayments || 0;
-        const netTotal = Math.max(0, grossTotal - advancePayments);
-        return {
-          current: da.current || 0,
-          age30: da.age30 || 0,
-          age60: da.age60 || 0,
-          age90: da.age90 || 0,
-          over90: 0,
-          grossTotal,
-          netTotal,
-          advancePayments,
-          accountCounts: unifiedMetrics.debtAgingStats.accountCounts || { current: 0, age30: 0, age60: 0, age90: 0, over90: 0, totalOverdue: 0, overdue60Plus: 0 }
-        };
-      }
-    }
-    return unifiedMetrics.debtAgingStats;
-  }, [dashboardSummary, unifiedMetrics.debtAgingStats]);
-
-  const age60Bucket = resolvedAging.age60;
-  const age90Bucket = resolvedAging.age90;
-  const over90Bucket = resolvedAging.over90;
-  const overdue60PlusSum = age60Bucket + age90Bucket + over90Bucket;
-  const overdue60PlusCount = resolvedAging.accountCounts?.overdue60Plus || 0;
-
   // Executive Financial Metrics Sourcing
   const financialSummary = useMemo(() => {
     if (dashboardSummary?.financials) {
@@ -202,6 +143,11 @@ export function ExecutiveDirectorCockpit({
       collectedToday: unifiedMetrics.collectedToday,
     };
   }, [dashboardSummary, unifiedMetrics]);
+
+  const todayCashCollected = useMemo(() => ({
+    total: financialSummary.collectedToday || unifiedMetrics.collectedToday,
+    count: unifiedMetrics.todayCount,
+  }), [financialSummary, unifiedMetrics]);
 
   // Centralized Executive Telemetry Store (Single Source of Truth)
   const telemetry = useMemo(() => {
