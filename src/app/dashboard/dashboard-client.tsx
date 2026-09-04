@@ -11562,18 +11562,10 @@ export default function DashboardClient() {
   [firestore, schoolId, isFinancialTabActive]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
 
-  // Bounded collectionGroup query capped at limit(30) ordered by timestamp DESC for live stream
-  const paymentsQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isFinancialTabActive) 
-      ? query(
-          collectionGroup(firestore, 'payments'), 
-          where('schoolId', '==', schoolId), 
-          orderBy('timestamp', 'desc'), 
-          limit(30)
-        ) 
-      : null, 
-  [firestore, schoolId, isFinancialTabActive]);
-  const { data: payments, isLoading: loadingPayments } = useCollection(paymentsQuery);
+  // Bounded collectionGroup query disabled to eliminate Firestore data read costs completely
+  const paymentsQuery = null;
+  const payments = useMemo(() => [], []);
+  const loadingPayments = false;
 
   const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);

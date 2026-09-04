@@ -690,10 +690,10 @@ export function FinancialDashboardView({
         </Card>
       </div>
 
-      {/* Class Arrears Risk Heatmap & Real-Time Payment Stream Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        {/* Class Arrears Heatmap (2 Columns) */}
-        <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-[520px] max-h-[520px] flex flex-col overflow-hidden relative box-border">
+      {/* Class Arrears Risk Heatmap Section */}
+      <div className="w-full">
+        {/* Class Arrears Heatmap (Full Width) */}
+        <Card className="w-full rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 h-[520px] max-h-[520px] flex flex-col overflow-hidden relative box-border">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100 shrink-0">
             <div>
               <div className="flex items-center gap-2">
@@ -738,7 +738,7 @@ export function FinancialDashboardView({
           </div>
 
           <div className="flex-1 overflow-y-auto overscroll-contain pr-1.5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {(heatmapViewMode === 'top9' ? classArrearsHeatmap.slice(0, 9) : classArrearsHeatmap).map((cls) => {
                 const isHighRisk = cls.collectionRate < 50;
                 const isMediumRisk = cls.collectionRate >= 50 && cls.collectionRate < 80;
@@ -781,99 +781,6 @@ export function FinancialDashboardView({
                 );
               })}
             </div>
-          </div>
-        </Card>
-
-        {/* Live Real-Time Payment Feed (1 Column) */}
-        <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.03)] bg-white p-6 flex flex-col h-[520px] max-h-[520px] overflow-hidden relative box-border">
-          <div className="sticky top-0 bg-white z-10 pb-3 mb-3 border-b border-slate-100 flex flex-col gap-3 shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-emerald-600 animate-pulse" />
-                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Live Payment Stream</h3>
-              </div>
-              <Badge className="bg-emerald-500 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase animate-pulse">
-                Real-Time
-              </Badge>
-            </div>
-
-            {/* Segmented Control / Executive Rollup Filters */}
-            <div className="flex items-center p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 gap-1 text-[11px]">
-              <button
-                onClick={() => setStreamFilter('all')}
-                className={cn(
-                  "flex-1 py-1 px-2 font-extrabold rounded-lg transition-all text-center cursor-pointer",
-                  streamFilter === 'all' ? "bg-white text-emerald-700 shadow-xs border border-slate-200/60 font-black" : "text-slate-600 hover:text-slate-900"
-                )}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setStreamFilter('tuition')}
-                className={cn(
-                  "flex-1 py-1 px-2 font-extrabold rounded-lg transition-all text-center cursor-pointer",
-                  streamFilter === 'tuition' ? "bg-white text-emerald-700 shadow-xs border border-slate-200/60 font-black" : "text-slate-600 hover:text-slate-900"
-                )}
-              >
-                Tuition
-              </button>
-              <button
-                onClick={() => setStreamFilter('batches')}
-                className={cn(
-                  "flex-1 py-1 px-2 font-extrabold rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
-                  streamFilter === 'batches' ? "bg-white text-indigo-700 shadow-xs border border-slate-200/60 font-black" : "text-slate-600 hover:text-slate-900"
-                )}
-              >
-                <Layers3 className="h-3 w-3" /> Batches
-              </button>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto overscroll-contain pr-1.5 space-y-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent [::-webkit-scrollbar]:w-1.5 [::-webkit-scrollbar-thumb]:bg-slate-200 [::-webkit-scrollbar-thumb]:rounded-full">
-            {cardDisplayedStream.length > 0 ? (
-              cardDisplayedStream.map((p: any) => (
-                <div key={p.id} className={cn(
-                  "p-3 rounded-2xl flex items-center justify-between transition-colors border",
-                  p.isBatch ? "bg-indigo-50/50 border-indigo-100 hover:bg-indigo-50" : "bg-slate-50 border-slate-100 hover:bg-slate-100/80"
-                )}>
-                  <div className="min-w-0 pr-2">
-                    <p className="text-xs font-bold text-slate-900 truncate">{p.studentName}</p>
-                    <p className="text-[10px] text-slate-500 font-medium truncate">
-                      {p.className} • {p.categoryLabel || p.category}
-                      {p.breakdownSubtext && (
-                        <span className="block text-[9px] text-slate-400 font-semibold mt-0.5">{p.breakdownSubtext}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-xs font-black text-emerald-700 font-mono">+GH₵{p.amount.toFixed(2)}</p>
-                    {p.isSplit || p.method?.toLowerCase().includes('split') || p.method?.includes('/') ? (
-                      <Badge variant="outline" className="text-[8px] font-black uppercase text-indigo-700 bg-indigo-50 border-indigo-200 mt-0.5">
-                        Split: Cash + MoMo
-                      </Badge>
-                    ) : (
-                      <span className="text-[9px] font-bold text-slate-400 block">{p.method}</span>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-6 text-center text-xs text-slate-400 italic bg-slate-50 border border-dashed rounded-2xl">
-                No transactions recorded for selected filter.
-              </div>
-            )}
-          </div>
-
-          <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between shrink-0 bg-white">
-            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
-              {streamDisplayItems.length} Logged
-            </span>
-            <button
-              onClick={() => { setModalPage(1); setIsAuditModalOpen(true); }}
-              className="text-[11px] font-black text-emerald-700 hover:text-emerald-800 flex items-center gap-1 hover:underline cursor-pointer"
-            >
-              View All Log <ExternalLink className="h-3 w-3" />
-            </button>
           </div>
         </Card>
       </div>
