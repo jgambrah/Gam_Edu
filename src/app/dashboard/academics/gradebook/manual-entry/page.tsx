@@ -935,7 +935,7 @@ export default function GradebookPage() {
     const gradingScale = schoolSettings?.gradingSystem || DEFAULT_GRADING_SYSTEM;
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 pb-36 space-y-6">
             {/* Header Banner */}
             <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-12 shadow-2xl border border-white/10 group">
                 <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
@@ -1156,17 +1156,17 @@ export default function GradebookPage() {
                                     </Button>
                                 </div>
                             </CardHeader>
-                            <CardContent className="pt-4 px-4 sm:px-6 overflow-x-auto">
+                            <CardContent className="pt-4 px-4 sm:px-6 pb-8 overflow-x-auto">
                                 {loadingStudents ? (
                                     <div className="p-16 flex flex-col items-center justify-center text-slate-400 gap-3">
                                         <Loader2 className="animate-spin h-10 w-10 text-indigo-600"/>
                                         <p className="font-semibold text-sm">Loading roster...</p>
                                     </div>
                                 ) : (
-                                    <Table className="min-w-[1100px]">
+                                    <Table className="min-w-[1180px]">
                                         <TableHeader>
                                             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 border-b border-slate-200">
-                                                <TableHead className="font-bold text-slate-700 w-[220px]">Student Name</TableHead>
+                                                <TableHead className="font-bold text-slate-700 w-[270px] min-w-[240px]">Student Name</TableHead>
                                                 
                                                 {/* Class Test Header */}
                                                 <TableHead className="text-center w-[110px]">
@@ -1267,7 +1267,7 @@ export default function GradebookPage() {
                                                 </TableHead>
 
                                                 {/* Teacher Remark Header */}
-                                                <TableHead className="font-bold text-slate-700 min-w-[200px]">
+                                                <TableHead className="font-bold text-slate-700 min-w-[260px] pr-10">
                                                     Teacher Remark
                                                 </TableHead>
                                             </TableRow>
@@ -1328,8 +1328,8 @@ export default function GradebookPage() {
                                                                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 text-xs font-black border border-indigo-100 shadow-xs">
                                                                     {initials}
                                                                 </div>
-                                                                <div className="truncate max-w-[170px]">
-                                                                    <p className="font-bold text-xs text-slate-800 leading-tight">{s.firstName} {s.lastName}</p>
+                                                                <div className="min-w-0 pr-1">
+                                                                    <p className="font-bold text-xs text-slate-800 leading-snug whitespace-normal break-words">{s.firstName} {s.lastName}</p>
                                                                     <p className="text-[10px] text-slate-400 font-mono">{s.studentId || ''}</p>
                                                                 </div>
                                                             </div>
@@ -1438,7 +1438,7 @@ export default function GradebookPage() {
                                                         </TableCell>
 
                                                         {/* Remark Input & Quick Chips */}
-                                                        <TableCell className="p-1.5">
+                                                        <TableCell className="p-1.5 pr-10">
                                                             <div className="space-y-1">
                                                                 <Input 
                                                                     type="text"
@@ -1500,7 +1500,7 @@ export default function GradebookPage() {
                                     </Button>
                                 </div>
                             </CardHeader>
-                            <CardContent className="pt-6 px-6">
+                            <CardContent className="pt-6 px-6 pb-8">
                                 {loadingStudents ? (
                                     <div className="p-16 flex flex-col items-center justify-center text-slate-400 gap-3">
                                         <Loader2 className="animate-spin h-10 w-10 text-indigo-600"/>
@@ -1510,9 +1510,9 @@ export default function GradebookPage() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="bg-slate-50/70 hover:bg-slate-50/70 border-b border-slate-150">
-                                                <TableHead className="font-bold text-slate-700">Student Name</TableHead>
+                                                <TableHead className="font-bold text-slate-700 w-[270px] min-w-[240px]">Student Name</TableHead>
                                                 <TableHead className="w-[120px] sm:w-[180px] min-w-[120px] font-bold text-slate-700">Score (/{maxScore})</TableHead>
-                                                <TableHead className="font-bold text-slate-700">Teacher Remark (Optional)</TableHead>
+                                                <TableHead className="font-bold text-slate-700 pr-10">Teacher Remark (Optional)</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -1532,10 +1532,10 @@ export default function GradebookPage() {
                                                     <TableRow key={s.uid} className="hover:bg-slate-50/30 transition-colors border-b border-slate-100">
                                                         <TableCell className="font-semibold text-slate-800">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 text-xs font-black border border-indigo-100 shadow-sm">
+                                                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-700 text-xs font-black border border-indigo-100 shadow-sm">
                                                                     {initials}
                                                                 </div>
-                                                                <span>{s.firstName} {s.lastName}</span>
+                                                                <span className="whitespace-normal break-words leading-snug">{s.firstName} {s.lastName}</span>
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className="min-w-[120px]">
@@ -1578,7 +1578,7 @@ export default function GradebookPage() {
                                                                 </p>
                                                             )}
                                                         </TableCell>
-                                                        <TableCell>
+                                                        <TableCell className="pr-10">
                                                             <Input 
                                                                 type="text" 
                                                                 placeholder="e.g. Solid understanding, excellent work"
