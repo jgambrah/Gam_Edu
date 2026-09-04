@@ -1188,9 +1188,9 @@ function AbcMatcherGame({
     const targetWord = mergedDict[currentLetter.toUpperCase()]?.[0] || { word: 'Apple', emoji: '🍎', phonic: 'ah' };
 
     return (
-        <div className="p-4 sm:p-8 space-y-6 animate-in fade-in max-w-xl mx-auto">
-            {/* 1. ROUNDED PILL MODE SELECTOR */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 p-1.5 bg-green-50/80 rounded-2xl border border-green-200/80 shadow-inner">
+        <div className="p-3 sm:p-5 space-y-3.5 sm:space-y-4 animate-in fade-in max-w-xl mx-auto">
+            {/* 1. ROUNDED PILL MODE SELECTOR (SINGLE ROW, NO WRAP) */}
+            <div className="flex flex-nowrap items-center justify-start sm:justify-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-green-50/80 rounded-2xl border border-green-200/80 shadow-inner overflow-x-auto scrollbar-none">
                 {[
                     { id: 'upper-to-lower', icon: '🔤', label: 'Upper ➔ Lower' },
                     { id: 'letter-to-object', icon: '🍎', label: 'Letter ➔ Picture' },
@@ -1201,9 +1201,9 @@ function AbcMatcherGame({
                         key={modeTab.id}
                         onClick={() => handleModeChange(modeTab.id as MatcherMode)}
                         className={cn(
-                            "px-3 py-1.5 rounded-xl font-black text-xs md:text-sm transition-all flex items-center gap-1.5 shadow-sm active:scale-95",
+                            "px-2.5 sm:px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm whitespace-nowrap shrink-0 transition-all flex items-center gap-1 sm:gap-1.5 shadow-sm active:scale-95",
                             matcherMode === modeTab.id
-                                ? "bg-white text-green-700 shadow-md border border-green-300 scale-105"
+                                ? "bg-white text-green-700 shadow-md border border-green-300 scale-102"
                                 : "text-slate-600 hover:text-green-700 hover:bg-white/60"
                         )}
                     >
@@ -1214,19 +1214,19 @@ function AbcMatcherGame({
             </div>
 
             {/* 2. 5-ROUND STREAK & PROGRESS BAR */}
-            <div className="flex items-center justify-between bg-amber-50/90 border border-amber-200 px-5 py-2.5 rounded-2xl shadow-inner">
-                <div className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-amber-600" />
-                    <span className="text-xs font-black text-amber-900 uppercase tracking-wider">
+            <div className="flex items-center justify-between bg-amber-50/90 border border-amber-200 px-4 py-1.5 sm:py-2 rounded-xl shadow-inner">
+                <div className="flex items-center gap-1.5">
+                    <Trophy className="w-3.5 h-3.5 text-amber-600" />
+                    <span className="text-[11px] sm:text-xs font-black text-amber-900 uppercase tracking-wider">
                         {isCompleted ? "5 of 5 Completed!" : `Round ${Math.min(streak + 1, 5)} of 5`}
                     </span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                     {[0, 1, 2, 3, 4].map(idx => (
                         <span
                             key={idx}
                             className={cn(
-                                "text-xl transition-transform duration-300",
+                                "text-lg transition-transform duration-300",
                                 idx < streak ? "text-amber-500 scale-110 drop-shadow-sm" : "text-slate-300"
                             )}
                         >
@@ -1238,73 +1238,73 @@ function AbcMatcherGame({
 
             {/* 3. COMPLETION BANNER / MODAL */}
             {isCompleted ? (
-                <div className="bg-gradient-to-b from-amber-50 to-orange-50/70 border-4 border-amber-300 rounded-3xl p-8 text-center space-y-5 shadow-xl animate-in zoom-in-95">
-                    <div className="text-6xl animate-bounce">🏆</div>
+                <div className="bg-gradient-to-b from-amber-50 to-orange-50/70 border-4 border-amber-300 rounded-3xl p-6 sm:p-8 text-center space-y-4 sm:space-y-5 shadow-xl animate-in zoom-in-95">
+                    <div className="text-5xl sm:text-6xl animate-bounce">🏆</div>
                     <div>
-                        <h3 className="text-3xl font-black text-amber-800">ABC Kingdom Champion!</h3>
-                        <p className="text-slate-600 font-bold mt-1 text-sm md:text-base">
+                        <h3 className="text-2xl sm:text-3xl font-black text-amber-800">ABC Kingdom Champion!</h3>
+                        <p className="text-slate-600 font-bold mt-1 text-xs sm:text-sm">
                             Awesome job! You matched all 5 rounds in a row!
                         </p>
                     </div>
 
-                    <div className="bg-white/90 border-2 border-amber-200 rounded-2xl p-4 max-w-xs mx-auto shadow-sm flex items-center justify-center gap-3">
-                        <span className="text-4xl">🌟</span>
+                    <div className="bg-white/90 border-2 border-amber-200 rounded-2xl p-3.5 max-w-xs mx-auto shadow-sm flex items-center justify-center gap-3">
+                        <span className="text-3xl sm:text-4xl">🌟</span>
                         <div className="text-left">
-                            <p className="text-xs font-black uppercase text-amber-600 tracking-wider">Sticker Earned</p>
-                            <p className="text-base font-black text-slate-800">ABC Matcher Champion</p>
+                            <p className="text-[10px] font-black uppercase text-amber-600 tracking-wider">Sticker Earned</p>
+                            <p className="text-sm sm:text-base font-black text-slate-800">ABC Matcher Champion</p>
                             <p className="text-[10px] text-slate-400 font-bold">Added to your Sticker Book!</p>
                         </div>
                     </div>
 
                     <Button
                         onClick={handleResetGame}
-                        className="h-14 px-8 rounded-2xl text-lg font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg active:scale-95 transition-all"
+                        className="h-12 sm:h-14 px-7 rounded-2xl text-base sm:text-lg font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg active:scale-95 transition-all"
                     >
-                        <RotateCcw className="w-5 h-5 mr-2" /> Play Again
+                        <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Play Again
                     </Button>
                 </div>
             ) : (
                 /* 4. MAIN GAMEPLAY CARD */
-                <div className="space-y-6 text-center">
+                <div className="space-y-3.5 sm:space-y-4 text-center">
                     {/* Prompt Header */}
                     <div>
-                        <h3 className="text-2xl md:text-3xl font-black text-slate-800">
+                        <h3 className="text-xl sm:text-2xl font-black text-slate-800">
                             {matcherMode === 'upper-to-lower' && `Find the Lowercase for "${currentLetter.toUpperCase()}"!`}
                             {matcherMode === 'letter-to-object' && `What starts with "${currentLetter.toUpperCase()}"?`}
                             {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
                             {matcherMode === 'confusing-pairs' && `Find the matching letter "${currentLetter.toLowerCase()}"!`}
                         </h3>
-                        <p className="text-xs md:text-sm font-bold text-slate-400 mt-0.5">
+                        <p className="text-[11px] sm:text-xs font-bold text-slate-400 mt-0.5">
                             {matcherMode === 'confusing-pairs' ? 'Look closely! Watch out for tricky letter flips.' : 'Tap the correct matching tile below!'}
                         </p>
                     </div>
 
-                    {/* Central Target Display */}
+                    {/* Central Target Display (Optimized Compact Height) */}
                     {matcherMode === 'sound-to-letter' ? (
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50/80 border-4 border-green-200 p-6 rounded-3xl max-w-xs mx-auto shadow-inner flex flex-col items-center gap-3">
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50/80 border-3 border-green-200 p-4 rounded-2xl max-w-xs mx-auto shadow-inner flex flex-col items-center gap-2">
                             <Button
                                 onClick={playSoundPrompt}
-                                className="h-16 w-16 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-md active:scale-90 transition-transform flex items-center justify-center p-0"
+                                className="h-12 w-12 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-md active:scale-90 transition-transform flex items-center justify-center p-0"
                             >
-                                <Volume2 className="w-8 h-8" />
+                                <Volume2 className="w-6 h-6" />
                             </Button>
                             <div>
-                                <span className="text-2xl font-black text-green-700 tracking-wide">
+                                <span className="text-xl sm:text-2xl font-black text-green-700 tracking-wide">
                                     /{currentPhonic}/
                                 </span>
-                                <p className="text-[11px] font-extrabold text-green-600 uppercase tracking-wider mt-0.5">
+                                <p className="text-[10px] font-extrabold text-green-600 uppercase tracking-wider mt-0.5">
                                     Tap speaker to listen
                                 </p>
                             </div>
                         </div>
                     ) : (
-                        <div className="text-[100px] md:text-[110px] font-black text-green-600 bg-green-50/80 w-36 h-36 md:w-40 md:h-40 flex items-center justify-center rounded-3xl mx-auto shadow-sm border-2 border-green-200 select-none">
+                        <div className="text-[72px] sm:text-[84px] font-black text-green-600 bg-green-50/80 w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center rounded-2xl sm:rounded-3xl mx-auto shadow-sm border-2 border-green-200 select-none">
                             {matcherMode === 'confusing-pairs' ? currentLetter.toLowerCase() : currentLetter.toUpperCase()}
                         </div>
                     )}
 
-                    {/* Choice Grid */}
-                    <div className="grid grid-cols-2 gap-4 max-w-sm sm:max-w-md mx-auto">
+                    {/* Choice Grid (Refined Touch Target & Viewport Clearance) */}
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-sm sm:max-w-md mx-auto">
                         {choices.map((choice, i) => {
                             const isShaking = shakingIndex === i;
                             const isSelectedCorrect = correctIndex === i;
@@ -1316,20 +1316,20 @@ function AbcMatcherGame({
                                     disabled={isDisabled || isRoundLocked}
                                     onClick={() => handleChoiceClick(choice, i)}
                                     className={cn(
-                                        "min-h-[80px] md:min-h-[92px] p-3 rounded-2xl md:rounded-3xl border-2 border-b-[6px] transition-all shadow-md flex flex-col items-center justify-center select-none active:translate-y-1 active:border-b-2",
+                                        "min-h-[72px] sm:min-h-[80px] p-2 sm:p-3 rounded-2xl border-2 border-b-[5px] transition-all shadow-md flex flex-col items-center justify-center select-none active:translate-y-1 active:border-b-2",
                                         isShaking && "animate-shake bg-rose-50 border-rose-300 text-rose-500",
-                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 scale-105 shadow-lg",
+                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 scale-102 shadow-lg",
                                         isDisabled && "opacity-35 pointer-events-none bg-slate-100 border-slate-200 text-slate-400 line-through",
                                         !isShaking && !isSelectedCorrect && !isDisabled && "bg-white border-slate-200 text-slate-700 hover:border-green-400 hover:bg-green-50/50"
                                     )}
                                 >
                                     {choice.emoji ? (
                                         <div className="flex flex-col items-center justify-center">
-                                            <span className="text-3xl md:text-4xl mb-0.5">{choice.emoji}</span>
-                                            <span className="text-base md:text-lg font-black tracking-tight">{choice.label}</span>
+                                            <span className="text-2xl sm:text-3xl mb-0.5">{choice.emoji}</span>
+                                            <span className="text-sm sm:text-base font-black tracking-tight">{choice.label}</span>
                                         </div>
                                     ) : (
-                                        <span className="text-4xl md:text-5xl font-black">{choice.label}</span>
+                                        <span className="text-3xl sm:text-4xl font-black">{choice.label}</span>
                                     )}
                                 </button>
                             );
