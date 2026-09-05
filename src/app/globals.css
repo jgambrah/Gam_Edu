@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka:wght@400;500;600;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -145,8 +145,9 @@
 }
 
 /* Kindergarten / Nursery Early Childhood Font Form (Single-story 'a' & 'g') */
-.font-school {
-  font-family: 'Fredoka', 'Nunito', 'Comic Neue', cursive, sans-serif;
+.font-school,
+.matcher-tile-text {
+  font-family: 'Fredoka', 'Comic Neue', 'Nunito', cursive, sans-serif !important;
   font-feature-settings: "ss01" on;
 }
 

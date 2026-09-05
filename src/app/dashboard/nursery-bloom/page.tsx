@@ -868,11 +868,12 @@ interface MatcherChoice {
 
 // Pedagogically-sound visually confusing & mirror pairs for early-childhood phonics/literacy
 const PEDAGOGICAL_DISTRACTORS: Record<string, string[]> = {
-    // Explicit primary confusing pairs
+    // Explicit primary confusing / mirror pairs
     b: ['d', 'p', 'q', 'h'],
     p: ['q', 'b', 'd', 'g'],
     m: ['w', 'n', 'u', 'v'],
-    a: ['o', 'c', 'd', 'e'],
+    a: ['o', 'c', 'd', 'e', 'u'],
+    c: ['o', 'e', 's', 'g', 'a', 'd'],
     // Full visual confusion mappings
     d: ['b', 'p', 'q', 'g'],
     q: ['p', 'b', 'd', 'g'],
@@ -880,11 +881,10 @@ const PEDAGOGICAL_DISTRACTORS: Record<string, string[]> = {
     u: ['n', 'v', 'w', 'm'],
     w: ['m', 'v', 'u', 'n'],
     v: ['u', 'w', 'y'],
-    c: ['o', 'e', 'a', 'd'],
-    e: ['c', 'o', 'a'],
+    e: ['c', 'o', 'a', 's'],
     f: ['t', 'j', 'l'],
     t: ['f', 'l', 'j', 'i'],
-    g: ['q', 'p', 'y', 'j'],
+    g: ['q', 'p', 'y', 'j', 'c'],
     h: ['n', 'b', 'k', 'r'],
     i: ['j', 'l', 't'],
     j: ['i', 'l', 'g', 'f'],
@@ -908,25 +908,26 @@ function shuffleArray<T>(array: T[]): T[] {
     return arr;
 }
 
-// Smart distractor selection: prioritizes 2 confusing/mirrored letters, plus 1 neutral consonant/vowel
+// Smart distractor selection: prioritizes visually/phonologically rich pairs from pedagogical map
 function getSmartDistractorLetters(targetLetter: string, allAlphabet: string[]): string[] {
     const lowerTarget = targetLetter.toLowerCase();
     const confusions = (PEDAGOGICAL_DISTRACTORS[lowerTarget] || [])
         .map(l => l.toLowerCase())
         .filter(l => l !== lowerTarget);
 
-    // Shuffle confusing options to keep it dynamic
     const shuffledConfusions = shuffleArray(confusions);
-    const chosenConfusions = shuffledConfusions.slice(0, 2);
+    // Take up to 3 prioritized rich pairs
+    const chosenConfusions = shuffledConfusions.slice(0, Math.min(3, shuffledConfusions.length));
 
-    // Neutral pool from the remaining alphabet
-    const neutralPool = allAlphabet
-        .map(l => l.toLowerCase())
-        .filter(l => l !== lowerTarget && !chosenConfusions.includes(l));
-    const shuffledNeutrals = shuffleArray(neutralPool);
-
-    const needed = 3 - chosenConfusions.length;
-    const chosenNeutrals = shuffledNeutrals.slice(0, needed);
+    // If fewer than 3 confusing pairs exist, fill from the neutral pool
+    let chosenNeutrals: string[] = [];
+    if (chosenConfusions.length < 3) {
+        const neutralPool = allAlphabet
+            .map(l => l.toLowerCase())
+            .filter(l => l !== lowerTarget && !chosenConfusions.includes(l));
+        const shuffledNeutrals = shuffleArray(neutralPool);
+        chosenNeutrals = shuffledNeutrals.slice(0, 3 - chosenConfusions.length);
+    }
 
     return [...chosenConfusions, ...chosenNeutrals];
 }
@@ -998,7 +999,6 @@ function AbcMatcherGame({
             const gain = ctx.createGain();
             osc.type = 'sine';
             const now = ctx.currentTime;
-            // Playful pitch drop
             osc.frequency.setValueAtTime(310, now);
             osc.frequency.exponentialRampToValueAtTime(140, now + 0.28);
             gain.gain.setValueAtTime(0.2, now);
@@ -1311,9 +1311,9 @@ function AbcMatcherGame({
     };
 
     return (
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-5 animate-in fade-in max-w-xl mx-auto">
-            {/* 1. ROUNDED PILL MODE SELECTOR */}
-            <div className="w-full flex flex-nowrap items-center justify-between sm:justify-center gap-1.5 p-1.5 bg-emerald-50/80 rounded-2xl border border-emerald-200 shadow-inner overflow-x-auto scrollbar-none">
+        <div className="p-2 sm:p-3.5 space-y-2 sm:space-y-2.5 max-w-lg mx-auto w-full select-none">
+            {/* 1. COMPACT ROUNDED PILL MODE SELECTOR */}
+            <div className="w-full flex flex-nowrap items-center justify-between sm:justify-center gap-1 p-1 bg-emerald-50/80 rounded-xl border border-emerald-200 shadow-inner overflow-x-auto scrollbar-none">
                 {[
                     { id: 'upper-to-lower', icon: '🔤', label: 'Upper ➔ Lower' },
                     { id: 'letter-to-object', icon: '🍎', label: 'Letter ➔ Picture' },
@@ -1324,9 +1324,9 @@ function AbcMatcherGame({
                         key={modeTab.id}
                         onClick={() => handleModeChange(modeTab.id as MatcherMode)}
                         className={cn(
-                            "px-2.5 py-1.5 rounded-xl font-black text-xs whitespace-nowrap shrink-0 transition-all flex items-center gap-1.5 shadow-xs active:scale-95",
+                            "px-2 py-1 rounded-lg font-black text-[11px] sm:text-xs whitespace-nowrap shrink-0 transition-all flex items-center gap-1 shadow-xs active:scale-95",
                             matcherMode === modeTab.id
-                                ? "bg-white text-emerald-700 shadow-md border border-emerald-300 scale-102"
+                                ? "bg-white text-emerald-700 shadow-sm border border-emerald-300 scale-102"
                                 : "text-slate-600 hover:text-emerald-700 hover:bg-white/60"
                         )}
                     >
@@ -1336,21 +1336,25 @@ function AbcMatcherGame({
                 ))}
             </div>
 
-            {/* 2. 5-ROUND STREAK & PROGRESS BAR */}
-            <div className="flex items-center justify-between bg-amber-50/90 border-2 border-amber-200 px-4 py-2 rounded-2xl shadow-inner">
+            {/* 2. 5-ROUND STREAK & TARGET BREADCRUMB BAR */}
+            <div className="flex items-center justify-between bg-amber-50/90 border border-amber-200 px-3 py-1 sm:py-1.5 rounded-xl shadow-inner">
                 <div className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-amber-600 animate-pulse" />
-                    <span className="text-xs sm:text-sm font-black text-amber-900 uppercase tracking-wider">
-                        {isCompleted ? "5 of 5 Completed!" : `Round ${Math.min(streak + 1, 5)} of 5`}
+                    <Trophy className="w-3.5 h-3.5 text-amber-600" />
+                    <span className="text-[11px] sm:text-xs font-black text-amber-900 uppercase tracking-wider">
+                        {isCompleted ? "5 of 5 Done!" : `Round ${Math.min(streak + 1, 5)} of 5`}
+                    </span>
+                    <span className="text-slate-300">|</span>
+                    <span className="text-[10px] sm:text-xs font-black text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded-md uppercase">
+                        Target: {currentLetter.toUpperCase()}
                     </span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                     {[0, 1, 2, 3, 4].map(idx => (
                         <span
                             key={idx}
                             className={cn(
-                                "text-xl transition-all duration-300 inline-block",
-                                idx < streak ? "text-amber-500 scale-125 drop-shadow-sm animate-in zoom-in" : "text-slate-300"
+                                "text-base sm:text-lg transition-all duration-300 inline-block",
+                                idx < streak ? "text-amber-500 scale-110 drop-shadow-xs animate-in zoom-in" : "text-slate-300"
                             )}
                         >
                             {idx < streak ? '⭐' : '☆'}
@@ -1361,112 +1365,98 @@ function AbcMatcherGame({
 
             {/* 3. COMPLETION MODAL */}
             {isCompleted ? (
-                <div className="bg-gradient-to-b from-amber-50 via-orange-50/70 to-yellow-50/80 border-4 border-amber-300 rounded-3xl p-6 sm:p-8 text-center space-y-5 shadow-2xl animate-in zoom-in-95">
-                    <div className="text-6xl sm:text-7xl animate-bounce">🏆</div>
+                <div className="bg-gradient-to-b from-amber-50 via-orange-50/70 to-yellow-50/80 border-3 border-amber-300 rounded-3xl p-5 sm:p-6 text-center space-y-3.5 shadow-xl animate-in zoom-in-95">
+                    <div className="text-5xl sm:text-6xl animate-bounce">🏆</div>
                     <div>
-                        <h3 className="text-2xl sm:text-3xl font-black text-amber-900">ABC Kingdom Champion!</h3>
-                        <p className="text-slate-600 font-bold mt-1 text-sm sm:text-base">
+                        <h3 className="text-xl sm:text-2xl font-black text-amber-900">ABC Kingdom Champion!</h3>
+                        <p className="text-slate-600 font-bold mt-0.5 text-xs sm:text-sm">
                             Awesome job! You mastered all 5 rounds!
                         </p>
                     </div>
 
-                    <div className="bg-white/95 border-2 border-amber-300 rounded-2xl p-4 max-w-xs mx-auto shadow-md flex items-center justify-center gap-3.5">
-                        <span className="text-4xl sm:text-5xl animate-spin" style={{ animationDuration: '8s' }}>🌟</span>
+                    <div className="bg-white/95 border-2 border-amber-300 rounded-2xl p-3 max-w-xs mx-auto shadow-md flex items-center justify-center gap-3">
+                        <span className="text-3xl sm:text-4xl animate-spin" style={{ animationDuration: '8s' }}>🌟</span>
                         <div className="text-left">
-                            <p className="text-[10px] font-black uppercase text-amber-600 tracking-wider">Sticker Earned</p>
-                            <p className="text-base font-black text-slate-800">ABC Matcher Champion</p>
-                            <p className="text-[11px] text-slate-500 font-bold">Saved in your Sticker Book!</p>
+                            <p className="text-[9px] font-black uppercase text-amber-600 tracking-wider">Sticker Earned</p>
+                            <p className="text-sm font-black text-slate-800">ABC Matcher Champion</p>
+                            <p className="text-[10px] text-slate-500 font-bold">Saved in your Sticker Book!</p>
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
                         <Button
                             onClick={handleResetGame}
-                            className="w-full sm:w-auto h-13 px-6 rounded-2xl text-base font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg active:scale-95 transition-all"
+                            className="w-full sm:w-auto h-11 px-5 rounded-xl text-sm font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md active:scale-95 transition-all"
                         >
-                            <RotateCcw className="w-5 h-5 mr-2" /> Play Again
+                            <RotateCcw className="w-4 h-4 mr-1.5" /> Play Again
                         </Button>
                         <Button
                             onClick={handleNextLevel}
-                            className="w-full sm:w-auto h-13 px-6 rounded-2xl text-base font-black bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg active:scale-95 transition-all"
+                            className="w-full sm:w-auto h-11 px-5 rounded-xl text-sm font-black bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md active:scale-95 transition-all"
                         >
-                            Try Next Level <ArrowRight className="w-5 h-5 ml-2" />
+                            Try Next Level <ArrowRight className="w-4 h-4 ml-1.5" />
                         </Button>
                     </div>
                 </div>
             ) : (
-                /* 4. MAIN GAMEPLAY CARD */
-                <div className="space-y-4 sm:space-y-5 text-center">
-                    {/* Prompt Header with Animated Speaker Button */}
-                    <div className="flex flex-col items-center justify-center gap-1.5 px-2">
-                        <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-                            <h3 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
-                                {matcherMode === 'upper-to-lower' && `Find the Lowercase for "${currentLetter.toUpperCase()}"!`}
-                                {matcherMode === 'letter-to-object' && `What starts with "${currentLetter.toUpperCase()}"?`}
-                                {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
-                                {matcherMode === 'confusing-pairs' && (
-                                    <span>Find the matching <span className="font-school text-emerald-600 font-black">"{currentLetter.toLowerCase()}"</span>!</span>
-                                )}
-                            </h3>
+                /* 4. MAIN GAMEPLAY ARENA (COMPACT VIEWPORT-FIT) */
+                <div className="space-y-2 sm:space-y-2.5 text-center">
+                    {/* Prompt Header with Primary CTA Audio Button */}
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 px-1">
+                        <h3 className="text-base sm:text-lg font-black text-slate-800 tracking-tight text-center">
+                            {matcherMode === 'upper-to-lower' && `Find the Lowercase for "${currentLetter.toUpperCase()}"!`}
+                            {matcherMode === 'letter-to-object' && `What starts with "${currentLetter.toUpperCase()}"?`}
+                            {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
+                            {matcherMode === 'confusing-pairs' && (
+                                <span>Find the matching <span className="matcher-tile-text font-['Fredoka',_'Comic_Neue',_sans-serif] text-emerald-600 font-bold">"{currentLetter.toLowerCase()}"</span>!</span>
+                            )}
+                        </h3>
 
-                            {/* Animated Audio Speaker Button */}
-                            <Button
-                                type="button"
-                                size="sm"
-                                onClick={handlePlayAudioPrompt}
-                                title="Listen to question"
-                                className={cn(
-                                    "rounded-full w-9 h-9 sm:w-10 sm:h-10 p-0 shrink-0 shadow-md border-2 transition-all active:scale-90",
-                                    isSpeakingPrompt
-                                        ? "bg-amber-500 border-amber-600 text-white animate-pulse"
-                                        : "bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100 hover:scale-105"
-                                )}
-                            >
-                                <Volume2 className={cn("w-4 h-4 sm:w-5 sm:h-5", isSpeakingPrompt && "animate-bounce")} />
-                            </Button>
-                        </div>
-                        <p className="text-[11px] sm:text-xs font-bold text-slate-400">
-                            {matcherMode === 'confusing-pairs' ? 'Look closely! Watch out for tricky letter flips.' : 'Tap the correct matching tile below!'}
-                        </p>
+                        {/* High-Contrast Playful Bouncy Speaker Button */}
+                        <Button
+                            type="button"
+                            onClick={handlePlayAudioPrompt}
+                            title="Tap to hear prompt aloud"
+                            className={cn(
+                                "h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 shrink-0 shadow-md border-2 border-amber-400 bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-500 text-amber-950 flex items-center justify-center transition-all active:scale-90",
+                                isSpeakingPrompt ? "scale-110 ring-4 ring-amber-300 ring-offset-1 animate-pulse" : "hover:scale-105"
+                            )}
+                        >
+                            <Volume2 className={cn("w-5 h-5 sm:w-6 sm:h-6 text-amber-950", isSpeakingPrompt && "animate-bounce")} />
+                        </Button>
                     </div>
 
-                    {/* Central Spotlight Target Display */}
-                    <div className="relative mx-auto my-1">
-                        <div className="relative bg-gradient-to-b from-amber-50 via-yellow-50/60 to-emerald-50/40 border-3 border-amber-300/80 rounded-3xl p-4 sm:p-5 shadow-lg max-w-[260px] sm:max-w-[280px] mx-auto flex flex-col items-center justify-center gap-2">
+                    {/* Compact Spotlight Target Display */}
+                    <div className="relative mx-auto">
+                        <div className="relative bg-gradient-to-b from-amber-50 via-yellow-50/60 to-emerald-50/40 border-2 border-amber-300/90 rounded-2xl p-2 sm:p-2.5 shadow-md max-w-[190px] sm:max-w-[210px] mx-auto flex flex-col items-center justify-center gap-1">
                             {/* Spotlight Badge */}
-                            <div className="inline-flex items-center gap-1.5 bg-amber-400 text-amber-950 px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-xs">
-                                <Sparkles className="w-3 h-3 text-amber-900 animate-spin" style={{ animationDuration: '6s' }} />
+                            <div className="inline-flex items-center gap-1 bg-amber-400 text-amber-950 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-xs">
+                                <Sparkles className="w-2.5 h-2.5 text-amber-900 animate-spin" style={{ animationDuration: '6s' }} />
                                 <span>Target Letter</span>
                             </div>
 
                             {matcherMode === 'sound-to-letter' ? (
-                                <div className="flex flex-col items-center gap-1 py-1">
+                                <div className="flex flex-col items-center gap-1 py-0.5">
                                     <Button
                                         type="button"
                                         onClick={playSoundPromptOnly}
-                                        className="h-14 w-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center p-0 animate-bounce"
+                                        className="h-11 w-11 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center p-0 animate-bounce"
                                         style={{ animationDuration: '2s' }}
                                     >
-                                        <Volume2 className="w-7 h-7" />
+                                        <Volume2 className="w-5 h-5" />
                                     </Button>
-                                    <span className="text-2xl sm:text-3xl font-black text-emerald-700 tracking-wide mt-1">
+                                    <span className="text-xl sm:text-2xl font-black text-emerald-700 tracking-wide mt-0.5">
                                         /{currentPhonic}/
                                     </span>
-                                    <p className="text-[10px] font-extrabold text-emerald-600 uppercase tracking-wider">
-                                        Sound of Letter
-                                    </p>
                                 </div>
                             ) : (
-                                <div className={cn(
-                                    "text-[76px] sm:text-[88px] font-black text-emerald-600 leading-none select-none drop-shadow-sm py-1",
-                                    matcherMode === 'confusing-pairs' && "font-school text-amber-600"
-                                )}>
+                                <div className="matcher-tile-text font-['Fredoka',_'Comic_Neue',_sans-serif] text-[48px] sm:text-[56px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs">
                                     {matcherMode === 'confusing-pairs' ? currentLetter.toLowerCase() : currentLetter.toUpperCase()}
                                 </div>
                             )}
 
-                            {/* Helpful hint clue */}
-                            <div className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                            {/* Compact Clue Hint */}
+                            <div className="text-[10px] font-bold text-slate-500 flex items-center gap-1">
                                 <span>{matcherMode === 'upper-to-lower' ? 'Capital Letter' : matcherMode === 'confusing-pairs' ? 'Lowercase Letter' : 'Explore'}</span>
                                 <span className="text-amber-500">✨</span>
                                 <span>{targetWord.word}</span>
@@ -1474,13 +1464,12 @@ function AbcMatcherGame({
                         </div>
                     </div>
 
-                    {/* Responsive 2x2 Chunky Tile Grid */}
-                    <div className="grid grid-cols-2 gap-3.5 sm:gap-5 max-w-sm sm:max-w-md mx-auto w-full pt-1">
+                    {/* Responsive 2x2 Chunky Tile Grid (Viewport-Fit Height) */}
+                    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-sm sm:max-w-md mx-auto w-full pt-0.5">
                         {choices.map((choice, i) => {
                             const isShaking = shakingIndex === i;
                             const isSelectedCorrect = correctIndex === i;
                             const isDisabled = disabledIndices.includes(i);
-                            const isLowercaseChar = choice.label.length === 1 && choice.label === choice.label.toLowerCase();
 
                             return (
                                 <button
@@ -1488,24 +1477,21 @@ function AbcMatcherGame({
                                     disabled={isDisabled || isRoundLocked}
                                     onClick={() => handleChoiceClick(choice, i)}
                                     className={cn(
-                                        "min-h-[105px] sm:min-h-[125px] p-3 sm:p-4 rounded-3xl border-3 sm:border-4 border-b-6 sm:border-b-8 transition-all flex flex-col items-center justify-center select-none shadow-md relative group",
+                                        "h-16 sm:h-20 min-h-[60px] sm:min-h-[72px] max-h-[82px] p-1.5 sm:p-2.5 rounded-2xl border-2 sm:border-3 border-b-4 sm:border-b-6 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
                                         isShaking && "animate-shake bg-amber-50 border-amber-300 text-amber-600 shadow-inner",
-                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 scale-105 shadow-xl ring-4 ring-emerald-300 z-10",
+                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 scale-102 shadow-lg ring-4 ring-emerald-300 z-10",
                                         isDisabled && "opacity-35 pointer-events-none bg-slate-100 border-slate-200 text-slate-400 line-through",
-                                        !isShaking && !isSelectedCorrect && !isDisabled && "bg-white border-slate-200 text-slate-800 hover:border-emerald-400 hover:bg-emerald-50/40 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-1.5 active:border-b-2"
+                                        !isShaking && !isSelectedCorrect && !isDisabled && "bg-white border-slate-200 text-slate-800 hover:border-emerald-400 hover:bg-emerald-50/40 hover:shadow-md hover:-translate-y-0.5 active:translate-y-1 active:border-b-2"
                                     )}
                                 >
                                     {choice.emoji ? (
-                                        <div className="flex flex-col items-center justify-center gap-1">
-                                            <span className="text-3xl sm:text-4xl filter drop-shadow-sm group-hover:scale-110 transition-transform">{choice.emoji}</span>
-                                            <span className="text-sm sm:text-base font-black tracking-tight text-slate-700">{choice.label}</span>
+                                        <div className="flex flex-col items-center justify-center">
+                                            <span className="text-2xl sm:text-3xl mb-0.5 filter drop-shadow-xs group-hover:scale-105 transition-transform">{choice.emoji}</span>
+                                            <span className="text-xs sm:text-sm font-bold tracking-tight text-slate-700">{choice.label}</span>
                                         </div>
                                     ) : (
-                                        <span className={cn(
-                                            "text-4xl sm:text-5xl font-black transition-transform group-hover:scale-105",
-                                            isLowercaseChar && "font-school lowercase"
-                                        )}>
+                                        <span className="matcher-tile-text font-['Fredoka',_'Comic_Neue',_sans-serif] text-3xl sm:text-4xl font-bold transition-transform group-hover:scale-105 leading-none">
                                             {choice.label}
                                         </span>
                                     )}
@@ -1730,7 +1716,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
     const currentWordData = currentWordList[wordIndex] || { word: 'None', emoji: '❓', phonic: '' };
 
     return (
-        <div className="space-y-8">
+<div className="space-y-8">
             {/* 1. TOP NAVIGATION */}
             <div className="flex flex-wrap gap-2 p-1.5 bg-green-50/50 rounded-2xl w-fit mx-auto border border-green-100/60 shadow-inner">
                 <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} onClick={() => { setActiveTab('explorer'); setWordIndex(0); }} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'explorer' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Explorer</Button>
@@ -1738,184 +1724,162 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                 <Button variant={activeTab === 'matcher' ? 'default' : 'ghost'} onClick={() => setActiveTab('matcher')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'matcher' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Matcher Game</Button>
             </div>
 
-            <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
-                {/* 2. LETTER GRID (SIDEBAR ON DESKTOP) */}
-                <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
-                    <div className="flex justify-center gap-2 bg-slate-50 p-1.5 border border-slate-100 rounded-2xl w-fit mx-auto">
-                        <Button size="sm" variant={caseMode === 'upper' ? 'secondary' : 'outline'} onClick={() => setCaseMode('upper')} className="font-extrabold rounded-xl h-8 px-4">ABC</Button>
-                        <Button size="sm" variant={caseMode === 'lower' ? 'secondary' : 'outline'} onClick={() => setCaseMode('lower')} className="font-extrabold rounded-xl h-8 px-4">abc</Button>
-                        <Button size="sm" variant={caseMode === 'both' ? 'secondary' : 'outline'} onClick={() => setCaseMode('both')} className="font-extrabold rounded-xl h-8 px-4">Aa</Button>
-                    </div>
-                    {/* Focus Mode Banner when in Matcher Game */}
-                    {activeTab === 'matcher' && (
-                        <div className="bg-emerald-100/90 border border-emerald-300 text-emerald-900 px-3.5 py-1.5 rounded-2xl text-xs font-black flex items-center justify-between shadow-xs animate-in fade-in">
-                            <span className="flex items-center gap-1.5">
-                                <span className="animate-pulse">🎯</span>
-                                <span>Game Focus Mode</span>
-                            </span>
-                            <span className="bg-white/90 border border-emerald-300 text-emerald-800 px-2 py-0.5 rounded-xl font-black text-[10px] uppercase">
-                                Target: {selectedLetter.toUpperCase()}
-                            </span>
-                        </div>
-                    )}
-                    <div className="grid grid-cols-6 sm:grid-cols-7 lg:grid-cols-6 gap-1.5 sm:gap-2 bg-emerald-50/25 p-2.5 sm:p-3 rounded-3xl border border-emerald-100/60 shadow-inner">
-                        {alphabet.map(letter => {
-                            const isTarget = selectedLetter?.toUpperCase() === letter.toUpperCase();
-                            const isMatcherMode = activeTab === 'matcher';
-
-                            return (
-                                <button 
-                                    key={letter}
-                                    disabled={isMatcherMode && !isTarget}
-                                    onClick={() => handleLetterClick(letter)}
-                                    className={cn(
-                                      "aspect-square rounded-2xl font-black text-base sm:text-lg transition-all border-2 border-b-4 active:translate-y-0.5 active:border-b-2 shadow-xs flex items-center justify-center relative",
-                                      isTarget
-                                        ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-4 ring-emerald-400/70 -translate-y-0.5 animate-pulse-ring z-10' 
-                                        : isMatcherMode
-                                          ? 'bg-slate-100/70 text-slate-300 border-slate-200 opacity-35 cursor-not-allowed pointer-events-none'
-                                          : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
-                                    )}
-                                >
-                                    {caseMode === 'upper' ? letter : caseMode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
-                                    {isMatcherMode && isTarget && (
-                                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-white shadow-xs" />
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {/* Teacher Add Word Modal Trigger */}
-                    {canEdit && (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setIsAddWordModalOpen(true)}
-                            className="w-full py-2.5 px-4 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/40 hover:bg-emerald-100/60 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:border-emerald-400 shadow-xs h-10"
-                        >
-                            <PlusCircle className="w-4 h-4 text-emerald-600" /> + Add Custom Word Card
-                        </Button>
-                    )}
-                </div>
-
-                {/* 3. INTERACTIVE STAGE */}
-                <div className="lg:col-span-3 order-1 lg:order-2">
-                    <Card className="rounded-[40px] border-4 border-green-100 shadow-xl overflow-hidden h-full">
+            {/* When activeTab is 'matcher', hide the left 26-letter sidebar to maximize game focus and viewport fit */}
+            {activeTab === 'matcher' ? (
+                <div className="max-w-xl mx-auto w-full animate-in fade-in zoom-in-95 duration-200">
+                    <Card className="rounded-3xl border-2 sm:border-3 border-emerald-200 shadow-xl overflow-hidden bg-white/95">
                         <CardContent className="p-0">
-                            
-                            {/* EXPLORER MODE */}
-                            {activeTab === 'explorer' && (
-                                <div className="p-6 sm:p-8 text-center space-y-6 animate-in zoom-in relative group">
-                                    {currentWordData.isCustom && canEdit && (
-                                        <Button 
-                                            size="icon" 
-                                            variant="ghost" 
-                                            className="absolute top-4 right-4 text-red-350 hover:text-red-500 hover:bg-red-50 rounded-full"
-                                            onClick={() => handleDeleteAbcWord(currentWordData.id)}
-                                        >
-                                            <Trash2 className="w-5 h-5"/>
-                                        </Button>
-                                    )}
-
-                                    <div className="flex justify-center gap-4 items-baseline">
-                                        <h1 className="text-[110px] sm:text-[140px] font-black text-emerald-500 leading-none drop-shadow-xs select-none">{selectedLetter}</h1>
-                                        <h2 className="text-[70px] sm:text-[90px] font-black text-emerald-300 leading-none select-none">{selectedLetter.toLowerCase()}</h2>
-                                    </div>
-                                    <div className="bg-gradient-to-br from-emerald-50/80 to-green-50/50 p-6 sm:p-8 rounded-[32px] border-2 border-emerald-200 shadow-inner animate-in fade-in duration-300" key={`${selectedLetter}-${wordIndex}`}>
-                                        <div className="text-7xl sm:text-8xl mb-3 drop-shadow-md hover:scale-110 transition-transform duration-300 cursor-pointer select-none" onClick={() => speak(currentWordData.word)}>{currentWordData.emoji}</div>
-                                        <h3 className="text-4xl sm:text-5xl font-black text-slate-800">{currentWordData.word}</h3>
-                                        <p className="text-xl sm:text-2xl font-black text-emerald-600 mt-2">Sound: <span className="underline">"{currentWordData.phonic}"</span></p>
-                                    </div>
-                                    <div className="flex gap-4 justify-center items-center">
-                                        <Button 
-                                            onClick={handleListen} 
-                                            className={cn(
-                                                "h-14 sm:h-16 px-8 sm:px-12 rounded-full text-lg sm:text-xl font-black shadow-md transition-all",
-                                                isSpeaking 
-                                                    ? "bg-emerald-500 hover:bg-emerald-600 text-white animate-pulse ring-4 ring-emerald-300/60 scale-105" 
-                                                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                                            )}
-                                        >
-                                            {isSpeaking ? (
-                                                <>
-                                                    <Sparkles className="mr-3 w-5 h-5 sm:w-6 sm:h-6 animate-spin" /> Speaking...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Volume2 className="mr-3 w-5 h-5 sm:w-6 sm:h-6" /> Listen
-                                                </>
-                                            )}
-                                        </Button>
-                                        
-                                        {currentWordList.length > 1 && (
-                                            <Button 
-                                                onClick={() => {
-                                                    const nextIdx = (wordIndex + 1) % currentWordList.length;
-                                                    setWordIndex(nextIdx);
-                                                    const data = currentWordList[nextIdx];
-                                                    speak(data.word);
-                                                }} 
-                                                variant="outline"
-                                                className="h-14 sm:h-16 px-6 sm:px-8 rounded-full text-lg sm:text-xl border-2 border-emerald-200 text-emerald-700 font-bold hover:bg-emerald-50 shadow-xs"
-                                            >
-                                                Next Word ➡️
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* TRACING MODE */}
-                            {activeTab === 'tracing' && (
-                                <div className="p-8 flex flex-col items-center space-y-6 animate-in slide-in-from-right-4">
-                                    <div className="text-center">
-                                        <h3 className="text-2xl font-black text-slate-800">Can you trace the letter {selectedLetter}?</h3>
-                                        <p className="text-slate-500 font-bold text-sm">Use your finger or mouse to draw!</p>
-                                    </div>
-                                    <div className="relative bg-amber-50 p-6 rounded-[36px] border-8 border-amber-800 shadow-2xl flex items-center justify-center">
-                                        {/* Wooden frame pegs */}
-                                        <div className="absolute top-2 left-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
-                                        <div className="absolute top-2 right-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
-                                        <div className="bg-white rounded-2xl overflow-hidden shadow-inner border border-amber-900/10">
-                                            <canvas 
-                                                ref={traceCanvasRef} width={400} height={400} 
-                                                className="touch-none cursor-crosshair"
-                                                onMouseDown={startTracing}
-                                                onMouseMove={draw}
-                                                onMouseUp={stopTracing}
-                                                onMouseLeave={stopTracing}
-                                                onTouchStart={startTracing}
-                                                onTouchMove={draw}
-                                                onTouchEnd={stopTracing}
-                                            />
-                                        </div>
-                                        <Button 
-                                            variant="ghost" size="sm" 
-                                            className="absolute bottom-2 right-8 text-slate-400 hover:text-slate-600 font-black"
-                                            onClick={resetTracingCanvas}
-                                        >
-                                            Reset
-                                        </Button>
-                                    </div>
-                                    <p className="text-xs font-black text-emerald-500 uppercase tracking-widest animate-pulse">★ Start at the top! ★</p>
-                                </div>
-                            )}
-
-                            {/* MATCHER GAME */}
-                            {activeTab === 'matcher' && (
-                                <AbcMatcherGame 
-                                    alphabet={alphabet}
-                                    mergedDict={mergedDict}
-                                    selectedLetter={selectedLetter}
-                                    onLetterChange={setSelectedLetter}
-                                />
-                            )}
-
+                            <AbcMatcherGame 
+                                alphabet={alphabet}
+                                mergedDict={mergedDict}
+                                selectedLetter={selectedLetter}
+                                onLetterChange={setSelectedLetter}
+                            />
                         </CardContent>
                     </Card>
                 </div>
-            </div>
+            ) : (
+                <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
+                    {/* 2. LETTER GRID (SIDEBAR ON DESKTOP) */}
+                    <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
+                        <div className="flex justify-center gap-2 bg-slate-50 p-1.5 border border-slate-100 rounded-2xl w-fit mx-auto">
+                            <Button size="sm" variant={caseMode === 'upper' ? 'secondary' : 'outline'} onClick={() => setCaseMode('upper')} className="font-extrabold rounded-xl h-8 px-4">ABC</Button>
+                            <Button size="sm" variant={caseMode === 'lower' ? 'secondary' : 'outline'} onClick={() => setCaseMode('lower')} className="font-extrabold rounded-xl h-8 px-4">abc</Button>
+                            <Button size="sm" variant={caseMode === 'both' ? 'secondary' : 'outline'} onClick={() => setCaseMode('both')} className="font-extrabold rounded-xl h-8 px-4">Aa</Button>
+                        </div>
+                        <div className="grid grid-cols-6 sm:grid-cols-7 lg:grid-cols-6 gap-1.5 sm:gap-2 bg-emerald-50/25 p-2.5 sm:p-3 rounded-3xl border border-emerald-100/60 shadow-inner">
+                            {alphabet.map(letter => (
+                                <button 
+                                    key={letter}
+                                    onClick={() => handleLetterClick(letter)}
+                                    className={cn(
+                                      "aspect-square rounded-2xl font-black text-base sm:text-lg transition-all border-2 border-b-4 active:translate-y-0.5 active:border-b-2 shadow-xs flex items-center justify-center relative",
+                                      selectedLetter?.toUpperCase() === letter.toUpperCase()
+                                        ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-4 ring-emerald-400/70 -translate-y-0.5 animate-pulse-ring z-10' 
+                                        : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
+                                    )}
+                                >
+                                    {caseMode === 'upper' ? letter : caseMode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Teacher Add Word Modal Trigger */}
+                        {canEdit && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsAddWordModalOpen(true)}
+                                className="w-full py-2.5 px-4 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/40 hover:bg-emerald-100/60 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:border-emerald-400 shadow-xs h-10"
+                            >
+                                <PlusCircle className="w-4 h-4 text-emerald-600" /> + Add Custom Word Card
+                            </Button>
+                        )}
+                    </div>
+
+                    {/* 3. INTERACTIVE STAGE (EXPLORER & TRACING) */}
+                    <div className="lg:col-span-3 order-1 lg:order-2">
+                        <Card className="rounded-[40px] border-4 border-green-100 shadow-xl overflow-hidden h-full">
+                            <CardContent className="p-0">
+                                
+                                {/* EXPLORER MODE */}
+                                {activeTab === 'explorer' && (
+                                    <div className="p-6 sm:p-8 text-center space-y-6 animate-in zoom-in relative group">
+                                        {currentWordData.isCustom && canEdit && (
+                                            <Button 
+                                                size="icon" 
+                                                variant="ghost" 
+                                                className="absolute top-4 right-4 text-red-350 hover:text-red-500 hover:bg-red-50 rounded-full"
+                                                onClick={() => handleDeleteAbcWord(currentWordData.id)}
+                                            >
+                                                <Trash2 className="w-5 h-5"/>
+                                            </Button>
+                                        )}
+                                        <div className="bg-gradient-to-br from-emerald-50/80 to-green-50/50 p-6 sm:p-8 rounded-[32px] border-2 border-emerald-200 shadow-inner animate-in fade-in duration-300" key={`${selectedLetter}-${wordIndex}`}>
+                                            <div className="text-7xl sm:text-8xl mb-3 drop-shadow-md hover:scale-110 transition-transform duration-300 cursor-pointer select-none" onClick={() => speak(currentWordData.word)}>{currentWordData.emoji}</div>
+                                            <h3 className="text-4xl sm:text-5xl font-black text-slate-800">{currentWordData.word}</h3>
+                                            <p className="text-xl sm:text-2xl font-black text-emerald-600 mt-2">Sound: <span className="underline">"{currentWordData.phonic}"</span></p>
+                                        </div>
+                                        <div className="flex gap-4 justify-center items-center">
+                                            <Button 
+                                                onClick={handleListen} 
+                                                className={cn(
+                                                    "h-14 sm:h-16 px-8 sm:px-12 rounded-full text-lg sm:text-xl font-black shadow-md transition-all",
+                                                    isSpeaking 
+                                                        ? "bg-emerald-500 hover:bg-emerald-600 text-white animate-pulse ring-4 ring-emerald-300/60 scale-105" 
+                                                        : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                                                )}
+                                            >
+                                                {isSpeaking ? (
+                                                    <>
+                                                        <Sparkles className="mr-3 w-5 h-5 sm:w-6 sm:h-6 animate-spin" /> Speaking...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Volume2 className="mr-3 w-5 h-5 sm:w-6 sm:h-6" /> Listen
+                                                    </>
+                                                )}
+                                            </Button>
+                                            
+                                            {currentWordList.length > 1 && (
+                                                <Button 
+                                                    onClick={() => {
+                                                        const nextIdx = (wordIndex + 1) % currentWordList.length;
+                                                        setWordIndex(nextIdx);
+                                                        const data = currentWordList[nextIdx];
+                                                        speak(data.word);
+                                                    }} 
+                                                    variant="outline"
+                                                    className="h-14 sm:h-16 px-6 sm:px-8 rounded-full text-lg sm:text-xl border-2 border-emerald-200 text-emerald-700 font-bold hover:bg-emerald-50 shadow-xs"
+                                                >
+                                                    Next Word ➡️
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* TRACING MODE */}
+                                {activeTab === 'tracing' && (
+                                    <div className="p-8 flex flex-col items-center space-y-6 animate-in slide-in-from-right-4">
+                                        <div className="text-center">
+                                            <h3 className="text-2xl font-black text-slate-800">Can you trace the letter {selectedLetter}?</h3>
+                                            <p className="text-slate-500 font-bold text-sm">Use your finger or mouse to draw!</p>
+                                        </div>
+                                        <div className="relative bg-amber-50 p-6 rounded-[36px] border-8 border-amber-800 shadow-2xl flex items-center justify-center">
+                                            {/* Wooden frame pegs */}
+                                            <div className="absolute top-2 left-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
+                                            <div className="absolute top-2 right-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
+                                            <div className="bg-white rounded-2xl overflow-hidden shadow-inner border border-amber-900/10">
+                                                <canvas 
+                                                    ref={traceCanvasRef} width={400} height={400} 
+                                                    className="touch-none cursor-crosshair"
+                                                    onMouseDown={startTracing}
+                                                    onMouseMove={draw}
+                                                    onMouseUp={stopTracing}
+                                                    onMouseLeave={stopTracing}
+                                                    onTouchStart={startTracing}
+                                                    onTouchMove={draw}
+                                                    onTouchEnd={stopTracing}
+                                                />
+                                            </div>
+                                            <Button 
+                                                variant="ghost" size="sm" 
+                                                className="absolute bottom-2 right-8 text-slate-400 hover:text-slate-600 font-black"
+                                                onClick={resetTracingCanvas}
+                                            >
+                                                Reset
+                                            </Button>
+                                        </div>
+                                        <p className="text-xs font-black text-emerald-500 uppercase tracking-widest animate-pulse">★ Start at the top! ★</p>
+                                    </div>
+                                )}
+
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            )}
 
             {/* Custom Word Modal Dialog for Teachers */}
             <Dialog open={isAddWordModalOpen} onOpenChange={setIsAddWordModalOpen}>
