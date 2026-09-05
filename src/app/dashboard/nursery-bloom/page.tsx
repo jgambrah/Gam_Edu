@@ -1415,7 +1415,12 @@ function AbcMatcherGame({
                             {matcherMode === 'letter-to-object' && `What starts with "${currentLetter.toUpperCase()}"?`}
                             {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
                             {matcherMode === 'confusing-pairs' && (
-                                <span>Find the matching <span className="matcher-tile-text font-['Comic_Neue',_'Fredoka',_'Nunito',_sans-serif] text-emerald-600 font-bold">"{currentLetter.toLowerCase()}"</span>!</span>
+                                <span>Find the matching <span 
+                                    style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                    className="matcher-tile-text font-school text-emerald-600 font-bold"
+                                >
+                                    "{currentLetter.toLowerCase() === 'a' ? 'ɑ' : currentLetter.toLowerCase()}"
+                                </span>!</span>
                             )}
                         </h3>
 
@@ -1457,8 +1462,13 @@ function AbcMatcherGame({
                                     </span>
                                 </div>
                             ) : (
-                                <div className="matcher-tile-text font-['Comic_Neue',_'Fredoka',_'Nunito',_sans-serif] text-[42px] sm:text-[48px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs">
-                                    {matcherMode === 'confusing-pairs' ? currentLetter.toLowerCase() : currentLetter.toUpperCase()}
+                                <div 
+                                    style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                    className="matcher-tile-text font-school text-[42px] sm:text-[48px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs"
+                                >
+                                    {matcherMode === 'confusing-pairs' 
+                                        ? (currentLetter.toLowerCase() === 'a' ? 'ɑ' : currentLetter.toLowerCase()) 
+                                        : currentLetter.toUpperCase()}
                                 </div>
                             )}
 
@@ -1480,7 +1490,7 @@ function AbcMatcherGame({
                         </div>
                     </div>
 
-                    {/* Responsive 2x2 Chunky Tile Grid (Viewport-Fit Height) */}
+                    {/* Responsive 2x2 Chunky Tile Grid (Viewport-Fit Height & Enhanced Contrast) */}
                     <div className="grid grid-cols-2 gap-2 sm:gap-2.5 max-w-sm sm:max-w-md mx-auto w-full pt-0.5">
                         {choices.map((choice, i) => {
                             const isShaking = shakingIndex === i;
@@ -1492,23 +1502,27 @@ function AbcMatcherGame({
                                     key={choice.id}
                                     disabled={isDisabled || isRoundLocked}
                                     onClick={() => handleChoiceClick(choice, i)}
+                                    style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
                                     className={cn(
-                                        "h-16 sm:h-20 min-h-[58px] sm:min-h-[66px] max-h-[76px] p-1 sm:p-2 rounded-2xl border-2 sm:border-3 border-b-4 sm:border-b-5 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group",
+                                        "h-16 sm:h-20 min-h-[58px] sm:min-h-[66px] max-h-[76px] p-1 sm:p-2 rounded-2xl border-2 sm:border-3 border-b-4 sm:border-b-5 transition-all flex flex-col items-center justify-center select-none shadow-xs relative group cursor-pointer",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
-                                        isShaking && "animate-shake bg-amber-50 border-amber-300 text-amber-600 shadow-inner",
-                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 scale-102 shadow-lg ring-4 ring-emerald-300 z-10",
+                                        isShaking && "animate-shake bg-amber-50 border-amber-400 border-b-amber-500 text-amber-700 shadow-inner",
+                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 border-b-emerald-700 scale-102 shadow-lg ring-4 ring-emerald-300 z-10",
                                         isDisabled && "opacity-35 pointer-events-none bg-slate-100 border-slate-200 text-slate-400 line-through",
-                                        !isShaking && !isSelectedCorrect && !isDisabled && "bg-white border-slate-200 text-slate-800 hover:border-emerald-400 hover:bg-emerald-50/40 hover:shadow-md hover:-translate-y-0.5 active:translate-y-1 active:border-b-2"
+                                        !isShaking && !isSelectedCorrect && !isDisabled && "bg-slate-50/90 border-slate-300 border-b-slate-400/90 hover:bg-emerald-50/80 hover:border-emerald-400 hover:border-b-emerald-500 hover:scale-[1.03] hover:-translate-y-0.5 active:bg-emerald-100 active:border-emerald-500 active:border-b-2 active:scale-95 active:translate-y-1 text-slate-800 hover:text-emerald-900 hover:shadow-md"
                                     )}
                                 >
                                     {choice.emoji ? (
-                                        <div className="flex flex-col items-center justify-center">
-                                            <span className="text-2xl sm:text-3xl mb-0.5 filter drop-shadow-xs group-hover:scale-105 transition-transform">{choice.emoji}</span>
+                                        <div className="flex flex-col items-center justify-center pointer-events-none">
+                                            <span className="text-2xl sm:text-3xl mb-0.5 filter drop-shadow-xs group-hover:scale-110 transition-transform">{choice.emoji}</span>
                                             <span className="text-xs sm:text-sm font-bold tracking-tight text-slate-700">{choice.label}</span>
                                         </div>
                                     ) : (
-                                        <span className="matcher-tile-text font-['Comic_Neue',_'Fredoka',_'Nunito',_sans-serif] text-3xl sm:text-4xl font-bold transition-transform group-hover:scale-105 leading-none">
-                                            {choice.label}
+                                        <span 
+                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                            className="matcher-tile-text font-school text-3xl sm:text-4xl font-bold transition-transform group-hover:scale-110 leading-none pointer-events-none select-none"
+                                        >
+                                            {choice.label === 'a' ? 'ɑ' : choice.label}
                                         </span>
                                     )}
                                 </button>

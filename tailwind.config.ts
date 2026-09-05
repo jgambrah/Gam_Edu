@@ -21,6 +21,7 @@ export default {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
         code: ['monospace'],
+        school: ['"Comic Neue"', 'Fredoka', '"Comic Sans MS"', '"Chalkboard SE"', 'cursive', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
