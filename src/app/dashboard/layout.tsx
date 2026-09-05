@@ -146,16 +146,16 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         `}</style>
       )}
       <AppSidebar />
-      <div className="flex flex-1 flex-col overflow-hidden md:ml-64 relative">
+      <div className="flex flex-1 flex-col overflow-hidden md:ml-64 relative min-w-0 w-full max-w-full">
         <OfflineSyncBanner />
         <TrialBanner />
         <Header />
-        <main className="relative flex-1 overflow-y-auto scroll-smooth">
+        <main className="relative flex-1 overflow-y-auto overflow-x-hidden scroll-smooth w-full max-w-full">
           {/* DECORATIVE BACKGROUND GLOWS */}
           <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="p-4 md:p-8 relative z-10">
+          <div className="p-4 md:p-8 relative z-10 w-full max-w-full overflow-x-hidden">
             <div className="pb-24">
               {/* STUDENT DEBT LOCKOVER */}
               {role === 'Student' && studentDebtLocked && isRestrictedStudentRoute ? (

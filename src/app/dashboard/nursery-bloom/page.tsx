@@ -1019,16 +1019,22 @@ function AbcMatcherGame({
         }
     }, []);
 
-    // Active phonics sound for target letter
+    // Active phonics sound for target letter (Synthetic phonics: short 'a' is /æ/)
     const currentPhonic = useMemo(() => {
         const upper = currentLetter.toUpperCase();
-        return mergedDict[upper]?.[0]?.phonic || 'ah';
+        if (upper === 'A') return 'æ';
+        return mergedDict[upper]?.[0]?.phonic || (upper === 'A' ? 'æ' : 'ah');
     }, [currentLetter, mergedDict]);
 
     const targetWord = useMemo(() => {
         const upper = currentLetter.toUpperCase();
-        return mergedDict[upper]?.[0] || { word: 'Apple', emoji: '🍎', phonic: 'ah' };
+        return mergedDict[upper]?.[0] || { word: 'Apple', emoji: '🍎', phonic: 'æ' };
     }, [currentLetter, mergedDict]);
+
+    // Spoken phonetic sound helper for Web Speech API (pronounces short 'a' cleanly without saying 'ash')
+    const spokenPhonicSound = useMemo(() => {
+        return currentPhonic === 'æ' ? 'a' : currentPhonic;
+    }, [currentPhonic]);
 
     // Audio text generation
     const getPromptAudioText = useCallback(() => {
@@ -1039,11 +1045,11 @@ function AbcMatcherGame({
         } else if (matcherMode === 'letter-to-object') {
             return `What starts with ${upper}?`;
         } else if (matcherMode === 'sound-to-letter') {
-            return `Listen carefully! Which letter makes the sound, ${currentPhonic}?`;
+            return `Listen carefully! Which letter makes the sound, ${spokenPhonicSound}?`;
         } else {
             return `Find the matching letter ${lower}! Look closely!`;
         }
-    }, [matcherMode, currentLetter, currentPhonic]);
+    }, [matcherMode, currentLetter, spokenPhonicSound]);
 
     // Text-To-Speech Play Trigger
     const handlePlayAudioPrompt = useCallback(() => {
@@ -1056,9 +1062,9 @@ function AbcMatcherGame({
 
     const playSoundPromptOnly = useCallback(() => {
         setIsSpeakingPrompt(true);
-        speak(currentPhonic, 0.85);
+        speak(spokenPhonicSound, 0.85);
         setTimeout(() => setIsSpeakingPrompt(false), 1200);
-    }, [currentPhonic]);
+    }, [spokenPhonicSound]);
 
     // Generate Question for the current mode and target letter
     const generateQuestion = useCallback((mode: MatcherMode, target: string) => {
@@ -1318,7 +1324,7 @@ function AbcMatcherGame({
     };
 
     return (
-        <div className="py-2 px-2.5 sm:py-3 sm:px-4 space-y-2 sm:space-y-2.5 max-w-md sm:max-w-lg mx-auto w-full select-none">
+        <div className="py-2 px-2.5 sm:py-3 sm:px-4 space-y-2 sm:space-y-2.5 max-w-md sm:max-w-lg mx-auto w-full select-none overflow-x-hidden">
             {/* 1. COMPACT ROUNDED PILL MODE SELECTOR */}
             <div className="w-full flex flex-nowrap items-center justify-between sm:justify-center gap-1 p-1 bg-emerald-50/80 rounded-xl border border-emerald-200 shadow-inner overflow-x-auto scrollbar-none">
                 {[
@@ -1490,12 +1496,20 @@ function AbcMatcherGame({
                         </div>
                     </div>
 
-                    {/* Responsive 2x2 Chunky Tile Grid (Viewport-Fit Height & Enhanced Contrast) */}
+                    {/* Responsive 2x2 Chunky Tile Grid (Viewport-Fit Height & Enhanced Tactile Affordance) */}
                     <div className="grid grid-cols-2 gap-2 sm:gap-2.5 max-w-sm sm:max-w-md mx-auto w-full pt-0.5">
                         {choices.map((choice, i) => {
                             const isShaking = shakingIndex === i;
                             const isSelectedCorrect = correctIndex === i;
                             const isDisabled = disabledIndices.includes(i);
+
+                            // Playful soft pastel themes for each tile position (mint, honey, sky, lavender)
+                            const pastelTheme = [
+                                "bg-emerald-50/85 border-emerald-300/90 border-b-emerald-400 text-emerald-950 hover:bg-emerald-100 hover:border-emerald-400 active:bg-emerald-200 active:border-emerald-500",
+                                "bg-amber-50/85 border-amber-300/90 border-b-amber-400 text-amber-950 hover:bg-amber-100 hover:border-amber-400 active:bg-amber-200 active:border-amber-500",
+                                "bg-sky-50/85 border-sky-300/90 border-b-sky-400 text-sky-950 hover:bg-sky-100 hover:border-sky-400 active:bg-sky-200 active:border-sky-500",
+                                "bg-purple-50/85 border-purple-300/90 border-b-purple-400 text-purple-950 hover:bg-purple-100 hover:border-purple-400 active:bg-purple-200 active:border-purple-500",
+                            ][i % 4];
 
                             return (
                                 <button
@@ -1504,18 +1518,21 @@ function AbcMatcherGame({
                                     onClick={() => handleChoiceClick(choice, i)}
                                     style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
                                     className={cn(
-                                        "h-16 sm:h-20 min-h-[58px] sm:min-h-[66px] max-h-[76px] p-1 sm:p-2 rounded-2xl border-2 sm:border-3 border-b-4 sm:border-b-5 transition-all flex flex-col items-center justify-center select-none shadow-xs relative group cursor-pointer",
+                                        "h-16 sm:h-20 min-h-[58px] sm:min-h-[66px] max-h-[76px] p-1 sm:p-2 rounded-2xl border-2 border-b-4 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group cursor-pointer",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
-                                        isShaking && "animate-shake bg-amber-50 border-amber-400 border-b-amber-500 text-amber-700 shadow-inner",
+                                        isShaking && "animate-shake bg-amber-100 border-amber-400 border-b-amber-500 text-amber-800 shadow-inner",
                                         isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 border-b-emerald-700 scale-102 shadow-lg ring-4 ring-emerald-300 z-10",
                                         isDisabled && "opacity-35 pointer-events-none bg-slate-100 border-slate-200 text-slate-400 line-through",
-                                        !isShaking && !isSelectedCorrect && !isDisabled && "bg-slate-50/90 border-slate-300 border-b-slate-400/90 hover:bg-emerald-50/80 hover:border-emerald-400 hover:border-b-emerald-500 hover:scale-[1.03] hover:-translate-y-0.5 active:bg-emerald-100 active:border-emerald-500 active:border-b-2 active:scale-95 active:translate-y-1 text-slate-800 hover:text-emerald-900 hover:shadow-md"
+                                        !isShaking && !isSelectedCorrect && !isDisabled && cn(
+                                            pastelTheme,
+                                            "hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 active:scale-95 active:translate-y-0.5 active:border-b-2"
+                                        )
                                     )}
                                 >
                                     {choice.emoji ? (
                                         <div className="flex flex-col items-center justify-center pointer-events-none">
                                             <span className="text-2xl sm:text-3xl mb-0.5 filter drop-shadow-xs group-hover:scale-110 transition-transform">{choice.emoji}</span>
-                                            <span className="text-xs sm:text-sm font-bold tracking-tight text-slate-700">{choice.label}</span>
+                                            <span className="text-xs sm:text-sm font-bold tracking-tight text-slate-800">{choice.label}</span>
                                         </div>
                                     ) : (
                                         <span 
@@ -1556,7 +1573,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     const defaultDict: Record<string, { word: string, emoji: string, phonic: string }[]> = {
-        A: [{ word: "Apple", emoji: "🍎", phonic: "ah" }],
+        A: [{ word: "Apple", emoji: "🍎", phonic: "æ" }],
         B: [{ word: "Ball", emoji: "⚽", phonic: "buh" }],
         C: [{ word: "Cat", emoji: "🐱", phonic: "cuh" }],
         D: [{ word: "Dog", emoji: "🐶", phonic: "duh" }],
@@ -1746,7 +1763,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
     const currentWordData = currentWordList[wordIndex] || { word: 'None', emoji: '❓', phonic: '' };
 
     return (
-        <div className={cn(activeTab === 'matcher' ? "space-y-2.5 sm:space-y-3" : "space-y-8")}>
+        <div className={cn(activeTab === 'matcher' ? "space-y-2.5 sm:space-y-3" : "space-y-8", "w-full max-w-full overflow-hidden")}>
             {/* 1. TOP NAVIGATION */}
             <div className="flex flex-wrap gap-2 p-1.5 bg-green-50/50 rounded-2xl w-fit mx-auto border border-green-100/60 shadow-inner">
                 <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} onClick={() => { setActiveTab('explorer'); setWordIndex(0); }} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'explorer' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Explorer</Button>
@@ -1756,8 +1773,8 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
 
             {/* When activeTab is 'matcher', hide the left 26-letter sidebar to maximize game focus and viewport fit */}
             {activeTab === 'matcher' ? (
-                <div className="max-w-md sm:max-w-lg mx-auto w-full animate-in fade-in zoom-in-95 duration-200">
-                    <Card className="rounded-2xl sm:rounded-3xl border-2 border-emerald-200 shadow-md overflow-hidden bg-white/95">
+                <div className="max-w-md sm:max-w-lg mx-auto w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <Card className="rounded-2xl sm:rounded-3xl border-2 border-emerald-200 shadow-md overflow-hidden bg-white/95 w-full">
                         <CardContent className="p-0">
                             <AbcMatcherGame 
                                 alphabet={alphabet}
@@ -7675,7 +7692,7 @@ export default function JuniorCampusPage() {
   }, [activeAgeTier, pageModules, activeTab]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] to-[#E0F2FE] p-4 md:p-8 font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] to-[#E0F2FE] p-4 md:p-8 font-sans relative overflow-x-hidden w-full max-w-full">
       {/* Ambient background decorations */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-pink-200/30 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
       <div className="absolute top-40 right-20 w-80 h-80 bg-yellow-200/30 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
@@ -7822,8 +7839,8 @@ export default function JuniorCampusPage() {
                     <PhonicsForest canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
-                <TabsContent value="abc" className="mt-0 animate-in fade-in-50 duration-300">
-                  <div className="bg-white/80 backdrop-blur-md p-3.5 sm:p-5 md:py-4 md:px-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400">
+                <TabsContent value="abc" className="mt-0 animate-in fade-in-50 duration-300 w-full max-w-full overflow-x-hidden">
+                  <div className="bg-white/80 backdrop-blur-md p-3.5 sm:p-5 md:py-4 md:px-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400 w-full max-w-full overflow-hidden">
                     <ABCKingdom canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
