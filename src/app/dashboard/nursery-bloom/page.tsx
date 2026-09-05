@@ -882,8 +882,8 @@ const PEDAGOGICAL_DISTRACTORS: Record<string, string[]> = {
     w: ['m', 'v', 'u', 'n'],
     v: ['u', 'w', 'y'],
     e: ['c', 'o', 'a', 's'],
-    f: ['t', 'j', 'l'],
-    t: ['f', 'l', 'j', 'i'],
+    f: ['t', 'l', 'j'],
+    t: ['f', 'l', 'd', 'b'],
     g: ['q', 'p', 'y', 'j', 'c'],
     h: ['n', 'b', 'k', 'r'],
     i: ['j', 'l', 't'],
@@ -911,6 +911,13 @@ function shuffleArray<T>(array: T[]): T[] {
 // Smart distractor selection: prioritizes visually/phonologically rich pairs from pedagogical map
 function getSmartDistractorLetters(targetLetter: string, allAlphabet: string[]): string[] {
     const lowerTarget = targetLetter.toLowerCase();
+
+    // Special pedagogical prioritization for 't': always include stroke-confusions 'f', 'l', and 'd' or 'b'
+    if (lowerTarget === 't') {
+        const secondary = Math.random() < 0.5 ? 'd' : 'b';
+        return shuffleArray(['f', 'l', secondary]);
+    }
+
     const confusions = (PEDAGOGICAL_DISTRACTORS[lowerTarget] || [])
         .map(l => l.toLowerCase())
         .filter(l => l !== lowerTarget);
@@ -1311,7 +1318,7 @@ function AbcMatcherGame({
     };
 
     return (
-        <div className="p-2 sm:p-3.5 space-y-2 sm:space-y-2.5 max-w-lg mx-auto w-full select-none">
+        <div className="py-2 px-2.5 sm:py-3 sm:px-4 space-y-2 sm:space-y-2.5 max-w-md sm:max-w-lg mx-auto w-full select-none">
             {/* 1. COMPACT ROUNDED PILL MODE SELECTOR */}
             <div className="w-full flex flex-nowrap items-center justify-between sm:justify-center gap-1 p-1 bg-emerald-50/80 rounded-xl border border-emerald-200 shadow-inner overflow-x-auto scrollbar-none">
                 {[
@@ -1337,7 +1344,7 @@ function AbcMatcherGame({
             </div>
 
             {/* 2. 5-ROUND STREAK & TARGET BREADCRUMB BAR */}
-            <div className="flex items-center justify-between bg-amber-50/90 border border-amber-200 px-3 py-1 sm:py-1.5 rounded-xl shadow-inner">
+            <div className="flex items-center justify-between bg-amber-50/90 border border-amber-200 px-3 py-1 rounded-xl shadow-inner">
                 <div className="flex items-center gap-2">
                     <Trophy className="w-3.5 h-3.5 text-amber-600" />
                     <span className="text-[11px] sm:text-xs font-black text-amber-900 uppercase tracking-wider">
@@ -1400,15 +1407,15 @@ function AbcMatcherGame({
                 </div>
             ) : (
                 /* 4. MAIN GAMEPLAY ARENA (COMPACT VIEWPORT-FIT) */
-                <div className="space-y-2 sm:space-y-2.5 text-center">
+                <div className="space-y-1.5 sm:space-y-2 text-center">
                     {/* Prompt Header with Primary CTA Audio Button */}
-                    <div className="flex items-center justify-center gap-2 sm:gap-3 px-1">
+                    <div className="flex items-center justify-center gap-2 sm:gap-2.5 px-1">
                         <h3 className="text-base sm:text-lg font-black text-slate-800 tracking-tight text-center">
                             {matcherMode === 'upper-to-lower' && `Find the Lowercase for "${currentLetter.toUpperCase()}"!`}
                             {matcherMode === 'letter-to-object' && `What starts with "${currentLetter.toUpperCase()}"?`}
                             {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
                             {matcherMode === 'confusing-pairs' && (
-                                <span>Find the matching <span className="matcher-tile-text font-['Fredoka',_'Comic_Neue',_sans-serif] text-emerald-600 font-bold">"{currentLetter.toLowerCase()}"</span>!</span>
+                                <span>Find the matching <span className="matcher-tile-text font-['Comic_Neue',_'Fredoka',_'Nunito',_sans-serif] text-emerald-600 font-bold">"{currentLetter.toLowerCase()}"</span>!</span>
                             )}
                         </h3>
 
@@ -1418,54 +1425,63 @@ function AbcMatcherGame({
                             onClick={handlePlayAudioPrompt}
                             title="Tap to hear prompt aloud"
                             className={cn(
-                                "h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 shrink-0 shadow-md border-2 border-amber-400 bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-500 text-amber-950 flex items-center justify-center transition-all active:scale-90",
+                                "h-9 w-9 sm:h-10 sm:w-10 rounded-full p-0 shrink-0 shadow-md border-2 border-amber-400 bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-500 text-amber-950 flex items-center justify-center transition-all active:scale-90",
                                 isSpeakingPrompt ? "scale-110 ring-4 ring-amber-300 ring-offset-1 animate-pulse" : "hover:scale-105"
                             )}
                         >
-                            <Volume2 className={cn("w-5 h-5 sm:w-6 sm:h-6 text-amber-950", isSpeakingPrompt && "animate-bounce")} />
+                            <Volume2 className={cn("w-4 h-4 sm:w-5 sm:h-5 text-amber-950", isSpeakingPrompt && "animate-bounce")} />
                         </Button>
                     </div>
 
                     {/* Compact Spotlight Target Display */}
                     <div className="relative mx-auto">
-                        <div className="relative bg-gradient-to-b from-amber-50 via-yellow-50/60 to-emerald-50/40 border-2 border-amber-300/90 rounded-2xl p-2 sm:p-2.5 shadow-md max-w-[190px] sm:max-w-[210px] mx-auto flex flex-col items-center justify-center gap-1">
+                        <div className="relative bg-gradient-to-b from-amber-50 via-yellow-50/60 to-emerald-50/40 border-2 border-amber-300/90 rounded-2xl p-1.5 sm:p-2 shadow-md max-w-[170px] sm:max-w-[190px] mx-auto flex flex-col items-center justify-center gap-0.5">
                             {/* Spotlight Badge */}
-                            <div className="inline-flex items-center gap-1 bg-amber-400 text-amber-950 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-xs">
+                            <div className="inline-flex items-center gap-1 bg-amber-400 text-amber-950 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-xs">
                                 <Sparkles className="w-2.5 h-2.5 text-amber-900 animate-spin" style={{ animationDuration: '6s' }} />
                                 <span>Target Letter</span>
                             </div>
 
                             {matcherMode === 'sound-to-letter' ? (
-                                <div className="flex flex-col items-center gap-1 py-0.5">
+                                <div className="flex flex-col items-center gap-0.5 py-0.5">
                                     <Button
                                         type="button"
                                         onClick={playSoundPromptOnly}
-                                        className="h-11 w-11 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center p-0 animate-bounce"
+                                        className="h-10 w-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center p-0 animate-bounce"
                                         style={{ animationDuration: '2s' }}
                                     >
-                                        <Volume2 className="w-5 h-5" />
+                                        <Volume2 className="w-4 h-4" />
                                     </Button>
-                                    <span className="text-xl sm:text-2xl font-black text-emerald-700 tracking-wide mt-0.5">
+                                    <span className="text-lg sm:text-xl font-black text-emerald-700 tracking-wide">
                                         /{currentPhonic}/
                                     </span>
                                 </div>
                             ) : (
-                                <div className="matcher-tile-text font-['Fredoka',_'Comic_Neue',_sans-serif] text-[48px] sm:text-[56px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs">
+                                <div className="matcher-tile-text font-['Comic_Neue',_'Fredoka',_'Nunito',_sans-serif] text-[42px] sm:text-[48px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs">
                                     {matcherMode === 'confusing-pairs' ? currentLetter.toLowerCase() : currentLetter.toUpperCase()}
                                 </div>
                             )}
 
-                            {/* Compact Clue Hint */}
-                            <div className="text-[10px] font-bold text-slate-500 flex items-center gap-1">
-                                <span>{matcherMode === 'upper-to-lower' ? 'Capital Letter' : matcherMode === 'confusing-pairs' ? 'Lowercase Letter' : 'Explore'}</span>
-                                <span className="text-amber-500">✨</span>
-                                <span>{targetWord.word}</span>
+                            {/* Dynamic Sub-label without spoilers */}
+                            <div className="text-[10px] font-bold text-slate-500 flex items-center justify-center gap-1 py-0.5">
+                                {matcherMode === 'upper-to-lower' && (
+                                    <span>Capital Letter {currentPhonic ? `(Sound: /${currentPhonic}/)` : ''}</span>
+                                )}
+                                {matcherMode === 'letter-to-object' && (
+                                    <span>What starts with this?</span>
+                                )}
+                                {matcherMode === 'sound-to-letter' && (
+                                    <span>Match the Sound</span>
+                                )}
+                                {matcherMode === 'confusing-pairs' && (
+                                    <span>Look closely at the shape!</span>
+                                )}
                             </div>
                         </div>
                     </div>
 
                     {/* Responsive 2x2 Chunky Tile Grid (Viewport-Fit Height) */}
-                    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-sm sm:max-w-md mx-auto w-full pt-0.5">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-2.5 max-w-sm sm:max-w-md mx-auto w-full pt-0.5">
                         {choices.map((choice, i) => {
                             const isShaking = shakingIndex === i;
                             const isSelectedCorrect = correctIndex === i;
@@ -1477,7 +1493,7 @@ function AbcMatcherGame({
                                     disabled={isDisabled || isRoundLocked}
                                     onClick={() => handleChoiceClick(choice, i)}
                                     className={cn(
-                                        "h-16 sm:h-20 min-h-[60px] sm:min-h-[72px] max-h-[82px] p-1.5 sm:p-2.5 rounded-2xl border-2 sm:border-3 border-b-4 sm:border-b-6 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group",
+                                        "h-16 sm:h-20 min-h-[58px] sm:min-h-[66px] max-h-[76px] p-1 sm:p-2 rounded-2xl border-2 sm:border-3 border-b-4 sm:border-b-5 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
                                         isShaking && "animate-shake bg-amber-50 border-amber-300 text-amber-600 shadow-inner",
                                         isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 scale-102 shadow-lg ring-4 ring-emerald-300 z-10",
@@ -1491,7 +1507,7 @@ function AbcMatcherGame({
                                             <span className="text-xs sm:text-sm font-bold tracking-tight text-slate-700">{choice.label}</span>
                                         </div>
                                     ) : (
-                                        <span className="matcher-tile-text font-['Fredoka',_'Comic_Neue',_sans-serif] text-3xl sm:text-4xl font-bold transition-transform group-hover:scale-105 leading-none">
+                                        <span className="matcher-tile-text font-['Comic_Neue',_'Fredoka',_'Nunito',_sans-serif] text-3xl sm:text-4xl font-bold transition-transform group-hover:scale-105 leading-none">
                                             {choice.label}
                                         </span>
                                     )}
@@ -1716,7 +1732,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
     const currentWordData = currentWordList[wordIndex] || { word: 'None', emoji: '❓', phonic: '' };
 
     return (
-<div className="space-y-8">
+        <div className={cn(activeTab === 'matcher' ? "space-y-2.5 sm:space-y-3" : "space-y-8")}>
             {/* 1. TOP NAVIGATION */}
             <div className="flex flex-wrap gap-2 p-1.5 bg-green-50/50 rounded-2xl w-fit mx-auto border border-green-100/60 shadow-inner">
                 <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} onClick={() => { setActiveTab('explorer'); setWordIndex(0); }} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'explorer' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Explorer</Button>
@@ -1726,8 +1742,8 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
 
             {/* When activeTab is 'matcher', hide the left 26-letter sidebar to maximize game focus and viewport fit */}
             {activeTab === 'matcher' ? (
-                <div className="max-w-xl mx-auto w-full animate-in fade-in zoom-in-95 duration-200">
-                    <Card className="rounded-3xl border-2 sm:border-3 border-emerald-200 shadow-xl overflow-hidden bg-white/95">
+                <div className="max-w-md sm:max-w-lg mx-auto w-full animate-in fade-in zoom-in-95 duration-200">
+                    <Card className="rounded-2xl sm:rounded-3xl border-2 border-emerald-200 shadow-md overflow-hidden bg-white/95">
                         <CardContent className="p-0">
                             <AbcMatcherGame 
                                 alphabet={alphabet}
@@ -7793,7 +7809,7 @@ export default function JuniorCampusPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="abc" className="mt-0 animate-in fade-in-50 duration-300">
-                  <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400">
+                  <div className="bg-white/80 backdrop-blur-md p-3.5 sm:p-5 md:py-4 md:px-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400">
                     <ABCKingdom canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>

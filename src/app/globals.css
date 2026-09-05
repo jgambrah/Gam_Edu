@@ -144,10 +144,10 @@
   display: none;
 }
 
-/* Kindergarten / Nursery Early Childhood Font Form (Single-story 'a' & 'g') */
+/* Kindergarten / Nursery Early Childhood Font Form (Single-story 'a' & 'g', curved 't' & 'l') */
 .font-school,
 .matcher-tile-text {
-  font-family: 'Fredoka', 'Comic Neue', 'Nunito', cursive, sans-serif !important;
+  font-family: 'Comic Neue', 'Fredoka', 'Nunito', cursive, sans-serif !important;
   font-feature-settings: "ss01" on;
 }
 
