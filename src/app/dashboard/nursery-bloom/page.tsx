@@ -473,6 +473,332 @@ export const PURE_PHONEMES: Record<string, { ipa: string; speech: string }> = {
   ng: { ipa: '/ŋ/', speech: 'ng' }
 };
 
+// --- SCIENCE OF READING ONSET-RIME WORD FAMILIES ---
+export interface StructuredWordItem {
+    word: string;
+    onset: string;
+    rime: string;
+    emoji: string;
+}
+
+export interface StructuredRhymeFamily {
+    id?: string;
+    family: string;
+    vowel: 'a' | 'e' | 'i' | 'o' | 'u';
+    vowelLabel: string;
+    theme: {
+        badgeBg: string;
+        border: string;
+        rimeText: string;
+        lightBg: string;
+        accentRing: string;
+    };
+    decodablePhrase: string;
+    words: StructuredWordItem[];
+    isCustom?: boolean;
+}
+
+export const STRUCTURED_RHYME_FAMILIES: StructuredRhymeFamily[] = [
+    // --- Short a (-at, -an, -ad) ---
+    {
+        family: "-at",
+        vowel: 'a',
+        vowelLabel: "Short a: -at, -an, -ad",
+        theme: {
+            badgeBg: "from-amber-500 to-orange-500",
+            border: "border-amber-200 hover:border-amber-400",
+            rimeText: "text-amber-700",
+            lightBg: "bg-amber-50/40",
+            accentRing: "focus:ring-amber-400"
+        },
+        decodablePhrase: "The fat cat sat on the soft mat.",
+        words: [
+            { word: "cat", onset: "c", rime: "at", emoji: "🐱" },
+            { word: "hat", onset: "h", rime: "at", emoji: "🎩" },
+            { word: "mat", onset: "m", rime: "at", emoji: "🧘" },
+            { word: "bat", onset: "b", rime: "at", emoji: "🦇" },
+            { word: "rat", onset: "r", rime: "at", emoji: "🐀" }
+        ]
+    },
+    {
+        family: "-an",
+        vowel: 'a',
+        vowelLabel: "Short a: -at, -an, -ad",
+        theme: {
+            badgeBg: "from-orange-500 to-amber-600",
+            border: "border-orange-200 hover:border-orange-400",
+            rimeText: "text-orange-700",
+            lightBg: "bg-orange-50/40",
+            accentRing: "focus:ring-orange-400"
+        },
+        decodablePhrase: "The man ran fast with a hot pan.",
+        words: [
+            { word: "can", onset: "c", rime: "an", emoji: "🥫" },
+            { word: "fan", onset: "f", rime: "an", emoji: "🪭" },
+            { word: "man", onset: "m", rime: "an", emoji: "👨" },
+            { word: "pan", onset: "p", rime: "an", emoji: "🍳" },
+            { word: "ran", onset: "r", rime: "an", emoji: "🏃" }
+        ]
+    },
+    {
+        family: "-ad",
+        vowel: 'a',
+        vowelLabel: "Short a: -at, -an, -ad",
+        theme: {
+            badgeBg: "from-yellow-500 to-amber-600",
+            border: "border-yellow-200 hover:border-yellow-400",
+            rimeText: "text-yellow-700",
+            lightBg: "bg-yellow-50/40",
+            accentRing: "focus:ring-yellow-400"
+        },
+        decodablePhrase: "Dad had a pad and was glad, not sad.",
+        words: [
+            { word: "dad", onset: "d", rime: "ad", emoji: "👨‍👧" },
+            { word: "sad", onset: "s", rime: "ad", emoji: "😢" },
+            { word: "mad", onset: "m", rime: "ad", emoji: "😡" },
+            { word: "bad", onset: "b", rime: "ad", emoji: "👎" },
+            { word: "pad", onset: "p", rime: "ad", emoji: "📝" }
+        ]
+    },
+
+    // --- Short e (-en, -et) ---
+    {
+        family: "-en",
+        vowel: 'e',
+        vowelLabel: "Short e: -en, -et",
+        theme: {
+            badgeBg: "from-emerald-500 to-teal-600",
+            border: "border-emerald-200 hover:border-emerald-400",
+            rimeText: "text-emerald-700",
+            lightBg: "bg-emerald-50/40",
+            accentRing: "focus:ring-emerald-400"
+        },
+        decodablePhrase: "Ten red hens rest in the cozy den.",
+        words: [
+            { word: "hen", onset: "h", rime: "en", emoji: "🐔" },
+            { word: "pen", onset: "p", rime: "en", emoji: "🖊️" },
+            { word: "ten", onset: "t", rime: "en", emoji: "🔟" },
+            { word: "men", onset: "m", rime: "en", emoji: "👥" },
+            { word: "den", onset: "d", rime: "en", emoji: "🐻" }
+        ]
+    },
+    {
+        family: "-et",
+        vowel: 'e',
+        vowelLabel: "Short e: -en, -et",
+        theme: {
+            badgeBg: "from-teal-500 to-cyan-600",
+            border: "border-teal-200 hover:border-teal-400",
+            rimeText: "text-teal-700",
+            lightBg: "bg-teal-50/40",
+            accentRing: "focus:ring-teal-400"
+        },
+        decodablePhrase: "The wet pet met the kind vet.",
+        words: [
+            { word: "net", onset: "n", rime: "et", emoji: "🥅" },
+            { word: "pet", onset: "p", rime: "et", emoji: "🐶" },
+            { word: "jet", onset: "j", rime: "et", emoji: "✈️" },
+            { word: "wet", onset: "w", rime: "et", emoji: "💧" },
+            { word: "vet", onset: "v", rime: "et", emoji: "🩺" }
+        ]
+    },
+
+    // --- Short i (-in, -ig, -it) ---
+    {
+        family: "-in",
+        vowel: 'i',
+        vowelLabel: "Short i: -in, -ig, -it",
+        theme: {
+            badgeBg: "from-blue-500 to-indigo-600",
+            border: "border-blue-200 hover:border-blue-400",
+            rimeText: "text-blue-700",
+            lightBg: "bg-blue-50/40",
+            accentRing: "focus:ring-blue-400"
+        },
+        decodablePhrase: "A shiny pin in the big tin bin.",
+        words: [
+            { word: "bin", onset: "b", rime: "in", emoji: "🗑️" },
+            { word: "pin", onset: "p", rime: "in", emoji: "🧷" },
+            { word: "tin", onset: "t", rime: "in", emoji: "🥫" },
+            { word: "win", onset: "w", rime: "in", emoji: "🏆" },
+            { word: "fin", onset: "f", rime: "in", emoji: "🦈" }
+        ]
+    },
+    {
+        family: "-ig",
+        vowel: 'i',
+        vowelLabel: "Short i: -in, -ig, -it",
+        theme: {
+            badgeBg: "from-indigo-500 to-violet-600",
+            border: "border-indigo-200 hover:border-indigo-400",
+            rimeText: "text-indigo-700",
+            lightBg: "bg-indigo-50/40",
+            accentRing: "focus:ring-indigo-400"
+        },
+        decodablePhrase: "The big pig in a wig can dig.",
+        words: [
+            { word: "big", onset: "b", rime: "ig", emoji: "🐘" },
+            { word: "dig", onset: "d", rime: "ig", emoji: "⛏️" },
+            { word: "pig", onset: "p", rime: "ig", emoji: "🐖" },
+            { word: "wig", onset: "w", rime: "ig", emoji: "💇" },
+            { word: "fig", onset: "f", rime: "ig", emoji: "🫐" }
+        ]
+    },
+    {
+        family: "-it",
+        vowel: 'i',
+        vowelLabel: "Short i: -in, -ig, -it",
+        theme: {
+            badgeBg: "from-sky-500 to-blue-600",
+            border: "border-sky-200 hover:border-sky-400",
+            rimeText: "text-sky-700",
+            lightBg: "bg-sky-50/40",
+            accentRing: "focus:ring-sky-400"
+        },
+        decodablePhrase: "Sit on the kit and stay fit.",
+        words: [
+            { word: "sit", onset: "s", rime: "it", emoji: "🪑" },
+            { word: "hit", onset: "h", rime: "it", emoji: "⚾" },
+            { word: "fit", onset: "f", rime: "it", emoji: "💪" },
+            { word: "lit", onset: "l", rime: "it", emoji: "💡" },
+            { word: "pit", onset: "p", rime: "it", emoji: "🕳️" }
+        ]
+    },
+
+    // --- Short o (-op, -ot) ---
+    {
+        family: "-op",
+        vowel: 'o',
+        vowelLabel: "Short o: -op, -ot",
+        theme: {
+            badgeBg: "from-rose-500 to-pink-600",
+            border: "border-rose-200 hover:border-rose-400",
+            rimeText: "text-rose-700",
+            lightBg: "bg-rose-50/40",
+            accentRing: "focus:ring-rose-400"
+        },
+        decodablePhrase: "Hop to the top and pop the red drop.",
+        words: [
+            { word: "hop", onset: "h", rime: "op", emoji: "🐰" },
+            { word: "mop", onset: "m", rime: "op", emoji: "🧹" },
+            { word: "pop", onset: "p", rime: "op", emoji: "🎈" },
+            { word: "top", onset: "t", rime: "op", emoji: "🪀" },
+            { word: "stop", onset: "st", rime: "op", emoji: "🛑" }
+        ]
+    },
+    {
+        family: "-ot",
+        vowel: 'o',
+        vowelLabel: "Short o: -op, -ot",
+        theme: {
+            badgeBg: "from-red-500 to-rose-600",
+            border: "border-red-200 hover:border-red-400",
+            rimeText: "text-red-700",
+            lightBg: "bg-red-50/40",
+            accentRing: "focus:ring-red-400"
+        },
+        decodablePhrase: "The hot soup in the red pot.",
+        words: [
+            { word: "hot", onset: "h", rime: "ot", emoji: "☀️" },
+            { word: "pot", onset: "p", rime: "ot", emoji: "🍲" },
+            { word: "dot", onset: "d", rime: "ot", emoji: "🔴" },
+            { word: "cot", onset: "c", rime: "ot", emoji: "🛏️" },
+            { word: "not", onset: "n", rime: "ot", emoji: "🚫" }
+        ]
+    },
+
+    // --- Short u (-un, -ug) ---
+    {
+        family: "-un",
+        vowel: 'u',
+        vowelLabel: "Short u: -un, -ug",
+        theme: {
+            badgeBg: "from-purple-500 to-fuchsia-600",
+            border: "border-purple-200 hover:border-purple-400",
+            rimeText: "text-purple-700",
+            lightBg: "bg-purple-50/40",
+            accentRing: "focus:ring-purple-400"
+        },
+        decodablePhrase: "Run in the hot sun for big fun!",
+        words: [
+            { word: "sun", onset: "s", rime: "un", emoji: "☀️" },
+            { word: "run", onset: "r", rime: "un", emoji: "🏃" },
+            { word: "fun", onset: "f", rime: "un", emoji: "🎉" },
+            { word: "bun", onset: "b", rime: "un", emoji: "🍔" },
+            { word: "nun", onset: "n", rime: "un", emoji: "🕊️" }
+        ]
+    },
+    {
+        family: "-ug",
+        vowel: 'u',
+        vowelLabel: "Short u: -un, -ug",
+        theme: {
+            badgeBg: "from-fuchsia-500 to-pink-600",
+            border: "border-fuchsia-200 hover:border-fuchsia-400",
+            rimeText: "text-fuchsia-700",
+            lightBg: "bg-fuchsia-50/40",
+            accentRing: "focus:ring-fuchsia-400"
+        },
+        decodablePhrase: "A snug bug gives a warm hug on the rug.",
+        words: [
+            { word: "bug", onset: "b", rime: "ug", emoji: "🐞" },
+            { word: "hug", onset: "h", rime: "ug", emoji: "🤗" },
+            { word: "mug", onset: "m", rime: "ug", emoji: "☕" },
+            { word: "rug", onset: "r", rime: "ug", emoji: "🧶" },
+            { word: "jug", onset: "j", rime: "ug", emoji: "🏺" }
+        ]
+    }
+];
+
+// Helper to parse any word into onset and rime with infant visual emoji
+export function parseOnsetRime(fullWord: string, familyEnding: string): StructuredWordItem {
+    const cleanWord = fullWord.toLowerCase().trim();
+    const cleanEnding = familyEnding.replace(/^-/, '').toLowerCase().trim();
+    const EMOJI_MAP: Record<string, string> = {
+        cat: '🐱', hat: '🎩', mat: '🧘', bat: '🦇', rat: '🐀', fat: '🦁', sat: '🪑',
+        can: '🥫', fan: '🪭', man: '👨', pan: '🍳', ran: '🏃', van: '🚐',
+        dad: '👨‍👧', sad: '😢', mad: '😡', bad: '👎', pad: '📝', lad: '👦',
+        hen: '🐔', pen: '🖊️', ten: '🔟', men: '👥', den: '🐻',
+        net: '🥅', pet: '🐶', jet: '✈️', wet: '💧', vet: '🩺', set: '📦', get: '🎁',
+        bin: '🗑️', pin: '🧷', tin: '🥫', win: '🏆', fin: '🦈', chin: '🗣️',
+        big: '🐘', dig: '⛏️', pig: '🐖', wig: '💇', fig: '🫐', twig: '🌿',
+        sit: '🪑', hit: '⚾', fit: '💪', lit: '💡', pit: '🕳️', kit: '🧰',
+        hop: '🐰', mop: '🧹', pop: '🎈', top: '🪀', stop: '🛑', drop: '💧',
+        hot: '☀️', pot: '🍲', dot: '🔴', cot: '🛏️', spot: '🐕', not: '🚫',
+        sun: '☀️', run: '🏃', fun: '🎉', bun: '🍔', nun: '🕊️', spun: '🌀',
+        bug: '🐞', hug: '🤗', mug: '☕', rug: '🧶', jug: '🏺', tug: '🚢',
+        cap: '🧢', map: '🗺️', tap: '🚰', lap: '🛋️', nap: '😴', clap: '👏',
+        day: '🌅', hay: '🌾', play: '🎮', say: '💬', way: '🛤️'
+    };
+
+    if (cleanEnding && cleanWord.endsWith(cleanEnding)) {
+        const onset = cleanWord.slice(0, cleanWord.length - cleanEnding.length) || '•';
+        return {
+            word: cleanWord,
+            onset,
+            rime: cleanEnding,
+            emoji: EMOJI_MAP[cleanWord] || '✨'
+        };
+    }
+
+    const vowelMatch = cleanWord.search(/[aeiou]/);
+    if (vowelMatch > 0) {
+        return {
+            word: cleanWord,
+            onset: cleanWord.slice(0, vowelMatch),
+            rime: cleanWord.slice(vowelMatch),
+            emoji: EMOJI_MAP[cleanWord] || '✨'
+        };
+    }
+
+    return {
+        word: cleanWord,
+        onset: '',
+        rime: cleanWord,
+        emoji: EMOJI_MAP[cleanWord] || '✨'
+    };
+}
+
 // --- HIGH-RESOLUTION VISUAL ANCHOR GRAPHIC COMPONENT (COMMERCIAL ECE POLISH) ---
 function PhonicsAnchorGraphic({ word, emoji, className }: { word: string; emoji?: string; className?: string }) {
     const normalized = word.toLowerCase().trim();
@@ -925,38 +1251,54 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
         return groups;
     }, [dbSounds]);
 
-    const defaultRhymeFamilies = [
-        { family: "-at", words: ["cat", "hat", "mat", "sat"] },
-        { family: "-ig", words: ["big", "dig", "pig", "wig"] },
-        { family: "-op", words: ["hop", "mop", "pop", "top"] },
-        { family: "-un", words: ["bun", "fun", "run", "sun"] },
-        { family: "-an", words: ["can", "man", "pan", "ran", "fan"] },
-        { family: "-in", words: ["bin", "pin", "tin", "win", "fin"] },
-        { family: "-en", words: ["den", "hen", "pen", "ten", "men"] },
-        { family: "-ot", words: ["cot", "dot", "hot", "pot", "not"] },
-        { family: "-ug", words: ["bug", "hug", "mug", "rug", "tug"] },
-        { family: "-ay", words: ["day", "hay", "lay", "play", "say"] },
-        { family: "-it", words: ["bit", "fit", "hit", "lit", "sit"] },
-        { family: "-et", words: ["bet", "get", "jet", "let", "wet"] },
-        { family: "-ad", words: ["bad", "dad", "had", "mad", "sad"] }
-    ];
+    // --- STRUCTURED WORD FAMILIES (SCIENCE OF READING ONSET-RIME STANDARDS) ---
+    const [vowelFilter, setVowelFilter] = useState<'all' | 'a' | 'e' | 'i' | 'o' | 'u'>('all');
+    const [activeSpeakingWord, setActiveSpeakingWord] = useState<string | null>(null);
+    const [isReadingPhrase, setIsReadingPhrase] = useState<string | null>(null);
 
     const rhymeFamilies = useMemo(() => {
-        const families = defaultRhymeFamilies.map(f => ({ ...f, words: [...f.words], isCustom: false, id: '' }));
+        // Clone structured preset word families
+        const families: StructuredRhymeFamily[] = STRUCTURED_RHYME_FAMILIES.map(f => ({
+            ...f,
+            words: [...f.words],
+            isCustom: false,
+            id: ''
+        }));
+
+        // Merge custom teacher/facilitator rhymes from Firestore
         if (dbRhymes) {
             dbRhymes.forEach((item: any) => {
-                const existing = families.find(f => f.family.toLowerCase().trim() === item.family.toLowerCase().trim());
+                const familyClean = (item.family || '').toLowerCase().trim();
+                const existing = families.find(f => f.family.toLowerCase().trim() === familyClean);
                 if (existing) {
                     item.words.forEach((w: string) => {
                         const cleaned = w.toLowerCase().trim();
-                        if (cleaned && !existing.words.includes(cleaned)) {
-                            existing.words.push(cleaned);
+                        if (cleaned && !existing.words.some(ew => ew.word === cleaned)) {
+                            existing.words.push(parseOnsetRime(cleaned, existing.family));
                         }
                     });
-                } else {
+                } else if (familyClean) {
+                    // Detect primary vowel
+                    const vowelMatch = familyClean.match(/[aeiou]/);
+                    const vowel = (vowelMatch ? vowelMatch[0] : 'a') as 'a' | 'e' | 'i' | 'o' | 'u';
+                    const customWords: StructuredWordItem[] = (item.words || [])
+                        .map((w: string) => w.toLowerCase().trim())
+                        .filter(Boolean)
+                        .map((w: string) => parseOnsetRime(w, familyClean));
+
                     families.push({
-                        family: item.family.toLowerCase().trim(),
-                        words: item.words.map((w: string) => w.toLowerCase().trim()).filter(Boolean),
+                        family: familyClean.startsWith('-') ? familyClean : `-${familyClean}`,
+                        vowel,
+                        vowelLabel: `Short ${vowel}`,
+                        theme: {
+                            badgeBg: "from-teal-500 to-emerald-600",
+                            border: "border-teal-200 hover:border-teal-400",
+                            rimeText: "text-teal-700",
+                            lightBg: "bg-teal-50/40",
+                            accentRing: "focus:ring-teal-400"
+                        },
+                        decodablePhrase: `Read and rhyme with the ${familyClean} words!`,
+                        words: customWords,
                         isCustom: true,
                         id: item.id
                     });
@@ -965,6 +1307,68 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
         }
         return families;
     }, [dbRhymes]);
+
+    // Onset-Rime sequential audio playback (/k/ ... /æt/ ... Cat!)
+    const playOnsetRimeAudio = useCallback((item: StructuredWordItem) => {
+        if (typeof window === 'undefined') return;
+        setActiveSpeakingWord(item.word);
+
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            try { navigator.vibrate(30); } catch {}
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+
+            // 1. Speak Onset Sound (pure phoneme if available)
+            const onsetKey = item.onset.toLowerCase().trim();
+            const onsetPhoneme = PURE_PHONEMES[onsetKey]?.speech || item.onset;
+            const utterOnset = new SpeechSynthesisUtterance(onsetPhoneme);
+            utterOnset.rate = 0.85;
+            utterOnset.pitch = 1.15;
+            utterOnset.lang = 'en-US';
+
+            utterOnset.onend = () => {
+                setTimeout(() => {
+                    // 2. Speak Rime Sound
+                    const utterRime = new SpeechSynthesisUtterance(item.rime);
+                    utterRime.rate = 0.85;
+                    utterRime.pitch = 1.1;
+                    utterRime.lang = 'en-US';
+
+                    utterRime.onend = () => {
+                        setTimeout(() => {
+                            // 3. Speak Whole Blended Word
+                            const utterWhole = new SpeechSynthesisUtterance(item.word);
+                            utterWhole.rate = 0.95;
+                            utterWhole.pitch = 1.05;
+                            utterWhole.lang = 'en-US';
+
+                            utterWhole.onend = () => setActiveSpeakingWord(null);
+                            utterWhole.onerror = () => setActiveSpeakingWord(null);
+                            window.speechSynthesis.speak(utterWhole);
+                        }, 180);
+                    };
+
+                    utterRime.onerror = () => setActiveSpeakingWord(null);
+                    window.speechSynthesis.speak(utterRime);
+                }, 140);
+            };
+
+            utterOnset.onerror = () => setActiveSpeakingWord(null);
+            window.speechSynthesis.speak(utterOnset);
+        } else {
+            speak(item.word);
+            setTimeout(() => setActiveSpeakingWord(null), 1000);
+        }
+    }, []);
+
+    // Decodable phrase read-aloud
+    const readFamilyPhrase = useCallback((familyKey: string, phrase: string) => {
+        if (typeof window === 'undefined') return;
+        setIsReadingPhrase(familyKey);
+        speak(phrase, 0.9, () => setIsReadingPhrase(null));
+    }, []);
 
     // Blending Station State (Science of Reading / Letters & Sounds)
     const [tierFilter, setTierFilter] = useState<'continuous' | 'stop' | 'mixed'>('continuous');
@@ -1803,37 +2207,200 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                 </div>
             )}
 
-            {/* PILLAR 3: WORD FAMILIES (RHYMES) - UNCLUTTERED LEARNER VIEW */}
+            {/* PILLAR 3: WORD FAMILIES (RHYMES) - SCIENCE OF READING ONSET-RIME STANDARDS */}
             {activeTab === 'families' && (
                 <div className="space-y-6 animate-in fade-in duration-200">
+                    {/* Header */}
                     <div className="text-center space-y-1">
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
-                            Rhyming Word Families <Sparkles className="w-4 h-4 text-amber-500" />
+                        <h3 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
+                            Rhyming Word Families <Sparkles className="w-5 h-5 text-amber-500" />
                         </h3>
-                        <p className="text-xs text-slate-500 font-medium">Explore words that share common phonemic endings and practice onset-rime blending</p>
+                        <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto">
+                            Explore words with matching endings. Tap any word to blend the <span className="font-bold text-indigo-700">onset</span> and <span className="font-bold text-emerald-700">rime</span>!
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4">
-                        {rhymeFamilies.map((item, index) => {
-                            const rhymingColors = [
-                              'border-indigo-100 hover:border-indigo-300 bg-indigo-50/10 shadow-indigo-100/50',
-                              'border-purple-100 hover:border-purple-300 bg-purple-50/10 shadow-purple-100/50',
-                              'border-pink-100 hover:border-pink-300 bg-pink-50/10 shadow-pink-100/50',
-                              'border-emerald-100 hover:border-emerald-300 bg-emerald-50/10 shadow-emerald-100/50'
-                            ];
-                            const colorStyle = rhymingColors[index % rhymingColors.length];
+                    {/* 1. VOWEL GROUPING FILTER SUB-NAV (Prevents endless vertical card scrolling) */}
+                    <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto p-2 bg-slate-100/90 rounded-3xl border border-slate-200/90 shadow-xs">
+                        {[
+                            { id: 'all', label: 'All', sub: 'Featured Core', badge: 'bg-slate-200 text-slate-700' },
+                            { id: 'a', label: 'Short a', sub: '-at, -an, -ad', badge: 'bg-amber-100 text-amber-800' },
+                            { id: 'e', label: 'Short e', sub: '-en, -et', badge: 'bg-emerald-100 text-emerald-800' },
+                            { id: 'i', label: 'Short i', sub: '-in, -ig, -it', badge: 'bg-blue-100 text-blue-800' },
+                            { id: 'o', label: 'Short o', sub: '-op, -ot', badge: 'bg-rose-100 text-rose-800' },
+                            { id: 'u', label: 'Short u', sub: '-un, -ug', badge: 'bg-purple-100 text-purple-800' },
+                        ].map(tab => {
+                            const isActive = vowelFilter === tab.id;
                             return (
-                                <div key={item.family} className={cn("relative group bg-white p-6 rounded-[32px] border-2 border-b-8 shadow-md text-center transition-all hover:-translate-y-1 duration-300", colorStyle)}>
-                                    <div className="bg-gradient-to-b from-teal-500 to-emerald-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl mx-auto mb-4 font-black text-2xl shadow-md">
-                                        {item.family}
-                                    </div>
-                                    <div className="space-y-2">
-                                        {item.words.map(w => (
-                                            <button key={w} onClick={() => speak(w)} className="block w-full py-1.5 text-slate-600 font-bold hover:text-teal-600 hover:bg-teal-50/30 rounded-lg transition-colors capitalize">
-                                                {w}
+                                <button
+                                    key={tab.id}
+                                    type="button"
+                                    onClick={() => setVowelFilter(tab.id as any)}
+                                    className={cn(
+                                        "flex items-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 min-h-[44px] cursor-pointer",
+                                        isActive 
+                                            ? "bg-white text-slate-900 shadow-sm ring-2 ring-teal-500 scale-[1.02]" 
+                                            : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
+                                    )}
+                                    aria-pressed={isActive}
+                                >
+                                    <span className="font-extrabold">{tab.label}</span>
+                                    <span className={cn(
+                                        "text-[10px] font-black px-2 py-0.5 rounded-full transition-colors",
+                                        isActive ? tab.badge : "bg-slate-200/60 text-slate-500"
+                                    )}>
+                                        {tab.sub}
+                                    </span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Filter guidance info */}
+                    {vowelFilter === 'all' && (
+                        <div className="text-center text-xs text-slate-500 font-semibold flex items-center justify-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                            <span>Showing 4 core families • Select a target short vowel above to focus practice!</span>
+                        </div>
+                    )}
+
+                    {/* 2. RESPONSIVE CARDS GRID (3-4 families at a time per selected vowel group) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-in slide-in-from-bottom-4">
+                        {(vowelFilter === 'all' 
+                            ? rhymeFamilies.slice(0, 4) 
+                            : rhymeFamilies.filter(f => f.vowel === vowelFilter)
+                        ).map((item) => {
+                            return (
+                                <div 
+                                    key={item.family} 
+                                    className={cn(
+                                        "relative group bg-white p-5 sm:p-6 rounded-[32px] border-2 border-b-8 shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between",
+                                        item.theme.border,
+                                        item.theme.lightBg
+                                    )}
+                                >
+                                    {/* Card Header: Family Badge + Metadata */}
+                                    <div>
+                                        <div className="flex items-center justify-between gap-3 mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div 
+                                                    className={cn(
+                                                        "w-13 h-13 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-md bg-gradient-to-br",
+                                                        item.theme.badgeBg
+                                                    )}
+                                                >
+                                                    <span style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}>
+                                                        {item.family}
+                                                    </span>
+                                                </div>
+                                                <div className="text-left">
+                                                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                                                        {item.vowelLabel}
+                                                    </span>
+                                                    <h4 className="text-sm sm:text-base font-black text-slate-800">
+                                                        {item.words.length} Rhyme Words
+                                                    </h4>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => speak(item.family.replace(/^-/, ''), 0.85)}
+                                                className="p-2 rounded-xl bg-white/90 hover:bg-teal-50 text-slate-500 hover:text-teal-700 transition-colors shadow-2xs border border-slate-200/60 cursor-pointer"
+                                                title={`Hear ending sound ${item.family}`}
+                                                aria-label={`Hear ending sound ${item.family}`}
+                                            >
+                                                <Volume2 className="w-4 h-4" />
                                             </button>
-                                        ))}
+                                        </div>
+
+                                        {/* Prompt */}
+                                        <div className="text-[11px] font-bold text-slate-500 mb-2.5 text-left flex items-center gap-1">
+                                            <span>Tap word to blend onset + rime:</span>
+                                        </div>
+
+                                        {/* 3. INTERACTIVE WORD CHIPS / MINI-CARDS (Single-story infant typography & 48px touch targets) */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                            {item.words.map((w) => {
+                                                const isSpeaking = activeSpeakingWord === w.word;
+                                                return (
+                                                    <button
+                                                        key={w.word}
+                                                        type="button"
+                                                        onClick={() => playOnsetRimeAudio(w)}
+                                                        className={cn(
+                                                            "relative group/chip flex items-center justify-between gap-2 px-3 py-2.5 min-h-[48px] rounded-2xl border-2 transition-all duration-200 text-left cursor-pointer",
+                                                            "hover:-translate-y-0.5 active:scale-95 shadow-2xs hover:shadow-md",
+                                                            isSpeaking 
+                                                                ? "bg-indigo-50/90 border-indigo-400 ring-2 ring-indigo-300 scale-[1.02]" 
+                                                                : "bg-white border-slate-200/90 hover:border-indigo-300 hover:bg-slate-50/60"
+                                                        )}
+                                                        aria-label={`Blend word ${w.word}: onset ${w.onset}, rime ${w.rime}`}
+                                                    >
+                                                        {/* Visual Anchor Emoji */}
+                                                        <div className="w-8 h-8 rounded-xl bg-slate-100/90 flex items-center justify-center text-lg shrink-0 group-hover/chip:scale-110 transition-transform">
+                                                            <span>{w.emoji}</span>
+                                                        </div>
+
+                                                        {/* Onset-Rime Visual Typography (Single-Story infant font) */}
+                                                        <div 
+                                                            className="flex-1 flex items-baseline gap-0.5 tracking-wide leading-none"
+                                                            style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                                        >
+                                                            <span className="text-xl font-black text-indigo-700">
+                                                                {w.onset}
+                                                            </span>
+                                                            <span className={cn("text-xl font-black", item.theme.rimeText)}>
+                                                                {w.rime}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Discrete Audio Speaker Button */}
+                                                        <div className={cn(
+                                                            "w-7 h-7 rounded-lg flex items-center justify-center transition-colors shrink-0",
+                                                            isSpeaking 
+                                                                ? "bg-indigo-600 text-white animate-pulse" 
+                                                                : "bg-slate-100 group-hover/chip:bg-indigo-100 text-slate-500 group-hover/chip:text-indigo-700"
+                                                        )}>
+                                                            <Volume2 className="w-3.5 h-3.5" />
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
+
+                                    {/* 4. RHYME DECODABLE REINFORCEMENT PHRASE */}
+                                    <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between gap-2.5 bg-white/80 backdrop-blur-xs rounded-2xl p-3 border shadow-2xs">
+                                        <div className="flex items-start gap-2 text-left flex-1 min-w-0">
+                                            <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                            <p 
+                                                style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                                className="text-xs sm:text-sm font-black text-slate-700 leading-snug"
+                                            >
+                                                "{item.decodablePhrase}"
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                readFamilyPhrase(item.family, item.decodablePhrase);
+                                            }}
+                                            className={cn(
+                                                "shrink-0 p-2 rounded-xl transition-all shadow-xs border flex items-center justify-center cursor-pointer min-h-[40px] min-w-[40px]",
+                                                isReadingPhrase === item.family 
+                                                    ? "bg-amber-500 text-white border-amber-600 animate-pulse ring-2 ring-amber-300" 
+                                                    : "bg-white hover:bg-amber-50 text-amber-700 border-amber-200 hover:scale-105 active:scale-95"
+                                            )}
+                                            title="Hear decodable rhyming phrase"
+                                            aria-label={`Read aloud decodable sentence: ${item.decodablePhrase}`}
+                                        >
+                                            <Volume2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    {/* Facilitator Delete Button (for custom teacher rhymes) */}
                                     {canEdit && item.isCustom && item.id && (
                                         <Button 
                                             size="icon" 
@@ -1841,14 +2408,14 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                             onClick={async (e) => {
                                                 e.stopPropagation();
                                                 if (confirm("Delete this rhyming family?")) {
-                                                    if (firestore) {
+                                                    if (firestore && item.id) {
                                                         await deleteDoc(doc(firestore, 'junior_phonics_rhymes', item.id));
                                                         refetchRhymes();
                                                         toast({ title: "Rhyming family deleted." });
                                                     }
                                                 }
                                             }}
-                                            className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full shadow-sm bg-white/95"
+                                            className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full shadow-xs bg-white/95 transition-opacity"
                                         >
                                             <Trash2 className="w-3.5 h-3.5"/>
                                         </Button>
