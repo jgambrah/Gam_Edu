@@ -12,7 +12,7 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, ArrowLeft, 
   ChevronLeft, ChevronRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Bot,
-  Hash, Play, Pause, BarChart3, TrendingUp, RotateCcw
+  Hash, Play, Pause, BarChart3, TrendingUp, RotateCcw, Settings2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction, generateIncompleteSentenceAction, generateMathWordProblemAction } from '@/ai/flows/junior-actions';
@@ -32,7 +32,8 @@ import {
   AGE_TIERS, ANIMAL_SOUNDS, HOUSEHOLD_OBJECTS, LETTER_DISTINCTION, 
   PATTERN_DRILLS, CVC_WORDS, SIGHT_WORDS, RHYME_MATCHES, 
   SENTENCE_PACING_READS, STORY_SEQUENCING_DRILLS, INCOMPLETE_SENTENCES,
-  ADVANCED_VOICE_WORDS_AGE5, IncompleteSentenceItem
+  ADVANCED_VOICE_WORDS_AGE5, IncompleteSentenceItem,
+  SSP_PHONICS_PRESET, SSPSoundCard, SSPPhaseGroup
 } from '@/lib/junior-age-levels';
 
 // --- HELPER: TEXT TO SPEECH ---
@@ -394,39 +395,115 @@ const DECODABLE_WORDS = [
   "tree", "rain", "boat", "goat", "road", "soap", "seed", "feet", "moon", "book", "look", "cook", "meat", "leaf", "star", "park", "fork", "horn", "bird", "girl", "dirt"
 ];
 
-// --- 2. PHONICS FOREST (COMPREHENSIVE) ---
+// --- 2. PHONICS FOREST (SYSTEMATIC SYNTHETIC PHONICS - ECE COMPLIANT) ---
 function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { toast } = useToast();
     const firestore = useFirestore();
     const [activeTab, setActiveTab] = useState<'library' | 'blender' | 'families' | 'game'>('library');
+    const [progressionMode, setProgressionMode] = useState<'ssp' | 'categories'>('ssp');
+    const [isFacilitatorModalOpen, setIsFacilitatorModalOpen] = useState(false);
+    const [facilitatorModalTab, setFacilitatorModalTab] = useState<'sound' | 'rhyme'>('sound');
+    const [playingCardId, setPlayingCardId] = useState<string | null>(null);
 
-    // Fetch custom sound cards
+    // Fetch custom sound cards from Firestore
     const soundsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics_sounds'), orderBy('createdAt', 'asc')) : null, [firestore]);
     const { data: dbSounds, forceRefetch: refetchSounds } = useCollection<any>(soundsQuery);
 
-    // Fetch custom rhyming families
+    // Fetch custom rhyming families from Firestore
     const rhymesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics_rhymes'), orderBy('createdAt', 'asc')) : null, [firestore]);
     const { data: dbRhymes, forceRefetch: refetchRhymes } = useCollection<any>(rhymesQuery);
 
-    // Add state
-    const [newSound, setNewSound] = useState({ sound: '', example: '', category: 'Short Vowels' });
+    // Facilitator Form States
+    const [newSound, setNewSound] = useState({ sound: '', example: '', category: 'Single Letters', phase: 'Phase 2', formationCue: '' });
     const [isAddingSound, setIsAddingSound] = useState(false);
     const [newRhyme, setNewRhyme] = useState({ family: '', words: '' });
     const [isAddingRhyme, setIsAddingRhyme] = useState(false);
 
+    // Audio Playback Pipeline: Attempts local pre-recorded audio, falling back gracefully to Web Speech Synthesis
+    const playSoundCardAudio = useCallback(async (card: { id: string; speechPhonic: string; grapheme: string; exampleWord?: string; formationCue?: string }) => {
+        setPlayingCardId(card.id);
+        let playedLocalAsset = false;
+
+        if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
+            try {
+                const audio = new Audio(`/audio/phonics/${encodeURIComponent(card.grapheme.toLowerCase().trim())}.mp3`);
+                await new Promise<void>((resolve, reject) => {
+                    const timer = setTimeout(() => reject(new Error('Audio timeout')), 1000);
+                    audio.onended = () => {
+                        clearTimeout(timer);
+                        resolve();
+                    };
+                    audio.onerror = () => {
+                        clearTimeout(timer);
+                        reject();
+                    };
+                    audio.play().catch(reject);
+                });
+                playedLocalAsset = true;
+            } catch {
+                playedLocalAsset = false;
+            }
+        }
+
+        if (!playedLocalAsset) {
+            // Smooth phonetic fallback via Web Speech Synthesis (clean phoneme sound)
+            speak(card.speechPhonic || card.grapheme, 0.85, () => {
+                setPlayingCardId(null);
+            });
+            setTimeout(() => setPlayingCardId(null), 1200);
+        } else {
+            setPlayingCardId(null);
+        }
+    }, []);
+
+    // Merge SSP Presets with Firestore custom sounds
+    const sspPhaseGroups = useMemo<SSPPhaseGroup[]>(() => {
+        const baseGroups = SSP_PHONICS_PRESET.map(g => ({
+            ...g,
+            sounds: [...g.sounds]
+        }));
+
+        if (dbSounds && dbSounds.length > 0) {
+            dbSounds.forEach((item: any) => {
+                const customCard: SSPSoundCard = {
+                    id: item.id,
+                    grapheme: item.sound?.toLowerCase() || '',
+                    upperGrapheme: (item.sound || '').toUpperCase(),
+                    phoneme: item.phoneme || `/${item.sound}/`,
+                    speechPhonic: item.speechPhonic || item.sound || '',
+                    exampleWord: item.example || '',
+                    exampleEmoji: item.emoji || '✨',
+                    phase: (item.phase as any) || 'Phase 2',
+                    set: item.set || 'Custom Set',
+                    category: (item.category as any) || 'Single Letters',
+                    formationCue: item.formationCue || '',
+                    isCustom: true
+                };
+
+                // Attach to matching phase group or first group
+                const targetGroup = baseGroups.find(g => g.phase === customCard.phase) || baseGroups[0];
+                if (targetGroup && !targetGroup.sounds.some(s => s.id === customCard.id)) {
+                    targetGroup.sounds.push(customCard);
+                }
+            });
+        }
+
+        return baseGroups;
+    }, [dbSounds]);
+
+    // Traditional Categories Mapping
     const toddlerSoundGroups = [
-        { name: "First Alphabet Sounds (Ages 2-3)", color: "bg-amber-100 text-amber-700 border-amber-300", sounds: ["a", "b", "c", "d", "e", "f"], example: ["apple 🍎", "ball ⚽", "cat 🐱", "duck 🦆", "egg 🥚", "fish 🐟"] },
-        { name: "Toddler Animal Sounds", color: "bg-pink-100 text-pink-700 border-pink-300", sounds: ["woof", "meow", "moo", "quack", "roar", "baa"], example: ["dog 🐶", "cat 🐱", "cow 🐮", "duck 🦆", "lion 🦁", "sheep 🐑"] },
+        { name: "First Alphabet Sounds (Ages 2-3)", color: "bg-amber-100 text-amber-800 border-amber-300", sounds: ["a", "b", "c", "d", "e", "f"], example: ["apple 🍎", "ball ⚽", "cat 🐱", "duck 🦆", "egg 🥚", "fish 🐟"] },
+        { name: "Toddler Animal Sounds", color: "bg-pink-100 text-pink-800 border-pink-300", sounds: ["woof", "meow", "moo", "quack", "roar", "baa"], example: ["dog 🐶", "cat 🐱", "cow 🐮", "duck 🦆", "lion 🦁", "sheep 🐑"] },
     ];
 
-    // Comprehensive Sound Categories (SSP Structured)
     const defaultSoundGroups = [
         ...(activeAgeTier === 'ages2-3' ? toddlerSoundGroups : []),
-        { name: "Short Vowels", color: "bg-rose-100 text-rose-600 border-rose-200", sounds: ["a", "e", "i", "o", "u"], example: ["apple", "egg", "ink", "octopus", "up"] },
-        { name: "Digraphs (2 letters, 1 sound)", color: "bg-teal-100 text-teal-600 border-teal-200", sounds: ["ch", "sh", "th", "ng", "qu", "wh"], example: ["chip", "ship", "thin", "ring", "queen", "whale"] },
-        { name: "Long Vowels", color: "bg-purple-100 text-purple-600 border-purple-200", sounds: ["ai", "ee", "igh", "oa", "oo"], example: ["rain", "tree", "light", "boat", "moon"] },
-        { name: "Trigraphs (3 letters, 1 sound)", color: "bg-orange-100 text-orange-600 border-orange-200", sounds: ["ear", "air", "ure", "igh"], example: ["near", "fair", "pure", "night"] },
-        { name: "R-Controlled", color: "bg-amber-100 text-amber-600 border-amber-200", sounds: ["ar", "or", "ur", "er", "ir"], example: ["car", "fork", "surf", "her", "bird"] },
+        { name: "Short Vowels", color: "bg-rose-100 text-rose-700 border-rose-200", sounds: ["a", "e", "i", "o", "u"], example: ["apple 🍎", "egg 🥚", "ink 🖋️", "octopus 🐙", "umbrella ☂️"] },
+        { name: "Digraphs (2 letters, 1 sound)", color: "bg-teal-100 text-teal-700 border-teal-200", sounds: ["ch", "sh", "th", "ng", "qu", "wh"], example: ["chip 🍟", "ship 🚢", "thin 🧵", "ring 💍", "queen 👑", "whale 🐋"] },
+        { name: "Long Vowels", color: "bg-purple-100 text-purple-700 border-purple-200", sounds: ["ai", "ee", "igh", "oa", "oo"], example: ["rain 🌧️", "tree 🌳", "light 💡", "boat ⛵", "moon 🌕"] },
+        { name: "Trigraphs (3 letters, 1 sound)", color: "bg-orange-100 text-orange-700 border-orange-200", sounds: ["ear", "air", "ure", "igh"], example: ["near 👂", "fair 🎡", "pure 💧", "night 🌌"] },
+        { name: "R-Controlled", color: "bg-amber-100 text-amber-700 border-amber-200", sounds: ["ar", "or", "ur", "er", "ir"], example: ["car 🚗", "fork 🍴", "surf 🏄", "her 👧", "bird 🐦"] },
     ];
 
     const soundGroups = useMemo(() => {
@@ -507,7 +584,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
     const lastGameTargetRef = useRef<string>("");
     
     const startNewGame = useCallback(() => {
-        const allSounds = soundGroups.flatMap(g => g.sounds);
+        const allSounds = sspPhaseGroups.flatMap(g => g.sounds.map(s => s.grapheme));
         if (allSounds.length === 0) return;
 
         let targetSound = "";
@@ -519,146 +596,262 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
 
         lastGameTargetRef.current = targetSound;
         
-        // Ensure options don't include the target, then add it back to shuffle
         let shuffledOptions = allSounds.filter(s => s !== targetSound).sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledOptions.push(targetSound);
         
         setGameTarget(targetSound);
-        setGameOptions(shuffledOptions.sort(() => Math.random() - 0.5)); // Final shuffle
+        setGameOptions(shuffledOptions.sort(() => Math.random() - 0.5));
         speak(`Find the sound: ${targetSound}`);
-    }, [soundGroups]);
+    }, [sspPhaseGroups]);
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-wrap gap-2 p-1.5 bg-teal-50/50 rounded-2xl w-fit mx-auto border border-teal-100/60 shadow-inner">
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'library' ? 'bg-teal-500 text-white shadow-sm' : 'text-teal-700 hover:bg-teal-100/55')}>Sound Cards</Button>
-                <Button variant={activeTab === 'blender' ? 'default' : 'ghost'} onClick={() => setActiveTab('blender')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'blender' ? 'bg-teal-500 text-white shadow-sm' : 'text-teal-700 hover:bg-teal-100/55')}>Blending Station</Button>
-                <Button variant={activeTab === 'families' ? 'default' : 'ghost'} onClick={() => setActiveTab('families')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'families' ? 'bg-teal-500 text-white shadow-sm' : 'text-teal-700 hover:bg-teal-100/55')}>Word Families</Button>
-                <Button variant={activeTab === 'game' ? 'default' : 'ghost'} onClick={() => {setActiveTab('game'); startNewGame();}} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'game' ? 'bg-teal-500 text-white shadow-sm' : 'text-teal-700 hover:bg-teal-100/55')}>Sound Game</Button>
+            {/* TOP BAR: LEARNER NAVIGATION & DECOUPLED FACILITATOR UTILITY */}
+            <div className="flex items-center justify-between flex-wrap gap-2.5 max-w-5xl mx-auto w-full px-1">
+                <div className="flex flex-wrap gap-1.5 p-1.5 bg-teal-50/70 rounded-2xl border border-teal-100/80 shadow-inner">
+                    <Button 
+                        variant={activeTab === 'library' ? 'default' : 'ghost'} 
+                        onClick={() => setActiveTab('library')} 
+                        className={cn("rounded-xl font-black transition-all text-xs sm:text-sm h-8 px-3.5", activeTab === 'library' ? 'bg-teal-600 text-white shadow-sm' : 'text-teal-800 hover:bg-teal-100/60')}
+                    >
+                        Sound Cards
+                    </Button>
+                    <Button 
+                        variant={activeTab === 'blender' ? 'default' : 'ghost'} 
+                        onClick={() => setActiveTab('blender')} 
+                        className={cn("rounded-xl font-black transition-all text-xs sm:text-sm h-8 px-3.5", activeTab === 'blender' ? 'bg-teal-600 text-white shadow-sm' : 'text-teal-800 hover:bg-teal-100/60')}
+                    >
+                        Blending Station
+                    </Button>
+                    <Button 
+                        variant={activeTab === 'families' ? 'default' : 'ghost'} 
+                        onClick={() => setActiveTab('families')} 
+                        className={cn("rounded-xl font-black transition-all text-xs sm:text-sm h-8 px-3.5", activeTab === 'families' ? 'bg-teal-600 text-white shadow-sm' : 'text-teal-800 hover:bg-teal-100/60')}
+                    >
+                        Word Families
+                    </Button>
+                    <Button 
+                        variant={activeTab === 'game' ? 'default' : 'ghost'} 
+                        onClick={() => {setActiveTab('game'); startNewGame();}} 
+                        className={cn("rounded-xl font-black transition-all text-xs sm:text-sm h-8 px-3.5", activeTab === 'game' ? 'bg-teal-600 text-white shadow-sm' : 'text-teal-800 hover:bg-teal-100/60')}
+                    >
+                        Sound Game
+                    </Button>
+                </div>
+
+                {/* Facilitator & Teacher Tools Button (Decoupled from Learner View) */}
+                {canEdit && (
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsFacilitatorModalOpen(true)}
+                        className="rounded-xl border-dashed border-teal-400 bg-teal-50/80 hover:bg-teal-100 text-teal-800 font-extrabold text-xs flex items-center gap-1.5 h-8 px-3 ml-auto cursor-pointer shadow-2xs"
+                        aria-label="Open Facilitator and Teacher Tools"
+                    >
+                        <Settings2 className="w-3.5 h-3.5 text-teal-700" />
+                        <span>Facilitator Tools</span>
+                    </Button>
+                )}
             </div>
 
-            {/* PILLAR 1: THE SOUND LIBRARY */}
+            {/* PILLAR 1: THE SOUND LIBRARY (UNCLUTTERED LEARNER VIEW) */}
             {activeTab === 'library' && (
-                <div className="space-y-8 animate-in fade-in">
-                    {canEdit && (
-                        <Card className="p-6 border-2 border-teal-200 bg-teal-50/30 rounded-3xl space-y-3 shadow-inner">
-                            <h4 className="font-black text-teal-800 text-sm flex items-center gap-2">
-                                <PlusCircle className="w-4 h-4" /> Add Custom Sound Card
-                            </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                                <div>
-                                    <label className="text-[9px] font-bold text-slate-400">Category</label>
-                                    <select 
-                                        value={newSound.category} 
-                                        onChange={e => setNewSound({...newSound, category: e.target.value})}
-                                        className="w-full bg-white border rounded-lg text-sm p-1.5 outline-none font-bold"
-                                    >
-                                        <option value="Short Vowels">Short Vowels</option>
-                                        <option value="Digraphs (2 letters, 1 sound)">Digraphs</option>
-                                        <option value="Long Vowels">Long Vowels</option>
-                                        <option value="Trigraphs (3 letters, 1 sound)">Trigraphs</option>
-                                        <option value="R-Controlled">R-Controlled</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="text-[9px] font-bold text-slate-400">Sound (e.g. sh)</label>
-                                    <Input 
-                                        placeholder="Sound" 
-                                        value={newSound.sound} 
-                                        onChange={e => setNewSound({...newSound, sound: e.target.value})} 
-                                        className="bg-white text-sm animate-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[9px] font-bold text-slate-400">Example Word (e.g. ship)</label>
-                                    <Input 
-                                        placeholder="Example" 
-                                        value={newSound.example} 
-                                        onChange={e => setNewSound({...newSound, example: e.target.value})} 
-                                        className="bg-white text-sm animate-none"
-                                    />
-                                </div>
-                                <div className="flex items-end">
-                                    <Button 
-                                        onClick={async () => {
-                                            if (!newSound.sound || !newSound.example || !firestore) return;
-                                            setIsAddingSound(true);
-                                            try {
-                                                await addDoc(collection(firestore, 'junior_phonics_sounds'), {
-                                                    sound: newSound.sound.trim().toLowerCase(),
-                                                    example: newSound.example.trim().toLowerCase(),
-                                                    category: newSound.category,
-                                                    createdAt: serverTimestamp()
-                                                });
-                                                setNewSound({ sound: '', example: '', category: newSound.category });
-                                                refetchSounds();
-                                                toast({ title: "Sound card added to library!" });
-                                            } catch (err) {
-                                                toast({ title: "Error", description: "Failed to add sound card.", variant: "destructive" });
-                                            } finally {
-                                                setIsAddingSound(false);
-                                            }
-                                        }} 
-                                        disabled={isAddingSound || !newSound.sound || !newSound.example}
-                                        className="w-full bg-teal-600 h-10 rounded-xl"
-                                    >
-                                        {isAddingSound ? <Loader2 className="animate-spin" /> : "Add Card"}
-                                    </Button>
-                                </div>
-                            </div>
-                        </Card>
-                    )}
-
-                    {soundGroups.map((group) => (
-                        <div key={group.name} className="space-y-3">
-                            <h3 className="font-black text-slate-500 uppercase text-xs tracking-widest ml-2">{group.name}</h3>
-                            <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-                                {group.sounds.map((sound, idx) => (
-                                    <div 
-                                        key={sound} 
-                                        className="relative group"
-                                    >
-                                        <button 
-                                            onClick={() => {
-                                                speak(sound);
-                                                toast({ title: `"${sound}" as in...`, description: group.example[idx].toUpperCase() });
-                                            }} 
-                                            className={cn(
-                                              "w-full aspect-square rounded-[28px] border-2 border-b-[8px] font-black text-3xl shadow-md hover:-translate-y-1 hover:shadow-lg active:translate-y-0.5 active:border-b-2 transition-all flex flex-col items-center justify-center bg-white animate-none",
-                                              group.name === "Short Vowels" && "border-rose-200 border-b-rose-400 text-rose-600 hover:bg-rose-50/20",
-                                              group.name === "Digraphs (2 letters, 1 sound)" && "border-teal-200 border-b-teal-400 text-teal-600 hover:bg-teal-50/20",
-                                              group.name === "Long Vowels" && "border-purple-200 border-b-purple-400 text-purple-600 hover:bg-purple-50/20",
-                                              group.name === "Trigraphs (3 letters, 1 sound)" && "border-orange-200 border-b-orange-400 text-orange-600 hover:bg-orange-50/20",
-                                              group.name === "R-Controlled" && "border-amber-200 border-b-amber-400 text-amber-600 hover:bg-amber-50/20"
-                                            )}
-                                        >
-                                            <span className="text-4xl tracking-tight capitalize">{sound}</span>
-                                            <span className="text-[10px] mt-2 font-black uppercase opacity-65 tracking-widest bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-100">{group.example[idx]}</span>
-                                        </button>
-                                        {canEdit && group.customIds[idx] && (
-                                            <Button 
-                                                size="icon" 
-                                                variant="ghost" 
-                                                onClick={async (e) => {
-                                                    e.stopPropagation();
-                                                    if (confirm("Delete this sound card?")) {
-                                                        if (firestore) {
-                                                            await deleteDoc(doc(firestore, 'junior_phonics_sounds', group.customIds[idx]));
-                                                            refetchSounds();
-                                                            toast({ title: "Sound card deleted." });
-                                                        }
-                                                    }
-                                                }}
-                                                className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 transition-opacity bg-white/80 rounded-full"
-                                            >
-                                                <Trash2 className="w-3.5 h-3.5"/>
-                                            </Button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+                <div className="space-y-6 animate-in fade-in duration-200">
+                    {/* Progression Mode Switcher */}
+                    <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white/80 backdrop-blur-md p-2.5 rounded-2xl border border-teal-100/80 shadow-xs max-w-5xl mx-auto">
+                        <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-teal-600 shrink-0" />
+                            <span className="text-xs font-black text-slate-800">Phonics Progression Mode:</span>
                         </div>
-                    ))}
+                        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                            <button
+                                type="button"
+                                onClick={() => setProgressionMode('ssp')}
+                                className={cn(
+                                    "px-3 py-1 rounded-lg text-xs font-black transition-all cursor-pointer",
+                                    progressionMode === 'ssp' 
+                                        ? "bg-teal-600 text-white shadow-xs" 
+                                        : "text-slate-600 hover:text-slate-900"
+                                )}
+                            >
+                                ⭐ Systematic Synthetic Phonics (SSP)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setProgressionMode('categories')}
+                                className={cn(
+                                    "px-3 py-1 rounded-lg text-xs font-black transition-all cursor-pointer",
+                                    progressionMode === 'categories' 
+                                        ? "bg-teal-600 text-white shadow-xs" 
+                                        : "text-slate-600 hover:text-slate-900"
+                                )}
+                            >
+                                📚 Traditional Categories
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mode A: Systematic Synthetic Phonics (SSP Phase Order) */}
+                    {progressionMode === 'ssp' ? (
+                        <div className="space-y-6 max-w-5xl mx-auto">
+                            {sspPhaseGroups.map((group) => (
+                                <div key={group.id} className="space-y-3 bg-white/60 p-4 sm:p-5 rounded-3xl border border-teal-100/60 shadow-xs">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className={cn("text-[10px] font-black uppercase px-2 py-0.5 rounded-md border", group.badgeBg)}>
+                                                    {group.phase}
+                                                </span>
+                                                <h3 className="font-black text-slate-900 text-sm sm:text-base">{group.setName}</h3>
+                                            </div>
+                                            <p className="text-xs text-slate-500 font-medium mt-0.5">{group.description}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Responsive multi-sensory sound cards grid (minimum 88x88px touch target) */}
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4" role="group" aria-label={group.setName}>
+                                        {group.sounds.map((card) => {
+                                            const isPlaying = playingCardId === card.id;
+                                            return (
+                                                <div
+                                                    key={card.id}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    aria-label={`Sound card: ${card.upperGrapheme}${card.grapheme}, phoneme ${card.phoneme}, as in ${card.exampleWord}`}
+                                                    onClick={() => playSoundCardAudio(card)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            playSoundCardAudio(card);
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                        "min-h-[96px] min-w-[96px] p-3 sm:p-4 rounded-3xl border-2 border-b-[6px] transition-all duration-150 relative cursor-pointer outline-none flex flex-col items-center justify-between text-center select-none shadow-md",
+                                                        "hover:-translate-y-1 hover:shadow-lg active:translate-y-0.5 active:border-b-2 active:scale-95",
+                                                        "focus-visible:ring-4 focus-visible:ring-teal-400 focus-visible:ring-offset-2",
+                                                        isPlaying
+                                                            ? "bg-teal-50 border-teal-500 ring-4 ring-teal-200 scale-102"
+                                                            : "bg-white border-slate-200/90 hover:border-teal-300"
+                                                    )}
+                                                >
+                                                    {/* Concentric Animated Sound Wave Ripple */}
+                                                    {isPlaying && (
+                                                        <span className="absolute inset-0 rounded-3xl ring-4 ring-teal-400/40 animate-ping pointer-events-none" />
+                                                    )}
+
+                                                    {/* Top Bar: IPA Phoneme & Audio Trigger */}
+                                                    <div className="w-full flex items-center justify-between">
+                                                        <span className="text-[11px] sm:text-xs font-mono font-black text-teal-800 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200/60">
+                                                            {card.phoneme}
+                                                        </span>
+                                                        <button 
+                                                            type="button" 
+                                                            aria-label={`Replay sound ${card.phoneme}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                playSoundCardAudio(card);
+                                                            }}
+                                                            className="text-slate-400 hover:text-teal-600 transition-colors p-1 rounded-full hover:bg-teal-50"
+                                                        >
+                                                            <Volume2 className={cn("w-4 h-4", isPlaying && "text-teal-600 animate-pulse")} />
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Central Letter Glyphs (Prominent Lower-case form as required by EYFS) */}
+                                                    <div className="my-1 flex items-baseline justify-center gap-1.5">
+                                                        <span 
+                                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', cursive, sans-serif" }}
+                                                            className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none drop-shadow-2xs"
+                                                        >
+                                                            {card.grapheme === 'a' ? 'ɑ' : card.grapheme}
+                                                        </span>
+                                                        <span 
+                                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', cursive, sans-serif" }}
+                                                            className="text-xl sm:text-2xl font-black text-slate-400 leading-none"
+                                                        >
+                                                            {card.upperGrapheme}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Example Word with Decodable Emoji */}
+                                                    <div className="w-full text-xs sm:text-sm font-extrabold text-slate-700 flex items-center justify-center gap-1.5 py-0.5">
+                                                        <span className="text-base sm:text-lg filter drop-shadow-2xs">{card.exampleEmoji}</span>
+                                                        <span className="capitalize">{card.exampleWord}</span>
+                                                    </div>
+
+                                                    {/* Stroke Direction Cue / Mnemonic Tooltip */}
+                                                    {card.formationCue && (
+                                                        <div className="w-full mt-1 border-t border-slate-100 pt-1 text-[10px] text-slate-500 font-medium italic truncate" title={card.formationCue}>
+                                                            "{card.formationCue}"
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        /* Mode B: Traditional Sound Categories */
+                        <div className="space-y-6 max-w-5xl mx-auto">
+                            {soundGroups.map((group) => (
+                                <div key={group.name} className="space-y-3 bg-white/60 p-4 sm:p-5 rounded-3xl border border-slate-100 shadow-xs">
+                                    <h3 className="font-black text-slate-700 uppercase text-xs tracking-wider">{group.name}</h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
+                                        {group.sounds.map((sound, idx) => {
+                                            const isPlaying = playingCardId === `cat-${sound}`;
+                                            return (
+                                                <div 
+                                                    key={sound} 
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    aria-label={`Sound card: ${sound}, as in ${group.example[idx]}`}
+                                                    onClick={() => {
+                                                        playSoundCardAudio({
+                                                            id: `cat-${sound}`,
+                                                            speechPhonic: sound,
+                                                            grapheme: sound,
+                                                            exampleWord: group.example[idx]
+                                                        });
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            playSoundCardAudio({
+                                                                id: `cat-${sound}`,
+                                                                speechPhonic: sound,
+                                                                grapheme: sound,
+                                                                exampleWord: group.example[idx]
+                                                            });
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                      "min-h-[88px] min-w-[88px] w-full aspect-square rounded-[28px] border-2 border-b-[6px] font-black shadow-md transition-all flex flex-col items-center justify-center bg-white cursor-pointer select-none relative",
+                                                      "hover:-translate-y-1 hover:shadow-lg active:translate-y-0.5 active:border-b-2 active:scale-95",
+                                                      "outline-none focus-visible:ring-4 focus-visible:ring-teal-400",
+                                                      group.name.includes("Short") && "border-rose-200 border-b-rose-400 text-rose-700 hover:bg-rose-50/20",
+                                                      group.name.includes("Digraphs") && "border-teal-200 border-b-teal-400 text-teal-700 hover:bg-teal-50/20",
+                                                      group.name.includes("Long") && "border-purple-200 border-b-purple-400 text-purple-700 hover:bg-purple-50/20",
+                                                      group.name.includes("Trigraphs") && "border-orange-200 border-b-orange-400 text-orange-700 hover:bg-orange-50/20",
+                                                      group.name.includes("R-Controlled") && "border-amber-200 border-b-amber-400 text-amber-700 hover:bg-amber-50/20",
+                                                      isPlaying && "ring-4 ring-teal-300 scale-102"
+                                                    )}
+                                                >
+                                                    {isPlaying && (
+                                                        <span className="absolute inset-0 rounded-[28px] ring-4 ring-teal-400/50 animate-ping pointer-events-none" />
+                                                    )}
+                                                    <span className="text-3xl sm:text-4xl tracking-tight capitalize font-black">{sound}</span>
+                                                    <span className="text-[10px] mt-1.5 font-extrabold uppercase opacity-80 tracking-wider bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-100">{group.example[idx]}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -678,7 +871,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                             <button 
                                 key={i}
                                 onClick={() => speak(letter)}
-                                className="w-24 h-32 bg-gradient-to-b from-white to-teal-50/50 rounded-3xl shadow-xl border-2 border-b-[12px] border-teal-200 hover:border-teal-300 text-5xl font-black text-teal-600 hover:scale-105 active:translate-y-2 active:border-b-4 transition-all flex items-center justify-center"
+                                className="w-24 h-32 bg-gradient-to-b from-white to-teal-50/50 rounded-3xl shadow-xl border-2 border-b-[12px] border-teal-200 hover:border-teal-300 text-5xl font-black text-teal-600 hover:scale-105 active:translate-y-2 active:border-b-4 transition-all flex items-center justify-center cursor-pointer"
                             >
                                 {letter}
                             </button>
@@ -692,97 +885,34 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                     speak(blendingWord.join(''), 0.7);
                                     confetti({ colors: ['#2dd4bf', '#10b981'], particleCount: 60 });
                                 }}
-                                className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 h-16 px-12 rounded-full text-2xl font-black shadow-lg hover:shadow-xl hover:scale-105 transition-all animate-none"
+                                className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xl px-10 py-7 rounded-2xl shadow-xl border-2 border-emerald-400 active:scale-95 transition-all cursor-pointer"
                             >
-                                Read Word <Sparkles className="ml-2 animate-pulse" />
+                                <Play className="w-6 h-6 mr-2" /> Blend Word!
                             </Button>
-                            <Button
-                                onClick={() => {
-                                    const nextWord = DECODABLE_WORDS[Math.floor(Math.random() * DECODABLE_WORDS.length)];
-                                    setBlendingWord(nextWord.split(''));
-                                    speak("New word loaded! Let's blend it.");
-                                }}
+                            <Button 
                                 variant="outline"
-                                className="border-teal-400 text-teal-600 hover:bg-teal-50 h-16 px-8 rounded-full text-xl font-black shadow-md hover:scale-105 transition-all animate-none"
+                                onClick={() => {
+                                    const randomWord = quickLoadWords[Math.floor(Math.random() * quickLoadWords.length)];
+                                    setBlendingWord(randomWord.split(''));
+                                }}
+                                className="bg-white text-teal-700 font-extrabold text-sm px-5 py-7 rounded-2xl border-2 border-teal-200 hover:bg-teal-50 shadow-sm transition-all cursor-pointer"
                             >
-                                Surprise Word 🎲
+                                <Sparkles className="w-4 h-4 mr-1.5 text-amber-500" /> New Word
                             </Button>
-                        </div>
-                        <div className="space-y-2">
-                            <p className="text-xs font-black uppercase text-teal-500/80 tracking-wider">Quick Words to Load</p>
-                            <div className="flex flex-wrap justify-center gap-2">
-                                {quickLoadWords.map(w => (
-                                    <button 
-                                      key={w} 
-                                      onClick={() => setBlendingWord(w.split(''))} 
-                                      className="px-4 py-2 bg-white hover:bg-teal-50 border border-teal-100 rounded-full text-sm font-black text-teal-700 shadow-sm transition-all hover:scale-105"
-                                    >
-                                        {w}
-                                    </button>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* PILLAR 3: WORD FAMILIES (RHYMES) */}
+            {/* PILLAR 3: WORD FAMILIES (RHYMES) - UNCLUTTERED LEARNER VIEW */}
             {activeTab === 'families' && (
-                <div className="space-y-6">
-                    {canEdit && (
-                        <Card className="p-6 border-2 border-teal-200 bg-teal-50/30 rounded-3xl space-y-3 shadow-inner">
-                            <h4 className="font-black text-teal-800 text-sm flex items-center gap-2">
-                                <PlusCircle className="w-4 h-4" /> Add Custom Rhyme Family
-                            </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div>
-                                    <label className="text-[9px] font-bold text-slate-400">Rhyme Family (e.g. -ot)</label>
-                                    <Input 
-                                        placeholder="-ot" 
-                                        value={newRhyme.family} 
-                                        onChange={e => setNewRhyme({...newRhyme, family: e.target.value})} 
-                                        className="bg-white text-sm animate-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-[9px] font-bold text-slate-400">Words (comma separated, e.g. hot, pot, cot)</label>
-                                    <Input 
-                                        placeholder="hot, pot, cot" 
-                                        value={newRhyme.words} 
-                                        onChange={e => setNewRhyme({...newRhyme, words: e.target.value})} 
-                                        className="bg-white text-sm animate-none"
-                                    />
-                                </div>
-                                <div className="flex items-end">
-                                    <Button 
-                                        onClick={async () => {
-                                            if (!newRhyme.family || !newRhyme.words || !firestore) return;
-                                            setIsAddingRhyme(true);
-                                            try {
-                                                const wordsArr = newRhyme.words.split(',').map(w => w.trim().toLowerCase()).filter(Boolean);
-                                                await addDoc(collection(firestore, 'junior_phonics_rhymes'), {
-                                                    family: newRhyme.family.trim().toLowerCase(),
-                                                    words: wordsArr,
-                                                    createdAt: serverTimestamp()
-                                                });
-                                                setNewRhyme({ family: '', words: '' });
-                                                refetchRhymes();
-                                                toast({ title: "Rhyme family added!" });
-                                            } catch (err) {
-                                                toast({ title: "Error", description: "Failed to add rhyme family.", variant: "destructive" });
-                                            } finally {
-                                                setIsAddingRhyme(false);
-                                            }
-                                        }} 
-                                        disabled={isAddingRhyme || !newRhyme.family || !newRhyme.words}
-                                        className="w-full bg-teal-600 h-10 rounded-xl"
-                                    >
-                                        {isAddingRhyme ? <Loader2 className="animate-spin" /> : "Add Family"}
-                                    </Button>
-                                </div>
-                            </div>
-                        </Card>
-                    )}
+                <div className="space-y-6 animate-in fade-in duration-200">
+                    <div className="text-center space-y-1">
+                        <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
+                            Rhyming Word Families <Sparkles className="w-4 h-4 text-amber-500" />
+                        </h3>
+                        <p className="text-xs text-slate-500 font-medium">Explore words that share common phonemic endings and practice onset-rime blending</p>
+                    </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4">
                         {rhymeFamilies.map((item, index) => {
@@ -865,6 +995,211 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                     </div>
                 </div>
             )}
+
+            {/* FACILITATOR & CURRICULUM MANAGER MODAL DIALOG (DECOUPLED FROM LEARNER VIEW) */}
+            <Dialog open={canEdit && isFacilitatorModalOpen} onOpenChange={(open) => { if (!canEdit) return; setIsFacilitatorModalOpen(open); }}>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-6 bg-white shadow-2xl border-2 border-slate-200">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <Settings2 className="w-5 h-5 text-teal-600" />
+                            Phonics Facilitator & Curriculum Manager
+                        </DialogTitle>
+                        <DialogDescription className="text-xs text-slate-500 font-medium">
+                            Create custom phonics sound cards, configure stroke mnemonics, and define rhyming word families.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {/* Modal Sub Tabs */}
+                    <div className="flex gap-2 p-1 bg-slate-100 rounded-xl my-2">
+                        <button
+                            type="button"
+                            onClick={() => setFacilitatorModalTab('sound')}
+                            className={cn(
+                                "flex-1 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer",
+                                facilitatorModalTab === 'sound' ? "bg-white text-teal-800 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                            )}
+                        >
+                            + Add Sound Card
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setFacilitatorModalTab('rhyme')}
+                            className={cn(
+                                "flex-1 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer",
+                                facilitatorModalTab === 'rhyme' ? "bg-white text-teal-800 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                            )}
+                        >
+                            + Add Rhyme Family
+                        </button>
+                    </div>
+
+                    {facilitatorModalTab === 'sound' ? (
+                        <div className="space-y-3.5 mt-2">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-bold text-slate-700">Category</Label>
+                                    <select
+                                        value={newSound.category}
+                                        onChange={e => setNewSound({...newSound, category: e.target.value})}
+                                        className="w-full bg-white border border-slate-200 rounded-xl text-xs p-2 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-teal-500"
+                                    >
+                                        <option value="Single Letters">Single Letters (Phase 2)</option>
+                                        <option value="Consonant Digraphs">Consonant Digraphs (sh, ch, th)</option>
+                                        <option value="Vowel Digraphs">Vowel Digraphs (ai, ee, oa)</option>
+                                        <option value="Short Vowels">Short Vowels</option>
+                                        <option value="Trigraphs">Trigraphs (igh, ear)</option>
+                                        <option value="R-Controlled">R-Controlled</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-bold text-slate-700">SSP Phase</Label>
+                                    <select
+                                        value={newSound.phase}
+                                        onChange={e => setNewSound({...newSound, phase: e.target.value})}
+                                        className="w-full bg-white border border-slate-200 rounded-xl text-xs p-2 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-teal-500"
+                                    >
+                                        <option value="Phase 2">Phase 2 (Letters & Sounds)</option>
+                                        <option value="Phase 3">Phase 3 (Digraphs & Vowels)</option>
+                                        <option value="Phase 4">Phase 4 (Blends & Clusters)</option>
+                                        <option value="Phase 5">Phase 5 (Alternative Spellings)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-bold text-slate-700">Grapheme / Sound</Label>
+                                    <Input
+                                        placeholder="e.g. sh or m"
+                                        value={newSound.sound}
+                                        onChange={e => setNewSound({...newSound, sound: e.target.value})}
+                                        className="h-9 rounded-xl text-sm font-semibold"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-xs font-bold text-slate-700">Example Word</Label>
+                                    <Input
+                                        placeholder="e.g. ship or moon"
+                                        value={newSound.example}
+                                        onChange={e => setNewSound({...newSound, example: e.target.value})}
+                                        className="h-9 rounded-xl text-sm font-semibold"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold text-slate-700">Sensory Stroke / Formation Cue</Label>
+                                <Input
+                                    placeholder="e.g. Slither down the snake"
+                                    value={newSound.formationCue}
+                                    onChange={e => setNewSound({...newSound, formationCue: e.target.value})}
+                                    className="h-9 rounded-xl text-xs font-medium"
+                                />
+                            </div>
+
+                            <div className="pt-2 flex justify-end gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsFacilitatorModalOpen(false)}
+                                    className="rounded-xl text-xs font-bold"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="button"
+                                    disabled={isAddingSound || !newSound.sound || !newSound.example}
+                                    onClick={async () => {
+                                        if (!newSound.sound || !newSound.example || !firestore) return;
+                                        setIsAddingSound(true);
+                                        try {
+                                            await addDoc(collection(firestore, 'junior_phonics_sounds'), {
+                                                sound: newSound.sound.trim().toLowerCase(),
+                                                example: newSound.example.trim().toLowerCase(),
+                                                category: newSound.category,
+                                                phase: newSound.phase,
+                                                formationCue: newSound.formationCue.trim(),
+                                                createdAt: serverTimestamp()
+                                            });
+                                            setNewSound({ sound: '', example: '', category: 'Single Letters', phase: 'Phase 2', formationCue: '' });
+                                            refetchSounds();
+                                            toast({ title: "Custom sound card added to Phonics Forest!" });
+                                            setIsFacilitatorModalOpen(false);
+                                        } catch (err) {
+                                            toast({ title: "Error", description: "Failed to add sound card.", variant: "destructive" });
+                                        } finally {
+                                            setIsAddingSound(false);
+                                        }
+                                    }}
+                                    className="bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-black px-5"
+                                >
+                                    {isAddingSound ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Sound Card"}
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-3.5 mt-2">
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold text-slate-700">Rhyme Family</Label>
+                                <Input
+                                    placeholder="e.g. -ot or -ell"
+                                    value={newRhyme.family}
+                                    onChange={e => setNewRhyme({...newRhyme, family: e.target.value})}
+                                    className="h-9 rounded-xl text-sm font-semibold"
+                                />
+                            </div>
+
+                            <div className="space-y-1">
+                                <Label className="text-xs font-bold text-slate-700">Words (comma-separated)</Label>
+                                <Input
+                                    placeholder="e.g. hot, pot, cot, dot, rot"
+                                    value={newRhyme.words}
+                                    onChange={e => setNewRhyme({...newRhyme, words: e.target.value})}
+                                    className="h-9 rounded-xl text-sm font-medium"
+                                />
+                            </div>
+
+                            <div className="pt-2 flex justify-end gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsFacilitatorModalOpen(false)}
+                                    className="rounded-xl text-xs font-bold"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="button"
+                                    disabled={isAddingRhyme || !newRhyme.family || !newRhyme.words}
+                                    onClick={async () => {
+                                        if (!newRhyme.family || !newRhyme.words || !firestore) return;
+                                        setIsAddingRhyme(true);
+                                        try {
+                                            const wordsArr = newRhyme.words.split(',').map(w => w.trim().toLowerCase()).filter(Boolean);
+                                            await addDoc(collection(firestore, 'junior_phonics_rhymes'), {
+                                                family: newRhyme.family.trim().toLowerCase(),
+                                                words: wordsArr,
+                                                createdAt: serverTimestamp()
+                                            });
+                                            setNewRhyme({ family: '', words: '' });
+                                            refetchRhymes();
+                                            toast({ title: "Custom rhyme family added!" });
+                                            setIsFacilitatorModalOpen(false);
+                                        } catch (err) {
+                                            toast({ title: "Error", description: "Failed to add rhyme family.", variant: "destructive" });
+                                        } finally {
+                                            setIsAddingRhyme(false);
+                                        }
+                                    }}
+                                    className="bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-black px-5"
+                                >
+                                    {isAddingRhyme ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Rhyme Family"}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

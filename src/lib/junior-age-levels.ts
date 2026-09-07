@@ -12,6 +12,7 @@ export interface AgeTierConfig {
   name: string;
   subtitle: string;
   recommendedGrade: string;
+  internationalTier: string;
   color: string;
   badgeBg: string;
   borderColor: string;
@@ -20,22 +21,152 @@ export interface AgeTierConfig {
   modules: string[];
 }
 
+export interface SSPSoundCard {
+  id: string;
+  grapheme: string;
+  upperGrapheme: string;
+  phoneme: string;
+  speechPhonic: string;
+  exampleWord: string;
+  exampleEmoji: string;
+  phase: 'Phase 2' | 'Phase 3' | 'Phase 4' | 'Phase 5';
+  set: string;
+  category: 'Single Letters' | 'Consonant Digraphs' | 'Vowel Digraphs' | 'Trigraphs';
+  formationCue?: string;
+  audioUrl?: string;
+  isCustom?: boolean;
+}
+
+export interface SSPPhaseGroup {
+  id: string;
+  phase: string;
+  setName: string;
+  description: string;
+  color: string;
+  badgeBg: string;
+  sounds: SSPSoundCard[];
+}
+
+// Systematic Synthetic Phonics (SSP) Phase 2 & 3 Standard Sequence
+export const SSP_PHONICS_PRESET: SSPPhaseGroup[] = [
+  {
+    id: 'p2-set1',
+    phase: 'Phase 2',
+    setName: 'Set 1: s, a, t, p',
+    description: 'Foundational consonants and short vowel for initial 2-letter and 3-letter blending (at, sat, pat, tap).',
+    color: 'border-rose-300 bg-rose-50/40 text-rose-800',
+    badgeBg: 'bg-rose-100 text-rose-700 border-rose-200',
+    sounds: [
+      { id: 'ssp-s', grapheme: 's', upperGrapheme: 'S', phoneme: '/s/', speechPhonic: 's', exampleWord: 'sun', exampleEmoji: '☀️', phase: 'Phase 2', set: 'Set 1', category: 'Single Letters', formationCue: 'Slither down the snake' },
+      { id: 'ssp-a', grapheme: 'a', upperGrapheme: 'A', phoneme: '/æ/', speechPhonic: 'ah', exampleWord: 'apple', exampleEmoji: '🍎', phase: 'Phase 2', set: 'Set 1', category: 'Single Letters', formationCue: 'Around the apple and down the leaf' },
+      { id: 'ssp-t', grapheme: 't', upperGrapheme: 'T', phoneme: '/t/', speechPhonic: 't', exampleWord: 'tap', exampleEmoji: '🚰', phase: 'Phase 2', set: 'Set 1', category: 'Single Letters', formationCue: 'Down the tower, across the tower' },
+      { id: 'ssp-p', grapheme: 'p', upperGrapheme: 'P', phoneme: '/p/', speechPhonic: 'p', exampleWord: 'pan', exampleEmoji: '🍳', phase: 'Phase 2', set: 'Set 1', category: 'Single Letters', formationCue: 'Down the pirate plait and around his face' }
+    ]
+  },
+  {
+    id: 'p2-set2',
+    phase: 'Phase 2',
+    setName: 'Set 2: i, n, m, d',
+    description: 'Expanding CVC decodable inventory (pin, tin, man, mat, sad, dim).',
+    color: 'border-emerald-300 bg-emerald-50/40 text-emerald-800',
+    badgeBg: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    sounds: [
+      { id: 'ssp-i', grapheme: 'i', upperGrapheme: 'I', phoneme: '/ɪ/', speechPhonic: 'ih', exampleWord: 'insect', exampleEmoji: '🐜', phase: 'Phase 2', set: 'Set 2', category: 'Single Letters', formationCue: 'Down the insect body and dot for his head' },
+      { id: 'ssp-n', grapheme: 'n', upperGrapheme: 'N', phoneme: '/n/', speechPhonic: 'nnn', exampleWord: 'net', exampleEmoji: '🥅', phase: 'Phase 2', set: 'Set 2', category: 'Single Letters', formationCue: 'Down Nobby and over his net' },
+      { id: 'ssp-m', grapheme: 'm', upperGrapheme: 'M', phoneme: '/m/', speechPhonic: 'mmm', exampleWord: 'moon', exampleEmoji: '🌙', phase: 'Phase 2', set: 'Set 2', category: 'Single Letters', formationCue: 'Maisie, mountain, mountain' },
+      { id: 'ssp-d', grapheme: 'd', upperGrapheme: 'D', phoneme: '/d/', speechPhonic: 'd as in duck', exampleWord: 'duck', exampleEmoji: '🦆', phase: 'Phase 2', set: 'Set 2', category: 'Single Letters', formationCue: 'Round the dinosaur bottom, up his tall neck, down to his feet' }
+    ]
+  },
+  {
+    id: 'p2-set3',
+    phase: 'Phase 2',
+    setName: 'Set 3: g, o, c, k',
+    description: 'Introducing velar stops and short rounded vowel for words like dog, pot, cup, kid.',
+    color: 'border-teal-300 bg-teal-50/40 text-teal-800',
+    badgeBg: 'bg-teal-100 text-teal-700 border-teal-200',
+    sounds: [
+      { id: 'ssp-g', grapheme: 'g', upperGrapheme: 'G', phoneme: '/ɡ/', speechPhonic: 'guh', exampleWord: 'girl', exampleEmoji: '👧', phase: 'Phase 2', set: 'Set 3', category: 'Single Letters', formationCue: 'Round her face, down her braid, and give her a curl' },
+      { id: 'ssp-o', grapheme: 'o', upperGrapheme: 'O', phoneme: '/ɒ/', speechPhonic: 'ah', exampleWord: 'octopus', exampleEmoji: '🐙', phase: 'Phase 2', set: 'Set 3', category: 'Single Letters', formationCue: 'All the way round the orange' },
+      { id: 'ssp-c', grapheme: 'c', upperGrapheme: 'C', phoneme: '/k/', speechPhonic: 'k', exampleWord: 'cat', exampleEmoji: '🐱', phase: 'Phase 2', set: 'Set 3', category: 'Single Letters', formationCue: 'Curl around the caterpillar' },
+      { id: 'ssp-k', grapheme: 'k', upperGrapheme: 'K', phoneme: '/k/', speechPhonic: 'k', exampleWord: 'kite', exampleEmoji: '🪁', phase: 'Phase 2', set: 'Set 3', category: 'Single Letters', formationCue: 'Down the kangaroo body, tail, and leg' }
+    ]
+  },
+  {
+    id: 'p2-set4',
+    phase: 'Phase 2',
+    setName: 'Set 4: ck, e, u, r',
+    description: 'Introducing first consonant digraph ck and remaining short vowels.',
+    color: 'border-amber-300 bg-amber-50/40 text-amber-800',
+    badgeBg: 'bg-amber-100 text-amber-700 border-amber-200',
+    sounds: [
+      { id: 'ssp-ck', grapheme: 'ck', upperGrapheme: 'CK', phoneme: '/k/', speechPhonic: 'k', exampleWord: 'duck', exampleEmoji: '🦆', phase: 'Phase 2', set: 'Set 4', category: 'Consonant Digraphs', formationCue: 'Two letters making one sound: c and k together' },
+      { id: 'ssp-e', grapheme: 'e', upperGrapheme: 'E', phoneme: '/ɛ/', speechPhonic: 'eh', exampleWord: 'egg', exampleEmoji: '🥚', phase: 'Phase 2', set: 'Set 4', category: 'Single Letters', formationCue: 'Lift off top and scoop out the egg' },
+      { id: 'ssp-u', grapheme: 'u', upperGrapheme: 'U', phoneme: '/ʌ/', speechPhonic: 'uh', exampleWord: 'umbrella', exampleEmoji: '☂️', phase: 'Phase 2', set: 'Set 4', category: 'Single Letters', formationCue: 'Down and under the umbrella, up to top, and down to puddle' },
+      { id: 'ssp-r', grapheme: 'r', upperGrapheme: 'R', phoneme: '/r/', speechPhonic: 'rrr', exampleWord: 'robot', exampleEmoji: '🤖', phase: 'Phase 2', set: 'Set 4', category: 'Single Letters', formationCue: 'Down his back and curl over his arm' }
+    ]
+  },
+  {
+    id: 'p2-set5',
+    phase: 'Phase 2',
+    setName: 'Set 5: h, b, f, l',
+    description: 'Consolidating simple consonants and double-letter representations (ff, ll, ss).',
+    color: 'border-indigo-300 bg-indigo-50/40 text-indigo-800',
+    badgeBg: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    sounds: [
+      { id: 'ssp-h', grapheme: 'h', upperGrapheme: 'H', phoneme: '/h/', speechPhonic: 'huh', exampleWord: 'hat', exampleEmoji: '🎩', phase: 'Phase 2', set: 'Set 5', category: 'Single Letters', formationCue: 'Down the horse head to hooves and over his back' },
+      { id: 'ssp-b', grapheme: 'b', upperGrapheme: 'B', phoneme: '/b/', speechPhonic: 'b', exampleWord: 'ball', exampleEmoji: '⚽', phase: 'Phase 2', set: 'Set 5', category: 'Single Letters', formationCue: 'Down the boot, up and around the toe' },
+      { id: 'ssp-f', grapheme: 'f', upperGrapheme: 'F', phoneme: '/f/', speechPhonic: 'fff', exampleWord: 'fish', exampleEmoji: '🐟', phase: 'Phase 2', set: 'Set 5', category: 'Single Letters', formationCue: 'Down the flower stem and draw the leaves' },
+      { id: 'ssp-l', grapheme: 'l', upperGrapheme: 'L', phoneme: '/l/', speechPhonic: 'lll', exampleWord: 'lollipop', exampleEmoji: '🍭', phase: 'Phase 2', set: 'Set 5', category: 'Single Letters', formationCue: 'Down the long leg straight to bottom' }
+    ]
+  },
+  {
+    id: 'p3-digraphs',
+    phase: 'Phase 3',
+    setName: 'Phase 3: Consonant Digraphs',
+    description: 'Essential two-letter combinations representing unique single phonemes (ch, sh, th, ng).',
+    color: 'border-purple-300 bg-purple-50/40 text-purple-800',
+    badgeBg: 'bg-purple-100 text-purple-700 border-purple-200',
+    sounds: [
+      { id: 'ssp-ch', grapheme: 'ch', upperGrapheme: 'CH', phoneme: '/tʃ/', speechPhonic: 'ch', exampleWord: 'chip', exampleEmoji: '🍟', phase: 'Phase 3', set: 'Digraphs', category: 'Consonant Digraphs', formationCue: 'c and h together making the train sound ch-ch-ch' },
+      { id: 'ssp-sh', grapheme: 'sh', upperGrapheme: 'SH', phoneme: '/ʃ/', speechPhonic: 'shh', exampleWord: 'ship', exampleEmoji: '🚢', phase: 'Phase 3', set: 'Digraphs', category: 'Consonant Digraphs', formationCue: 's and h together making the quiet shh sound' },
+      { id: 'ssp-th', grapheme: 'th', upperGrapheme: 'TH', phoneme: '/θ/', speechPhonic: 'th', exampleWord: 'thumb', exampleEmoji: '👍', phase: 'Phase 3', set: 'Digraphs', category: 'Consonant Digraphs', formationCue: 't and h together: tongue between your teeth' },
+      { id: 'ssp-ng', grapheme: 'ng', upperGrapheme: 'NG', phoneme: '/ŋ/', speechPhonic: 'ng', exampleWord: 'ring', exampleEmoji: '💍', phase: 'Phase 3', set: 'Digraphs', category: 'Consonant Digraphs', formationCue: 'n and g together: a strong ring sound' }
+    ]
+  },
+  {
+    id: 'p3-vowels',
+    phase: 'Phase 3',
+    setName: 'Phase 3: Vowel Digraphs',
+    description: 'Long vowel sounds made of two vowel letters (ai, ee, igh, oa, oo).',
+    color: 'border-cyan-300 bg-cyan-50/40 text-cyan-800',
+    badgeBg: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    sounds: [
+      { id: 'ssp-ai', grapheme: 'ai', upperGrapheme: 'AI', phoneme: '/eɪ/', speechPhonic: 'ay', exampleWord: 'rain', exampleEmoji: '🌧️', phase: 'Phase 3', set: 'Vowels', category: 'Vowel Digraphs', formationCue: 'a and i making the long A sound in rain' },
+      { id: 'ssp-ee', grapheme: 'ee', upperGrapheme: 'EE', phoneme: '/iː/', speechPhonic: 'ee', exampleWord: 'tree', exampleEmoji: '🌳', phase: 'Phase 3', set: 'Vowels', category: 'Vowel Digraphs', formationCue: 'Double e making the smiling ee sound' },
+      { id: 'ssp-igh', grapheme: 'igh', upperGrapheme: 'IGH', phoneme: '/aɪ/', speechPhonic: 'eye', exampleWord: 'light', exampleEmoji: '💡', phase: 'Phase 3', set: 'Vowels', category: 'Trigraphs', formationCue: 'Three letters, one bright sound: igh in night' },
+      { id: 'ssp-oa', grapheme: 'oa', upperGrapheme: 'OA', phoneme: '/əʊ/', speechPhonic: 'oh', exampleWord: 'boat', exampleEmoji: '⛵', phase: 'Phase 3', set: 'Vowels', category: 'Vowel Digraphs', formationCue: 'o and a making the round oh sound in boat' },
+      { id: 'ssp-oo', grapheme: 'oo', upperGrapheme: 'OO', phoneme: '/uː/', speechPhonic: 'oo', exampleWord: 'moon', exampleEmoji: '🌕', phase: 'Phase 3', set: 'Vowels', category: 'Vowel Digraphs', formationCue: 'Two little eyes peeking out: oo in zoom' }
+    ]
+  }
+];
+
 export const AGE_TIERS: Record<string, AgeTierConfig> = {
   'ages2-3': {
     id: 'ages2-3',
     name: 'Ages 2–3',
     subtitle: 'Toddler & Playgroup',
     recommendedGrade: 'Crèche / Playgroup',
+    internationalTier: 'EYFS Nursery / Toddler',
     color: 'from-amber-400 to-orange-400',
     badgeBg: 'bg-amber-100 text-amber-800 border-amber-300',
     borderColor: 'border-amber-400',
     iconEmoji: '🧸',
     objectives: [
-      'Identifying animal sounds',
-      'Naming common household objects',
-      '"Guess the Sound" game',
-      'Tracing straight lines & pre-writing shapes',
-      'Repeating simple words clearly after audio'
+      'Phonological awareness: environmental & animal sounds',
+      'Early oral sound imitation & vocabulary building',
+      '"Guess the Sound" auditory discrimination games',
+      'Pre-writing sensory strokes & linear motor tracing',
+      'Repeating pure phonetic sounds clearly without schwa'
     ],
     modules: ['coach', 'sounds_toddler', 'objects_toddler', 'tracing_toddler', 'rewards']
   },
@@ -44,16 +175,17 @@ export const AGE_TIERS: Record<string, AgeTierConfig> = {
     name: 'Ages 3–4',
     subtitle: 'Nursery 1 & Preschool',
     recommendedGrade: 'Nursery 1',
+    internationalTier: 'Pre-K 1 / Preschool',
     color: 'from-pink-400 to-rose-400',
     badgeBg: 'bg-pink-100 text-pink-800 border-pink-300',
     borderColor: 'border-pink-400',
     iconEmoji: '🎨',
     objectives: [
-      'Tracing letters & stroke order',
-      'Matching letters to correct animal/object',
-      'Distinguishing between similar-looking letters (b vs d, p vs q)',
-      'Identifying the first sound in spoken words',
-      'Completing a simple visual pattern (A-B-A-B)'
+      'Systematic Synthetic Phonics: Phase 2 grapheme-phoneme recognition',
+      'Guided stroke-order letter formation & sensory tracing',
+      'Auditory alliteration: isolating initial sounds in words',
+      'Visual discrimination of confusable letters (b vs d, p vs q)',
+      'Continuous oral blending for simple 2-letter VC words (in, at, on)'
     ],
     modules: ['abc', 'phonics', 'tracing_letters', 'letter_match', 'patterns', 'rewards']
   },
@@ -62,17 +194,18 @@ export const AGE_TIERS: Record<string, AgeTierConfig> = {
     name: 'Ages 4–5',
     subtitle: 'Nursery 2 & Pre-K',
     recommendedGrade: 'Nursery 2 / Pre-K',
+    internationalTier: 'Pre-K 2 / Reception',
     color: 'from-teal-400 to-emerald-400',
     badgeBg: 'bg-teal-100 text-teal-800 border-teal-300',
     borderColor: 'border-teal-400',
     iconEmoji: '🚀',
     objectives: [
-      'Reading simple CVC words (cat, dog, mop)',
-      'Visual recognition of high-frequency sight words (the, is, etc.)',
-      'Identifying words that rhyme (cat, hat, mat)',
-      'Arranging scrambled letters to form a word',
-      'Speed-blending drills (m-o-p -> mop)',
-      'Reading 2-3 word phrases fluently'
+      'Decodable CVC segmenting & phonemic manipulation',
+      'Continuous speed-blending drills (c-a-t -> cat, m-o-p -> mop)',
+      'Consonant & vowel digraph mastery (ch, sh, th, ng, ee, oa)',
+      'Orthographic sight-word recognition (Phase 2 & 3 high-frequency words)',
+      'Phoneme substitution across rhyming families (-at, -ig, -op, -un)',
+      'Reading emergent decodable sentences with fluency'
     ],
     modules: ['cvc_builder', 'sight_words', 'rhyme_matcher', 'word_scramble', 'speed_blend', 'rewards']
   },
@@ -81,17 +214,18 @@ export const AGE_TIERS: Record<string, AgeTierConfig> = {
     name: 'Ages 5+',
     subtitle: 'KG2 & Primary 1 / Class 1 (Advanced)',
     recommendedGrade: 'Kindergarten / Class 1',
+    internationalTier: 'Year 1 / Grade 1',
     color: 'from-indigo-500 to-purple-600',
     badgeBg: 'bg-indigo-100 text-indigo-800 border-indigo-300',
     borderColor: 'border-indigo-500',
     iconEmoji: '🎓',
     objectives: [
-      'Reading multi-sentence passages with advanced vocabulary & pacing',
-      'Multi-syllable word breakdown (e.g. ex-plo-ra-tion)',
-      'Chronological story event sequencing (4-step logic)',
-      'Context clue sentence finisher & grammar recognition',
+      'Polysyllabic decodable segmenting & complex phonemic manipulation',
+      'Advanced alternative spellings & Phase 5 vowel graphemes',
+      'Chronological story sequencing, inference & narrative logic',
+      'Context clue sentence completion & syntactic awareness',
       'Descriptive Read & Draw comprehension challenges',
-      'Advanced 2-digit math, multiplication arrays & time reading'
+      'Quantitative math mastery: 2-digit operations, arrays & clock reading'
     ],
     modules: ['sentence_reader', 'syllables', 'story_sequencer', 'sentence_finisher', 'read_and_draw', 'advanced_math', 'stories', 'science', 'rewards']
   }
