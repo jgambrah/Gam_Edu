@@ -26,6 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { JuniorAgeLevelSelector } from '@/components/dashboard/junior-academy/JuniorAgeLevelSelector';
+import { GuidedTracingLab } from '@/components/dashboard/junior-academy/GuidedTracingLab';
 import { 
   AGE_TIERS, ANIMAL_SOUNDS, HOUSEHOLD_OBJECTS, LETTER_DISTINCTION, 
   PATTERN_DRILLS, CVC_WORDS, SIGHT_WORDS, RHYME_MATCHES, 
@@ -1583,10 +1584,6 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
     const [caseMode, setCaseMode] = useState<'upper' | 'lower' | 'both'>('upper');
     const [wordIndex, setWordIndex] = useState(0);
     
-    // Tracing Canvas Refs
-    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
-    const [isTracing, setIsTracing] = useState(false);
-
     // Dynamic ABC custom words state
     const [newAbcWord, setNewAbcWord] = useState({ letter: 'A', word: '', emoji: '', phonic: '' });
     const [isAddingAbc, setIsAddingAbc] = useState(false);
@@ -1729,63 +1726,13 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
         }
     };
 
-    // Tracing Logic
-    useEffect(() => {
-        if (activeTab === 'tracing' && traceCanvasRef.current) {
-            const ctx = traceCanvasRef.current.getContext('2d');
-            if (ctx) {
-                ctx.clearRect(0, 0, 400, 400);
-                ctx.font = "bold 300px sans-serif";
-                ctx.fillStyle = "#f1f5f9"; // Ghost letter
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(selectedLetter, 200, 220);
-            }
-        }
-    }, [selectedLetter, activeTab]);
 
-    const startTracing = (e: any) => {
-        const ctx = traceCanvasRef.current?.getContext('2d');
-        if (!ctx) return;
-        const rect = traceCanvasRef.current!.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#10b981"; ctx.lineWidth = 20; ctx.lineCap = "round";
-        setIsTracing(true);
-    };
-
-    const draw = (e: any) => {
-        if (!isTracing) return;
-        const canvas = traceCanvasRef.current; if (!canvas) return;
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.lineTo(x, y); ctx.stroke();
-    };
-
-    const stopTracing = () => {
-        setIsTracing(false);
-    };
-
-    const resetTracingCanvas = () => {
-        const canvas = traceCanvasRef.current;
-        const ctx = canvas?.getContext('2d');
-        if (canvas && ctx) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = "bold 300px sans-serif";
-            ctx.fillStyle = "#f1f5f9";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(selectedLetter, 200, 220);
-        }
-    };
 
     const currentWordList = mergedDict[selectedLetter] || [];
     const currentWordData = currentWordList[wordIndex] || { word: 'None', emoji: '❓', phonic: '' };
 
     return (
-        <div className={cn(activeTab === 'matcher' ? "space-y-1.5 sm:space-y-2" : "space-y-8", "w-full max-w-full overflow-hidden")}>
+        <div className={cn(activeTab === 'matcher' || activeTab === 'tracing' ? "space-y-1.5 sm:space-y-2" : "space-y-8", "w-full max-w-full overflow-hidden")}>
             {/* 1. TOP NAVIGATION */}
             <div className="flex flex-wrap gap-2 p-1.5 bg-green-50/50 rounded-2xl w-fit mx-auto border border-green-100/60 shadow-inner">
                 <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} onClick={() => { setActiveTab('explorer'); setWordIndex(0); }} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'explorer' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Explorer</Button>
@@ -1803,6 +1750,20 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                                 mergedDict={mergedDict}
                                 selectedLetter={selectedLetter}
                                 onLetterChange={setSelectedLetter}
+                            />
+                        </CardContent>
+                    </Card>
+                </div>
+            ) : activeTab === 'tracing' ? (
+                /* GUIDED HANDWRITING TRACING LAB (ECE COMPLIANT) */
+                <div className="max-w-xl mx-auto w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <Card className="rounded-3xl border-2 sm:border-4 border-amber-200/90 shadow-xl overflow-hidden bg-white/95 w-full">
+                        <CardContent className="p-2 sm:p-4">
+                            <GuidedTracingLab 
+                                selectedLetter={selectedLetter}
+                                onLetterChange={setSelectedLetter}
+                                alphabet={alphabet}
+                                mergedDict={mergedDict}
                             />
                         </CardContent>
                     </Card>
@@ -1908,41 +1869,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
                                     </div>
                                 )}
 
-                                {/* TRACING MODE */}
-                                {activeTab === 'tracing' && (
-                                    <div className="p-8 flex flex-col items-center space-y-6 animate-in slide-in-from-right-4">
-                                        <div className="text-center">
-                                            <h3 className="text-2xl font-black text-slate-800">Can you trace the letter {selectedLetter}?</h3>
-                                            <p className="text-slate-500 font-bold text-sm">Use your finger or mouse to draw!</p>
-                                        </div>
-                                        <div className="relative bg-amber-50 p-6 rounded-[36px] border-8 border-amber-800 shadow-2xl flex items-center justify-center">
-                                            {/* Wooden frame pegs */}
-                                            <div className="absolute top-2 left-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
-                                            <div className="absolute top-2 right-4 w-4 h-4 rounded-full bg-amber-900/40"></div>
-                                            <div className="bg-white rounded-2xl overflow-hidden shadow-inner border border-amber-900/10">
-                                                <canvas 
-                                                    ref={traceCanvasRef} width={400} height={400} 
-                                                    className="touch-none cursor-crosshair"
-                                                    onMouseDown={startTracing}
-                                                    onMouseMove={draw}
-                                                    onMouseUp={stopTracing}
-                                                    onMouseLeave={stopTracing}
-                                                    onTouchStart={startTracing}
-                                                    onTouchMove={draw}
-                                                    onTouchEnd={stopTracing}
-                                                />
-                                            </div>
-                                            <Button 
-                                                variant="ghost" size="sm" 
-                                                className="absolute bottom-2 right-8 text-slate-400 hover:text-slate-600 font-black"
-                                                onClick={resetTracingCanvas}
-                                            >
-                                                Reset
-                                            </Button>
-                                        </div>
-                                        <p className="text-xs font-black text-emerald-500 uppercase tracking-widest animate-pulse">★ Start at the top! ★</p>
-                                    </div>
-                                )}
+
 
                             </CardContent>
                         </Card>
