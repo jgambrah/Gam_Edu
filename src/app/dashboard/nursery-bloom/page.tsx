@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, ArrowLeft, 
+  ChevronLeft, ChevronRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Bot,
   Hash, Play, Pause, BarChart3, TrendingUp, RotateCcw
 } from 'lucide-react';
@@ -1603,33 +1604,169 @@ function ABCKingdom({
     const [isSpeaking, setIsSpeaking] = useState(false);
 
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+    
+    // Child-friendly Phonetics & Pronunciation Dictionary
+    const PHONEME_HELPERS: Record<string, { ipa: string; helper: string; speechPhonic: string }> = {
+        A: { ipa: "/æ/", helper: "Short A", speechPhonic: "ah" },
+        B: { ipa: "/b/", helper: "buh", speechPhonic: "buh" },
+        C: { ipa: "/k/", helper: "kuh", speechPhonic: "kuh" },
+        D: { ipa: "/d/", helper: "duh", speechPhonic: "duh" },
+        E: { ipa: "/ɛ/", helper: "Short E", speechPhonic: "eh" },
+        F: { ipa: "/f/", helper: "fff", speechPhonic: "fff" },
+        G: { ipa: "/ɡ/", helper: "guh", speechPhonic: "guh" },
+        H: { ipa: "/h/", helper: "huh", speechPhonic: "huh" },
+        I: { ipa: "/ɪ/", helper: "Short I", speechPhonic: "ih" },
+        J: { ipa: "/dʒ/", helper: "juh", speechPhonic: "juh" },
+        K: { ipa: "/k/", helper: "kuh", speechPhonic: "kuh" },
+        L: { ipa: "/l/", helper: "lll", speechPhonic: "lll" },
+        M: { ipa: "/m/", helper: "mmm", speechPhonic: "mmm" },
+        N: { ipa: "/n/", helper: "nnn", speechPhonic: "nnn" },
+        O: { ipa: "/ɒ/", helper: "Short O", speechPhonic: "ah" },
+        P: { ipa: "/p/", helper: "puh", speechPhonic: "puh" },
+        Q: { ipa: "/kw/", helper: "kwuh", speechPhonic: "kwuh" },
+        R: { ipa: "/r/", helper: "rrr", speechPhonic: "rrr" },
+        S: { ipa: "/s/", helper: "sss", speechPhonic: "sss" },
+        T: { ipa: "/t/", helper: "tuh", speechPhonic: "tuh" },
+        U: { ipa: "/ʌ/", helper: "Short U", speechPhonic: "uh" },
+        V: { ipa: "/v/", helper: "vvv", speechPhonic: "vvv" },
+        W: { ipa: "/w/", helper: "wuh", speechPhonic: "wuh" },
+        X: { ipa: "/ks/", helper: "ks", speechPhonic: "ks" },
+        Y: { ipa: "/j/", helper: "yuh", speechPhonic: "yuh" },
+        Z: { ipa: "/z/", helper: "zzz", speechPhonic: "zzz" }
+    };
+
+    // 3 Familiar preschool objects per letter
     const defaultDict: Record<string, { word: string, emoji: string, phonic: string }[]> = {
-        A: [{ word: "Apple", emoji: "🍎", phonic: "æ" }],
-        B: [{ word: "Ball", emoji: "⚽", phonic: "buh" }],
-        C: [{ word: "Cat", emoji: "🐱", phonic: "cuh" }],
-        D: [{ word: "Dog", emoji: "🐶", phonic: "duh" }],
-        E: [{ word: "Egg", emoji: "🥚", phonic: "eh" }],
-        F: [{ word: "Fish", emoji: "🐟", phonic: "fuh" }],
-        G: [{ word: "Goat", emoji: "🐐", phonic: "guh" }],
-        H: [{ word: "Hat", emoji: "👒", phonic: "huh" }],
-        I: [{ word: "Igloo", emoji: "❄️", phonic: "ih" }],
-        J: [{ word: "Jam", emoji: "🍓", phonic: "juh" }],
-        K: [{ word: "Kite", emoji: "🪁", phonic: "kuh" }],
-        L: [{ word: "Lion", emoji: "🦁", phonic: "luh" }],
-        M: [{ word: "Moon", emoji: "🌙", phonic: "muh" }],
-        N: [{ word: "Net", emoji: "🕸️", phonic: "nuh" }],
-        O: [{ word: "Octopus", emoji: "🐙", phonic: "oh" }],
-        P: [{ word: "Pig", emoji: "🐷", phonic: "puh" }],
-        Q: [{ word: "Queen", emoji: "👑", phonic: "quuh" }],
-        R: [{ word: "Rabbit", emoji: "🐰", phonic: "ruh" }],
-        S: [{ word: "Sun", emoji: "☀️", phonic: "suh" }],
-        T: [{ word: "Tiger", emoji: "🐯", phonic: "tuh" }],
-        U: [{ word: "Umbrella", emoji: "☔", phonic: "uh" }],
-        V: [{ word: "Van", emoji: "🚐", phonic: "vuh" }],
-        W: [{ word: "Watch", emoji: "⌚", phonic: "wuh" }],
-        X: [{ word: "Xylophone", emoji: "🎹", phonic: "ks" }],
-        Y: [{ word: "Yo-yo", emoji: "🪀", phonic: "yuh" }],
-        Z: [{ word: "Zebra", emoji: "🦓", phonic: "zuh" }]
+        A: [
+            { word: "Apple", emoji: "🍎", phonic: "æ" },
+            { word: "Ant", emoji: "🐜", phonic: "æ" },
+            { word: "Alligator", emoji: "🐊", phonic: "æ" }
+        ],
+        B: [
+            { word: "Ball", emoji: "⚽", phonic: "buh" },
+            { word: "Bear", emoji: "🐻", phonic: "buh" },
+            { word: "Banana", emoji: "🍌", phonic: "buh" }
+        ],
+        C: [
+            { word: "Cat", emoji: "🐱", phonic: "kuh" },
+            { word: "Car", emoji: "🚗", phonic: "kuh" },
+            { word: "Cake", emoji: "🎂", phonic: "kuh" }
+        ],
+        D: [
+            { word: "Dog", emoji: "🐶", phonic: "duh" },
+            { word: "Duck", emoji: "🦆", phonic: "duh" },
+            { word: "Drum", emoji: "🥁", phonic: "duh" }
+        ],
+        E: [
+            { word: "Egg", emoji: "🥚", phonic: "eh" },
+            { word: "Elephant", emoji: "🐘", phonic: "eh" },
+            { word: "Eye", emoji: "👁️", phonic: "eh" }
+        ],
+        F: [
+            { word: "Fish", emoji: "🐟", phonic: "fuh" },
+            { word: "Frog", emoji: "🐸", phonic: "fuh" },
+            { word: "Flower", emoji: "🌸", phonic: "fuh" }
+        ],
+        G: [
+            { word: "Goat", emoji: "🐐", phonic: "guh" },
+            { word: "Grapes", emoji: "🍇", phonic: "guh" },
+            { word: "Guitar", emoji: "🎸", phonic: "guh" }
+        ],
+        H: [
+            { word: "Hat", emoji: "👒", phonic: "huh" },
+            { word: "House", emoji: "🏠", phonic: "huh" },
+            { word: "Heart", emoji: "❤️", phonic: "huh" }
+        ],
+        I: [
+            { word: "Igloo", emoji: "❄️", phonic: "ih" },
+            { word: "Iguana", emoji: "🦎", phonic: "ih" },
+            { word: "Ice cream", emoji: "🍦", phonic: "eye" }
+        ],
+        J: [
+            { word: "Jam", emoji: "🍓", phonic: "juh" },
+            { word: "Jellyfish", emoji: "🪼", phonic: "juh" },
+            { word: "Juice", emoji: "🧃", phonic: "juh" }
+        ],
+        K: [
+            { word: "Kite", emoji: "🪁", phonic: "kuh" },
+            { word: "Kangaroo", emoji: "🦘", phonic: "kuh" },
+            { word: "Key", emoji: "🔑", phonic: "kuh" }
+        ],
+        L: [
+            { word: "Lion", emoji: "🦁", phonic: "luh" },
+            { word: "Leaf", emoji: "🍃", phonic: "luh" },
+            { word: "Lemon", emoji: "🍋", phonic: "luh" }
+        ],
+        M: [
+            { word: "Moon", emoji: "🌙", phonic: "muh" },
+            { word: "Monkey", emoji: "🐒", phonic: "muh" },
+            { word: "Mouse", emoji: "🐭", phonic: "muh" }
+        ],
+        N: [
+            { word: "Net", emoji: "🕸️", phonic: "nuh" },
+            { word: "Nest", emoji: "🪺", phonic: "nuh" },
+            { word: "Nut", emoji: "🥜", phonic: "nuh" }
+        ],
+        O: [
+            { word: "Octopus", emoji: "🐙", phonic: "ah" },
+            { word: "Orange", emoji: "🍊", phonic: "ah" },
+            { word: "Owl", emoji: "🦉", phonic: "ow" }
+        ],
+        P: [
+            { word: "Pig", emoji: "🐷", phonic: "puh" },
+            { word: "Penguin", emoji: "🐧", phonic: "puh" },
+            { word: "Pizza", emoji: "🍕", phonic: "puh" }
+        ],
+        Q: [
+            { word: "Queen", emoji: "👑", phonic: "kwuh" },
+            { word: "Quail", emoji: "🐦", phonic: "kwuh" },
+            { word: "Question", emoji: "❓", phonic: "kwuh" }
+        ],
+        R: [
+            { word: "Rabbit", emoji: "🐰", phonic: "ruh" },
+            { word: "Rainbow", emoji: "🌈", phonic: "ruh" },
+            { word: "Ring", emoji: "💍", phonic: "ruh" }
+        ],
+        S: [
+            { word: "Sun", emoji: "☀️", phonic: "suh" },
+            { word: "Star", emoji: "⭐", phonic: "suh" },
+            { word: "Snake", emoji: "🐍", phonic: "suh" }
+        ],
+        T: [
+            { word: "Tiger", emoji: "🐯", phonic: "tuh" },
+            { word: "Tree", emoji: "🌳", phonic: "tuh" },
+            { word: "Train", emoji: "🚂", phonic: "tuh" }
+        ],
+        U: [
+            { word: "Umbrella", emoji: "☔", phonic: "uh" },
+            { word: "Unicorn", emoji: "🦄", phonic: "yoo" },
+            { word: "Up", emoji: "⬆️", phonic: "uh" }
+        ],
+        V: [
+            { word: "Van", emoji: "🚐", phonic: "vuh" },
+            { word: "Violin", emoji: "🎻", phonic: "vuh" },
+            { word: "Vase", emoji: "🏺", phonic: "vuh" }
+        ],
+        W: [
+            { word: "Watch", emoji: "⌚", phonic: "wuh" },
+            { word: "Whale", emoji: "🐋", phonic: "wuh" },
+            { word: "Watermelon", emoji: "🍉", phonic: "wuh" }
+        ],
+        X: [
+            { word: "Xylophone", emoji: "🎹", phonic: "ks" },
+            { word: "X-ray", emoji: "🩻", phonic: "ks" },
+            { word: "Fox", emoji: "🦊", phonic: "ks" }
+        ],
+        Y: [
+            { word: "Yo-yo", emoji: "🪀", phonic: "yuh" },
+            { word: "Yacht", emoji: "⛵", phonic: "yuh" },
+            { word: "Yak", emoji: "🐂", phonic: "yuh" }
+        ],
+        Z: [
+            { word: "Zebra", emoji: "🦓", phonic: "zuh" },
+            { word: "Zip", emoji: "🤐", phonic: "zuh" },
+            { word: "Zoo", emoji: "🦁", phonic: "zuh" }
+        ]
     };
 
     // Fetch custom ABC words from Firestore
@@ -1651,6 +1788,33 @@ function ABCKingdom({
         return copy;
     }, [dbAbcWords]);
 
+    // 3-Step Sequential Auto-Pronunciation: Letter Name -> Phoneme Sound -> Word
+    const playLetterSequence = useCallback((letter: string, wordObj?: { word: string; emoji?: string; phonic?: string }) => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        setIsSpeaking(true);
+
+        const phonemeInfo = PHONEME_HELPERS[letter.toUpperCase()] || { ipa: `/${letter.toLowerCase()}/`, helper: letter, speechPhonic: letter.toLowerCase() };
+        const list = mergedDict[letter.toUpperCase()] || [];
+        const currentItem = wordObj || list[0] || { word: letter, emoji: '✨', phonic: '' };
+        const soundToSpeak = phonemeInfo.speechPhonic || phonemeInfo.helper || letter;
+
+        // Step 1: Letter name: "Letter A"
+        speak(`Letter ${letter}`, 0.9, () => {
+            setTimeout(() => {
+                // Step 2: Phoneme sound: "/æ/"
+                speak(soundToSpeak, 0.85, () => {
+                    setTimeout(() => {
+                        // Step 3: Vocabulary word: "Apple"
+                        speak(currentItem.word, 0.88, () => {
+                            setIsSpeaking(false);
+                        });
+                    }, 220);
+                });
+            }, 220);
+        });
+    }, [mergedDict]);
+
     const handleLetterClick = (letter: string) => {
         setSelectedLetter(letter);
         setWordIndex(0);
@@ -1660,42 +1824,8 @@ function ABCKingdom({
         }
         if (activeTab === 'explorer') {
             const list = mergedDict[letter] || [];
-            const data = list[0] || { word: '', emoji: '', phonic: '' };
-            speak(letter); // Say Letter Name
-            if (data.word) {
-                setTimeout(() => speak(`${data.phonic}, as in, ${data.word}`), 800);
-            }
+            playLetterSequence(letter, list[0]);
         }
-    };
-
-    const handleListen = () => {
-        if (typeof window === 'undefined' || !window.speechSynthesis) return;
-        window.speechSynthesis.cancel();
-        
-        setIsSpeaking(true);
-        const letter = selectedLetter.toUpperCase();
-        const list = mergedDict[letter] || [];
-        const data = list[wordIndex] || list[0] || { word: 'Apple', emoji: '🍎', phonic: 'ah' };
-        const word = data.word || 'Apple';
-        const phonic = data.phonic || '';
-        const textToSpeak = `${letter}. ${letter} is for ${word}. ${phonic}!`;
-        
-        const utterance = new SpeechSynthesisUtterance(textToSpeak);
-        utterance.rate = 0.88;
-        
-        utterance.onend = () => {
-            setIsSpeaking(false);
-        };
-        utterance.onerror = () => {
-            setIsSpeaking(false);
-        };
-        
-        const maxDuration = Math.max(3000, textToSpeak.length * 130);
-        setTimeout(() => {
-            setIsSpeaking(false);
-        }, maxDuration);
-        
-        window.speechSynthesis.speak(utterance);
     };
 
     useEffect(() => {
@@ -1738,18 +1868,31 @@ function ABCKingdom({
         }
     };
 
-
-
     const currentWordList = mergedDict[selectedLetter] || [];
     const currentWordData = currentWordList[wordIndex] || { word: 'None', emoji: '❓', phonic: '' };
+    const currentPhoneme = PHONEME_HELPERS[selectedLetter] || { ipa: `/${selectedLetter.toLowerCase()}/`, helper: selectedLetter, speechPhonic: selectedLetter.toLowerCase() };
 
     return (
-        <div className={cn(activeTab === 'matcher' || activeTab === 'tracing' ? "space-y-1.5 sm:space-y-2" : "space-y-8", "w-full max-w-full overflow-hidden")}>
-            {/* 1. TOP NAVIGATION */}
-            <div className="flex flex-wrap gap-2 p-1.5 bg-green-50/50 rounded-2xl w-fit mx-auto border border-green-100/60 shadow-inner">
-                <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} onClick={() => { setActiveTab('explorer'); setWordIndex(0); }} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'explorer' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Explorer</Button>
-                <Button variant={activeTab === 'tracing' ? 'default' : 'ghost'} onClick={() => setActiveTab('tracing')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'tracing' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Tracing Lab</Button>
-                <Button variant={activeTab === 'matcher' ? 'default' : 'ghost'} onClick={() => setActiveTab('matcher')} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'matcher' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Matcher Game</Button>
+        <div className={cn(activeTab === 'matcher' || activeTab === 'tracing' ? "space-y-1.5 sm:space-y-2" : "space-y-2 sm:space-y-3", "w-full max-w-full overflow-hidden")}>
+            {/* 1. TOP NAVIGATION & RELOCATED TEACHER UTILITY */}
+            <div className="flex flex-wrap items-center justify-between gap-2 max-w-5xl mx-auto w-full px-2">
+                <div className="flex flex-wrap gap-1.5 p-1.5 bg-green-50/60 rounded-2xl border border-green-100/60 shadow-inner mx-auto sm:mx-0">
+                    <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} size="sm" onClick={() => { setActiveTab('explorer'); setWordIndex(0); }} className={cn("rounded-xl font-bold transition-all h-8 text-xs sm:text-sm", activeTab === 'explorer' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Explorer</Button>
+                    <Button variant={activeTab === 'tracing' ? 'default' : 'ghost'} size="sm" onClick={() => setActiveTab('tracing')} className={cn("rounded-xl font-bold transition-all h-8 text-xs sm:text-sm", activeTab === 'tracing' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Tracing Lab</Button>
+                    <Button variant={activeTab === 'matcher' ? 'default' : 'ghost'} size="sm" onClick={() => setActiveTab('matcher')} className={cn("rounded-xl font-bold transition-all h-8 text-xs sm:text-sm", activeTab === 'matcher' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Matcher Game</Button>
+                </div>
+                {/* Relocated Teacher Add Word Utility Button */}
+                {canEdit && activeTab === 'explorer' && (
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsAddWordModalOpen(true)}
+                        className="rounded-xl border-dashed border-emerald-400 bg-emerald-50/60 hover:bg-emerald-100/80 text-emerald-800 font-bold text-xs flex items-center gap-1.5 h-8 px-3 shadow-xs ml-auto cursor-pointer"
+                    >
+                        <PlusCircle className="w-3.5 h-3.5 text-emerald-600" /> + Add Word Card
+                    </Button>
+                )}
             </div>
 
             {/* When activeTab is 'matcher', hide the left 26-letter sidebar to maximize game focus and viewport fit */}
@@ -1781,110 +1924,195 @@ function ABCKingdom({
                     </Card>
                 </div>
             ) : (
-                <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
+                /* EXPLORER STAGE (VIEWPORT ERGONOMIC FIT - NO SCROLL) */
+                <div className="grid lg:grid-cols-5 gap-3 sm:gap-4 items-center max-w-5xl mx-auto w-full lg:max-h-[calc(100vh-220px)] px-2 sm:px-3">
                     {/* 2. LETTER GRID (SIDEBAR ON DESKTOP) */}
-                    <div className="lg:col-span-2 order-2 lg:order-1 space-y-4">
-                        <div className="flex justify-center gap-2 bg-slate-50 p-1.5 border border-slate-100 rounded-2xl w-fit mx-auto">
-                            <Button size="sm" variant={caseMode === 'upper' ? 'secondary' : 'outline'} onClick={() => setCaseMode('upper')} className="font-extrabold rounded-xl h-8 px-4">ABC</Button>
-                            <Button size="sm" variant={caseMode === 'lower' ? 'secondary' : 'outline'} onClick={() => setCaseMode('lower')} className="font-extrabold rounded-xl h-8 px-4">abc</Button>
-                            <Button size="sm" variant={caseMode === 'both' ? 'secondary' : 'outline'} onClick={() => setCaseMode('both')} className="font-extrabold rounded-xl h-8 px-4">Aa</Button>
+                    <div className="lg:col-span-2 order-2 lg:order-1 flex flex-col justify-center space-y-2 h-full">
+                        <div className="flex justify-center gap-1 bg-slate-100/70 p-1 border border-slate-200/60 rounded-xl w-fit mx-auto">
+                            <Button size="sm" variant={caseMode === 'upper' ? 'secondary' : 'outline'} onClick={() => setCaseMode('upper')} className="font-extrabold rounded-lg h-7 px-3 text-xs">ABC</Button>
+                            <Button size="sm" variant={caseMode === 'lower' ? 'secondary' : 'outline'} onClick={() => setCaseMode('lower')} className="font-extrabold rounded-lg h-7 px-3 text-xs">abc</Button>
+                            <Button size="sm" variant={caseMode === 'both' ? 'secondary' : 'outline'} onClick={() => setCaseMode('both')} className="font-extrabold rounded-lg h-7 px-3 text-xs">Aa</Button>
                         </div>
-                        <div className="grid grid-cols-6 sm:grid-cols-7 lg:grid-cols-6 gap-1.5 sm:gap-2 bg-emerald-50/25 p-2.5 sm:p-3 rounded-3xl border border-emerald-100/60 shadow-inner">
+                        <div className="grid grid-cols-6 gap-1 sm:gap-1.5 bg-emerald-50/25 p-2 sm:p-2.5 rounded-3xl border border-emerald-100/60 shadow-inner">
                             {alphabet.map(letter => (
                                 <button 
                                     key={letter}
+                                    type="button"
                                     onClick={() => handleLetterClick(letter)}
                                     className={cn(
-                                      "aspect-square rounded-2xl font-black text-base sm:text-lg transition-all border-2 border-b-4 active:translate-y-0.5 active:border-b-2 shadow-xs flex items-center justify-center relative",
+                                      "h-8 sm:h-9 lg:h-10 rounded-xl font-black text-sm sm:text-base transition-all border-2 border-b-3 active:translate-y-0.5 active:border-b-2 shadow-2xs flex items-center justify-center relative cursor-pointer",
                                       selectedLetter?.toUpperCase() === letter.toUpperCase()
-                                        ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-4 ring-emerald-400/70 -translate-y-0.5 animate-pulse-ring z-10' 
+                                        ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-3 ring-emerald-400/70 -translate-y-0.5 z-10' 
                                         : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
                                     )}
                                 >
-                                    {caseMode === 'upper' ? letter : caseMode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
+                                    <span style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}>
+                                        {caseMode === 'upper' ? letter : caseMode === 'lower' ? (letter === 'A' ? 'ɑ' : letter.toLowerCase()) : `${letter}${letter === 'A' ? 'ɑ' : letter.toLowerCase()}`}
+                                    </span>
                                 </button>
                             ))}
                         </div>
-
-                        {/* Teacher Add Word Modal Trigger */}
-                        {canEdit && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setIsAddWordModalOpen(true)}
-                                className="w-full py-2.5 px-4 rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/40 hover:bg-emerald-100/60 text-emerald-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:border-emerald-400 shadow-xs h-10"
-                            >
-                                <PlusCircle className="w-4 h-4 text-emerald-600" /> + Add Custom Word Card
-                            </Button>
-                        )}
                     </div>
 
-                    {/* 3. INTERACTIVE STAGE (EXPLORER & TRACING) */}
-                    <div className="lg:col-span-3 order-1 lg:order-2">
-                        <Card className="rounded-[40px] border-4 border-green-100 shadow-xl overflow-hidden h-full">
-                            <CardContent className="p-0">
-                                
-                                {/* EXPLORER MODE */}
-                                {activeTab === 'explorer' && (
-                                    <div className="p-6 sm:p-8 text-center space-y-6 animate-in zoom-in relative group">
-                                        {currentWordData.isCustom && canEdit && (
-                                            <Button 
-                                                size="icon" 
-                                                variant="ghost" 
-                                                className="absolute top-4 right-4 text-red-350 hover:text-red-500 hover:bg-red-50 rounded-full"
-                                                onClick={() => handleDeleteAbcWord(currentWordData.id)}
-                                            >
-                                                <Trash2 className="w-5 h-5"/>
-                                            </Button>
-                                        )}
-                                        <div className="bg-gradient-to-br from-emerald-50/80 to-green-50/50 p-6 sm:p-8 rounded-[32px] border-2 border-emerald-200 shadow-inner animate-in fade-in duration-300" key={`${selectedLetter}-${wordIndex}`}>
-                                            <div className="text-7xl sm:text-8xl mb-3 drop-shadow-md hover:scale-110 transition-transform duration-300 cursor-pointer select-none" onClick={() => speak(currentWordData.word)}>{currentWordData.emoji}</div>
-                                            <h3 className="text-4xl sm:text-5xl font-black text-slate-800">{currentWordData.word}</h3>
-                                            <p className="text-xl sm:text-2xl font-black text-emerald-600 mt-2">Sound: <span className="underline">"{currentWordData.phonic}"</span></p>
-                                        </div>
-                                        <div className="flex gap-4 justify-center items-center">
-                                            <Button 
-                                                onClick={handleListen} 
-                                                className={cn(
-                                                    "h-14 sm:h-16 px-8 sm:px-12 rounded-full text-lg sm:text-xl font-black shadow-md transition-all",
-                                                    isSpeaking 
-                                                        ? "bg-emerald-500 hover:bg-emerald-600 text-white animate-pulse ring-4 ring-emerald-300/60 scale-105" 
-                                                        : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                                                )}
-                                            >
-                                                {isSpeaking ? (
-                                                    <>
-                                                        <Sparkles className="mr-3 w-5 h-5 sm:w-6 sm:h-6 animate-spin" /> Speaking...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Volume2 className="mr-3 w-5 h-5 sm:w-6 sm:h-6" /> Listen
-                                                    </>
-                                                )}
-                                            </Button>
-                                            
-                                            {currentWordList.length > 1 && (
-                                                <Button 
-                                                    onClick={() => {
-                                                        const nextIdx = (wordIndex + 1) % currentWordList.length;
-                                                        setWordIndex(nextIdx);
-                                                        const data = currentWordList[nextIdx];
-                                                        speak(data.word);
-                                                    }} 
-                                                    variant="outline"
-                                                    className="h-14 sm:h-16 px-6 sm:px-8 rounded-full text-lg sm:text-xl border-2 border-emerald-200 text-emerald-700 font-bold hover:bg-emerald-50 shadow-xs"
-                                                >
-                                                    Next Word ➡️
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
+                    {/* 3. INTERACTIVE FLASHCARD STAGE (FLOATING NAVIGATION + FREDOKA BADGE) */}
+                    <div className="lg:col-span-3 order-1 lg:order-2 relative flex items-center justify-center px-6 sm:px-8 py-1">
+                        {/* Floating Left Chevron Navigation */}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const currentIdx = alphabet.indexOf(selectedLetter);
+                                const prevIdx = (currentIdx - 1 + alphabet.length) % alphabet.length;
+                                handleLetterClick(alphabet[prevIdx]);
+                            }}
+                            aria-label="Previous Letter"
+                            className="absolute left-0 sm:left-1 lg:-left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-emerald-700 shadow-xl border-2 border-emerald-300 hover:bg-emerald-50 hover:scale-110 active:scale-95 transition-all flex items-center justify-center ring-4 ring-emerald-100/70 cursor-pointer"
+                        >
+                            <ChevronLeft className="w-6 h-6 stroke-[3]" />
+                        </button>
+
+                        <Card className="rounded-[32px] sm:rounded-[36px] border-3 sm:border-4 border-emerald-200/90 shadow-xl overflow-hidden bg-white/95 w-full">
+                            <CardContent className="p-4 sm:p-6 text-center flex flex-col justify-between space-y-3 relative group">
+                                {currentWordData.isCustom && canEdit && (
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        className="absolute top-3 right-3 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-full h-8 w-8"
+                                        onClick={() => handleDeleteAbcWord(currentWordData.id)}
+                                        title="Delete custom word"
+                                    >
+                                        <Trash2 className="w-4 h-4"/>
+                                    </Button>
                                 )}
 
+                                {/* Target Letter Anchor Badge (Fredoka / Single-Story Infant ɑ) */}
+                                <div className="flex justify-center">
+                                    <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-md border-2 border-emerald-300 ring-4 ring-emerald-100">
+                                        <span 
+                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                            className="text-2xl sm:text-3xl font-black tracking-wider leading-none select-none drop-shadow-xs"
+                                        >
+                                            {selectedLetter}{selectedLetter === 'A' ? 'ɑ' : selectedLetter.toLowerCase()}
+                                        </span>
+                                        <span className="text-xs font-extrabold uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-xs">
+                                            Letter {selectedLetter}
+                                        </span>
+                                    </div>
+                                </div>
 
+                                {/* Visual Card Area */}
+                                <div className="bg-gradient-to-br from-emerald-50/80 via-teal-50/40 to-green-50/60 p-4 sm:p-5 rounded-[28px] border-2 border-emerald-200/80 shadow-inner" key={`${selectedLetter}-${wordIndex}`}>
+                                    <div 
+                                        className="text-6xl sm:text-7xl mb-1 drop-shadow-md hover:scale-110 transition-transform duration-300 cursor-pointer select-none inline-block" 
+                                        onClick={() => speak(currentWordData.word)}
+                                        title="Click to hear word"
+                                    >
+                                        {currentWordData.emoji}
+                                    </div>
+                                    <h3 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">{currentWordData.word}</h3>
+                                    
+                                    {/* Child-Friendly Phoneme Display with Sound Waves */}
+                                    <div className="mt-2 flex justify-center">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 text-emerald-800 border border-emerald-200/70 shadow-2xs">
+                                            <Volume2 className={cn("w-4 h-4 text-emerald-600", isSpeaking && "animate-pulse text-emerald-500")} />
+                                            <span className="text-xs sm:text-sm font-extrabold">
+                                                Sound: <span className="font-mono text-emerald-900 font-black">{currentPhoneme.ipa}</span> ({currentPhoneme.helper})
+                                            </span>
+                                            <span className="inline-flex items-center gap-0.5 ml-1">
+                                                <span className={cn("w-1 h-2.5 rounded-full bg-emerald-500", isSpeaking && "animate-[bounce_0.6s_infinite_100ms]")}></span>
+                                                <span className={cn("w-1 h-3.5 rounded-full bg-emerald-600", isSpeaking && "animate-[bounce_0.6s_infinite_200ms]")}></span>
+                                                <span className={cn("w-1 h-2 rounded-full bg-emerald-500", isSpeaking && "animate-[bounce_0.6s_infinite_300ms]")}></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
 
+                                {/* Vocabulary Carousel Navigation (Dots & Mini Arrows) */}
+                                <div className="flex items-center justify-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const nextIdx = (wordIndex - 1 + currentWordList.length) % currentWordList.length;
+                                            setWordIndex(nextIdx);
+                                            speak(currentWordList[nextIdx].word);
+                                        }}
+                                        className="w-7 h-7 rounded-full bg-emerald-100/70 text-emerald-700 hover:bg-emerald-200/90 flex items-center justify-center text-xs font-black transition-all active:scale-90 cursor-pointer"
+                                        aria-label="Previous word"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </button>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50/70 rounded-full border border-emerald-200/50">
+                                        {currentWordList.map((item: any, idx: number) => (
+                                            <button
+                                                key={idx}
+                                                type="button"
+                                                onClick={() => {
+                                                    setWordIndex(idx);
+                                                    speak(item.word);
+                                                }}
+                                                className={cn(
+                                                    "h-2.5 rounded-full transition-all duration-200 cursor-pointer",
+                                                    idx === wordIndex 
+                                                        ? "w-6 bg-emerald-600 shadow-xs" 
+                                                        : "w-2.5 bg-emerald-200 hover:bg-emerald-300"
+                                                )}
+                                                title={item.word}
+                                                aria-label={`Select ${item.word}`}
+                                            />
+                                        ))}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const nextIdx = (wordIndex + 1) % currentWordList.length;
+                                            setWordIndex(nextIdx);
+                                            speak(currentWordList[nextIdx].word);
+                                        }}
+                                        className="w-7 h-7 rounded-full bg-emerald-100/70 text-emerald-700 hover:bg-emerald-200/90 flex items-center justify-center text-xs font-black transition-all active:scale-90 cursor-pointer"
+                                        aria-label="Next word"
+                                    >
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                {/* Dedicated Large Circular Sound Buttons */}
+                                <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+                                    <Button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsSpeaking(true);
+                                            speak(currentPhoneme.speechPhonic || currentPhoneme.helper, 0.85, () => setIsSpeaking(false));
+                                        }}
+                                        className="h-10 sm:h-11 px-4 sm:px-5 rounded-full font-black text-xs sm:text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md border-2 border-amber-300 ring-2 ring-amber-100 active:scale-95 transition-all cursor-pointer"
+                                    >
+                                        <Volume2 className="w-4 h-4 mr-1.5" /> Say Letter Sound
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsSpeaking(true);
+                                            speak(currentWordData.word, 0.88, () => setIsSpeaking(false));
+                                        }}
+                                        className="h-10 sm:h-11 px-4 sm:px-5 rounded-full font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md border-2 border-emerald-300 ring-2 ring-emerald-100 active:scale-95 transition-all cursor-pointer"
+                                    >
+                                        <span className="text-base mr-1.5">{currentWordData.emoji}</span> Say Word
+                                    </Button>
+                                </div>
                             </CardContent>
                         </Card>
+
+                        {/* Floating Right Chevron Navigation */}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const currentIdx = alphabet.indexOf(selectedLetter);
+                                const nextIdx = (currentIdx + 1) % alphabet.length;
+                                handleLetterClick(alphabet[nextIdx]);
+                            }}
+                            aria-label="Next Letter"
+                            className="absolute right-0 sm:right-1 lg:-right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-emerald-700 shadow-xl border-2 border-emerald-300 hover:bg-emerald-50 hover:scale-110 active:scale-95 transition-all flex items-center justify-center ring-4 ring-emerald-100/70 cursor-pointer"
+                        >
+                            <ChevronRight className="w-6 h-6 stroke-[3]" />
+                        </button>
                     </div>
                 </div>
             )}
