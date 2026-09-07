@@ -139,6 +139,17 @@
   animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
+/* Gentle 200ms non-punitive wobble for early childhood retry */
+@keyframes gentle-wobble {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-gentle-wobble {
+  animation: gentle-wobble 0.2s ease-in-out both;
+}
+
 /* Hide scrollbars while maintaining scrollability */
 .scrollbar-none {
   scrollbar-width: none;

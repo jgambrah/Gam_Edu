@@ -34,12 +34,23 @@ import {
 } from '@/lib/junior-age-levels';
 
 // --- HELPER: TEXT TO SPEECH ---
-const speak = (text: string, rate = 0.9) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = rate;
-    window.speechSynthesis.speak(u);
+const speak = (text: string, rate = 0.9, onEnd?: () => void) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) {
+        if (onEnd) onEnd();
+        return;
+    }
+    try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = rate;
+        if (onEnd) {
+            u.onend = onEnd;
+            u.onerror = onEnd;
+        }
+        window.speechSynthesis.speak(u);
+    } catch {
+        if (onEnd) onEnd();
+    }
 };
 
 
@@ -964,6 +975,19 @@ function AbcMatcherGame({
     const [isRoundLocked, setIsRoundLocked] = useState<boolean>(false);
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
     const [isSpeakingPrompt, setIsSpeakingPrompt] = useState<boolean>(false);
+    const audioPromptTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Cancel speech and clear pending audio timeouts on unmount
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            if (audioPromptTimeoutRef.current) {
+                clearTimeout(audioPromptTimeoutRef.current);
+            }
+        };
+    }, []);
 
     // Synthesized Web Audio API Chime for Correct Matches
     const playSuccessChime = useCallback(() => {
@@ -1051,19 +1075,33 @@ function AbcMatcherGame({
         }
     }, [matcherMode, currentLetter, spokenPhonicSound]);
 
-    // Text-To-Speech Play Trigger
+    // Text-To-Speech Play Trigger with cancel & debounce protection for rapid tapping
     const handlePlayAudioPrompt = useCallback(() => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        if (audioPromptTimeoutRef.current) {
+            clearTimeout(audioPromptTimeoutRef.current);
+            audioPromptTimeoutRef.current = null;
+        }
         setIsSpeakingPrompt(true);
         const text = getPromptAudioText();
-        speak(text, 0.88);
-        const timeout = Math.max(1600, text.length * 75);
-        setTimeout(() => setIsSpeakingPrompt(false), timeout);
+        speak(text, 0.88, () => setIsSpeakingPrompt(false));
+        const maxTimeout = Math.max(1600, text.length * 80);
+        audioPromptTimeoutRef.current = setTimeout(() => setIsSpeakingPrompt(false), maxTimeout);
     }, [getPromptAudioText]);
 
     const playSoundPromptOnly = useCallback(() => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        if (audioPromptTimeoutRef.current) {
+            clearTimeout(audioPromptTimeoutRef.current);
+            audioPromptTimeoutRef.current = null;
+        }
         setIsSpeakingPrompt(true);
-        speak(spokenPhonicSound, 0.85);
-        setTimeout(() => setIsSpeakingPrompt(false), 1200);
+        speak(spokenPhonicSound, 0.85, () => setIsSpeakingPrompt(false));
+        audioPromptTimeoutRef.current = setTimeout(() => setIsSpeakingPrompt(false), 1000);
     }, [spokenPhonicSound]);
 
     // Generate Question for the current mode and target letter
@@ -1237,24 +1275,16 @@ function AbcMatcherGame({
             setIsRoundLocked(true);
             setCorrectIndex(index);
             playSuccessChime();
-            confetti({ particleCount: 75, spread: 70, origin: { y: 0.6 } });
+            confetti({ particleCount: 60, spread: 65, origin: { y: 0.6 } });
 
-            // Audio speech reinforcement per mode
-            const upper = currentLetter.toUpperCase();
-            const wordData = mergedDict[upper]?.[0] || { word: 'Apple', phonic: 'ah' };
-            if (matcherMode === 'upper-to-lower') {
-                speak(`Correct! Big ${upper} matches small ${upper.toLowerCase()}. ${upper} is for ${wordData.word}!`);
-            } else if (matcherMode === 'letter-to-object') {
-                speak(`Super! ${upper} is for ${wordData.word}!`);
-            } else if (matcherMode === 'sound-to-letter') {
-                speak(`Awesome! The sound ${currentPhonic} is for letter ${upper}!`);
-            } else {
-                speak(`Spot on! That is the letter ${currentLetter}!`);
-            }
+            // Cheerful quick audio reinforcement
+            const cheers = ["Super!", "Awesome!", "Star!", "Great match!", "You got it!"];
+            const quickCheer = cheers[Math.floor(Math.random() * cheers.length)];
+            speak(quickCheer, 1.0);
 
             const nextStreak = streak + 1;
 
-            // Auto-advance after 1.2s celebratory animation
+            // Round Transition Cadence: 700ms pause (within 600ms–800ms) with cheerful chime & star cue before advancing
             setTimeout(async () => {
                 if (nextStreak >= 5) {
                     setStreak(5);
@@ -1296,14 +1326,14 @@ function AbcMatcherGame({
                         onLetterChange(nextAlphabet);
                     }
                 }
-            }, 1250);
+            }, 700);
         } else {
-            // Incorrect choice: Gentle boing & wobble without harsh penalty
+            // Incorrect choice: Gentle boing & subtle 200ms non-punitive wobble with light desaturation for immediate retry
             playBoingSound();
             speak("Try again!", 1.1);
             setShakingIndex(index);
-            setTimeout(() => setShakingIndex(null), 400);
-            setDisabledIndices(prev => [...prev, index]);
+            setTimeout(() => setShakingIndex(null), 200);
+            setDisabledIndices(prev => (prev.includes(index) ? prev : [...prev, index]));
         }
     };
 
@@ -1515,9 +1545,9 @@ function AbcMatcherGame({
                                     className={cn(
                                         "h-14 sm:h-16 min-h-[52px] sm:min-h-[58px] max-h-[66px] p-1 sm:p-1.5 rounded-2xl border-2 border-b-4 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group cursor-pointer",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
-                                        isShaking && "animate-shake bg-amber-100 border-amber-400 border-b-amber-500 text-amber-800 shadow-inner ring-2 ring-amber-300/70",
+                                        isShaking && "animate-gentle-wobble saturate-50 opacity-85 bg-slate-100/90 border-slate-300 border-b-slate-400 text-slate-500 shadow-inner ring-2 ring-slate-200/80",
                                         isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 border-b-emerald-700 animate-bounce scale-105 shadow-lg ring-4 ring-emerald-300/90 z-10",
-                                        isDisabled && "opacity-35 pointer-events-none bg-slate-100 border-slate-200 text-slate-400 line-through",
+                                        isDisabled && "opacity-40 pointer-events-none bg-slate-100/80 border-slate-200 text-slate-400 saturate-50",
                                         !isShaking && !isSelectedCorrect && !isDisabled && neutralTileStyle
                                     )}
                                 >
