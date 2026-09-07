@@ -181,3 +181,8 @@
   animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Infant-friendly Single-Story Font for Onset-Rime & Phonics ('a' and 'g' are strictly single-loop) */
+.font-infant {
+  font-family: 'Andika', 'Comic Neue', 'Fredoka', 'Century Gothic', cursive, sans-serif !important;
+}
+

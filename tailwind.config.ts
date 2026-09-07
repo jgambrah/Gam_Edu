@@ -22,6 +22,7 @@ export default {
         headline: ['Inter', 'sans-serif'],
         code: ['monospace'],
         school: ['"Comic Neue"', 'Fredoka', '"Comic Sans MS"', '"Chalkboard SE"', 'cursive', 'sans-serif'],
+        infant: ["'Andika'", "'Comic Neue'", "'Fredoka'", "'Century Gothic'", 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
