@@ -395,6 +395,84 @@ const DECODABLE_WORDS = [
   "tree", "rain", "boat", "goat", "road", "soap", "seed", "feet", "moon", "book", "look", "cook", "meat", "leaf", "star", "park", "fork", "horn", "bird", "girl", "dirt"
 ];
 
+// --- SCIENCE OF READING & LETTERS AND SOUNDS DECODABLE WORD POOLS ---
+export interface BlendingWordItem {
+  id: string;
+  word: string;
+  graphemes: string[];
+  tier: 'continuous' | 'stop' | 'digraph';
+  category: string;
+  emoji: string;
+  sentence: string;
+  meaning: string;
+}
+
+export const BLENDING_WORD_BANK: BlendingWordItem[] = [
+  // Tier 1: Continuous Initial Consonants (f, l, m, n, r, s, v, z) - optimal for early synthetic blending
+  { id: 'sun', word: 'sun', graphemes: ['s', 'u', 'n'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '☀️', sentence: 'The sun is big and bright.', meaning: 'A warm star shining in the sky' },
+  { id: 'run', word: 'run', graphemes: ['r', 'u', 'n'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '🏃', sentence: 'Run fast in the sun!', meaning: 'To move quickly with your legs' },
+  { id: 'man', word: 'man', graphemes: ['m', 'a', 'n'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '👨', sentence: 'The kind man waved hello.', meaning: 'A friendly grown-up person' },
+  { id: 'sit', word: 'sit', graphemes: ['s', 'i', 't'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '🪑', sentence: 'Sit down on the red mat.', meaning: 'To rest your body on a chair' },
+  { id: 'fin', word: 'fin', graphemes: ['f', 'i', 'n'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '🦈', sentence: 'The little fish has a blue fin.', meaning: 'Helps water creatures swim' },
+  { id: 'fan', word: 'fan', graphemes: ['f', 'a', 'n'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '🪭', sentence: 'The cool fan spins around.', meaning: 'Makes a gentle cool breeze' },
+  { id: 'mop', word: 'mop', graphemes: ['m', 'o', 'p'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '🧹', sentence: 'Mop up the water drop.', meaning: 'A soft tool to clean floors' },
+  { id: 'lip', word: 'lip', graphemes: ['l', 'i', 'p'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '👄', sentence: 'A bright smile on every lip.', meaning: 'Part of your happy mouth' },
+  { id: 'red', word: 'red', graphemes: ['r', 'e', 'd'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '🔴', sentence: 'A juicy red apple fell.', meaning: 'The bold color of roses' },
+  { id: 'nut', word: 'nut', graphemes: ['n', 'u', 't'], tier: 'continuous', category: 'Tier 1 (Continuous)', emoji: '🥜', sentence: 'A little nut on the tall tree.', meaning: 'A crunchy woodland snack' },
+
+  // Tier 2: Stop Initial Consonants (b, c, d, g, k, p, t)
+  { id: 'cat', word: 'cat', graphemes: ['c', 'a', 't'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🐱', sentence: 'The soft cat sat on the rug.', meaning: 'A playful furry companion' },
+  { id: 'top', word: 'top', graphemes: ['t', 'o', 'p'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🎯', sentence: 'Spin the top on the table.', meaning: 'A toy that twirls around' },
+  { id: 'pin', word: 'pin', graphemes: ['p', 'i', 'n'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '📌', sentence: 'A shiny pin in the tin.', meaning: 'A small pointy holder' },
+  { id: 'bag', word: 'bag', graphemes: ['b', 'a', 'g'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🎒', sentence: 'Put books in your school bag.', meaning: 'Carries your treasures' },
+  { id: 'cup', word: 'cup', graphemes: ['c', 'u', 'p'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '☕', sentence: 'A warm cup of sweet milk.', meaning: 'A mug for drinking' },
+  { id: 'dog', word: 'dog', graphemes: ['d', 'o', 'g'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🐶', sentence: 'The happy dog wagged his tail.', meaning: 'A loyal barking friend' },
+  { id: 'pig', word: 'pig', graphemes: ['p', 'i', 'g'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🐷', sentence: 'The pink pig likes muddy puddles.', meaning: 'A cute oinking farm animal' },
+  { id: 'pot', word: 'pot', graphemes: ['p', 'o', 't'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🍲', sentence: 'Warm soup in the cooking pot.', meaning: 'Used to cook delicious food' },
+  { id: 'tub', word: 'tub', graphemes: ['t', 'u', 'b'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🛁', sentence: 'Splish splash in the bath tub.', meaning: 'A bubbly place to wash' },
+  { id: 'bed', word: 'bed', graphemes: ['b', 'e', 'd'], tier: 'stop', category: 'Tier 2 (Stop Initials)', emoji: '🛏️', sentence: 'Time to rest in the cosy bed.', meaning: 'A soft place to dream' },
+
+  // Phase 3 Digraphs (Sound buttons render as elongated bars)
+  { id: 'ship', word: 'ship', graphemes: ['sh', 'i', 'p'], tier: 'digraph', category: 'Digraphs', emoji: '🚢', sentence: 'The big ship sails across the sea.', meaning: 'A vessel that travels water' },
+  { id: 'fish', word: 'fish', graphemes: ['f', 'i', 'sh'], tier: 'digraph', category: 'Digraphs', emoji: '🐟', sentence: 'The little fish swam away fast.', meaning: 'An animal that lives in water' },
+  { id: 'duck', word: 'duck', graphemes: ['d', 'u', 'ck'], tier: 'digraph', category: 'Digraphs', emoji: '🦆', sentence: 'The yellow duck can quack.', meaning: 'A bird that swims and quacks' }
+];
+
+// Pure phonemes without added schwa for Letters & Sounds
+export const PURE_PHONEMES: Record<string, { ipa: string; speech: string }> = {
+  s: { ipa: '/s/', speech: 'sss' },
+  a: { ipa: '/æ/', speech: 'ah' },
+  t: { ipa: '/t/', speech: 't' },
+  p: { ipa: '/p/', speech: 'p' },
+  i: { ipa: '/ɪ/', speech: 'ih' },
+  n: { ipa: '/n/', speech: 'nnn' },
+  m: { ipa: '/m/', speech: 'mmm' },
+  d: { ipa: '/d/', speech: 'd' },
+  g: { ipa: '/ɡ/', speech: 'g' },
+  o: { ipa: '/ɒ/', speech: 'ah' },
+  c: { ipa: '/k/', speech: 'k' },
+  k: { ipa: '/k/', speech: 'k' },
+  ck: { ipa: '/k/', speech: 'k' },
+  e: { ipa: '/e/', speech: 'eh' },
+  u: { ipa: '/ʌ/', speech: 'uh' },
+  r: { ipa: '/r/', speech: 'rrr' },
+  h: { ipa: '/h/', speech: 'h' },
+  b: { ipa: '/b/', speech: 'b' },
+  f: { ipa: '/f/', speech: 'fff' },
+  l: { ipa: '/l/', speech: 'lll' },
+  j: { ipa: '/dʒ/', speech: 'j' },
+  v: { ipa: '/v/', speech: 'vvv' },
+  w: { ipa: '/w/', speech: 'w' },
+  x: { ipa: '/ks/', speech: 'ks' },
+  y: { ipa: '/j/', speech: 'y' },
+  z: { ipa: '/z/', speech: 'zzz' },
+  sh: { ipa: '/ʃ/', speech: 'shhh' },
+  ch: { ipa: '/tʃ/', speech: 'ch' },
+  th: { ipa: '/θ/', speech: 'th' },
+  qu: { ipa: '/kw/', speech: 'kw' },
+  ng: { ipa: '/ŋ/', speech: 'ng' }
+};
+
 // --- HIGH-RESOLUTION VISUAL ANCHOR GRAPHIC COMPONENT (COMMERCIAL ECE POLISH) ---
 function PhonicsAnchorGraphic({ word, emoji, className }: { word: string; emoji?: string; className?: string }) {
     const normalized = word.toLowerCase().trim();
@@ -540,6 +618,115 @@ function PhonicsAnchorGraphic({ word, emoji, className }: { word: string; emoji?
                         <path d="M12 32A20 20 0 0 0 52 32" fill="#3B82F6" />
                         <circle cx="32" cy="32" r="20" stroke="#FFFFFF" strokeWidth="2" />
                         <rect x="12" y="30" width="40" height="4" fill="#FFFFFF" />
+                    </svg>
+                );
+            case 'run':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="44" cy="16" r="6" fill="#10B981" />
+                        <path d="M38 22L32 32L40 40L48 46" stroke="#059669" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M32 32L24 40L14 44" stroke="#059669" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M26 26L34 22L42 26" stroke="#10B981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M8 28H14M6 34H16M10 40H18" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'man':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="32" cy="24" r="14" fill="#FDE047" />
+                        <path d="M18 20C18 12 26 8 32 8C38 8 46 12 46 20C44 20 40 18 36 18C30 18 24 20 18 20Z" fill="#78350F" />
+                        <circle cx="27" cy="24" r="2" fill="#1E293B" />
+                        <circle cx="37" cy="24" r="2" fill="#1E293B" />
+                        <path d="M28 30Q32 34 36 30" stroke="#B45309" strokeWidth="2.5" strokeLinecap="round" />
+                        <path d="M16 54C16 42 22 38 32 38C42 38 48 42 48 54" fill="#3B82F6" />
+                    </svg>
+                );
+            case 'sit':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <rect x="20" y="16" width="6" height="24" rx="3" fill="#D97706" />
+                        <rect x="18" y="36" width="28" height="6" rx="3" fill="#B45309" />
+                        <rect x="22" y="42" width="4" height="14" rx="2" fill="#92400E" />
+                        <rect x="38" y="42" width="4" height="14" rx="2" fill="#92400E" />
+                        <path d="M24 22H38" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'fin':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M14 46C22 46 28 38 34 26C38 16 46 12 50 14C48 24 42 36 34 42C26 48 18 48 14 46Z" fill="#0EA5E9" stroke="#0284C7" strokeWidth="2" />
+                        <path d="M8 50C16 48 24 52 32 50C40 48 48 52 56 50" stroke="#38BDF8" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'top':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <polygon points="32,8 35,16 29,16" fill="#78350F" />
+                        <path d="M16 24C16 18 48 18 48 24L34 50C33 52 31 52 30 50L16 24Z" fill="#EC4899" />
+                        <path d="M19 28H45" stroke="#F43F5E" strokeWidth="4" />
+                        <path d="M23 36H41" stroke="#FBBF24" strokeWidth="4" />
+                        <circle cx="32" cy="54" r="2.5" fill="#475569" />
+                    </svg>
+                );
+            case 'pin':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="32" cy="18" r="10" fill="#EF4444" />
+                        <circle cx="32" cy="18" r="6" fill="#F87171" />
+                        <rect x="30" y="28" width="4" height="22" rx="2" fill="#94A3B8" />
+                        <polygon points="32,56 29,48 35,48" fill="#64748B" />
+                    </svg>
+                );
+            case 'bag':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M24 22V16C24 12 40 12 40 16V22" stroke="#475569" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                        <rect x="16" y="22" width="32" height="32" rx="8" fill="#6366F1" />
+                        <rect x="22" y="34" width="20" height="14" rx="4" fill="#4F46E5" />
+                        <path d="M32 30V34" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'cup':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M16 22H44V38C44 46 36 50 30 50C24 50 16 46 16 38V22Z" fill="#F59E0B" />
+                        <path d="M44 26H50C54 26 54 36 50 36H44" stroke="#D97706" strokeWidth="4" strokeLinecap="round" />
+                        <path d="M26 12C26 16 24 16 24 20M34 10C34 14 32 14 32 18" stroke="#FBBF24" strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'dog':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="32" cy="34" r="16" fill="#D97706" />
+                        <ellipse cx="18" cy="28" rx="5" ry="10" fill="#B45309" transform="rotate(-15 18 28)" />
+                        <ellipse cx="46" cy="28" rx="5" ry="10" fill="#B45309" transform="rotate(15 46 28)" />
+                        <circle cx="26" cy="32" r="2.5" fill="#1E293B" />
+                        <circle cx="38" cy="32" r="2.5" fill="#1E293B" />
+                        <ellipse cx="32" cy="38" rx="3.5" ry="2.5" fill="#1E293B" />
+                        <path d="M30 42Q32 44 34 42" stroke="#1E293B" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'pig':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="32" cy="34" r="16" fill="#F472B6" />
+                        <polygon points="18,24 22,14 28,20" fill="#EC4899" />
+                        <polygon points="46,24 42,14 36,20" fill="#EC4899" />
+                        <circle cx="26" cy="30" r="2" fill="#1E293B" />
+                        <circle cx="38" cy="30" r="2" fill="#1E293B" />
+                        <ellipse cx="32" cy="38" rx="7" ry="5" fill="#F9A8D4" />
+                        <circle cx="30" cy="38" r="1.5" fill="#BE185D" />
+                        <circle cx="34" cy="38" r="1.5" fill="#BE185D" />
+                    </svg>
+                );
+            case 'ship':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M12 40L18 52H46L54 40H12Z" fill="#0284C7" />
+                        <rect x="24" y="28" width="16" height="12" rx="2" fill="#F1F5F9" stroke="#CBD5E1" strokeWidth="2" />
+                        <rect x="28" y="20" width="4" height="8" fill="#EF4444" />
+                        <circle cx="32" cy="34" r="2.5" fill="#0284C7" />
+                        <path d="M6 56C14 54 22 58 30 56C38 54 46 58 54 56" stroke="#38BDF8" strokeWidth="3" strokeLinecap="round" />
                     </svg>
                 );
             default:
@@ -779,13 +966,152 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
         return families;
     }, [dbRhymes]);
 
-    // Blending Station State
-    const [blendingWord, setBlendingWord] = useState(["c", "a", "t"]);
+    // Blending Station State (Science of Reading / Letters & Sounds)
+    const [tierFilter, setTierFilter] = useState<'continuous' | 'stop' | 'mixed'>('continuous');
+    const [activeWordItem, setActiveWordItem] = useState<BlendingWordItem>(() => BLENDING_WORD_BANK[0]); // default: sun
+    const [highlightedGraphemeIndex, setHighlightedGraphemeIndex] = useState<number | null>(null);
+    const [isBlending, setIsBlending] = useState(false);
+    const [hasBlended, setHasBlended] = useState(false);
+    const [slideProgress, setSlideProgress] = useState(0);
+    const [isLeverPulled, setIsLeverPulled] = useState(false);
 
-    // Dynamic quick load words that randomize on mount
-    const quickLoadWords = useMemo(() => {
-        return [...DECODABLE_WORDS].sort(() => Math.random() - 0.5).slice(0, 8);
+    // Current word pool based on tier filter
+    const activeWordPool = useMemo(() => {
+        if (tierFilter === 'continuous') {
+            return BLENDING_WORD_BANK.filter(w => w.tier === 'continuous');
+        }
+        if (tierFilter === 'stop') {
+            return BLENDING_WORD_BANK.filter(w => w.tier === 'stop');
+        }
+        return BLENDING_WORD_BANK;
+    }, [tierFilter]);
+
+    // Handle switching decodable tiers
+    const handleSelectTier = useCallback((tier: 'continuous' | 'stop' | 'mixed') => {
+        setTierFilter(tier);
+        let nextPool: BlendingWordItem[];
+        if (tier === 'continuous') {
+            nextPool = BLENDING_WORD_BANK.filter(w => w.tier === 'continuous');
+        } else if (tier === 'stop') {
+            nextPool = BLENDING_WORD_BANK.filter(w => w.tier === 'stop');
+        } else {
+            nextPool = BLENDING_WORD_BANK;
+        }
+        if (nextPool.length > 0) {
+            setActiveWordItem(nextPool[0]);
+            setHasBlended(false);
+            setHighlightedGraphemeIndex(null);
+            setSlideProgress(0);
+            setIsLeverPulled(false);
+        }
     }, []);
+
+    // Pick a new word from current pool
+    const pickNewWord = useCallback((targetWord?: BlendingWordItem) => {
+        if (targetWord) {
+            setActiveWordItem(targetWord);
+        } else {
+            const candidates = activeWordPool.filter(w => w.id !== activeWordItem.id);
+            const chosen = candidates.length > 0 
+                ? candidates[Math.floor(Math.random() * candidates.length)]
+                : activeWordPool[0];
+            setActiveWordItem(chosen);
+        }
+        setHasBlended(false);
+        setHighlightedGraphemeIndex(null);
+        setSlideProgress(0);
+        setIsLeverPulled(false);
+    }, [activeWordPool, activeWordItem.id]);
+
+    // Pure phonetic audio without added schwa
+    const playGraphemeSound = useCallback(async (grapheme: string, index: number) => {
+        setHighlightedGraphemeIndex(index);
+        
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            try { navigator.vibrate(35); } catch {}
+        }
+
+        const meta = PURE_PHONEMES[grapheme.toLowerCase()] || { ipa: `/${grapheme}/`, speech: grapheme };
+
+        let playedLocal = false;
+        if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
+            try {
+                const audio = new Audio(`/audio/phonics/${encodeURIComponent(grapheme.toLowerCase().trim())}.mp3`);
+                await new Promise<void>((resolve, reject) => {
+                    const timer = setTimeout(() => reject(new Error('timeout')), 500);
+                    audio.onended = () => { clearTimeout(timer); resolve(); };
+                    audio.onerror = () => { clearTimeout(timer); reject(); };
+                    audio.play().catch(reject);
+                });
+                playedLocal = true;
+            } catch {
+                playedLocal = false;
+            }
+        }
+
+        if (!playedLocal) {
+            speak(meta.speech, 0.85);
+        }
+
+        setTimeout(() => {
+            setHighlightedGraphemeIndex(null);
+        }, 550);
+    }, []);
+
+    // Continuous Blending Slide
+    const runContinuousBlend = useCallback(async () => {
+        if (isBlending) return;
+        setIsBlending(true);
+        setHasBlended(false);
+        setHighlightedGraphemeIndex(null);
+        setIsLeverPulled(true);
+
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            try { navigator.vibrate([40, 50, 40]); } catch {}
+        }
+
+        const totalGraphemes = activeWordItem.graphemes.length;
+
+        // Sequentially glide through each grapheme
+        for (let i = 0; i < totalGraphemes; i++) {
+            setHighlightedGraphemeIndex(i);
+            setSlideProgress(((i + 0.6) / totalGraphemes) * 100);
+
+            const g = activeWordItem.graphemes[i];
+            const meta = PURE_PHONEMES[g.toLowerCase()] || { ipa: `/${g}/`, speech: g };
+
+            if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+                try { navigator.vibrate(30); } catch {}
+            }
+
+            await new Promise<void>((resolve) => {
+                speak(meta.speech, 0.82, () => resolve());
+                setTimeout(resolve, 520);
+            });
+
+            await new Promise((r) => setTimeout(r, 120));
+        }
+
+        // Complete slide track
+        setSlideProgress(100);
+        setHighlightedGraphemeIndex(-1); // highlight all blocks
+
+        await new Promise((r) => setTimeout(r, 220));
+
+        // Speak full blended word with natural inflection
+        speak(activeWordItem.word, 0.88, () => {
+            setHasBlended(true);
+            setIsBlending(false);
+            setIsLeverPulled(false);
+            confetti({ colors: ['#0d9488', '#10b981', '#f59e0b', '#3b82f6'], particleCount: 75 });
+        });
+
+        // Failsafe timer
+        setTimeout(() => {
+            setIsBlending(false);
+            setIsLeverPulled(false);
+        }, 3600);
+    }, [activeWordItem, isBlending]);
     
     // Sound Match Game State
     const [gameTarget, setGameTarget] = useState<any>(null);
@@ -1135,52 +1461,319 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                 </div>
             )}
 
-            {/* PILLAR 2: BLENDING STATION */}
+            {/* PILLAR 2: BLENDING STATION (SCIENCE OF READING & UK LETTERS & SOUNDS COMPLIANT) */}
             {activeTab === 'blender' && (
-                <div className="bg-gradient-to-br from-teal-50/50 via-white to-emerald-50/30 p-8 rounded-[40px] border-4 border-teal-100 text-center space-y-8 animate-in zoom-in shadow-inner relative overflow-hidden">
-                    {/* Wooden track/shelf line effect */}
-                    <div className="absolute top-[40%] left-0 right-0 h-4 bg-amber-800/10 -translate-y-1/2 pointer-events-none border-y border-amber-800/20"></div>
-
-                    <div className="relative z-10">
-                        <h2 className="text-3xl font-black text-teal-800 flex items-center justify-center gap-2">Blending Train 🚂</h2>
-                        <p className="text-teal-600 font-bold text-sm mt-1">Tap each sound block, then pull the lever to read!</p>
-                    </div>
-                    
-                    <div className="relative z-10 flex justify-center gap-6 py-6">
-                        {blendingWord.map((letter, i) => (
-                            <button 
-                                key={i}
-                                onClick={() => speak(letter)}
-                                className="w-24 h-32 bg-gradient-to-b from-white to-teal-50/50 rounded-3xl shadow-xl border-2 border-b-[12px] border-teal-200 hover:border-teal-300 text-5xl font-black text-teal-600 hover:scale-105 active:translate-y-2 active:border-b-4 transition-all flex items-center justify-center cursor-pointer"
-                            >
-                                {letter}
-                            </button>
+                <div className="bg-gradient-to-br from-teal-50/60 via-white to-emerald-50/40 p-5 sm:p-8 rounded-[40px] border-4 border-teal-200/80 text-center space-y-6 animate-in zoom-in-95 shadow-lg relative overflow-hidden">
+                    {/* Railroad Track Visual Background */}
+                    <div className="absolute top-[36%] left-0 right-0 h-5 bg-amber-900/10 -translate-y-1/2 pointer-events-none border-y-2 border-amber-900/20 flex items-center justify-around opacity-40">
+                        {Array.from({ length: 24 }).map((_, i) => (
+                            <div key={i} className="w-1.5 h-full bg-amber-900/40"></div>
                         ))}
                     </div>
 
-                    <div className="relative z-10 flex flex-col items-center gap-6">
-                        <div className="flex gap-4">
-                            <Button 
-                                onClick={() => {
-                                    speak(blendingWord.join(''), 0.7);
-                                    confetti({ colors: ['#2dd4bf', '#10b981'], particleCount: 60 });
-                                }}
-                                className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xl px-10 py-7 rounded-2xl shadow-xl border-2 border-emerald-400 active:scale-95 transition-all cursor-pointer"
+                    {/* Header & Science of Reading Pedagogy Badge */}
+                    <div className="relative z-10 space-y-2">
+                        <div className="inline-flex items-center gap-1.5 bg-teal-100/80 text-teal-800 text-[11px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full border border-teal-200 shadow-xs">
+                            <span>🚂 Science of Reading · Systematic Synthetic Phonics</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-4xl font-black text-teal-900 flex items-center justify-center gap-2">
+                            Blending Train Station
+                        </h2>
+                        <p className="text-teal-700 font-bold text-xs sm:text-sm max-w-lg mx-auto">
+                            Tap individual sound buttons to isolate pure phonemes, then slide or pull the lever for continuous blending!
+                        </p>
+                    </div>
+
+                    {/* DECODABLE PROGRESSION SELECTOR (Tier 1 Continuous CVC | Tier 2 Stop Initials | Mixed CVC) */}
+                    <div className="relative z-10 flex flex-col items-center gap-2.5">
+                        <div className="bg-teal-100/70 p-1 rounded-2xl flex flex-wrap items-center justify-center gap-1 border border-teal-200/80 shadow-inner">
+                            <button
+                                type="button"
+                                onClick={() => handleSelectTier('continuous')}
+                                className={cn(
+                                    "px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 select-none",
+                                    tierFilter === 'continuous'
+                                        ? "bg-teal-700 text-white shadow-xs"
+                                        : "text-teal-800 hover:bg-teal-200/60"
+                                )}
                             >
-                                <Play className="w-6 h-6 mr-2" /> Blend Word!
-                            </Button>
-                            <Button 
-                                variant="outline"
-                                onClick={() => {
-                                    const randomWord = quickLoadWords[Math.floor(Math.random() * quickLoadWords.length)];
-                                    setBlendingWord(randomWord.split(''));
-                                }}
-                                className="bg-white text-teal-700 font-extrabold text-sm px-5 py-7 rounded-2xl border-2 border-teal-200 hover:bg-teal-50 shadow-sm transition-all cursor-pointer"
+                                <span>🟢 Tier 1: Continuous CVC</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleSelectTier('stop')}
+                                className={cn(
+                                    "px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 select-none",
+                                    tierFilter === 'stop'
+                                        ? "bg-teal-700 text-white shadow-xs"
+                                        : "text-teal-800 hover:bg-teal-200/60"
+                                )}
                             >
-                                <Sparkles className="w-4 h-4 mr-1.5 text-amber-500" /> New Word
-                            </Button>
+                                <span>🟡 Tier 2: Stop Initials</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleSelectTier('mixed')}
+                                className={cn(
+                                    "px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 select-none",
+                                    tierFilter === 'mixed'
+                                        ? "bg-teal-700 text-white shadow-xs"
+                                        : "text-teal-800 hover:bg-teal-200/60"
+                                )}
+                            >
+                                <span>🔵 Mixed CVC & Digraphs</span>
+                            </button>
+                        </div>
+
+                        {/* Quick Word Pills Picker for Direct 1-Tap Loading */}
+                        <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-2xl px-2">
+                            {activeWordPool.map((item) => (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => pickNewWord(item)}
+                                    style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                    className={cn(
+                                        "min-h-[40px] px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1 select-none",
+                                        activeWordItem.id === item.id
+                                            ? "bg-teal-600 text-white border-teal-600 shadow-xs scale-105"
+                                            : "bg-white/80 hover:bg-white text-teal-800 border-teal-200"
+                                    )}
+                                >
+                                    <span>{item.emoji}</span>
+                                    <span className="capitalize">{item.word}</span>
+                                </button>
+                            ))}
                         </div>
                     </div>
+
+                    {/* MAIN INTERACTIVE TRAIN DECK: LETTER BLOCKS, SOUND BUTTONS & TRAIN LEVER */}
+                    <div className="relative z-10 flex items-center justify-center gap-4 sm:gap-8 py-4">
+                        {/* Interactive Letter Blocks and Sound Buttons */}
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="flex items-center justify-center gap-3 sm:gap-6">
+                                {activeWordItem.graphemes.map((grapheme, idx) => {
+                                    const isLit = highlightedGraphemeIndex === idx || highlightedGraphemeIndex === -1;
+                                    const meta = PURE_PHONEMES[grapheme.toLowerCase()] || { ipa: `/${grapheme}/`, speech: grapheme };
+                                    const isDigraph = grapheme.length > 1;
+
+                                    return (
+                                        <div key={idx} className="flex flex-col items-center gap-3">
+                                            {/* Tactile Letter Block (56px+ Touch Target, Infant School Single-Story Font) */}
+                                            <button
+                                                type="button"
+                                                onClick={() => playGraphemeSound(grapheme, idx)}
+                                                disabled={isBlending}
+                                                style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                                className={cn(
+                                                    "w-20 h-28 sm:w-28 sm:h-36 min-w-[72px] min-h-[104px] rounded-[28px] sm:rounded-[32px] shadow-lg border-2 border-b-[10px] transition-all duration-200 flex flex-col items-center justify-center cursor-pointer select-none relative group",
+                                                    isLit
+                                                        ? "scale-105 -translate-y-2 border-teal-500 border-b-[8px] bg-gradient-to-b from-white via-teal-50 to-emerald-100 text-teal-800 ring-4 ring-teal-300 shadow-teal-200/80"
+                                                        : "bg-gradient-to-b from-white to-slate-50/90 border-teal-200 hover:border-teal-300 text-teal-900 hover:-translate-y-1 active:translate-y-1 active:border-b-4"
+                                                )}
+                                            >
+                                                {/* Grapheme text (pure infant single-loop a and g via Andika font) */}
+                                                <span className="text-4xl sm:text-6xl font-black tracking-normal lowercase leading-none">
+                                                    {grapheme}
+                                                </span>
+                                                {/* IPA Cue Badge */}
+                                                <span className="text-[10px] sm:text-[11px] font-bold text-teal-700/80 mt-2 font-sans px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-100 shadow-inner">
+                                                    {meta.ipa}
+                                                </span>
+                                            </button>
+
+                                            {/* Tactile Sound Button (UK Letters & Sounds standard: Circular dot for single letters, elongated capsule for digraphs) */}
+                                            <button
+                                                type="button"
+                                                onClick={() => playGraphemeSound(grapheme, idx)}
+                                                disabled={isBlending}
+                                                title={`Sound button for ${grapheme} (${meta.ipa})`}
+                                                className={cn(
+                                                    "h-14 transition-all duration-200 flex items-center justify-center cursor-pointer select-none shadow-md border-2 border-b-4 active:border-b-2 active:translate-y-0.5",
+                                                    isDigraph 
+                                                        ? "w-20 sm:w-24 min-w-[80px] rounded-full px-2" // Elongated capsule for digraph
+                                                        : "w-14 min-w-[56px] rounded-full", // Circular dot for single sound
+                                                    isLit
+                                                        ? "bg-gradient-to-tr from-teal-500 to-emerald-400 border-teal-600 text-white scale-110 ring-4 ring-teal-300 shadow-lg"
+                                                        : "bg-white hover:bg-teal-50 border-teal-300 text-teal-700"
+                                                )}
+                                            >
+                                                {isDigraph ? (
+                                                    <div className="w-12 h-3.5 bg-current rounded-full opacity-85 flex items-center justify-center">
+                                                        <span className="text-[9px] text-white font-black uppercase tracking-wider">Digraph</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-4 h-4 rounded-full bg-current opacity-85 shadow-inner"></div>
+                                                )}
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* CONTINUOUS BLENDING SLIDE TRACK (Left-to-right animated sweep track) */}
+                            <div className="w-full max-w-md sm:max-w-lg mx-auto mt-2 space-y-1.5 px-2">
+                                <div className="relative h-6 bg-amber-900/10 rounded-full border border-amber-900/20 p-1 flex items-center overflow-hidden">
+                                    {/* Track gradient glow */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-teal-400/20 via-emerald-400/30 to-amber-400/20 rounded-full pointer-events-none"></div>
+                                    
+                                    {/* Animated Slider Fill / Sweep Bar */}
+                                    <div 
+                                        className="h-full bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600 rounded-full transition-all duration-300 shadow-sm"
+                                        style={{ width: `${Math.max(6, slideProgress)}%` }}
+                                    ></div>
+
+                                    {/* Sliding Train Engine Marker */}
+                                    <div 
+                                        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 text-base transition-all duration-300 pointer-events-none drop-shadow-sm"
+                                        style={{ left: `${Math.max(4, Math.min(96, slideProgress))}%` }}
+                                    >
+                                        🚂
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between text-[11px] font-black text-teal-800 px-1">
+                                    <span className="flex items-center gap-1">
+                                        <span className="text-xs">👆</span> Tap Dots
+                                    </span>
+                                    <span className="flex items-center gap-1 text-emerald-800 font-extrabold animate-pulse">
+                                        Continuous Blending Slide &nbsp;➔
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Whole Word
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* TACTILE 3D TRAIN LEVER (Pull lever to trigger continuous blend) */}
+                        <div className="flex flex-col items-center gap-1 select-none shrink-0">
+                            <div className="text-[10px] uppercase tracking-wider font-black text-amber-800">Train Lever</div>
+                            <button
+                                type="button"
+                                disabled={isBlending}
+                                onClick={runContinuousBlend}
+                                title="Pull the Train Lever to Blend!"
+                                className={cn(
+                                    "w-14 h-36 rounded-2xl bg-gradient-to-b from-amber-100 via-amber-50 to-amber-200 border-2 border-amber-300 shadow-md flex flex-col items-center justify-between p-2 cursor-pointer transition-all duration-200 active:scale-95",
+                                    isBlending ? "opacity-75 cursor-not-allowed" : "hover:border-amber-400"
+                                )}
+                            >
+                                {/* Lever Handle Knob */}
+                                <div 
+                                    className={cn(
+                                        "w-10 h-10 rounded-full shadow-lg border-2 transition-transform duration-300 flex items-center justify-center font-black text-xs select-none",
+                                        isLeverPulled || isBlending
+                                            ? "translate-y-16 bg-gradient-to-tr from-emerald-500 to-teal-400 text-white border-emerald-600 ring-2 ring-emerald-300"
+                                            : "translate-y-0 bg-gradient-to-tr from-rose-500 to-amber-500 text-white border-rose-600"
+                                    )}
+                                >
+                                    {isBlending ? <Loader2 className="w-5 h-5 animate-spin" /> : "🚂"}
+                                </div>
+
+                                {/* Track Guide Groove */}
+                                <div className="w-2 h-14 bg-amber-900/20 rounded-full inset-shadow-sm"></div>
+                                <span className="text-[9px] font-black text-amber-900 uppercase">Pull</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* CONTROLS: BLEND WORD BUTTON & NEW WORD BUTTON (56px+ Touch Targets) */}
+                    <div className="relative z-10 flex flex-wrap items-center justify-center gap-4">
+                        <Button 
+                            onClick={runContinuousBlend}
+                            disabled={isBlending}
+                            className="bg-gradient-to-r from-emerald-500 via-teal-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-lg sm:text-xl min-h-[56px] px-8 sm:px-10 py-3 rounded-2xl shadow-xl border-2 border-emerald-400 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+                        >
+                            {isBlending ? (
+                                <>
+                                    <Loader2 className="w-6 h-6 animate-spin mr-1" />
+                                    <span>Blending...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Play className="w-6 h-6 mr-1" />
+                                    <span>Blend Word!</span>
+                                </>
+                            )}
+                        </Button>
+
+                        <Button 
+                            variant="outline"
+                            onClick={() => pickNewWord()}
+                            disabled={isBlending}
+                            className="bg-white text-teal-800 font-extrabold text-sm sm:text-base min-h-[56px] px-6 py-3 rounded-2xl border-2 border-teal-200 hover:bg-teal-50 shadow-sm active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+                        >
+                            <Sparkles className="w-5 h-5 text-amber-500" />
+                            <span>New Word</span>
+                        </Button>
+                    </div>
+
+                    {/* SEMANTIC REVEAL & VISUAL ANCHOR CARD (Reveals upon successful continuous blend) */}
+                    {hasBlended && (
+                        <div className="bg-white/95 backdrop-blur-md rounded-[32px] p-6 sm:p-7 border-4 border-emerald-200 shadow-xl max-w-xl mx-auto space-y-4 animate-in zoom-in-95 duration-300">
+                            <div className="flex items-center justify-center gap-2">
+                                <span className="bg-emerald-100 text-emerald-800 text-xs uppercase tracking-wider font-black px-3.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 shadow-xs">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Word Decoded!
+                                </span>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+                                {/* Visual Anchor Illustration */}
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-teal-50 to-emerald-50 border-2 border-emerald-200 shadow-inner flex items-center justify-center p-2 shrink-0">
+                                    <PhonicsAnchorGraphic word={activeWordItem.word} emoji={activeWordItem.emoji} className="w-20 h-20" />
+                                </div>
+
+                                <div className="text-center sm:text-left space-y-2 flex-1">
+                                    {/* Blended Word in single-story infant font */}
+                                    <h3 
+                                        style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                        className="text-4xl sm:text-5xl font-black text-teal-900 tracking-tight lowercase leading-none"
+                                    >
+                                        {activeWordItem.word}
+                                    </h3>
+
+                                    {/* Phoneme to Grapheme Breakdown */}
+                                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1 text-xs font-black text-slate-600">
+                                        {activeWordItem.graphemes.map((g, idx) => (
+                                            <span key={idx} className="flex items-center gap-1">
+                                                <span className="bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">
+                                                    /{PURE_PHONEMES[g.toLowerCase()]?.ipa.replace(/\//g, '') || g}/
+                                                </span>
+                                                {idx < activeWordItem.graphemes.length - 1 && <span className="text-teal-400 font-bold">+</span>}
+                                            </span>
+                                        ))}
+                                        <span className="text-emerald-700 font-extrabold ml-1">= {activeWordItem.word}</span>
+                                    </div>
+
+                                    <p className="text-xs text-slate-500 font-semibold">{activeWordItem.meaning}</p>
+                                </div>
+                            </div>
+
+                            {/* Decodable Sentence Reinforcement */}
+                            <div className="bg-gradient-to-r from-teal-50/80 via-emerald-50/60 to-amber-50/80 rounded-2xl p-4 border border-teal-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                                <div className="space-y-0.5">
+                                    <div className="text-[10px] uppercase tracking-wider font-black text-teal-700 flex items-center justify-center sm:justify-start gap-1">
+                                        <span>📖 Decodable Sentence</span>
+                                    </div>
+                                    <p 
+                                        style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                        className="text-lg sm:text-xl font-black text-slate-800"
+                                    >
+                                        {activeWordItem.sentence}
+                                    </p>
+                                </div>
+
+                                <Button
+                                    type="button"
+                                    onClick={() => speak(activeWordItem.sentence, 0.82)}
+                                    className="bg-teal-600 hover:bg-teal-700 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-sm cursor-pointer shrink-0 min-h-[48px] flex items-center gap-1.5"
+                                >
+                                    <Volume2 className="w-4 h-4" /> Hear Sentence
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
