@@ -8525,15 +8525,7 @@ export default function JuniorCampusPage() {
   const [activeTab, setActiveTab] = useState<string>('level_curriculum');
   const [abcSubTab, setAbcSubTab] = useState<'explorer' | 'tracing' | 'matcher'>('tracing');
   const [manualAgeCollapse, setManualAgeCollapse] = useState<boolean | null>(null);
-  const [isSubjectDrawerOpen, setIsSubjectDrawerOpen] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    if (carouselRef.current) {
-      const scrollAmount = direction === 'left' ? -260 : 260;
-      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  const [subjectFilter, setSubjectFilter] = useState<'all' | 'literacy' | 'math' | 'discovery' | 'milestones'>('all');
 
   // Automatically collapse Age Level cards into compact bar when entering interactive tools (Explorer, Tracing Lab, or Matcher Game)
   const isAgeLevelCompact = manualAgeCollapse !== null 
@@ -8542,53 +8534,27 @@ export default function JuniorCampusPage() {
 
   const pageModules = useMemo(() => {
     return [
-      { id: 'level_curriculum', name: 'Age Level Curriculum', icon: <Brain className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
-      ...(activeAgeTier === 'ages5+' ? [{ id: 'sentence_finisher', name: 'Sentence Finisher (Year 5+)', icon: <PenTool className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' }] : []),
-      { id: 'coach', name: 'Voice Coach', icon: <Mic className="w-5 h-5"/>, color: 'text-pink-600 bg-pink-100' },
-      { id: 'phonics', name: 'Phonics Forest', icon: <Music className="w-5 h-5"/>, color: 'text-teal-600 bg-teal-100' },
-      { id: 'abc', name: 'ABC Kingdom', icon: <Brain className="w-5 h-5"/>, color: 'text-green-600 bg-green-100' },
-      { id: 'numbers', name: 'Number Garden', icon: <Hash className="w-5 h-5"/>, color: 'text-amber-600 bg-amber-100' },
-      { id: 'math', name: 'Math Playground', icon: <Calculator className="w-5 h-5"/>, color: 'text-orange-600 bg-orange-100' },
-      { id: 'stories', name: 'Story Spark', icon: <BookOpen className="w-5 h-5"/>, color: 'text-purple-600 bg-purple-100' },
-      { id: 'science', name: 'Science World', icon: <Atom className="w-5 h-5"/>, color: 'text-blue-600 bg-blue-100' },
-      { id: 'music', name: 'Music Corner', icon: <Lightbulb className="w-5 h-5"/>, color: 'text-violet-600 bg-violet-100' },
-      { id: 'art', name: 'Art Studio', icon: <Palette className="w-5 h-5"/>, color: 'text-cyan-600 bg-cyan-100' },
-      { id: 'rewards', name: 'Sticker Book', icon: <Trophy className="w-5 h-5"/>, color: 'text-yellow-600 bg-yellow-100' },
-      ...(canEdit ? [{ id: 'dashboard', name: 'Dashboard', icon: <BarChart3 className="w-5 h-5"/>, color: 'text-indigo-600 bg-indigo-100' }] : []),
+      { id: 'level_curriculum', name: 'Age Level Curriculum', category: 'milestones', icon: <Brain className="w-4 h-4"/>, color: 'text-amber-600 bg-amber-100' },
+      ...(activeAgeTier === 'ages5+' ? [{ id: 'sentence_finisher', name: 'Sentence Finisher (Year 5+)', category: 'literacy', icon: <PenTool className="w-4 h-4"/>, color: 'text-purple-600 bg-purple-100' }] : []),
+      { id: 'coach', name: 'Voice Coach', category: 'literacy', icon: <Mic className="w-4 h-4"/>, color: 'text-pink-600 bg-pink-100' },
+      { id: 'phonics', name: 'Phonics Forest', category: 'literacy', icon: <Music className="w-4 h-4"/>, color: 'text-teal-600 bg-teal-100' },
+      { id: 'abc', name: 'ABC Kingdom', category: 'literacy', icon: <Brain className="w-4 h-4"/>, color: 'text-green-600 bg-green-100' },
+      { id: 'numbers', name: 'Number Garden', category: 'math', icon: <Hash className="w-4 h-4"/>, color: 'text-amber-600 bg-amber-100' },
+      { id: 'math', name: 'Math Playground', category: 'math', icon: <Calculator className="w-4 h-4"/>, color: 'text-orange-600 bg-orange-100' },
+      { id: 'stories', name: 'Story Spark', category: 'discovery', icon: <BookOpen className="w-4 h-4"/>, color: 'text-purple-600 bg-purple-100' },
+      { id: 'science', name: 'Science World', category: 'discovery', icon: <Atom className="w-4 h-4"/>, color: 'text-blue-600 bg-blue-100' },
+      { id: 'music', name: 'Music Corner', category: 'discovery', icon: <Lightbulb className="w-4 h-4"/>, color: 'text-violet-600 bg-violet-100' },
+      { id: 'art', name: 'Art Studio', category: 'discovery', icon: <Palette className="w-4 h-4"/>, color: 'text-cyan-600 bg-cyan-100' },
+      { id: 'rewards', name: 'Sticker Book', category: 'milestones', icon: <Trophy className="w-4 h-4"/>, color: 'text-yellow-600 bg-yellow-100' },
+      ...(canEdit ? [{ id: 'dashboard', name: 'Dashboard', category: 'milestones', icon: <BarChart3 className="w-4 h-4"/>, color: 'text-indigo-600 bg-indigo-100' }] : []),
     ];
   }, [activeAgeTier, canEdit]);
 
-  // Group modules into structured subject tracks for the expandable drawer
-  const subjectCategories = useMemo(() => [
-    {
-      category: 'Early Literacy & Phonics',
-      description: 'Systematic phonics, speaking coach, and letter kingdom',
-      border: 'border-teal-200',
-      bg: 'bg-teal-50/60',
-      modules: pageModules.filter(m => ['coach', 'phonics', 'abc', 'sentence_finisher'].includes(m.id))
-    },
-    {
-      category: 'Numbers & Math Playground',
-      description: 'Counting games, numeral tracing, and early arithmetic',
-      border: 'border-amber-200',
-      bg: 'bg-amber-50/60',
-      modules: pageModules.filter(m => ['numbers', 'math'].includes(m.id))
-    },
-    {
-      category: 'Creative Arts & Discovery',
-      description: 'Story generation, interactive science, music, and art',
-      border: 'border-purple-200',
-      bg: 'bg-purple-50/60',
-      modules: pageModules.filter(m => ['stories', 'science', 'music', 'art'].includes(m.id))
-    },
-    {
-      category: 'Curriculum & Milestones',
-      description: 'Age-tiered progression, sticker rewards, and facilitator tools',
-      border: 'border-blue-200',
-      bg: 'bg-blue-50/60',
-      modules: pageModules.filter(m => ['level_curriculum', 'rewards', 'dashboard'].includes(m.id))
-    }
-  ], [pageModules]);
+  // Filter modules when a category is chosen, or show all 100% visible by default
+  const displayedModules = useMemo(() => {
+    if (subjectFilter === 'all') return pageModules;
+    return pageModules.filter(m => (m as any).category === subjectFilter);
+  }, [pageModules, subjectFilter]);
 
   // Safely fallback when active tab gets dynamically hidden
   useEffect(() => {
@@ -8647,131 +8613,118 @@ export default function JuniorCampusPage() {
 
       <div className="max-w-6xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* CONSOLIDATED SINGLE-ROW ACTIVITY CAROUSEL & SUBJECT DRAWER TRIGGER */}
-            <div className="bg-white/80 backdrop-blur-md p-1.5 sm:p-2 rounded-[28px] shadow-md border border-white/90 mb-2.5 sm:mb-3.5 flex items-center gap-1.5 sm:gap-2">
-              {/* Left Carousel Scroll Arrow */}
-              <button
-                type="button"
-                onClick={() => scrollCarousel('left')}
-                aria-label="Scroll left in activities"
-                className="h-8.5 w-8.5 sm:h-9 sm:w-9 rounded-2xl bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 shadow-xs border border-slate-200/80 flex items-center justify-center shrink-0 transition-transform active:scale-90 cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
-              </button>
+            {/* ZERO-HORIZONTAL-SCROLL ACTIVITY DIRECTORY (All modules directly visible and tappable) */}
+            <div className="bg-white/85 backdrop-blur-md p-2.5 sm:p-3.5 rounded-[32px] shadow-lg border-2 border-white/90 mb-3 space-y-2.5">
+              {/* Category Filter Pills (Instant 1-tap focus) */}
+              <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-100 pb-2">
+                <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setSubjectFilter('all')}
+                    className={cn(
+                      "px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1",
+                      subjectFilter === 'all'
+                        ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                    )}
+                  >
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <span>All Subjects ({pageModules.length})</span>
+                  </button>
 
-              {/* Horizontal Scrolling Carousel Container */}
-              <div 
-                ref={carouselRef}
-                className="overflow-x-auto scrollbar-none flex items-center gap-1.5 sm:gap-2 py-0.5 px-1 snap-x scroll-smooth w-full"
-              >
-                <TabsList className="flex items-center gap-1.5 sm:gap-2 bg-transparent p-0 h-auto w-auto">
-                    {pageModules.map(mod => (
-                        <TabsTrigger 
-                            key={mod.id}
-                            value={mod.id} 
-                            className={cn(
-                              "rounded-2xl font-black flex flex-row items-center gap-2 text-xs py-2 px-3 sm:px-3.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-xs border border-transparent whitespace-nowrap snap-start shrink-0 cursor-pointer",
-                              "data-[state=active]:bg-gradient-to-b data-[state=active]:shadow-md data-[state=active]:border-white/50 data-[state=active]:-translate-y-0.5",
-                              mod.id === 'level_curriculum' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
-                              mod.id === 'sentence_finisher' && "data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white text-purple-700 hover:bg-purple-50/50",
-                              mod.id === 'coach' && "data-[state=active]:from-pink-500 data-[state=active]:to-rose-500 data-[state=active]:text-white text-pink-600 hover:bg-pink-50/50",
-                              mod.id === 'phonics' && "data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white text-teal-600 hover:bg-teal-50/50",
-                              mod.id === 'abc' && "data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white text-green-600 hover:bg-green-50/50",
-                              mod.id === 'math' && "data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white text-orange-600 hover:bg-orange-50/50",
-                              mod.id === 'stories' && "data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white text-purple-600 hover:bg-purple-50/50",
-                              mod.id === 'science' && "data-[state=active]:from-blue-500 data-[state=active]:to-sky-500 data-[state=active]:text-white text-blue-600 hover:bg-blue-50/50",
-                              mod.id === 'art' && "data-[state=active]:from-cyan-500 data-[state=active]:to-teal-400 data-[state=active]:text-white text-cyan-700 hover:bg-cyan-50/50",
-                              mod.id === 'rewards' && "data-[state=active]:from-yellow-400 data-[state=active]:to-orange-400 data-[state=active]:text-white text-yellow-600 hover:bg-yellow-50/50",
-                              mod.id === 'numbers' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-400 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
-                              mod.id === 'music' && "data-[state=active]:from-violet-500 data-[state=active]:to-purple-500 data-[state=active]:text-white text-violet-600 hover:bg-violet-50/50",
-                              mod.id === 'dashboard' && "data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-indigo-600 hover:bg-indigo-50/50"
-                            )}
-                        >
-                            <div className="p-1 rounded-xl bg-white/20 shadow-inner shrink-0">
-                              {mod.icon}
-                            </div>
-                            <span className="font-extrabold tracking-wide whitespace-nowrap">{mod.name}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+                  <button
+                    type="button"
+                    onClick={() => setSubjectFilter('literacy')}
+                    className={cn(
+                      "px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1",
+                      subjectFilter === 'literacy'
+                        ? "bg-teal-600 text-white border-teal-600 shadow-xs"
+                        : "bg-teal-50/70 text-teal-800 border-teal-200 hover:bg-teal-100/60"
+                    )}
+                  >
+                    <span>🔤 Literacy ({pageModules.filter(m => (m as any).category === 'literacy').length})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSubjectFilter('math')}
+                    className={cn(
+                      "px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1",
+                      subjectFilter === 'math'
+                        ? "bg-amber-600 text-white border-amber-600 shadow-xs"
+                        : "bg-amber-50/70 text-amber-800 border-amber-200 hover:bg-amber-100/60"
+                    )}
+                  >
+                    <span>🔢 Math ({pageModules.filter(m => (m as any).category === 'math').length})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSubjectFilter('discovery')}
+                    className={cn(
+                      "px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1",
+                      subjectFilter === 'discovery'
+                        ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                        : "bg-purple-50/70 text-purple-800 border-purple-200 hover:bg-purple-100/60"
+                    )}
+                  >
+                    <span>🎨 Discovery ({pageModules.filter(m => (m as any).category === 'discovery').length})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSubjectFilter('milestones')}
+                    className={cn(
+                      "px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1",
+                      subjectFilter === 'milestones'
+                        ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                        : "bg-blue-50/70 text-blue-800 border-blue-200 hover:bg-blue-100/60"
+                    )}
+                  >
+                    <span>🌟 Milestones ({pageModules.filter(m => (m as any).category === 'milestones').length})</span>
+                  </button>
+                </div>
+
+                {/* Current Active Activity Indicator */}
+                <div className="hidden md:flex items-center gap-1.5 text-[11px] font-black text-slate-500 bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-200">
+                  <span>Active:</span>
+                  <span className="text-slate-800 font-extrabold">{pageModules.find(m => m.id === activeTab)?.name}</span>
+                </div>
               </div>
 
-              {/* Right Carousel Scroll Arrow */}
-              <button
-                type="button"
-                onClick={() => scrollCarousel('right')}
-                aria-label="Scroll right in activities"
-                className="h-8.5 w-8.5 sm:h-9 sm:w-9 rounded-2xl bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 shadow-xs border border-slate-200/80 flex items-center justify-center shrink-0 transition-transform active:scale-90 cursor-pointer"
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
-              </button>
-
-              {/* Expandable Subject Directory Drawer Button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsSubjectDrawerOpen(true)}
-                className="h-8.5 sm:h-9 px-3 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 border-teal-200 text-teal-800 hover:bg-teal-100 font-black text-xs flex items-center gap-1.5 shrink-0 shadow-xs active:scale-95 cursor-pointer"
-                title="Browse All Learning Activities"
-              >
-                <LayoutGrid className="w-4 h-4 text-teal-600" />
-                <span className="hidden md:inline">All Subjects</span>
-              </Button>
-            </div>
-
-            {/* EXPANDABLE SUBJECT DIRECTORY DRAWER DIALOG */}
-            <Dialog open={isSubjectDrawerOpen} onOpenChange={setIsSubjectDrawerOpen}>
-              <DialogContent className="max-w-3xl rounded-[32px] p-5 sm:p-6 max-h-[85vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <LayoutGrid className="w-6 h-6 text-teal-600" />
-                    <span>Learning Subject Directory</span>
-                  </DialogTitle>
-                  <DialogDescription className="text-xs text-slate-500 font-bold">
-                    Select any early childhood learning module or educator tool to jump directly to it.
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-3">
-                  {subjectCategories.map(cat => (
-                    <div key={cat.category} className={cn("p-4 rounded-3xl border-2 space-y-2.5", cat.bg, cat.border)}>
-                      <div>
-                        <h4 className="font-black text-sm text-slate-900">{cat.category}</h4>
-                        <p className="text-[11px] text-slate-500 font-medium">{cat.description}</p>
-                      </div>
-                      <div className="grid grid-cols-1 gap-1.5">
-                        {cat.modules.map(mod => (
-                          <button
-                            key={mod.id}
-                            type="button"
-                            onClick={() => {
-                              setActiveTab(mod.id);
-                              setIsSubjectDrawerOpen(false);
-                            }}
-                            className={cn(
-                              "flex items-center gap-2.5 p-2 rounded-2xl text-left font-bold text-xs transition-all w-full cursor-pointer",
-                              activeTab === mod.id 
-                                ? "bg-white text-slate-900 shadow-md border border-slate-200/80 font-black ring-2 ring-teal-400" 
-                                : "hover:bg-white/80 text-slate-700 bg-white/40"
-                            )}
-                          >
-                            <div className="p-1.5 rounded-xl bg-white shadow-xs border border-slate-100 shrink-0">
-                              {mod.icon}
-                            </div>
-                            <div className="flex-1 truncate">
-                              <span className="block truncate">{mod.name}</span>
-                            </div>
-                            {activeTab === mod.id && (
-                              <span className="text-[10px] font-black uppercase text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">Active</span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
+              {/* NON-SCROLLING RESPONSIVE ACTIVITY GRID (All items visible simultaneously) */}
+              <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 bg-transparent p-0 h-auto w-full">
+                {displayedModules.map(mod => (
+                  <TabsTrigger 
+                    key={mod.id}
+                    value={mod.id} 
+                    className={cn(
+                      "min-h-[46px] sm:min-h-[50px] w-full rounded-2xl font-black flex items-center justify-start gap-2.5 text-xs px-2.5 py-1.5 transition-all duration-150 shadow-xs border-2 border-b-4 cursor-pointer text-left select-none",
+                      "hover:-translate-y-0.5 hover:shadow-md active:translate-y-0.5 active:border-b-2 active:scale-95",
+                      "data-[state=active]:shadow-md data-[state=active]:-translate-y-0.5 data-[state=active]:border-b-4",
+                      mod.id === 'level_curriculum' && "border-amber-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white data-[state=active]:border-amber-600",
+                      mod.id === 'sentence_finisher' && "border-purple-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:border-purple-700",
+                      mod.id === 'coach' && "border-pink-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-rose-500 data-[state=active]:text-white data-[state=active]:border-pink-600",
+                      mod.id === 'phonics' && "border-teal-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white data-[state=active]:border-teal-600",
+                      mod.id === 'abc' && "border-green-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:border-green-600",
+                      mod.id === 'math' && "border-orange-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white data-[state=active]:border-orange-600",
+                      mod.id === 'stories' && "border-purple-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:border-purple-600",
+                      mod.id === 'science' && "border-blue-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-sky-500 data-[state=active]:text-white data-[state=active]:border-blue-600",
+                      mod.id === 'art' && "border-cyan-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:border-cyan-600",
+                      mod.id === 'rewards' && "border-yellow-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-400 data-[state=active]:to-orange-400 data-[state=active]:text-white data-[state=active]:border-yellow-500",
+                      mod.id === 'numbers' && "border-amber-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-400 data-[state=active]:text-white data-[state=active]:border-amber-500",
+                      mod.id === 'music' && "border-violet-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-purple-500 data-[state=active]:text-white data-[state=active]:border-violet-600",
+                      mod.id === 'dashboard' && "border-indigo-200 bg-white text-slate-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:border-indigo-600"
+                    )}
+                  >
+                    <div className="p-1.5 rounded-xl bg-white/40 shadow-inner shrink-0">
+                      {mod.icon}
                     </div>
-                  ))}
-                </div>
-              </DialogContent>
-            </Dialog>
+                    <span className="font-extrabold tracking-tight truncate leading-tight">{mod.name}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
             
             {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
