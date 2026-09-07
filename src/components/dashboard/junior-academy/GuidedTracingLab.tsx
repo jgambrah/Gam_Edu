@@ -610,9 +610,9 @@ export function GuidedTracingLab({
   };
 
   return (
-    <div className="w-full flex flex-col items-center select-none space-y-1.5 sm:space-y-2">
+    <div className="w-full flex flex-col items-center select-none space-y-1 sm:space-y-1.5">
       {/* 1. ERGONOMIC TOP TOOLBAR (PALM-PROOF: ABOVE DRAWING CANVAS) */}
-      <div className="w-full flex flex-wrap items-center justify-between gap-1.5 p-1.5 sm:p-2 bg-amber-50/90 rounded-2xl border border-amber-200 shadow-xs">
+      <div className="w-full max-w-md flex flex-wrap items-center justify-between gap-1 p-1 sm:p-1.5 bg-amber-50/90 rounded-2xl border border-amber-200 shadow-xs">
         {/* Letter Navigator with Quick Pills */}
         <div className="flex items-center gap-1 sm:gap-1.5">
           <Button
@@ -708,7 +708,7 @@ export function GuidedTracingLab({
       {/* 2. THE HANDWRITING CANVAS SLATE (WOODEN CLASSROOM DESK FRAME) */}
       <div
         ref={containerRef}
-        className="relative bg-amber-100/90 p-2 sm:p-3 rounded-3xl sm:rounded-[32px] border-4 sm:border-6 border-amber-800 shadow-xl flex flex-col items-center justify-center w-full max-w-[340px] sm:max-w-[370px] aspect-square select-none overflow-hidden"
+        className="relative bg-amber-100/90 p-1.5 sm:p-2 rounded-3xl border-4 sm:border-5 border-amber-800 shadow-xl flex flex-col items-center justify-center w-full max-w-[280px] sm:max-w-[310px] aspect-square select-none overflow-hidden"
       >
         {/* Wooden frame corner pegs */}
         <div className="absolute top-2 left-2 w-3 h-3 rounded-full bg-amber-900/40"></div>
@@ -901,7 +901,7 @@ export function GuidedTracingLab({
       </div>
 
       {/* 3. STATUS BAR & MULTI-SENSORY FEEDBACK */}
-      <div className="w-full max-w-sm flex items-center justify-between px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center shadow-xs">
+      <div className="w-full max-w-sm flex items-center justify-between px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-center shadow-xs">
         <div className="flex items-center gap-1.5 text-left">
           <span className="text-base">{isCompleted ? '🏆' : corridorWarning ? '⚠️' : '🎯'}</span>
           <p className={cn(
@@ -931,7 +931,7 @@ export function GuidedTracingLab({
       {/* Quick Letter Carousel (Jump to any letter instantly, smooth touch-scrolling across all 26 letters in single horizontal row) */}
       <div 
         ref={letterTrayRef}
-        className="w-full max-w-md overflow-x-auto overflow-y-hidden flex flex-row flex-nowrap items-center gap-2 py-1.5 px-2 rounded-2xl bg-amber-50/70 border border-amber-200/80 shadow-inner no-scrollbar scrollbar-none scroll-smooth shrink-0"
+        className="w-full max-w-md overflow-x-auto overflow-y-hidden flex flex-row flex-nowrap items-center gap-1.5 py-1 px-1.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 shadow-inner no-scrollbar scrollbar-none scroll-smooth shrink-0"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {alphabet.map((letter) => {
@@ -942,7 +942,7 @@ export function GuidedTracingLab({
               ref={isCurrent ? activeLetterRef : null}
               onClick={() => onLetterChange(letter)}
               className={cn(
-                "h-8 w-8 min-w-[32px] rounded-xl text-xs font-black shrink-0 transition-all font-school flex items-center justify-center border",
+                "h-7 w-7 min-w-[28px] sm:h-8 sm:w-8 sm:min-w-[32px] rounded-xl text-xs font-black shrink-0 transition-all font-school flex items-center justify-center border",
                 isCurrent
                   ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400 scale-110 z-10"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 active:scale-95"

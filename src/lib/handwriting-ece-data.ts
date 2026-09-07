@@ -168,9 +168,9 @@ export const ECE_HANDWRITING_CATALOG: Record<string, LetterData> = {
     phonemeSound: '/ɛ/',
     strokes: [
       { id: 1, order: 1, startLabel: '1', guidePath: 'M 32 20 L 32 80', arrowAngle: 90, points: linePoints(32, 20, 32, 80, 8) },
-      { id: 2, order: 2, startLabel: '2', guidePath: 'M 32 20 L 72 20', arrowAngle: 0, points: linePoints(32, 20, 72, 20, 6) },
-      { id: 3, order: 3, startLabel: '3', guidePath: 'M 32 50 L 64 50', arrowAngle: 0, points: linePoints(32, 50, 64, 50, 5) },
-      { id: 4, order: 4, startLabel: '4', guidePath: 'M 32 80 L 72 80', arrowAngle: 0, points: linePoints(32, 80, 72, 80, 6) }
+      { id: 2, order: 2, startLabel: '2', guidePath: 'M 32 20 L 72 20', arrowAngle: 0, points: linePoints(42, 20, 72, 20, 6) },
+      { id: 3, order: 3, startLabel: '3', guidePath: 'M 32 50 L 66 50', arrowAngle: 0, points: linePoints(42, 50, 66, 50, 5) },
+      { id: 4, order: 4, startLabel: '4', guidePath: 'M 32 80 L 72 80', arrowAngle: 0, points: linePoints(42, 80, 72, 80, 6) }
     ]
   },
   'F': {
@@ -179,8 +179,8 @@ export const ECE_HANDWRITING_CATALOG: Record<string, LetterData> = {
     phonemeSound: '/f/',
     strokes: [
       { id: 1, order: 1, startLabel: '1', guidePath: 'M 34 20 L 34 80', arrowAngle: 90, points: linePoints(34, 20, 34, 80, 8) },
-      { id: 2, order: 2, startLabel: '2', guidePath: 'M 34 20 L 72 20', arrowAngle: 0, points: linePoints(34, 20, 72, 20, 6) },
-      { id: 3, order: 3, startLabel: '3', guidePath: 'M 34 50 L 64 50', arrowAngle: 0, points: linePoints(34, 50, 64, 50, 5) }
+      { id: 2, order: 2, startLabel: '2', guidePath: 'M 34 20 L 74 20', arrowAngle: 0, points: linePoints(42, 20, 74, 20, 6) },
+      { id: 3, order: 3, startLabel: '3', guidePath: 'M 34 50 L 68 50', arrowAngle: 0, points: linePoints(42, 50, 68, 50, 5) }
     ]
   },
   'G': {
@@ -215,7 +215,7 @@ export const ECE_HANDWRITING_CATALOG: Record<string, LetterData> = {
     strokes: [
       { id: 1, order: 1, startLabel: '1', guidePath: 'M 32 20 L 32 80', arrowAngle: 90, points: linePoints(32, 20, 32, 80, 8) },
       { id: 2, order: 2, startLabel: '2', guidePath: 'M 68 20 L 68 80', arrowAngle: 90, points: linePoints(68, 20, 68, 80, 8) },
-      { id: 3, order: 3, startLabel: '3', guidePath: 'M 32 50 L 68 50', arrowAngle: 0, points: linePoints(32, 50, 68, 50, 6) }
+      { id: 3, order: 3, startLabel: '3', guidePath: 'M 32 50 L 68 50', arrowAngle: 0, points: linePoints(42, 50, 68, 50, 6) }
     ]
   },
   'I': {

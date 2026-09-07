@@ -1576,13 +1576,25 @@ function AbcMatcherGame({
 }
 
 // --- 3. ABC KINGDOM (ALPHABET ACADEMY) ---
-function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTier?: string }) {
+function ABCKingdom({ 
+    canEdit, 
+    activeAgeTier, 
+    onSubTabChange 
+}: { 
+    canEdit: boolean; 
+    activeAgeTier?: string; 
+    onSubTabChange?: (tab: 'explorer' | 'tracing' | 'matcher') => void;
+}) {
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [activeTab, setActiveTab] = useState<'explorer' | 'tracing' | 'matcher'>('explorer');
+    const [activeTab, setActiveTab] = useState<'explorer' | 'tracing' | 'matcher'>('tracing');
     const [selectedLetter, setSelectedLetter] = useState('A');
     const [caseMode, setCaseMode] = useState<'upper' | 'lower' | 'both'>('upper');
     const [wordIndex, setWordIndex] = useState(0);
+
+    useEffect(() => {
+        onSubTabChange?.(activeTab);
+    }, [activeTab, onSubTabChange]);
     
     // Dynamic ABC custom words state
     const [newAbcWord, setNewAbcWord] = useState({ letter: 'A', word: '', emoji: '', phonic: '' });
@@ -7613,6 +7625,13 @@ export default function JuniorCampusPage() {
 
   const [activeAgeTier, setActiveAgeTier] = useState<'ages2-3' | 'ages3-4' | 'ages4-5' | 'ages5+'>('ages2-3');
   const [activeTab, setActiveTab] = useState<string>('level_curriculum');
+  const [abcSubTab, setAbcSubTab] = useState<'explorer' | 'tracing' | 'matcher'>('tracing');
+  const [manualAgeCollapse, setManualAgeCollapse] = useState<boolean | null>(null);
+
+  // Automatically collapse Age Level cards into compact bar when in activity subtabs (Tracing Lab or Matcher Game)
+  const isAgeLevelCompact = manualAgeCollapse !== null 
+    ? manualAgeCollapse 
+    : (activeTab === 'abc' && (abcSubTab === 'tracing' || abcSubTab === 'matcher'));
 
   const pageModules = useMemo(() => {
     return [
@@ -7676,7 +7695,12 @@ export default function JuniorCampusPage() {
         </div>
 
         {/* Structured Age Level Selector */}
-        <JuniorAgeLevelSelector activeTier={activeAgeTier} onSelectTier={(tier) => setActiveAgeTier(tier)} />
+        <JuniorAgeLevelSelector 
+          activeTier={activeAgeTier} 
+          onSelectTier={(tier) => setActiveAgeTier(tier)} 
+          isCompact={isAgeLevelCompact}
+          onToggleCompact={() => setManualAgeCollapse(prev => (prev !== null ? !prev : !isAgeLevelCompact))}
+        />
       </div>
 
       <div className="max-w-6xl mx-auto">
@@ -7790,7 +7814,7 @@ export default function JuniorCampusPage() {
                 </TabsContent>
                 <TabsContent value="abc" className="mt-0 animate-in fade-in-50 duration-300 w-full max-w-full overflow-x-hidden">
                   <div className="bg-white/80 backdrop-blur-md p-2 sm:p-3 md:py-2 md:px-5 rounded-[36px] shadow-xl border-4 border-white/90 border-b-[10px] border-b-green-400 w-full max-w-full overflow-hidden">
-                    <ABCKingdom canEdit={canEdit} activeAgeTier={activeAgeTier} />
+                    <ABCKingdom canEdit={canEdit} activeAgeTier={activeAgeTier} onSubTabChange={setAbcSubTab} />
                   </div>
                 </TabsContent>
                 <TabsContent value="math" className="mt-0 animate-in fade-in-50 duration-300">

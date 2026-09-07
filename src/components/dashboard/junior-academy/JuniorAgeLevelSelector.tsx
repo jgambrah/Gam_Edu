@@ -3,15 +3,61 @@
 import React from 'react';
 import { AGE_TIERS, AgeTierConfig } from '@/lib/junior-age-levels';
 import { cn } from '@/lib/utils';
-import { Sparkles, Trophy, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Trophy, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface JuniorAgeLevelSelectorProps {
   activeTier: string;
   onSelectTier: (tierId: 'ages2-3' | 'ages3-4' | 'ages4-5' | 'ages5+') => void;
+  isCompact?: boolean;
+  onToggleCompact?: () => void;
 }
 
-export function JuniorAgeLevelSelector({ activeTier, onSelectTier }: JuniorAgeLevelSelectorProps) {
+export function JuniorAgeLevelSelector({ activeTier, onSelectTier, isCompact = false, onToggleCompact }: JuniorAgeLevelSelectorProps) {
   const tiers = Object.values(AGE_TIERS);
+
+  if (isCompact) {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-white/70 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-white/80 shadow-xs my-1">
+        <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span>Pathway:</span>
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none py-0.5">
+          <div className="flex items-center gap-1.5">
+            {tiers.map((tier) => {
+              const isSelected = activeTier === tier.id;
+              return (
+                <button
+                  key={tier.id}
+                  onClick={() => onSelectTier(tier.id)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shrink-0 border",
+                    isSelected
+                      ? "bg-pink-500 text-white border-pink-600 shadow-xs scale-102"
+                      : "bg-white/80 text-slate-600 border-slate-200 hover:bg-pink-50 hover:text-pink-700"
+                  )}
+                >
+                  <span>{tier.iconEmoji}</span>
+                  <span>{tier.name}</span>
+                  <span className="text-[10px] opacity-80 hidden sm:inline">({tier.recommendedGrade})</span>
+                </button>
+              );
+            })}
+          </div>
+          {onToggleCompact && (
+            <button
+              onClick={onToggleCompact}
+              title="Expand Pathway Cards"
+              className="px-2 py-1 text-[11px] font-bold text-slate-500 hover:text-slate-800 bg-white/60 hover:bg-white rounded-xl border border-slate-200 flex items-center gap-1 shrink-0 transition-colors"
+            >
+              <span>Expand</span>
+              <ChevronDown className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 my-6">
@@ -22,6 +68,16 @@ export function JuniorAgeLevelSelector({ activeTier, onSelectTier }: JuniorAgeLe
           </h2>
           <p className="text-xs text-slate-500 font-medium">Select your child's age group to unlock age-tailored interactive exercises</p>
         </div>
+        {onToggleCompact && (
+          <button
+            onClick={onToggleCompact}
+            title="Collapse to compact bar"
+            className="px-2.5 py-1 text-xs font-bold text-slate-500 hover:text-slate-800 bg-white/80 hover:bg-white rounded-xl border border-slate-200 flex items-center gap-1 transition-colors"
+          >
+            <span>Compact View</span>
+            <ChevronUp className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
