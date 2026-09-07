@@ -48,6 +48,7 @@ import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatem
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { billStudentForAttendance } from '@/lib/billing';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
+import { TargetedBillingPurgeTool } from '@/components/dashboard/finance/TargetedBillingPurgeTool';
 import { StudentSearchInput } from '@/components/student-search';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
 
@@ -3166,7 +3167,7 @@ export default function AccountsPage() {
   const { toast } = useToast();
   const { user } = useUser();
   
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termly-transport' | 'termly-canteen' | 'daily' | null>(null); 
+  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'levy' | 'termly-transport' | 'termly-canteen' | 'daily' | 'targeted-purge' | null>(null); 
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver' | 'reversal' | 'history', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null); 
@@ -4566,6 +4567,12 @@ export default function AccountsPage() {
                                         <DropdownMenuItem onClick={() => setActiveForm('termly-canteen')} className="cursor-pointer">
                                             <Utensils className="mr-2 h-4 w-4 text-green-600" /> Generate Termly Canteen
                                         </DropdownMenuItem>
+
+                                        <DropdownMenuSeparator />
+
+                                        <DropdownMenuItem onClick={() => setActiveForm('targeted-purge')} className="cursor-pointer text-rose-600 focus:text-rose-700 focus:bg-rose-50 font-bold">
+                                            <Trash2 className="mr-2 h-4 w-4 text-rose-600" /> Purge Springfield Third Term Bills
+                                        </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
@@ -4624,6 +4631,19 @@ export default function AccountsPage() {
                                     students={students || []} 
                                     schoolId={schoolId} 
                                     onRecordsAdded={forceRefetch} 
+                                />
+                            </div>
+                        )}
+
+                        {activeForm === 'targeted-purge' && (
+                            <div className="mb-6 animate-in slide-in-from-top-2">
+                                <TargetedBillingPurgeTool 
+                                    schoolId={schoolId || undefined}
+                                    onClose={() => setActiveForm(null)}
+                                    onPurgeComplete={() => {
+                                        setActiveForm(null);
+                                        forceRefetch();
+                                    }}
                                 />
                             </div>
                         )}
