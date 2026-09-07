@@ -1610,7 +1610,7 @@ function ABCKingdom({
         A: { ipa: "/æ/", helper: "Short A", speechPhonic: "ah" },
         B: { ipa: "/b/", helper: "buh", speechPhonic: "buh" },
         C: { ipa: "/k/", helper: "kuh", speechPhonic: "kuh" },
-        D: { ipa: "/d/", helper: "duh", speechPhonic: "duh" },
+        D: { ipa: "/d/", helper: "as in Duck", speechPhonic: "d as in Duck" },
         E: { ipa: "/ɛ/", helper: "Short E", speechPhonic: "eh" },
         F: { ipa: "/f/", helper: "fff", speechPhonic: "fff" },
         G: { ipa: "/ɡ/", helper: "guh", speechPhonic: "guh" },
@@ -1653,9 +1653,9 @@ function ABCKingdom({
             { word: "Cake", emoji: "🎂", phonic: "kuh" }
         ],
         D: [
-            { word: "Dog", emoji: "🐶", phonic: "duh" },
-            { word: "Duck", emoji: "🦆", phonic: "duh" },
-            { word: "Drum", emoji: "🥁", phonic: "duh" }
+            { word: "Duck", emoji: "🦆", phonic: "d" },
+            { word: "Dog", emoji: "🐶", phonic: "d" },
+            { word: "Drum", emoji: "🥁", phonic: "d" }
         ],
         E: [
             { word: "Egg", emoji: "🥚", phonic: "eh" },
@@ -1835,6 +1835,55 @@ function ABCKingdom({
         }
     }, [selectedLetter, wordIndex, activeTab]);
 
+    // Keyboard listener: sync active letter tile, allow physical key navigation, and retain focus
+    useEffect(() => {
+        if (activeTab !== 'explorer') return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const target = e.target as HTMLElement | null;
+            if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+                return;
+            }
+
+            const key = e.key.toUpperCase();
+            if (alphabet.includes(key)) {
+                e.preventDefault();
+                handleLetterClick(key);
+                const tile = document.getElementById(`letter-tile-${key}`);
+                tile?.focus({ preventScroll: true });
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const currentIdx = alphabet.indexOf(selectedLetter);
+                const prevIdx = (currentIdx - 1 + alphabet.length) % alphabet.length;
+                const prevLetter = alphabet[prevIdx];
+                handleLetterClick(prevLetter);
+                const tile = document.getElementById(`letter-tile-${prevLetter}`);
+                tile?.focus({ preventScroll: true });
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                const currentIdx = alphabet.indexOf(selectedLetter);
+                const nextIdx = (currentIdx + 1) % alphabet.length;
+                const nextLetter = alphabet[nextIdx];
+                handleLetterClick(nextLetter);
+                const tile = document.getElementById(`letter-tile-${nextLetter}`);
+                tile?.focus({ preventScroll: true });
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                const words = mergedDict[selectedLetter] || [];
+                if (words.length > 0) {
+                    const delta = e.key === 'ArrowDown' ? 1 : -1;
+                    const nextWordIdx = (wordIndex + delta + words.length) % words.length;
+                    setWordIndex(nextWordIdx);
+                    speak(words[nextWordIdx].word);
+                    const tile = document.getElementById(`letter-tile-${selectedLetter}`);
+                    tile?.focus({ preventScroll: true });
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeTab, selectedLetter, wordIndex, alphabet, mergedDict]);
+
     const handleAddAbcWord = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!canEdit) {
@@ -1941,23 +1990,30 @@ function ABCKingdom({
                             <Button size="sm" variant={caseMode === 'both' ? 'secondary' : 'outline'} onClick={() => setCaseMode('both')} className="font-extrabold rounded-lg h-7 px-3 text-xs">Aa</Button>
                         </div>
                         <div className="grid grid-cols-6 gap-1 sm:gap-1.5 bg-emerald-50/25 p-2 sm:p-2.5 rounded-3xl border border-emerald-100/60 shadow-inner">
-                            {alphabet.map(letter => (
-                                <button 
-                                    key={letter}
-                                    type="button"
-                                    onClick={() => handleLetterClick(letter)}
-                                    className={cn(
-                                      "h-8 sm:h-9 lg:h-10 rounded-xl font-black text-sm sm:text-base transition-all border-2 border-b-3 active:translate-y-0.5 active:border-b-2 shadow-2xs flex items-center justify-center relative cursor-pointer",
-                                      selectedLetter?.toUpperCase() === letter.toUpperCase()
-                                        ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-3 ring-emerald-400/70 -translate-y-0.5 z-10' 
-                                        : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
-                                    )}
-                                >
-                                    <span style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}>
-                                        {caseMode === 'upper' ? letter : caseMode === 'lower' ? (letter === 'A' ? 'ɑ' : letter.toLowerCase()) : `${letter}${letter === 'A' ? 'ɑ' : letter.toLowerCase()}`}
-                                    </span>
-                                </button>
-                            ))}
+                            {alphabet.map(letter => {
+                                const isSelected = selectedLetter?.toUpperCase() === letter.toUpperCase();
+                                return (
+                                    <button 
+                                        key={letter}
+                                        id={`letter-tile-${letter}`}
+                                        type="button"
+                                        aria-label={`Letter ${letter}`}
+                                        aria-pressed={isSelected}
+                                        aria-current={isSelected ? 'true' : undefined}
+                                        onClick={() => handleLetterClick(letter)}
+                                        className={cn(
+                                          "h-8 sm:h-9 lg:h-10 rounded-xl font-black text-sm sm:text-base transition-all border-2 border-b-3 active:translate-y-0.5 active:border-b-2 shadow-2xs flex items-center justify-center relative cursor-pointer outline-none focus-visible:ring-4 focus-visible:ring-emerald-400 focus-visible:z-20",
+                                          isSelected
+                                            ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-3 ring-emerald-400/70 -translate-y-0.5 z-10' 
+                                            : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
+                                        )}
+                                    >
+                                        <span style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}>
+                                            {caseMode === 'upper' ? letter : caseMode === 'lower' ? (letter === 'A' ? 'ɑ' : letter.toLowerCase()) : `${letter}${letter === 'A' ? 'ɑ' : letter.toLowerCase()}`}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -2045,9 +2101,16 @@ function ABCKingdom({
                                                 <button
                                                     key={idx}
                                                     type="button"
+                                                    onMouseDown={(e) => {
+                                                        // Prevent stealing keyboard focus from active letter tile
+                                                        e.preventDefault();
+                                                    }}
                                                     onClick={() => {
                                                         setWordIndex(idx);
                                                         speak(item.word);
+                                                        // Firmly retain focus on the active letter keyboard tile
+                                                        const tile = document.getElementById(`letter-tile-${selectedLetter}`);
+                                                        tile?.focus({ preventScroll: true });
                                                     }}
                                                     className={cn(
                                                         "px-3 py-1 sm:py-1.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-1.5 transition-all duration-200 cursor-pointer border-2 active:scale-95",
