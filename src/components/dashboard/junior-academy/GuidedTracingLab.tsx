@@ -426,8 +426,12 @@ export function GuidedTracingLab({
       if (t >= 0.75 || distToNext <= 12) {
         const nextIdx = currentWaypointIndex + 1;
 
-        // Completion Detection: within 10% of stroke end waypoint
-        if (nextIdx >= pts.length || distToNext <= 10) {
+        // Completion Detection: must have progressed through waypoints (at least penultimate waypoint reached)
+        // and either stepped past the final index or finger is within 10% of stroke end
+        const isNearFinalPoint = getDistance(pt, pts[pts.length - 1]) <= 10;
+        const hasPassedIntermediateCheckpoints = currentWaypointIndex >= pts.length - 2;
+
+        if (nextIdx >= pts.length || (hasPassedIntermediateCheckpoints && isNearFinalPoint)) {
           // STROKE COMPLETED!
           playSound('chime');
           const finalStrokeInk = [...currentStrokeInk, pts[pts.length - 1]];
