@@ -1837,6 +1837,10 @@ function ABCKingdom({
 
     const handleAddAbcWord = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!canEdit) {
+            toast({ title: "Unauthorized", description: "Teacher or Admin access required to add custom words.", variant: "destructive" });
+            return;
+        }
         if (!newAbcWord.word || !newAbcWord.emoji || !firestore) return;
         setIsAddingAbc(true);
         try {
@@ -1859,7 +1863,7 @@ function ABCKingdom({
     };
 
     const handleDeleteAbcWord = async (id: string) => {
-        if (!firestore) return;
+        if (!canEdit || !firestore) return;
         if (confirm("Delete this word card from ABC Kingdom?")) {
             await deleteDoc(doc(firestore, 'junior_abc_words', id));
             refetchAbc();
@@ -1881,13 +1885,16 @@ function ABCKingdom({
                     <Button variant={activeTab === 'tracing' ? 'default' : 'ghost'} size="sm" onClick={() => setActiveTab('tracing')} className={cn("rounded-xl font-bold transition-all h-8 text-xs sm:text-sm", activeTab === 'tracing' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Tracing Lab</Button>
                     <Button variant={activeTab === 'matcher' ? 'default' : 'ghost'} size="sm" onClick={() => setActiveTab('matcher')} className={cn("rounded-xl font-bold transition-all h-8 text-xs sm:text-sm", activeTab === 'matcher' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Matcher Game</Button>
                 </div>
-                {/* Relocated Teacher Add Word Utility Button */}
+                {/* Relocated Teacher Add Word Utility Button (Strictly authenticated) */}
                 {canEdit && activeTab === 'explorer' && (
                     <Button
                         type="button"
                         size="sm"
                         variant="outline"
-                        onClick={() => setIsAddWordModalOpen(true)}
+                        onClick={() => {
+                            if (!canEdit) return;
+                            setIsAddWordModalOpen(true);
+                        }}
                         className="rounded-xl border-dashed border-emerald-400 bg-emerald-50/60 hover:bg-emerald-100/80 text-emerald-800 font-bold text-xs flex items-center gap-1.5 h-8 px-3 shadow-xs ml-auto cursor-pointer"
                     >
                         <PlusCircle className="w-3.5 h-3.5 text-emerald-600" /> + Add Word Card
@@ -1956,7 +1963,7 @@ function ABCKingdom({
 
                     {/* 3. INTERACTIVE FLASHCARD STAGE (FLOATING NAVIGATION + FREDOKA BADGE) */}
                     <div className="lg:col-span-3 order-1 lg:order-2 relative flex items-center justify-center px-6 sm:px-8 py-1">
-                        {/* Floating Left Chevron Navigation */}
+                        {/* Floating Left Chevron Navigation (Strictly for Alphabet A-Z) */}
                         <button
                             type="button"
                             onClick={() => {
@@ -1971,7 +1978,7 @@ function ABCKingdom({
                         </button>
 
                         <Card className="rounded-[32px] sm:rounded-[36px] border-3 sm:border-4 border-emerald-200/90 shadow-xl overflow-hidden bg-white/95 w-full">
-                            <CardContent className="p-4 sm:p-6 text-center flex flex-col justify-between space-y-3 relative group">
+                            <CardContent className="p-4 sm:p-5 text-center flex flex-col justify-between space-y-2.5 relative group">
                                 {currentWordData.isCustom && canEdit && (
                                     <Button 
                                         size="icon" 
@@ -2000,7 +2007,7 @@ function ABCKingdom({
                                 </div>
 
                                 {/* Visual Card Area */}
-                                <div className="bg-gradient-to-br from-emerald-50/80 via-teal-50/40 to-green-50/60 p-4 sm:p-5 rounded-[28px] border-2 border-emerald-200/80 shadow-inner" key={`${selectedLetter}-${wordIndex}`}>
+                                <div className="bg-gradient-to-br from-emerald-50/80 via-teal-50/40 to-green-50/60 p-3.5 sm:p-4 rounded-[28px] border-2 border-emerald-200/80 shadow-inner" key={`${selectedLetter}-${wordIndex}`}>
                                     <div 
                                         className="text-6xl sm:text-7xl mb-1 drop-shadow-md hover:scale-110 transition-transform duration-300 cursor-pointer select-none inline-block" 
                                         onClick={() => speak(currentWordData.word)}
@@ -2011,7 +2018,7 @@ function ABCKingdom({
                                     <h3 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">{currentWordData.word}</h3>
                                     
                                     {/* Child-Friendly Phoneme Display with Sound Waves */}
-                                    <div className="mt-2 flex justify-center">
+                                    <div className="mt-1.5 flex justify-center">
                                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 text-emerald-800 border border-emerald-200/70 shadow-2xs">
                                             <Volume2 className={cn("w-4 h-4 text-emerald-600", isSpeaking && "animate-pulse text-emerald-500")} />
                                             <span className="text-xs sm:text-sm font-extrabold">
@@ -2026,52 +2033,37 @@ function ABCKingdom({
                                     </div>
                                 </div>
 
-                                {/* Vocabulary Carousel Navigation (Dots & Mini Arrows) */}
-                                <div className="flex items-center justify-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const nextIdx = (wordIndex - 1 + currentWordList.length) % currentWordList.length;
-                                            setWordIndex(nextIdx);
-                                            speak(currentWordList[nextIdx].word);
-                                        }}
-                                        className="w-7 h-7 rounded-full bg-emerald-100/70 text-emerald-700 hover:bg-emerald-200/90 flex items-center justify-center text-xs font-black transition-all active:scale-90 cursor-pointer"
-                                        aria-label="Previous word"
-                                    >
-                                        <ChevronLeft className="w-4 h-4" />
-                                    </button>
-                                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50/70 rounded-full border border-emerald-200/50">
-                                        {currentWordList.map((item: any, idx: number) => (
-                                            <button
-                                                key={idx}
-                                                type="button"
-                                                onClick={() => {
-                                                    setWordIndex(idx);
-                                                    speak(item.word);
-                                                }}
-                                                className={cn(
-                                                    "h-2.5 rounded-full transition-all duration-200 cursor-pointer",
-                                                    idx === wordIndex 
-                                                        ? "w-6 bg-emerald-600 shadow-xs" 
-                                                        : "w-2.5 bg-emerald-200 hover:bg-emerald-300"
-                                                )}
-                                                title={item.word}
-                                                aria-label={`Select ${item.word}`}
-                                            />
-                                        ))}
+                                {/* Distinct Labeled Object Thumbnail Pills (Prevents Chevron Confusion With Alphabet Flipping) */}
+                                <div className="flex flex-col items-center gap-1.5 py-0.5">
+                                    <div className="flex items-center gap-1 text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-700/80">
+                                        <span>Tap to change word:</span>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const nextIdx = (wordIndex + 1) % currentWordList.length;
-                                            setWordIndex(nextIdx);
-                                            speak(currentWordList[nextIdx].word);
-                                        }}
-                                        className="w-7 h-7 rounded-full bg-emerald-100/70 text-emerald-700 hover:bg-emerald-200/90 flex items-center justify-center text-xs font-black transition-all active:scale-90 cursor-pointer"
-                                        aria-label="Next word"
-                                    >
-                                        <ChevronRight className="w-4 h-4" />
-                                    </button>
+                                    <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+                                        {currentWordList.map((item: any, idx: number) => {
+                                            const isActive = idx === wordIndex;
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setWordIndex(idx);
+                                                        speak(item.word);
+                                                    }}
+                                                    className={cn(
+                                                        "px-3 py-1 sm:py-1.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-1.5 transition-all duration-200 cursor-pointer border-2 active:scale-95",
+                                                        isActive 
+                                                            ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-3 ring-emerald-300/80 scale-105 -translate-y-0.5" 
+                                                            : "bg-white/90 text-emerald-800 border-emerald-200/90 hover:bg-emerald-50 hover:border-emerald-300"
+                                                    )}
+                                                    title={`Switch to ${item.word}`}
+                                                    aria-label={`Select ${item.word}`}
+                                                >
+                                                    <span className="text-base sm:text-lg leading-none filter drop-shadow-2xs">{item.emoji}</span>
+                                                    <span>{item.word}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
 
                                 {/* Dedicated Large Circular Sound Buttons */}
@@ -2100,7 +2092,7 @@ function ABCKingdom({
                             </CardContent>
                         </Card>
 
-                        {/* Floating Right Chevron Navigation */}
+                        {/* Floating Right Chevron Navigation (Strictly for Alphabet A-Z) */}
                         <button
                             type="button"
                             onClick={() => {
@@ -2117,8 +2109,8 @@ function ABCKingdom({
                 </div>
             )}
 
-            {/* Custom Word Modal Dialog for Teachers */}
-            <Dialog open={isAddWordModalOpen} onOpenChange={setIsAddWordModalOpen}>
+            {/* Custom Word Modal Dialog for Teachers (Authenticated only) */}
+            <Dialog open={canEdit && isAddWordModalOpen} onOpenChange={(open) => { if (!canEdit) return; setIsAddWordModalOpen(open); }}>
                 <DialogContent className="sm:max-w-md rounded-3xl p-6">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-black text-slate-800 flex items-center gap-2">
@@ -7856,10 +7848,10 @@ export default function JuniorCampusPage() {
   const [abcSubTab, setAbcSubTab] = useState<'explorer' | 'tracing' | 'matcher'>('tracing');
   const [manualAgeCollapse, setManualAgeCollapse] = useState<boolean | null>(null);
 
-  // Automatically collapse Age Level cards into compact bar when in activity subtabs (Tracing Lab or Matcher Game)
+  // Automatically collapse Age Level cards into compact bar when entering interactive tools (Explorer, Tracing Lab, or Matcher Game)
   const isAgeLevelCompact = manualAgeCollapse !== null 
     ? manualAgeCollapse 
-    : (activeTab === 'abc' && (abcSubTab === 'tracing' || abcSubTab === 'matcher'));
+    : (activeTab === 'abc' && (abcSubTab === 'explorer' || abcSubTab === 'tracing' || abcSubTab === 'matcher'));
 
   const pageModules = useMemo(() => {
     return [
@@ -7895,7 +7887,10 @@ export default function JuniorCampusPage() {
       <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '4s' }}></div>
 
       <div className="max-w-6xl mx-auto mb-2.5 sm:mb-3.5 relative">
-        <div className="relative overflow-hidden bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 p-4 sm:p-5 md:p-6 rounded-[32px] shadow-lg border-b-6 border-rose-400/30 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+        <div className={cn(
+          "relative overflow-hidden bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 rounded-[28px] sm:rounded-[32px] shadow-lg border-b-6 border-rose-400/30 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 transition-all",
+          activeTab === 'abc' ? "p-3 sm:p-3.5 md:py-3 md:px-5" : "p-4 sm:p-5 md:p-6"
+        )}>
           {/* Decorative shapes */}
           <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
