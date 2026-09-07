@@ -1058,12 +1058,13 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
         }, 550);
     }, []);
 
-    // Continuous Blending Slide
+    // Continuous Blending Slide with Sequential Light-Up & Sound Sweep
     const runContinuousBlend = useCallback(async () => {
         if (isBlending) return;
         setIsBlending(true);
         setHasBlended(false);
         setHighlightedGraphemeIndex(null);
+        setSlideProgress(0);
         setIsLeverPulled(true);
 
         if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
@@ -1072,16 +1073,17 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
 
         const totalGraphemes = activeWordItem.graphemes.length;
 
-        // Sequentially glide through each grapheme
+        // Sequentially glide through each grapheme from left to right
         for (let i = 0; i < totalGraphemes; i++) {
             setHighlightedGraphemeIndex(i);
-            setSlideProgress(((i + 0.6) / totalGraphemes) * 100);
+            // Move slider marker directly beneath the active sound column
+            setSlideProgress(((i + 0.5) / totalGraphemes) * 85);
 
             const g = activeWordItem.graphemes[i];
             const meta = PURE_PHONEMES[g.toLowerCase()] || { ipa: `/${g}/`, speech: g };
 
             if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-                try { navigator.vibrate(30); } catch {}
+                try { navigator.vibrate(35); } catch {}
             }
 
             await new Promise<void>((resolve) => {
@@ -1089,16 +1091,18 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                 setTimeout(resolve, 520);
             });
 
-            await new Promise((r) => setTimeout(r, 120));
+            // Clean 160ms pause so the child distinctly sees the letter pulsing and hears the sound
+            await new Promise((r) => setTimeout(r, 160));
         }
 
-        // Complete slide track
+        // Complete slide track to the far right
         setSlideProgress(100);
-        setHighlightedGraphemeIndex(-1); // highlight all blocks
+        // All blocks light up together in unison
+        setHighlightedGraphemeIndex(-1);
 
-        await new Promise((r) => setTimeout(r, 220));
+        await new Promise((r) => setTimeout(r, 260));
 
-        // Speak full blended word with natural inflection
+        // Speak full blended word with natural pitch inflection
         speak(activeWordItem.word, 0.88, () => {
             setHasBlended(true);
             setIsBlending(false);
@@ -1110,7 +1114,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
         setTimeout(() => {
             setIsBlending(false);
             setIsLeverPulled(false);
-        }, 3600);
+        }, 4000);
     }, [activeWordItem, isBlending]);
     
     // Sound Match Game State
@@ -1464,19 +1468,12 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
             {/* PILLAR 2: BLENDING STATION (SCIENCE OF READING & UK LETTERS & SOUNDS COMPLIANT) */}
             {activeTab === 'blender' && (
                 <div className="bg-gradient-to-br from-teal-50/60 via-white to-emerald-50/40 p-5 sm:p-8 rounded-[40px] border-4 border-teal-200/80 text-center space-y-6 animate-in zoom-in-95 shadow-lg relative overflow-hidden">
-                    {/* Railroad Track Visual Background */}
-                    <div className="absolute top-[36%] left-0 right-0 h-5 bg-amber-900/10 -translate-y-1/2 pointer-events-none border-y-2 border-amber-900/20 flex items-center justify-around opacity-40">
-                        {Array.from({ length: 24 }).map((_, i) => (
-                            <div key={i} className="w-1.5 h-full bg-amber-900/40"></div>
-                        ))}
-                    </div>
-
                     {/* Header & Science of Reading Pedagogy Badge */}
-                    <div className="relative z-10 space-y-2">
+                    <div className="relative z-10 space-y-1.5">
                         <div className="inline-flex items-center gap-1.5 bg-teal-100/80 text-teal-800 text-[11px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full border border-teal-200 shadow-xs">
                             <span>🚂 Science of Reading · Systematic Synthetic Phonics</span>
                         </div>
-                        <h2 className="text-2xl sm:text-4xl font-black text-teal-900 flex items-center justify-center gap-2">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-teal-900 flex items-center justify-center gap-2">
                             Blending Train Station
                         </h2>
                         <p className="text-teal-700 font-bold text-xs sm:text-sm max-w-lg mx-auto">
@@ -1484,14 +1481,15 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                         </p>
                     </div>
 
-                    {/* DECODABLE PROGRESSION SELECTOR (Tier 1 Continuous CVC | Tier 2 Stop Initials | Mixed CVC) */}
-                    <div className="relative z-10 flex flex-col items-center gap-2.5">
+                    {/* DECODABLE PROGRESSION SELECTOR & COMPACT HORIZONTAL WORD CHIPS (Space-Efficient on Tablets) */}
+                    <div className="relative z-10 flex flex-col items-center gap-2">
+                        {/* Tier Selector Pills */}
                         <div className="bg-teal-100/70 p-1 rounded-2xl flex flex-wrap items-center justify-center gap-1 border border-teal-200/80 shadow-inner">
                             <button
                                 type="button"
                                 onClick={() => handleSelectTier('continuous')}
                                 className={cn(
-                                    "px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 select-none",
+                                    "px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[38px] flex items-center gap-1.5 select-none",
                                     tierFilter === 'continuous'
                                         ? "bg-teal-700 text-white shadow-xs"
                                         : "text-teal-800 hover:bg-teal-200/60"
@@ -1503,7 +1501,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                 type="button"
                                 onClick={() => handleSelectTier('stop')}
                                 className={cn(
-                                    "px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 select-none",
+                                    "px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[38px] flex items-center gap-1.5 select-none",
                                     tierFilter === 'stop'
                                         ? "bg-teal-700 text-white shadow-xs"
                                         : "text-teal-800 hover:bg-teal-200/60"
@@ -1515,7 +1513,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                 type="button"
                                 onClick={() => handleSelectTier('mixed')}
                                 className={cn(
-                                    "px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 select-none",
+                                    "px-3.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[38px] flex items-center gap-1.5 select-none",
                                     tierFilter === 'mixed'
                                         ? "bg-teal-700 text-white shadow-xs"
                                         : "text-teal-800 hover:bg-teal-200/60"
@@ -1525,59 +1523,74 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                             </button>
                         </div>
 
-                        {/* Quick Word Pills Picker for Direct 1-Tap Loading */}
-                        <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-2xl px-2">
-                            {activeWordPool.map((item) => (
-                                <button
-                                    key={item.id}
-                                    type="button"
-                                    onClick={() => pickNewWord(item)}
-                                    style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
-                                    className={cn(
-                                        "min-h-[40px] px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1 select-none",
-                                        activeWordItem.id === item.id
-                                            ? "bg-teal-600 text-white border-teal-600 shadow-xs scale-105"
-                                            : "bg-white/80 hover:bg-white text-teal-800 border-teal-200"
-                                    )}
-                                >
-                                    <span>{item.emoji}</span>
-                                    <span className="capitalize">{item.word}</span>
-                                </button>
-                            ))}
+                        {/* Compact Single-Row Word Chip Bar (Zero Vertical Crowding on Tablet Viewports) */}
+                        <div className="w-full max-w-xl mx-auto flex items-center gap-2 px-2">
+                            <span className="text-[10px] font-black uppercase text-teal-800/70 tracking-wider shrink-0 hidden sm:inline-block">
+                                Quick Pick:
+                            </span>
+                            <div className="flex-1 overflow-x-auto no-scrollbar py-1 flex items-center gap-1.5 scroll-smooth">
+                                {activeWordPool.map((item) => (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={() => pickNewWord(item)}
+                                        style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                        className={cn(
+                                            "h-8 px-3 rounded-xl text-xs font-black transition-all cursor-pointer border flex items-center gap-1 shrink-0 select-none whitespace-nowrap",
+                                            activeWordItem.id === item.id
+                                                ? "bg-teal-600 text-white border-teal-600 shadow-xs scale-105"
+                                                : "bg-white/80 hover:bg-white text-teal-800 border-teal-200 hover:border-teal-300"
+                                        )}
+                                    >
+                                        <span>{item.emoji}</span>
+                                        <span className="capitalize">{item.word}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    {/* MAIN INTERACTIVE TRAIN DECK: LETTER BLOCKS, SOUND BUTTONS & TRAIN LEVER */}
-                    <div className="relative z-10 flex items-center justify-center gap-4 sm:gap-8 py-4">
-                        {/* Interactive Letter Blocks and Sound Buttons */}
-                        <div className="flex flex-col items-center gap-3">
+                    {/* MAIN INTERACTIVE TRAIN STAGE: LETTER BLOCKS, SOUND BUTTONS, TRAIN TRACK & LEVER */}
+                    <div className="relative z-10 flex items-center justify-center gap-4 sm:gap-8 py-2">
+                        {/* Interactive Stage (Blocks on top, Sound Buttons, Train Track on Rails beneath) */}
+                        <div className="flex flex-col items-center gap-2 w-full max-w-xl">
+                            {/* Letter Cards & Sound Buttons Row */}
                             <div className="flex items-center justify-center gap-3 sm:gap-6">
                                 {activeWordItem.graphemes.map((grapheme, idx) => {
-                                    const isLit = highlightedGraphemeIndex === idx || highlightedGraphemeIndex === -1;
+                                    const isStepActive = highlightedGraphemeIndex === idx;
+                                    const isAllActive = highlightedGraphemeIndex === -1;
+                                    const isLit = isStepActive || isAllActive;
                                     const meta = PURE_PHONEMES[grapheme.toLowerCase()] || { ipa: `/${grapheme}/`, speech: grapheme };
                                     const isDigraph = grapheme.length > 1;
 
                                     return (
                                         <div key={idx} className="flex flex-col items-center gap-3">
-                                            {/* Tactile Letter Block (56px+ Touch Target, Infant School Single-Story Font) */}
+                                            {/* Tactile Letter Block (Uniform Sans-Serif Weight, Not Italic, Infant-School Proportions) */}
                                             <button
                                                 type="button"
                                                 onClick={() => playGraphemeSound(grapheme, idx)}
                                                 disabled={isBlending}
-                                                style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                                 className={cn(
-                                                    "w-20 h-28 sm:w-28 sm:h-36 min-w-[72px] min-h-[104px] rounded-[28px] sm:rounded-[32px] shadow-lg border-2 border-b-[10px] transition-all duration-200 flex flex-col items-center justify-center cursor-pointer select-none relative group",
-                                                    isLit
-                                                        ? "scale-105 -translate-y-2 border-teal-500 border-b-[8px] bg-gradient-to-b from-white via-teal-50 to-emerald-100 text-teal-800 ring-4 ring-teal-300 shadow-teal-200/80"
-                                                        : "bg-gradient-to-b from-white to-slate-50/90 border-teal-200 hover:border-teal-300 text-teal-900 hover:-translate-y-1 active:translate-y-1 active:border-b-4"
+                                                    "w-20 h-28 sm:w-28 sm:h-36 min-w-[72px] min-h-[104px] rounded-[28px] sm:rounded-[32px] shadow-lg border-2 border-b-[10px] transition-all duration-300 flex flex-col items-center justify-center cursor-pointer select-none relative group",
+                                                    isStepActive && "scale-110 -translate-y-3 border-amber-500 border-b-[8px] bg-gradient-to-b from-amber-50 via-yellow-100 to-amber-200 text-amber-950 ring-6 ring-amber-300 shadow-2xl shadow-amber-300/80 animate-pulse",
+                                                    isAllActive && "scale-105 -translate-y-2 border-teal-500 border-b-[8px] bg-gradient-to-b from-white via-teal-50 to-emerald-100 text-teal-900 ring-6 ring-emerald-300 shadow-xl shadow-teal-200/80",
+                                                    !isLit && "bg-gradient-to-b from-white to-slate-50/90 border-teal-200 hover:border-teal-300 text-teal-900 hover:-translate-y-1 active:translate-y-1 active:border-b-4"
                                                 )}
                                             >
-                                                {/* Grapheme text (pure infant single-loop a and g via Andika font) */}
-                                                <span className="text-4xl sm:text-6xl font-black tracking-normal lowercase leading-none">
+                                                {/* Grapheme Glyph with strictly normalized font styling (no slant, identical stroke thickness) */}
+                                                <span 
+                                                    className="text-4xl sm:text-6xl font-black tracking-normal lowercase leading-none select-none not-italic inline-block"
+                                                    style={{ 
+                                                        fontFamily: "'Andika', 'Comic Neue', 'Fredoka', 'Century Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                                                        fontWeight: 900,
+                                                        fontStyle: 'normal',
+                                                        fontSynthesis: 'none'
+                                                    }}
+                                                >
                                                     {grapheme}
                                                 </span>
                                                 {/* IPA Cue Badge */}
-                                                <span className="text-[10px] sm:text-[11px] font-bold text-teal-700/80 mt-2 font-sans px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-100 shadow-inner">
+                                                <span className="text-[10px] sm:text-[11px] font-bold text-teal-800/80 mt-2 font-sans px-2.5 py-0.5 rounded-full bg-teal-50/90 border border-teal-100 shadow-inner">
                                                     {meta.ipa}
                                                 </span>
                                             </button>
@@ -1589,13 +1602,13 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                 disabled={isBlending}
                                                 title={`Sound button for ${grapheme} (${meta.ipa})`}
                                                 className={cn(
-                                                    "h-14 transition-all duration-200 flex items-center justify-center cursor-pointer select-none shadow-md border-2 border-b-4 active:border-b-2 active:translate-y-0.5",
+                                                    "h-14 transition-all duration-300 flex items-center justify-center cursor-pointer select-none shadow-md border-2 border-b-4 active:border-b-2 active:translate-y-0.5",
                                                     isDigraph 
                                                         ? "w-20 sm:w-24 min-w-[80px] rounded-full px-2" // Elongated capsule for digraph
                                                         : "w-14 min-w-[56px] rounded-full", // Circular dot for single sound
-                                                    isLit
-                                                        ? "bg-gradient-to-tr from-teal-500 to-emerald-400 border-teal-600 text-white scale-110 ring-4 ring-teal-300 shadow-lg"
-                                                        : "bg-white hover:bg-teal-50 border-teal-300 text-teal-700"
+                                                    isStepActive && "bg-gradient-to-tr from-amber-500 to-yellow-400 border-amber-600 text-white scale-125 ring-6 ring-amber-300 shadow-xl animate-pulse",
+                                                    isAllActive && "bg-gradient-to-tr from-teal-500 to-emerald-400 border-teal-600 text-white scale-110 ring-4 ring-emerald-300 shadow-lg",
+                                                    !isLit && "bg-white hover:bg-teal-50 border-teal-300 text-teal-700"
                                                 )}
                                             >
                                                 {isDigraph ? (
@@ -1611,37 +1624,50 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                 })}
                             </div>
 
-                            {/* CONTINUOUS BLENDING SLIDE TRACK (Left-to-right animated sweep track) */}
-                            <div className="w-full max-w-md sm:max-w-lg mx-auto mt-2 space-y-1.5 px-2">
-                                <div className="relative h-6 bg-amber-900/10 rounded-full border border-amber-900/20 p-1 flex items-center overflow-hidden">
-                                    {/* Track gradient glow */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-teal-400/20 via-emerald-400/30 to-amber-400/20 rounded-full pointer-events-none"></div>
-                                    
-                                    {/* Animated Slider Fill / Sweep Bar */}
-                                    <div 
-                                        className="h-full bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600 rounded-full transition-all duration-300 shadow-sm"
-                                        style={{ width: `${Math.max(6, slideProgress)}%` }}
-                                    ></div>
-
-                                    {/* Sliding Train Engine Marker */}
-                                    <div 
-                                        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 text-base transition-all duration-300 pointer-events-none drop-shadow-sm"
-                                        style={{ left: `${Math.max(4, Math.min(96, slideProgress))}%` }}
-                                    >
-                                        🚂
+                            {/* AUTHENTIC RAILROAD TRACK & CONTINUOUS BLENDING SLIDER (Directly Underneath Sound Buttons) */}
+                            <div className="w-full max-w-md sm:max-w-xl mx-auto mt-4 px-2 relative">
+                                {/* Realistic Wooden Sleepers & Dual Steel Rails */}
+                                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-8 pointer-events-none flex items-center justify-between px-1">
+                                    {/* Steel Rail Lines */}
+                                    <div className="absolute inset-x-0 top-1 h-1 bg-gradient-to-r from-amber-700 via-amber-800 to-amber-700 rounded-full shadow-xs"></div>
+                                    <div className="absolute inset-x-0 bottom-1 h-1 bg-gradient-to-r from-amber-700 via-amber-800 to-amber-700 rounded-full shadow-xs"></div>
+                                    {/* Wooden Sleepers */}
+                                    <div className="w-full flex items-center justify-around">
+                                        {Array.from({ length: 16 }).map((_, i) => (
+                                            <div key={i} className="w-2.5 h-7 bg-amber-900/30 rounded-xs border-x border-amber-950/40 shadow-xs"></div>
+                                        ))}
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between text-[11px] font-black text-teal-800 px-1">
-                                    <span className="flex items-center gap-1">
-                                        <span className="text-xs">👆</span> Tap Dots
-                                    </span>
-                                    <span className="flex items-center gap-1 text-emerald-800 font-extrabold animate-pulse">
-                                        Continuous Blending Slide &nbsp;➔
-                                    </span>
-                                    <span className="flex items-center gap-1">
-                                        <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Whole Word
-                                    </span>
+                                {/* Continuous Slider on Top of Rails */}
+                                <div className="relative z-10 space-y-1.5">
+                                    <div className="relative h-7 bg-amber-950/20 backdrop-blur-xs rounded-full border-2 border-amber-900/40 p-1 flex items-center overflow-hidden shadow-inner">
+                                        {/* Animated Slider Fill / Sweep Bar */}
+                                        <div 
+                                            className="h-full bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600 rounded-full transition-all duration-300 shadow-sm"
+                                            style={{ width: `${Math.max(6, slideProgress)}%` }}
+                                        ></div>
+
+                                        {/* Sliding Train Engine Marker */}
+                                        <div 
+                                            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 text-xl transition-all duration-300 pointer-events-none drop-shadow-md"
+                                            style={{ left: `${Math.max(5, Math.min(95, slideProgress))}%` }}
+                                        >
+                                            🚂
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between text-[11px] font-black text-teal-900 px-2">
+                                        <span className="flex items-center gap-1">
+                                            <span className="text-xs">👆</span> Tap Sound Dots
+                                        </span>
+                                        <span className="flex items-center gap-1 text-emerald-800 font-extrabold animate-pulse">
+                                            Continuous Blending Slide &nbsp;➔
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Blended Word
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
