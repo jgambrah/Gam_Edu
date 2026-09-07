@@ -99,21 +99,19 @@ export default function LoginPage() {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         router.push('/dashboard');
+      } else {
+        setShowSplash(false);
       }
     });
     return () => unsubscribe();
   }, [auth, router]);
 
   useEffect(() => {
-    // Only show splash screen if the app is launched as a PWA (standalone) or on small screens
     const isStandalone = typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches;
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    
-    if (isStandalone || isMobile) {
+    if (isStandalone) {
+      // Brief branding splash only for initial standalone PWA launch, dismisses quickly
       setShowSplash(true);
-      const timer = setTimeout(() => {
-        setShowSplash(false);
-      }, 1500); // 1.5 seconds of branded loading
+      const timer = setTimeout(() => setShowSplash(false), 300);
       return () => clearTimeout(timer);
     }
   }, []);

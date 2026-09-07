@@ -11,8 +11,26 @@ import { doc, getDoc } from 'firebase/firestore';
 export function useCurrentSchool() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const [schoolId, setSchoolId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  
+  const [schoolId, setSchoolId] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const lastUid = localStorage.getItem('gam_last_uid');
+        if (lastUid) return localStorage.getItem(`gam_school_id_${lastUid}`) || null;
+      } catch {}
+    }
+    return null;
+  });
+
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const lastUid = localStorage.getItem('gam_last_uid');
+        if (lastUid && localStorage.getItem(`gam_school_id_${lastUid}`)) return false;
+      } catch {}
+    }
+    return true;
+  });
 
   useEffect(() => {
     async function fetchSchool() {
@@ -23,23 +41,46 @@ export function useCurrentSchool() {
         }
         return;
       }
-      
-      setLoading(true);
+
+      // Fast-path: Synchronously check cached school ID
       try {
-        const collectionsToTry = ['staff', 'users', 'students', 'parents'];
-        for (const collectionName of collectionsToTry) {
-          const docRef = doc(firestore, collectionName, user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists() && docSnap.data().schoolId) {
-            setSchoolId(docSnap.data().schoolId);
-            setLoading(false);
-            return;
+        const cachedSchoolId = localStorage.getItem(`gam_school_id_${user.uid}`);
+        if (cachedSchoolId) {
+          setSchoolId(cachedSchoolId);
+          setLoading(false);
+        }
+      } catch {}
+
+      try {
+        // Parallel queries across candidate collections
+        const [staffSnap, userSnap, studentSnap, parentSnap] = await Promise.all([
+          getDoc(doc(firestore, 'staff', user.uid)).catch(() => null),
+          getDoc(doc(firestore, 'users', user.uid)).catch(() => null),
+          getDoc(doc(firestore, 'students', user.uid)).catch(() => null),
+          getDoc(doc(firestore, 'parents', user.uid)).catch(() => null)
+        ]);
+
+        const candidateSnaps = [staffSnap, userSnap, studentSnap, parentSnap];
+        let resolvedSchoolId: string | null = null;
+
+        for (const snap of candidateSnaps) {
+          if (snap && snap.exists()) {
+            const data = snap.data();
+            if (data?.schoolId) {
+              resolvedSchoolId = data.schoolId;
+              break;
+            }
           }
         }
-        setSchoolId(null);
+
+        setSchoolId(resolvedSchoolId);
+        if (resolvedSchoolId) {
+          try {
+            localStorage.setItem(`gam_school_id_${user.uid}`, resolvedSchoolId);
+          } catch {}
+        }
       } catch (error) {
         console.error("Failed to fetch school ID:", error);
-        setSchoolId(null);
       } finally {
         setLoading(false);
       }
