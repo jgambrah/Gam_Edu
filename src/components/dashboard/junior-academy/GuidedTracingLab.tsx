@@ -76,6 +76,8 @@ export function GuidedTracingLab({
   // Canvas & Audio Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const activeLetterRef = useRef<HTMLButtonElement | null>(null);
+  const letterTrayRef = useRef<HTMLDivElement | null>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const demoAnimationRef = useRef<number | null>(null);
   const idleAnimationRef = useRef<number | null>(null);
@@ -191,6 +193,17 @@ export function GuidedTracingLab({
   useEffect(() => {
     handleResetLetter();
   }, [selectedLetter, caseMode, handleResetLetter]);
+
+  // Auto-scroll bottom tray to keep active letter centered
+  useEffect(() => {
+    if (activeLetterRef.current) {
+      activeLetterRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
+  }, [selectedLetter]);
 
   // Reset Idle Mascot Timer (> 2.5s idle activates helper animation)
   const resetIdleTimer = useCallback(() => {
@@ -894,19 +907,23 @@ export function GuidedTracingLab({
         </div>
       </div>
 
-      {/* Quick Letter Carousel (Jump to any letter instantly) */}
-      <div className="w-full max-w-md overflow-x-auto scrollbar-none py-0.5 flex gap-1 justify-center sm:justify-start">
+      {/* Quick Letter Carousel (Jump to any letter instantly, smooth touch-scrolling across all 26 letters) */}
+      <div 
+        ref={letterTrayRef}
+        className="w-full max-w-md overflow-x-auto whitespace-nowrap no-scrollbar scroll-smooth py-1 px-1 flex items-center gap-2 justify-start rounded-2xl bg-amber-50/60 border border-amber-200/80 shadow-inner"
+      >
         {alphabet.map((letter) => {
           const isCurrent = letter.toUpperCase() === selectedLetter.toUpperCase();
           return (
             <button
               key={letter}
+              ref={isCurrent ? activeLetterRef : null}
               onClick={() => onLetterChange(letter)}
               className={cn(
-                "h-7 w-7 rounded-lg text-xs font-black shrink-0 transition-all font-school flex items-center justify-center",
+                "h-8 w-8 rounded-xl text-xs font-black flex-shrink-0 transition-all font-school flex items-center justify-center border",
                 isCurrent
-                  ? "bg-emerald-600 text-white shadow-xs scale-105"
-                  : "bg-slate-100 text-slate-600 hover:bg-emerald-100"
+                  ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400 scale-110 z-10"
+                  : "bg-white text-slate-700 border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 active:scale-95"
               )}
             >
               {caseMode === 'upper' ? letter.toUpperCase() : (letter.toLowerCase() === 'a' ? 'ɑ' : letter.toLowerCase())}
