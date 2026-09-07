@@ -82,40 +82,40 @@ export const ECE_HANDWRITING_CATALOG: Record<string, LetterData> = {
         id: 1,
         order: 1,
         startLabel: '1',
-        guidePath: 'M 30 15 L 30 85',
+        guidePath: 'M 35 15 L 35 80',
         arrowAngle: 90,
-        points: linePoints(30, 15, 30, 85, 8)
+        points: linePoints(35, 15, 35, 80, 8)
       },
       {
         id: 2,
         order: 2,
         startLabel: '2',
-        guidePath: 'M 30 15 C 70 15, 70 50, 35 50',
+        guidePath: 'M 35 15 C 65 15, 65 48, 35 48',
         arrowAngle: 0,
         points: [
-          { x: 30, y: 15 },
-          { x: 45, y: 15 },
-          { x: 62, y: 20 },
-          { x: 70, y: 32 },
-          { x: 62, y: 45 },
-          { x: 48, y: 50 },
-          { x: 35, y: 50 }
+          { x: 35, y: 15 },
+          { x: 48, y: 15 },
+          { x: 60, y: 20 },
+          { x: 65, y: 32 },
+          { x: 60, y: 44 },
+          { x: 48, y: 48 },
+          { x: 35, y: 48 }
         ]
       },
       {
         id: 3,
         order: 3,
         startLabel: '3',
-        guidePath: 'M 35 50 C 75 50, 75 85, 30 85',
+        guidePath: 'M 35 48 C 70 48, 70 80, 35 80',
         arrowAngle: 0,
         points: [
-          { x: 35, y: 50 },
-          { x: 52, y: 50 },
-          { x: 68, y: 56 },
-          { x: 75, y: 68 },
-          { x: 68, y: 80 },
-          { x: 50, y: 85 },
-          { x: 30, y: 85 }
+          { x: 35, y: 48 },
+          { x: 50, y: 48 },
+          { x: 65, y: 54 },
+          { x: 70, y: 64 },
+          { x: 65, y: 76 },
+          { x: 50, y: 80 },
+          { x: 35, y: 80 }
         ]
       }
     ]

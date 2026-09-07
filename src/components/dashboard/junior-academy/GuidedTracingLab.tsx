@@ -229,11 +229,12 @@ export function GuidedTracingLab({
 
   // Auto-scroll bottom tray to keep active letter centered
   useEffect(() => {
-    if (activeLetterRef.current) {
-      activeLetterRef.current.scrollIntoView({
+    const el = document.getElementById(`trace-btn-${selectedLetter.toUpperCase()}`) || activeLetterRef.current;
+    if (el) {
+      el.scrollIntoView({
         behavior: 'smooth',
         inline: 'center',
-        block: 'nearest',
+        block: 'nearest'
       });
     }
   }, [selectedLetter]);
@@ -931,18 +932,19 @@ export function GuidedTracingLab({
       {/* Quick Letter Carousel (Jump to any letter instantly, smooth touch-scrolling across all 26 letters in single horizontal row) */}
       <div 
         ref={letterTrayRef}
-        className="w-full max-w-md overflow-x-auto overflow-y-hidden flex flex-row flex-nowrap items-center gap-1.5 py-1 px-1.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 shadow-inner no-scrollbar scrollbar-none scroll-smooth shrink-0"
+        className="w-full max-w-2xl mx-auto overflow-x-auto whitespace-nowrap flex items-center gap-2 px-4 py-2 rounded-2xl bg-amber-50/80 border border-amber-200/80 shadow-inner no-scrollbar scrollbar-none scroll-smooth shrink-0"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {alphabet.map((letter) => {
           const isCurrent = letter.toUpperCase() === selectedLetter.toUpperCase();
           return (
             <button
+              id={`trace-btn-${letter.toUpperCase()}`}
               key={letter}
               ref={isCurrent ? activeLetterRef : null}
               onClick={() => onLetterChange(letter)}
               className={cn(
-                "h-7 w-7 min-w-[28px] sm:h-8 sm:w-8 sm:min-w-[32px] rounded-xl text-xs font-black shrink-0 transition-all font-school flex items-center justify-center border",
+                "w-9 h-9 min-w-[36px] rounded-full text-xs font-black flex-shrink-0 transition-all font-school flex items-center justify-center border",
                 isCurrent
                   ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400 scale-110 z-10"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 active:scale-95"
