@@ -1324,7 +1324,7 @@ function AbcMatcherGame({
     };
 
     return (
-        <div className="py-2 px-2.5 sm:py-3 sm:px-4 space-y-2 sm:space-y-2.5 max-w-md sm:max-w-lg mx-auto w-full select-none overflow-x-hidden">
+        <div className="py-1 sm:py-1.5 px-2 sm:px-3 space-y-1.5 sm:space-y-2 max-w-md sm:max-w-lg mx-auto w-full select-none overflow-x-hidden">
             {/* 1. COMPACT ROUNDED PILL MODE SELECTOR */}
             <div className="w-full flex flex-nowrap items-center justify-between sm:justify-center gap-1 p-1 bg-emerald-50/80 rounded-xl border border-emerald-200 shadow-inner overflow-x-auto scrollbar-none">
                 {[
@@ -1413,7 +1413,7 @@ function AbcMatcherGame({
                 </div>
             ) : (
                 /* 4. MAIN GAMEPLAY ARENA (COMPACT VIEWPORT-FIT) */
-                <div className="space-y-1.5 sm:space-y-2 text-center">
+                <div className="space-y-1 sm:space-y-1.5 text-center">
                     {/* Prompt Header with Primary CTA Audio Button */}
                     <div className="flex items-center justify-center gap-2 sm:gap-2.5 px-1">
                         <h3 className="text-base sm:text-lg font-black text-slate-800 tracking-tight text-center">
@@ -1446,7 +1446,7 @@ function AbcMatcherGame({
 
                     {/* Compact Spotlight Target Display */}
                     <div className="relative mx-auto">
-                        <div className="relative bg-gradient-to-b from-amber-50 via-yellow-50/60 to-emerald-50/40 border-2 border-amber-300/90 rounded-2xl p-1.5 sm:p-2 shadow-md max-w-[170px] sm:max-w-[190px] mx-auto flex flex-col items-center justify-center gap-0.5">
+                        <div className="relative bg-gradient-to-b from-amber-50 via-yellow-50/60 to-emerald-50/40 border-2 border-amber-300/90 rounded-2xl p-1 sm:p-1.5 shadow-md max-w-[160px] sm:max-w-[180px] mx-auto flex flex-col items-center justify-center gap-0">
                             {/* Spotlight Badge */}
                             <div className="inline-flex items-center gap-1 bg-amber-400 text-amber-950 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-xs">
                                 <Sparkles className="w-2.5 h-2.5 text-amber-900 animate-spin" style={{ animationDuration: '6s' }} />
@@ -1458,7 +1458,7 @@ function AbcMatcherGame({
                                     <Button
                                         type="button"
                                         onClick={playSoundPromptOnly}
-                                        className="h-10 w-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center p-0 animate-bounce"
+                                        className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center p-0 animate-bounce"
                                         style={{ animationDuration: '2s' }}
                                     >
                                         <Volume2 className="w-4 h-4" />
@@ -1470,7 +1470,7 @@ function AbcMatcherGame({
                             ) : (
                                 <div 
                                     style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
-                                    className="matcher-tile-text font-school text-[42px] sm:text-[48px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs"
+                                    className="matcher-tile-text font-school text-[38px] sm:text-[44px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs"
                                 >
                                     {matcherMode === 'confusing-pairs' 
                                         ? (currentLetter.toLowerCase() === 'a' ? 'ɑ' : currentLetter.toLowerCase()) 
@@ -1497,19 +1497,14 @@ function AbcMatcherGame({
                     </div>
 
                     {/* Responsive 2x2 Chunky Tile Grid (Viewport-Fit Height & Enhanced Tactile Affordance) */}
-                    <div className="grid grid-cols-2 gap-2 sm:gap-2.5 max-w-sm sm:max-w-md mx-auto w-full pt-0.5">
+                    <div className="grid grid-cols-2 gap-1.5 sm:gap-2 max-w-sm sm:max-w-md mx-auto w-full pt-0">
                         {choices.map((choice, i) => {
                             const isShaking = shakingIndex === i;
                             const isSelectedCorrect = correctIndex === i;
                             const isDisabled = disabledIndices.includes(i);
 
-                            // Playful soft pastel themes for each tile position (mint, honey, sky, lavender)
-                            const pastelTheme = [
-                                "bg-emerald-50/85 border-emerald-300/90 border-b-emerald-400 text-emerald-950 hover:bg-emerald-100 hover:border-emerald-400 active:bg-emerald-200 active:border-emerald-500",
-                                "bg-amber-50/85 border-amber-300/90 border-b-amber-400 text-amber-950 hover:bg-amber-100 hover:border-amber-400 active:bg-amber-200 active:border-amber-500",
-                                "bg-sky-50/85 border-sky-300/90 border-b-sky-400 text-sky-950 hover:bg-sky-100 hover:border-sky-400 active:bg-sky-200 active:border-sky-500",
-                                "bg-purple-50/85 border-purple-300/90 border-b-purple-400 text-purple-950 hover:bg-purple-100 hover:border-purple-400 active:bg-purple-200 active:border-purple-500",
-                            ][i % 4];
+                            // Uniform neutral slate theme across all inactive tiles to focus strictly on letter recognition without inadvertent color cues
+                            const neutralTileStyle = "bg-slate-50/90 border-slate-300 border-b-slate-400 text-slate-800 hover:bg-slate-100 hover:border-slate-400 hover:border-b-slate-500 hover:shadow-md hover:scale-[1.02] hover:-translate-y-0.5 active:scale-95 active:translate-y-0.5 active:border-b-2 active:bg-slate-200/90";
 
                             return (
                                 <button
@@ -1518,15 +1513,12 @@ function AbcMatcherGame({
                                     onClick={() => handleChoiceClick(choice, i)}
                                     style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
                                     className={cn(
-                                        "h-16 sm:h-20 min-h-[58px] sm:min-h-[66px] max-h-[76px] p-1 sm:p-2 rounded-2xl border-2 border-b-4 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group cursor-pointer",
+                                        "h-14 sm:h-16 min-h-[52px] sm:min-h-[58px] max-h-[66px] p-1 sm:p-1.5 rounded-2xl border-2 border-b-4 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group cursor-pointer",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
-                                        isShaking && "animate-shake bg-amber-100 border-amber-400 border-b-amber-500 text-amber-800 shadow-inner",
-                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 border-b-emerald-700 scale-102 shadow-lg ring-4 ring-emerald-300 z-10",
+                                        isShaking && "animate-shake bg-amber-100 border-amber-400 border-b-amber-500 text-amber-800 shadow-inner ring-2 ring-amber-300/70",
+                                        isSelectedCorrect && "bg-emerald-500 text-white border-emerald-600 border-b-emerald-700 animate-bounce scale-105 shadow-lg ring-4 ring-emerald-300/90 z-10",
                                         isDisabled && "opacity-35 pointer-events-none bg-slate-100 border-slate-200 text-slate-400 line-through",
-                                        !isShaking && !isSelectedCorrect && !isDisabled && cn(
-                                            pastelTheme,
-                                            "hover:shadow-md hover:scale-[1.03] hover:-translate-y-0.5 active:scale-95 active:translate-y-0.5 active:border-b-2"
-                                        )
+                                        !isShaking && !isSelectedCorrect && !isDisabled && neutralTileStyle
                                     )}
                                 >
                                     {choice.emoji ? (
@@ -1763,7 +1755,7 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
     const currentWordData = currentWordList[wordIndex] || { word: 'None', emoji: '❓', phonic: '' };
 
     return (
-        <div className={cn(activeTab === 'matcher' ? "space-y-2.5 sm:space-y-3" : "space-y-8", "w-full max-w-full overflow-hidden")}>
+        <div className={cn(activeTab === 'matcher' ? "space-y-1.5 sm:space-y-2" : "space-y-8", "w-full max-w-full overflow-hidden")}>
             {/* 1. TOP NAVIGATION */}
             <div className="flex flex-wrap gap-2 p-1.5 bg-green-50/50 rounded-2xl w-fit mx-auto border border-green-100/60 shadow-inner">
                 <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} onClick={() => { setActiveTab('explorer'); setWordIndex(0); }} className={cn("rounded-xl font-bold transition-all animate-none", activeTab === 'explorer' ? 'bg-green-500 text-white shadow-sm' : 'text-green-700 hover:bg-green-100/50')}>Explorer</Button>
@@ -7692,14 +7684,14 @@ export default function JuniorCampusPage() {
   }, [activeAgeTier, pageModules, activeTab]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] to-[#E0F2FE] p-4 md:p-8 font-sans relative overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] to-[#E0F2FE] p-2.5 sm:p-4 md:py-3.5 md:px-6 font-sans relative overflow-x-hidden w-full max-w-full">
       {/* Ambient background decorations */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-pink-200/30 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
       <div className="absolute top-40 right-20 w-80 h-80 bg-yellow-200/30 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
       <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '4s' }}></div>
 
-      <div className="max-w-6xl mx-auto mb-8 relative">
-        <div className="relative overflow-hidden bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 p-8 rounded-[36px] shadow-xl border-b-8 border-rose-400/30 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="max-w-6xl mx-auto mb-4 sm:mb-6 relative">
+        <div className="relative overflow-hidden bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 p-5 sm:p-7 rounded-[36px] shadow-xl border-b-8 border-rose-400/30 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
           {/* Decorative shapes */}
           <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
@@ -7732,7 +7724,7 @@ export default function JuniorCampusPage() {
 
       <div className="max-w-6xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="bg-white/70 backdrop-blur-md p-3 rounded-[32px] shadow-lg border border-white/80 mb-8">
+            <div className="bg-white/70 backdrop-blur-md p-2.5 sm:p-3 rounded-[32px] shadow-lg border border-white/80 mb-4 sm:mb-5">
               <TabsList className="flex flex-wrap gap-2.5 bg-transparent p-0 h-auto justify-center w-full">
                   {pageModules.map(mod => (
                       <TabsTrigger 
@@ -7840,7 +7832,7 @@ export default function JuniorCampusPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="abc" className="mt-0 animate-in fade-in-50 duration-300 w-full max-w-full overflow-x-hidden">
-                  <div className="bg-white/80 backdrop-blur-md p-3.5 sm:p-5 md:py-4 md:px-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400 w-full max-w-full overflow-hidden">
+                  <div className="bg-white/80 backdrop-blur-md p-2.5 sm:p-4 md:py-2.5 md:px-6 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400 w-full max-w-full overflow-hidden">
                     <ABCKingdom canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
