@@ -12,7 +12,7 @@ import {
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, ArrowLeft, 
   ChevronLeft, ChevronRight,
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Bot,
-  Hash, Play, Pause, BarChart3, TrendingUp, RotateCcw, Settings2
+  Hash, Play, Pause, BarChart3, TrendingUp, RotateCcw, Settings2, LayoutGrid
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction, generateIncompleteSentenceAction, generateMathWordProblemAction } from '@/ai/flows/junior-actions';
@@ -587,9 +587,17 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
     const [newRhyme, setNewRhyme] = useState({ family: '', words: '' });
     const [isAddingRhyme, setIsAddingRhyme] = useState(false);
 
+    // Track practiced sound IDs for progress indication
+    const [practicedSoundIds, setPracticedSoundIds] = useState<Set<string>>(() => new Set());
+
     // Audio Playback Pipeline: Speaks pure phoneme sound first (/s/), then example word ("Sun"), with haptic feedback
     const playSoundCardAudio = useCallback(async (card: { id: string; speechPhonic: string; grapheme: string; exampleWord?: string; formationCue?: string }) => {
         setPlayingCardId(card.id);
+        setPracticedSoundIds(prev => {
+            const next = new Set(prev);
+            next.add(card.id);
+            return next;
+        });
 
         // 1. Tactile haptic vibration for touch screens (Android / iOS / Tablets)
         if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
@@ -896,9 +904,15 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                     {/* Mode A: Systematic Synthetic Phonics (SSP Phase Order) */}
                     {progressionMode === 'ssp' ? (
                         <div className="space-y-6 max-w-5xl mx-auto">
-                            {sspPhaseGroups.map((group) => (
-                                <div key={group.id} className="space-y-3 bg-white/60 p-4 sm:p-5 rounded-3xl border border-teal-100/60 shadow-xs">
-                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                            {sspPhaseGroups.map((group) => {
+                                const totalSounds = group.sounds.length;
+                                const practicedCount = group.sounds.filter(s => practicedSoundIds.has(s.id)).length;
+                                const isSetComplete = practicedCount === totalSounds && totalSounds > 0;
+
+                                return (
+                                <div key={group.id} className="space-y-3.5 bg-white/70 backdrop-blur-xs p-4 sm:p-5 rounded-3xl border border-teal-100/80 shadow-xs">
+                                    {/* Active Set Header with Dynamic Visual Progress Indicator */}
+                                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-teal-100/60 pb-3">
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <span className={cn("text-[10px] font-black uppercase px-2 py-0.5 rounded-md border", group.badgeBg)}>
@@ -908,12 +922,44 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                             </div>
                                             <p className="text-xs text-slate-500 font-medium mt-0.5">{group.description}</p>
                                         </div>
+
+                                        {/* Dynamic Progress Tracker (e.g. "3 of 4 sounds practiced") */}
+                                        <div className="flex items-center gap-2.5 bg-white/95 px-3 py-1.5 rounded-2xl border border-teal-200/80 shadow-xs">
+                                            <div className="flex flex-col items-end">
+                                                <div className="flex items-center gap-1.5 text-xs font-black">
+                                                    {isSetComplete ? (
+                                                        <span className="text-amber-600 flex items-center gap-1">
+                                                            <Trophy className="w-3.5 h-3.5 text-amber-500 animate-bounce" />
+                                                            Set Mastered! 🎉
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-teal-900">
+                                                            {practicedCount} of {totalSounds} sounds practiced
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="w-28 sm:w-36 h-2 bg-slate-100 rounded-full overflow-hidden mt-1 border border-slate-200/60">
+                                                    <div 
+                                                        className={cn(
+                                                            "h-full rounded-full transition-all duration-500",
+                                                            isSetComplete ? "bg-gradient-to-r from-amber-400 to-yellow-400" : "bg-gradient-to-r from-teal-400 to-emerald-500"
+                                                        )}
+                                                        style={{ width: `${totalSounds > 0 ? (practicedCount / totalSounds) * 100 : 0}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {isSetComplete && (
+                                                <span className="text-lg animate-bounce">⭐</span>
+                                            )}
+                                        </div>
                                     </div>
 
-                                    {/* Responsive multi-sensory sound cards grid (minimum 88x88px touch target) */}
+                                    {/* Responsive multi-sensory sound cards grid (generous full-card touch target) */}
                                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4" role="group" aria-label={group.setName}>
                                         {group.sounds.map((card) => {
                                             const isPlaying = playingCardId === card.id;
+                                            const isPracticed = practicedSoundIds.has(card.id);
+
                                             return (
                                                 <div
                                                     key={card.id}
@@ -928,12 +974,14 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                         }
                                                     }}
                                                     className={cn(
-                                                        "min-h-[110px] min-w-[100px] p-3 sm:p-4 rounded-3xl border-2 border-b-[6px] transition-all duration-150 relative cursor-pointer outline-none flex flex-col items-center justify-between text-center select-none shadow-md",
+                                                        "min-h-[145px] sm:min-h-[160px] min-w-[110px] w-full p-3 sm:p-4 rounded-3xl border-2 border-b-[6px] transition-all duration-150 relative cursor-pointer outline-none flex flex-col items-center justify-between text-center select-none shadow-md group",
                                                         "hover:-translate-y-1 hover:shadow-lg active:translate-y-0.5 active:border-b-2 active:scale-95",
                                                         "focus-visible:ring-4 focus-visible:ring-teal-400 focus-visible:ring-offset-2",
                                                         isPlaying
-                                                            ? "bg-teal-50/90 border-teal-500 ring-4 ring-teal-200/80 scale-102"
-                                                            : "bg-white border-slate-200/90 hover:border-teal-300"
+                                                            ? "bg-teal-50/90 border-teal-500 ring-4 ring-teal-200/80 scale-[1.02]"
+                                                            : isPracticed
+                                                                ? "bg-white border-teal-200/90 hover:border-teal-400"
+                                                                : "bg-white border-slate-200/90 hover:border-teal-300"
                                                     )}
                                                 >
                                                     {/* Concentric Animated Sound Wave Ripple */}
@@ -941,38 +989,44 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                         <span className="absolute inset-0 rounded-3xl ring-4 ring-teal-400/50 animate-ping pointer-events-none" />
                                                     )}
 
-                                                    {/* Top Header: Unified Sound Indicator (No small nested buttons) */}
+                                                    {/* Top Header: Phoneme badge and playback equalizer (No small nested buttons) */}
                                                     <div className="w-full flex items-center justify-between pointer-events-none mb-1">
                                                         <span className="text-xs font-mono font-black text-teal-800 bg-teal-50/90 px-2.5 py-0.5 rounded-full border border-teal-200/80 shadow-2xs">
                                                             {card.phoneme}
                                                         </span>
-                                                        <div className={cn(
-                                                            "flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs transition-all",
-                                                            isPlaying ? "bg-teal-600 text-white shadow-xs" : "text-slate-500 bg-slate-100/80"
-                                                        )}>
-                                                            <Volume2 className={cn("w-3.5 h-3.5", isPlaying && "animate-pulse text-white")} />
+                                                        <div className="flex items-center">
                                                             {isPlaying ? (
-                                                                <span className="inline-flex items-center gap-0.5">
-                                                                    <span className="w-1 h-2 rounded-full bg-white animate-[bounce_0.6s_infinite_100ms]" />
-                                                                    <span className="w-1 h-3 rounded-full bg-white animate-[bounce_0.6s_infinite_200ms]" />
-                                                                    <span className="w-1 h-2 rounded-full bg-white animate-[bounce_0.6s_infinite_300ms]" />
-                                                                </span>
+                                                                <div className="flex items-center gap-1 bg-teal-600 text-white px-2.5 py-0.5 rounded-full text-xs shadow-xs">
+                                                                    <Volume2 className="w-3.5 h-3.5 animate-pulse text-white" />
+                                                                    <span className="inline-flex items-center gap-0.5">
+                                                                        <span className="w-1 h-2 rounded-full bg-white animate-[bounce_0.6s_infinite_100ms]" />
+                                                                        <span className="w-1 h-3 rounded-full bg-white animate-[bounce_0.6s_infinite_200ms]" />
+                                                                        <span className="w-1 h-2 rounded-full bg-white animate-[bounce_0.6s_infinite_300ms]" />
+                                                                    </span>
+                                                                </div>
+                                                            ) : isPracticed ? (
+                                                                <div className="flex items-center gap-1 bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full text-[10px] font-black shadow-2xs">
+                                                                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                                                                    <span>Done</span>
+                                                                </div>
                                                             ) : (
-                                                                <span className="text-[10px] font-extrabold uppercase tracking-tight">Tap</span>
+                                                                <div className="flex items-center gap-1 text-slate-400 bg-slate-100/90 px-2 py-0.5 rounded-full text-[10px] font-black">
+                                                                    <Volume2 className="w-3 h-3 text-slate-500" />
+                                                                </div>
                                                             )}
                                                         </div>
                                                     </div>
 
-                                                    {/* Central Letter Glyphs (Standard Infant School Font Stack with Single-Story 'a' and Single-Loop 'g') */}
+                                                    {/* Central Letter Glyphs (True Infant School Font Stack with Single-Story 'a' and Single-Loop 'g') */}
                                                     <div className="my-1 flex items-baseline justify-center gap-1.5">
                                                         <span 
-                                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
+                                                            style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                                             className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none drop-shadow-2xs"
                                                         >
                                                             {card.grapheme}
                                                         </span>
                                                         <span 
-                                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
+                                                            style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                                             className="text-xl sm:text-2xl font-black text-slate-400 leading-none"
                                                         >
                                                             {card.upperGrapheme}
@@ -989,16 +1043,30 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
 
                                                     {/* Stroke Direction Cue / Mnemonic Tooltip */}
                                                     {card.formationCue && (
-                                                        <div className="w-full mt-1 border-t border-slate-100 pt-1 text-[10px] text-slate-500 font-medium italic truncate" title={card.formationCue}>
+                                                        <div className="w-full mt-0.5 border-t border-slate-100 pt-1 text-[10px] text-slate-500 font-medium italic truncate" title={card.formationCue}>
                                                             "{card.formationCue}"
                                                         </div>
                                                     )}
+
+                                                    {/* Full-Card Touch Target Banner (Tactile Invitation for Early Learners) */}
+                                                    <div className={cn(
+                                                        "w-full mt-2 py-1.5 px-2 rounded-xl text-[11px] font-black flex items-center justify-center gap-1.5 transition-all shadow-2xs pointer-events-none",
+                                                        isPlaying 
+                                                            ? "bg-teal-600 text-white animate-pulse" 
+                                                            : isPracticed
+                                                                ? "bg-emerald-50 text-emerald-700 group-hover:bg-teal-600 group-hover:text-white"
+                                                                : "bg-slate-100/90 text-slate-600 group-hover:bg-teal-600 group-hover:text-white"
+                                                    )}>
+                                                        <Volume2 className={cn("w-3.5 h-3.5 shrink-0", isPlaying && "animate-bounce text-white")} />
+                                                        <span>{isPlaying ? "Speaking..." : isPracticed ? "Tap to Replay" : "Tap Card to Hear"}</span>
+                                                    </div>
                                                 </div>
                                             );
                                         })}
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         /* Mode B: Traditional Sound Categories */
@@ -1049,7 +1117,12 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                     {isPlaying && (
                                                         <span className="absolute inset-0 rounded-[28px] ring-4 ring-teal-400/50 animate-ping pointer-events-none" />
                                                     )}
-                                                    <span className="text-3xl sm:text-4xl tracking-tight capitalize font-black">{sound}</span>
+                                                    <span 
+                                                        style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
+                                                        className="text-3xl sm:text-4xl tracking-tight capitalize font-black"
+                                                    >
+                                                        {sound}
+                                                    </span>
                                                     <span className="text-[10px] mt-1.5 font-extrabold uppercase opacity-80 tracking-wider bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-100">{group.example[idx]}</span>
                                                 </div>
                                             );
@@ -1996,7 +2069,7 @@ function AbcMatcherGame({
                             {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
                             {matcherMode === 'confusing-pairs' && (
                                 <span>Find the matching <span 
-                                    style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
+                                    style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                     className="matcher-tile-text font-school text-emerald-600 font-bold"
                                 >
                                     "{currentLetter.toLowerCase()}"
@@ -2043,7 +2116,7 @@ function AbcMatcherGame({
                                 </div>
                             ) : (
                                 <div 
-                                    style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
+                                    style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                     className="matcher-tile-text font-school text-[38px] sm:text-[44px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs"
                                 >
                                     {matcherMode === 'confusing-pairs' 
@@ -2085,7 +2158,7 @@ function AbcMatcherGame({
                                     key={choice.id}
                                     disabled={isDisabled || isRoundLocked}
                                     onClick={() => handleChoiceClick(choice, i)}
-                                    style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
+                                    style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                     className={cn(
                                         "h-14 sm:h-16 min-h-[52px] sm:min-h-[58px] max-h-[66px] p-1 sm:p-1.5 rounded-2xl border-2 border-b-4 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group cursor-pointer",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
@@ -2102,7 +2175,7 @@ function AbcMatcherGame({
                                         </div>
                                     ) : (
                                         <span 
-                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
+                                            style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                             className="matcher-tile-text font-school text-3xl sm:text-4xl font-bold transition-transform group-hover:scale-110 leading-none pointer-events-none select-none"
                                         >
                                             {choice.label}
@@ -2550,7 +2623,7 @@ function ABCKingdom({
                                             : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
                                         )}
                                     >
-                                        <span style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}>
+                                        <span style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}>
                                             {caseMode === 'upper' ? letter : caseMode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
                                         </span>
                                     </button>
@@ -2593,7 +2666,7 @@ function ABCKingdom({
                                 <div className="flex justify-center">
                                     <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-md border-2 border-emerald-300 ring-4 ring-emerald-100">
                                         <span 
-                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
+                                            style={{ fontFamily: "'Andika', 'Comic Neue', 'Century Gothic', 'Fredoka', cursive, sans-serif" }}
                                             className="text-2xl sm:text-3xl font-black tracking-wider leading-none select-none drop-shadow-xs"
                                         >
                                             {selectedLetter}{selectedLetter.toLowerCase()}
@@ -8452,6 +8525,15 @@ export default function JuniorCampusPage() {
   const [activeTab, setActiveTab] = useState<string>('level_curriculum');
   const [abcSubTab, setAbcSubTab] = useState<'explorer' | 'tracing' | 'matcher'>('tracing');
   const [manualAgeCollapse, setManualAgeCollapse] = useState<boolean | null>(null);
+  const [isSubjectDrawerOpen, setIsSubjectDrawerOpen] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = direction === 'left' ? -260 : 260;
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   // Automatically collapse Age Level cards into compact bar when entering interactive tools (Explorer, Tracing Lab, or Matcher Game)
   const isAgeLevelCompact = manualAgeCollapse !== null 
@@ -8475,6 +8557,38 @@ export default function JuniorCampusPage() {
       ...(canEdit ? [{ id: 'dashboard', name: 'Dashboard', icon: <BarChart3 className="w-5 h-5"/>, color: 'text-indigo-600 bg-indigo-100' }] : []),
     ];
   }, [activeAgeTier, canEdit]);
+
+  // Group modules into structured subject tracks for the expandable drawer
+  const subjectCategories = useMemo(() => [
+    {
+      category: 'Early Literacy & Phonics',
+      description: 'Systematic phonics, speaking coach, and letter kingdom',
+      border: 'border-teal-200',
+      bg: 'bg-teal-50/60',
+      modules: pageModules.filter(m => ['coach', 'phonics', 'abc', 'sentence_finisher'].includes(m.id))
+    },
+    {
+      category: 'Numbers & Math Playground',
+      description: 'Counting games, numeral tracing, and early arithmetic',
+      border: 'border-amber-200',
+      bg: 'bg-amber-50/60',
+      modules: pageModules.filter(m => ['numbers', 'math'].includes(m.id))
+    },
+    {
+      category: 'Creative Arts & Discovery',
+      description: 'Story generation, interactive science, music, and art',
+      border: 'border-purple-200',
+      bg: 'bg-purple-50/60',
+      modules: pageModules.filter(m => ['stories', 'science', 'music', 'art'].includes(m.id))
+    },
+    {
+      category: 'Curriculum & Milestones',
+      description: 'Age-tiered progression, sticker rewards, and facilitator tools',
+      border: 'border-blue-200',
+      bg: 'bg-blue-50/60',
+      modules: pageModules.filter(m => ['level_curriculum', 'rewards', 'dashboard'].includes(m.id))
+    }
+  ], [pageModules]);
 
   // Safely fallback when active tab gets dynamically hidden
   useEffect(() => {
@@ -8533,38 +8647,131 @@ export default function JuniorCampusPage() {
 
       <div className="max-w-6xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="bg-white/70 backdrop-blur-md p-2 rounded-[28px] shadow-md border border-white/80 mb-2.5 sm:mb-3">
-              <TabsList className="flex flex-wrap gap-2 bg-transparent p-0 h-auto justify-center w-full">
-                  {pageModules.map(mod => (
-                      <TabsTrigger 
-                          key={mod.id}
-                          value={mod.id} 
-                          className={cn(
-                            "rounded-2xl font-black flex flex-row items-center gap-2 text-xs py-2 px-3.5 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm border border-transparent flex-initial",
-                            "data-[state=active]:bg-gradient-to-b data-[state=active]:shadow-md data-[state=active]:border-white/50 data-[state=active]:-translate-y-0.5",
-                            mod.id === 'level_curriculum' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
-                            mod.id === 'sentence_finisher' && "data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white text-purple-700 hover:bg-purple-50/50",
-                            mod.id === 'coach' && "data-[state=active]:from-pink-500 data-[state=active]:to-rose-500 data-[state=active]:text-white text-pink-600 hover:bg-pink-50/50",
-                            mod.id === 'phonics' && "data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white text-teal-600 hover:bg-teal-50/50",
-                            mod.id === 'abc' && "data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white text-green-600 hover:bg-green-50/50",
-                            mod.id === 'math' && "data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white text-orange-600 hover:bg-orange-50/50",
-                            mod.id === 'stories' && "data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white text-purple-600 hover:bg-purple-50/50",
-                            mod.id === 'science' && "data-[state=active]:from-blue-500 data-[state=active]:to-sky-500 data-[state=active]:text-white text-blue-600 hover:bg-blue-50/50",
-                            mod.id === 'art' && "data-[state=active]:from-cyan-500 data-[state=active]:to-teal-400 data-[state=active]:text-white text-cyan-700 hover:bg-cyan-50/50",
-                            mod.id === 'rewards' && "data-[state=active]:from-yellow-400 data-[state=active]:to-orange-400 data-[state=active]:text-white text-yellow-600 hover:bg-yellow-50/50",
-                            mod.id === 'numbers' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-400 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
-                            mod.id === 'music' && "data-[state=active]:from-violet-500 data-[state=active]:to-purple-500 data-[state=active]:text-white text-violet-600 hover:bg-violet-50/50",
-                            mod.id === 'dashboard' && "data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-indigo-600 hover:bg-indigo-50/50"
-                          )}
-                      >
-                          <div className="p-1 rounded-xl bg-white/20 shadow-inner flex-shrink-0">
-                            {mod.icon}
-                          </div>
-                          <span className="font-extrabold tracking-wide whitespace-nowrap">{mod.name}</span>
-                      </TabsTrigger>
-                  ))}
-              </TabsList>
+            {/* CONSOLIDATED SINGLE-ROW ACTIVITY CAROUSEL & SUBJECT DRAWER TRIGGER */}
+            <div className="bg-white/80 backdrop-blur-md p-1.5 sm:p-2 rounded-[28px] shadow-md border border-white/90 mb-2.5 sm:mb-3.5 flex items-center gap-1.5 sm:gap-2">
+              {/* Left Carousel Scroll Arrow */}
+              <button
+                type="button"
+                onClick={() => scrollCarousel('left')}
+                aria-label="Scroll left in activities"
+                className="h-8.5 w-8.5 sm:h-9 sm:w-9 rounded-2xl bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 shadow-xs border border-slate-200/80 flex items-center justify-center shrink-0 transition-transform active:scale-90 cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+              </button>
+
+              {/* Horizontal Scrolling Carousel Container */}
+              <div 
+                ref={carouselRef}
+                className="overflow-x-auto scrollbar-none flex items-center gap-1.5 sm:gap-2 py-0.5 px-1 snap-x scroll-smooth w-full"
+              >
+                <TabsList className="flex items-center gap-1.5 sm:gap-2 bg-transparent p-0 h-auto w-auto">
+                    {pageModules.map(mod => (
+                        <TabsTrigger 
+                            key={mod.id}
+                            value={mod.id} 
+                            className={cn(
+                              "rounded-2xl font-black flex flex-row items-center gap-2 text-xs py-2 px-3 sm:px-3.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-xs border border-transparent whitespace-nowrap snap-start shrink-0 cursor-pointer",
+                              "data-[state=active]:bg-gradient-to-b data-[state=active]:shadow-md data-[state=active]:border-white/50 data-[state=active]:-translate-y-0.5",
+                              mod.id === 'level_curriculum' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
+                              mod.id === 'sentence_finisher' && "data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white text-purple-700 hover:bg-purple-50/50",
+                              mod.id === 'coach' && "data-[state=active]:from-pink-500 data-[state=active]:to-rose-500 data-[state=active]:text-white text-pink-600 hover:bg-pink-50/50",
+                              mod.id === 'phonics' && "data-[state=active]:from-teal-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white text-teal-600 hover:bg-teal-50/50",
+                              mod.id === 'abc' && "data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white text-green-600 hover:bg-green-50/50",
+                              mod.id === 'math' && "data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white text-orange-600 hover:bg-orange-50/50",
+                              mod.id === 'stories' && "data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white text-purple-600 hover:bg-purple-50/50",
+                              mod.id === 'science' && "data-[state=active]:from-blue-500 data-[state=active]:to-sky-500 data-[state=active]:text-white text-blue-600 hover:bg-blue-50/50",
+                              mod.id === 'art' && "data-[state=active]:from-cyan-500 data-[state=active]:to-teal-400 data-[state=active]:text-white text-cyan-700 hover:bg-cyan-50/50",
+                              mod.id === 'rewards' && "data-[state=active]:from-yellow-400 data-[state=active]:to-orange-400 data-[state=active]:text-white text-yellow-600 hover:bg-yellow-50/50",
+                              mod.id === 'numbers' && "data-[state=active]:from-amber-500 data-[state=active]:to-orange-400 data-[state=active]:text-white text-amber-600 hover:bg-amber-50/50",
+                              mod.id === 'music' && "data-[state=active]:from-violet-500 data-[state=active]:to-purple-500 data-[state=active]:text-white text-violet-600 hover:bg-violet-50/50",
+                              mod.id === 'dashboard' && "data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-indigo-600 hover:bg-indigo-50/50"
+                            )}
+                        >
+                            <div className="p-1 rounded-xl bg-white/20 shadow-inner shrink-0">
+                              {mod.icon}
+                            </div>
+                            <span className="font-extrabold tracking-wide whitespace-nowrap">{mod.name}</span>
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+              </div>
+
+              {/* Right Carousel Scroll Arrow */}
+              <button
+                type="button"
+                onClick={() => scrollCarousel('right')}
+                aria-label="Scroll right in activities"
+                className="h-8.5 w-8.5 sm:h-9 sm:w-9 rounded-2xl bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 shadow-xs border border-slate-200/80 flex items-center justify-center shrink-0 transition-transform active:scale-90 cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+              </button>
+
+              {/* Expandable Subject Directory Drawer Button */}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsSubjectDrawerOpen(true)}
+                className="h-8.5 sm:h-9 px-3 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 border-teal-200 text-teal-800 hover:bg-teal-100 font-black text-xs flex items-center gap-1.5 shrink-0 shadow-xs active:scale-95 cursor-pointer"
+                title="Browse All Learning Activities"
+              >
+                <LayoutGrid className="w-4 h-4 text-teal-600" />
+                <span className="hidden md:inline">All Subjects</span>
+              </Button>
             </div>
+
+            {/* EXPANDABLE SUBJECT DIRECTORY DRAWER DIALOG */}
+            <Dialog open={isSubjectDrawerOpen} onOpenChange={setIsSubjectDrawerOpen}>
+              <DialogContent className="max-w-3xl rounded-[32px] p-5 sm:p-6 max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <LayoutGrid className="w-6 h-6 text-teal-600" />
+                    <span>Learning Subject Directory</span>
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-slate-500 font-bold">
+                    Select any early childhood learning module or educator tool to jump directly to it.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-3">
+                  {subjectCategories.map(cat => (
+                    <div key={cat.category} className={cn("p-4 rounded-3xl border-2 space-y-2.5", cat.bg, cat.border)}>
+                      <div>
+                        <h4 className="font-black text-sm text-slate-900">{cat.category}</h4>
+                        <p className="text-[11px] text-slate-500 font-medium">{cat.description}</p>
+                      </div>
+                      <div className="grid grid-cols-1 gap-1.5">
+                        {cat.modules.map(mod => (
+                          <button
+                            key={mod.id}
+                            type="button"
+                            onClick={() => {
+                              setActiveTab(mod.id);
+                              setIsSubjectDrawerOpen(false);
+                            }}
+                            className={cn(
+                              "flex items-center gap-2.5 p-2 rounded-2xl text-left font-bold text-xs transition-all w-full cursor-pointer",
+                              activeTab === mod.id 
+                                ? "bg-white text-slate-900 shadow-md border border-slate-200/80 font-black ring-2 ring-teal-400" 
+                                : "hover:bg-white/80 text-slate-700 bg-white/40"
+                            )}
+                          >
+                            <div className="p-1.5 rounded-xl bg-white shadow-xs border border-slate-100 shrink-0">
+                              {mod.icon}
+                            </div>
+                            <div className="flex-1 truncate">
+                              <span className="block truncate">{mod.name}</span>
+                            </div>
+                            {activeTab === mod.id && (
+                              <span className="text-[10px] font-black uppercase text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">Active</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
             
             {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
