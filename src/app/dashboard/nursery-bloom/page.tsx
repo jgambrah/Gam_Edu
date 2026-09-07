@@ -395,6 +395,174 @@ const DECODABLE_WORDS = [
   "tree", "rain", "boat", "goat", "road", "soap", "seed", "feet", "moon", "book", "look", "cook", "meat", "leaf", "star", "park", "fork", "horn", "bird", "girl", "dirt"
 ];
 
+// --- HIGH-RESOLUTION VISUAL ANCHOR GRAPHIC COMPONENT (COMMERCIAL ECE POLISH) ---
+function PhonicsAnchorGraphic({ word, emoji, className }: { word: string; emoji?: string; className?: string }) {
+    const normalized = word.toLowerCase().trim();
+    
+    // Curated high-resolution SVG illustrations for SSP core words
+    const renderVector = () => {
+        switch (normalized) {
+            case 'sun':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="32" cy="32" r="14" fill="#F59E0B" />
+                        <circle cx="32" cy="32" r="11" fill="#FBBF24" />
+                        <path d="M32 6V12M32 52V58M6 32H12M52 32H58M13.6 13.6L17.8 17.8M46.2 46.2L50.4 50.4M13.6 50.4L17.8 46.2M46.2 17.8L50.4 13.6" stroke="#F59E0B" strokeWidth="4" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'apple':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M32 18C28 12 24 10 20 12C14 15 14 26 18 36C22 46 27 52 32 52C37 52 42 46 46 36C50 26 50 15 44 12C40 10 36 12 32 18Z" fill="#EF4444" />
+                        <path d="M32 18C34 14 38 10 44 11" stroke="#15803D" strokeWidth="3" strokeLinecap="round" />
+                        <path d="M38 12C42 12 45 9 46 6C42 6 39 9 38 12Z" fill="#22C55E" />
+                    </svg>
+                );
+            case 'tap':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M16 28H44V34H16V28Z" fill="#64748B" />
+                        <path d="M36 28V16H24V28" stroke="#475569" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M38 34V42H32V34" fill="#64748B" />
+                        <circle cx="35" cy="50" r="3.5" fill="#38BDF8" />
+                    </svg>
+                );
+            case 'pan':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <ellipse cx="28" cy="36" rx="18" ry="10" fill="#334155" />
+                        <ellipse cx="28" cy="34" rx="16" ry="8" fill="#475569" />
+                        <path d="M44 34L58 24" stroke="#D97706" strokeWidth="5" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'insect':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <ellipse cx="32" cy="34" rx="14" ry="16" fill="#DC2626" />
+                        <circle cx="32" cy="18" r="7" fill="#1E293B" />
+                        <path d="M32 20V50" stroke="#1E293B" strokeWidth="2.5" />
+                        <circle cx="26" cy="30" r="2.5" fill="#1E293B" />
+                        <circle cx="38" cy="30" r="2.5" fill="#1E293B" />
+                        <circle cx="27" cy="40" r="2.5" fill="#1E293B" />
+                        <circle cx="37" cy="40" r="2.5" fill="#1E293B" />
+                        <path d="M28 14L22 8M36 14L42 8" stroke="#1E293B" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'net':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M12 20H52V46H12V20Z" stroke="#0284C7" strokeWidth="3" strokeLinejoin="round" />
+                        <path d="M22 20V46M32 20V46M42 20V46M12 28H52M12 37H52" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'moon':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M44 32C44 42 36 50 26 50C22 50 18 48 15 45C22 45 32 40 32 30C32 20 25 15 18 15C21 13 25 12 28 12C38 12 44 20 44 32Z" fill="#FACC15" />
+                        <circle cx="48" cy="16" r="1.5" fill="#FEF08A" />
+                        <circle cx="52" cy="24" r="2" fill="#FEF08A" />
+                    </svg>
+                );
+            case 'duck':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M22 24C22 18 27 14 33 14C38 14 42 17 43 21L52 23L44 28C44 32 40 36 34 36C28 36 22 32 22 24Z" fill="#FACC15" />
+                        <ellipse cx="30" cy="40" rx="16" ry="11" fill="#FACC15" />
+                        <circle cx="34" cy="20" r="2" fill="#1E293B" />
+                        <path d="M46 22L54 24L46 26" fill="#F97316" />
+                    </svg>
+                );
+            case 'cat':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="32" cy="36" r="16" fill="#FB923C" />
+                        <polygon points="20,24 24,12 30,22" fill="#EA580C" />
+                        <polygon points="44,24 40,12 34,22" fill="#EA580C" />
+                        <circle cx="26" cy="34" r="2.5" fill="#1E293B" />
+                        <circle cx="38" cy="34" r="2.5" fill="#1E293B" />
+                        <ellipse cx="32" cy="39" rx="2" ry="1.5" fill="#F43F5E" />
+                        <path d="M29 42Q32 44 35 42" stroke="#1E293B" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M18 36H24M18 40H24M40 36H46M40 40H46" stroke="#C2410C" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'egg':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M32 10C21 10 16 26 16 38C16 48 23 54 32 54C41 54 48 48 48 38C48 26 43 10 32 10Z" fill="#FEF3C7" stroke="#FDE68A" strokeWidth="3" />
+                        <ellipse cx="28" cy="26" rx="4" ry="7" fill="white" opacity="0.6" transform="rotate(-20 28 26)" />
+                    </svg>
+                );
+            case 'fish':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M14 32C14 20 36 18 46 32C36 46 14 44 14 32Z" fill="#38BDF8" />
+                        <polygon points="44,32 56,20 56,44" fill="#0284C7" />
+                        <circle cx="22" cy="30" r="2.5" fill="#0F172A" />
+                        <path d="M30 26C32 29 32 35 30 38" stroke="#0284C7" strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'hat':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <ellipse cx="32" cy="46" rx="24" ry="6" fill="#334155" />
+                        <path d="M20 44V20H44V44" fill="#1E293B" />
+                        <rect x="20" y="38" width="24" height="6" fill="#E11D48" />
+                    </svg>
+                );
+            case 'boat':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <path d="M12 40L20 52H44L52 40H12Z" fill="#0284C7" />
+                        <path d="M32 14V38" stroke="#78350F" strokeWidth="3" strokeLinecap="round" />
+                        <polygon points="33,16 48,28 33,36" fill="#F43F5E" />
+                        <path d="M8 55C16 53 24 57 32 55C40 53 48 57 56 55" stroke="#38BDF8" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                );
+            case 'tree':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <rect x="28" y="38" width="8" height="18" rx="2" fill="#78350F" />
+                        <circle cx="32" cy="24" r="14" fill="#22C55E" />
+                        <circle cx="24" cy="30" r="10" fill="#16A34A" />
+                        <circle cx="40" cy="30" r="10" fill="#15803D" />
+                    </svg>
+                );
+            case 'star':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <polygon points="32,8 39,23 55,25 43,36 47,52 32,43 17,52 21,36 9,25 25,23" fill="#FACC15" stroke="#EAB308" strokeWidth="2" strokeLinejoin="round" />
+                    </svg>
+                );
+            case 'ball':
+                return (
+                    <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-sm" fill="none">
+                        <circle cx="32" cy="32" r="20" fill="#EF4444" />
+                        <path d="M12 32A20 20 0 0 0 52 32" fill="#3B82F6" />
+                        <circle cx="32" cy="32" r="20" stroke="#FFFFFF" strokeWidth="2" />
+                        <rect x="12" y="30" width="40" height="4" fill="#FFFFFF" />
+                    </svg>
+                );
+            default:
+                return null;
+        }
+    };
+
+    const vector = renderVector();
+    return (
+        <div className={cn("flex items-center justify-center relative select-none", className)}>
+            {vector ? (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 p-1 rounded-2xl bg-gradient-to-br from-white/90 via-slate-50/70 to-slate-100/50 shadow-inner flex items-center justify-center transition-transform group-hover:scale-105">
+                    {vector}
+                </div>
+            ) : (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-white/90 via-slate-50/70 to-slate-100/50 shadow-inner flex items-center justify-center text-2xl sm:text-3xl filter drop-shadow-xs transition-transform group-hover:scale-105">
+                    {emoji || '✨'}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // --- 2. PHONICS FOREST (SYSTEMATIC SYNTHETIC PHONICS - ECE COMPLIANT) ---
 function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { toast } = useToast();
@@ -419,16 +587,29 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
     const [newRhyme, setNewRhyme] = useState({ family: '', words: '' });
     const [isAddingRhyme, setIsAddingRhyme] = useState(false);
 
-    // Audio Playback Pipeline: Attempts local pre-recorded audio, falling back gracefully to Web Speech Synthesis
+    // Audio Playback Pipeline: Speaks pure phoneme sound first (/s/), then example word ("Sun"), with haptic feedback
     const playSoundCardAudio = useCallback(async (card: { id: string; speechPhonic: string; grapheme: string; exampleWord?: string; formationCue?: string }) => {
         setPlayingCardId(card.id);
-        let playedLocalAsset = false;
 
+        // 1. Tactile haptic vibration for touch screens (Android / iOS / Tablets)
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            try {
+                navigator.vibrate(35);
+            } catch {
+                // Ignore devices without vibration support
+            }
+        }
+
+        // 2. Pure phoneme cue first, followed by example word (never pronounce letter names like "Ess")
+        const purePhoneme = card.speechPhonic || card.grapheme;
+        const word = card.exampleWord || '';
+
+        let playedLocalAsset = false;
         if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
             try {
                 const audio = new Audio(`/audio/phonics/${encodeURIComponent(card.grapheme.toLowerCase().trim())}.mp3`);
                 await new Promise<void>((resolve, reject) => {
-                    const timer = setTimeout(() => reject(new Error('Audio timeout')), 1000);
+                    const timer = setTimeout(() => reject(new Error('Audio timeout')), 800);
                     audio.onended = () => {
                         clearTimeout(timer);
                         resolve();
@@ -446,14 +627,34 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
         }
 
         if (!playedLocalAsset) {
-            // Smooth phonetic fallback via Web Speech Synthesis (clean phoneme sound)
-            speak(card.speechPhonic || card.grapheme, 0.85, () => {
-                setPlayingCardId(null);
+            // Step A: Speak pure phoneme sound without added schwa
+            speak(purePhoneme, 0.85, () => {
+                // Step B: Natural 260ms pause, then speak the full example word
+                setTimeout(() => {
+                    if (word) {
+                        speak(word, 0.88, () => {
+                            setPlayingCardId(null);
+                        });
+                    } else {
+                        setPlayingCardId(null);
+                    }
+                }, 260);
             });
-            setTimeout(() => setPlayingCardId(null), 1200);
         } else {
-            setPlayingCardId(null);
+            // If local asset played successfully, follow up with the example word
+            setTimeout(() => {
+                if (word) {
+                    speak(word, 0.88, () => {
+                        setPlayingCardId(null);
+                    });
+                } else {
+                    setPlayingCardId(null);
+                }
+            }, 260);
         }
+
+        // Failsafe timeout to prevent animation lock
+        setTimeout(() => setPlayingCardId(null), 3200);
     }, []);
 
     // Merge SSP Presets with Firestore custom sounds
@@ -727,56 +928,62 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                         }
                                                     }}
                                                     className={cn(
-                                                        "min-h-[96px] min-w-[96px] p-3 sm:p-4 rounded-3xl border-2 border-b-[6px] transition-all duration-150 relative cursor-pointer outline-none flex flex-col items-center justify-between text-center select-none shadow-md",
+                                                        "min-h-[110px] min-w-[100px] p-3 sm:p-4 rounded-3xl border-2 border-b-[6px] transition-all duration-150 relative cursor-pointer outline-none flex flex-col items-center justify-between text-center select-none shadow-md",
                                                         "hover:-translate-y-1 hover:shadow-lg active:translate-y-0.5 active:border-b-2 active:scale-95",
                                                         "focus-visible:ring-4 focus-visible:ring-teal-400 focus-visible:ring-offset-2",
                                                         isPlaying
-                                                            ? "bg-teal-50 border-teal-500 ring-4 ring-teal-200 scale-102"
+                                                            ? "bg-teal-50/90 border-teal-500 ring-4 ring-teal-200/80 scale-102"
                                                             : "bg-white border-slate-200/90 hover:border-teal-300"
                                                     )}
                                                 >
                                                     {/* Concentric Animated Sound Wave Ripple */}
                                                     {isPlaying && (
-                                                        <span className="absolute inset-0 rounded-3xl ring-4 ring-teal-400/40 animate-ping pointer-events-none" />
+                                                        <span className="absolute inset-0 rounded-3xl ring-4 ring-teal-400/50 animate-ping pointer-events-none" />
                                                     )}
 
-                                                    {/* Top Bar: IPA Phoneme & Audio Trigger */}
-                                                    <div className="w-full flex items-center justify-between">
-                                                        <span className="text-[11px] sm:text-xs font-mono font-black text-teal-800 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200/60">
+                                                    {/* Top Header: Unified Sound Indicator (No small nested buttons) */}
+                                                    <div className="w-full flex items-center justify-between pointer-events-none mb-1">
+                                                        <span className="text-xs font-mono font-black text-teal-800 bg-teal-50/90 px-2.5 py-0.5 rounded-full border border-teal-200/80 shadow-2xs">
                                                             {card.phoneme}
                                                         </span>
-                                                        <button 
-                                                            type="button" 
-                                                            aria-label={`Replay sound ${card.phoneme}`}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                playSoundCardAudio(card);
-                                                            }}
-                                                            className="text-slate-400 hover:text-teal-600 transition-colors p-1 rounded-full hover:bg-teal-50"
-                                                        >
-                                                            <Volume2 className={cn("w-4 h-4", isPlaying && "text-teal-600 animate-pulse")} />
-                                                        </button>
+                                                        <div className={cn(
+                                                            "flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs transition-all",
+                                                            isPlaying ? "bg-teal-600 text-white shadow-xs" : "text-slate-500 bg-slate-100/80"
+                                                        )}>
+                                                            <Volume2 className={cn("w-3.5 h-3.5", isPlaying && "animate-pulse text-white")} />
+                                                            {isPlaying ? (
+                                                                <span className="inline-flex items-center gap-0.5">
+                                                                    <span className="w-1 h-2 rounded-full bg-white animate-[bounce_0.6s_infinite_100ms]" />
+                                                                    <span className="w-1 h-3 rounded-full bg-white animate-[bounce_0.6s_infinite_200ms]" />
+                                                                    <span className="w-1 h-2 rounded-full bg-white animate-[bounce_0.6s_infinite_300ms]" />
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-[10px] font-extrabold uppercase tracking-tight">Tap</span>
+                                                            )}
+                                                        </div>
                                                     </div>
 
-                                                    {/* Central Letter Glyphs (Prominent Lower-case form as required by EYFS) */}
+                                                    {/* Central Letter Glyphs (Standard Infant School Font Stack with Single-Story 'a' and Single-Loop 'g') */}
                                                     <div className="my-1 flex items-baseline justify-center gap-1.5">
                                                         <span 
-                                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', cursive, sans-serif" }}
+                                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
                                                             className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none drop-shadow-2xs"
                                                         >
-                                                            {card.grapheme === 'a' ? 'ɑ' : card.grapheme}
+                                                            {card.grapheme}
                                                         </span>
                                                         <span 
-                                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', cursive, sans-serif" }}
+                                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
                                                             className="text-xl sm:text-2xl font-black text-slate-400 leading-none"
                                                         >
                                                             {card.upperGrapheme}
                                                         </span>
                                                     </div>
 
-                                                    {/* Example Word with Decodable Emoji */}
-                                                    <div className="w-full text-xs sm:text-sm font-extrabold text-slate-700 flex items-center justify-center gap-1.5 py-0.5">
-                                                        <span className="text-base sm:text-lg filter drop-shadow-2xs">{card.exampleEmoji}</span>
+                                                    {/* Visual Anchor Illustration with Clean Vector Graphics */}
+                                                    <PhonicsAnchorGraphic word={card.exampleWord} emoji={card.exampleEmoji} className="my-1" />
+
+                                                    {/* Example Word */}
+                                                    <div className="w-full text-xs sm:text-sm font-extrabold text-slate-800 flex items-center justify-center gap-1 py-0.5">
                                                         <span className="capitalize">{card.exampleWord}</span>
                                                     </div>
 
@@ -1789,10 +1996,10 @@ function AbcMatcherGame({
                             {matcherMode === 'sound-to-letter' && `Listen to the Sound!`}
                             {matcherMode === 'confusing-pairs' && (
                                 <span>Find the matching <span 
-                                    style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                    style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
                                     className="matcher-tile-text font-school text-emerald-600 font-bold"
                                 >
-                                    "{currentLetter.toLowerCase() === 'a' ? 'ɑ' : currentLetter.toLowerCase()}"
+                                    "{currentLetter.toLowerCase()}"
                                 </span>!</span>
                             )}
                         </h3>
@@ -1836,11 +2043,11 @@ function AbcMatcherGame({
                                 </div>
                             ) : (
                                 <div 
-                                    style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                    style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
                                     className="matcher-tile-text font-school text-[38px] sm:text-[44px] font-bold text-emerald-600 leading-none select-none py-0.5 drop-shadow-xs"
                                 >
                                     {matcherMode === 'confusing-pairs' 
-                                        ? (currentLetter.toLowerCase() === 'a' ? 'ɑ' : currentLetter.toLowerCase()) 
+                                        ? currentLetter.toLowerCase() 
                                         : currentLetter.toUpperCase()}
                                 </div>
                             )}
@@ -1878,7 +2085,7 @@ function AbcMatcherGame({
                                     key={choice.id}
                                     disabled={isDisabled || isRoundLocked}
                                     onClick={() => handleChoiceClick(choice, i)}
-                                    style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                    style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
                                     className={cn(
                                         "h-14 sm:h-16 min-h-[52px] sm:min-h-[58px] max-h-[66px] p-1 sm:p-1.5 rounded-2xl border-2 border-b-4 transition-all flex flex-col items-center justify-center select-none shadow-sm relative group cursor-pointer",
                                         "focus:outline-none focus:ring-4 focus:ring-emerald-300/60",
@@ -1895,10 +2102,10 @@ function AbcMatcherGame({
                                         </div>
                                     ) : (
                                         <span 
-                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
                                             className="matcher-tile-text font-school text-3xl sm:text-4xl font-bold transition-transform group-hover:scale-110 leading-none pointer-events-none select-none"
                                         >
-                                            {choice.label === 'a' ? 'ɑ' : choice.label}
+                                            {choice.label}
                                         </span>
                                     )}
                                 </button>
@@ -2343,8 +2550,8 @@ function ABCKingdom({
                                             : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/60 hover:text-emerald-700 hover:border-emerald-200'
                                         )}
                                     >
-                                        <span style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}>
-                                            {caseMode === 'upper' ? letter : caseMode === 'lower' ? (letter === 'A' ? 'ɑ' : letter.toLowerCase()) : `${letter}${letter === 'A' ? 'ɑ' : letter.toLowerCase()}`}
+                                        <span style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}>
+                                            {caseMode === 'upper' ? letter : caseMode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
                                         </span>
                                     </button>
                                 );
@@ -2382,14 +2589,14 @@ function ABCKingdom({
                                     </Button>
                                 )}
 
-                                {/* Target Letter Anchor Badge (Fredoka / Single-Story Infant ɑ) */}
+                                {/* Target Letter Anchor Badge (Fredoka / Infant School Letterforms) */}
                                 <div className="flex justify-center">
                                     <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-md border-2 border-emerald-300 ring-4 ring-emerald-100">
                                         <span 
-                                            style={{ fontFamily: "'Comic Neue', 'Fredoka', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif" }}
+                                            style={{ fontFamily: "'Fredoka', 'Comic Neue', 'Century Gothic', cursive, sans-serif" }}
                                             className="text-2xl sm:text-3xl font-black tracking-wider leading-none select-none drop-shadow-xs"
                                         >
-                                            {selectedLetter}{selectedLetter === 'A' ? 'ɑ' : selectedLetter.toLowerCase()}
+                                            {selectedLetter}{selectedLetter.toLowerCase()}
                                         </span>
                                         <span className="text-xs font-extrabold uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-xs">
                                             Letter {selectedLetter}
