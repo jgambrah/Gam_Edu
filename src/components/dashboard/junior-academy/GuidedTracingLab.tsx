@@ -43,6 +43,39 @@ function projectPointOntoSegment(
   return { point: proj, t, distance: getDistance(p, proj) };
 }
 
+// Draw natural smooth Bézier curve across sequence of points
+function drawSmoothBezierStroke(
+  ctx: CanvasRenderingContext2D,
+  pts: StrokeWaypoint[],
+  scaleX: number,
+  scaleY: number
+) {
+  if (pts.length === 0) return;
+  if (pts.length === 1) {
+    ctx.moveTo(pts[0].x * scaleX, pts[0].y * scaleY);
+    ctx.lineTo(pts[0].x * scaleX, pts[0].y * scaleY);
+    return;
+  }
+  if (pts.length === 2) {
+    ctx.moveTo(pts[0].x * scaleX, pts[0].y * scaleY);
+    ctx.lineTo(pts[1].x * scaleX, pts[1].y * scaleY);
+    return;
+  }
+
+  // Draw continuous smooth spline using midpoint quadratic Béziers
+  ctx.moveTo(pts[0].x * scaleX, pts[0].y * scaleY);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const curr = pts[i];
+    const next = pts[i + 1];
+    const midX = ((curr.x + next.x) / 2) * scaleX;
+    const midY = ((curr.y + next.y) / 2) * scaleY;
+    ctx.quadraticCurveTo(curr.x * scaleX, curr.y * scaleY, midX, midY);
+  }
+  // Connect to final waypoint
+  const last = pts[pts.length - 1];
+  ctx.lineTo(last.x * scaleX, last.y * scaleY);
+}
+
 export function GuidedTracingLab({
   selectedLetter,
   onLetterChange,
@@ -307,24 +340,18 @@ export function GuidedTracingLab({
     completedStrokes.forEach((strokePts) => {
       if (strokePts.length < 2) return;
 
-      // Base solid stroke
+      // Base solid stroke with smooth natural curves
       ctx.beginPath();
-      ctx.moveTo(strokePts[0].x * scaleX, strokePts[0].y * scaleY);
-      for (let i = 1; i < strokePts.length; i++) {
-        ctx.lineTo(strokePts[i].x * scaleX, strokePts[i].y * scaleY);
-      }
+      drawSmoothBezierStroke(ctx, strokePts, scaleX, scaleY);
       ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 14;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.stroke();
 
-      // Soft gloss center line
+      // Soft gloss center line with smooth natural curves
       ctx.beginPath();
-      ctx.moveTo(strokePts[0].x * scaleX, strokePts[0].y * scaleY);
-      for (let i = 1; i < strokePts.length; i++) {
-        ctx.lineTo(strokePts[i].x * scaleX, strokePts[i].y * scaleY);
-      }
+      drawSmoothBezierStroke(ctx, strokePts, scaleX, scaleY);
       ctx.strokeStyle = '#6ee7b7';
       ctx.lineWidth = 5;
       ctx.lineCap = 'round';
@@ -335,22 +362,16 @@ export function GuidedTracingLab({
     // 2. Draw Currently Active Tracing Ink (ocean blue ink)
     if (currentStrokeInk.length >= 2) {
       ctx.beginPath();
-      ctx.moveTo(currentStrokeInk[0].x * scaleX, currentStrokeInk[0].y * scaleY);
-      for (let i = 1; i < currentStrokeInk.length; i++) {
-        ctx.lineTo(currentStrokeInk[i].x * scaleX, currentStrokeInk[i].y * scaleY);
-      }
+      drawSmoothBezierStroke(ctx, currentStrokeInk, scaleX, scaleY);
       ctx.strokeStyle = corridorWarning ? '#f59e0b' : '#0284c7';
       ctx.lineWidth = 14;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.stroke();
 
-      // Inner gloss
+      // Inner gloss with smooth natural curves
       ctx.beginPath();
-      ctx.moveTo(currentStrokeInk[0].x * scaleX, currentStrokeInk[0].y * scaleY);
-      for (let i = 1; i < currentStrokeInk.length; i++) {
-        ctx.lineTo(currentStrokeInk[i].x * scaleX, currentStrokeInk[i].y * scaleY);
-      }
+      drawSmoothBezierStroke(ctx, currentStrokeInk, scaleX, scaleY);
       ctx.strokeStyle = corridorWarning ? '#fde68a' : '#7dd3fc';
       ctx.lineWidth = 5;
       ctx.lineCap = 'round';
@@ -589,9 +610,9 @@ export function GuidedTracingLab({
   };
 
   return (
-    <div className="w-full flex flex-col items-center select-none space-y-3">
+    <div className="w-full flex flex-col items-center select-none space-y-1.5 sm:space-y-2">
       {/* 1. ERGONOMIC TOP TOOLBAR (PALM-PROOF: ABOVE DRAWING CANVAS) */}
-      <div className="w-full flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 bg-amber-50/90 rounded-2xl border border-amber-200 shadow-xs">
+      <div className="w-full flex flex-wrap items-center justify-between gap-1.5 p-1.5 sm:p-2 bg-amber-50/90 rounded-2xl border border-amber-200 shadow-xs">
         {/* Letter Navigator with Quick Pills */}
         <div className="flex items-center gap-1 sm:gap-1.5">
           <Button
@@ -599,18 +620,18 @@ export function GuidedTracingLab({
             variant="outline"
             onClick={handlePrevLetter}
             title="Previous Letter"
-            className="h-8 w-8 rounded-xl bg-white border-amber-200 text-amber-900 hover:bg-amber-100"
+            className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl bg-white border-amber-200 text-amber-900 hover:bg-amber-100"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5" />
           </Button>
 
           {/* Current Letter Badge */}
-          <div className="px-3 py-1 bg-white rounded-xl border border-amber-300 shadow-xs flex items-center gap-1.5 font-school">
-            <span className="text-xl sm:text-2xl font-black text-emerald-600 leading-none">
+          <div className="px-2.5 py-0.5 sm:py-1 bg-white rounded-xl border border-amber-300 shadow-xs flex items-center gap-1.5 font-school">
+            <span className="text-lg sm:text-xl font-black text-emerald-600 leading-none">
               {caseMode === 'upper' ? selectedLetter.toUpperCase() : (selectedLetter.toLowerCase() === 'a' ? 'ɑ' : selectedLetter.toLowerCase())}
             </span>
-            <span className="text-xs font-bold text-slate-400">/</span>
-            <span className="text-xs font-bold text-slate-600">{letterData.phonemeSound}</span>
+            <span className="text-[10px] font-bold text-slate-400">/</span>
+            <span className="text-[11px] font-bold text-slate-600">{letterData.phonemeSound}</span>
           </div>
 
           <Button
@@ -618,9 +639,9 @@ export function GuidedTracingLab({
             variant="outline"
             onClick={handleNextLetter}
             title="Next Letter"
-            className="h-8 w-8 rounded-xl bg-white border-amber-200 text-amber-900 hover:bg-amber-100"
+            className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl bg-white border-amber-200 text-amber-900 hover:bg-amber-100"
           >
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </div>
 
@@ -629,7 +650,7 @@ export function GuidedTracingLab({
           <button
             onClick={() => setCaseMode('upper')}
             className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-black transition-all",
+              "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-black transition-all",
               caseMode === 'upper'
                 ? "bg-emerald-500 text-white shadow-xs"
                 : "text-slate-600 hover:text-emerald-700"
@@ -640,7 +661,7 @@ export function GuidedTracingLab({
           <button
             onClick={() => setCaseMode('lower')}
             className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-black font-school transition-all",
+              "px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-black font-school transition-all",
               caseMode === 'lower'
                 ? "bg-emerald-500 text-white shadow-xs"
                 : "text-slate-600 hover:text-emerald-700"
@@ -651,12 +672,12 @@ export function GuidedTracingLab({
         </div>
 
         {/* Audio, Demonstrate & Erase Action Buttons */}
-        <div className="flex items-center gap-1 sm:gap-1.5">
+        <div className="flex items-center gap-1">
           <Button
             size="sm"
             variant="outline"
             onClick={() => speakText(`${selectedLetter}! ${currentWord.word}!`)}
-            className="h-8 px-2.5 rounded-xl bg-white border-amber-200 text-amber-900 hover:bg-amber-100 font-bold text-xs flex items-center gap-1"
+            className="h-7 sm:h-8 px-2 rounded-xl bg-white border-amber-200 text-amber-900 hover:bg-amber-100 font-bold text-xs flex items-center gap-1"
           >
             <Volume2 className="w-3.5 h-3.5 text-amber-600" />
             <span className="hidden sm:inline">Sound</span>
@@ -666,7 +687,7 @@ export function GuidedTracingLab({
             size="sm"
             onClick={handleDemonstrate}
             disabled={isDemonstrating}
-            className="h-8 px-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-xs flex items-center gap-1 shadow-xs active:scale-95"
+            className="h-7 sm:h-8 px-2 sm:px-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-xs flex items-center gap-1 shadow-xs active:scale-95"
           >
             <Wand2 className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             <span>{isDemonstrating ? 'Showing...' : 'Auto-Trace'}</span>
@@ -676,7 +697,7 @@ export function GuidedTracingLab({
             size="sm"
             variant="outline"
             onClick={handleResetLetter}
-            className="h-8 px-2.5 rounded-xl bg-white border-slate-200 text-slate-600 hover:text-slate-900 font-bold text-xs flex items-center gap-1"
+            className="h-7 sm:h-8 px-2 rounded-xl bg-white border-slate-200 text-slate-600 hover:text-slate-900 font-bold text-xs flex items-center gap-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Erase</span>
@@ -687,7 +708,7 @@ export function GuidedTracingLab({
       {/* 2. THE HANDWRITING CANVAS SLATE (WOODEN CLASSROOM DESK FRAME) */}
       <div
         ref={containerRef}
-        className="relative bg-amber-100/90 p-3 sm:p-4 rounded-[32px] border-4 sm:border-8 border-amber-800 shadow-2xl flex flex-col items-center justify-center w-full max-w-[400px] aspect-square select-none overflow-hidden"
+        className="relative bg-amber-100/90 p-2 sm:p-3 rounded-3xl sm:rounded-[32px] border-4 sm:border-6 border-amber-800 shadow-xl flex flex-col items-center justify-center w-full max-w-[340px] sm:max-w-[370px] aspect-square select-none overflow-hidden"
       >
         {/* Wooden frame corner pegs */}
         <div className="absolute top-2 left-2 w-3 h-3 rounded-full bg-amber-900/40"></div>
@@ -907,10 +928,11 @@ export function GuidedTracingLab({
         </div>
       </div>
 
-      {/* Quick Letter Carousel (Jump to any letter instantly, smooth touch-scrolling across all 26 letters) */}
+      {/* Quick Letter Carousel (Jump to any letter instantly, smooth touch-scrolling across all 26 letters in single horizontal row) */}
       <div 
         ref={letterTrayRef}
-        className="w-full max-w-md overflow-x-auto whitespace-nowrap no-scrollbar scroll-smooth py-1 px-1 flex items-center gap-2 justify-start rounded-2xl bg-amber-50/60 border border-amber-200/80 shadow-inner"
+        className="w-full max-w-md overflow-x-auto overflow-y-hidden flex flex-row flex-nowrap items-center gap-2 py-1.5 px-2 rounded-2xl bg-amber-50/70 border border-amber-200/80 shadow-inner no-scrollbar scrollbar-none scroll-smooth shrink-0"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {alphabet.map((letter) => {
           const isCurrent = letter.toUpperCase() === selectedLetter.toUpperCase();
@@ -920,7 +942,7 @@ export function GuidedTracingLab({
               ref={isCurrent ? activeLetterRef : null}
               onClick={() => onLetterChange(letter)}
               className={cn(
-                "h-8 w-8 rounded-xl text-xs font-black flex-shrink-0 transition-all font-school flex items-center justify-center border",
+                "h-8 w-8 min-w-[32px] rounded-xl text-xs font-black shrink-0 transition-all font-school flex items-center justify-center border",
                 isCurrent
                   ? "bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400 scale-110 z-10"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 active:scale-95"

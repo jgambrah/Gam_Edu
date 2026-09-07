@@ -151,11 +151,13 @@
 }
 
 /* Hide scrollbars while maintaining scrollability */
-.scrollbar-none {
+.scrollbar-none,
+.no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.scrollbar-none::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 

@@ -1757,8 +1757,8 @@ function ABCKingdom({ canEdit, activeAgeTier }: { canEdit: boolean; activeAgeTie
             ) : activeTab === 'tracing' ? (
                 /* GUIDED HANDWRITING TRACING LAB (ECE COMPLIANT) */
                 <div className="max-w-xl mx-auto w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <Card className="rounded-3xl border-2 sm:border-4 border-amber-200/90 shadow-xl overflow-hidden bg-white/95 w-full">
-                        <CardContent className="p-2 sm:p-4">
+                    <Card className="rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-amber-200/90 shadow-lg overflow-hidden bg-white/95 w-full">
+                        <CardContent className="p-1 sm:p-2">
                             <GuidedTracingLab 
                                 selectedLetter={selectedLetter}
                                 onLetterChange={setSelectedLetter}
@@ -7647,30 +7647,30 @@ export default function JuniorCampusPage() {
       <div className="absolute top-40 right-20 w-80 h-80 bg-yellow-200/30 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
       <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '4s' }}></div>
 
-      <div className="max-w-6xl mx-auto mb-4 sm:mb-6 relative">
-        <div className="relative overflow-hidden bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 p-5 sm:p-7 rounded-[36px] shadow-xl border-b-8 border-rose-400/30 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+      <div className="max-w-6xl mx-auto mb-2.5 sm:mb-3.5 relative">
+        <div className="relative overflow-hidden bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 p-4 sm:p-5 md:p-6 rounded-[32px] shadow-lg border-b-6 border-rose-400/30 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
           {/* Decorative shapes */}
           <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
           
-          <div className="flex items-center gap-6 z-10">
-            <div className="bg-white/95 p-4 rounded-3xl shadow-lg hover:rotate-12 transition-transform duration-300">
-              <Rabbit className="h-14 w-14 text-pink-500 animate-bounce" />
+          <div className="flex items-center gap-4 sm:gap-5 z-10">
+            <div className="bg-white/95 p-3 rounded-2xl shadow-md hover:rotate-12 transition-transform duration-300">
+              <Rabbit className="h-10 w-10 sm:h-12 sm:w-12 text-pink-500 animate-bounce" />
             </div>
             <div>
-              <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight drop-shadow-sm flex items-center gap-2">
-                Junior Campus <Sparkles className="w-7 h-7 text-yellow-500 animate-pulse" />
+              <h1 className="text-3xl md:text-4xl font-black text-slate-800 tracking-tight drop-shadow-sm flex items-center gap-2">
+                Junior Campus <Sparkles className="w-6 h-6 text-yellow-500 animate-pulse" />
               </h1>
-              <p className="text-slate-700/80 font-bold text-lg mt-1">A magical space to learn, play, and bloom across early childhood levels!</p>
+              <p className="text-slate-700/80 font-bold text-sm sm:text-base mt-0.5">A magical space to learn, play, and bloom across early childhood levels!</p>
             </div>
           </div>
 
           {/* Spark Status Badge */}
-          <div className="z-10 bg-white/40 backdrop-blur-md border border-white/40 px-6 py-3 rounded-2xl shadow-inner flex items-center gap-3">
-            <Trophy className="w-8 h-8 text-yellow-500 animate-bounce" />
+          <div className="z-10 bg-white/40 backdrop-blur-md border border-white/40 px-4 py-2 rounded-2xl shadow-inner flex items-center gap-2.5">
+            <Trophy className="w-6 h-6 text-yellow-500 animate-bounce" />
             <div>
-              <div className="text-[10px] uppercase tracking-wider font-black text-slate-700">Spark Status</div>
-              <div className="text-sm font-black text-slate-900">Ready to Learn! 🌟</div>
+              <div className="text-[9px] uppercase tracking-wider font-black text-slate-700">Spark Status</div>
+              <div className="text-xs font-black text-slate-900">Ready to Learn! 🌟</div>
             </div>
           </div>
         </div>
@@ -7681,8 +7681,8 @@ export default function JuniorCampusPage() {
 
       <div className="max-w-6xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="bg-white/70 backdrop-blur-md p-2.5 sm:p-3 rounded-[32px] shadow-lg border border-white/80 mb-4 sm:mb-5">
-              <TabsList className="flex flex-wrap gap-2.5 bg-transparent p-0 h-auto justify-center w-full">
+            <div className="bg-white/70 backdrop-blur-md p-2 rounded-[28px] shadow-md border border-white/80 mb-2.5 sm:mb-3">
+              <TabsList className="flex flex-wrap gap-2 bg-transparent p-0 h-auto justify-center w-full">
                   {pageModules.map(mod => (
                       <TabsTrigger 
                           key={mod.id}
@@ -7789,7 +7789,7 @@ export default function JuniorCampusPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="abc" className="mt-0 animate-in fade-in-50 duration-300 w-full max-w-full overflow-x-hidden">
-                  <div className="bg-white/80 backdrop-blur-md p-2.5 sm:p-4 md:py-2.5 md:px-6 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-green-400 w-full max-w-full overflow-hidden">
+                  <div className="bg-white/80 backdrop-blur-md p-2 sm:p-3 md:py-2 md:px-5 rounded-[36px] shadow-xl border-4 border-white/90 border-b-[10px] border-b-green-400 w-full max-w-full overflow-hidden">
                     <ABCKingdom canEdit={canEdit} activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
