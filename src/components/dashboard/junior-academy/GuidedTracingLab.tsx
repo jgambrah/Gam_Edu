@@ -247,6 +247,27 @@ export function GuidedTracingLab({
     };
   }, [activeStroke, idleHelperProgress]);
 
+  // Ergonomics & Safety: Prevent mobile/tablet scrolling, pull-to-refresh, or accidental panning
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const preventTouchScroll = (e: TouchEvent) => {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    // Use { passive: false } so preventDefault() stops browser gesture actions reliably
+    canvas.addEventListener('touchstart', preventTouchScroll, { passive: false });
+    canvas.addEventListener('touchmove', preventTouchScroll, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('touchstart', preventTouchScroll);
+      canvas.removeEventListener('touchmove', preventTouchScroll);
+    };
+  }, []);
+
   // High-DPI Canvas Rendering
   const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -367,8 +388,8 @@ export function GuidedTracingLab({
     const startPoint = stroke.points[0];
     const distToStart = getDistance(pt, startPoint);
 
-    // Tolerance radius: <= 14% of normalized box
-    if (distToStart <= 14) {
+    // Preschool starting tolerance radius: <= 16% of normalized box (generous envelope for early learner tremor)
+    if (distToStart <= 16) {
       setIsTracing(true);
       setIsStrokeActive(true);
       setCorridorWarning(false);
@@ -379,7 +400,7 @@ export function GuidedTracingLab({
     } else {
       // Check if child touched near a future stroke
       const otherStrokes = letterData.strokes.slice(activeStrokeIndex + 1);
-      const touchedFuture = otherStrokes.some(s => getDistance(pt, s.points[0]) <= 14);
+      const touchedFuture = otherStrokes.some(s => getDistance(pt, s.points[0]) <= 16);
       if (touchedFuture) {
         playSound('warning');
         setStatusMessage(`Start at circle ${stroke.order} first!`);
@@ -389,7 +410,7 @@ export function GuidedTracingLab({
     }
   };
 
-  // TOUCH MOVE: Corridor Snapping (within +-18%) & Completion Detection
+  // TOUCH MOVE: Preschool Corridor Snapping (+-20% to 22% generous tolerance envelope) & Completion Detection
   const handlePointerMove = (e: React.TouchEvent | React.MouseEvent) => {
     if (!isTracing || !isStrokeActive || isCompleted || isDemonstrating) return;
     resetIdleTimer();
@@ -408,8 +429,8 @@ export function GuidedTracingLab({
     // Compute orthogonal distance to active segment
     const { point: snappedPt, t, distance: distToSegment } = projectPointOntoSegment(pt, pA, pB);
 
-    // Corridor Snapping Algorithm: +-18% threshold
-    if (distToSegment <= 18) {
+    // Preschool Corridor Snapping: generous +-20% envelope (prevents false failures from finger tremors)
+    if (distToSegment <= 20) {
       setCorridorWarning(false);
 
       // Append snapped point to smooth ink line
@@ -421,9 +442,9 @@ export function GuidedTracingLab({
         return prev;
       });
 
-      // Advance waypoint if finger is near or past next waypoint
+      // Advance waypoint if finger is near or past next waypoint (generous radius <= 14)
       const distToNext = getDistance(pt, pB);
-      if (t >= 0.75 || distToNext <= 12) {
+      if (t >= 0.70 || distToNext <= 14) {
         const nextIdx = currentWaypointIndex + 1;
 
         // Completion Detection: must have progressed through waypoints (at least penultimate waypoint reached)
@@ -832,7 +853,8 @@ export function GuidedTracingLab({
           {/* HIGH-DPI INTERACTIVE DRAWING CANVAS */}
           <canvas
             ref={canvasRef}
-            className="absolute inset-0 w-full h-full touch-none cursor-crosshair"
+            className="absolute inset-0 w-full h-full touch-none cursor-crosshair select-none"
+            style={{ touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}
             onMouseDown={handlePointerDown}
             onMouseMove={handlePointerMove}
             onMouseUp={handlePointerUp}

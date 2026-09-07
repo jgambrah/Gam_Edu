@@ -202,9 +202,9 @@ export const ECE_HANDWRITING_CATALOG: Record<string, LetterData> = {
         id: 2,
         order: 2,
         startLabel: '2',
-        guidePath: 'M 74 54 L 54 54',
-        arrowAngle: 180,
-        points: linePoints(74, 54, 54, 54, 5)
+        guidePath: 'M 54 54 L 74 54',
+        arrowAngle: 0,
+        points: linePoints(54, 54, 74, 54, 5)
       }
     ]
   },
