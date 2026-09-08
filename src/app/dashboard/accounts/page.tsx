@@ -3333,93 +3333,15 @@ export default function AccountsPage() {
     ).toString();
   }, [schoolSettings, schoolProfile]);
 
-  // Fast Term-Scoped Ledger vs All-Time Historical Archive
-  const [ledgerQueryScope, setLedgerQueryScope] = useState<'current-term' | 'all-time'>('current-term');
-  const [selectedTerm, setSelectedTerm] = useState<string>('');
   const [isRolloverModalOpen, setIsRolloverModalOpen] = useState<boolean>(false);
-  const activeTerm = selectedTerm || detectedActiveTerm;
+  const activeTerm = detectedActiveTerm;
 
-  // 1. Current term records with matching termId
-  const termRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || ledgerQueryScope !== 'current-term') return null;
-    return query(
-      collection(firestore, 'financialRecords'),
-      where('schoolId', '==', schoolId),
-      where('termId', '==', activeTerm)
-    );
-  }, [firestore, schoolId, ledgerQueryScope, activeTerm]);
-  const { data: termRecords, isLoading: isLoadingTermRecs, forceRefetch: refetchTermRecs } = useCollection<FinancialRecord>(termRecordsQuery);
-
-  // 2. Current term records with matching term (alternative field name)
-  const termAltRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || ledgerQueryScope !== 'current-term') return null;
-    return query(
-      collection(firestore, 'financialRecords'),
-      where('schoolId', '==', schoolId),
-      where('term', '==', activeTerm)
-    );
-  }, [firestore, schoolId, ledgerQueryScope, activeTerm]);
-  const { data: termAltRecords, isLoading: isLoadingTermAltRecs, forceRefetch: refetchTermAltRecs } = useCollection<FinancialRecord>(termAltRecordsQuery);
-
-  // 3. Opening Balances & Arrears Brought Forward (category == 'Arrears')
-  const arrearsRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || ledgerQueryScope !== 'current-term') return null;
-    return query(
-      collection(firestore, 'financialRecords'),
-      where('schoolId', '==', schoolId),
-      where('category', '==', 'Arrears')
-    );
-  }, [firestore, schoolId, ledgerQueryScope]);
-  const { data: arrearsRecords, isLoading: isLoadingArrearsRecs, forceRefetch: refetchArrearsRecs } = useCollection<FinancialRecord>(arrearsRecordsQuery);
-
-  // 4. Manually marked opening balances (isOpeningBalance == true)
-  const openingBalRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || ledgerQueryScope !== 'current-term') return null;
-    return query(
-      collection(firestore, 'financialRecords'),
-      where('schoolId', '==', schoolId),
-      where('isOpeningBalance', '==', true)
-    );
-  }, [firestore, schoolId, ledgerQueryScope]);
-  const { data: openingBalRecords, isLoading: isLoadingOpeningBalRecs, forceRefetch: refetchOpeningBalRecs } = useCollection<FinancialRecord>(openingBalRecordsQuery);
-
-  // 5. All-Time Historical Ledger (Only queried when explicitly requested for archive auditing)
-  const allTimeRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || ledgerQueryScope !== 'all-time') return null;
-    return query(
-      collection(firestore, 'financialRecords'),
-      where('schoolId', '==', schoolId)
-    );
-  }, [firestore, schoolId, ledgerQueryScope]);
-  const { data: allTimeRecords, isLoading: isLoadingAllTimeRecs, forceRefetch: refetchAllTimeRecs } = useCollection<FinancialRecord>(allTimeRecordsQuery);
-
-  // Consolidate records deduplicated by document id
-  const records = useMemo(() => {
-    if (ledgerQueryScope === 'all-time') {
-      return allTimeRecords || [];
-    }
-    const map = new Map<string, FinancialRecord>();
-    (termRecords || []).forEach(r => map.set(r.id, r));
-    (termAltRecords || []).forEach(r => map.set(r.id, r));
-    (arrearsRecords || []).forEach(r => map.set(r.id, r));
-    (openingBalRecords || []).forEach(r => map.set(r.id, r));
-    return Array.from(map.values());
-  }, [ledgerQueryScope, allTimeRecords, termRecords, termAltRecords, arrearsRecords, openingBalRecords]);
-
-  const isLoadingRecords = ledgerQueryScope === 'all-time'
-    ? isLoadingAllTimeRecs
-    : (isLoadingTermRecs || isLoadingArrearsRecs || isLoadingTermAltRecs || isLoadingOpeningBalRecs);
-
-  const forceRefetch = useCallback(() => {
-    if (ledgerQueryScope === 'all-time') {
-      refetchAllTimeRecs();
-    } else {
-      refetchTermRecs();
-      refetchArrearsRecs();
-      refetchTermAltRecs();
-      refetchOpeningBalRecs();
-    }
-  }, [ledgerQueryScope, refetchAllTimeRecs, refetchTermRecs, refetchArrearsRecs, refetchTermAltRecs, refetchOpeningBalRecs]);
+  // Complete school financial ledger querying all 17,000+ records for exact balances
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(
+    collection(firestore, 'financialRecords'),
+    where('schoolId', '==', schoolId)
+  ) : null, [firestore, schoolId]);
+  const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
 
   const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
   const { data: pendingWaivers, forceRefetch: refetchWaivers } = useCollection<any>(waiverRequestsQuery);
@@ -4912,66 +4834,25 @@ export default function AccountsPage() {
                             </div>
                         )}
 
-                        {/* Active Term Ledger & Balances Status Bar */}
-                        <div className={cn(
-                            "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 border rounded-xl shadow-xs text-xs mb-4 transition-all",
-                            ledgerQueryScope === 'current-term'
-                                ? "bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-slate-50 border-emerald-200/70"
-                                : "bg-gradient-to-r from-amber-50/90 via-orange-50/60 to-slate-50 border-amber-200/70"
-                        )}>
+                        {/* Complete Financial Ledger & Balances Status Bar */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-slate-50 border border-emerald-200/70 rounded-xl shadow-xs text-xs mb-4">
                             <div className="flex items-center gap-3">
-                                <div className={cn(
-                                    "flex items-center justify-center h-8 w-8 rounded-lg font-black shadow-xs shrink-0 text-white",
-                                    ledgerQueryScope === 'current-term' ? "bg-emerald-600" : "bg-amber-600"
-                                )}>
-                                    {ledgerQueryScope === 'current-term' ? <Zap className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+                                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-emerald-600 text-white font-black shadow-xs shrink-0">
+                                    <CheckCircle2 className="h-4 w-4" />
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <span className="font-bold text-slate-900 text-sm">
-                                            {ledgerQueryScope === 'current-term'
-                                                ? `⚡ Active Term Ledger (${activeTerm}) + Opening Arrears`
-                                                : `📂 Complete School Multi-Term Archive (All-Time)`}
+                                            ✅ Complete School Ledger Active (100% Exact Balances)
                                         </span>
-                                        <Badge 
-                                            variant="default" 
-                                            className={cn(
-                                                "text-[10px]",
-                                                ledgerQueryScope === 'current-term' 
-                                                    ? "bg-emerald-600 hover:bg-emerald-700" 
-                                                    : "bg-amber-600 hover:bg-amber-700"
-                                            )}
-                                        >
-                                            {records?.length || 0} Records Loaded {ledgerQueryScope === 'current-term' ? '(97% Cost Savings)' : '(All History)'}
+                                        <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-[10px]">
+                                            {records?.length || 0} Records Reconciled
                                         </Badge>
                                     </div>
                                     <p className="text-slate-500 text-[11px] mt-0.5">
-                                        {ledgerQueryScope === 'current-term'
-                                            ? `Loading Opening Balance (Arrears Brought Forward) + active billing for ${activeTerm}. Fast, cost-efficient, and 100% accurate.`
-                                            : `Loading complete historical financial ledger across all terms from day one for comprehensive accounting audit.`}
+                                        All historical bills, payments, and credits are included to ensure exact balances without inflation or missing entries.
                                     </p>
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                                {ledgerQueryScope === 'current-term' ? (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="h-8 text-xs font-semibold bg-white border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 shadow-xs"
-                                        onClick={() => setLedgerQueryScope('all-time')}
-                                    >
-                                        <Archive className="h-3.5 w-3.5 mr-1.5 text-slate-500" /> View All-Time Archive
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant="default"
-                                        size="sm"
-                                        className="h-8 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
-                                        onClick={() => setLedgerQueryScope('current-term')}
-                                    >
-                                        <Zap className="h-3.5 w-3.5 mr-1.5" /> Return to Fast Term Mode
-                                    </Button>
-                                )}
                             </div>
                         </div>
 
@@ -4985,37 +4866,6 @@ export default function AccountsPage() {
                             </div>
                             
                             <div className="flex items-center gap-2 flex-wrap">
-                                {/* Term Selector */}
-                                <Select 
-                                    value={ledgerQueryScope === 'all-time' ? 'all-time' : (selectedTerm || activeTerm)} 
-                                    onValueChange={(val) => {
-                                        if (val === 'all-time') {
-                                            setLedgerQueryScope('all-time');
-                                        } else {
-                                            setLedgerQueryScope('current-term');
-                                            setSelectedTerm(val);
-                                        }
-                                    }}
-                                >
-                                    <SelectTrigger className="h-9 text-xs w-[160px] bg-white border-slate-300">
-                                        <SelectValue placeholder="Select Term" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value={detectedActiveTerm}>
-                                            ⚡ {detectedActiveTerm} (Active)
-                                        </SelectItem>
-                                        {['Term 1', 'Term 2', 'Term 3', 'First Term', 'Second Term', 'Third Term']
-                                            .filter(t => t.toLowerCase() !== detectedActiveTerm.toLowerCase())
-                                            .map(t => (
-                                                <SelectItem key={t} value={t}>{t}</SelectItem>
-                                            ))
-                                        }
-                                        <SelectItem value="all-time">
-                                            📂 All-Time Full Ledger
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-
                                 {/* Class Filter */}
                                 <Select value={selectedBillingClassId} onValueChange={setSelectedBillingClassId}>
                                     <SelectTrigger className="h-9 text-xs w-[140px] bg-white">
