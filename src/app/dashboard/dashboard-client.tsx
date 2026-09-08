@@ -226,6 +226,11 @@ function AdminDashboard({
   loadingSatisfaction = false,
   // ─── Aggregated summary doc (Director-only optimisation) ───
   dashboardSummary,
+  openTillsCash = 0,
+  financialsMode = 'on-demand',
+  onLoadFinancials,
+  onSwitchOnDemand,
+  isLoadingFinancials = false,
 }: any) {
   // ─── Summary-aware KPI helpers: prefer pre-computed values, fall back to arrays ───
   const summaryStudentTotal   = dashboardSummary?.studentCount?.total;
@@ -1088,6 +1093,21 @@ function AdminDashboard({
   const financials = useMemo(() => {
     if (syncedFinancialData) return syncedFinancialData;
 
+    if (dashboardSummary?.financials?.totalBilled !== undefined && dashboardSummary.financials.totalBilled > 0) {
+      return {
+        totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
+        totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
+        collectedThisTerm: dashboardSummary.financials.totalCollectedThisTerm ?? dashboardSummary.financials.totalRevenue ?? 0,
+        collectedToday: Math.max(dashboardSummary.financials.totalCollectedToday ?? 0, openTillsCash || 0),
+        collectedThisMonth: dashboardSummary.financials.totalCollectedThisMonth ?? 0,
+        totalBilled: dashboardSummary.financials.totalBilled ?? 0,
+        collectionRate: dashboardSummary.financials.collectionRate ?? 0,
+        revenueByType: [],
+        grossReceivables: dashboardSummary.financials.totalOutstanding ?? 0,
+        netReceivables: dashboardSummary.financials.totalOutstanding ?? 0
+      };
+    }
+
     const calculated = computeFinancialMetrics({
       financialRecords: financialRecords || [],
       payments: syncedFinancialData?.payments || payments || [],
@@ -1100,7 +1120,7 @@ function AdminDashboard({
       totalOutstanding: calculated.grossReceivables, 
       totalRevenue: calculated.totalRevenue, 
       collectedThisTerm: calculated.collectedThisTerm,
-      collectedToday: calculated.collectedToday,
+      collectedToday: Math.max(calculated.collectedToday, openTillsCash || 0),
       collectedThisMonth: calculated.collectedThisMonth,
       totalBilled: calculated.totalBilled,
       collectionRate: calculated.collectionRate, 
@@ -1108,7 +1128,7 @@ function AdminDashboard({
       grossReceivables: calculated.grossReceivables,
       netReceivables: calculated.netReceivables
     };
-  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData, payments, classes, budgets]);
+  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData, payments, classes, budgets, openTillsCash]);
 
   const debtAgingStats = useMemo(() => {
     const calculated = computeFinancialMetrics({
@@ -1462,6 +1482,11 @@ function AdminDashboard({
               recentAssessments={recentAssessments}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
               hasFinanceAccess={hasFinanceAccess}
+              openTillsCash={openTillsCash}
+              financialsMode={financialsMode}
+              onLoadFinancials={onLoadFinancials}
+              onSwitchOnDemand={onSwitchOnDemand}
+              isLoadingFinancials={isLoadingFinancials}
             />
           </div>
         )}
@@ -2389,6 +2414,11 @@ function DirectorDashboard({
   dashboardSummary,
   activeTab: passedActiveTab,
   setActiveTab: passedSetActiveTab,
+  openTillsCash = 0,
+  financialsMode = 'on-demand',
+  onLoadFinancials,
+  onSwitchOnDemand,
+  isLoadingFinancials = false,
 }: any) {
   // ─── Summary-aware KPI helpers: prefer pre-computed values, fall back to arrays ───
   const summaryStudentTotal   = dashboardSummary?.studentCount?.total;
@@ -3525,8 +3555,8 @@ function DirectorDashboard({
       }
     })();
     const finalSummaryToday = isSummaryToday ? (summaryCollectedToday ?? 0) : 0;
-    return Math.max(clientTotal, finalSummaryToday);
-  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, startOfToday]);
+    return Math.max(clientTotal, finalSummaryToday, openTillsCash || 0);
+  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, startOfToday, openTillsCash]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -3779,7 +3809,10 @@ function DirectorDashboard({
               students={students}
               staff={staff}
               classes={classes}
-              financials={financials}
+              financials={{
+                ...financials,
+                collectedToday: collectedToday,
+              }}
               financialRecords={financialRecords || []}
               payments={payments}
               debtAgingStats={debtAgingStats}
@@ -3793,6 +3826,11 @@ function DirectorDashboard({
               recentAssessments={recentAssessments}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
               hasFinanceAccess={hasFinanceAccess}
+              openTillsCash={openTillsCash}
+              financialsMode={financialsMode}
+              onLoadFinancials={onLoadFinancials}
+              onSwitchOnDemand={onSwitchOnDemand}
+              isLoadingFinancials={isLoadingFinancials}
             />
           </div>
         )}
@@ -3928,6 +3966,10 @@ function DirectorDashboard({
             schoolSettings={schoolSettings}
             arrearsThreshold={arrearsThreshold}
             dashboardSummary={dashboardSummary}
+            financialsMode={financialsMode}
+            onLoadFinancials={onLoadFinancials}
+            onSwitchOnDemand={onSwitchOnDemand}
+            isLoadingFinancials={isLoadingFinancials}
           />
         )}
 
@@ -11573,14 +11615,15 @@ export default function DashboardClient() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
-  // Financial records loaded when viewing Overview or Financials tab
+  // Financial records loaded on demand or when full mode is requested
+  const [directorFinancialsMode, setDirectorFinancialsMode] = useState<'on-demand' | 'full'>('on-demand');
+
   const isRecordsNeeded = isAccountant || 
-    (role === 'Director' && (directorActiveTab === 'financials' || directorActiveTab === 'overview')) || 
-    (role === 'Administrator' && (adminActiveTab === 'financials' || adminActiveTab === 'overview'));
+    ((role === 'Director' || role === 'Administrator') && directorFinancialsMode === 'full');
 
   const recordsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isRecordsNeeded) 
-      ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), limit(1000)) 
+      ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) 
       : null, 
   [firestore, schoolId, isRecordsNeeded]);
   const { data: allRecords, isLoading: loadingAllRecords } = useCollection(recordsQuery);
@@ -11590,8 +11633,22 @@ export default function DashboardClient() {
   const payments = useMemo(() => [], []);
   const loadingPayments = false;
 
-  const tillsQuery = useMemoFirebase(() => (firestore && schoolId && isAccountant) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid)) : null, [firestore, schoolId, isAccountant, profile?.uid]);
+  const tillsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    if (isAccountant) {
+      return query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', profile?.uid));
+    }
+    if (role === 'Director' || role === 'Administrator') {
+      return query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'Open'));
+    }
+    return null;
+  }, [firestore, schoolId, isAccountant, role, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
+
+  const openTillsCash = useMemo(() => {
+    if (!tills || tills.length === 0) return 0;
+    return tills.reduce((sum: number, t: any) => sum + (Number(t.currentBalance) || 0), 0);
+  }, [tills]);
 
   // Director gets attendance from summary (today's snapshot) and only needs raw logs when active tab is attendance.
   // Administrator is restricted to overview/attendance tabs.
@@ -11907,6 +11964,11 @@ export default function DashboardClient() {
       assignments={assignments ?? []}
       submissions={submissions ?? []}
       medicalLogs={medicalLogs ?? []}
+      openTillsCash={openTillsCash}
+      financialsMode={directorFinancialsMode}
+      onLoadFinancials={() => setDirectorFinancialsMode('full')}
+      onSwitchOnDemand={() => setDirectorFinancialsMode('on-demand')}
+      isLoadingFinancials={loadingAllRecords}
     />;
   }
 
@@ -11946,6 +12008,11 @@ export default function DashboardClient() {
       parentSatisfactionRecords={parentSatisfactionRecords ?? []} 
       loadingSatisfaction={loadingSatisfaction} 
       dashboardSummary={dashboardSummary} 
+      openTillsCash={openTillsCash}
+      financialsMode={directorFinancialsMode}
+      onLoadFinancials={() => setDirectorFinancialsMode('full')}
+      onSwitchOnDemand={() => setDirectorFinancialsMode('on-demand')}
+      isLoadingFinancials={loadingAllRecords}
     />;
   }
 

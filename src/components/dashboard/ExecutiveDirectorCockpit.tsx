@@ -38,6 +38,11 @@ export function ExecutiveDirectorCockpit({
   recentAssessments = [],
   onNavigateTab,
   hasFinanceAccess,
+  openTillsCash = 0,
+  financialsMode = 'on-demand',
+  onLoadFinancials,
+  onSwitchOnDemand,
+  isLoadingFinancials = false,
 }: any) {
   const { toast } = useToast();
 
@@ -147,9 +152,16 @@ export function ExecutiveDirectorCockpit({
   }, [dashboardSummary, unifiedMetrics]);
 
   const todayCashCollected = useMemo(() => ({
-    total: financialSummary.collectedToday || unifiedMetrics.collectedToday,
-    count: unifiedMetrics.todayCount,
-  }), [financialSummary, unifiedMetrics]);
+    total: Math.max(
+      Number(openTillsCash) || 0,
+      Number(financials?.collectedToday) || 0,
+      Number(financialSummary.collectedToday) || 0,
+      Number(unifiedMetrics.collectedToday) || 0
+    ),
+    count: (unifiedMetrics.todayCount > 0)
+      ? unifiedMetrics.todayCount
+      : ((openTillsCash > 0 || financialSummary.collectedToday > 0) ? 1 : 0),
+  }), [openTillsCash, financials?.collectedToday, financialSummary, unifiedMetrics]);
 
   // Calculate student fee arrears dynamically from real student records
   const allArrearsList = useMemo(() => {
@@ -814,10 +826,60 @@ export function ExecutiveDirectorCockpit({
 
               {activeDrawer === 'arrears' && (
                 <div className="space-y-4">
+                  {/* On-Demand Financial Ledger Controls */}
+                  {financialsMode === 'on-demand' && (!financialRecords || financialRecords.length === 0) ? (
+                    <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 space-y-3">
+                      <div className="flex items-start gap-2.5">
+                        <Zap className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-bold text-amber-900">Arrears Records On-Demand</p>
+                          <p className="text-[11px] text-amber-800/90 leading-relaxed mt-0.5">
+                            Detailed student balances and aging rosters are paused to keep the director overview loading instantly. Real-time daily cash collections remain active.
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        size="sm"
+                        onClick={(e) => { e.stopPropagation(); onLoadFinancials?.(); }}
+                        disabled={isLoadingFinancials}
+                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl h-9 gap-1.5 shadow-sm cursor-pointer"
+                      >
+                        {isLoadingFinancials ? (
+                          <>
+                            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                            <span>Loading School Records...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Banknote className="h-3.5 w-3.5" />
+                            <span>Load Full Arrears & Financial Ledger</span>
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  ) : (
+                    financialsMode === 'full' && (
+                      <div className="flex items-center justify-between p-2.5 bg-indigo-50/70 border border-indigo-200/70 rounded-xl text-xs">
+                        <span className="font-bold text-indigo-950 flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+                          Full Ledger Active ({financialRecords?.length || 0} records)
+                        </span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={(e) => { e.stopPropagation(); onSwitchOnDemand?.(); }} 
+                          className="h-6 px-2 text-[10px] text-indigo-800 hover:bg-indigo-100 font-bold cursor-pointer"
+                        >
+                          ⚡ Switch to On-Demand
+                        </Button>
+                      </div>
+                    )
+                  )}
+
                   {selectedAgingCategory && (
                     <div className="flex items-center justify-between p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs">
                       <span className="font-bold text-amber-900">Filtered Tier: {selectedAgingCategory}</span>
-                      <Button variant="ghost" size="sm" onClick={() => setSelectedAgingCategory(null)} className="h-6 px-2 text-[10px] text-amber-800 hover:bg-amber-100 font-bold">
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedAgingCategory(null)} className="h-6 px-2 text-[10px] text-amber-800 hover:bg-amber-100 font-bold cursor-pointer">
                         Reset Filter
                       </Button>
                     </div>
@@ -826,7 +888,7 @@ export function ExecutiveDirectorCockpit({
                     {selectedAgingCategory ? `Displaying student accounts in aging category ${selectedAgingCategory}:` : 'Total combined unpaid fees (tuition, transport, canteen, PTA & auxiliaries) exceeding 60 days overdue stands at '}{' '}
                     {!selectedAgingCategory && (
                       <span className="font-bold text-red-600">
-                        GH₵ {Math.round(totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0)).toLocaleString()}
+                        GH₵ {Math.round(totalHighArrearsSum || (debtAgingStats.age60 || 0) + (debtAgingStats.age90 || 0) || dashboardSummary?.financials?.totalOutstanding || 0).toLocaleString()}
                       </span>
                     )}{' '}
                     across {displayedArrearsList.length} student account{displayedArrearsList.length === 1 ? '' : 's'}.
@@ -844,7 +906,7 @@ export function ExecutiveDirectorCockpit({
                       ))
                     ) : (
                       <div className="p-4 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
-                        No active student fee arrears matching {selectedAgingCategory || '60 days overdue'} in school records.
+                        {financialsMode === 'on-demand' ? 'Click "Load Full Arrears" above to view individual student account records.' : `No active student fee arrears matching ${selectedAgingCategory || '60 days overdue'} in school records.`}
                       </div>
                     )}
                   </div>
@@ -1073,7 +1135,18 @@ export function ExecutiveDirectorCockpit({
             >
               <CardContent className="p-4 h-full flex flex-col justify-between">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Collection Rate</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Collection Rate</span>
+                    {financialsMode === 'on-demand' ? (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60">
+                        ⚡ On-Demand
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                        📊 Full Ledger
+                      </span>
+                    )}
+                  </div>
                   <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                     <Banknote className="h-4 w-4" />
                   </div>
@@ -1112,6 +1185,9 @@ export function ExecutiveDirectorCockpit({
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Collected Today</span>
                     <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                      Live Register
+                    </span>
                   </div>
                   <div className="p-1.5 rounded-xl bg-slate-100 text-slate-700 group-hover:scale-105 transition-transform">
                     <Banknote className="h-4 w-4" />
@@ -1302,17 +1378,49 @@ export function ExecutiveDirectorCockpit({
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Total Billed</p>
-                      <p className="font-black text-sm text-slate-800">GH₵ {Math.round(unifiedMetrics.totalBilled).toLocaleString()}</p>
+                      <p className="font-black text-sm text-slate-800">GH₵ {Math.round(financialSummary.totalBilled || unifiedMetrics.totalBilled).toLocaleString()}</p>
                     </div>
                     <div className="p-3 bg-emerald-50 rounded-xl">
                       <p className="text-[10px] text-emerald-700">Collected</p>
-                      <p className="font-black text-sm text-emerald-700">GH₵ {Math.round(unifiedMetrics.totalRevenue).toLocaleString()}</p>
+                      <p className="font-black text-sm text-emerald-700">GH₵ {Math.round(financialSummary.totalRevenue || unifiedMetrics.totalRevenue).toLocaleString()}</p>
                     </div>
                     <div className="p-3 bg-red-50 rounded-xl">
                       <p className="text-[10px] text-red-700">Total Arrears</p>
-                      <p className="font-black text-sm text-red-700">GH₵ {Math.round(unifiedMetrics.grossReceivables).toLocaleString()}</p>
+                      <p className="font-black text-sm text-red-700">GH₵ {Math.round((financialSummary.totalBilled - financialSummary.totalRevenue > 0 ? financialSummary.totalBilled - financialSummary.totalRevenue : (dashboardSummary?.financials?.totalOutstanding || unifiedMetrics.grossReceivables || 0))).toLocaleString()}</p>
                     </div>
                   </div>
+
+                  {financialsMode === 'on-demand' && (!financialRecords || financialRecords.length === 0) ? (
+                    <Button 
+                      onClick={() => { onLoadFinancials?.(); }}
+                      disabled={isLoadingFinancials}
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl gap-2 cursor-pointer text-xs h-10 shadow-sm"
+                    >
+                      {isLoadingFinancials ? (
+                        <>
+                          <RefreshCw className="h-4 w-4 animate-spin" />
+                          <span>Loading School Records...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Banknote className="h-4 w-4" />
+                          <span>Load Complete Financial Ledger On-Demand</span>
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    financialsMode === 'full' && (
+                      <Button 
+                        variant="outline"
+                        onClick={() => { onSwitchOnDemand?.(); }}
+                        className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold rounded-xl gap-2 cursor-pointer text-xs h-10"
+                      >
+                        <Zap className="h-4 w-4 text-amber-500" />
+                        <span>Switch to On-Demand Mode</span>
+                      </Button>
+                    )
+                  )}
+
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('financials'); }} className="w-full bg-slate-900 text-white font-bold rounded-xl">
                     View Full Accounts & Receivables Ledger
                   </Button>

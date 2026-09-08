@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
@@ -13,7 +14,8 @@ import {
   Landmark, Banknote, TrendingUp, DollarSign, Wallet, Calculator, 
   ArrowUpRight, AlertTriangle, Scale, Clock, Users, ArrowDownRight, Award,
   Zap, Layers, Flame, Activity, CheckCircle2, ShieldAlert,
-  Search, SlidersHorizontal, ChevronLeft, ChevronRight, ExternalLink, Layers3, Info
+  Search, SlidersHorizontal, ChevronLeft, ChevronRight, ExternalLink, Layers3, Info,
+  RefreshCw
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { computeFinancialMetrics, getActiveTermBounds, safeParseDate } from '@/lib/financial-analytics';
@@ -30,6 +32,10 @@ interface FinancialDashboardViewProps {
   schoolSettings: any;
   arrearsThreshold: number;
   dashboardSummary?: any;
+  financialsMode?: 'on-demand' | 'full';
+  onLoadFinancials?: () => void;
+  onSwitchOnDemand?: () => void;
+  isLoadingFinancials?: boolean;
 }
 
 export function FinancialDashboardView({
@@ -44,6 +50,10 @@ export function FinancialDashboardView({
   schoolSettings,
   arrearsThreshold,
   dashboardSummary,
+  financialsMode = 'on-demand',
+  onLoadFinancials,
+  onSwitchOnDemand,
+  isLoadingFinancials = false,
 }: FinancialDashboardViewProps) {
   const today = new Date();
 
@@ -596,6 +606,75 @@ export function FinancialDashboardView({
           As a Finance Professional yourself, you know this section is critical.
         </p>
       </div>
+
+      {/* ON-DEMAND LEDGER CONTROLS */}
+      <Card className="rounded-2xl border border-slate-200/80 bg-gradient-to-r from-slate-50 via-white to-indigo-50/30 p-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className={cn(
+              "p-2.5 rounded-xl border shrink-0",
+              financialsMode === 'full' 
+                ? "bg-indigo-50 text-indigo-700 border-indigo-200" 
+                : "bg-amber-50 text-amber-700 border-amber-200"
+            )}>
+              {financialsMode === 'full' ? <Layers3 className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                  {financialsMode === 'full' ? 'Complete Financial Ledger Active' : 'On-Demand Financial Summary Mode'}
+                </h3>
+                <Badge variant="outline" className={cn(
+                  "text-[9px] font-black uppercase px-2 py-0.5",
+                  financialsMode === 'full' 
+                    ? "bg-indigo-100/60 text-indigo-800 border-indigo-200" 
+                    : "bg-amber-100/60 text-amber-800 border-amber-200"
+                )}>
+                  {financialsMode === 'full' ? `${financialRecords?.length || 0} Records Loaded` : 'Real-Time Cash Live'}
+                </Badge>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                {financialsMode === 'full'
+                  ? 'All itemized student invoices and historical fee records are loaded for complete audit inspection.'
+                  : 'Displaying executive metrics from daily snapshots with live till collections. Raw itemized ledger is on-demand to keep loading instantaneous.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {financialsMode === 'on-demand' ? (
+              <Button
+                size="sm"
+                onClick={onLoadFinancials}
+                disabled={isLoadingFinancials}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl h-9 px-3.5 gap-1.5 shadow-sm cursor-pointer"
+              >
+                {isLoadingFinancials ? (
+                  <>
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                    <span>Loading Full Ledger...</span>
+                  </>
+                ) : (
+                  <>
+                    <Layers3 className="h-3.5 w-3.5" />
+                    <span>Load Full Ledger On-Demand</span>
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={onSwitchOnDemand}
+                className="border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs rounded-xl h-9 px-3.5 gap-1.5 cursor-pointer"
+              >
+                <Zap className="h-3.5 w-3.5 text-amber-500" />
+                <span>Switch to On-Demand</span>
+              </Button>
+            )}
+          </div>
+        </div>
+      </Card>
 
       {/* 1. REVENUE SECTION */}
       <div className="space-y-4">
