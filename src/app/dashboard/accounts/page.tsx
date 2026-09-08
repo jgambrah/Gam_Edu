@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -2069,7 +2069,27 @@ function PaymentHistory({ record }: { record: FinancialRecord }) {
     );
 }
 
-function StudentLedgerDetail({ student, records, globalDateRange, onRecordPayment, onApplyWaiver, onEditRecord, onReverseTransaction }: { student: Student; records: FinancialRecord[]; globalDateRange?: DateRange; onRecordPayment: (record: FinancialRecord) => void; onApplyWaiver: (record: FinancialRecord) => void; onEditRecord: (record: FinancialRecord) => void; onReverseTransaction: (record: FinancialRecord) => void; }) {
+function StudentLedgerDetail({ 
+    student, 
+    records, 
+    cachedRecords,
+    globalDateRange, 
+    onRecordPayment, 
+    onApplyWaiver, 
+    onEditRecord, 
+    onReverseTransaction,
+    onRecordsLoaded
+}: { 
+    student: Student; 
+    records?: FinancialRecord[] | null; 
+    cachedRecords?: FinancialRecord[];
+    globalDateRange?: DateRange; 
+    onRecordPayment: (record: FinancialRecord) => void; 
+    onApplyWaiver: (record: FinancialRecord) => void; 
+    onEditRecord: (record: FinancialRecord) => void; 
+    onReverseTransaction: (record: FinancialRecord) => void; 
+    onRecordsLoaded?: (studentKey: string, records: FinancialRecord[]) => void;
+}) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { schoolId } = useCurrentSchool();
@@ -2077,7 +2097,7 @@ function StudentLedgerDetail({ student, records, globalDateRange, onRecordPaymen
     const [isBilling, setIsBilling] = useState(false);
     const [dateRange, setDateRange] = useState<DateRange | undefined>(globalDateRange || { from: startOfMonth(new Date()), to: endOfDay(new Date()) });
     const [openRowId, setOpenRowId] = useState<string | null>(null);
-    const [studentArchiveRecords, setStudentArchiveRecords] = useState<FinancialRecord[] | null>(null);
+    const [studentArchiveRecords, setStudentArchiveRecords] = useState<FinancialRecord[] | null>(cachedRecords || null);
     const [isLoadingArchive, setIsLoadingArchive] = useState(false);
 
     useEffect(() => {
@@ -2085,6 +2105,12 @@ function StudentLedgerDetail({ student, records, globalDateRange, onRecordPaymen
             setDateRange(globalDateRange);
         }
     }, [globalDateRange]);
+
+    useEffect(() => {
+        if (cachedRecords && cachedRecords.length > 0) {
+            setStudentArchiveRecords(cachedRecords);
+        }
+    }, [cachedRecords]);
 
     const handleLoadStudentArchive = async () => {
         if (!firestore || !schoolId || !student) return;
@@ -2097,8 +2123,13 @@ function StudentLedgerDetail({ student, records, globalDateRange, onRecordPaymen
                 const snap = await getDocs(q);
                 snap.docs.forEach(d => docsMap.set(d.id, { id: d.id, ...d.data() } as FinancialRecord));
             }
-            setStudentArchiveRecords(Array.from(docsMap.values()));
-            toast({ title: 'Student Archive Loaded', description: `Retrieved all multi-year historical records for ${student.firstName || (student as any).name || 'student'}.` });
+            const fetched = Array.from(docsMap.values());
+            setStudentArchiveRecords(fetched);
+            const sKey = student.uid || student.id || student.studentId || '';
+            if (sKey && onRecordsLoaded) {
+                onRecordsLoaded(sKey, fetched);
+            }
+            toast({ title: 'Student Ledger Loaded', description: `Retrieved ${fetched.length} records for ${student.firstName || (student as any).name || 'student'}.` });
         } catch (e: any) {
             console.error(e);
             toast({ variant: 'destructive', title: 'Archive Load Error', description: e.message });
@@ -2106,6 +2137,14 @@ function StudentLedgerDetail({ student, records, globalDateRange, onRecordPaymen
             setIsLoadingArchive(false);
         }
     };
+
+    // Auto-fetch student ledger on mount if not already loaded from whole-school records or cache
+    useEffect(() => {
+        const hasExisting = (records && records.length > 0) || (cachedRecords && cachedRecords.length > 0) || (studentArchiveRecords && studentArchiveRecords.length > 0);
+        if (!hasExisting && !isLoadingArchive && firestore && schoolId && student) {
+            handleLoadStudentArchive();
+        }
+    }, [student, schoolId, firestore]);
     
     const effectiveRecords = useMemo(() => {
         if (!studentArchiveRecords) return records || [];
@@ -3336,11 +3375,15 @@ export default function AccountsPage() {
   const [isRolloverModalOpen, setIsRolloverModalOpen] = useState<boolean>(false);
   const activeTerm = detectedActiveTerm;
 
-  // Complete school financial ledger querying all 17,000+ records for exact balances
-  const recordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(
+  // Ledger mode: 'on-demand' (fast, cashier flow with 0 upfront reads) or 'full-school' (loads 17,000+ records for school-wide auditing)
+  const [ledgerMode, setLedgerMode] = useState<'on-demand' | 'full-school'>('on-demand');
+  const [cachedStudentRecords, setCachedStudentRecords] = useState<Record<string, FinancialRecord[]>>({});
+
+  // School-wide financial records query (only executes when 'full-school' ledger mode is active)
+  const recordsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school') ? query(
     collection(firestore, 'financialRecords'),
     where('schoolId', '==', schoolId)
-  ) : null, [firestore, schoolId]);
+  ) : null, [firestore, schoolId, ledgerMode]);
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
 
   const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
@@ -3350,6 +3393,28 @@ export default function AccountsPage() {
       forceRefetch();
       refetchWaivers();
   }, [forceRefetch, refetchWaivers]);
+
+  const handleRecordUpdate = useCallback(async (targetStudentId?: string) => {
+    if (ledgerMode === 'full-school') {
+      forceRefetch();
+      return;
+    }
+    const studentToFetch = targetStudentId || dialogState.record?.studentId || editingRecord?.studentId;
+    if (studentToFetch && firestore && schoolId) {
+      try {
+        const q = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('studentId', '==', studentToFetch));
+        const snap = await getDocs(q);
+        const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() } as FinancialRecord));
+        setCachedStudentRecords(prev => ({
+          ...prev,
+          [studentToFetch]: fetched
+        }));
+      } catch (e) {
+        console.error('Error updating cached student record:', e);
+      }
+    }
+    forceRefetch();
+  }, [ledgerMode, forceRefetch, dialogState.record, editingRecord, firestore, schoolId]);
   
   const rawStudentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(rawStudentsQuery);
@@ -3715,25 +3780,29 @@ export default function AccountsPage() {
   }, [advisoryActiveRecords, students, classes]);
 
   const studentFinancials = useMemo(() => {
-    if (!records || !students) return [];
+    if (!students) return [];
     
     const recordsByStudent: Record<string, FinancialRecord[]> = {};
-    records.forEach(r => { 
-      const keys = [r.studentId, (r as any).studentUid, (r as any).uid, (r as any).admissionNumber, (r as any).admissionNo].filter(Boolean) as string[];
-      const seenForThisRecord = new Set<string>();
-      keys.forEach(k => {
-        if (!seenForThisRecord.has(k)) {
-          seenForThisRecord.add(k);
-          if (!recordsByStudent[k]) recordsByStudent[k] = []; 
-          recordsByStudent[k].push(r); 
-        }
+    if (records && records.length > 0) {
+      records.forEach(r => { 
+        const keys = [r.studentId, (r as any).studentUid, (r as any).uid, (r as any).admissionNumber, (r as any).admissionNo].filter(Boolean) as string[];
+        const seenForThisRecord = new Set<string>();
+        keys.forEach(k => {
+          if (!seenForThisRecord.has(k)) {
+            seenForThisRecord.add(k);
+            if (!recordsByStudent[k]) recordsByStudent[k] = []; 
+            recordsByStudent[k].push(r); 
+          }
+        });
       });
-    });
+    }
     
     return students.map(student => {
       const sKeys = [student.id, student.uid, student.studentId, (student as any).admissionNo, (student as any).admissionNumber].filter(Boolean);
       const seenIds = new Set<string>();
       const studentRecords: FinancialRecord[] = [];
+      
+      // Pull from full-school records if available
       sKeys.forEach(k => {
         (recordsByStudent[k] || []).forEach(r => {
           const recKey = r.id || `${r.studentId}-${r.billedAmount}-${(r as any).date || (r as any).dueDate || ''}`;
@@ -3743,6 +3812,19 @@ export default function AccountsPage() {
           }
         });
       });
+
+      // Pull from on-demand cached records if available
+      sKeys.forEach(k => {
+        (cachedStudentRecords[k] || []).forEach(r => {
+          const recKey = r.id || `${r.studentId}-${r.billedAmount}-${(r as any).date || (r as any).dueDate || ''}`;
+          if (!seenIds.has(recKey)) {
+            seenIds.add(recKey);
+            studentRecords.push(r);
+          }
+        });
+      });
+
+      const isLoaded = Boolean(records && records.length > 0) || sKeys.some(k => Boolean(cachedStudentRecords[k] && cachedStudentRecords[k].length > 0)) || studentRecords.length > 0;
       const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
       const totalBilled = activeRecords.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
       const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
@@ -3757,21 +3839,32 @@ export default function AccountsPage() {
 
       return { 
         student, 
+        isLoaded,
         balance: totalBilled - totalPaid, 
         openingArrears,
         currentTermBilled,
         hasOverdue: activeRecords.some(r => r.status === 'Overdue'), 
         records: studentRecords 
       };
-    }).sort((a, b) => b.balance - a.balance);
-  }, [records, students]);
+    }).sort((a, b) => {
+      if (a.isLoaded && !b.isLoaded) return -1;
+      if (!a.isLoaded && b.isLoaded) return 1;
+      return b.balance - a.balance;
+    });
+  }, [records, students, cachedStudentRecords]);
 
   const filteredStudentsWithBills = useMemo(() => {
     return studentFinancials.filter(sf => {
       if (searchTerm && !searchStudent(sf.student, searchTerm)) return false;
       if (selectedBillingClassId !== 'all' && sf.student.classId !== selectedBillingClassId) return false;
-      if (billingStatusFilter === 'debtors' && sf.balance <= 0.01) return false;
-      if (billingStatusFilter === 'settled' && sf.balance > 0.01) return false;
+      if (billingStatusFilter === 'debtors') {
+        if (sf.isLoaded) return sf.balance > 0.01;
+        return true;
+      }
+      if (billingStatusFilter === 'settled') {
+        if (sf.isLoaded) return sf.balance <= 0.01;
+        return true;
+      }
       return true;
     });
   }, [studentFinancials, searchTerm, selectedBillingClassId, billingStatusFilter]);
@@ -4175,6 +4268,25 @@ export default function AccountsPage() {
                                 </TabsList>
                             </div>
                             
+                            {ledgerMode === 'on-demand' && (
+                                <div className="mb-4 p-3 bg-blue-50/70 border border-blue-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-blue-900">
+                                    <div className="flex items-center gap-2">
+                                        <Info className="h-4 w-4 text-blue-600 shrink-0" />
+                                        <span>Advisory charts reflect whole-school data. Load the full ledger to view debt aging & collection pace across all 17,000+ records.</span>
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => setLedgerMode('full-school')}
+                                        disabled={isLoadingRecords}
+                                        className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-100 font-semibold shrink-0"
+                                    >
+                                        {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
+                                        Load School Ledger
+                                    </Button>
+                                </div>
+                            )}
+
                             <TabsContent value="summary" className="mt-0 space-y-6 animate-in fade-in-50">
                                 {/* Top Reconciled Metric Cards */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -4834,27 +4946,93 @@ export default function AccountsPage() {
                             </div>
                         )}
 
-                        {/* Complete Financial Ledger & Balances Status Bar */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-slate-50 border border-emerald-200/70 rounded-xl shadow-xs text-xs mb-4">
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-emerald-600 text-white font-black shadow-xs shrink-0">
-                                    <CheckCircle2 className="h-4 w-4" />
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <span className="font-bold text-slate-900 text-sm">
-                                            ✅ Complete School Ledger Active (100% Exact Balances)
-                                        </span>
-                                        <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-[10px]">
-                                            {records?.length || 0} Records Reconciled
-                                        </Badge>
+                        {/* Interactive Financial Ledger Mode Bar */}
+                        {ledgerMode === 'on-demand' ? (
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/60 to-slate-50 border border-blue-200/70 rounded-xl shadow-xs text-xs mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-blue-600 text-white font-black shadow-xs shrink-0">
+                                        <Zap className="h-4 w-4" />
                                     </div>
-                                    <p className="text-slate-500 text-[11px] mt-0.5">
-                                        All historical bills, payments, and credits are included to ensure exact balances without inflation or missing entries.
-                                    </p>
+                                    <div>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="font-bold text-slate-900 text-sm">
+                                                ⚡ On-Demand Cashier Mode (0 Upfront Reads)
+                                            </span>
+                                            <Badge variant="outline" className="border-blue-300 text-blue-800 bg-blue-50 text-[10px]">
+                                                Superfast & Cost Efficient
+                                            </Badge>
+                                            {Object.keys(cachedStudentRecords).length > 0 && (
+                                                <Badge variant="secondary" className="text-[10px] bg-indigo-100 text-indigo-800">
+                                                    {Object.keys(cachedStudentRecords).length} Student(s) Loaded in Session
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <p className="text-slate-500 text-[11px] mt-0.5">
+                                            Search for any student and expand them to load only their ledger on demand (~15–30 reads). Need school-wide reports or debtor lists? Load the full ledger on demand.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setLedgerMode('full-school')}
+                                        disabled={isLoadingRecords}
+                                        className="h-8 text-xs font-semibold bg-white border-blue-300 text-blue-900 hover:bg-blue-100 hover:text-blue-950 shadow-xs"
+                                    >
+                                        {isLoadingRecords ? (
+                                            <>
+                                                <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> Loading Ledger...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Database className="h-3.5 w-3.5 mr-1.5 text-blue-600" /> Load Full School Ledger (17,000+ Records)
+                                            </>
+                                        )}
+                                    </Button>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-slate-50 border border-emerald-200/70 rounded-xl shadow-xs text-xs mb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-emerald-600 text-white font-black shadow-xs shrink-0">
+                                        <CheckCircle2 className="h-4 w-4" />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="font-bold text-slate-900 text-sm">
+                                                ✅ Complete School Ledger Active (100% Exact Balances)
+                                            </span>
+                                            <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-[10px]">
+                                                {records?.length || 0} Records Reconciled
+                                            </Badge>
+                                        </div>
+                                        <p className="text-slate-500 text-[11px] mt-0.5">
+                                            All historical bills, payments, and credits across all classes are loaded for school-wide auditing and reports.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setLedgerMode('on-demand')}
+                                        className="h-8 text-xs font-medium text-slate-600 hover:text-slate-900 bg-white"
+                                    >
+                                        <Zap className="h-3.5 w-3.5 mr-1.5 text-amber-600" /> Switch to On-Demand Mode
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => forceRefetch()}
+                                        disabled={isLoadingRecords}
+                                        className="h-8 text-xs font-medium"
+                                    >
+                                        <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", isLoadingRecords && "animate-spin")} /> Refresh
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Search & Filters Bar */}
                         <div className="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-4 flex-wrap">
@@ -4946,7 +5124,7 @@ export default function AccountsPage() {
                                             onValueChange={setExpandedStudentKey} 
                                             className="w-full"
                                         >
-                                            {paginatedStudentsWithBills.map(({ student, balance, openingArrears, currentTermBilled, records }) => {
+                                            {paginatedStudentsWithBills.map(({ student, isLoaded, balance, openingArrears, currentTermBilled, records: sRecords }) => {
                                                 const sKey = student.uid || student.id || student.studentId || '';
                                                 const isExpanded = expandedStudentKey === sKey;
                                                 return (
@@ -4955,7 +5133,7 @@ export default function AccountsPage() {
                                                         <div className='flex justify-between items-center w-full pr-4'>
                                                             <StudentDisplay student={student} variant="full" showAvatar />
                                                             <div className="flex items-center gap-4 text-right">
-                                                                {openingArrears > 0.01 && (
+                                                                {isLoaded && openingArrears > 0.01 && (
                                                                     <div className="hidden sm:block text-right">
                                                                         <p className="text-[10px] uppercase font-bold text-amber-600">Arrears Brought Fwd</p>
                                                                         <p className="font-semibold text-xs text-amber-700">GH₵{openingArrears.toFixed(2)}</p>
@@ -4963,9 +5141,15 @@ export default function AccountsPage() {
                                                                 )}
                                                                 <div>
                                                                     <p className="text-[10px] uppercase font-bold text-muted-foreground">Total Balance</p>
-                                                                    <p className={cn("font-bold text-lg", balance > 0.01 ? "text-red-600" : "text-green-600")}>
-                                                                        GH₵{Math.abs(balance).toFixed(2)} {balance < -0.01 ? "(CR)" : ""}
-                                                                    </p>
+                                                                    {isLoaded ? (
+                                                                        <p className={cn("font-bold text-lg", balance > 0.01 ? "text-red-600" : "text-green-600")}>
+                                                                            GH₵{Math.abs(balance).toFixed(2)} {balance < -0.01 ? "(CR)" : ""}
+                                                                        </p>
+                                                                    ) : (
+                                                                        <p className="text-xs text-blue-600 font-semibold flex items-center gap-1 mt-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                                                                            <Zap className="h-3 w-3 text-blue-600" /> Click to Load Ledger
+                                                                        </p>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -4975,7 +5159,17 @@ export default function AccountsPage() {
                                                             <StudentLedgerDetail 
                                                                 student={student} 
                                                                 records={records} 
+                                                                cachedRecords={cachedStudentRecords[sKey] || cachedStudentRecords[student.id || ''] || cachedStudentRecords[student.uid || '']}
                                                                 globalDateRange={globalDateRange}
+                                                                onRecordsLoaded={(loadedKey, recs) => {
+                                                                    setCachedStudentRecords(prev => {
+                                                                        const updated = { ...prev, [loadedKey]: recs };
+                                                                        if (student.id) updated[student.id] = recs;
+                                                                        if (student.uid) updated[student.uid] = recs;
+                                                                        if (student.studentId) updated[student.studentId] = recs;
+                                                                        return updated;
+                                                                    });
+                                                                }}
                                                                 onRecordPayment={(rec) => setDialogState({ type: 'payment', record: rec })} 
                                                                 onApplyWaiver={(rec) => setDialogState({ type: 'waiver', record: rec })} 
                                                                 onEditRecord={(rec) => setEditingRecord(rec)} 
@@ -5426,16 +5620,16 @@ export default function AccountsPage() {
         </Tabs>
 
         {dialogState.record && dialogState.type === 'payment' && (
-            <RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={forceRefetch} />
+            <RecordPaymentDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'payment', record: null})} onUpdate={() => handleRecordUpdate(dialogState.record?.studentId)} />
         )}
         {dialogState.record && dialogState.type === 'waiver' && (
-            <ApplyWaiverDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'waiver', record: null})} onUpdate={forceRefetch} />
+            <ApplyWaiverDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'waiver', record: null})} onUpdate={() => handleRecordUpdate(dialogState.record?.studentId)} />
         )}
         {dialogState.record && dialogState.type === 'reversal' && (
-            <ReversalRequestDialog record={dialogState.record} activeTill={activeTill} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={forceRefetch} />
+            <ReversalRequestDialog record={dialogState.record} activeTill={activeTill} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={() => handleRecordUpdate(dialogState.record?.studentId)} />
         )}
         {editingRecord && (
-            <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={forceRefetch} />
+            <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={() => handleRecordUpdate(editingRecord?.studentId)} />
         )}
         {selectedSponsorIdForStudents && (
             <Dialog open={true} onOpenChange={(open) => !open && setSelectedSponsorIdForStudents(null)}>
