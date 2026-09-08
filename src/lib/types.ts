@@ -697,6 +697,12 @@ export type FinancialRecord = {
     lastPaymentDate?: any; 
     academicYear?: string;
     term?: string;
+    termId?: string;
+    category?: string;
+    title?: string;
+    isOpeningBalance?: boolean;
+    isArchived?: boolean;
+    itemizedArrears?: any;
     schoolId?: string;
 };
 

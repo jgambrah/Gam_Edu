@@ -13,6 +13,9 @@ interface TermRolloverModalProps {
   currentTermId: string;
   nextTermId: string;
   onSuccess?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactNode;
 }
 
 export function TermRolloverModal({
@@ -20,8 +23,17 @@ export function TermRolloverModal({
   currentTermId,
   nextTermId,
   onSuccess,
+  open: openProp,
+  onOpenChange,
+  trigger,
 }: TermRolloverModalProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = typeof openProp === 'boolean';
+  const open = isControlled ? openProp : internalOpen;
+  const setOpen = (val: boolean) => {
+    if (!isControlled) setInternalOpen(val);
+    onOpenChange?.(val);
+  };
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
@@ -211,12 +223,16 @@ export function TermRolloverModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold gap-2 rounded-xl shadow-md">
-          <Archive className="h-4 w-4" />
-          Archive Term & Prepare Next Term
-        </Button>
-      </DialogTrigger>
+      {trigger !== null && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold gap-2 rounded-xl shadow-md">
+              <Archive className="h-4 w-4" />
+              Archive Term & Prepare Next Term
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-lg rounded-2xl p-6 bg-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
