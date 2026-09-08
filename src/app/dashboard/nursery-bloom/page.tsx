@@ -777,6 +777,48 @@ const splitOnsetRime = (word: string, family: string) => {
     };
 };
 
+// Visual Associative Cues: Concrete noun CVC/rhyme words mapped to lightweight emoji badges
+const WORD_EMOJI_MAP: Record<string, string> = {
+    // -at
+    cat: '🐱', hat: '🧢', mat: '🧘', bat: '🦇', rat: '🐀', sat: '🪑', fat: '🧈', pat: '✋', flat: '🥞',
+    // -ig
+    pig: '🐷', wig: '💇', fig: '🍇', dig: '⛏️', big: '🐘', twig: '🌿', rig: '🚛',
+    // -op
+    mop: '🧹', top: '🪀', pop: '🎈', hop: '🐰', cop: '👮', drop: '💧', crop: '🌽', shop: '🏪', stop: '🛑',
+    // -un
+    sun: '☀️', bun: '🍞', run: '🏃', fun: '🎉', nun: '🧑‍🦲',
+    // -an
+    pan: '🍳', can: '🥫', fan: '🪭', man: '👨', van: '🚐', ran: '🏃', tan: '🏖️', plan: '📋',
+    // -in
+    bin: '🗑️', pin: '📌', tin: '🥫', fin: '🦈', win: '🏆', chin: '🗣️', twin: '👯',
+    // -en
+    hen: '🐔', pen: '🖊️', ten: '🔟', men: '👥', den: '🐻',
+    // -ot
+    pot: '🍲', cot: '🛏️', dot: '🔴', hot: '♨️', not: '🚫', lot: '📦', spot: '🎯',
+    // -ug
+    bug: '🐛', mug: '☕', rug: '🧶', hug: '🫂', jug: '🏺', tug: '⛵', plug: '🔌', slug: '🐌',
+    // -ay
+    day: '🌅', hay: '🌾', lay: '🛌', play: '🎮', say: '💬', bay: '⛵', ray: '☀️', pay: '💵', clay: '🧱',
+    // -it
+    pit: '🕳️', sit: '🪑', hit: '🎯', kit: '🧰', lit: '💡', bit: '🪙', fit: '👟',
+    // -et
+    jet: '✈️', net: '🥅', pet: '🐶', wet: '💧', set: '📦', vet: '🩺', bet: '🎫', get: '🎁',
+    // -ad
+    dad: '👨', pad: '📝', mad: '😠', sad: '😢', bad: '👎', glad: '😊',
+    // -og
+    log: '🪓', dog: '🐶', fog: '🌫️', frog: '🐸', jog: '🏃',
+    // -ox
+    fox: '🦊', box: '📦', ox: '🐂',
+    // -ed
+    bed: '🛏️', red: '🔴', fed: '🥣', wed: '💍',
+    // -up / -ut / -ub
+    cup: '🥤', pup: '🐶', nut: '🥜', hut: '🛖', cut: '✂️', tub: '🛁', sub: '🥪', cub: '🐻', rub: '🧼',
+    // -ap / -ag
+    cap: '🧢', map: '🗺️', tap: '🚰', lap: '💻', nap: '😴', bag: '🎒', tag: '🏷️', rag: '🧻', wag: '🐕',
+    // -eg
+    leg: '🦵', peg: '📌', egg: '🥚'
+};
+
 // --- 2. PHONICS FOREST (SYSTEMATIC SYNTHETIC PHONICS - ECE COMPLIANT) ---
 function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { toast } = useToast();
@@ -786,6 +828,32 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
     const [isFacilitatorModalOpen, setIsFacilitatorModalOpen] = useState(false);
     const [facilitatorModalTab, setFacilitatorModalTab] = useState<'sound' | 'rhyme'>('sound');
     const [playingCardId, setPlayingCardId] = useState<string | null>(null);
+    const [activeRhymeWord, setActiveRhymeWord] = useState<string | null>(null);
+
+    // Early-childhood tailored speech synthesis for rhyming words
+    const speakWordWithCues = useCallback((word: string) => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(word);
+            u.rate = 0.85; // Slightly slowed down for phonemic clarity
+            u.pitch = 1.1; // Friendly, warm tone for early childhood
+            u.lang = 'en-US';
+
+            const cleanWord = word.toLowerCase().trim();
+            setActiveRhymeWord(cleanWord);
+
+            const handleEnd = () => {
+                setActiveRhymeWord(current => (current === cleanWord ? null : current));
+            };
+            u.onend = handleEnd;
+            u.onerror = handleEnd;
+
+            window.speechSynthesis.speak(u);
+        } catch {
+            setActiveRhymeWord(null);
+        }
+    }, []);
 
     // Fetch custom sound cards from Firestore
     const soundsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics_sounds'), orderBy('createdAt', 'asc')) : null, [firestore]);
@@ -1829,23 +1897,59 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                         </span>
                                     </div>
 
-                                    {/* 2 & 3. Word Item Buttons with Orthographic Scaffolding & Pressable Chip Animation */}
+                                    {/* 2 & 3. Word Item Buttons with Orthographic Scaffolding, Visual Cues, & Active Playback Glow */}
                                     <div className="w-full space-y-2">
                                         {item.words.map(w => {
                                             const { onset, rime } = splitOnsetRime(w, item.family);
+                                            const cleanW = w.toLowerCase().trim();
+                                            const wordEmoji = WORD_EMOJI_MAP[cleanW];
+                                            const isPlaying = activeRhymeWord === cleanW;
+
                                             return (
                                                 <button 
                                                     key={w} 
                                                     type="button"
-                                                    onClick={() => speak(w)} 
-                                                    className="w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50/80 hover:bg-teal-50/80 border border-slate-200/70 hover:border-teal-300 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer shadow-xs hover:shadow-sm group/word"
+                                                    onClick={() => speakWordWithCues(w)} 
+                                                    className={cn(
+                                                        "w-full flex items-center justify-between px-3 py-2 bg-slate-50/80 hover:bg-teal-50/80 border border-slate-200/70 hover:border-teal-300 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer shadow-xs hover:shadow-sm group/word",
+                                                        isPlaying && "ring-2 ring-teal-400 bg-teal-50 border-teal-300 shadow-md animate-pulse"
+                                                    )}
                                                     title={`Listen to ${w}`}
                                                 >
-                                                    <span className="text-base tracking-wide flex items-center">
-                                                        <span className="text-slate-800 font-semibold">{onset}</span>
-                                                        <span className="text-teal-600 font-black">{rime}</span>
-                                                    </span>
-                                                    <Volume2 className="w-4 h-4 text-slate-300 group-hover/word:text-teal-600 transition-colors opacity-70 group-hover/word:opacity-100" />
+                                                    <div className="flex items-center gap-2.5">
+                                                        {wordEmoji ? (
+                                                            <span className={cn(
+                                                                "w-7 h-7 flex items-center justify-center rounded-lg bg-white border border-slate-200/60 shadow-xs text-base shrink-0 select-none transition-transform",
+                                                                isPlaying && "scale-110"
+                                                            )}>
+                                                                {wordEmoji}
+                                                            </span>
+                                                        ) : (
+                                                            <span 
+                                                                className={cn(
+                                                                    "w-7 h-7 flex items-center justify-center rounded-lg bg-teal-50/90 border border-teal-100 text-teal-600 shrink-0 transition-transform",
+                                                                    isPlaying && "scale-110"
+                                                                )}
+                                                                title="Phonics Sound"
+                                                            >
+                                                                <span className="flex items-center gap-0.5">
+                                                                    <span className={cn("w-1 h-2 rounded-full bg-teal-400", isPlaying && "animate-pulse")} />
+                                                                    <span className={cn("w-1 h-3.5 rounded-full bg-teal-600", isPlaying && "animate-bounce")} />
+                                                                    <span className={cn("w-1 h-2 rounded-full bg-teal-400", isPlaying && "animate-pulse")} />
+                                                                </span>
+                                                            </span>
+                                                        )}
+                                                        <span className="text-base tracking-wide flex items-center">
+                                                            <span className="text-slate-800 font-semibold">{onset}</span>
+                                                            <span className="text-teal-600 font-black">{rime}</span>
+                                                        </span>
+                                                    </div>
+                                                    <Volume2 className={cn(
+                                                        "w-4 h-4 transition-all shrink-0",
+                                                        isPlaying 
+                                                            ? "text-teal-600 scale-110 animate-bounce" 
+                                                            : "text-slate-300 group-hover/word:text-teal-600 opacity-70 group-hover/word:opacity-100"
+                                                    )} />
                                                 </button>
                                             );
                                         })}
