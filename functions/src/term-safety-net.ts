@@ -1,6 +1,6 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { executeTermFinancialRollover } from './financial-rollover';
 import { summarizeTermAttendance, lockTermReportCards } from './dashboard-aggregators';
 

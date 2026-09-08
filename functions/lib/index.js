@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
+exports.enforceTermRolloverSafetyNet = exports.requestTermUnlock = exports.executeTermFinancialRollover = exports.lockTermReportCards = exports.summarizeTermAttendance = exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
 var dashboard_aggregators_1 = require("./dashboard-aggregators");
 Object.defineProperty(exports, "onStudentWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onStudentWrite; } });
 Object.defineProperty(exports, "onAttendanceWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onAttendanceWrite; } });
@@ -10,4 +10,12 @@ Object.defineProperty(exports, "onStaffAttendanceWrite", { enumerable: true, get
 Object.defineProperty(exports, "onAdmissionWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onAdmissionWrite; } });
 Object.defineProperty(exports, "onBehavioralWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onBehavioralWrite; } });
 Object.defineProperty(exports, "onParentWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onParentWrite; } });
+Object.defineProperty(exports, "summarizeTermAttendance", { enumerable: true, get: function () { return dashboard_aggregators_1.summarizeTermAttendance; } });
+Object.defineProperty(exports, "lockTermReportCards", { enumerable: true, get: function () { return dashboard_aggregators_1.lockTermReportCards; } });
+var financial_rollover_1 = require("./financial-rollover");
+Object.defineProperty(exports, "executeTermFinancialRollover", { enumerable: true, get: function () { return financial_rollover_1.executeTermFinancialRollover; } });
+var term_management_1 = require("./term-management");
+Object.defineProperty(exports, "requestTermUnlock", { enumerable: true, get: function () { return term_management_1.requestTermUnlock; } });
+var term_safety_net_1 = require("./term-safety-net");
+Object.defineProperty(exports, "enforceTermRolloverSafetyNet", { enumerable: true, get: function () { return term_safety_net_1.enforceTermRolloverSafetyNet; } });
 //# sourceMappingURL=index.js.map

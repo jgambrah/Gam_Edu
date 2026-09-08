@@ -15,7 +15,7 @@ import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { useRole } from '@/context/role-context';
 import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { 
-  GraduationCap, Users, School, Banknote, Loader2, RefreshCw, 
+  GraduationCap, Users, School, Banknote, Loader2, RefreshCw, Zap, BarChart3, Layers3,
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
   TrendingUp, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Code,
   Clock, CheckCircle2, Star, PlusCircle, Sparkles, Wand2, Wallet, HandCoins, Receipt, Calculator, ArrowUpRight,
@@ -4915,7 +4915,21 @@ function ReceptionistDashboard({ profile, announcements, attendance, students, i
     );
 }
 
-function AccountantDashboard({ profile, students, classes, records, tills, announcements, isLoading, schoolSettings }: any) {
+function AccountantDashboard({ 
+    profile, 
+    students, 
+    classes, 
+    records, 
+    tills, 
+    announcements, 
+    isLoading, 
+    schoolSettings,
+    financialsMode = 'on-demand',
+    onLoadFinancials,
+    onSwitchOnDemand,
+    isLoadingFinancials = false,
+    dashboardSummary
+}: any) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -4955,10 +4969,32 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     const activeTill = useMemo(() => tills?.find((t: any) => t.status === 'Open'), [tills]);
 
     const stats = useMemo(() => {
-        if (!records || !students) return { totalOutstanding: 0, totalRevenue: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0, otherDebt: 0, revenueByType: [], totalBilled: 0 };
+        const hasRecords = records && records.length > 0;
+
+        if (!hasRecords) {
+            const sumFin = dashboardSummary?.financials;
+            const streamDebts = (sumFin as any)?.streamDebts;
+            const streamBreakdown = sumFin?.streamBreakdown;
+
+            return { 
+                totalOutstanding: sumFin?.totalOutstanding ?? 0, 
+                totalRevenue: sumFin?.totalRevenue ?? 0, 
+                outstandingTuition: streamDebts?.tuition ?? 0, 
+                outstandingCanteen: streamDebts?.canteen ?? 0, 
+                outstandingTransport: streamDebts?.transport ?? 0, 
+                otherDebt: streamDebts?.other ?? 0, 
+                revenueByType: streamBreakdown ? [
+                    { name: 'Tuition', value: streamBreakdown.tuition || 0 },
+                    { name: 'Canteen', value: streamBreakdown.canteen || 0 },
+                    { name: 'Transport', value: streamBreakdown.transport || 0 },
+                    { name: 'Auxiliary', value: streamBreakdown.auxiliary || 0 }
+                ].filter((s: any) => s.value > 0).sort((a: any, b: any) => b.value - a.value) : [], 
+                totalBilled: sumFin?.totalBilled ?? 0 
+            };
+        }
         
         // Unified Logic: Filter by Active Students and ignore Pending Reversals
-        const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+        const activeStudents = students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
         const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
         const activeRecords = records.filter((r: any) => 
             activeStudentIds.has(r.studentId) && 
@@ -5014,20 +5050,49 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
             revenueByType,
             totalBilled
         };
-    }, [records, students]);
+    }, [records, students, dashboardSummary]);
 
     const collectionRate = useMemo(() => {
+        if (!records || records.length === 0) {
+            return dashboardSummary?.financials?.collectionRate ?? 0;
+        }
         const billed = stats.totalBilled;
         return billed > 0 ? (stats.totalRevenue / billed) * 105 : 100; // Match visually or default
-    }, [stats]);
+    }, [stats, records, dashboardSummary]);
 
     const displayCollectionRate = useMemo(() => {
+        if (!records || records.length === 0) {
+            return dashboardSummary?.financials?.collectionRate ?? 0;
+        }
         const billed = stats.totalBilled;
         return billed > 0 ? (stats.totalRevenue / billed) * 100 : 100;
-    }, [stats]);
+    }, [stats, records, dashboardSummary]);
 
     const categoryCollections = useMemo(() => {
-        if (!records || !students) return [];
+        if (!records || records.length === 0) {
+            const sumFin = dashboardSummary?.financials;
+            if ((sumFin as any)?.categoryCollections && Array.isArray((sumFin as any).categoryCollections) && (sumFin as any).categoryCollections.length > 0) {
+                return (sumFin as any).categoryCollections;
+            }
+            if (sumFin?.streamBreakdown) {
+                const sb = sumFin.streamBreakdown;
+                const sd = (sumFin as any)?.streamDebts || {};
+                const makeCat = (name: string, paid: number, outstanding: number) => {
+                    const billed = paid + outstanding;
+                    const rate = billed > 0 ? (paid / billed) * 100 : (paid > 0 ? 100 : 0);
+                    return { name, billed, paid, waived: 0, outstanding, rate };
+                };
+                return [
+                    makeCat('Tuition', sb.tuition || 0, sd.tuition || 0),
+                    makeCat('Canteen', sb.canteen || 0, sd.canteen || 0),
+                    makeCat('Transport', sb.transport || 0, sd.transport || 0),
+                    makeCat('PTA Levy', 0, 0),
+                    makeCat('Other', sb.auxiliary || 0, sd.other || 0),
+                ];
+            }
+            return [];
+        }
+        if (!students) return [];
         
         const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
         const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
@@ -5066,7 +5131,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
                 rate
             };
         });
-    }, [records, students]);
+    }, [records, students, dashboardSummary]);
 
     const studentFinancials = useMemo(() => {
         if (!records || !students) return [];
@@ -5155,7 +5220,21 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
     }, [firestore, schoolId, toast]);
 
     const debtAgingStats = useMemo(() => {
-        if (!records || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
+        if (!records || records.length === 0) {
+            const da = (dashboardSummary as any)?.debtAging;
+            if (da) {
+                const current = Number(da.current) || 0;
+                const age30 = Number(da.age30) || 0;
+                const age60 = Number(da.age60) || 0;
+                const age90 = Number(da.age90) || 0;
+                const overpayments = Number(da.overpayments) || 0;
+                const total = current + age30 + age60 + age90 - overpayments;
+                const grossTotal = current + age30 + age60 + age90;
+                return { current, age30, age60, age90, total, overpayments, grossTotal };
+            }
+            return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
+        }
+        if (!students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
         
         const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
         const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
@@ -5199,7 +5278,7 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
         const total = current + age30 + age60 + age90 - overpayments;
         const grossTotal = current + age30 + age60 + age90;
         return { current, age30, age60, age90, total, overpayments, grossTotal };
-    }, [records, students]);
+    }, [records, students, dashboardSummary]);
 
     const classCollectionsStats = useMemo(() => {
         if (!records || !students || !classes) return [];
@@ -5265,10 +5344,79 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
                 )}
             </div>
 
+            {/* On-Demand Ledger Controls */}
+            <Card className="rounded-2xl border border-slate-200/80 bg-gradient-to-r from-slate-50 via-white to-emerald-50/30 p-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-start sm:items-center gap-3">
+                        <div className={cn(
+                            "p-2.5 rounded-xl border shrink-0",
+                            financialsMode === 'full' 
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                                : "bg-amber-50 text-amber-700 border-amber-200"
+                        )}>
+                            {financialsMode === 'full' ? <Layers3 className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                                    {financialsMode === 'full' ? 'Complete Financial Ledger Active' : 'On-Demand Financial Summary Mode'}
+                                </h3>
+                                <Badge variant="outline" className={cn(
+                                    "text-[9px] font-black uppercase px-2 py-0.5",
+                                    financialsMode === 'full' 
+                                        ? "bg-emerald-100/60 text-emerald-800 border-emerald-200" 
+                                        : "bg-amber-100/60 text-amber-800 border-amber-200"
+                                )}>
+                                    {financialsMode === 'full' ? `${records?.length || 0} Records Loaded` : 'Real-Time Cash Live'}
+                                </Badge>
+                            </div>
+                            <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                                {financialsMode === 'full'
+                                    ? 'All itemized student invoices and historical fee ledgers are loaded into memory for full audits and SMS call reminders.'
+                                    : 'Displaying executive liquidity metrics from live snapshot. Itemized student ledger loads on demand to keep performance instantaneous.'}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                        {financialsMode === 'on-demand' ? (
+                            <Button
+                                size="sm"
+                                onClick={onLoadFinancials}
+                                disabled={isLoadingFinancials}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-9 px-3.5 gap-1.5 shadow-sm cursor-pointer"
+                            >
+                                {isLoadingFinancials ? (
+                                    <>
+                                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                                        <span>Loading Full Ledger...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Layers3 className="h-3.5 w-3.5" />
+                                        <span>Load Full Ledger On-Demand</span>
+                                    </>
+                                )}
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={onSwitchOnDemand}
+                                className="border-slate-200 hover:bg-slate-100 text-slate-600 font-bold text-xs rounded-xl h-9 px-3.5 gap-1.5 cursor-pointer"
+                            >
+                                <Zap className="h-3.5 w-3.5 text-amber-500" />
+                                <span>Switch to On-Demand</span>
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </Card>
+
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="Outstanding Debt" value={`GH₵${Math.round(stats.totalOutstanding).toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
                 <StatCard title="Total Collections" value={`GH₵${Math.round(stats.totalRevenue).toLocaleString()}`} icon={CheckCircle2} link="/dashboard/reports/financials" isLoading={isLoading} color="text-emerald-600" />
-                <StatCard title="Active Students" value={students?.filter((s:any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Active Students" value={dashboardSummary?.studentCount?.active || students?.filter((s:any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
                 <StatCard title="Payment Vouchers" value="--" icon={Receipt} link="/dashboard/finance/payment-vouchers" isLoading={isLoading} color="text-indigo-600" />
             </div>
 
@@ -5374,26 +5522,42 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
                                 {/* Category Collections Pace */}
                                 <div className="md:col-span-3 space-y-4">
                                     <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Performance</h4>
-                                    <div className="space-y-3">
-                                        {categoryCollections.map(cat => {
-                                            const color = cat.rate >= 80 ? 'bg-emerald-500' : cat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
-                                            const textColor = cat.rate >= 80 ? 'text-emerald-700' : cat.rate >= 50 ? 'text-amber-700' : 'text-rose-700';
-                                            return (
-                                                <div key={cat.name} className="space-y-1">
-                                                    <div className="flex justify-between text-xs">
-                                                        <span className="font-semibold text-slate-700">{cat.name}</span>
-                                                        <span className={cn("font-bold font-mono", textColor)}>{cat.rate.toFixed(1)}% ({cat.outstanding > 0 ? `GH₵${cat.outstanding.toFixed(0)} owed` : 'Settled'})</span>
+                                    {categoryCollections.length === 0 ? (
+                                        <div className="p-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 text-center space-y-2">
+                                            <p className="text-xs text-slate-500">Itemized fee stream audit is paused in on-demand mode.</p>
+                                            <Button 
+                                                size="sm" 
+                                                variant="outline" 
+                                                onClick={onLoadFinancials} 
+                                                disabled={isLoadingFinancials}
+                                                className="h-7 text-xs text-emerald-700 border-emerald-300 hover:bg-emerald-50 font-bold cursor-pointer"
+                                            >
+                                                {isLoadingFinancials ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Layers3 className="h-3 w-3 mr-1" />}
+                                                Load Fee Streams
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {categoryCollections.map((cat: any) => {
+                                                const color = cat.rate >= 80 ? 'bg-emerald-500' : cat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+                                                const textColor = cat.rate >= 80 ? 'text-emerald-700' : cat.rate >= 50 ? 'text-amber-700' : 'text-rose-700';
+                                                return (
+                                                    <div key={cat.name} className="space-y-1">
+                                                        <div className="flex justify-between text-xs">
+                                                            <span className="font-semibold text-slate-700">{cat.name}</span>
+                                                            <span className={cn("font-bold font-mono", textColor)}>{cat.rate.toFixed(1)}% ({cat.outstanding > 0 ? `GH₵${cat.outstanding.toFixed(0)} owed` : 'Settled'})</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                            <div 
+                                                                className={cn("h-full transition-all duration-500", color)}
+                                                                style={{ width: `${Math.min(cat.rate, 100)}%` }}
+                                                            />
+                                                        </div>
                                                     </div>
-                                                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                                        <div 
-                                                            className={cn("h-full transition-all duration-500", color)}
-                                                            style={{ width: `${Math.min(cat.rate, 100)}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -5401,76 +5565,109 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
 
                     {activeTab === 'debtors' && (
                         <div className="space-y-4 animate-in fade-in-50">
-                            <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
-                                <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                    <AlertTriangle className="h-4 w-4 text-rose-500" /> Actionable Aged Debt Reminders
-                                </h4>
-                                <p className="text-xs text-slate-500 leading-normal">
-                                    The following students have the largest outstanding balances. Click the SMS button to send parent reminder messages.
-                                </p>
-                            </div>
-                            
-                            <div className="grid gap-3 max-h-[360px] overflow-y-auto pr-1">
-                                {topDebtors.map(({ student, balance, records: studentRecs }: any) => {
-                                    const overdueDays = getOldestOverdueDays(studentRecs);
-                                    const isSending = sendingSMSStudentId === student.uid;
-                                    
-                                    return (
-                                        <div key={student.uid} className="bg-white border hover:border-slate-350 p-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                            <div className="flex items-center gap-3">
-                                                <StudentDisplay student={student} variant="compact" />
-                                                <div className="hidden sm:block border-l pl-3 py-1">
-                                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Oldest Aging</p>
-                                                    <p className={cn("text-xs font-semibold mt-0.5", overdueDays > 30 ? "text-rose-600" : "text-slate-500")}>
-                                                        {overdueDays > 0 ? `${overdueDays} Days Overdue` : "Current"}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
-                                                <div className="text-left sm:text-right">
-                                                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Outstanding</p>
-                                                    <p className="text-md font-extrabold text-rose-600 font-mono">
-                                                        GH₵{balance.toFixed(2)}
-                                                    </p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Button 
-                                                        variant="outline" 
-                                                        size="sm" 
-                                                        className="h-9 px-3 text-xs text-blue-600 border-blue-200 hover:bg-blue-50/50"
-                                                        asChild
-                                                    >
-                                                        <Link href={`/dashboard/accounts?search=${student.firstName}+${student.lastName}`}>
-                                                            View Ledger
-                                                        </Link>
-                                                    </Button>
-                                                    <Button 
-                                                        size="sm" 
-                                                        className="h-9 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white animate-in fade-in"
-                                                        disabled={isSending}
-                                                        onClick={() => handleSendOverallSMSReminder(student.uid, `${student.firstName} ${student.lastName}`, balance)}
-                                                    >
-                                                        {isSending ? (
-                                                            <>
-                                                                <Loader2 className="h-3 w-3 animate-spin mr-1.5" /> Sending...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Send className="h-3 w-3 mr-1.5" /> Send Reminder
-                                                            </>
-                                                        )}
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                                {topDebtors.length === 0 && (
-                                    <div className="text-center py-10 text-muted-foreground italic text-xs">
-                                        All accounts are in good standing! No outstanding debt found.
+                            {(!records || records.length === 0) ? (
+                                <div className="text-center py-12 px-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 space-y-4">
+                                    <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                                        <Zap className="h-6 w-6" />
                                     </div>
-                                )}
-                            </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Aged Debt Call List Paused</h4>
+                                        <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+                                            Loading individual student balances and debt call lists is on-demand to keep the dashboard instantaneous. Click below to load all student account ledgers and trigger SMS reminders.
+                                        </p>
+                                    </div>
+                                    <Button 
+                                        onClick={onLoadFinancials}
+                                        disabled={isLoadingFinancials}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-9 px-4 gap-2 cursor-pointer"
+                                    >
+                                        {isLoadingFinancials ? (
+                                            <>
+                                                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                                                <span>Loading Full Ledger...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Layers3 className="h-3.5 w-3.5" />
+                                                <span>Load Full Ledger On-Demand</span>
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
+                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                            <AlertTriangle className="h-4 w-4 text-rose-500" /> Actionable Aged Debt Reminders
+                                        </h4>
+                                        <p className="text-xs text-slate-500 leading-normal">
+                                            The following students have the largest outstanding balances. Click the SMS button to send parent reminder messages.
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="grid gap-3 max-h-[360px] overflow-y-auto pr-1">
+                                        {topDebtors.map(({ student, balance, records: studentRecs }: any) => {
+                                            const overdueDays = getOldestOverdueDays(studentRecs);
+                                            const isSending = sendingSMSStudentId === student.uid;
+                                            
+                                            return (
+                                                <div key={student.uid} className="bg-white border hover:border-slate-350 p-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <StudentDisplay student={student} variant="compact" />
+                                                        <div className="hidden sm:block border-l pl-3 py-1">
+                                                            <p className="text-[10px] text-muted-foreground uppercase font-bold">Oldest Aging</p>
+                                                            <p className={cn("text-xs font-semibold mt-0.5", overdueDays > 30 ? "text-rose-600" : "text-slate-500")}>
+                                                                {overdueDays > 0 ? `${overdueDays} Days Overdue` : "Current"}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
+                                                        <div className="text-left sm:text-right">
+                                                            <p className="text-[10px] text-muted-foreground uppercase font-bold">Outstanding</p>
+                                                            <p className="text-md font-extrabold text-rose-600 font-mono">
+                                                                GH₵{balance.toFixed(2)}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm" 
+                                                                className="h-9 px-3 text-xs text-blue-600 border-blue-200 hover:bg-blue-50/50"
+                                                                asChild
+                                                            >
+                                                                <Link href={`/dashboard/accounts?search=${student.firstName}+${student.lastName}`}>
+                                                                    View Ledger
+                                                                </Link>
+                                                            </Button>
+                                                            <Button 
+                                                                size="sm" 
+                                                                className="h-9 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white animate-in fade-in"
+                                                                disabled={isSending}
+                                                                onClick={() => handleSendOverallSMSReminder(student.uid, `${student.firstName} ${student.lastName}`, balance)}
+                                                            >
+                                                                {isSending ? (
+                                                                    <>
+                                                                        <Loader2 className="h-3 w-3 animate-spin mr-1.5" /> Sending...
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Send className="h-3 w-3 mr-1.5" /> Send Reminder
+                                                                    </>
+                                                                )}
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {topDebtors.length === 0 && (
+                                            <div className="text-center py-10 text-muted-foreground italic text-xs">
+                                                All accounts are in good standing! No outstanding debt found.
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     )}
 
@@ -5547,7 +5744,36 @@ function AccountantDashboard({ profile, students, classes, records, tills, annou
 
                     {activeTab === 'classPace' && (
                         <div className="space-y-4 animate-in fade-in-50">
-                            {classCollectionsStats.length === 0 ? (
+                            {(!records || records.length === 0) ? (
+                                <div className="text-center py-12 px-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 space-y-4">
+                                    <div className="w-12 h-12 mx-auto rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                        <Layers3 className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Class Collection Pace Paused</h4>
+                                        <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+                                            Calculating collection pace for each class analyzes student invoices across all classes. Load the full ledger on-demand to review class performance.
+                                        </p>
+                                    </div>
+                                    <Button 
+                                        onClick={onLoadFinancials}
+                                        disabled={isLoadingFinancials}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-9 px-4 gap-2 cursor-pointer"
+                                    >
+                                        {isLoadingFinancials ? (
+                                            <>
+                                                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                                                <span>Loading Full Ledger...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Layers3 className="h-3.5 w-3.5" />
+                                                <span>Load Full Ledger On-Demand</span>
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            ) : classCollectionsStats.length === 0 ? (
                                 <p className="text-center py-10 text-muted-foreground italic text-xs">No class data found.</p>
                             ) : (
                                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-h-[380px] overflow-y-auto pr-1">
@@ -11574,11 +11800,11 @@ export default function DashboardClient() {
   const canListStaff = ['Administrator', 'Director', 'Accountant', 'Receptionist'].includes(role || '');
   const isSupportStaff = role === 'Cleaner' || role === 'Security Officer' || role === 'Cook' || role === 'Transport Staff';
 
-  // ─── OPTIMISATION: Director and Admin use pre-aggregated summary doc instead of raw sweeps ───
+  // ─── OPTIMISATION: Director, Admin and Accountant use pre-aggregated summary doc instead of raw sweeps ───
   const isDirector = role === 'Director';
   const isAdminRole = role === 'Administrator';
   const { summary: dashboardSummary, isLoading: dashboardSummaryLoading } = useDashboardSummary(
-    (isDirector || isAdminRole) ? schoolId : null
+    (isDirector || isAdminRole || isAccountant) ? schoolId : null
   );
 
 
@@ -11616,10 +11842,9 @@ export default function DashboardClient() {
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
   // Financial records loaded on demand or when full mode is requested
-  const [directorFinancialsMode, setDirectorFinancialsMode] = useState<'on-demand' | 'full'>('on-demand');
+  const [financialsMode, setFinancialsMode] = useState<'on-demand' | 'full'>('on-demand');
 
-  const isRecordsNeeded = isAccountant || 
-    ((role === 'Director' || role === 'Administrator') && directorFinancialsMode === 'full');
+  const isRecordsNeeded = (role === 'Director' || role === 'Administrator' || role === 'Accountant') && financialsMode === 'full';
 
   const recordsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isRecordsNeeded) 
@@ -11965,9 +12190,9 @@ export default function DashboardClient() {
       submissions={submissions ?? []}
       medicalLogs={medicalLogs ?? []}
       openTillsCash={openTillsCash}
-      financialsMode={directorFinancialsMode}
-      onLoadFinancials={() => setDirectorFinancialsMode('full')}
-      onSwitchOnDemand={() => setDirectorFinancialsMode('on-demand')}
+      financialsMode={financialsMode}
+      onLoadFinancials={() => setFinancialsMode('full')}
+      onSwitchOnDemand={() => setFinancialsMode('on-demand')}
       isLoadingFinancials={loadingAllRecords}
     />;
   }
@@ -12009,9 +12234,9 @@ export default function DashboardClient() {
       loadingSatisfaction={loadingSatisfaction} 
       dashboardSummary={dashboardSummary} 
       openTillsCash={openTillsCash}
-      financialsMode={directorFinancialsMode}
-      onLoadFinancials={() => setDirectorFinancialsMode('full')}
-      onSwitchOnDemand={() => setDirectorFinancialsMode('on-demand')}
+      financialsMode={financialsMode}
+      onLoadFinancials={() => setFinancialsMode('full')}
+      onSwitchOnDemand={() => setFinancialsMode('on-demand')}
       isLoadingFinancials={loadingAllRecords}
     />;
   }
@@ -12025,7 +12250,21 @@ export default function DashboardClient() {
   }
 
   if (role === 'Accountant') {
-    return <AccountantDashboard profile={profile} students={students ?? []} classes={classes ?? []} records={records ?? []} tills={tills ?? []} announcements={announcements ?? []} isLoading={loadingStudents || loadingRecords || loadingTills} schoolSettings={schoolSettings} />;
+    return <AccountantDashboard 
+      profile={profile} 
+      students={students ?? []} 
+      classes={classes ?? []} 
+      records={records ?? []} 
+      tills={tills ?? []} 
+      announcements={announcements ?? []} 
+      isLoading={loadingStudents || (financialsMode === 'full' && loadingRecords) || loadingTills} 
+      schoolSettings={schoolSettings} 
+      financialsMode={financialsMode}
+      onLoadFinancials={() => setFinancialsMode('full')}
+      onSwitchOnDemand={() => setFinancialsMode('on-demand')}
+      isLoadingFinancials={loadingAllRecords}
+      dashboardSummary={dashboardSummary}
+    />;
   }
 
   if (isSupportStaff) {

@@ -132,6 +132,19 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
   let uniformsStream = 0;
   let otherStream = 0;
 
+  let outstandingTuition = 0;
+  let outstandingCanteen = 0;
+  let outstandingTransport = 0;
+  let otherDebt = 0;
+
+  const categoryMap: Record<string, { billed: number; paid: number; waived: number }> = {
+    'Tuition': { billed: 0, paid: 0, waived: 0 },
+    'Canteen': { billed: 0, paid: 0, waived: 0 },
+    'Transport': { billed: 0, paid: 0, waived: 0 },
+    'PTA Levy': { billed: 0, paid: 0, waived: 0 },
+    'Other': { billed: 0, paid: 0, waived: 0 },
+  };
+
   const todayMs = todayStartMs();
   const monthStart = new Date();
   monthStart.setUTCDate(1);
@@ -151,6 +164,19 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
 
     totalBilled += billed;
 
+    const typeLower = (r.type || r.category || '').toLowerCase();
+    let catKey = 'Other';
+    if (typeLower.includes('tuition')) catKey = 'Tuition';
+    else if (typeLower.includes('canteen')) catKey = 'Canteen';
+    else if (typeLower.includes('transport')) catKey = 'Transport';
+    else if (typeLower.includes('pta')) catKey = 'PTA Levy';
+
+    if (categoryMap[catKey]) {
+      categoryMap[catKey].billed += billed;
+      categoryMap[catKey].paid += paid;
+      categoryMap[catKey].waived += waiver;
+    }
+
     if (balance < 0) {
       overpayments += Math.abs(balance);
       return;
@@ -159,6 +185,11 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
 
     totalOutstanding += balance;
     arrearsCount++;
+
+    if (typeLower.includes('tuition')) outstandingTuition += balance;
+    else if (typeLower.includes('canteen')) outstandingCanteen += balance;
+    else if (typeLower.includes('transport')) outstandingTransport += balance;
+    else otherDebt += balance;
 
     // Debt aging buckets
     const dueTs = r.dueDate as FirebaseFirestore.Timestamp | undefined;
@@ -262,7 +293,25 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
         canteen: canteenStream,
         transport: transportStream,
         auxiliary: boardingStream + uniformsStream + otherStream
-      }
+      },
+      streamDebts: {
+        tuition: outstandingTuition,
+        canteen: outstandingCanteen,
+        transport: outstandingTransport,
+        other: otherDebt,
+      },
+      categoryCollections: Object.entries(categoryMap).map(([name, catStats]) => {
+        const netBilled = catStats.billed - catStats.waived;
+        const rate = netBilled > 0 ? (catStats.paid / netBilled) * 100 : 100;
+        return {
+          name,
+          billed: catStats.billed,
+          paid: catStats.paid,
+          waived: catStats.waived,
+          outstanding: Math.max(0, netBilled - catStats.paid),
+          rate,
+        };
+      }),
     },
     debtAging: {
       current,

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
+exports.summarizeTermAttendance = summarizeTermAttendance;
+exports.lockTermReportCards = lockTermReportCards;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const app_1 = require("firebase-admin/app");
 const firestore_2 = require("firebase-admin/firestore");
@@ -16,7 +18,7 @@ function todayStr() {
 /** Epoch ms for start of today */
 function todayStartMs() {
     const d = new Date();
-    d.setHours(0, 0, 0, 0);
+    d.setUTCHours(0, 0, 0, 0);
     return d.getTime();
 }
 /** Robust helper to get YYYY-MM-DD from Timestamp, Date, or string */
@@ -38,11 +40,34 @@ function getYYYYMMDD(val) {
     return d.toISOString().slice(0, 10);
 }
 /** Helper to recalculate financial metrics for a school considering active students */
-async function recalculateSchoolFinancials(schoolId) {
-    // Fetch active students first
-    const studentsSnap = await db.collection('students')
+function classifyCategory(item) {
+    if (!item)
+        return 'tuition';
+    const text = `${item.type || ''} ${item.category || ''} ${item.description || ''} ${item.feeType || ''} ${item.notes || ''} ${item.name || ''} ${item.title || ''} ${item.paymentType || ''} ${item.narration || ''} ${item.paymentNarration || ''} ${item.item || ''}`.toLowerCase();
+    if (text.includes('canteen') || text.includes('feed') || text.includes('lunch') || text.includes('meal') || text.includes('food') || text.includes('cafeteria')) {
+        return 'canteen';
+    }
+    if (text.includes('bus') || text.includes('transport') || text.includes('fare') || text.includes('shuttle') || text.includes('transit') || text.includes('vehicle')) {
+        return 'transport';
+    }
+    if (text.includes('boarding') || text.includes('hostel') || text.includes('dorm') || text.includes('accommodation')) {
+        return 'boarding';
+    }
+    if (text.includes('uniform') || text.includes('book') || text.includes('textbook') || text.includes('stationery') || text.includes('crest') || text.includes('jersey') || text.includes('exercise')) {
+        return 'uniforms';
+    }
+    if (text.includes('rent') || text.includes('hire') || text.includes('fine') || text.includes('penalty') || text.includes('transcript') || text.includes('certificate')) {
+        return 'other';
+    }
+    return 'tuition';
+}
+/** Helper to recalculate financial metrics for a school considering active students */
+async function recalculateSchoolFinancials(schoolId, eventTermId) {
+    // Fetch active students first (excluding archived students)
+    let studentsQuery = db.collection('students')
         .where('schoolId', '==', schoolId)
-        .get();
+        .where('isArchived', '!=', true);
+    const studentsSnap = await studentsQuery.get();
     const activeStudentIds = new Set();
     studentsSnap.forEach(sDoc => {
         const s = sDoc.data();
@@ -50,14 +75,29 @@ async function recalculateSchoolFinancials(schoolId) {
             activeStudentIds.add(sDoc.id);
         }
     });
-    // Fetch all financial records for this school to calculate full, accurate aggregates
-    const snap = await db.collection('financialRecords')
+    // Build scoped query for active financial records
+    let recordsQuery = db.collection('financialRecords')
         .where('schoolId', '==', schoolId)
-        .get();
-    // Fetch all payments for this school via collectionGroup to calculate collections today/this month
-    const paymentsSnap = await db.collectionGroup('payments')
+        .where('isArchived', '!=', true);
+    if (eventTermId) {
+        recordsQuery = recordsQuery.where('termId', '==', eventTermId);
+    }
+    const snap = await recordsQuery.get();
+    // Build scoped query for active payments via collectionGroup
+    let paymentsQuery = db.collectionGroup('payments')
         .where('schoolId', '==', schoolId)
-        .get();
+        .where('isArchived', '!=', true);
+    if (eventTermId) {
+        paymentsQuery = paymentsQuery.where('termId', '==', eventTermId);
+    }
+    const paymentsSnap = await paymentsQuery.get();
+    let tillsTransactionsSnap;
+    try {
+        tillsTransactionsSnap = await db.collectionGroup('transactions').where('schoolId', '==', schoolId).get();
+    }
+    catch (e) {
+        tillsTransactionsSnap = { docs: [] };
+    }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     let totalBilled = 0;
@@ -74,10 +114,27 @@ async function recalculateSchoolFinancials(schoolId) {
     let totalCollectedThisTerm = 0;
     let lastPaymentAmount = 0;
     let lastPaymentAt = null;
+    let tuitionStream = 0;
+    let canteenStream = 0;
+    let transportStream = 0;
+    let boardingStream = 0;
+    let uniformsStream = 0;
+    let otherStream = 0;
+    let outstandingTuition = 0;
+    let outstandingCanteen = 0;
+    let outstandingTransport = 0;
+    let otherDebt = 0;
+    const categoryMap = {
+        'Tuition': { billed: 0, paid: 0, waived: 0 },
+        'Canteen': { billed: 0, paid: 0, waived: 0 },
+        'Transport': { billed: 0, paid: 0, waived: 0 },
+        'PTA Levy': { billed: 0, paid: 0, waived: 0 },
+        'Other': { billed: 0, paid: 0, waived: 0 },
+    };
     const todayMs = todayStartMs();
     const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
+    monthStart.setUTCDate(1);
+    monthStart.setUTCHours(0, 0, 0, 0);
     const monthMs = monthStart.getTime();
     // 1. Process parent financial records (billing, arrears, and debt aging)
     snap.forEach(doc => {
@@ -85,14 +142,28 @@ async function recalculateSchoolFinancials(schoolId) {
         const r = doc.data();
         if (r.status === 'Pending Reversal')
             return;
-        if (!activeStudentIds.has(r.studentId))
+        if (r.studentId && !activeStudentIds.has(r.studentId) && activeStudentIds.size > 0)
             return;
         const billed = Number((_b = (_a = r.billedAmount) !== null && _a !== void 0 ? _a : r.amount) !== null && _b !== void 0 ? _b : 0);
         const paid = Number((_c = r.amountPaid) !== null && _c !== void 0 ? _c : 0);
         const waiver = Number((_d = r.waiverAmount) !== null && _d !== void 0 ? _d : 0);
         const balance = billed - paid - waiver;
         totalBilled += billed;
-        totalRevenue += paid;
+        const typeLower = (r.type || r.category || '').toLowerCase();
+        let catKey = 'Other';
+        if (typeLower.includes('tuition'))
+            catKey = 'Tuition';
+        else if (typeLower.includes('canteen'))
+            catKey = 'Canteen';
+        else if (typeLower.includes('transport'))
+            catKey = 'Transport';
+        else if (typeLower.includes('pta'))
+            catKey = 'PTA Levy';
+        if (categoryMap[catKey]) {
+            categoryMap[catKey].billed += billed;
+            categoryMap[catKey].paid += paid;
+            categoryMap[catKey].waived += waiver;
+        }
         if (balance < 0) {
             overpayments += Math.abs(balance);
             return;
@@ -101,6 +172,14 @@ async function recalculateSchoolFinancials(schoolId) {
             return;
         totalOutstanding += balance;
         arrearsCount++;
+        if (typeLower.includes('tuition'))
+            outstandingTuition += balance;
+        else if (typeLower.includes('canteen'))
+            outstandingCanteen += balance;
+        else if (typeLower.includes('transport'))
+            outstandingTransport += balance;
+        else
+            otherDebt += balance;
         // Debt aging buckets
         const dueTs = r.dueDate;
         const dueMs = (_f = (_e = dueTs === null || dueTs === void 0 ? void 0 : dueTs.toMillis) === null || _e === void 0 ? void 0 : _e.call(dueTs)) !== null && _f !== void 0 ? _f : (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
@@ -119,32 +198,71 @@ async function recalculateSchoolFinancials(schoolId) {
             age90 += balance;
         }
     });
-    // 2. Process payments for actual collection sums (today, this month, this term)
-    paymentsSnap.forEach(pDoc => {
+    const processedKeys = new Set();
+    const processItem = (p, docId) => {
         var _a, _b;
-        const p = pDoc.data();
-        if (p.studentId && !activeStudentIds.has(p.studentId))
+        if (!p)
             return;
-        const amount = Number(p.amount) || 0;
+        if (p.status === 'Reversed' || p.status === 'Cancelled' || p.status === 'Pending Reversal')
+            return;
+        const amount = Number(p.amount) || Number(p.amountPaid) || Number(p.totalAmount) || 0;
         if (amount <= 0)
             return;
-        const dateVal = p.paidAt || p.createdAt || p.date;
-        if (!dateVal)
+        const refNo = p.referenceNo || p.reference_no || p.transactionId || p.receiptNo || docId;
+        if (processedKeys.has(refNo))
             return;
-        const pTs = dateVal;
-        const pMs = (_b = (_a = pTs.toMillis) === null || _a === void 0 ? void 0 : _a.call(pTs)) !== null && _b !== void 0 ? _b : (dateVal ? new Date(dateVal).getTime() : 0);
-        if (pMs >= todayMs) {
-            totalCollectedToday += amount;
-            if (amount > lastPaymentAmount) {
+        processedKeys.add(refNo);
+        const dateVal = p.paidAt || p.createdAt || p.date || p.timestamp;
+        let pMs = 0;
+        if (dateVal) {
+            const pTs = dateVal;
+            pMs = (_b = (_a = pTs.toMillis) === null || _a === void 0 ? void 0 : _a.call(pTs)) !== null && _b !== void 0 ? _b : new Date(dateVal).getTime();
+            if (pMs >= todayMs && amount > lastPaymentAmount) {
                 lastPaymentAmount = amount;
                 lastPaymentAt = pTs;
             }
         }
-        if (pMs >= monthMs) {
+        totalRevenue += amount;
+        if (pMs >= todayMs)
+            totalCollectedToday += amount;
+        if (pMs >= monthMs)
             totalCollectedThisMonth += amount;
+        totalCollectedThisTerm += amount;
+        const cat = classifyCategory(p);
+        if (cat === 'tuition')
+            tuitionStream += amount;
+        else if (cat === 'canteen')
+            canteenStream += amount;
+        else if (cat === 'transport')
+            transportStream += amount;
+        else if (cat === 'boarding')
+            boardingStream += amount;
+        else if (cat === 'uniforms')
+            uniformsStream += amount;
+        else
+            otherStream += amount;
+    };
+    // 2. Process payments for actual collection sums & category streams
+    if (paymentsSnap.docs) {
+        paymentsSnap.docs.forEach((pDoc) => processItem(pDoc.data(), pDoc.id));
+    }
+    if (tillsTransactionsSnap.docs) {
+        tillsTransactionsSnap.docs.forEach((tDoc) => processItem(tDoc.data(), tDoc.id));
+    }
+    snap.forEach(doc => {
+        const r = doc.data();
+        if (r.payments && Array.isArray(r.payments) && r.payments.length > 0) {
+            r.payments.forEach((p) => processItem(p, p.id || doc.id));
+        }
+        else if (r.amountPaid && Number(r.amountPaid) > 0) {
+            processItem({
+                amount: Number(r.amountPaid),
+                paidAt: r.lastPaymentDate || r.createdAt || r.date,
+                type: r.type || r.category || 'Tuition',
+                description: r.description
+            }, `record-${doc.id}`);
         }
     });
-    totalCollectedThisTerm = totalCollectedThisMonth;
     const collectionRate = totalBilled > 0
         ? Math.round((totalRevenue / totalBilled) * 100)
         : 0;
@@ -154,7 +272,8 @@ async function recalculateSchoolFinancials(schoolId) {
         financials: {
             totalCollectedToday,
             totalCollectedThisMonth,
-            totalCollectedThisTerm,
+            totalCollectedThisTerm: totalRevenue,
+            totalCollectedThisYear: totalRevenue,
             totalOutstanding,
             totalBilled,
             totalRevenue,
@@ -162,6 +281,30 @@ async function recalculateSchoolFinancials(schoolId) {
             arrearsCount,
             lastPaymentAmount,
             lastPaymentAt,
+            streamBreakdown: {
+                tuition: tuitionStream,
+                canteen: canteenStream,
+                transport: transportStream,
+                auxiliary: boardingStream + uniformsStream + otherStream
+            },
+            streamDebts: {
+                tuition: outstandingTuition,
+                canteen: outstandingCanteen,
+                transport: outstandingTransport,
+                other: otherDebt,
+            },
+            categoryCollections: Object.entries(categoryMap).map(([name, catStats]) => {
+                const netBilled = catStats.billed - catStats.waived;
+                const rate = netBilled > 0 ? (catStats.paid / netBilled) * 100 : 100;
+                return {
+                    name,
+                    billed: catStats.billed,
+                    paid: catStats.paid,
+                    waived: catStats.waived,
+                    outstanding: Math.max(0, netBilled - catStats.paid),
+                    rate,
+                };
+            }),
         },
         debtAging: {
             current,
@@ -255,23 +398,25 @@ exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{reco
 });
 // ── TRIGGER 3: Financial Records ──────────────────────────────────────────────
 exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRecords/{recordId}', async (event) => {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f;
     const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
     const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
     const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
     if (!schoolId)
         return;
-    await recalculateSchoolFinancials(schoolId);
+    const termId = (_f = after === null || after === void 0 ? void 0 : after.termId) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.termId;
+    await recalculateSchoolFinancials(schoolId, termId);
 });
 // ── TRIGGER 3.5: Payments Subcollection ─────────────────────────────────────────
 exports.onPaymentSubcollectionWrite = (0, firestore_1.onDocumentWritten)('financialRecords/{recordId}/payments/{paymentId}', async (event) => {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f;
     const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
     const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
     const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
     if (!schoolId)
         return;
-    await recalculateSchoolFinancials(schoolId);
+    const termId = (_f = after === null || after === void 0 ? void 0 : after.termId) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.termId;
+    await recalculateSchoolFinancials(schoolId, termId);
 });
 // ── TRIGGER 4: Staff Attendance ───────────────────────────────────────────────
 exports.onStaffAttendanceWrite = (0, firestore_1.onDocumentWritten)('staff_attendance/{recordId}', async (event) => {
@@ -395,4 +540,79 @@ exports.onParentWrite = (0, firestore_1.onDocumentWritten)('parents/{parentId}',
         parentCount: firestore_2.FieldValue.increment(delta),
     }, { merge: true });
 });
+// ── PHASE 2: ATTENDANCE SUMMARIZATION ENGINE ─────────────────────────────────
+async function summarizeTermAttendance(schoolId, termId) {
+    const snap = await db.collection('attendance')
+        .where('schoolId', '==', schoolId)
+        .where('termId', '==', termId)
+        .get();
+    const studentStats = {};
+    const batch = db.batch();
+    snap.forEach(d => {
+        const data = d.data();
+        const studentId = data.studentId;
+        if (!studentId)
+            return;
+        if (!studentStats[studentId]) {
+            studentStats[studentId] = { present: 0, absent: 0, late: 0, total: 0 };
+        }
+        studentStats[studentId].total++;
+        if (data.status === 'Present')
+            studentStats[studentId].present++;
+        else if (data.status === 'Absent')
+            studentStats[studentId].absent++;
+        else if (data.status === 'Late')
+            studentStats[studentId].late++;
+        // Mark raw daily attendance doc as archived (idempotent)
+        batch.update(d.ref, { isArchived: true });
+    });
+    // Write deterministic summary doc per student: att_summary_${schoolId}_${studentId}_${termId}
+    for (const [studentId, stats] of Object.entries(studentStats)) {
+        const docId = `att_summary_${schoolId}_${studentId}_${termId}`;
+        const rate = stats.total > 0 ? Math.round((stats.present / stats.total) * 100) : 0;
+        const summaryRef = db.collection('attendance_summaries').doc(docId);
+        batch.set(summaryRef, {
+            schoolId,
+            studentId,
+            termId,
+            totalPresent: stats.present,
+            totalAbsent: stats.absent,
+            totalLate: stats.late,
+            totalDays: stats.total,
+            attendanceRate: rate,
+            isArchived: true,
+            updatedAt: firestore_2.FieldValue.serverTimestamp(),
+        }, { merge: true });
+    }
+    await batch.commit();
+}
+// ── PHASE 2: ACADEMIC REPORT CARD & GRADEBOOK LOCKING ────────────────────────
+async function lockTermReportCards(schoolId, termId) {
+    const reportsSnap = await db.collection('report-cards')
+        .where('schoolId', '==', schoolId)
+        .where('termId', '==', termId)
+        .get();
+    const batch = db.batch();
+    reportsSnap.forEach(docSnap => {
+        const data = docSnap.data();
+        const studentId = data.studentId;
+        if (!studentId)
+            return;
+        // Deterministic frozen summary doc ID: term_report_card_${schoolId}_${studentId}_${termId}
+        const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+        const lockedRef = db.collection('term_report_cards').doc(docId);
+        batch.set(lockedRef, Object.assign(Object.assign({}, data), { id: docId, schoolId,
+            studentId,
+            termId, isLocked: true, isArchived: true, lockedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true });
+        batch.update(docSnap.ref, { isArchived: true });
+    });
+    const assessmentsSnap = await db.collection('assessments')
+        .where('schoolId', '==', schoolId)
+        .where('termId', '==', termId)
+        .get();
+    assessmentsSnap.forEach(aDoc => {
+        batch.update(aDoc.ref, { isArchived: true });
+    });
+    await batch.commit();
+}
 //# sourceMappingURL=dashboard-aggregators.js.map

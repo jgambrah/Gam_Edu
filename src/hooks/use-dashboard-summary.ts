@@ -31,6 +31,20 @@ export interface FinancialSummary {
     transport: number;
     auxiliary: number;
   };
+  streamDebts?: {
+    tuition: number;
+    canteen: number;
+    transport: number;
+    other: number;
+  };
+  categoryCollections?: Array<{
+    name: string;
+    billed: number;
+    paid: number;
+    waived: number;
+    outstanding: number;
+    rate: number;
+  }>;
 }
 
 export interface StudentCountSummary {
