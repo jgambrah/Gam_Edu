@@ -750,6 +750,33 @@ function PhonicsAnchorGraphic({ word, emoji, className }: { word: string; emoji?
     );
 }
 
+// Helper: Split word into initial consonant(s) (onset) and phonemic ending (rime)
+const splitOnsetRime = (word: string, family: string) => {
+    const cleanWord = word.trim();
+    const rimeTarget = family.replace(/^-+/, '').trim().toLowerCase();
+    const lowerWord = cleanWord.toLowerCase();
+
+    if (rimeTarget && lowerWord.endsWith(rimeTarget) && lowerWord.length > rimeTarget.length) {
+        const splitIdx = cleanWord.length - rimeTarget.length;
+        return {
+            onset: cleanWord.slice(0, splitIdx),
+            rime: cleanWord.slice(splitIdx)
+        };
+    }
+    // Fallback: split at first vowel
+    const vowelMatch = cleanWord.search(/[aeiouy]/i);
+    if (vowelMatch > 0) {
+        return {
+            onset: cleanWord.slice(0, vowelMatch),
+            rime: cleanWord.slice(vowelMatch)
+        };
+    }
+    return {
+        onset: cleanWord,
+        rime: ''
+    };
+};
+
 // --- 2. PHONICS FOREST (SYSTEMATIC SYNTHETIC PHONICS - ECE COMPLIANT) ---
 function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { toast } = useToast();
@@ -1788,26 +1815,42 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4">
-                        {rhymeFamilies.map((item, index) => {
-                            const rhymingColors = [
-                              'border-indigo-100 hover:border-indigo-300 bg-indigo-50/10 shadow-indigo-100/50',
-                              'border-purple-100 hover:border-purple-300 bg-purple-50/10 shadow-purple-100/50',
-                              'border-pink-100 hover:border-pink-300 bg-pink-50/10 shadow-pink-100/50',
-                              'border-emerald-100 hover:border-emerald-300 bg-emerald-50/10 shadow-emerald-100/50'
-                            ];
-                            const colorStyle = rhymingColors[index % rhymingColors.length];
+                        {rhymeFamilies.map((item) => {
+                            const displayFamily = item.family.startsWith('-') ? item.family : `-${item.family}`;
                             return (
-                                <div key={item.family} className={cn("relative group bg-white p-6 rounded-[32px] border-2 border-b-8 shadow-md text-center transition-all hover:-translate-y-1 duration-300", colorStyle)}>
-                                    <div className="bg-gradient-to-b from-teal-500 to-emerald-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl mx-auto mb-4 font-black text-2xl shadow-md">
-                                        {item.family}
+                                <div 
+                                    key={item.family} 
+                                    className="relative group bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center"
+                                >
+                                    {/* 1. Distinct pill header displaying the rime with clean contrast and large font */}
+                                    <div className="mb-4">
+                                        <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 font-black text-xl tracking-tight shadow-xs">
+                                            {displayFamily}
+                                        </span>
                                     </div>
-                                    <div className="space-y-2">
-                                        {item.words.map(w => (
-                                            <button key={w} onClick={() => speak(w)} className="block w-full py-1.5 text-slate-600 font-bold hover:text-teal-600 hover:bg-teal-50/30 rounded-lg transition-colors capitalize">
-                                                {w}
-                                            </button>
-                                        ))}
+
+                                    {/* 2 & 3. Word Item Buttons with Orthographic Scaffolding & Pressable Chip Animation */}
+                                    <div className="w-full space-y-2">
+                                        {item.words.map(w => {
+                                            const { onset, rime } = splitOnsetRime(w, item.family);
+                                            return (
+                                                <button 
+                                                    key={w} 
+                                                    type="button"
+                                                    onClick={() => speak(w)} 
+                                                    className="w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50/80 hover:bg-teal-50/80 border border-slate-200/70 hover:border-teal-300 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer shadow-xs hover:shadow-sm group/word"
+                                                    title={`Listen to ${w}`}
+                                                >
+                                                    <span className="text-base tracking-wide flex items-center">
+                                                        <span className="text-slate-800 font-semibold">{onset}</span>
+                                                        <span className="text-teal-600 font-black">{rime}</span>
+                                                    </span>
+                                                    <Volume2 className="w-4 h-4 text-slate-300 group-hover/word:text-teal-600 transition-colors opacity-70 group-hover/word:opacity-100" />
+                                                </button>
+                                            );
+                                        })}
                                     </div>
+
                                     {canEdit && item.isCustom && item.id && (
                                         <Button 
                                             size="icon" 
@@ -1822,7 +1865,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                     }
                                                 }
                                             }}
-                                            className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full shadow-sm bg-white/95"
+                                            className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full shadow-sm bg-white/95 transition-opacity"
                                         >
                                             <Trash2 className="w-3.5 h-3.5"/>
                                         </Button>
