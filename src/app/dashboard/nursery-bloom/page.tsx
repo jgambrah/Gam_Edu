@@ -828,7 +828,36 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
     const [isFacilitatorModalOpen, setIsFacilitatorModalOpen] = useState(false);
     const [facilitatorModalTab, setFacilitatorModalTab] = useState<'sound' | 'rhyme'>('sound');
     const [playingCardId, setPlayingCardId] = useState<string | null>(null);
+    const [blendMode, setBlendMode] = useState<'whole' | 'blend'>('whole');
     const [activeRhymeWord, setActiveRhymeWord] = useState<string | null>(null);
+    const [activeBlendStep, setActiveBlendStep] = useState<'onset' | 'rime' | 'whole' | null>(null);
+    const blendSequenceRef = useRef<number>(0);
+    const blendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const clearBlendSequence = useCallback(() => {
+        blendSequenceRef.current += 1;
+        if (blendTimeoutRef.current) {
+            clearTimeout(blendTimeoutRef.current);
+            blendTimeoutRef.current = null;
+        }
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        setActiveRhymeWord(null);
+        setActiveBlendStep(null);
+    }, []);
+
+    // Cleanup blend sequence on unmount
+    useEffect(() => {
+        return () => {
+            if (blendTimeoutRef.current) {
+                clearTimeout(blendTimeoutRef.current);
+            }
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     // Early-childhood tailored speech synthesis for rhyming words
     const speakWordWithCues = useCallback((word: string) => {
@@ -842,9 +871,11 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
 
             const cleanWord = word.toLowerCase().trim();
             setActiveRhymeWord(cleanWord);
+            setActiveBlendStep('whole');
 
             const handleEnd = () => {
                 setActiveRhymeWord(current => (current === cleanWord ? null : current));
+                setActiveBlendStep(null);
             };
             u.onend = handleEnd;
             u.onerror = handleEnd;
@@ -852,8 +883,91 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
             window.speechSynthesis.speak(u);
         } catch {
             setActiveRhymeWord(null);
+            setActiveBlendStep(null);
         }
     }, []);
+
+    // Segmented Blending Drill: onset -> 400ms pause -> rime -> 300ms pause -> blended whole word
+    const runSegmentedBlend = useCallback((word: string, family: string) => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+        clearBlendSequence();
+
+        const seqId = blendSequenceRef.current;
+        const { onset, rime } = splitOnsetRime(word, family);
+        const cleanWord = word.toLowerCase().trim();
+
+        setActiveRhymeWord(cleanWord);
+
+        const speakAsync = (text: string, rate = 0.8, pitch = 1.1): Promise<void> => {
+            return new Promise((resolve) => {
+                if (blendSequenceRef.current !== seqId) return resolve();
+                try {
+                    window.speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(text);
+                    u.rate = rate;
+                    u.pitch = pitch;
+                    u.lang = 'en-US';
+                    u.onend = () => resolve();
+                    u.onerror = () => resolve();
+                    window.speechSynthesis.speak(u);
+                } catch {
+                    resolve();
+                }
+            });
+        };
+
+        const wait = (ms: number): Promise<void> => {
+            return new Promise((resolve) => {
+                blendTimeoutRef.current = setTimeout(() => {
+                    resolve();
+                }, ms);
+            });
+        };
+
+        (async () => {
+            try {
+                // 1. Highlight Onset & Speak onset sound
+                if (blendSequenceRef.current !== seqId) return;
+                setActiveBlendStep('onset');
+                await speakAsync(onset || cleanWord, 0.75, 1.1);
+                if (blendSequenceRef.current !== seqId) return;
+                await wait(400); // 400ms pause
+
+                // 2. Highlight Rime & Speak rime sound
+                if (blendSequenceRef.current !== seqId) return;
+                setActiveBlendStep('rime');
+                await speakAsync(rime || cleanWord, 0.8, 1.1);
+                if (blendSequenceRef.current !== seqId) return;
+                await wait(300);
+
+                // 3. Highlight Whole Word & Speak blended word
+                if (blendSequenceRef.current !== seqId) return;
+                setActiveBlendStep('whole');
+                await speakAsync(cleanWord, 0.85, 1.25);
+                if (blendSequenceRef.current !== seqId) return;
+                await wait(500);
+
+                if (blendSequenceRef.current === seqId) {
+                    setActiveRhymeWord(null);
+                    setActiveBlendStep(null);
+                }
+            } catch {
+                if (blendSequenceRef.current === seqId) {
+                    setActiveRhymeWord(null);
+                    setActiveBlendStep(null);
+                }
+            }
+        })();
+    }, [clearBlendSequence]);
+
+    const handleWordClick = useCallback((word: string, family: string) => {
+        if (blendMode === 'blend') {
+            runSegmentedBlend(word, family);
+        } else {
+            clearBlendSequence();
+            speakWordWithCues(word);
+        }
+    }, [blendMode, runSegmentedBlend, clearBlendSequence, speakWordWithCues]);
 
     // Fetch custom sound cards from Firestore
     const soundsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics_sounds'), orderBy('createdAt', 'asc')) : null, [firestore]);
@@ -1875,11 +1989,49 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
             {/* PILLAR 3: WORD FAMILIES (RHYMES) - UNCLUTTERED LEARNER VIEW */}
             {activeTab === 'families' && (
                 <div className="space-y-6 animate-in fade-in duration-200">
-                    <div className="text-center space-y-1">
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
-                            Rhyming Word Families <Sparkles className="w-4 h-4 text-amber-500" />
-                        </h3>
-                        <p className="text-xs text-slate-500 font-medium">Explore words that share common phonemic endings and practice onset-rime blending</p>
+                    {/* Header with Sounding Out Mode Switcher */}
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/70 p-3.5 sm:px-5 rounded-2xl border border-slate-200/80 shadow-xs">
+                        <div className="text-center sm:text-left space-y-0.5">
+                            <h3 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight flex items-center justify-center sm:justify-start gap-2">
+                                Rhyming Word Families <Sparkles className="w-4 h-4 text-amber-500" />
+                            </h3>
+                            <p className="text-xs text-slate-500 font-medium">Explore words that share common phonemic endings and practice onset-rime blending</p>
+                        </div>
+
+                        {/* Mode Switcher Toggle Pill */}
+                        <div className="inline-flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200/80 shadow-inner shrink-0" role="group" aria-label="Sounding Out Mode">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    clearBlendSequence();
+                                    setBlendMode('whole');
+                                }}
+                                className={cn(
+                                    "px-3 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer",
+                                    blendMode === 'whole'
+                                        ? "bg-white text-teal-800 shadow-xs scale-[1.02]"
+                                        : "text-slate-500 hover:text-slate-800"
+                                )}
+                            >
+                                Whole Word
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    clearBlendSequence();
+                                    setBlendMode('blend');
+                                }}
+                                className={cn(
+                                    "px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer",
+                                    blendMode === 'blend'
+                                        ? "bg-teal-600 text-white shadow-xs scale-[1.02]"
+                                        : "text-slate-500 hover:text-slate-800"
+                                )}
+                            >
+                                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                                Slow Blend
+                            </button>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4">
@@ -1904,17 +2056,19 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                             const cleanW = w.toLowerCase().trim();
                                             const wordEmoji = WORD_EMOJI_MAP[cleanW];
                                             const isPlaying = activeRhymeWord === cleanW;
+                                            const isOnsetActive = isPlaying && (activeBlendStep === 'onset' || activeBlendStep === 'whole');
+                                            const isRimeActive = isPlaying && (activeBlendStep === 'rime' || activeBlendStep === 'whole');
 
                                             return (
                                                 <button 
                                                     key={w} 
                                                     type="button"
-                                                    onClick={() => speakWordWithCues(w)} 
+                                                    onClick={() => handleWordClick(w, item.family)} 
                                                     className={cn(
-                                                        "w-full flex items-center justify-between px-3 py-2 bg-slate-50/80 hover:bg-teal-50/80 border border-slate-200/70 hover:border-teal-300 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer shadow-xs hover:shadow-sm group/word",
+                                                        "w-full flex items-center justify-between px-3 py-2 bg-slate-50/80 hover:bg-teal-50/80 border border-slate-200/70 hover:border-teal-300 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer shadow-xs hover:shadow-sm group/word relative",
                                                         isPlaying && "ring-2 ring-teal-400 bg-teal-50 border-teal-300 shadow-md animate-pulse"
                                                     )}
-                                                    title={`Listen to ${w}`}
+                                                    title={blendMode === 'blend' ? `Slow blend ${w}` : `Listen to ${w}`}
                                                 >
                                                     <div className="flex items-center gap-2.5">
                                                         {wordEmoji ? (
@@ -1940,8 +2094,39 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                             </span>
                                                         )}
                                                         <span className="text-base tracking-wide flex items-center">
-                                                            <span className="text-slate-800 font-semibold">{onset}</span>
-                                                            <span className="text-teal-600 font-black">{rime}</span>
+                                                            {/* Onset phoneme with progress underline and bouncing dot */}
+                                                            <span className="relative inline-flex flex-col items-center">
+                                                                <span className={cn(
+                                                                    "transition-all duration-150",
+                                                                    isOnsetActive ? "text-teal-700 font-black scale-110" : "text-slate-800 font-semibold"
+                                                                )}>
+                                                                    {onset}
+                                                                </span>
+                                                                <span className={cn(
+                                                                    "h-0.5 rounded-full transition-all duration-200 mt-0.5",
+                                                                    isOnsetActive ? "w-full bg-teal-500 shadow-xs" : "w-0 bg-transparent"
+                                                                )} />
+                                                                {isPlaying && activeBlendStep === 'onset' && (
+                                                                    <span className="absolute -bottom-2 w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" />
+                                                                )}
+                                                            </span>
+
+                                                            {/* Rime phoneme with progress underline and bouncing dot */}
+                                                            <span className="relative inline-flex flex-col items-center ml-0.5">
+                                                                <span className={cn(
+                                                                    "transition-all duration-150 font-black",
+                                                                    isRimeActive ? "text-teal-600 scale-110" : "text-teal-600"
+                                                                )}>
+                                                                    {rime}
+                                                                </span>
+                                                                <span className={cn(
+                                                                    "h-0.5 rounded-full transition-all duration-200 mt-0.5",
+                                                                    isRimeActive ? "w-full bg-teal-500 shadow-xs" : "w-0 bg-transparent"
+                                                                )} />
+                                                                {isPlaying && activeBlendStep === 'rime' && (
+                                                                    <span className="absolute -bottom-2 w-1.5 h-1.5 rounded-full bg-teal-500 animate-bounce" />
+                                                                )}
+                                                            </span>
                                                         </span>
                                                     </div>
                                                     <Volume2 className={cn(
