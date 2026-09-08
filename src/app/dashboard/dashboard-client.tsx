@@ -1270,7 +1270,12 @@ function AdminDashboard({
             totalRevenue: financials.totalRevenue,
             collectionRate: financials.collectionRate,
             revenueByType: financials.revenueByType,
-          } : undefined,
+          } : {
+            totalOutstanding: 0,
+            totalRevenue: 0,
+            collectionRate: 0,
+            revenueByType: [],
+          },
           classSizes: classSizes,
           announcementsCount,
         };
@@ -1456,6 +1461,7 @@ function AdminDashboard({
               behavioralRecords={behavioralRecords}
               recentAssessments={recentAssessments}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
+              hasFinanceAccess={hasFinanceAccess}
             />
           </div>
         )}
@@ -3254,7 +3260,11 @@ function DirectorDashboard({
     if (!firestore || !schoolId) return;
     setIsSyncingFinancials(true);
     try {
-      const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
+      const activeStudentIds = new Set(
+        activeStudents
+          .flatMap((s: any) => [s.uid, s.id, s.studentId])
+          .filter(Boolean)
+      );
       const recordsQ = query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId));
       const recordsSnap = await getDocs(recordsQ);
 
@@ -3358,7 +3368,7 @@ function DirectorDashboard({
 
   const financials = useMemo(() => {
     if (syncedFinancialData) return syncedFinancialData;
-    if (dashboardSummary?.financials?.totalBilled !== undefined) {
+    if (dashboardSummary?.financials?.totalBilled !== undefined && dashboardSummary.financials.totalBilled > 0) {
       return {
         totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
         totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
@@ -3368,13 +3378,23 @@ function DirectorDashboard({
       };
     }
 
-    if (!financialRecords || activeStudents.length === 0) return { totalOutstanding: 0, totalRevenue: 0, collectionRate: 0, totalBilled: 0, revenueByType: [] };
+    if (!financialRecords || financialRecords.length === 0) {
+      return { totalOutstanding: 0, totalRevenue: 0, collectionRate: 0, totalBilled: 0, revenueByType: [] };
+    }
     
-    const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
-    const activeRecords = financialRecords.filter((r: any) => 
-      activeStudentIds.has(r.studentId) && 
-      r.status !== 'Pending Reversal'
+    const activeStudentIds = new Set(
+      activeStudents
+        .flatMap((s: any) => [s.uid, s.id, s.studentId])
+        .filter(Boolean)
     );
+
+    const activeRecords = financialRecords.filter((r: any) => {
+      if (r.status === 'Pending Reversal') return false;
+      if (activeStudentIds.size > 0 && r.studentId) {
+        return activeStudentIds.has(r.studentId);
+      }
+      return true;
+    });
 
     let totalBilled = 0;
     let totalPaid = 0;
@@ -3383,9 +3403,9 @@ function DirectorDashboard({
     const types: Record<string, number> = {};
 
     activeRecords.forEach((r: any) => {
-      const billed = Number(r.billedAmount) || 0;
-      const paid = Number(r.amountPaid) || 0;
-      const waiver = Number(r.waiverAmount) || 0;
+      const billed = Number(r.billedAmount || r.totalBilled || r.amount || 0);
+      const paid = Number(r.amountPaid || r.totalPaid || r.paid || 0);
+      const waiver = Number(r.waiverAmount || r.waiver || 0);
       
       totalBilled += billed;
       totalPaid += paid;
@@ -3415,7 +3435,7 @@ function DirectorDashboard({
       collectionRate, 
       revenueByType 
     };
-  }, [financialRecords, activeStudents, dashboardSummary]);
+  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData]);
 
 
 
@@ -3772,6 +3792,7 @@ function DirectorDashboard({
               behavioralRecords={behavioralRecords}
               recentAssessments={recentAssessments}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
+              hasFinanceAccess={hasFinanceAccess}
             />
           </div>
         )}
@@ -11823,7 +11844,8 @@ export default function DashboardClient() {
   const hasFinanceAccess = 
     role === 'Director' || 
     role === 'Accountant' || 
-    user?.email === 'jamesgambrah@gmail.com';
+    user?.email?.toLowerCase() === 'jamesgambrah@gmail.com' ||
+    user?.uid === 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
 
   // Admin no longer has financial stats or tabs on this page, so we don't load budgets, accounts, etc. for Admin on this dashboard.
   const budgetsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess && role !== 'Administrator') ? query(collection(firestore, 'budgets'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, hasFinanceAccess, role]);

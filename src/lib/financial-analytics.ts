@@ -312,7 +312,7 @@ export function computeFinancialMetrics({
   const allStudentIds = new Set(
     filteredStudents
       ? filteredStudents
-          .map((s: any) => s.uid || s.id || s.studentId)
+          .flatMap((s: any) => [s.uid, s.id, s.studentId, s.admissionNo, s.admissionNumber])
           .filter(Boolean)
       : []
   );
@@ -374,7 +374,7 @@ export function computeFinancialMetrics({
     const cat = classifyFeeCategory(p);
 
     // Student & Class Name Lookup
-    const studentObj = filteredStudents?.find((s: any) => s.uid === p.studentId || s.id === p.studentId);
+    const studentObj = filteredStudents?.find((s: any) => s.uid === p.studentId || s.id === p.studentId || s.studentId === p.studentId || s.admissionNo === p.studentId);
     const resolvedStudentName = studentObj ? `${studentObj.firstName || ''} ${studentObj.lastName || ''}`.trim() : (p.studentName || 'Student');
     const classObj = classes?.find((c: any) => c.id === (studentObj?.classId || p.classId));
     const sKey = (resolvedStudentName || p.studentId || 'std').toLowerCase().trim();

@@ -3299,14 +3299,26 @@ export default function AccountsPage() {
     });
 
     return students.map(s => {
-      const recs = studentRecordsMap[s.uid] || [];
+      const sKeys = [s.id, s.uid, s.studentId, (s as any).admissionNo, (s as any).admissionNumber].filter(Boolean);
+      const seenIds = new Set<string>();
+      const recs: FinancialRecord[] = [];
+      sKeys.forEach(k => {
+        (studentRecordsMap[k] || []).forEach(r => {
+          const recKey = r.id || `${r.studentId}-${r.billedAmount}-${(r as any).date || (r as any).dueDate || ''}`;
+          if (!seenIds.has(recKey)) {
+            seenIds.add(recKey);
+            recs.push(r);
+          }
+        });
+      });
+
       const totalBilled = recs.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
       const totalPaid = recs.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
       const balance = totalBilled - totalPaid;
 
-      const tuitionDebt = recs.filter(r => r.type.toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
-      const canteenDebt = recs.filter(r => r.type.toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
-      const transportDebt = recs.filter(r => r.type.toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+      const tuitionDebt = recs.filter(r => (r.type || '').toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+      const canteenDebt = recs.filter(r => (r.type || '').toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+      const transportDebt = recs.filter(r => (r.type || '').toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
       const otherDebt = balance - tuitionDebt - canteenDebt - transportDebt;
 
       return {
@@ -3328,7 +3340,9 @@ export default function AccountsPage() {
       const studentSponsorMap = new Map<string, string>();
       students.forEach(s => {
           if (s.isSponsored && s.sponsorId) {
-              studentSponsorMap.set(s.uid, s.sponsorId);
+              if (s.id) studentSponsorMap.set(s.id, s.sponsorId);
+              if (s.uid) studentSponsorMap.set(s.uid, s.sponsorId);
+              if (s.studentId) studentSponsorMap.set(s.studentId, s.sponsorId);
           }
       });
       
@@ -3443,19 +3457,27 @@ export default function AccountsPage() {
   const canAccess = 
     role === 'Director' || 
     role === 'Accountant' || 
-    profile?.email === 'jamesgambrah@gmail.com';
+    profile?.role === 'Director' ||
+    profile?.email?.toLowerCase() === 'jamesgambrah@gmail.com' ||
+    user?.email?.toLowerCase() === 'jamesgambrah@gmail.com' ||
+    user?.uid === 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
 
   const isLoading = isLoadingRecords || isLoadingStudents;
 
   const advisoryActiveRecords = useMemo(() => {
     if (!records || !students) return [];
-    const activeStudentIds = new Set(students.map(s => s.uid || s.id));
+    const activeStudentIds = new Set(
+      students
+        .flatMap(s => [s.uid, s.id, s.studentId, (s as any).admissionNo, (s as any).admissionNumber])
+        .filter(Boolean)
+    );
     const currentTermId = (schoolSettings?.currentTerm || schoolSettings?.term || '').toString().toLowerCase();
 
     return records.filter(r => {
-      if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return false;
+      if (r.status === 'Pending Reversal') return false;
+      if (activeStudentIds.size > 0 && r.studentId && !activeStudentIds.has(r.studentId)) return false;
       if (advisoryScope === 'current-term' && currentTermId) {
-        const rTermId = (r.termId || '').toString().toLowerCase();
+        const rTermId = ((r as any).termId || '').toString().toLowerCase();
         const rTerm = (r.term || '').toString().toLowerCase();
         if (rTermId && !rTermId.includes(currentTermId) && !currentTermId.includes(rTermId)) return false;
         if (rTerm && !rTerm.includes(currentTermId) && !currentTermId.includes(rTerm)) return false;
@@ -3538,7 +3560,7 @@ export default function AccountsPage() {
       }
       if (balance <= 0.01) return;
 
-      const rawDueDate = r.dueDate || r.date || r.createdAt;
+      const rawDueDate = r.dueDate || (r as any).date || (r as any).createdAt;
       const dueDate = rawDueDate?.toDate ? rawDueDate.toDate() : (rawDueDate ? new Date(rawDueDate) : null);
       const validDueDate = (dueDate && !isNaN(dueDate.getTime())) ? dueDate : null;
 
@@ -3580,11 +3602,18 @@ export default function AccountsPage() {
       let totalWaivers = 0;
 
       classStudents.forEach(s => {
-        const studentRecs = recordsByStudent[s.uid] || [];
-        studentRecs.forEach(r => {
-          totalBilled += Number(r.billedAmount) || 0;
-          totalPaid += Number(r.amountPaid) || 0;
-          totalWaivers += Number(r.waiverAmount) || 0;
+        const sKeys = [s.id, s.uid, s.studentId, (s as any).admissionNo, (s as any).admissionNumber].filter(Boolean);
+        const seenIds = new Set<string>();
+        sKeys.forEach(k => {
+          (recordsByStudent[k] || []).forEach(r => {
+            const recKey = r.id || `${r.studentId}-${r.billedAmount}-${(r as any).date || (r as any).dueDate || ''}`;
+            if (!seenIds.has(recKey)) {
+              seenIds.add(recKey);
+              totalBilled += Number(r.billedAmount) || 0;
+              totalPaid += Number(r.amountPaid) || 0;
+              totalWaivers += Number(r.waiverAmount) || 0;
+            }
+          });
         });
       });
 
@@ -3609,16 +3638,37 @@ export default function AccountsPage() {
     if (!records || !students) return [];
     
     const recordsByStudent: Record<string, FinancialRecord[]> = {};
-    records.forEach(r => { if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = []; recordsByStudent[r.studentId].push(r); });
+    records.forEach(r => { 
+      if (r.studentId) {
+        if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = []; 
+        recordsByStudent[r.studentId].push(r); 
+      }
+    });
     
     return students.map(student => {
-          const studentRecords = recordsByStudent[student.uid] || [];
-          const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
-          const totalBilled = activeRecords.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
-          const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
-          return { student, balance: totalBilled - totalPaid, hasOverdue: activeRecords.some(r => r.status === 'Overdue'), records: studentRecords };
-      }).sort((a, b) => b.balance - a.balance);
-}, [records, students]);
+      const sKeys = [student.id, student.uid, student.studentId, (student as any).admissionNo, (student as any).admissionNumber].filter(Boolean);
+      const seenIds = new Set<string>();
+      const studentRecords: FinancialRecord[] = [];
+      sKeys.forEach(k => {
+        (recordsByStudent[k] || []).forEach(r => {
+          const recKey = r.id || `${r.studentId}-${r.billedAmount}-${(r as any).date || (r as any).dueDate || ''}`;
+          if (!seenIds.has(recKey)) {
+            seenIds.add(recKey);
+            studentRecords.push(r);
+          }
+        });
+      });
+      const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
+      const totalBilled = activeRecords.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
+      const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
+      return { 
+        student, 
+        balance: totalBilled - totalPaid, 
+        hasOverdue: activeRecords.some(r => r.status === 'Overdue'), 
+        records: studentRecords 
+      };
+    }).sort((a, b) => b.balance - a.balance);
+  }, [records, students]);
 
   const filteredStudentsWithBills = useMemo(() => studentFinancials.filter(sf => searchStudent(sf.student, searchTerm)), [studentFinancials, searchTerm]);
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
@@ -4187,11 +4237,12 @@ export default function AccountsPage() {
                                 
                                 <div className="grid gap-3 max-h-[360px] overflow-y-auto pr-1">
                                     {topDebtors.map(({ student, balance, records: studentRecs }) => {
+                                        const sKey = student.uid || student.id || student.studentId;
                                         const overdueDays = getOldestOverdueDays(studentRecs);
-                                        const isSending = sendingSMSStudentId === student.uid;
+                                        const isSending = sendingSMSStudentId === sKey;
                                         
                                         return (
-                                            <div key={student.uid} className="bg-white border hover:border-slate-350 p-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                            <div key={sKey} className="bg-white border hover:border-slate-350 p-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                                 <div className="flex items-center gap-3">
                                                     <StudentDisplay student={student} variant="compact" />
                                                     <div className="hidden sm:block border-l pl-3 py-1">
@@ -4683,8 +4734,10 @@ export default function AccountsPage() {
                                     <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">No students found.</div>
                                 ) : (
                                     <Accordion type="single" collapsible className="w-full">
-                                        {filteredStudentsWithBills.map(({ student, balance, records }) => (
-                                            <AccordionItem value={student.uid} key={student.uid} className="border rounded-lg mb-2 px-4 bg-white hover:border-slate-300 transition-colors">
+                                        {filteredStudentsWithBills.map(({ student, balance, records }) => {
+                                            const sKey = student.uid || student.id || student.studentId || '';
+                                            return (
+                                              <AccordionItem value={sKey} key={sKey} className="border rounded-lg mb-2 px-4 bg-white hover:border-slate-300 transition-colors">
                                                 <AccordionTrigger className="hover:no-underline py-4">
                                                     <div className='flex justify-between items-center w-full pr-4'>
                                                         <StudentDisplay student={student} variant="full" showAvatar />
@@ -4708,7 +4761,8 @@ export default function AccountsPage() {
                                                     />
                                                 </AccordionContent>
                                             </AccordionItem>
-                                        ))}
+                                          );
+                                        })}
                                     </Accordion>
                                 )}
                             </div>

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, query, collection, where, getDocs } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 
 type Role = 'Director' | 'Administrator' | 'Teacher' | 'Accountant' | 'Student' | 'Parent' | 'Librarian' | 'Cook' | 'Transport Staff' | 'Cleaner' | 'Security Officer' | 'Secretary' | 'Receptionist' | null;
@@ -41,20 +41,43 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         // --- 0. SUPER ADMIN CHECK ---
         if (currentUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL || currentUser.uid === SUPER_ADMIN_UID) {
           setRole('Director');
+          let staffData: any = null;
           const staffRef = doc(firestore, 'staff', currentUser.uid);
           const staffSnap = await getDoc(staffRef);
           if (staffSnap.exists()) {
-            setProfile(staffSnap.data());
-          } else {
-            setProfile({ firstName: 'Super', lastName: 'Admin', role: 'Director' });
+            staffData = staffSnap.data();
+          } else if (currentUser.email) {
+            try {
+              const q = query(collection(firestore, 'staff'), where('email', '==', currentUser.email.toLowerCase()));
+              const snap = await getDocs(q);
+              if (!snap.empty) {
+                staffData = snap.docs[0].data();
+              }
+            } catch (err) {
+              console.warn("[RoleContext] Super Admin staff query by email failed:", err);
+            }
           }
+
+          const storedSchoolId = typeof window !== 'undefined'
+            ? (localStorage.getItem('gam_school_id') || localStorage.getItem('selected_school_id'))
+            : null;
+          const finalSchoolId = staffData?.schoolId || storedSchoolId || 'oHr3BrGdK2eS5MQ5zmZU';
+
+          setProfile({
+            firstName: staffData?.firstName || 'Super',
+            lastName: staffData?.lastName || 'Admin',
+            email: currentUser.email,
+            role: 'Director',
+            schoolId: finalSchoolId,
+            ...(staffData || {})
+          });
           setLoading(false);
           return;
         }
 
         // --- 1. CHECK SPECIFIC COLLECTIONS FIRST (Detailed Profiles) ---
         
-        // Try Staff
+        // Try Staff by UID
         const staffRef = doc(firestore, 'staff', currentUser.uid);
         const staffSnap = await getDoc(staffRef);
         if (staffSnap.exists()) {
@@ -63,6 +86,23 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           setProfile(data);
           setLoading(false);
           return;
+        }
+
+        // Try Staff by Email fallback
+        if (currentUser.email) {
+          try {
+            const staffEmailQ = query(collection(firestore, 'staff'), where('email', '==', currentUser.email.toLowerCase()));
+            const staffEmailSnap = await getDocs(staffEmailQ);
+            if (!staffEmailSnap.empty) {
+              const data = staffEmailSnap.docs[0].data();
+              setRole(data.role as Role);
+              setProfile(data);
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            console.warn("[RoleContext] Staff query by email failed:", e);
+          }
         }
 
         // Try Students
@@ -96,6 +136,25 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
                 setLoading(false);
                 return;
              }
+        }
+
+        // Try users collection by Email fallback
+        if (currentUser.email) {
+          try {
+            const userEmailQ = query(collection(firestore, 'users'), where('email', '==', currentUser.email.toLowerCase()));
+            const userEmailSnap = await getDocs(userEmailQ);
+            if (!userEmailSnap.empty) {
+              const data = userEmailSnap.docs[0].data();
+              if (data.role) {
+                setRole(data.role as Role);
+                setProfile(data);
+                setLoading(false);
+                return;
+              }
+            }
+          } catch (e) {
+            console.warn("[RoleContext] User query by email failed:", e);
+          }
         }
 
         setRole(null);

@@ -42,7 +42,8 @@ export function ExecutiveDirectorCockpit({
   const { toast } = useToast();
 
   const isAdministrator = profile?.role === 'Administrator' || profile?.role === 'Admin';
-  const showFinancials = (hasFinanceAccess !== undefined ? hasFinanceAccess : !isAdministrator) && !isAdministrator;
+  const isDirectorOrSuper = profile?.role === 'Director' || profile?.email?.toLowerCase() === 'jamesgambrah@gmail.com';
+  const showFinancials = isDirectorOrSuper ? true : (hasFinanceAccess !== undefined ? hasFinanceAccess : !isAdministrator);
 
   // Drawers & Drilldown States
   const [activeDrawer, setActiveDrawer] = useState<'staff' | 'arrears' | 'pantry' | null>(null);
