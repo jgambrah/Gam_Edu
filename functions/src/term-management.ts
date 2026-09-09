@@ -33,21 +33,49 @@ export interface TermUnlockParams {
   requestedDurationHours?: number;
   reason: string;
   requestedBy?: string;
+  updateRawRecords?: boolean;
+}
+
+/**
+ * Helper to commit document updates in safe batches of max 400 operations.
+ * Prevents Firestore's 500-write and 10MB transaction size limit.
+ */
+async function commitUpdatesInChunks(
+  db: FirebaseFirestore.Firestore,
+  updates: Array<{ ref: FirebaseFirestore.DocumentReference; data: Record<string, any> }>,
+  chunkSize = 400
+): Promise<number> {
+  let committedCount = 0;
+  for (let i = 0; i < updates.length; i += chunkSize) {
+    const chunk = updates.slice(i, i + chunkSize);
+    const batch = db.batch();
+    for (const item of chunk) {
+      batch.update(item.ref, item.data);
+    }
+    await batch.commit();
+    committedCount += chunk.length;
+  }
+  return committedCount;
 }
 
 /**
  * requestTermUnlock
  *
  * Temporarily unlocks an archived term for corrections (default 24h).
- * Un-archives raw term records, sets expiration timestamp, and logs an audit record.
+ * Refactored to avoid single-transaction size limits:
+ * 1. Atomically writes term status metadata (terms/{termId}.isArchived = false, unlockedUntil, audit log) in one small write.
+ * 2. Does NOT execute unbounded transactions across raw grade/attendance documents.
+ * 3. Client queries check parent term status / active unlock window instead of individual flags.
+ * 4. If updateRawRecords is requested, processes in safe 400-doc batch chunks without failing the primary unlock.
  */
 export async function requestTermUnlock(params: TermUnlockParams): Promise<{
   success: boolean;
   termId: string;
   unlockExpiresAt: Date;
   auditLogId: string;
+  rawRecordsUpdated?: number;
 }> {
-  const { schoolId, termId, requestedDurationHours = 24, reason, requestedBy = 'Admin' } = params;
+  const { schoolId, termId, requestedDurationHours = 24, reason, requestedBy = 'Admin', updateRawRecords = false } = params;
 
   if (!schoolId || !termId || !reason) {
     throw new Error('Missing required params: schoolId, termId, and reason are required.');
@@ -61,7 +89,7 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
 
   const batch = db.batch();
 
-  // 1. Update term metadata status on schoolSettings
+  // 1. Update term metadata status on schoolSettings/terms/{termId}
   const termRef = db.collection('schoolSettings').doc(schoolId).collection('terms').doc(termId);
   batch.set(termRef, {
     termId,
@@ -70,6 +98,7 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
     isUnlockedForCorrection: true,
     unlockedAt: FieldValue.serverTimestamp(),
     unlockExpiresAt: Timestamp.fromMillis(unlockExpiresAtMs),
+    unlockedUntil: Timestamp.fromMillis(unlockExpiresAtMs),
     unlockReason: reason,
     unlockedBy: requestedBy,
   }, { merge: true });
@@ -80,6 +109,7 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
     activeUnlockedTermId: termId,
     isTermCorrectionActive: true,
     termUnlockExpiresAt: Timestamp.fromMillis(unlockExpiresAtMs),
+    unlockedUntil: Timestamp.fromMillis(unlockExpiresAtMs),
   }, { merge: true });
 
   // 2. Write structured audit log entry
@@ -97,33 +127,52 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
     expiresAt: Timestamp.fromMillis(unlockExpiresAtMs),
   }, { merge: true });
 
-  // 3. Mark raw documents for this term as temporarily un-archived
-  const collectionsToUnlock = ['attendance', 'assessments', 'report-cards', 'financialRecords'];
-  for (const colName of collectionsToUnlock) {
-    const snap = await db.collection(colName)
-      .where('schoolId', '==', schoolId)
-      .get();
-
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const docTerm = data.termId || data.term || '';
-      if (
-        docTerm === termId ||
-        docTerm.toLowerCase() === termId.toLowerCase() ||
-        docTerm.toLowerCase().includes(termId.toLowerCase()) ||
-        termId.toLowerCase().includes(docTerm.toLowerCase())
-      ) {
-        batch.update(docSnap.ref, { isArchived: false, unlockedForCorrection: true });
-      }
-    });
-  }
-
+  // Commit the primary metadata & audit update in one small atomic write (3 operations total)
   await batch.commit();
+
+  let rawRecordsUpdated = 0;
+
+  // 3. Optional chunked background mutation across raw records if explicitly requested
+  if (updateRawRecords) {
+    try {
+      const collectionsToUnlock = ['attendance', 'assessments', 'report-cards', 'financialRecords'];
+      const docUpdates: Array<{ ref: FirebaseFirestore.DocumentReference; data: Record<string, any> }> = [];
+
+      for (const colName of collectionsToUnlock) {
+        const snap = await db.collection(colName)
+          .where('schoolId', '==', schoolId)
+          .get();
+
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const docTerm = data.termId || data.term || '';
+          if (
+            docTerm === termId ||
+            docTerm.toLowerCase() === termId.toLowerCase() ||
+            docTerm.toLowerCase().includes(termId.toLowerCase()) ||
+            termId.toLowerCase().includes(docTerm.toLowerCase())
+          ) {
+            docUpdates.push({
+              ref: docSnap.ref,
+              data: { isArchived: false, unlockedForCorrection: true }
+            });
+          }
+        });
+      }
+
+      if (docUpdates.length > 0) {
+        rawRecordsUpdated = await commitUpdatesInChunks(db, docUpdates, 400);
+      }
+    } catch (chunkErr) {
+      console.warn(`[WARN] Chunked raw record update completed with partial warnings:`, chunkErr);
+    }
+  }
 
   return {
     success: true,
     termId,
     unlockExpiresAt,
     auditLogId,
+    rawRecordsUpdated,
   };
 }

@@ -29,7 +29,7 @@ import { useUser } from '@/firebase/provider';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { TermManagementModal } from '@/components/dashboard/term-management-modal';
+import { TermManagementModal, TermUnlockCountdownBanner } from '@/components/dashboard/term-management-modal';
 
 const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'N/A' => {
     if (score >= 80) return 'A';
@@ -274,11 +274,20 @@ export default function AcademicReportsPage() {
         });
     }, [assessments, selectedClassId, selectedYear, selectedTerm]);
 
-    // Check if current term data is archived
+    // Check if current term data is archived (or if an active unlock window is open on schoolSettings)
     const isTermArchived = useMemo(() => {
+        // If term is actively unlocked for correction on schoolSettings, it is NOT archived
+        if (schoolProfile?.isTermCorrectionActive) {
+            const activeTerm = schoolProfile.activeUnlockedTermId;
+            const expires = schoolProfile.termUnlockExpiresAt || schoolProfile.unlockedUntil;
+            const expiresMs = expires?.toMillis ? expires.toMillis() : (expires ? new Date(expires).getTime() : 0);
+            if ((!activeTerm || activeTerm === selectedTerm || activeTerm.toLowerCase() === (selectedTerm || '').toLowerCase()) && expiresMs > Date.now()) {
+                return false;
+            }
+        }
         if (!classAssessments || classAssessments.length === 0) return false;
         return classAssessments.every(a => (a as any).isArchived === true);
-    }, [classAssessments]);
+    }, [classAssessments, schoolProfile, selectedTerm]);
 
     const handleGenerateAnalytics = () => {
         if (!selectedClassId) return;
@@ -801,6 +810,7 @@ export default function AcademicReportsPage() {
                         <TermManagementModal
                             schoolId={schoolId || 'default'}
                             currentTermId={selectedTerm}
+                            onSuccess={() => handleGenerateAnalytics()}
                         />
                         <Button variant="outline" size="sm" onClick={() => { setSelectedClassId(null); setIsReportRequested(false); }} className="rounded-xl">
                             Change Class
@@ -869,6 +879,18 @@ export default function AcademicReportsPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* ACTIVE UNLOCK COUNTDOWN BANNER */}
+            {schoolProfile?.isTermCorrectionActive && (
+                (!schoolProfile?.activeUnlockedTermId || schoolProfile?.activeUnlockedTermId === selectedTerm || schoolProfile?.activeUnlockedTermId.toLowerCase() === (selectedTerm || '').toLowerCase()) && (
+                    <div className="print:hidden">
+                        <TermUnlockCountdownBanner
+                            unlockedTermId={selectedTerm}
+                            expiresAt={schoolProfile.termUnlockExpiresAt || schoolProfile.unlockedUntil}
+                        />
+                    </div>
+                )
+            )}
 
             {/* FILTERS PANEL */}
             <Card className="print:hidden border border-slate-200/80 shadow-md">
