@@ -1639,22 +1639,45 @@ export default function ReportCardManager() {
 
             <style jsx global>{`
                 @media print {
+                    @page {
+                        size: A4 portrait;
+                        margin: 0;
+                    }
+                    html, body {
+                        width: 210mm !important;
+                        height: 297mm !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        background: #ffffff !important;
+                    }
                     body * { visibility: hidden !important; }
                     #print-area, #print-area * { 
                         visibility: visible !important; 
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
-                    #print-area { position: absolute !important; left: 0 !important; top: 0 !important; width: 210mm !important; height: auto !important; display: block !important; }
+                    #print-area { 
+                        position: absolute !important; 
+                        left: 0 !important; 
+                        top: 0 !important; 
+                        width: 210mm !important; 
+                        height: 297mm !important; 
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        display: block !important; 
+                    }
                     .print-page-break {
                         page-break-after: always;
                         break-after: page;
+                        page-break-inside: avoid;
+                        break-inside: avoid;
                         display: block !important;
                         width: 210mm !important;
                         height: 297mm !important;
                         margin: 0 !important;
                         padding: 0 !important;
                         box-sizing: border-box !important;
+                        overflow: hidden !important;
                     }
                 }
             `}</style>

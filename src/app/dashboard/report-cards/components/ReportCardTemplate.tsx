@@ -181,21 +181,21 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 {/* ── ACADEMIC TRANSCRIPT TABLE ── */}
                 {(() => {
                     const showSubjectPosition = (data.reportCardPositionMode || 'both') !== 'none';
-                    const subjectWidth = showSubjectPosition ? 'w-[32%]' : 'w-[39%]';
+                    const subjectWidth = showSubjectPosition ? 'w-[34%]' : 'w-[40%]';
                     return (
-                        <table className="w-full text-[11.5px] mb-5 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `1.5px solid ${secondaryTheme}` }}>
+                        <table className="w-full text-[11.5px] mb-4 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `1.5px solid ${secondaryTheme}` }}>
                             <thead>
                                 <tr style={{ backgroundColor: secondaryTheme, color: '#ffffff' }}>
-                                    <th className={`p-2.5 text-left ${subjectWidth} uppercase font-black text-[10.5px] tracking-widest`}>Subject</th>
-                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10.5px] tracking-wider">CA ({caWeight})</th>
-                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10.5px] tracking-wider">Exam ({examWeight})</th>
-                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10.5px] tracking-wider bg-black/10">Total</th>
-                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10px] tracking-wider">Class Avg</th>
+                                    <th className={`p-2 text-left ${subjectWidth} uppercase font-black text-[10.5px] tracking-widest`}>Subject</th>
+                                    <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">CA ({caWeight})</th>
+                                    <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">Exam ({examWeight})</th>
+                                    <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider bg-black/10">Total</th>
+                                    <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">Class Avg</th>
                                     {showSubjectPosition && (
-                                        <th className="p-2.5 text-center w-[7%] uppercase font-black text-[10px] tracking-wider">Pos</th>
+                                        <th className="p-2 text-center w-[6%] uppercase font-black text-[10px] tracking-wider">Pos</th>
                                     )}
-                                    <th className="p-2.5 text-center w-[7%] uppercase font-black text-[10px] tracking-wider">Grade</th>
-                                    <th className={`p-2.5 text-left ${showSubjectPosition ? 'w-[18%]' : 'w-[17%]'} uppercase font-black text-[10.5px] tracking-widest`}>Remarks</th>
+                                    <th className="p-2 text-center w-[6%] uppercase font-black text-[10px] tracking-wider">Grade</th>
+                                    <th className={`p-2 text-left ${showSubjectPosition ? 'w-[20%]' : 'w-[20%]'} uppercase font-black text-[10.5px] tracking-widest`}>Remarks</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -203,27 +203,37 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                     const gradeVal = (row.grade || '').toUpperCase();
                                     const isFail = gradeVal.includes('F') || gradeVal.includes('E');
                                     const isExcellent = gradeVal.includes('A') || gradeVal.includes('*');
-                                    const isLongName = (row.subjectName || '').length > 22;
+                                    const nameLen = (row.subjectName || '').length;
                                     
                                     return (
-                                        <tr key={i} className={`border-b border-slate-300 last:border-0 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
-                                            <td className={`p-2.5 font-extrabold uppercase border-r text-black flex items-center gap-1.5 leading-snug ${isLongName ? 'text-[10.5px]' : 'text-[11.5px]'}`} style={{ borderRightColor: `${secondaryTheme}35` }}>
-                                                <BookOpen className="h-3 w-3 text-slate-800 shrink-0" />
-                                                <span>{row.subjectName}</span>
+                                        <tr key={i} className={`border-b border-slate-300 last:border-0 h-8 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
+                                            <td className="py-1.5 px-2.5 font-extrabold uppercase border-r text-black whitespace-nowrap" style={{ borderRightColor: `${secondaryTheme}35` }}>
+                                                <div className="flex items-center gap-1.5 overflow-hidden">
+                                                    <BookOpen className="h-3 w-3 text-slate-800 shrink-0" />
+                                                    <span className={`tracking-tight truncate ${
+                                                        nameLen > 24 
+                                                            ? 'text-[10px]' 
+                                                            : nameLen > 18 
+                                                                ? 'text-[10.5px]' 
+                                                                : 'text-[11.5px]'
+                                                    }`}>
+                                                        {row.subjectName}
+                                                    </span>
+                                                </div>
                                             </td>
-                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
-                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
-                                            <td className="p-2.5 text-center font-black bg-slate-100/50 border-r text-black text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
-                                            <td className="p-2.5 text-center text-slate-900 border-r font-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.classAverage}</td>
+                                            <td className="py-1.5 px-2 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
+                                            <td className="py-1.5 px-2 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
+                                            <td className="py-1.5 px-2 text-center font-black bg-slate-100/50 border-r text-black text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
+                                            <td className="py-1.5 px-2 text-center text-slate-900 border-r font-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.classAverage}</td>
                                             {showSubjectPosition && (
-                                                <td className="p-2.5 text-center font-black border-r text-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.position}</td>
+                                                <td className="py-1.5 px-2 text-center font-black border-r text-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.position}</td>
                                             )}
-                                            <td className={`p-2.5 text-center font-black border-r text-[12.5px] ${
+                                            <td className={`py-1.5 px-2 text-center font-black border-r text-[12.5px] ${
                                                 isExcellent ? 'text-emerald-800' : isFail ? 'text-rose-700' : 'text-amber-800'
                                             }`} style={{ borderRightColor: `${secondaryTheme}35` }}>
                                                 {row.grade}
                                             </td>
-                                            <td className="p-2.5 italic text-slate-955 font-bold text-[10px] leading-snug">{row.autoRemark}</td>
+                                            <td className="py-1.5 px-2.5 italic text-slate-955 font-bold text-[10px] leading-tight truncate">{row.autoRemark}</td>
                                         </tr>
                                     );
                                 })}
@@ -251,7 +261,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     };
                     
                     return (
-                        <div className="mb-4">
+                        <div className="mb-3">
                             <h4 className="text-[9px] font-black uppercase mb-1 border-b border-slate-200 w-max pr-4" style={{ color: secondaryTheme }}>
                                 Official Grading System Key
                             </h4>
@@ -275,12 +285,12 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 })()}
 
                 {/* ── NEXT TERM REOPENING DETAILS BANNER ── */}
-                <div className="bg-amber-50 text-amber-950 border-2 border-amber-300 rounded-xl px-4 py-2.5 mb-5 shadow-sm flex items-center justify-center gap-3">
-                    <div className="flex items-center gap-1.5 text-amber-800 font-black text-[10px] uppercase tracking-wider">
-                        <Calendar className="h-3.5 w-3.5 text-amber-700" />
+                <div className="my-2 py-1.5 px-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 shadow-sm flex items-center justify-center gap-2.5">
+                    <div className="flex items-center gap-1.5 font-black text-[9.5px] uppercase tracking-wider text-amber-800 shrink-0">
+                        <Calendar className="h-3.5 w-3.5 text-amber-600 shrink-0" />
                         <span>Next Term Reopening Date:</span>
                     </div>
-                    <span className="text-sm font-black tracking-wide text-amber-950 underline decoration-amber-400 decoration-2 underline-offset-2">
+                    <span className="text-xs font-black tracking-wide text-amber-950 underline decoration-amber-400 decoration-2 underline-offset-2">
                         {nextTermReopening}
                     </span>
                 </div>
