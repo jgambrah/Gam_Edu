@@ -3385,6 +3385,7 @@ export default function AccountsPage() {
     where('schoolId', '==', schoolId)
   ) : null, [firestore, schoolId, ledgerMode]);
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
+  const isLedgerLoaded = Boolean(ledgerMode === 'full-school' && !isLoadingRecords && records);
 
   const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
   const { data: pendingWaivers, forceRefetch: refetchWaivers } = useCollection<any>(waiverRequestsQuery);
@@ -3606,7 +3607,7 @@ export default function AccountsPage() {
   const isLoading = isLoadingRecords || isLoadingStudents;
 
   const advisoryActiveRecords = useMemo(() => {
-    if (!records || !students) return [];
+    if (!isLedgerLoaded || !records || !students) return [];
     const activeStudentIds = new Set(
       students
         .flatMap(s => [s.uid, s.id, s.studentId, (s as any).admissionNo, (s as any).admissionNumber])
@@ -3629,7 +3630,7 @@ export default function AccountsPage() {
       }
       return true;
     });
-  }, [records, students, advisoryScope, schoolSettings]);
+  }, [isLedgerLoaded, records, students, advisoryScope, schoolSettings]);
 
   const dashboardStats = useMemo(() => {
     if (!advisoryActiveRecords.length) return { 
@@ -3884,12 +3885,13 @@ export default function AccountsPage() {
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
 
   const collectionRate = useMemo(() => {
+    if (!isLedgerLoaded) return null;
     const billed = dashboardStats.totalBilled;
     return billed > 0 ? (dashboardStats.totalRevenue / billed) * 100 : 100;
-  }, [dashboardStats]);
+  }, [isLedgerLoaded, dashboardStats]);
 
   const categoryCollections = useMemo(() => {
-    if (!advisoryActiveRecords.length) return [];
+    if (!isLedgerLoaded || !advisoryActiveRecords.length) return [];
     
     const categories: Record<string, { billed: number, paid: number, waived: number }> = {
         'Tuition': { billed: 0, paid: 0, waived: 0 },
@@ -3924,16 +3926,17 @@ export default function AccountsPage() {
             rate
         };
     });
-  }, [advisoryActiveRecords]);
+  }, [isLedgerLoaded, advisoryActiveRecords]);
 
   const topDebtors = useMemo(() => {
+      if (!isLedgerLoaded) return [];
       const actualThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
       const exceeding = studentFinancials.filter(sf => sf.balance >= actualThreshold);
       if (exceeding.length > 0) {
           return exceeding;
       }
       return studentFinancials.filter(sf => sf.balance > 0.01).slice(0, 5);
-  }, [studentFinancials, schoolSettings]);
+  }, [isLedgerLoaded, studentFinancials, schoolSettings]);
 
   const getOldestOverdueDays = useCallback((studentRecords: FinancialRecord[]) => {
       const unpaidOrOverdue = studentRecords.filter(r => 
@@ -4204,7 +4207,17 @@ export default function AccountsPage() {
                     <div>
                         <p className="text-[10px] text-emerald-200 font-bold uppercase tracking-wide">Overall Collection Rate</p>
                         <p className="text-2xl font-extrabold tracking-tight text-white mt-0.5">
-                            {(dashboardStats.totalBilled > 0 ? (dashboardStats.totalRevenue / dashboardStats.totalBilled) * 100 : 0).toFixed(1)}%
+                            {isLoadingRecords ? (
+                                <span className="text-base font-semibold flex items-center gap-1.5 text-white/90">
+                                    <Loader2 className="h-4 w-4 animate-spin" /> Calculating...
+                                </span>
+                            ) : !isLedgerLoaded ? (
+                                "-- %"
+                            ) : dashboardStats.totalBilled > 0 ? (
+                                `${((dashboardStats.totalRevenue / dashboardStats.totalBilled) * 100).toFixed(1)}%`
+                            ) : (
+                                "100.0%"
+                            )}
                         </p>
                     </div>
                 </div>
@@ -4290,166 +4303,225 @@ export default function AccountsPage() {
                             <TabsContent value="summary" className="mt-0 space-y-6 animate-in fade-in-50">
                                 {/* Top Reconciled Metric Cards */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                                    <Card className="border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <div>
-                                          <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Gross Outstanding</CardTitle>
-                                          <p className="text-[9px] text-slate-400 font-medium">Before advance credits</p>
-                                        </div>
-                                        <Wallet className="h-4 w-4 text-rose-500" />
-                                      </CardHeader>
-                                      <CardContent className="p-3.5 pt-1">
-                                        <div className="text-lg font-black text-rose-600">GH₵{dashboardStats.totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                      </CardContent>
+                                    <Card className={cn("border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !isLedgerLoaded && "opacity-85")}>
+                                        <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <div>
+                                                <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Gross Outstanding</CardTitle>
+                                                <p className="text-[9px] text-slate-400 font-medium">Before advance credits</p>
+                                            </div>
+                                            <Wallet className="h-4 w-4 text-rose-500" />
+                                        </CardHeader>
+                                        <CardContent className="p-3.5 pt-1">
+                                            <div className="text-lg font-black text-rose-600">
+                                                {isLedgerLoaded ? `GH₵${dashboardStats.totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
 
-                                    <Card className="border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <div>
-                                          <CardTitle className="text-[10px] font-bold text-emerald-700 uppercase">Advance Credits</CardTitle>
-                                          <p className="text-[9px] text-emerald-600 font-medium">Prepayments & deposits</p>
-                                        </div>
-                                        <HandCoins className="h-4 w-4 text-emerald-500" />
-                                      </CardHeader>
-                                      <CardContent className="p-3.5 pt-1">
-                                        <div className="text-lg font-black text-emerald-600">(GH₵{dashboardStats.advancePayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
-                                      </CardContent>
+                                    <Card className={cn("border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !isLedgerLoaded && "opacity-85")}>
+                                        <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <div>
+                                                <CardTitle className="text-[10px] font-bold text-emerald-700 uppercase">Advance Credits</CardTitle>
+                                                <p className="text-[9px] text-emerald-600 font-medium">Prepayments & deposits</p>
+                                            </div>
+                                            <HandCoins className="h-4 w-4 text-emerald-500" />
+                                        </CardHeader>
+                                        <CardContent className="p-3.5 pt-1">
+                                            <div className="text-lg font-black text-emerald-600">
+                                                {isLedgerLoaded ? `(GH₵${dashboardStats.advancePayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : "(GH₵ —.—)"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
 
-                                    <Card className="border-l-4 border-l-red-600 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-rose-50/20">
-                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <div>
-                                          <CardTitle className="text-[10px] font-bold text-red-700 uppercase">Net Collectible</CardTitle>
-                                          <p className="text-[9px] text-red-500 font-medium">Gross less deposits</p>
-                                        </div>
-                                        <AlertCircle className="h-4 w-4 text-red-600" />
-                                      </CardHeader>
-                                      <CardContent className="p-3.5 pt-1">
-                                        <div className="text-lg font-black text-red-700">GH₵{dashboardStats.netOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                      </CardContent>
+                                    <Card className={cn("border-l-4 border-l-red-600 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-rose-50/20", !isLedgerLoaded && "opacity-85")}>
+                                        <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <div>
+                                                <CardTitle className="text-[10px] font-bold text-red-700 uppercase">Net Collectible</CardTitle>
+                                                <p className="text-[9px] text-red-500 font-medium">Gross less deposits</p>
+                                            </div>
+                                            <AlertCircle className="h-4 w-4 text-red-600" />
+                                        </CardHeader>
+                                        <CardContent className="p-3.5 pt-1">
+                                            <div className="text-lg font-black text-red-700">
+                                                {isLedgerLoaded ? `GH₵${dashboardStats.netOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
 
-                                    <Card className="border-l-4 border-l-indigo-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                                      <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <div>
-                                          <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
-                                          <p className="text-[9px] text-slate-400 font-medium">Paid to date ({advisoryScope === 'current-term' ? 'Term' : 'All-time'})</p>
-                                        </div>
-                                        <DollarSign className="h-4 w-4 text-indigo-500" />
-                                      </CardHeader>
-                                      <CardContent className="p-3.5 pt-1">
-                                        <div className="text-lg font-black text-indigo-600">GH₵{dashboardStats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                      </CardContent>
+                                    <Card className={cn("border-l-4 border-l-indigo-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !isLedgerLoaded && "opacity-85")}>
+                                        <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <div>
+                                                <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
+                                                <p className="text-[9px] text-slate-400 font-medium">Paid to date ({advisoryScope === 'current-term' ? 'Term' : 'All-time'})</p>
+                                            </div>
+                                            <DollarSign className="h-4 w-4 text-indigo-500" />
+                                        </CardHeader>
+                                        <CardContent className="p-3.5 pt-1">
+                                            <div className="text-lg font-black text-indigo-600">
+                                                {isLedgerLoaded ? `GH₵${dashboardStats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
                                 </div>
 
                                 {/* Fee Stream Breakdown Cards */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-1">
-                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
-                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Tuition Debt</CardTitle>
-                                        <BookOpen className="h-3.5 w-3.5 text-blue-500" />
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-1">
-                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                      </CardContent>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                        <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Tuition Debt</CardTitle>
+                                            <BookOpen className="h-3.5 w-3.5 text-blue-500" />
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-1">
+                                            <div className="text-base font-bold text-slate-800">
+                                                {isLedgerLoaded ? `GH₵${dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
-                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
-                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Canteen Debt</CardTitle>
-                                        <Utensils className="h-3.5 w-3.5 text-orange-500" />
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-1">
-                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                      </CardContent>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                        <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Canteen Debt</CardTitle>
+                                            <Utensils className="h-3.5 w-3.5 text-orange-500" />
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-1">
+                                            <div className="text-base font-bold text-slate-800">
+                                                {isLedgerLoaded ? `GH₵${dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
-                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
-                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Transport Debt</CardTitle>
-                                        <BusIcon className="h-3.5 w-3.5 text-amber-500" />
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-1">
-                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                      </CardContent>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                        <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Transport Debt</CardTitle>
+                                            <BusIcon className="h-3.5 w-3.5 text-amber-500" />
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-1">
+                                            <div className="text-base font-bold text-slate-800">
+                                                {isLedgerLoaded ? `GH₵${dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
-                                    <Card className="border-slate-200 shadow-none bg-slate-50/40">
-                                      <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
-                                        <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Other Fees</CardTitle>
-                                        <HandCoins className="h-3.5 w-3.5 text-slate-400" />
-                                      </CardHeader>
-                                      <CardContent className="p-3 pt-1">
-                                        <div className="text-base font-bold text-slate-800">GH₵{dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                      </CardContent>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                        <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
+                                            <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Other Fees</CardTitle>
+                                            <HandCoins className="h-3.5 w-3.5 text-slate-400" />
+                                        </CardHeader>
+                                        <CardContent className="p-3 pt-1">
+                                            <div className="text-base font-bold text-slate-800">
+                                                {isLedgerLoaded ? `GH₵${dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                            </div>
+                                        </CardContent>
                                     </Card>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mt-6 pt-6 border-t border-slate-100">
                                     {/* SVG Target Collection Gauge */}
-                                    <div className="md:col-span-2 flex flex-col items-center justify-center text-center p-4 bg-slate-50/50 rounded-xl border border-slate-100">
+                                    <div className="md:col-span-2 flex flex-col items-center justify-center text-center p-4 bg-slate-50/50 rounded-xl border border-slate-100 min-h-[220px]">
                                         <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4">Overall Target Pace</h4>
-                                        <div className="relative flex items-center justify-center h-32 w-32">
-                                            {/* Background Circle */}
-                                            <svg className="w-full h-full transform -rotate-90">
-                                                <circle
-                                                    cx="64"
-                                                    cy="64"
-                                                    r="52"
-                                                    className="stroke-slate-200 fill-none"
-                                                    strokeWidth="10"
-                                                />
-                                                {/* Foreground Progress Circle */}
-                                                <circle
-                                                    cx="64"
-                                                    cy="64"
-                                                    r="52"
-                                                    className="stroke-emerald-500 fill-none transition-all duration-1000 ease-out"
-                                                    strokeWidth="10"
-                                                    strokeDasharray={2 * Math.PI * 52}
-                                                    strokeDashoffset={2 * Math.PI * 52 - (collectionRate / 100) * (2 * Math.PI * 52)}
-                                                    strokeLinecap="round"
-                                                />
-                                            </svg>
-                                            <div className="absolute flex flex-col items-center justify-center">
-                                                <span className="text-2xl font-black text-slate-800 font-mono">{collectionRate.toFixed(1)}%</span>
-                                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Collected</span>
+                                        {isLedgerLoaded ? (
+                                            <>
+                                                <div className="relative flex items-center justify-center h-32 w-32">
+                                                    {/* Background Circle */}
+                                                    <svg className="w-full h-full transform -rotate-90">
+                                                        <circle
+                                                            cx="64"
+                                                            cy="64"
+                                                            r="52"
+                                                            className="stroke-slate-200 fill-none"
+                                                            strokeWidth="10"
+                                                        />
+                                                        {/* Foreground Progress Circle */}
+                                                        <circle
+                                                            cx="64"
+                                                            cy="64"
+                                                            r="52"
+                                                            className="stroke-emerald-500 fill-none transition-all duration-1000 ease-out"
+                                                            strokeWidth="10"
+                                                            strokeDasharray={2 * Math.PI * 52}
+                                                            strokeDashoffset={2 * Math.PI * 52 - (((collectionRate ?? 0)) / 100) * (2 * Math.PI * 52)}
+                                                            strokeLinecap="round"
+                                                        />
+                                                    </svg>
+                                                    <div className="absolute flex flex-col items-center justify-center">
+                                                        <span className="text-2xl font-black text-slate-800 font-mono">{(collectionRate ?? 0).toFixed(1)}%</span>
+                                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Collected</span>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-4 max-w-[240px]">
+                                                    <p className="text-[11px] font-medium text-slate-500 leading-normal">
+                                                        {(collectionRate ?? 0) >= 80 ? (
+                                                            "Excellent collection health. Continue regular cash auditing."
+                                                        ) : (collectionRate ?? 0) >= 55 ? (
+                                                            "Moderate collection health. Trigger reminders for aging accounts."
+                                                        ) : (
+                                                            "Urgent attention needed. Overall collection rate is critical."
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center text-center p-3 my-auto space-y-3">
+                                                <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-200/70 flex items-center justify-center text-blue-600 shadow-xs">
+                                                    <Database className="h-6 w-6" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-bold text-slate-800">Ledger Unloaded</p>
+                                                    <p className="text-[11px] text-slate-500 max-w-[210px] leading-relaxed">
+                                                        Click &apos;Load School Ledger&apos; to calculate pace
+                                                    </p>
+                                                </div>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => setLedgerMode('full-school')}
+                                                    disabled={isLoadingRecords}
+                                                    className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                                >
+                                                    {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
+                                                    Load School Ledger
+                                                </Button>
                                             </div>
-                                        </div>
-                                        <div className="mt-4 max-w-[240px]">
-                                            <p className="text-[11px] font-medium text-slate-500 leading-normal">
-                                                {collectionRate >= 80 ? (
-                                                    "Excellent collection health. Continue regular cash auditing."
-                                                ) : collectionRate >= 55 ? (
-                                                    "Moderate collection health. Trigger reminders for aging accounts."
-                                                ) : (
-                                                    "Urgent attention needed. Overall collection rate is critical."
-                                                )}
-                                            </p>
-                                        </div>
+                                        )}
                                     </div>
                                     
                                     {/* Category Collections Pace */}
                                     <div className="md:col-span-3 space-y-4">
-                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Collection Performance</h4>
-                                        <div className="space-y-3">
-                                            {categoryCollections.map(cat => {
-                                                const color = cat.rate >= 80 ? 'bg-emerald-500' : cat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
-                                                const textColor = cat.rate >= 80 ? 'text-emerald-700' : cat.rate >= 50 ? 'text-amber-700' : 'text-rose-700';
-                                                return (
-                                                    <div key={cat.name} className="space-y-1">
-                                                        <div className="flex justify-between text-xs">
-                                                            <span className="font-semibold text-slate-700">{cat.name}</span>
-                                                            <span className={cn("font-bold font-mono", textColor)}>{cat.rate.toFixed(1)}% ({cat.outstanding > 0 ? `GH₵${cat.outstanding.toFixed(0)} owed` : 'Settled'})</span>
-                                                        </div>
-                                                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                                            <div 
-                                                                className={cn("h-full transition-all duration-500", color)}
-                                                                style={{ width: `${Math.min(cat.rate, 100)}%` }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Collection Performance</h4>
+                                            {!isLedgerLoaded && (
+                                                <Badge variant="outline" className="text-[10px] text-slate-400 border-slate-200 font-normal">
+                                                    Standby
+                                                </Badge>
+                                            )}
                                         </div>
+                                        {isLedgerLoaded ? (
+                                            <div className="space-y-3">
+                                                {categoryCollections.map(cat => {
+                                                    const color = cat.rate >= 80 ? 'bg-emerald-500' : cat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+                                                    const textColor = cat.rate >= 80 ? 'text-emerald-700' : cat.rate >= 50 ? 'text-amber-700' : 'text-rose-700';
+                                                    return (
+                                                        <div key={cat.name} className="space-y-1">
+                                                            <div className="flex justify-between text-xs">
+                                                                <span className="font-semibold text-slate-700">{cat.name}</span>
+                                                                <span className={cn("font-bold font-mono", textColor)}>{cat.rate.toFixed(1)}% ({cat.outstanding > 0 ? `GH₵${cat.outstanding.toFixed(0)} owed` : 'Settled'})</span>
+                                                            </div>
+                                                            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                                <div 
+                                                                    className={cn("h-full transition-all duration-500", color)}
+                                                                    style={{ width: `${Math.min(cat.rate, 100)}%` }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <div className="p-6 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center text-center space-y-2 h-[160px]">
+                                                <HandCoins className="h-6 w-6 text-slate-300" />
+                                                <p className="text-xs font-semibold text-slate-600">Fee Stream Breakdown Disabled</p>
+                                                <p className="text-[11px] text-slate-400 max-w-sm">
+                                                    Fee categories (Tuition, Canteen, Transport, PTA) are calculated once the full school ledger is explicitly loaded.
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </TabsContent>
@@ -4464,144 +4536,214 @@ export default function AccountsPage() {
                                     </p>
                                 </div>
                                 
-                                <div className="grid gap-3 max-h-[360px] overflow-y-auto pr-1">
-                                    {topDebtors.map(({ student, balance, records: studentRecs }) => {
-                                        const sKey = student.uid || student.id || student.studentId;
-                                        const overdueDays = getOldestOverdueDays(studentRecs);
-                                        const isSending = sendingSMSStudentId === sKey;
-                                        
-                                        return (
-                                            <div key={sKey} className="bg-white border hover:border-slate-350 p-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                                <div className="flex items-center gap-3">
-                                                    <StudentDisplay student={student} variant="compact" />
-                                                    <div className="hidden sm:block border-l pl-3 py-1">
-                                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Oldest Aging</p>
-                                                        <p className={cn("text-xs font-semibold mt-0.5", overdueDays > 30 ? "text-rose-600" : "text-slate-500")}>
-                                                            {overdueDays > 0 ? `${overdueDays} Days Overdue` : "Current"}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
-                                                    <div className="text-left sm:text-right">
-                                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Outstanding</p>
-                                                        <p className="text-md font-extrabold text-rose-600 font-mono">
-                                                            GH₵{balance.toFixed(2)}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        <Button 
-                                                            variant="outline" 
-                                                            size="sm" 
-                                                            className="h-9 px-3 text-xs text-blue-600 border-blue-200 hover:bg-blue-50/50"
-                                                            onClick={() => {
-                                                                setSearchTerm(`${student.firstName} ${student.lastName}`);
-                                                                setActiveTab('billing');
-                                                            }}
-                                                        >
-                                                            View Ledger
-                                                        </Button>
-                                                        <Button 
-                                                            size="sm" 
-                                                            className="h-9 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
-                                                            disabled={isSending}
-                                                            onClick={() => handleSendOverallSMSReminder(student.uid, `${student.firstName} ${student.lastName}`, balance)}
-                                                        >
-                                                            {isSending ? (
-                                                                <>
-                                                                    <Loader2 className="h-3 w-3 animate-spin mr-1.5" /> Sending...
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <Send className="h-3 w-3 mr-1.5" /> Send Reminder
-                                                                </>
-                                                            )}
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {topDebtors.length === 0 && (
-                                        <div className="text-center py-10 text-muted-foreground italic text-xs">
-                                            All accounts are in good standing! No outstanding debt found.
+                                {!isLedgerLoaded ? (
+                                    <div className="text-center py-12 px-4 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center space-y-3">
+                                        <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-200/70 flex items-center justify-center text-blue-600 shadow-xs">
+                                            <Database className="h-6 w-6" />
                                         </div>
-                                    )}
-                                </div>
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-bold text-slate-800">Ledger Unloaded</p>
+                                            <p className="text-[11px] text-slate-500 max-w-sm leading-relaxed">
+                                                Load the complete school ledger to identify and rank aged debtor accounts.
+                                            </p>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => setLedgerMode('full-school')}
+                                            disabled={isLoadingRecords}
+                                            className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                        >
+                                            {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
+                                            Load School Ledger
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-3 max-h-[360px] overflow-y-auto pr-1">
+                                        {topDebtors.map(({ student, balance, records: studentRecs }) => {
+                                            const sKey = student.uid || student.id || student.studentId;
+                                            const overdueDays = getOldestOverdueDays(studentRecs);
+                                            const isSending = sendingSMSStudentId === sKey;
+                                            
+                                            return (
+                                                <div key={sKey} className="bg-white border hover:border-slate-350 p-3.5 rounded-xl shadow-sm hover:shadow transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <StudentDisplay student={student} variant="compact" />
+                                                        <div className="hidden sm:block border-l pl-3 py-1">
+                                                            <p className="text-[10px] text-muted-foreground uppercase font-bold">Oldest Aging</p>
+                                                            <p className={cn("text-xs font-semibold mt-0.5", overdueDays > 30 ? "text-rose-600" : "text-slate-500")}>
+                                                                {overdueDays > 0 ? `${overdueDays} Days Overdue` : "Current"}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
+                                                        <div className="text-left sm:text-right">
+                                                            <p className="text-[10px] text-muted-foreground uppercase font-bold">Outstanding</p>
+                                                            <p className="text-md font-extrabold text-rose-600 font-mono">
+                                                                GH₵{balance.toFixed(2)}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm" 
+                                                                className="h-9 px-3 text-xs text-blue-600 border-blue-200 hover:bg-blue-50/50"
+                                                                onClick={() => {
+                                                                    setSearchTerm(`${student.firstName} ${student.lastName}`);
+                                                                    setActiveTab('billing');
+                                                                }}
+                                                            >
+                                                                View Ledger
+                                                            </Button>
+                                                            <Button 
+                                                                size="sm" 
+                                                                className="h-9 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                                                                disabled={isSending}
+                                                                onClick={() => handleSendOverallSMSReminder(student.uid, `${student.firstName} ${student.lastName}`, balance)}
+                                                            >
+                                                                {isSending ? (
+                                                                    <>
+                                                                        <Loader2 className="h-3 w-3 animate-spin mr-1.5" /> Sending...
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Send className="h-3 w-3 mr-1.5" /> Send Reminder
+                                                                    </>
+                                                                )}
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {topDebtors.length === 0 && (
+                                            <div className="text-center py-10 text-muted-foreground italic text-xs">
+                                                All accounts are in good standing! No outstanding debt found.
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </TabsContent>
                             
                             <TabsContent value="aging" className="mt-0">
-                                <div className="space-y-4">
-                                    <div className="h-5 flex rounded-lg overflow-hidden bg-slate-100 border shadow-inner">
-                                        {debtAgingStats.grossTotal > 0 ? (
-                                            <>
-                                                {debtAgingStats.current > 0 && (
-                                                    <div 
-                                                        style={{ width: `${(debtAgingStats.current / debtAgingStats.grossTotal) * 100}%` }} 
-                                                        className="bg-emerald-500 transition-all duration-500 hover:opacity-90"
-                                                        title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
-                                                    />
-                                                )}
-                                                {debtAgingStats.age30 > 0 && (
-                                                    <div 
-                                                        style={{ width: `${(debtAgingStats.age30 / debtAgingStats.grossTotal) * 100}%` }} 
-                                                        className="bg-amber-400 transition-all duration-500 hover:opacity-90"
-                                                        title={`1-30 Days Overdue: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
-                                                    />
-                                                )}
-                                                {debtAgingStats.age60 > 0 && (
-                                                    <div 
-                                                        style={{ width: `${(debtAgingStats.age60 / debtAgingStats.grossTotal) * 100}%` }} 
-                                                        className="bg-orange-500 transition-all duration-500 hover:opacity-90"
-                                                        title={`31-60 Days Overdue: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
-                                                    />
-                                                )}
-                                                {debtAgingStats.age90 > 0 && (
-                                                    <div 
-                                                        style={{ width: `${(debtAgingStats.age90 / debtAgingStats.grossTotal) * 100}%` }} 
-                                                        className="bg-rose-600 transition-all duration-500 hover:opacity-90"
-                                                        title={`61+ Days Overdue: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
-                                                    />
-                                                )}
-                                            </>
-                                        ) : (
-                                            <div className="w-full bg-slate-100 flex items-center justify-center text-xs text-muted-foreground italic">No Outstanding Debt</div>
-                                        )}
+                                {!isLedgerLoaded ? (
+                                    <div className="text-center py-12 px-4 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center space-y-3">
+                                        <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-200/70 flex items-center justify-center text-blue-600 shadow-xs">
+                                            <Clock className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-bold text-slate-800">Debt Aging Analysis Standby</p>
+                                            <p className="text-[11px] text-slate-500 max-w-sm leading-relaxed">
+                                                Load the full school ledger to compute aging brackets across student balances.
+                                            </p>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => setLedgerMode('full-school')}
+                                            disabled={isLoadingRecords}
+                                            className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                        >
+                                            {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
+                                            Load School Ledger
+                                        </Button>
                                     </div>
-                                    
-                                    <div className={cn("grid grid-cols-2 gap-4", debtAgingStats.overpayments > 0 ? "md:grid-cols-3 lg:grid-cols-5" : "md:grid-cols-4")}>
-                                        <Card className="p-3 border-l-4 border-l-emerald-500 bg-emerald-50/10 bg-slate-50/20">
-                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Current (Not Overdue)</p>
-                                            <p className="text-lg font-bold text-slate-800 mt-1">GH₵{debtAgingStats.current.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.current / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
-                                        </Card>
-                                        <Card className="p-3 border-l-4 border-l-amber-400 bg-amber-50/10 bg-slate-50/20">
-                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 1 - 30 Days Overdue</p>
-                                            <p className="text-lg font-bold text-amber-700 mt-1">GH₵{debtAgingStats.age30.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age30 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
-                                        </Card>
-                                        <Card className="p-3 border-l-4 border-l-orange-500 bg-orange-50/10 bg-slate-50/20">
-                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-orange-500" /> 31 - 60 Days Overdue</p>
-                                            <p className="text-lg font-bold text-orange-700 mt-1">GH₵{debtAgingStats.age60.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age60 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
-                                        </Card>
-                                        <Card className="p-3 border-l-4 border-l-rose-600 bg-rose-50/10 bg-slate-50/20">
-                                            <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><AlertCircle className="h-3 w-3 text-rose-600" /> 61+ Days Overdue</p>
-                                            <p className="text-lg font-bold text-rose-700 mt-1">GH₵{debtAgingStats.age90.toFixed(2)}</p>
-                                            <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age90 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
-                                        </Card>
-                                        {debtAgingStats.overpayments > 0 && (
-                                            <Card className="p-3 border-l-4 border-l-teal-500 bg-teal-50/10 bg-slate-50/20">
-                                                <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><HandCoins className="h-3 w-3 text-teal-650" /> Overpayments</p>
-                                                <p className="text-lg font-bold text-teal-700 mt-1">-GH₵{debtAgingStats.overpayments.toFixed(2)}</p>
-                                                <p className="text-[10px] text-muted-foreground">Prepayments & credits</p>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="h-5 flex rounded-lg overflow-hidden bg-slate-100 border shadow-inner">
+                                            {debtAgingStats.grossTotal > 0 ? (
+                                                <>
+                                                    {debtAgingStats.current > 0 && (
+                                                        <div 
+                                                            style={{ width: `${(debtAgingStats.current / debtAgingStats.grossTotal) * 100}%` }} 
+                                                            className="bg-emerald-500 transition-all duration-500 hover:opacity-90"
+                                                            title={`Current: GH₵ ${debtAgingStats.current.toFixed(2)}`}
+                                                        />
+                                                    )}
+                                                    {debtAgingStats.age30 > 0 && (
+                                                        <div 
+                                                            style={{ width: `${(debtAgingStats.age30 / debtAgingStats.grossTotal) * 100}%` }} 
+                                                            className="bg-amber-400 transition-all duration-500 hover:opacity-90"
+                                                            title={`1-30 Days Overdue: GH₵ ${debtAgingStats.age30.toFixed(2)}`}
+                                                        />
+                                                    )}
+                                                    {debtAgingStats.age60 > 0 && (
+                                                        <div 
+                                                            style={{ width: `${(debtAgingStats.age60 / debtAgingStats.grossTotal) * 100}%` }} 
+                                                            className="bg-orange-500 transition-all duration-500 hover:opacity-90"
+                                                            title={`31-60 Days Overdue: GH₵ ${debtAgingStats.age60.toFixed(2)}`}
+                                                        />
+                                                    )}
+                                                    {debtAgingStats.age90 > 0 && (
+                                                        <div 
+                                                            style={{ width: `${(debtAgingStats.age90 / debtAgingStats.grossTotal) * 100}%` }} 
+                                                            className="bg-rose-600 transition-all duration-500 hover:opacity-90"
+                                                            title={`61+ Days Overdue: GH₵ ${debtAgingStats.age90.toFixed(2)}`}
+                                                        />
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <div className="w-full bg-slate-100 flex items-center justify-center text-xs text-muted-foreground italic">No Outstanding Debt</div>
+                                            )}
+                                        </div>
+                                        
+                                        <div className={cn("grid grid-cols-2 gap-4", debtAgingStats.overpayments > 0 ? "md:grid-cols-3 lg:grid-cols-5" : "md:grid-cols-4")}>
+                                            <Card className="p-3 border-l-4 border-l-emerald-500 bg-emerald-50/10 bg-slate-50/20">
+                                                <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Current (Not Overdue)</p>
+                                                <p className="text-lg font-bold text-slate-800 mt-1">GH₵{debtAgingStats.current.toFixed(2)}</p>
+                                                <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.current / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
                                             </Card>
-                                        )}
+                                            <Card className="p-3 border-l-4 border-l-amber-400 bg-amber-50/10 bg-slate-50/20">
+                                                <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 1 - 30 Days Overdue</p>
+                                                <p className="text-lg font-bold text-amber-700 mt-1">GH₵{debtAgingStats.age30.toFixed(2)}</p>
+                                                <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age30 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
+                                            </Card>
+                                            <Card className="p-3 border-l-4 border-l-orange-500 bg-orange-50/10 bg-slate-50/20">
+                                                <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3 text-orange-500" /> 31 - 60 Days Overdue</p>
+                                                <p className="text-lg font-bold text-orange-700 mt-1">GH₵{debtAgingStats.age60.toFixed(2)}</p>
+                                                <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age60 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
+                                            </Card>
+                                            <Card className="p-3 border-l-4 border-l-rose-600 bg-rose-50/10 bg-slate-50/20">
+                                                <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><AlertCircle className="h-3 w-3 text-rose-600" /> 61+ Days Overdue</p>
+                                                <p className="text-lg font-bold text-rose-700 mt-1">GH₵{debtAgingStats.age90.toFixed(2)}</p>
+                                                <p className="text-[10px] text-muted-foreground">{debtAgingStats.grossTotal > 0 ? ((debtAgingStats.age90 / debtAgingStats.grossTotal) * 100).toFixed(1) : 0}% of gross</p>
+                                            </Card>
+                                            {debtAgingStats.overpayments > 0 && (
+                                                <Card className="p-3 border-l-4 border-l-teal-500 bg-teal-50/10 bg-slate-50/20">
+                                                    <p className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1"><HandCoins className="h-3 w-3 text-teal-650" /> Overpayments</p>
+                                                    <p className="text-lg font-bold text-teal-700 mt-1">-GH₵{debtAgingStats.overpayments.toFixed(2)}</p>
+                                                    <p className="text-[10px] text-muted-foreground">Prepayments & credits</p>
+                                                </Card>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </TabsContent>
                             
                             <TabsContent value="classPace" className="mt-0">
-                                {classCollectionsStats.length === 0 ? (
+                                {!isLedgerLoaded ? (
+                                    <div className="text-center py-12 px-4 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center space-y-3">
+                                        <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-200/70 flex items-center justify-center text-blue-600 shadow-xs">
+                                            <Database className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-bold text-slate-800">Class Pace Standby</p>
+                                            <p className="text-[11px] text-slate-500 max-w-sm leading-relaxed">
+                                                Load the full school ledger to compute billing and collection velocity per classroom.
+                                            </p>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => setLedgerMode('full-school')}
+                                            disabled={isLoadingRecords}
+                                            className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                        >
+                                            {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
+                                            Load School Ledger
+                                        </Button>
+                                    </div>
+                                ) : classCollectionsStats.length === 0 ? (
                                     <p className="text-center py-10 text-muted-foreground italic text-xs">No class data found.</p>
                                 ) : (
                                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
