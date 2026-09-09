@@ -30,10 +30,11 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck, KeyRound } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck, KeyRound, Zap, RotateCcw, Sparkles } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
+import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 
 // --- TYPE DEFINITIONS ---
 type ParentMember = {
@@ -66,10 +67,14 @@ export default function ParentsPage() {
   const { toast } = useToast();
   const { role } = useRole();
   const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
+  const { summary: dashboardSummary } = useDashboardSummary(adminSchoolId);
 
   const [parents, setParents] = useState<ParentMember[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
+  
+  // On-Demand Parent Loading State
+  const [hasLoadedParents, setHasLoadedParents] = useState(false);
+  const [isLoadingParents, setIsLoadingParents] = useState(false);
 
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -99,11 +104,11 @@ export default function ParentsPage() {
     );
   };
 
-  // --- 1. FETCH DATA ---
-  const loadData = useCallback(async () => {
+  // --- 1. ON-DEMAND DATA FETCHING ---
+  const loadParentData = useCallback(async () => {
     if (!firestore || !adminSchoolId) return;
     
-    setIsLoadingData(true);
+    setIsLoadingParents(true);
     try {
         const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
         const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
@@ -118,17 +123,24 @@ export default function ParentsPage() {
 
         setParents(parentList);
         setStudents(studentList);
+        setHasLoadedParents(true);
+        toast({ title: "Directory Loaded", description: `Loaded ${parentList.length} parent profiles on-demand.` });
     } catch (err: any) {
         console.error("Load Data Error:", err);
-        toast({ variant: 'destructive', title: "Error", description: "Failed to load school data." });
+        toast({ variant: 'destructive', title: "Error", description: "Failed to load parent profiles." });
     } finally {
-        setIsLoadingData(false);
+        setIsLoadingParents(false);
     }
   }, [firestore, adminSchoolId, toast]);
 
-  useEffect(() => {
-      if(adminSchoolId) loadData();
-  }, [loadData, adminSchoolId]);
+  const loadData = loadParentData;
+
+  const resetToOnDemand = useCallback(() => {
+    setParents([]);
+    setStudents([]);
+    setHasLoadedParents(false);
+    toast({ title: "Switched to On-Demand Mode", description: "Parent records unloaded from memory to eliminate reads." });
+  }, [toast]);
 
   useEffect(() => {
     if (isAddOpen) {
@@ -265,7 +277,9 @@ export default function ParentsPage() {
       return list;
   }, [students, studentSearch, showOnlyUnlinked, editingParent, selectedStudentIds]);
 
-  const overallLoading = isLoadingSchoolId || isLoadingData;  return (
+  const overallLoading = isLoadingSchoolId;
+
+  return (
     <div className="space-y-8 p-6">
       {/* Premium Rose/Pink Gradient Header */}
       <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-rose-500 via-pink-500 to-fuchsia-600 p-8 md:p-10 text-white shadow-xl shadow-pink-100/50 dark:shadow-none">
@@ -280,11 +294,23 @@ export default function ParentsPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
-              <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
-            </Button>
+            {hasLoadedParents ? (
+              <>
+                <Button variant="outline" onClick={loadParentData} disabled={isLoadingParents} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
+                  <RefreshCw className={cn("h-4 w-4 mr-2", isLoadingParents && "animate-spin")}/> Refresh
+                </Button>
+                <Button variant="outline" onClick={resetToOnDemand} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
+                  <RotateCcw className="h-4 w-4 mr-2"/> Switch to On-Demand
+                </Button>
+              </>
+            ) : (
+              <Button onClick={loadParentData} disabled={isLoadingParents} className="bg-white text-pink-700 hover:bg-pink-50 hover:text-pink-850 font-bold px-5 h-11 rounded-xl shadow-lg border border-pink-100 gap-2 cursor-pointer">
+                {isLoadingParents ? <Loader2 className="h-4 w-4 animate-spin"/> : <Zap className="h-4 w-4 text-pink-600"/>}
+                <span>Generate Parent List</span>
+              </Button>
+            )}
             {canManage && (
-              <Button onClick={() => setIsAddOpen(true)} className="bg-white text-pink-700 hover:bg-pink-50 hover:text-pink-850 font-bold px-5 h-11 rounded-xl shadow-lg border border-pink-100" disabled={!adminSchoolId}>
+              <Button onClick={() => { if (!hasLoadedParents) loadParentData(); setIsAddOpen(true); }} className="bg-white text-pink-700 hover:bg-pink-50 hover:text-pink-850 font-bold px-5 h-11 rounded-xl shadow-lg border border-pink-100" disabled={!adminSchoolId}>
                 <UserPlus className="h-4.5 w-4.5 mr-2"/> Add Parent Profile
               </Button>
             )}
@@ -293,14 +319,22 @@ export default function ParentsPage() {
 
         {/* Dynamic Metric Badges */}
         {adminSchoolId && (
-          <div className="relative z-10 mt-8 flex flex-wrap gap-4 border-t border-white/10 pt-6">
+          <div className="relative z-10 mt-8 flex flex-wrap items-center gap-4 border-t border-white/10 pt-6">
             <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
               <span className="text-[10px] text-pink-200 uppercase tracking-widest font-black">Linked Guardians</span>
-              <div className="text-xl font-bold mt-0.5">{parents.length} Accounts</div>
+              <div className="text-xl font-bold mt-0.5">
+                {hasLoadedParents ? `${parents.length} Accounts` : 'On-Demand'}
+              </div>
             </div>
             <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
               <span className="text-[10px] text-pink-200 uppercase tracking-widest font-black">Associated Children</span>
-              <div className="text-xl font-bold mt-0.5">{students.filter(s => s.parentId).length} Students Linked</div>
+              <div className="text-xl font-bold mt-0.5">
+                {hasLoadedParents ? `${students.filter(s => s.parentId).length} Students Linked` : 'On-Demand'}
+              </div>
+            </div>
+            <div className="ml-auto hidden lg:flex items-center gap-2 rounded-xl bg-black/20 px-3.5 py-2 border border-white/10 text-xs text-pink-100">
+              <Zap className={cn("h-3.5 w-3.5", hasLoadedParents ? "text-pink-300" : "text-amber-300")} />
+              <span>{hasLoadedParents ? "Full Directory In Memory" : "0 Upfront Firestore Reads Active"}</span>
             </div>
           </div>
         )}
@@ -312,23 +346,105 @@ export default function ParentsPage() {
       {/* Main Card */}
       <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
         <CardContent className="p-6 space-y-6">
+          {/* On-Demand Mode Bar when parents are loaded */}
+          {hasLoadedParents && (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-pink-50/90 via-rose-50/50 to-slate-50 border border-pink-200/70 rounded-2xl text-xs text-pink-950">
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-pink-600 text-white font-bold shadow-xs shrink-0">
+                  <Zap className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <span className="font-bold text-pink-950">Active Parent Directory Mode</span>
+                  <span className="text-pink-700 ml-2">({filteredParents.length} of {parents.length} profiles showing)</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={loadParentData}
+                  disabled={isLoadingParents}
+                  className="h-8 text-xs font-semibold rounded-lg border-pink-300 text-pink-800 hover:bg-pink-100/60"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-pink-600", isLoadingParents && "animate-spin")} /> Refresh
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={resetToOnDemand}
+                  className="h-8 text-xs font-semibold rounded-lg border-pink-300 text-pink-800 hover:bg-pink-100/60"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-pink-600" /> Switch to On-Demand
+                </Button>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-between gap-4">
             <div className="relative max-w-sm flex-grow">
               <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
               <StudentSearchInput 
                 value={searchTerm} 
-                onChange={setSearchTerm} 
+                onChange={(val) => {
+                  setSearchTerm(val);
+                  if (!hasLoadedParents && val.trim().length >= 3) {
+                    loadParentData();
+                  }
+                }} 
                 className="pl-10 h-10 border-slate-200 focus-visible:ring-pink-500 rounded-xl"
                 placeholder="Search parents by name or email..."
               />
             </div>
-            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">{filteredParents.length} Records</span>
+            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
+              {hasLoadedParents ? `${filteredParents.length} Records` : 'On-Demand'}
+            </span>
           </div>
 
-          {overallLoading ? (
+          {isLoadingParents ? (
             <div className="py-16 flex flex-col items-center justify-center text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
               <Loader2 className="h-8 w-8 animate-spin text-pink-500 mb-2"/>
-              <p className="text-xs uppercase font-bold tracking-wider">Loading Directory...</p>
+              <p className="text-xs uppercase font-bold tracking-wider font-mono">Loading Parent Directory On Demand...</p>
+            </div>
+          ) : !hasLoadedParents ? (
+            <div className="py-16 px-6 text-center border-2 border-dashed border-pink-200/80 rounded-3xl bg-gradient-to-b from-pink-50/50 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
+              <div className="h-16 w-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600 shadow-inner">
+                <HeartHandshake className="h-8 w-8 text-pink-600 animate-pulse" />
+              </div>
+              <div className="space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-100/80 text-pink-800 text-xs font-bold uppercase tracking-wider mb-1">
+                  ⚡ Cost-Saving Architecture
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Parent Profiles Generated On-Demand</h3>
+                <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
+                  To prevent automatic Firestore read spikes upon page open, parent records and linked student relationships are loaded only when requested.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <Button 
+                  onClick={loadParentData}
+                  disabled={isLoadingParents}
+                  className="bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
+                >
+                  <Zap className="h-4 w-4" />
+                  Generate Parent List
+                </Button>
+                {searchTerm.trim().length > 0 && (
+                  <Button 
+                    variant="outline"
+                    onClick={loadParentData}
+                    className="rounded-xl h-11 px-4 border-slate-200 hover:bg-slate-50"
+                  >
+                    Search Directory for "{searchTerm.trim()}"
+                  </Button>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400 pt-3 border-t border-slate-100 w-full">
+                <span>⚡ 0 upfront Firestore reads</span>
+                <span>•</span>
+                <span>Associated child linkages</span>
+                <span>•</span>
+                <span>Contact information & credentials</span>
+              </div>
             </div>
           ) : filteredParents.length === 0 ? (
             <div className="py-16 text-center text-slate-400 border border-dashed rounded-2xl bg-slate-50 flex flex-col items-center gap-3">
