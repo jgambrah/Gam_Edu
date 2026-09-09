@@ -47,6 +47,90 @@ const getStatusBadge = (score: number) => {
     return <Badge className="bg-rose-100 text-rose-800 border-rose-200">Needs Support</Badge>;
 };
 
+/**
+ * Strict pedagogical hierarchy rank for Ghanaian / West African school systems:
+ * 1. Creche / Daycare (Rank 10)
+ * 2. Nursery 1, Nursery 2 (Rank 21, 22)
+ * 3. KG 1, KG 2 (Rank 31, 32)
+ * 4. BS 1 / Class 1 through BS 6 / Class 6 (Rank 41..46)
+ * 5. BS 7 / JHS 1 through BS 9 / JHS 3 (Rank 70, 80, 90)
+ * 6. SHS / Secondary / Unmatched (Rank 100+)
+ */
+export const getAcademicClassRank = (className?: string): number => {
+    if (!className) return 999;
+    const name = className.trim().toUpperCase();
+
+    // 1. Creche / Daycare
+    if (name.includes('CRECHE') || name.includes('DAYCARE') || name.includes('DAY CARE') || name.includes('TODDLER')) {
+        return 10;
+    }
+
+    // 2. Nursery 1, Nursery 2
+    if (name.includes('NURSERY') || name.includes('NURS')) {
+        if (name.includes('1')) return 21;
+        if (name.includes('2')) return 22;
+        if (name.includes('3')) return 23;
+        return 20;
+    }
+
+    // 3. KG 1, KG 2 / Kindergarten
+    if (name.includes('KG') || name.includes('KINDERGARTEN')) {
+        if (name.includes('1')) return 31;
+        if (name.includes('2')) return 32;
+        if (name.includes('3')) return 33;
+        return 30;
+    }
+
+    // 4. JHS 1..3 / Junior High / BS 7..9
+    if (name.includes('JHS') || name.includes('J.H.S') || name.includes('JUNIOR HIGH')) {
+        if (name.includes('1')) return 70; // JHS 1 / BS 7
+        if (name.includes('2')) return 80; // JHS 2 / BS 8
+        if (name.includes('3')) return 90; // JHS 3 / BS 9
+        return 70;
+    }
+
+    // 5. SHS / Senior High (if present)
+    if (name.includes('SHS') || name.includes('S.H.S') || name.includes('SENIOR HIGH')) {
+        if (name.includes('1')) return 101;
+        if (name.includes('2')) return 102;
+        if (name.includes('3')) return 103;
+        return 100;
+    }
+
+    // 6. BS 1..6, Class 1..6, Grade 1..6, Primary 1..6, Basic 1..6
+    const prefixMatch = name.match(/(?:BS|CLASS|GRADE|BASIC|PRIMARY|STAGE|YEAR|P)\s*(\d+)/i);
+    if (prefixMatch) {
+        const num = parseInt(prefixMatch[1], 10);
+        if (num >= 1 && num <= 6) return 40 + num; // 41..46
+        if (num === 7) return 70; // BS 7
+        if (num === 8) return 80; // BS 8
+        if (num === 9) return 90; // BS 9
+        if (num > 9) return 100 + num;
+    }
+
+    // Fallback: standalone digits in the class name
+    const numberMatch = name.match(/\b(\d+)\b/);
+    if (numberMatch) {
+        const num = parseInt(numberMatch[1], 10);
+        if (num >= 1 && num <= 6) return 40 + num;
+        if (num === 7) return 70;
+        if (num === 8) return 80;
+        if (num === 9) return 90;
+        if (num > 9) return 100 + num;
+    }
+
+    return 500;
+};
+
+export const compareAcademicClasses = (a: Class, b: Class): number => {
+    const rankA = getAcademicClassRank(a?.name);
+    const rankB = getAcademicClassRank(b?.name);
+    if (rankA !== rankB) {
+        return rankA - rankB;
+    }
+    return (a?.name || '').localeCompare(b?.name || '', undefined, { numeric: true, sensitivity: 'base' });
+};
+
 export default function AcademicReportsPage() {
     const { role, loading: isRoleLoading } = useRole();
     const router = useRouter();
@@ -100,7 +184,13 @@ export default function AcademicReportsPage() {
         }
         return q;
     }, [firestore, user, role, schoolId, isRoleLoading, canAccess]);
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+    const { data: rawClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+
+    // Pedagogical Academic Sorting for classes
+    const classes = useMemo(() => {
+        if (!rawClasses) return [];
+        return [...rawClasses].sort(compareAcademicClasses);
+    }, [rawClasses]);
 
     // Query Subjects
     const subjectsQuery = useMemoFirebase(() => {
