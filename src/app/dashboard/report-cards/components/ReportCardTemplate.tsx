@@ -61,6 +61,8 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 margin: '0 auto',
                 padding: '24px',
                 overflow: 'hidden',
+                WebkitPrintColorAdjust: 'exact',
+                printColorAdjust: 'exact',
             }}
         >
             {/* ── CERTIFICATE EMBELLISHMENT FRAME ── */}
@@ -151,23 +153,23 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         </div>
                     )}
                     {(data.term === 'Third Term' || data.term === 'Term 3' || data.term === '3' || data.term === 'third term') && data.promotionDecision && (
-                        <div className="flex justify-between items-center border-b border-slate-300 pb-1.5 col-span-2">
+                        <div className="flex justify-between items-center border-b border-slate-300 pb-2 col-span-2 px-1">
                             <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
-                                <GraduationCap className="h-3 w-3 text-slate-800" /> Promotion Status
+                                <GraduationCap className="h-3.5 w-3.5 text-slate-800" /> Promotion Status
                             </span>
-                            <span className="font-black uppercase text-[10px]">
+                            <span className="font-black uppercase text-[10px] mr-1">
                                 {data.promotionDecision === 'Promoted' && (
-                                    <span className="bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border-2 border-emerald-300 font-black">
+                                    <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-900 px-3.5 py-1 rounded-full border-2 border-emerald-400 font-black tracking-wide shadow-sm">
                                         Promoted to {data.promotedToClassName || 'Next Class'}
                                     </span>
                                 )}
                                 {data.promotionDecision === 'Repeated' && (
-                                    <span className="bg-rose-50 text-rose-800 px-2.5 py-1 rounded-lg border-2 border-rose-300 font-black">
+                                    <span className="inline-flex items-center gap-1 bg-rose-100 text-rose-900 px-3.5 py-1 rounded-full border-2 border-rose-400 font-black tracking-wide shadow-sm">
                                         Repeated in {data.className}
                                     </span>
                                 )}
                                 {data.promotionDecision === 'Graduated' && (
-                                    <span className="bg-amber-50 text-amber-800 px-2.5 py-1 rounded-lg border-2 border-amber-300 font-black">
+                                    <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 px-3.5 py-1 rounded-full border-2 border-amber-400 font-black tracking-wide shadow-sm">
                                         Graduated 🎓
                                     </span>
                                 )}
@@ -179,21 +181,21 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 {/* ── ACADEMIC TRANSCRIPT TABLE ── */}
                 {(() => {
                     const showSubjectPosition = (data.reportCardPositionMode || 'both') !== 'none';
-                    const subjectWidth = showSubjectPosition ? 'w-[25%]' : 'w-[33%]';
+                    const subjectWidth = showSubjectPosition ? 'w-[32%]' : 'w-[39%]';
                     return (
                         <table className="w-full text-[11.5px] mb-5 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `1.5px solid ${secondaryTheme}` }}>
                             <thead>
                                 <tr style={{ backgroundColor: secondaryTheme, color: '#ffffff' }}>
                                     <th className={`p-2.5 text-left ${subjectWidth} uppercase font-black text-[10.5px] tracking-widest`}>Subject</th>
-                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[10.5px] tracking-widest">CA ({caWeight})</th>
-                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[10.5px] tracking-widest">Exam ({examWeight})</th>
-                                    <th className="p-2.5 text-center w-[10%] uppercase font-black text-[10.5px] tracking-widest bg-black/10">Total</th>
-                                    <th className="p-2.5 text-center w-[8%] uppercase font-black text-[10.5px] tracking-widest">Avg</th>
+                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10.5px] tracking-wider">CA ({caWeight})</th>
+                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10.5px] tracking-wider">Exam ({examWeight})</th>
+                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10.5px] tracking-wider bg-black/10">Total</th>
+                                    <th className="p-2.5 text-center w-[9%] uppercase font-black text-[10px] tracking-wider">Class Avg</th>
                                     {showSubjectPosition && (
-                                        <th className="p-2.5 text-center w-[8%] uppercase font-black text-[10.5px] tracking-widest">Pos</th>
+                                        <th className="p-2.5 text-center w-[7%] uppercase font-black text-[10px] tracking-wider">Pos</th>
                                     )}
-                                    <th className="p-2.5 text-center w-[8%] uppercase font-black text-[10.5px] tracking-widest">Grade</th>
-                                    <th className="p-2.5 text-left w-[21%] uppercase font-black text-[10.5px] tracking-widest">Remarks</th>
+                                    <th className="p-2.5 text-center w-[7%] uppercase font-black text-[10px] tracking-wider">Grade</th>
+                                    <th className={`p-2.5 text-left ${showSubjectPosition ? 'w-[18%]' : 'w-[17%]'} uppercase font-black text-[10.5px] tracking-widest`}>Remarks</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -201,21 +203,22 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                     const gradeVal = (row.grade || '').toUpperCase();
                                     const isFail = gradeVal.includes('F') || gradeVal.includes('E');
                                     const isExcellent = gradeVal.includes('A') || gradeVal.includes('*');
+                                    const isLongName = (row.subjectName || '').length > 22;
                                     
                                     return (
                                         <tr key={i} className={`border-b border-slate-300 last:border-0 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
-                                            <td className="p-2.5 font-extrabold uppercase border-r text-black flex items-center gap-1.5 text-[11.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>
-                                                <BookOpen className="h-3 w-3 text-slate-800" />
-                                                {row.subjectName}
+                                            <td className={`p-2.5 font-extrabold uppercase border-r text-black flex items-center gap-1.5 leading-snug ${isLongName ? 'text-[10.5px]' : 'text-[11.5px]'}`} style={{ borderRightColor: `${secondaryTheme}35` }}>
+                                                <BookOpen className="h-3 w-3 text-slate-800 shrink-0" />
+                                                <span>{row.subjectName}</span>
                                             </td>
-                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
-                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
-                                            <td className="p-2.5 text-center font-black bg-slate-100/50 border-r text-black text-[13px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
+                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
+                                            <td className="p-2.5 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
+                                            <td className="p-2.5 text-center font-black bg-slate-100/50 border-r text-black text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
                                             <td className="p-2.5 text-center text-slate-900 border-r font-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.classAverage}</td>
                                             {showSubjectPosition && (
                                                 <td className="p-2.5 text-center font-black border-r text-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.position}</td>
                                             )}
-                                            <td className={`p-2.5 text-center font-black border-r text-[13px] ${
+                                            <td className={`p-2.5 text-center font-black border-r text-[12.5px] ${
                                                 isExcellent ? 'text-emerald-800' : isFail ? 'text-rose-700' : 'text-amber-800'
                                             }`} style={{ borderRightColor: `${secondaryTheme}35` }}>
                                                 {row.grade}
@@ -272,12 +275,14 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 })()}
 
                 {/* ── NEXT TERM REOPENING DETAILS BANNER ── */}
-                <div 
-                    className="border-2 p-3 text-center mb-5 rounded-xl shadow-sm"
-                    style={{ borderColor: `${secondaryTheme}70`, backgroundColor: `${secondaryTheme}08` }}
-                >
-                    <span className="text-[9.5px] font-black uppercase tracking-wider mr-2" style={{ color: primaryTheme }}>Next Term Reopening Date:</span>
-                    <span className="text-sm font-black" style={{ color: primaryTheme }}>{nextTermReopening}</span>
+                <div className="bg-amber-50 text-amber-950 border-2 border-amber-300 rounded-xl px-4 py-2.5 mb-5 shadow-sm flex items-center justify-center gap-3">
+                    <div className="flex items-center gap-1.5 text-amber-800 font-black text-[10px] uppercase tracking-wider">
+                        <Calendar className="h-3.5 w-3.5 text-amber-700" />
+                        <span>Next Term Reopening Date:</span>
+                    </div>
+                    <span className="text-sm font-black tracking-wide text-amber-950 underline decoration-amber-400 decoration-2 underline-offset-2">
+                        {nextTermReopening}
+                    </span>
                 </div>
 
                 {/* ── COMMENTS & REMARKS CARD PANELS ── */}

@@ -1640,7 +1640,11 @@ export default function ReportCardManager() {
             <style jsx global>{`
                 @media print {
                     body * { visibility: hidden !important; }
-                    #print-area, #print-area * { visibility: visible !important; }
+                    #print-area, #print-area * { 
+                        visibility: visible !important; 
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
                     #print-area { position: absolute !important; left: 0 !important; top: 0 !important; width: 210mm !important; height: auto !important; display: block !important; }
                     .print-page-break {
                         page-break-after: always;
