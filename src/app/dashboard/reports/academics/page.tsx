@@ -862,7 +862,8 @@ export default function AcademicReportsPage() {
                     <Button 
                         onClick={() => window.print()} 
                         disabled={!selectedClassId || !isReportRequested || !academicData}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-md border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-white/15 hover:bg-white/25 text-white border border-white/20 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white/15"
+                        title={(!selectedClassId || !isReportRequested || !academicData) ? "Generate analytics first to print record" : "Print Record"}
                     >
                         <Printer className="mr-2 h-4 w-4"/>Print Record
                     </Button>
