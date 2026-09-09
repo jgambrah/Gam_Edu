@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, where, doc } from 'firebase/firestore';
+import { collection, query, where, doc, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,7 +15,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Ba
 import { 
     Users, Printer, Loader2, ShieldAlert, TrendingUp, AlertTriangle, 
     BookOpen, Search, Sparkles, ChevronRight, Briefcase, GraduationCap, 
-    Percent, HelpCircle, UserCheck, BarChart2, CheckCircle2, Award, FileText, Info 
+    Percent, HelpCircle, UserCheck, BarChart2, CheckCircle2, Award, FileText, Info,
+    Zap, RotateCcw, RefreshCw
 } from 'lucide-react';
 import { Class, Student, Staff } from '@/lib/types';
 import Link from 'next/link';
@@ -59,15 +60,57 @@ export default function EnrollmentReportsPage() {
         }
     }, [role, isRoleLoading, router]);
 
-    // Data Fetching
-    const studentsQuery = useMemoFirebase(() => (firestore && schoolId && canAccess) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canAccess]);
-    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+    // On-Demand Data State
+    const [hasLoadedReport, setHasLoadedReport] = useState(false);
+    const [isLoadingReport, setIsLoadingReport] = useState(false);
+    const [students, setStudents] = useState<Student[]>([]);
+    const [classes, setClasses] = useState<Class[]>([]);
+    const [staff, setStaff] = useState<Staff[]>([]);
 
-    const classesQuery = useMemoFirebase(() => (firestore && schoolId && canAccess) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canAccess]);
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+    const loadReportData = async () => {
+        if (!firestore || !schoolId || !canAccess) return;
+        setIsLoadingReport(true);
+        try {
+            const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+            const classQuery = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+            const staffQuery = query(collection(firestore, 'staff'), where('schoolId', '==', schoolId));
 
-    const staffQuery = useMemoFirebase(() => (firestore && schoolId && canAccess) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, canAccess]);
-    const { data: staff, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
+            const [studentSnap, classSnap, staffSnap] = await Promise.all([
+                getDocs(studentQuery),
+                getDocs(classQuery),
+                getDocs(staffQuery)
+            ]);
+
+            const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as unknown as Student[];
+            const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as unknown as Class[];
+            const staffList = staffSnap.docs.map(d => ({ id: d.id, ...d.data() })) as unknown as Staff[];
+
+            setStudents(studentList);
+            setClasses(classList);
+            setStaff(staffList);
+            setHasLoadedReport(true);
+        } catch (err: any) {
+            console.error("Error loading enrollment report data:", err);
+        } finally {
+            setIsLoadingReport(false);
+        }
+    };
+
+    const resetToOnDemand = () => {
+        setStudents([]);
+        setClasses([]);
+        setStaff([]);
+        setHasLoadedReport(false);
+    };
+
+    const handlePrint = async () => {
+        if (!hasLoadedReport) {
+            await loadReportData();
+            setTimeout(() => window.print(), 400);
+            return;
+        }
+        window.print();
+    };
 
     // Fetch School Settings for Print Layout Header
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
@@ -189,7 +232,7 @@ export default function EnrollmentReportsPage() {
         });
     }, [staff, staffSearchQuery]);
 
-    const isLoading = isSchoolLoading || isRoleLoading || isLoadingStudents || isLoadingClasses || isLoadingStaff;
+    const isLoading = isSchoolLoading || isRoleLoading;
 
     if (isLoading) {
         return (
@@ -248,22 +291,116 @@ export default function EnrollmentReportsPage() {
                     <p className="text-indigo-100 text-sm font-medium">
                         Analyze student demographics, classroom capacities, and staff allocation stats to drive enrollment policy.
                     </p>
+                    <div className="pt-2 flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                            <Zap className={cn("h-3.5 w-3.5", hasLoadedReport ? "text-emerald-300" : "text-amber-300")} />
+                            {hasLoadedReport ? `Snapshot In Memory (${students.length} Students)` : "0 Upfront Firestore Reads Active"}
+                        </span>
+                    </div>
                 </div>
-                <div className="flex gap-2 self-stretch md:self-auto justify-end">
+                <div className="flex flex-wrap gap-2 self-stretch md:self-auto justify-end items-center">
                     <Button asChild variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                         <Link href="/dashboard/reports/academics">Academics</Link>
                     </Button>
                     <Button asChild variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                         <Link href="/dashboard/reports/attendance">Attendance</Link>
                     </Button>
-                    <Button onClick={() => window.print()} className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-md border-0">
+                    {hasLoadedReport ? (
+                        <>
+                            <Button variant="outline" onClick={loadReportData} disabled={isLoadingReport} className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                                <RefreshCw className={cn("mr-2 h-4 w-4", isLoadingReport && "animate-spin")}/> Refresh
+                            </Button>
+                            <Button variant="outline" onClick={resetToOnDemand} className="bg-white/10 border-white/20 text-white hover:bg-white/20 text-xs font-semibold">
+                                <RotateCcw className="mr-2 h-4 w-4"/> On-Demand
+                            </Button>
+                        </>
+                    ) : (
+                        <Button onClick={loadReportData} disabled={isLoadingReport} className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold shadow-md border-0 gap-2 cursor-pointer">
+                            {isLoadingReport ? <Loader2 className="h-4 w-4 animate-spin"/> : <Zap className="h-4 w-4"/>}
+                            <span>Generate Report</span>
+                        </Button>
+                    )}
+                    <Button onClick={handlePrint} className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-md border-0">
                         <Printer className="mr-2 h-4 w-4"/>Print Record
                     </Button>
                 </div>
             </div>
 
-            {reportData ? (
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            {isLoadingReport ? (
+                <div className="py-20 flex flex-col items-center justify-center text-slate-400 bg-slate-50 border border-dashed rounded-3xl">
+                    <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mb-3"/>
+                    <p className="text-sm font-bold text-slate-700">Assembling Institutional Demographics...</p>
+                    <p className="text-xs text-slate-400 mt-1">Retrieving students, classroom capacities, and staff rosters on-demand</p>
+                </div>
+            ) : !hasLoadedReport ? (
+                <div className="py-16 px-6 text-center border-2 border-dashed border-indigo-200/80 rounded-3xl bg-gradient-to-b from-indigo-50/50 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
+                    <div className="h-16 w-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
+                        <Users className="h-8 w-8 text-indigo-600 animate-pulse" />
+                    </div>
+                    <div className="space-y-1.5">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100/80 text-indigo-800 text-xs font-bold uppercase tracking-wider mb-1">
+                            ⚡ Cost-Saving Architecture
+                        </div>
+                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Enrollment & HR Reports Generated On-Demand</h3>
+                        <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
+                            To eliminate automatic Firestore read spikes upon page open, full student demographics, classroom capacities, and staff allocation stats are assembled only when requested.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                        <Button 
+                            onClick={loadReportData}
+                            disabled={isLoadingReport}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
+                        >
+                            <Zap className="h-4 w-4" />
+                            Generate Enrollment & HR Report
+                        </Button>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400 pt-3 border-t border-slate-100 w-full">
+                        <span>⚡ 0 upfront Firestore reads</span>
+                        <span>•</span>
+                        <span>Demographics & gender ratios</span>
+                        <span>•</span>
+                        <span>Classroom capacity utilization</span>
+                        <span>•</span>
+                        <span>Staff-to-student ratios</span>
+                    </div>
+                </div>
+            ) : reportData ? (
+                <>
+                    {/* On-Demand Active Snapshot Bar */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-indigo-50/90 via-purple-50/50 to-slate-50 border border-indigo-200/70 rounded-2xl text-xs text-indigo-950 print:hidden">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-indigo-600 text-white font-bold shadow-xs shrink-0">
+                                <Zap className="h-3.5 w-3.5" />
+                            </div>
+                            <div>
+                                <span className="font-bold text-indigo-950">Active Report Snapshot</span>
+                                <span className="text-indigo-700 ml-2">({reportData.totalStudents} Students / {reportData.totalClasses} Classes / {reportData.totalStaff} Staff)</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={loadReportData}
+                                disabled={isLoadingReport}
+                                className="h-8 text-xs font-semibold rounded-lg border-indigo-300 text-indigo-800 hover:bg-indigo-100/60"
+                            >
+                                <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-indigo-600", isLoadingReport && "animate-spin")} /> Refresh
+                            </Button>
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={resetToOnDemand}
+                                className="h-8 text-xs font-semibold rounded-lg border-indigo-300 text-indigo-800 hover:bg-indigo-100/60"
+                            >
+                                <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-indigo-600" /> Switch to On-Demand
+                            </Button>
+                        </div>
+                    </div>
+
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                     <div className="flex justify-between items-center print:hidden border-b pb-2">
                         <TabsList className="bg-slate-100 p-1 rounded-xl">
                             <TabsTrigger value="students" className="rounded-lg font-bold text-xs uppercase px-4 py-2">Students Enrollment</TabsTrigger>
@@ -793,6 +930,7 @@ export default function EnrollmentReportsPage() {
                         </div>
                     </TabsContent>
                 </Tabs>
+                </>
             ) : (
                 <div className="text-center py-20 bg-slate-100 rounded-xl border border-slate-200">
                     <p className="text-slate-500 font-medium">No demographics or enrollment data posted in the system database.</p>
