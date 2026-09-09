@@ -66,6 +66,100 @@ function formatOrdinal(n: number): string {
     return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
+function getPromotedTargetClass(
+    currentClassId: string,
+    classesList: any[],
+    commentsText: string = '',
+    student?: any,
+    cohortStudents: any[] = []
+): any | null {
+    if (!classesList || classesList.length === 0) return null;
+    const currentClass = classesList.find((c: any) => c.id === currentClassId);
+
+    // 1. Check if comments specifically mention a class name
+    const commentsLower = (commentsText || '').toLowerCase();
+    if (commentsLower.includes('promot')) {
+        for (const c of classesList) {
+            if (c.id === currentClassId) continue;
+            const cNameLower = (c.name || '').toLowerCase();
+            if (commentsLower.includes(cNameLower)) return c;
+            
+            // Subparts e.g. "BS 3" or "Class 3"
+            const parts = cNameLower.split(/[\(\)]/).map((p: string) => p.trim()).filter(Boolean);
+            for (const part of parts) {
+                if (part.length >= 3 && commentsLower.includes(part)) {
+                    return c;
+                }
+            }
+            // Normalized e.g. "bs3", "class3"
+            const normCName = cNameLower.replace(/[^a-z0-9]/g, '');
+            const normComments = commentsLower.replace(/[^a-z0-9]/g, '');
+            if (normCName.length >= 3 && normComments.includes(normCName)) {
+                return c;
+            }
+        }
+    }
+
+    // 2. Check if student's current enrollment is in a higher class
+    if (student?.classId && student.classId !== currentClassId) {
+        const studentClass = classesList.find((c: any) => c.id === student.classId);
+        if (studentClass) {
+            const sOrder = studentClass.order ?? studentClass.level ?? 0;
+            const cOrder = currentClass?.order ?? currentClass?.level ?? 0;
+            if (sOrder > cOrder || !currentClass) {
+                return studentClass;
+            }
+        }
+    }
+
+    // 3. Check if the cohort has a predominant promoted destination
+    if (cohortStudents && cohortStudents.length > 0) {
+        const destCounts: Record<string, number> = {};
+        cohortStudents.forEach((s: any) => {
+            if (s.classId && s.classId !== currentClassId) {
+                destCounts[s.classId] = (destCounts[s.classId] || 0) + 1;
+            }
+        });
+        let topDestId = '';
+        let topCount = 0;
+        Object.entries(destCounts).forEach(([destId, count]) => {
+            if (count > topCount) {
+                topCount = count;
+                topDestId = destId;
+            }
+        });
+        if (topDestId) {
+            const topClass = classesList.find((c: any) => c.id === topDestId);
+            if (topClass) return topClass;
+        }
+    }
+
+    // 4. Sequential next class in classes hierarchy
+    if (currentClass) {
+        if (typeof currentClass.order === 'number' || typeof currentClass.level === 'number') {
+            const currentOrder = currentClass.order ?? currentClass.level;
+            const nextClass = classesList
+                .filter((c: any) => (c.order ?? c.level) > currentOrder)
+                .sort((a: any, b: any) => (a.order ?? a.level) - (b.order ?? b.level))[0];
+            if (nextClass) return nextClass;
+        }
+
+        const numMatch = currentClass.name?.match(/(\d+)/);
+        if (numMatch) {
+            const nextNum = parseInt(numMatch[1], 10) + 1;
+            const nextClass = classesList.find((c: any) => {
+                if (c.id === currentClassId) return false;
+                const cNumMatch = c.name?.match(/(\d+)/);
+                return cNumMatch && parseInt(cNumMatch[1], 10) === nextNum;
+            });
+            if (nextClass) return nextClass;
+        }
+    }
+
+    return null;
+}
+
+
 export default function ReportCardManager() {
     const { user } = useUser();
     const { role, profile } = useRole();
@@ -345,6 +439,14 @@ export default function ReportCardManager() {
             const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
             const stu = activeStudents.find((s: any) => s.uid === selectedStudentId || s.id === selectedStudentId || s.studentId === selectedStudentId);
 
+            const targetPromotedClass = getPromotedTargetClass(
+                classId,
+                classes || [],
+                snap.exists() ? `${snap.data().headmasterComment || ''} ${snap.data().classTeacherComment || ''}` : '',
+                stu,
+                activeStudents
+            );
+
             if (snap.exists()) {
                 const data = snap.data();
                 setClassTeacherComment(data.classTeacherComment || '');
@@ -353,25 +455,20 @@ export default function ReportCardManager() {
                 let decision = data.promotionDecision || '';
                 let targetPromotedId = data.promotedToClassId || '';
 
+                const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
+                const allComments = `${data.headmasterComment || ''} ${data.classTeacherComment || ''}`;
+                const commentsIndicatePromo = allComments.toLowerCase().includes('promot');
+
                 // Auto-bind completed promotion decision if student was promoted or remarks state it
                 if (!decision || decision === '') {
-                    if (stu?.classId && stu.classId !== classId) {
+                    if (isPromoTerm || commentsIndicatePromo || targetPromotedClass) {
                         decision = 'Promoted';
-                        targetPromotedId = stu.classId;
+                        targetPromotedId = targetPromotedClass?.id || stu?.classId || '';
                     } else if (stu?.enrollmentStatus === 'Graduated') {
                         decision = 'Graduated';
-                    } else {
-                        const allComments = `${data.headmasterComment || ''} ${data.classTeacherComment || ''}`;
-                        const foundClass = classes?.find((c: any) => c.id !== classId && allComments.toLowerCase().includes(c.name.toLowerCase()));
-                        if (foundClass) {
-                            decision = 'Promoted';
-                            targetPromotedId = foundClass.id;
-                        }
                     }
-                } else if (decision === 'Promoted' && !targetPromotedId) {
-                    if (stu?.classId && stu.classId !== classId) {
-                        targetPromotedId = stu.classId;
-                    }
+                } else if (decision === 'Promoted' && (!targetPromotedId || targetPromotedId === classId)) {
+                    targetPromotedId = targetPromotedClass?.id || stu?.classId || '';
                 }
 
                 setPromotionDecision(decision);
@@ -386,18 +483,19 @@ export default function ReportCardManager() {
                     promotionDecision: decision,
                     promotedToClassId: targetPromotedId,
                     promotedToClassName: decision === 'Promoted'
-                        ? (classes?.find((c: any) => c.id === targetPromotedId)?.name || 'Next Class')
+                        ? (classes?.find((c: any) => c.id === targetPromotedId)?.name || targetPromotedClass?.name || 'Next Class')
                         : (decision === 'Repeated' ? (currentClassName || data.className) : (decision === 'Graduated' ? 'Graduated' : ''))
                 });
             } else {
                 setClassTeacherComment('');
                 setHeadmasterComment('');
 
+                const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
                 let decision: any = '';
                 let targetPromotedId = '';
-                if (stu?.classId && stu.classId !== classId) {
+                if (isPromoTerm || targetPromotedClass) {
                     decision = 'Promoted';
-                    targetPromotedId = stu.classId;
+                    targetPromotedId = targetPromotedClass?.id || (stu?.classId !== classId ? stu?.classId : '') || '';
                 } else if (stu?.enrollmentStatus === 'Graduated') {
                     decision = 'Graduated';
                 }
@@ -406,7 +504,30 @@ export default function ReportCardManager() {
             }
         };
         fetchExisting();
-    }, [selectedStudentId, academicYear, term, firestore, schoolId, classId, classes, activeStudents, classSummary]);
+    }, [selectedStudentId, academicYear, term, firestore, schoolId, classId, classes, activeStudents, classSummary, isHistoricalCohort]);
+
+    // Auto-populate promotion decision for historical or third-term reports reactively
+    useEffect(() => {
+        if (!classId || !classes || classes.length === 0) return;
+        const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
+        const allComments = `${headmasterComment || ''} ${classTeacherComment || ''}`;
+        const commentsIndicatePromo = allComments.toLowerCase().includes('promot');
+
+        if (!promotionDecision) {
+            if (isPromoTerm || commentsIndicatePromo) {
+                const targetPromoted = getPromotedTargetClass(classId, classes, allComments, targetStudent, activeStudents);
+                if (targetPromoted) {
+                    setPromotionDecision('Promoted');
+                    setPromotedToClassId(targetPromoted.id);
+                }
+            }
+        } else if (promotionDecision === 'Promoted' && (!promotedToClassId || promotedToClassId === classId)) {
+            const targetPromoted = getPromotedTargetClass(classId, classes, allComments, targetStudent, activeStudents);
+            if (targetPromoted) {
+                setPromotedToClassId(targetPromoted.id);
+            }
+        }
+    }, [classId, classes, term, isHistoricalCohort, headmasterComment, classTeacherComment, promotionDecision, promotedToClassId, targetStudent, activeStudents]);
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId || !schoolProfile) return;
@@ -504,7 +625,7 @@ export default function ReportCardManager() {
 
             const myTotal = studentTotals[selectedStudentId] || 0;
             const classPosition = formatOrdinal(Object.values(studentTotals).filter(t => t > myTotal).length + 1);
-            const targetStudent = activeStudents.find((s: any) => s.uid === selectedStudentId);
+            const targetStudent = activeStudents.find((s: any) => s.uid === selectedStudentId || s.id === selectedStudentId || s.studentId === selectedStudentId);
 
             const reportRows: any[] = [];
             let myGrandTotal = 0;
@@ -571,21 +692,32 @@ export default function ReportCardManager() {
             const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
             const currentClassName = classes?.find((c: any) => c.id === classId)?.name || '';
 
+            const targetPromotedClass = getPromotedTargetClass(
+                classId,
+                classes || [],
+                `${headmasterComment || ''} ${classTeacherComment || ''}`,
+                targetStudent,
+                activeStudents
+            );
+
             let autoDecision = promotionDecision;
             let autoPromotedClassId = promotedToClassId;
-            if (!autoDecision) {
-                if (targetStudent?.classId && targetStudent.classId !== classId) {
+            const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
+            const commentsIndicatePromo = `${headmasterComment || ''} ${classTeacherComment || ''}`.toLowerCase().includes('promot');
+
+            if (!autoDecision || autoDecision === '') {
+                if (isPromoTerm || commentsIndicatePromo || targetPromotedClass) {
                     autoDecision = 'Promoted';
-                    autoPromotedClassId = targetStudent.classId;
+                    autoPromotedClassId = targetPromotedClass?.id || (targetStudent?.classId !== classId ? targetStudent?.classId : '') || '';
                     setPromotionDecision('Promoted');
-                    setPromotedToClassId(targetStudent.classId);
+                    setPromotedToClassId(autoPromotedClassId);
                 } else if (targetStudent?.enrollmentStatus === 'Graduated') {
                     autoDecision = 'Graduated';
                     setPromotionDecision('Graduated');
                 }
-            } else if (autoDecision === 'Promoted' && !autoPromotedClassId && targetStudent?.classId && targetStudent.classId !== classId) {
-                autoPromotedClassId = targetStudent.classId;
-                setPromotedToClassId(targetStudent.classId);
+            } else if (autoDecision === 'Promoted' && (!autoPromotedClassId || autoPromotedClassId === classId)) {
+                autoPromotedClassId = targetPromotedClass?.id || (targetStudent?.classId !== classId ? targetStudent?.classId : '') || '';
+                setPromotedToClassId(autoPromotedClassId);
             }
 
             setProcessedReport({
@@ -964,6 +1096,22 @@ export default function ReportCardManager() {
             
             if (res.success && res.text) {
                 setComment(res.text); 
+                const combinedComments = type === 'Teacher' 
+                    ? `${headmasterComment} ${res.text}` 
+                    : `${res.text} ${classTeacherComment}`;
+                if (!promotionDecision || promotionDecision === '') {
+                    const targetPromotedClass = getPromotedTargetClass(
+                        classId,
+                        classes || [],
+                        combinedComments,
+                        targetStudent,
+                        activeStudents
+                    );
+                    if (targetPromotedClass || combinedComments.toLowerCase().includes('promot')) {
+                        setPromotionDecision('Promoted');
+                        if (targetPromotedClass) setPromotedToClassId(targetPromotedClass.id);
+                    }
+                }
                 toast({ title: "AI Draft Remark Generated ✨", description: "Review and edit text comments before saving." });
             } else {
                 toast({ variant: 'destructive', title: "AI Remark Failed", description: res.error });
@@ -1021,7 +1169,7 @@ export default function ReportCardManager() {
                         )}
                     </div>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-white">
+                <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end p-6 bg-white">
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear} disabled={role?.toLowerCase() === 'teacher'}>
@@ -1069,16 +1217,16 @@ export default function ReportCardManager() {
                             </SelectContent>
                         </Select>
                     </div>
+                    <div className="space-y-2">
+                        <Button 
+                          onClick={generateReport} 
+                          disabled={isGenerating || !selectedStudentId} 
+                          className="w-full bg-indigo-600 hover:bg-indigo-700 h-11 rounded-xl font-bold text-white shadow-sm transition-all flex items-center justify-center"
+                        >
+                            {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} Compile Transcript
+                        </Button>
+                    </div>
                 </CardContent>
-                <CardFooter className="justify-end bg-slate-50/50 p-4 border-t border-slate-100">
-                    <Button 
-                      onClick={generateReport} 
-                      disabled={isGenerating || !selectedStudentId} 
-                      className="bg-indigo-600 hover:bg-indigo-700 px-8 h-11 rounded-xl font-bold text-white shadow-sm transition-all"
-                    >
-                        {isGenerating ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Search className="mr-2 h-4 w-4"/>} Compile Transcript
-                    </Button>
-                </CardFooter>
             </Card>
 
             {/* Class Summary widgets */}
@@ -1133,40 +1281,53 @@ export default function ReportCardManager() {
                                     </TooltipProvider>
                                 );
                             })()}
-                            {isAdminOrDirector && (
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button 
-                                            disabled={classSummary.drafts.length === 0 || isBulkPublishing} 
-                                            className="bg-emerald-600 hover:bg-emerald-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs"
-                                        >
-                                            {isBulkPublishing ? (
-                                                <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                                            ) : (
-                                                <ShieldCheck className="mr-2 h-4 w-4" />
-                                            )}
-                                            Bulk Publish Drafts ({classSummary.drafts.length})
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle className="font-black text-slate-800">Bulk Publish Report Cards?</AlertDialogTitle>
-                                            <AlertDialogDescription className="text-slate-400 text-sm leading-relaxed">
-                                                This will officially sign and publish all **{classSummary.drafts.length}** draft report cards. Parents and students will be notified in-app and can download the files immediately.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter className="gap-2 mt-4">
-                                            <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
-                                            <AlertDialogAction 
-                                                onClick={handleBulkPublish} 
-                                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl"
-                                            >
-                                                Publish All Drafts
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            )}
+                            {isAdminOrDirector && (() => {
+                                const draftCount = classSummary.drafts.length;
+                                const isDraftDisabled = draftCount === 0 || isBulkPublishing;
+
+                                const publishButton = (
+                                    <Button 
+                                        disabled={isDraftDisabled} 
+                                        className={`bg-emerald-600 hover:bg-emerald-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs transition-all ${draftCount === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        {isBulkPublishing ? (
+                                            <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                                        ) : (
+                                            <ShieldCheck className="mr-2 h-4 w-4" />
+                                        )}
+                                        {`Bulk Publish Drafts (${draftCount})`}
+                                    </Button>
+                                );
+
+                                if (draftCount === 0) {
+                                    return publishButton;
+                                }
+
+                                return (
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            {publishButton}
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-6">
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle className="font-black text-slate-800">Bulk Publish Report Cards?</AlertDialogTitle>
+                                                <AlertDialogDescription className="text-slate-400 text-sm leading-relaxed">
+                                                    This will officially sign and publish all **{draftCount}** draft report cards. Parents and students will be notified in-app and can download the files immediately.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter className="gap-2 mt-4">
+                                                <AlertDialogCancel className="rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</AlertDialogCancel>
+                                                <AlertDialogAction 
+                                                    onClick={handleBulkPublish} 
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl"
+                                                >
+                                                    Publish All Drafts
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                );
+                            })()}
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-6 p-6">
@@ -1329,19 +1490,21 @@ export default function ReportCardManager() {
                                                 setPromotionDecision(val);
                                                 if (val !== 'Promoted') {
                                                     setPromotedToClassId('');
-                                                } else if (!promotedToClassId && targetStudent?.classId && targetStudent.classId !== classId) {
-                                                    setPromotedToClassId(targetStudent.classId);
+                                                } else if (!promotedToClassId) {
+                                                    const targetPromoted = getPromotedTargetClass(classId, classes || [], `${headmasterComment || ''} ${classTeacherComment || ''}`, targetStudent, activeStudents);
+                                                    if (targetPromoted) setPromotedToClassId(targetPromoted.id);
                                                 }
                                             }}
                                             disabled={!isTeacher && !isAdminOrDirector}
                                         >
-                                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-555 shadow-sm">
+                                            <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                                 <SelectValue placeholder="Select Decision" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="Promoted">
                                                     Promoted{(() => {
-                                                        const targetClassObj = classes?.find((c: any) => c.id === (promotedToClassId || (targetStudent?.classId !== classId ? targetStudent?.classId : '')));
+                                                        const targetClassObj = classes?.find((c: any) => c.id === promotedToClassId)
+                                                            || getPromotedTargetClass(classId, classes || [], `${headmasterComment || ''} ${classTeacherComment || ''}`, targetStudent, activeStudents);
                                                         return targetClassObj ? ` to ${targetClassObj.name}` : '';
                                                     })()}
                                                 </SelectItem>
@@ -1355,11 +1518,11 @@ export default function ReportCardManager() {
                                         <div className="space-y-2 animate-in slide-in-from-top-2">
                                             <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Promote To Class</Label>
                                             <Select 
-                                                value={promotedToClassId} 
+                                                value={promotedToClassId || (getPromotedTargetClass(classId, classes || [], `${headmasterComment || ''} ${classTeacherComment || ''}`, targetStudent, activeStudents)?.id || '')} 
                                                 onValueChange={setPromotedToClassId}
                                                 disabled={!isTeacher && !isAdminOrDirector}
                                             >
-                                                <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-555 shadow-sm">
+                                                <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                                     <SelectValue placeholder="Select Target Class" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -1400,7 +1563,9 @@ export default function ReportCardManager() {
                                     promotionDecision,
                                     promotedToClassId,
                                     promotedToClassName: promotionDecision === 'Promoted'
-                                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
+                                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name 
+                                            || getPromotedTargetClass(classId, classes || [], `${headmasterComment || ''} ${classTeacherComment || ''}`, targetStudent, activeStudents)?.name
+                                            || 'Next Class')
                                         : (promotionDecision === 'Repeated' ? (classes?.find((c: any) => c.id === classId)?.name || processedReport?.className) : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
                                 }}
                                 classTeacherComment={classTeacherComment}
@@ -1457,7 +1622,9 @@ export default function ReportCardManager() {
                                     promotionDecision,
                                     promotedToClassId,
                                     promotedToClassName: promotionDecision === 'Promoted'
-                                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
+                                        ? (classes?.find((c: any) => c.id === promotedToClassId)?.name 
+                                            || getPromotedTargetClass(classId, classes || [], `${headmasterComment || ''} ${classTeacherComment || ''}`, targetStudent, activeStudents)?.name
+                                            || 'Next Class')
                                         : (promotionDecision === 'Repeated' ? (classes?.find((c: any) => c.id === classId)?.name || processedReport?.className) : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
                                 }}
                                 classTeacherComment={classTeacherComment}
