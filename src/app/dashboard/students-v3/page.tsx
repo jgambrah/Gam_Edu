@@ -36,7 +36,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer, Zap, Users, Sparkles } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -46,6 +46,7 @@ import { searchStudent, formatStudentId, generateNextStudentId } from '@/lib/stu
 import { sendSMSAction } from '@/app/actions/sms';
 import { TimelineService } from '@/lib/timeline-service';
 import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
+import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 
 
 export default function StudentsV3Page() {
@@ -55,6 +56,7 @@ export default function StudentsV3Page() {
   const { role, profile, loading: isRoleLoading } = useRole();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchool } = useCurrentSchool();
+  const { summary: dashboardSummary } = useDashboardSummary(adminSchoolId);
 
   // Data State
   const [students, setStudents] = useState<Student[]>([]);
@@ -62,6 +64,10 @@ export default function StudentsV3Page() {
   const [hostelAllocations, setHostelAllocations] = useState<any[]>([]);
   const [parentMap, setParentMap] = useState<Record<string, any>>({});
   
+  // On-Demand Student Loading State
+  const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
+  const [isLoadingStudents, setIsLoadingStudents] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
   const [statusMsg, setStatusMsg] = useState("Initializing...");
   
@@ -131,63 +137,99 @@ export default function StudentsV3Page() {
       return role === 'Director' || role === 'Accountant' || (role === 'Administrator' && schoolSettings?.allowAdminBillingToggles === true);
   }, [role, schoolSettings]);
 
-  // --- DATA FETCHING ---
-  const loadData = useCallback(async () => {
+  // --- CLASSES FETCHING (LIGHTWEIGHT ON MOUNT) ---
+  const loadClasses = useCallback(async () => {
     if (isUserLoading || !firestore || !adminSchoolId) return;
     
     setIsLoading(true);
-    setStatusMsg("Fetching Data...");
+    try {
+      const classQuery = query(collection(firestore, 'classes'), where('schoolId', '==', adminSchoolId));
+      const classSnap = await getDocs(classQuery);
+      const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
+      setClasses(classList);
+    } catch (err: any) {
+      console.error("Classes Load Error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [firestore, adminSchoolId, isUserLoading]);
+
+  useEffect(() => {
+    if (adminSchoolId) loadClasses();
+  }, [loadClasses, adminSchoolId]);
+
+  // --- ON-DEMAND STUDENT DATA FETCHING ---
+  const loadStudentData = useCallback(async () => {
+    if (isUserLoading || !firestore || !adminSchoolId) return;
+    
+    setIsLoadingStudents(true);
+    setStatusMsg("Retrieving Student Records...");
 
     try {
-        const classQuery = query(collection(firestore, 'classes'), where('schoolId', '==', adminSchoolId));
-        const classSnap = await getDocs(classQuery);
-        const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
-        setClasses(classList);
+      const classQuery = query(collection(firestore, 'classes'), where('schoolId', '==', adminSchoolId));
+      const classSnap = await getDocs(classQuery);
+      const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
+      setClasses(classList);
 
-        const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
-        const studentSnap = await getDocs(studentQuery);
-        
-        const studentList = studentSnap.docs.map(d => ({ 
-            id: d.id, 
-            ...d.data() 
-        })) as Student[];
-        setStudents(studentList);
+      const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
+      const studentSnap = await getDocs(studentQuery);
+      
+      const studentList = studentSnap.docs.map(d => ({ 
+          id: d.id, 
+          ...d.data() 
+      })) as Student[];
+      setStudents(studentList);
 
-        const allocationQuery = query(
-            collection(firestore, 'hostel_allocations'),
-            where('schoolId', '==', adminSchoolId),
-            where('status', '==', 'Active')
-        );
-        const allocationSnap = await getDocs(allocationQuery);
-        const allocationList = allocationSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setHostelAllocations(allocationList);
+      const allocationQuery = query(
+          collection(firestore, 'hostel_allocations'),
+          where('schoolId', '==', adminSchoolId),
+          where('status', '==', 'Active')
+      );
+      const allocationSnap = await getDocs(allocationQuery);
+      const allocationList = allocationSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setHostelAllocations(allocationList);
 
-        const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
-        const parentSnap = await getDocs(parentQuery);
-        const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        const pMap: Record<string, any> = {};
-        parentList.forEach((p: any) => {
-            if (p.studentIds && Array.isArray(p.studentIds)) {
-                p.studentIds.forEach((sid: string) => {
-                    pMap[sid] = p;
-                });
-            }
-        });
-        setParentMap(pMap);
-        
-        setStatusMsg("Ready");
+      const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
+      const parentSnap = await getDocs(parentQuery);
+      const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const pMap: Record<string, any> = {};
+      parentList.forEach((p: any) => {
+          if (p.studentIds && Array.isArray(p.studentIds)) {
+              p.studentIds.forEach((sid: string) => {
+                  pMap[sid] = p;
+              });
+          }
+      });
+      setParentMap(pMap);
+      
+      setHasLoadedStudents(true);
+      setStatusMsg("Ready");
+      toast({ title: "Student Directory Loaded", description: `Loaded ${studentList.length} student records on-demand.` });
     } catch (err: any) {
-        console.error("Load Error:", err);
-        setStatusMsg("Error loading data");
-        toast({ variant: 'destructive', title: "Error", description: "Could not fetch student database." });
+      console.error("Load Error:", err);
+      setStatusMsg("Error loading data");
+      toast({ variant: 'destructive', title: "Error", description: "Could not fetch student database." });
     } finally {
-        setIsLoading(false);
+      setIsLoadingStudents(false);
     }
   }, [firestore, adminSchoolId, isUserLoading, toast]);
 
-  useEffect(() => {
-      if (adminSchoolId) loadData();
-  }, [loadData, adminSchoolId]);
+  const loadData = loadStudentData;
+
+  const resetToOnDemand = useCallback(() => {
+    setStudents([]);
+    setHostelAllocations([]);
+    setParentMap({});
+    setHasLoadedStudents(false);
+    toast({ title: "Switched to On-Demand Mode", description: "Student records unloaded from memory to prevent unnecessary reads." });
+  }, [toast]);
+
+  const handleOpenPrintDialog = useCallback(() => {
+    if (!hasLoadedStudents) {
+      loadStudentData();
+    }
+    setIsPrintDialogOpen(true);
+  }, [hasLoadedStudents, loadStudentData]);
   
   // --- RESET LOGIC ---
   useEffect(() => {
@@ -539,10 +581,22 @@ export default function StudentsV3Page() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Button variant="outline" onClick={loadData} disabled={overallLoading} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
-              <RefreshCw className={cn("h-4 w-4 mr-2", overallLoading && "animate-spin")}/> Refresh
-            </Button>
-            <Button onClick={() => setIsPrintDialogOpen(true)} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white font-bold px-5 h-11 rounded-xl shadow-md border-0" disabled={!adminSchoolId}>
+            {hasLoadedStudents ? (
+              <>
+                <Button variant="outline" onClick={loadStudentData} disabled={isLoadingStudents} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
+                  <RefreshCw className={cn("h-4 w-4 mr-2", isLoadingStudents && "animate-spin")}/> Refresh
+                </Button>
+                <Button variant="outline" onClick={resetToOnDemand} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
+                  <RotateCcw className="h-4 w-4 mr-2"/> Switch to On-Demand
+                </Button>
+              </>
+            ) : (
+              <Button onClick={loadStudentData} disabled={isLoadingStudents} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-5 h-11 rounded-xl shadow-lg border border-emerald-400/50 gap-2 cursor-pointer">
+                {isLoadingStudents ? <Loader2 className="h-4 w-4 animate-spin"/> : <Zap className="h-4 w-4"/>}
+                <span>Generate Student List</span>
+              </Button>
+            )}
+            <Button onClick={handleOpenPrintDialog} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white font-bold px-5 h-11 rounded-xl shadow-md border-0" disabled={!adminSchoolId}>
               <Printer className="h-4.5 w-4.5 mr-2"/> Print Class List
             </Button>
             {canManage && (
@@ -555,18 +609,30 @@ export default function StudentsV3Page() {
 
         {/* Dynamic Metric Badges */}
         {adminSchoolId && (
-          <div className="relative z-10 mt-8 flex flex-wrap gap-4 border-t border-white/10 pt-6">
+          <div className="relative z-10 mt-8 flex flex-wrap items-center gap-4 border-t border-white/10 pt-6">
             <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
               <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Registered Students</span>
-              <div className="text-xl font-bold mt-0.5">{students.length} Total</div>
+              <div className="text-xl font-bold mt-0.5">
+                {hasLoadedStudents ? `${students.length} Total` : `${dashboardSummary?.studentCount?.total ?? '—'} Total`}
+              </div>
             </div>
             <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
               <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Active Cohorts</span>
-              <div className="text-xl font-bold mt-0.5">{students.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length} Enrolled</div>
+              <div className="text-xl font-bold mt-0.5">
+                {hasLoadedStudents 
+                  ? `${students.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length} Enrolled`
+                  : `${dashboardSummary?.studentCount?.active ?? '—'} Enrolled`}
+              </div>
             </div>
             <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
               <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Pending Placement</span>
-              <div className="text-xl font-bold mt-0.5 text-amber-200">{students.filter(s => !s.classId).length} Needs Class</div>
+              <div className="text-xl font-bold mt-0.5 text-amber-200">
+                {hasLoadedStudents ? `${students.filter(s => !s.classId).length} Needs Class` : 'On-Demand'}
+              </div>
+            </div>
+            <div className="ml-auto hidden lg:flex items-center gap-2 rounded-xl bg-black/20 px-3.5 py-2 border border-white/10 text-xs text-emerald-100">
+              <Zap className={cn("h-3.5 w-3.5", hasLoadedStudents ? "text-emerald-300" : "text-amber-300")} />
+              <span>{hasLoadedStudents ? "Full Directory In Memory" : "0 Upfront Firestore Reads Active"}</span>
             </div>
           </div>
         )}
@@ -578,15 +644,59 @@ export default function StudentsV3Page() {
       {/* Main card */}
       <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
         <CardContent className="p-6 space-y-6">
+            {/* On-Demand Mode Bar when students are loaded */}
+            {hasLoadedStudents && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-slate-50 border border-emerald-200/70 rounded-2xl text-xs text-emerald-950">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-emerald-600 text-white font-bold shadow-xs shrink-0">
+                    <Zap className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-emerald-950">Active Student Registry Mode</span>
+                    <span className="text-emerald-700 ml-2">({filteredStudents.length} of {students.length} students showing)</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={loadStudentData}
+                    disabled={isLoadingStudents}
+                    className="h-8 text-xs font-semibold rounded-lg border-emerald-300 text-emerald-800 hover:bg-emerald-100/60"
+                  >
+                    <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-emerald-600", isLoadingStudents && "animate-spin")} /> Refresh
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={resetToOnDemand}
+                    className="h-8 text-xs font-semibold rounded-lg border-emerald-300 text-emerald-800 hover:bg-emerald-100/60"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-emerald-600" /> Switch to On-Demand
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <StudentSearchInput 
                   value={searchTerm} 
-                  onChange={setSearchTerm} 
+                  onChange={(val) => {
+                    setSearchTerm(val);
+                    if (!hasLoadedStudents && val.trim().length >= 3) {
+                      loadStudentData();
+                    }
+                  }} 
                   className="flex-grow w-full md:max-w-md border-slate-200 focus:ring-emerald-500 rounded-xl"
                 />
                 
                 <div className="flex flex-wrap gap-2 w-full md:w-auto items-center justify-end">
-                    <Select value={classFilter} onValueChange={setClassFilter}>
+                    <Select value={classFilter} onValueChange={(v) => {
+                        setClassFilter(v);
+                        if (!hasLoadedStudents && v !== 'all') {
+                          loadStudentData();
+                        }
+                    }}>
                         <SelectTrigger className="w-full md:w-[180px] h-10 border-slate-200 rounded-xl"><SelectValue placeholder="All Classes" /></SelectTrigger>
                         <SelectContent className="rounded-xl">
                             <SelectItem value="all">All Classes</SelectItem>
@@ -597,7 +707,12 @@ export default function StudentsV3Page() {
                         </SelectContent>
                     </Select>
 
-                    <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}>
+                    <Select value={statusFilter} onValueChange={(v: any) => {
+                        setStatusFilter(v);
+                        if (!hasLoadedStudents && v !== 'Active') {
+                          loadStudentData();
+                        }
+                    }}>
                         <SelectTrigger className="w-full md:w-[150px] h-10 border-slate-200 rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
                         <SelectContent className="rounded-xl">
                             <SelectItem value="Active">Active Only</SelectItem>
@@ -611,10 +726,53 @@ export default function StudentsV3Page() {
                 </div>
             </div>
 
-            {overallLoading ? (
+            {isLoadingStudents ? (
                 <div className="py-16 flex flex-col items-center gap-3 text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
                     <Loader2 className="h-8 w-8 animate-spin text-emerald-600"/>
-                    <p className="text-xs uppercase font-bold tracking-wider">{statusMsg}</p>
+                    <p className="text-xs uppercase font-bold tracking-wider font-mono">{statusMsg}</p>
+                </div>
+            ) : !hasLoadedStudents ? (
+                <div className="py-16 px-6 text-center border-2 border-dashed border-emerald-200/80 rounded-3xl bg-gradient-to-b from-emerald-50/50 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
+                    <div className="h-16 w-16 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-inner">
+                        <Zap className="h-8 w-8 text-emerald-600 animate-pulse" />
+                    </div>
+                    <div className="space-y-1.5">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-1">
+                            ⚡ Cost-Saving Architecture
+                        </div>
+                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Student Directory Generated On-Demand</h3>
+                        <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
+                            To prevent high Firestore read cost spikes and speed up loading across GAM Edu, full student records are retrieved only when requested.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                        <Button 
+                            onClick={loadStudentData}
+                            disabled={isLoadingStudents}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
+                        >
+                            <Zap className="h-4 w-4" />
+                            Generate Student List
+                        </Button>
+                        {searchTerm.trim().length > 0 && (
+                            <Button 
+                                variant="outline"
+                                onClick={loadStudentData}
+                                className="rounded-xl h-11 px-4 border-slate-200 hover:bg-slate-50"
+                            >
+                                Search Registry for "{searchTerm.trim()}"
+                            </Button>
+                        )}
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400 pt-3 border-t border-slate-100 w-full">
+                        <span>⚡ 0 upfront Firestore reads</span>
+                        <span>•</span>
+                        <span>Housing details & allocations</span>
+                        <span>•</span>
+                        <span>Parent & guardian links</span>
+                        <span>•</span>
+                        <span>Service billing flags</span>
+                    </div>
                 </div>
             ) : filteredStudents.length === 0 ? (
                 <div className="py-16 text-center text-slate-400 border border-dashed rounded-2xl bg-slate-50 flex flex-col items-center gap-3">
