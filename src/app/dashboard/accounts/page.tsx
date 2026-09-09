@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database, BarChart3, Eye } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database, BarChart3, Eye, History, Coins } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -3343,6 +3343,43 @@ export default function AccountsPage() {
     return !!activeTill?.directorApproval?.rejectionReason;
   }, [activeTill]);
 
+  const recentTillsQuery = useMemoFirebase(() => 
+    (firestore && user?.uid && schoolId) ? 
+    query(
+        collection(firestore, 'tills'), 
+        where('schoolId', '==', schoolId),
+        where('accountantId', '==', user.uid),
+        limit(10)
+    ) : null,
+    [firestore, user?.uid, schoolId]
+  );
+  const { data: recentTills } = useCollection<any>(recentTillsQuery);
+
+  const lastClosedTill = useMemo(() => {
+    if (!recentTills || recentTills.length === 0) return null;
+    return recentTills
+      .filter((t: any) => t.status !== 'Open' && t.id !== activeTill?.id)
+      .sort((a: any, b: any) => {
+        const timeA = a.dateClosed?.seconds || a.dateOpened?.seconds || 0;
+        const timeB = b.dateClosed?.seconds || b.dateOpened?.seconds || 0;
+        return timeB - timeA;
+      })[0] || null;
+  }, [recentTills, activeTill?.id]);
+
+  const formatTillTimestamp = (timestamp: any) => {
+    if (!timestamp) return 'Recently';
+    try {
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      if (isNaN(date.getTime())) return 'Recently';
+      if (isToday(date)) {
+        return `Today, ${format(date, 'h:mm a')}`;
+      }
+      return format(date, 'MMM d, h:mm a');
+    } catch {
+      return 'Recently';
+    }
+  };
+
   const handleOpenTill = useCallback(async () => {
     if (!user || !schoolId || !firestore) return;
     setIsOpeningTill(true);
@@ -4421,7 +4458,7 @@ export default function AccountsPage() {
                     </div>
                 )}
                 {/* Advanced Analytics Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                     {/* Left: Collections Advisory Desk */}
                     <div className="lg:col-span-2 bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                         <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full flex-1 flex flex-col">
@@ -5125,8 +5162,8 @@ export default function AccountsPage() {
                     </div>
                     
                     {/* Right: Cash Register Registry Widget */}
-                    <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
-                        <Card className="border-0 shadow-none p-0 flex flex-col justify-between h-full bg-transparent">
+                    <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm self-start lg:sticky lg:top-6 transition-all">
+                        <Card className="border-0 shadow-none p-0 flex flex-col bg-transparent">
                             <div>
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
@@ -5161,7 +5198,7 @@ export default function AccountsPage() {
                                                 <div>
                                                     <p className="text-xs font-bold text-red-800">Till Rejected Alert</p>
                                                     <p className="text-[11px] text-red-700 mt-1 leading-normal font-medium">
-                                                        Your cash till was rejected by the Director: "{activeTill.directorApproval?.rejectionReason}". You must resolve discrepancies and re-submit it before you can record any payments.
+                                                        Your cash till was rejected by the Director: &quot;{activeTill.directorApproval?.rejectionReason}&quot;. You must resolve discrepancies and re-submit it before you can record any payments.
                                                     </p>
                                                 </div>
                                             </div>
@@ -5173,7 +5210,7 @@ export default function AccountsPage() {
                                                 <div>
                                                     <p className="text-xs font-bold text-amber-800">Unsubmitted Till Alert</p>
                                                     <p className="text-[11px] text-amber-700 mt-1 leading-normal font-medium">
-                                                        This register till was opened on a previous day. You are blocked from accepting new payments until you submit yesterday's till audit report.
+                                                        This register till was opened on a previous day. You are blocked from accepting new payments until you submit yesterday&apos;s till audit report.
                                                     </p>
                                                 </div>
                                             </div>
@@ -5195,9 +5232,9 @@ export default function AccountsPage() {
                                         </div>
                                     )
                                 ) : (
-                                    <div className="space-y-4">
-                                        <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-xl flex items-start gap-2.5">
-                                            <AlertTriangle className="h-5 w-5 text-rose-500 flex-shrink-0 mt-0.5 animate-pulse" />
+                                    <div className="space-y-3">
+                                        <div className="p-3.5 bg-rose-50/50 border border-rose-100 rounded-xl flex items-start gap-2.5">
+                                            <AlertTriangle className="h-4 w-4 text-rose-500 flex-shrink-0 mt-0.5 animate-pulse" />
                                             <div>
                                                 <p className="text-xs font-bold text-rose-800">Closed Registry</p>
                                                 <p className="text-[11px] text-rose-600/90 mt-0.5 leading-normal">
@@ -5206,34 +5243,94 @@ export default function AccountsPage() {
                                             </div>
                                         </div>
                                         <p className="text-xs text-slate-500 leading-relaxed">
-                                            Open registry initiates the digital cashier till tracking for correct payment reconciliation.
+                                            Opening registry initiates the digital cashier till tracking for correct payment reconciliation.
                                         </p>
                                     </div>
                                 )}
                             </div>
-                            <div className="mt-6 pt-4 border-t flex flex-col gap-2">
+                            <div className="mt-4 pt-3.5 border-t flex flex-col gap-2">
                                 {activeTill ? (
-                                    <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 text-xs">
+                                    <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 text-xs shadow-xs">
                                         <a href="/dashboard/accounts/cash-till" className="flex items-center justify-center gap-2 cursor-pointer">
                                             {isTillRejected ? "Review & Re-submit Till" : isTillFromPreviousDay ? "Resolve & Submit Till" : "Open Till Dashboard"} <ArrowUpRight className="h-4 w-4" />
                                         </a>
                                     </Button>
                                 ) : (
-                                    <Button 
-                                        onClick={handleOpenTill} 
-                                        disabled={isOpeningTill || isLoadingTills}
-                                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 text-xs"
-                                    >
-                                        {isOpeningTill ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Activating Register...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <PlusCircle className="mr-2 h-4 w-4" /> Open Active Till
-                                            </>
-                                        )}
-                                    </Button>
+                                    <>
+                                        <Button 
+                                            onClick={handleOpenTill} 
+                                            disabled={isOpeningTill || isLoadingTills}
+                                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 text-xs shadow-xs cursor-pointer"
+                                        >
+                                            {isOpeningTill ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Activating Register...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <PlusCircle className="mr-2 h-4 w-4" /> Open Active Till
+                                                </>
+                                            )}
+                                        </Button>
+
+                                        {/* Brief summary of last closed till session & quick links */}
+                                        <div className="mt-3 pt-3 border-t border-slate-100 space-y-2.5">
+                                            <div className="flex items-center justify-between text-[11px]">
+                                                <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                                                    <History className="h-3.5 w-3.5 text-slate-500" />
+                                                    Last Closed Session
+                                                </span>
+                                                {lastClosedTill && (
+                                                    <Badge variant="outline" className="text-[10px] font-mono text-slate-500 bg-slate-50 border-slate-200 px-1.5 py-0">
+                                                        #{lastClosedTill.id.substring(0, 6).toUpperCase()}
+                                                    </Badge>
+                                                )}
+                                            </div>
+
+                                            {lastClosedTill ? (
+                                                <div className="p-2.5 bg-slate-50/80 rounded-xl border border-slate-200/60 text-[11px] space-y-1.5">
+                                                    <div className="flex justify-between items-center text-slate-600">
+                                                        <span className="text-slate-400">Closed:</span>
+                                                        <span className="font-semibold text-slate-700">
+                                                            {formatTillTimestamp(lastClosedTill.dateClosed || lastClosedTill.dateOpened)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-slate-600">
+                                                        <span className="text-slate-400">Expected Handover:</span>
+                                                        <span className="font-mono font-bold text-slate-900">
+                                                            GH₵{(lastClosedTill.expectedBalance ?? lastClosedTill.actualCashCounted ?? lastClosedTill.closingBalance ?? lastClosedTill.currentBalance ?? 0).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                    {lastClosedTill.accountantName && (
+                                                        <div className="flex justify-between items-center text-slate-600">
+                                                            <span className="text-slate-400">Cashier:</span>
+                                                            <span className="text-slate-600 truncate max-w-[130px] font-medium">
+                                                                {lastClosedTill.accountantName}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="p-2.5 bg-slate-50/60 rounded-xl border border-dashed border-slate-200 text-center">
+                                                    <p className="text-[11px] text-slate-400">No previous till handover on record</p>
+                                                </div>
+                                            )}
+
+                                            {/* Quick Till-Management Links */}
+                                            <div className="grid grid-cols-2 gap-2 pt-1">
+                                                <Button asChild variant="outline" size="sm" className="h-7 text-[11px] font-medium bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200">
+                                                    <a href="/dashboard/accounts/cash-till" className="flex items-center justify-center gap-1.5 cursor-pointer">
+                                                        <History className="h-3 w-3 text-slate-500" /> Till History
+                                                    </a>
+                                                </Button>
+                                                <Button asChild variant="outline" size="sm" className="h-7 text-[11px] font-medium bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200">
+                                                    <a href="/dashboard/accounts/cash-till" className="flex items-center justify-center gap-1.5 cursor-pointer">
+                                                        <Coins className="h-3 w-3 text-slate-500" /> Float Setup
+                                                    </a>
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </Card>
