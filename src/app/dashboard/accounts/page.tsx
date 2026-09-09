@@ -3285,6 +3285,7 @@ export default function AccountsPage() {
   const [activePrintType, setActivePrintType] = useState<'debtors-list' | 'parent-letter' | 'sponsor-statement' | null>(null);
   const [printMode, setPrintMode] = useState<'all-classes-split' | 'single-class' | 'whole-school-grouped'>('all-classes-split');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
+  const [minDebt, setMinDebt] = useState<number>(1);
   const [activeTab, setActiveTab] = useState('billing');
 
   useEffect(() => {
@@ -4818,7 +4819,7 @@ export default function AccountsPage() {
                                         </div>
                                         {isLedgerLoaded || effectiveCategoryCollections.length > 0 ? (
                                             <div className="space-y-3">
-                                                {effectiveCategoryCollections.map(cat => {
+                                                {effectiveCategoryCollections.map((cat: any) => {
                                                     const color = cat.rate >= 80 ? 'bg-emerald-500' : cat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
                                                     const textColor = cat.rate >= 80 ? 'text-emerald-700' : cat.rate >= 50 ? 'text-amber-700' : 'text-rose-700';
                                                     return (
