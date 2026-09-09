@@ -20,7 +20,8 @@ import {
 import { 
     FileText, Printer, BarChart2, Users, Loader2, ShieldAlert, Award, TrendingUp, 
     TrendingDown, AlertTriangle, BookOpen, Search, Sparkles, Wand2, ChevronRight, 
-    GraduationCap, Info, FileSpreadsheet, RefreshCw, BookOpenCheck, UserCheck, Archive 
+    GraduationCap, Info, FileSpreadsheet, RefreshCw, BookOpenCheck, UserCheck, Archive,
+    BarChart3
 } from 'lucide-react';
 import { Class, Subject, Student, Assessment } from '@/lib/types';
 import Link from 'next/link';
@@ -62,6 +63,7 @@ export default function AcademicReportsPage() {
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [selectedTerm, setSelectedTerm] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [isReportRequested, setIsReportRequested] = useState<boolean>(false);
     const [viewMode, setViewMode] = useState<'dashboard' | 'master_report'>('dashboard');
     const [mounted, setMounted] = useState(false);
 
@@ -107,16 +109,16 @@ export default function AcademicReportsPage() {
     }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-    // Query Students (dependent on selectedClassId)
+    // Query Students (dependent on selectedClassId and isReportRequested)
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
         if (selectedClassId === 'all') {
             if (!isAdmin) return null;
             return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
         }
         return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isAdmin]);
-    const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isAdmin, isReportRequested]);
+    const { data: rawStudents, isLoading: isLoadingStudents, forceRefetch: refetchStudents } = useCollection<Student>(studentsQuery);
 
     const students = useMemo(() => {
         if (!rawStudents) return [];
@@ -129,9 +131,9 @@ export default function AcademicReportsPage() {
         });
     }, [rawStudents]);
 
-    // Query Assessments for the selected school and class
+    // Query Assessments for the selected school and class (on-demand)
     const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
         if (selectedClassId !== 'all') {
             return query(
                 collection(firestore, 'assessments'),
@@ -143,8 +145,8 @@ export default function AcademicReportsPage() {
             collection(firestore, 'assessments'), 
             where('schoolId', '==', schoolId)
         );
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
-    const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
+    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    const { data: assessments, isLoading: isLoadingAssessments, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Fetch School Settings for standard weighting overrides
     const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
@@ -187,6 +189,15 @@ export default function AcademicReportsPage() {
         if (!classAssessments || classAssessments.length === 0) return false;
         return classAssessments.every(a => (a as any).isArchived === true);
     }, [classAssessments]);
+
+    const handleGenerateAnalytics = () => {
+        if (!selectedClassId) return;
+        setIsReportRequested(true);
+        if (isReportRequested) {
+            refetchStudents?.();
+            refetchAssessments?.();
+        }
+    };
 
     // Data Aggregation Engine (Aggregates assessments by student & subject)
     const getCategoryKey = (type: string) => {
@@ -701,7 +712,7 @@ export default function AcademicReportsPage() {
                             schoolId={schoolId || 'default'}
                             currentTermId={selectedTerm}
                         />
-                        <Button variant="outline" size="sm" onClick={() => setSelectedClassId(null)} className="rounded-xl">
+                        <Button variant="outline" size="sm" onClick={() => { setSelectedClassId(null); setIsReportRequested(false); }} className="rounded-xl">
                             Change Class
                         </Button>
                     </div>
@@ -717,7 +728,7 @@ export default function AcademicReportsPage() {
                     No continuous assessments or terminal exam marks have been posted for this class in term: <strong className="text-slate-700">{selectedTerm}</strong> ({selectedYear}).
                 </p>
                 <div className="mt-4 gap-2 flex justify-center print:hidden">
-                    <Button variant="outline" size="sm" onClick={() => setSelectedClassId(null)}>Change Class</Button>
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedClassId(null); setIsReportRequested(false); }}>Change Class</Button>
                     <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" asChild>
                         <Link href="/dashboard/academics/gradebook">Go to Gradebook</Link>
                     </Button>
@@ -758,7 +769,11 @@ export default function AcademicReportsPage() {
                     <Button asChild variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                         <Link href="/dashboard/reports/attendance">Attendance</Link>
                     </Button>
-                    <Button onClick={() => window.print()} className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-md border-0">
+                    <Button 
+                        onClick={() => window.print()} 
+                        disabled={!selectedClassId || !isReportRequested || !academicData}
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-md border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         <Printer className="mr-2 h-4 w-4"/>Print Record
                     </Button>
                 </div>
@@ -771,115 +786,95 @@ export default function AcademicReportsPage() {
                         <Info className="h-4 w-4 text-indigo-500" /> Filter Selection
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-500 uppercase">Academic Year</label>
-                        <Select value={selectedYear} onValueChange={setSelectedYear}>
-                            <SelectTrigger className="w-full bg-white"><SelectValue placeholder="Select Year" /></SelectTrigger>
-                            <SelectContent>{MOCK_ACADEMIC_YEARS?.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
+                <CardContent className="pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                        {/* Column 1: Academic Year */}
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Academic Year</label>
+                            <Select value={selectedYear} onValueChange={(val) => { setSelectedYear(val); setIsReportRequested(false); }}>
+                                <SelectTrigger className="w-full bg-white h-11 border-2"><SelectValue placeholder="Select Year" /></SelectTrigger>
+                                <SelectContent>{MOCK_ACADEMIC_YEARS?.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-500 uppercase">Term</label>
-                        <Select value={selectedTerm} onValueChange={setSelectedTerm}>
-                            <SelectTrigger className="w-full bg-white"><SelectValue placeholder="Select Term" /></SelectTrigger>
-                            <SelectContent>{MOCK_TERMS?.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
+                        {/* Column 2: Term */}
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Term</label>
+                            <Select value={selectedTerm} onValueChange={(val) => { setSelectedTerm(val); setIsReportRequested(false); }}>
+                                <SelectTrigger className="w-full bg-white h-11 border-2"><SelectValue placeholder="Select Term" /></SelectTrigger>
+                                <SelectContent>{MOCK_TERMS?.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-500 uppercase">Select Class</label>
-                        <Select value={selectedClassId || ''} onValueChange={setSelectedClassId}>
-                            <SelectTrigger className="w-full bg-indigo-50/50 border-indigo-200 focus:ring-indigo-500 font-medium">
-                                <SelectValue placeholder="Choose a Class..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {isAdmin && <SelectItem value="all">🏫 Entire School (All Classes)</SelectItem>}
-                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                        {/* Column 3: Class */}
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Class</label>
+                            <Select value={selectedClassId || ''} onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); }}>
+                                <SelectTrigger className="w-full bg-indigo-50/50 border-2 border-indigo-200 focus:ring-indigo-500 font-medium h-11">
+                                    <SelectValue placeholder="Choose a Class..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {isAdmin && <SelectItem value="all">🏫 Entire School (All Classes)</SelectItem>}
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-500 uppercase">Subject Zoom</label>
-                        <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId} disabled={!selectedClassId}>
-                            <SelectTrigger className="w-full bg-white">
-                                <SelectValue placeholder="All Subjects (Class Summary)" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">📊 All Subjects (Class Summary)</SelectItem>
-                                {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                        {/* Column 4: Subject Zoom */}
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Subject Zoom</label>
+                            <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId} disabled={!selectedClassId}>
+                                <SelectTrigger className="w-full bg-white h-11 border-2 disabled:opacity-50">
+                                    <SelectValue placeholder="All Subjects (Class Summary)" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">📊 All Subjects (Class Summary)</SelectItem>
+                                    {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Column 5: Generate Analytics Action */}
+                        <div className="space-y-1.5">
+                            <label className="hidden md:block text-xs font-semibold text-transparent uppercase mb-1 select-none pointer-events-none">&nbsp;</label>
+                            <Button 
+                                onClick={handleGenerateAnalytics} 
+                                disabled={!selectedClassId || isLoadingStudents || isLoadingAssessments} 
+                                title={!selectedClassId ? "Please select a class to generate analytics" : "Generate academic analytics"}
+                                className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 gap-2 rounded-xl transition-all shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                                {isLoadingStudents || isLoadingAssessments ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <span>Generating...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <BarChart3 className="h-4 w-4" />
+                                        <span>Generate Analytics</span>
+                                    </>
+                                )}
+                            </Button>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
             
-            {/* NO CLASS SELECTED WELCOME AREA */}
-            {!selectedClassId ? (
-                <div className="space-y-6 print:hidden">
-                    <div className="text-center py-12 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
-                        <BookOpenCheck className="mx-auto h-16 w-16 text-indigo-200 mb-3" />
-                        <h2 className="text-2xl font-bold text-slate-800">Academic Analytics Selector</h2>
-                        <p className="text-slate-500 max-w-md mx-auto mt-1 text-sm">
-                            Select a class from the list below or from the filter menu to pull live weighted score distributions and grade averages.
+            {/* ON-DEMAND ACADEMIC ANALYTICS IDLE EMPTY-STATE */}
+            {(!selectedClassId || !isReportRequested) ? (
+                <Card className="border-2 border-dashed border-indigo-200 bg-indigo-50/30 p-12 text-center rounded-3xl shadow-sm my-8 max-w-xl mx-auto space-y-4 print:hidden">
+                    <div className="p-4 bg-indigo-600 text-white rounded-2xl w-fit mx-auto shadow-md shadow-indigo-200">
+                        <BookOpenCheck className="h-8 w-8" />
+                    </div>
+                    <div className="space-y-1.5">
+                        <h3 className="text-lg font-black text-slate-900 flex items-center justify-center gap-2">
+                            <span>⚡</span> On-Demand Academic Analytics
+                        </h3>
+                        <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                            Select an <strong>Academic Year</strong>, <strong>Term</strong>, <strong>Class</strong>, and <strong>Subject</strong> above, then click <strong>"Generate Analytics"</strong> to fetch grade averages and score distributions without upfront read overhead.
                         </p>
                     </div>
-
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                            <BookOpen className="h-5 w-5 text-indigo-500" /> Active Classes Overview
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {isAdmin && classes && classes.length > 0 && (
-                                <Card className="hover:border-indigo-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group bg-gradient-to-br from-indigo-50/20 to-indigo-100/10 border-indigo-200">
-                                    <CardHeader className="pb-2">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <Badge className="bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Entire School</Badge>
-                                            <Users className="h-5 w-5 text-indigo-500" />
-                                        </div>
-                                        <CardTitle className="text-xl font-bold text-slate-800">All Classes Combined</CardTitle>
-                                        <CardDescription className="line-clamp-2 text-xs">Run cross-institutional grading analysis and subject-by-subject master sheet.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="pb-4 pt-2 border-t mt-4 text-xs font-semibold text-slate-500 flex justify-between bg-slate-50/50">
-                                        <span>School-Wide Analytics</span>
-                                        <span>All Subjects</span>
-                                    </CardContent>
-                                    <CardFooter className="pt-2 pb-4 bg-slate-50/50 border-t">
-                                        <Button onClick={() => setSelectedClassId('all')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0 shadow-sm transition-all text-xs font-bold py-1.5 h-8">
-                                            Run Analytics <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            )}
-                            {classes?.map(c => (
-                                <Card key={c.id} className="hover:border-indigo-400 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group">
-                                    <CardHeader className="pb-2">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <Badge className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold">{c.teachingModel || 'Subject Model'}</Badge>
-                                            <Users className="h-5 w-5 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                                        </div>
-                                        <CardTitle className="text-xl font-bold text-slate-800">{c.name}</CardTitle>
-                                        <CardDescription className="line-clamp-2 text-xs">{c.description || 'No class description recorded in settings.'}</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="pb-4 pt-2 border-t mt-4 text-xs font-semibold text-slate-500 flex justify-between bg-slate-50/50">
-                                        <span>Grading Weight: {c.caWeight ?? CA_WEIGHT}% CA</span>
-                                        <span>Exam: {c.examWeight ?? EXAM_WEIGHT}%</span>
-                                    </CardContent>
-                                    <CardFooter className="pt-2 pb-4 bg-slate-50/50 border-t">
-                                        <Button onClick={() => setSelectedClassId(c.id)} className="w-full bg-white hover:bg-indigo-600 hover:text-white border border-slate-200 text-indigo-600 shadow-sm transition-all text-xs font-bold py-1.5 h-8">
-                                            Run Analytics <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                            ))}
-                            {(!classes || classes.length === 0) && (
-                                <div className="col-span-full text-center py-10 bg-slate-50 text-slate-400 rounded-lg">No classes found in school settings.</div>
-                            )}
-                        </div>
-                    </div>
-                </div>
+                </Card>
             ) : isLoadingStudents || isLoadingAssessments ? (
                  <div className="text-center py-24 bg-white border border-slate-200 rounded-xl shadow-sm">
                      <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600 mb-3"/>
