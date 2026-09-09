@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database, BarChart3 } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database, BarChart3, Eye } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -2078,7 +2078,8 @@ function StudentLedgerDetail({
     onApplyWaiver, 
     onEditRecord, 
     onReverseTransaction,
-    onRecordsLoaded
+    onRecordsLoaded,
+    onLoadingChange
 }: { 
     student: Student; 
     records?: FinancialRecord[] | null; 
@@ -2089,6 +2090,7 @@ function StudentLedgerDetail({
     onEditRecord: (record: FinancialRecord) => void; 
     onReverseTransaction: (record: FinancialRecord) => void; 
     onRecordsLoaded?: (studentKey: string, records: FinancialRecord[]) => void;
+    onLoadingChange?: (loading: boolean) => void;
 }) {
     const firestore = useFirestore();
     const { user } = useUser();
@@ -2115,6 +2117,7 @@ function StudentLedgerDetail({
     const handleLoadStudentArchive = async () => {
         if (!firestore || !schoolId || !student) return;
         setIsLoadingArchive(true);
+        if (onLoadingChange) onLoadingChange(true);
         try {
             const sKeys = [student.id, student.uid, student.studentId, (student as any).admissionNo, (student as any).admissionNumber].filter(Boolean);
             const docsMap = new Map<string, FinancialRecord>();
@@ -2135,6 +2138,7 @@ function StudentLedgerDetail({
             toast({ variant: 'destructive', title: 'Archive Load Error', description: e.message });
         } finally {
             setIsLoadingArchive(false);
+            if (onLoadingChange) onLoadingChange(false);
         }
     };
 
@@ -2245,7 +2249,23 @@ function StudentLedgerDetail({
                       </TableRow>
                   </TableHeader>
                   <TableBody>
-                      {filteredRecords.map(rec => {
+                      {isLoadingArchive && filteredRecords.length === 0 ? (
+                          <TableRow>
+                              <TableCell colSpan={6} className="h-28 text-center">
+                                  <div className="flex flex-col items-center justify-center space-y-2">
+                                      <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
+                                      <p className="text-xs text-slate-500 font-medium">Fetching complete student ledger & computing balance...</p>
+                                  </div>
+                              </TableCell>
+                          </TableRow>
+                      ) : filteredRecords.length === 0 ? (
+                          <TableRow>
+                              <TableCell colSpan={6} className="h-24 text-center text-xs text-slate-400">
+                                  No billing or transaction records found for this student.
+                              </TableCell>
+                          </TableRow>
+                      ) : (
+                          filteredRecords.map(rec => {
                           const balance = (Number(rec.billedAmount) || 0) - (Number(rec.amountPaid) || 0) - (Number(rec.waiverAmount) || 0);
                           return (
                               <React.Fragment key={rec.id}>
@@ -2320,7 +2340,7 @@ function StudentLedgerDetail({
                                   {openRowId === rec.id && (<TableRow className="bg-slate-50/50"><TableCell colSpan={6} className="p-0"><PaymentHistory record={rec} /></TableCell></TableRow>)}
                               </React.Fragment>
                           ); 
-                      })}
+                      }))}
                   </TableBody>
               </Table>
           </div>
@@ -3344,6 +3364,7 @@ export default function AccountsPage() {
   const [billingPage, setBillingPage] = useState<number>(1);
   const [billingPageSize, setBillingPageSize] = useState<number>(25);
   const [expandedStudentKey, setExpandedStudentKey] = useState<string>('');
+  const [loadingStudentKey, setLoadingStudentKey] = useState<string | null>(null);
 
   // School profile and settings for term detection
   const schoolRef = useMemoFirebase(
@@ -3825,7 +3846,7 @@ export default function AccountsPage() {
         });
       });
 
-      const isLoaded = Boolean(records && records.length > 0) || sKeys.some(k => Boolean(cachedStudentRecords[k] && cachedStudentRecords[k].length > 0)) || studentRecords.length > 0;
+      const isLoaded = Boolean(records && records.length > 0) || sKeys.some(k => k in cachedStudentRecords) || studentRecords.length > 0;
       const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
       const totalBilled = activeRecords.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
       const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
@@ -5301,12 +5322,25 @@ export default function AccountsPage() {
                                             type="single" 
                                             collapsible 
                                             value={expandedStudentKey} 
-                                            onValueChange={setExpandedStudentKey} 
+                                            onValueChange={(key) => {
+                                                setExpandedStudentKey(key);
+                                                if (key) {
+                                                    const isAlreadyLoaded = Boolean(records && records.length > 0) || (key in cachedStudentRecords);
+                                                    if (!isAlreadyLoaded) {
+                                                        setLoadingStudentKey(key);
+                                                    } else {
+                                                        setLoadingStudentKey(null);
+                                                    }
+                                                } else {
+                                                    setLoadingStudentKey(null);
+                                                }
+                                            }} 
                                             className="w-full"
                                         >
                                             {paginatedStudentsWithBills.map(({ student, isLoaded, balance, openingArrears, currentTermBilled, records: sRecords }) => {
                                                 const sKey = student.uid || student.id || student.studentId || '';
                                                 const isExpanded = expandedStudentKey === sKey;
+                                                const isCardLoading = (loadingStudentKey === sKey) || (isExpanded && !isLoaded);
                                                 return (
                                                   <AccordionItem value={sKey} key={sKey} className="border rounded-lg mb-2 px-4 bg-white hover:border-slate-300 transition-colors">
                                                     <AccordionTrigger className="hover:no-underline py-4">
@@ -5316,19 +5350,40 @@ export default function AccountsPage() {
                                                                 {isLoaded && openingArrears > 0.01 && (
                                                                     <div className="hidden sm:block text-right">
                                                                         <p className="text-[10px] uppercase font-bold text-amber-600">Arrears Brought Fwd</p>
-                                                                        <p className="font-semibold text-xs text-amber-700">GH₵{openingArrears.toFixed(2)}</p>
+                                                                        <p className="font-semibold text-xs text-amber-700 font-mono">GH₵{openingArrears.toFixed(2)}</p>
                                                                     </div>
                                                                 )}
-                                                                <div>
-                                                                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Total Balance</p>
+                                                                <div className="flex flex-col items-end">
+                                                                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Total Balance</p>
                                                                     {isLoaded ? (
-                                                                        <p className={cn("font-bold text-lg", balance > 0.01 ? "text-red-600" : "text-green-600")}>
-                                                                            GH₵{Math.abs(balance).toFixed(2)} {balance < -0.01 ? "(CR)" : ""}
-                                                                        </p>
+                                                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                                                            <p className={cn("font-black text-base font-mono tracking-tight", balance > 0.01 ? "text-rose-600" : "text-emerald-600")}>
+                                                                                GH₵{Math.abs(balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {balance < -0.01 ? "(CR)" : ""}
+                                                                            </p>
+                                                                            <Badge 
+                                                                                variant="outline"
+                                                                                className={cn(
+                                                                                    "text-[9px] font-bold px-1.5 py-0 uppercase tracking-wider",
+                                                                                    balance > 0.01 
+                                                                                        ? "bg-rose-50 text-rose-700 border-rose-200/80" 
+                                                                                        : balance < -0.01
+                                                                                            ? "bg-teal-50 text-teal-700 border-teal-200/80"
+                                                                                            : "bg-emerald-50 text-emerald-700 border-emerald-200/80"
+                                                                                )}
+                                                                            >
+                                                                                {balance > 0.01 ? "Debt" : balance < -0.01 ? "Credit" : "Settled"}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    ) : isCardLoading ? (
+                                                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 mt-0.5 animate-pulse shadow-2xs">
+                                                                            <Loader2 className="h-3 w-3 animate-spin text-indigo-600" />
+                                                                            <span>Loading Ledger...</span>
+                                                                        </div>
                                                                     ) : (
-                                                                        <p className="text-xs text-blue-600 font-semibold flex items-center gap-1 mt-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                                                                            <Zap className="h-3 w-3 text-blue-600" /> Click to Load Ledger
-                                                                        </p>
+                                                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-50 text-slate-600 border border-slate-200/80 shadow-2xs hover:bg-slate-100 hover:text-slate-900 transition-colors mt-0.5">
+                                                                            <Receipt className="h-3 w-3 text-slate-500" />
+                                                                            <span>View Ledger & Balance</span>
+                                                                        </div>
                                                                     )}
                                                                 </div>
                                                             </div>
@@ -5341,7 +5396,13 @@ export default function AccountsPage() {
                                                                 records={records} 
                                                                 cachedRecords={cachedStudentRecords[sKey] || cachedStudentRecords[student.id || ''] || cachedStudentRecords[student.uid || '']}
                                                                 globalDateRange={globalDateRange}
+                                                                onLoadingChange={(loading) => {
+                                                                    if (!loading && loadingStudentKey === sKey) {
+                                                                        setLoadingStudentKey(null);
+                                                                    }
+                                                                }}
                                                                 onRecordsLoaded={(loadedKey, recs) => {
+                                                                    setLoadingStudentKey(null);
                                                                     setCachedStudentRecords(prev => {
                                                                         const updated = { ...prev, [loadedKey]: recs };
                                                                         if (student.id) updated[student.id] = recs;
@@ -5356,7 +5417,10 @@ export default function AccountsPage() {
                                                                 onReverseTransaction={(rec) => setDialogState({ type: 'reversal', record: rec })}
                                                             />
                                                         ) : (
-                                                            <div className="py-4 text-center text-xs text-slate-400">Loading ledger...</div>
+                                                            <div className="py-4 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+                                                                <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />
+                                                                <span>Loading ledger...</span>
+                                                            </div>
                                                         )}
                                                     </AccordionContent>
                                                   </AccordionItem>
