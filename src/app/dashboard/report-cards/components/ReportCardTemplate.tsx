@@ -45,6 +45,11 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
         ? format(nextTermDate, 'PPP') 
         : "To Be Announced";
 
+    const rawSchoolName = data.schoolName || 'SCHOOL NAME';
+    const displaySchoolName = rawSchoolName
+        .replace(/\bACADMY\b/gi, 'ACADEMY')
+        .replace(/SUNNY\s+SIDE\s+ACADMY/gi, 'SUNNY SIDE ACADEMY');
+
     return (
         <div
             id="pdf-content"
@@ -78,7 +83,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
                     <div className="flex-1 text-right pl-6">
                         <h1 className="text-2xl font-black uppercase tracking-tight leading-none mb-1.5">
-                            {data.schoolName || 'SCHOOL NAME'}
+                            {displaySchoolName}
                         </h1>
                         {data.schoolMotto && (
                             <p className="text-xs italic opacity-85 font-medium mb-3">"{data.schoolMotto}"</p>
@@ -119,7 +124,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     </div>
                     <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
                         <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
-                            <GraduationCap className="h-3 w-3 text-slate-800" /> Target Class
+                            <GraduationCap className="h-3 w-3 text-slate-800" /> Class Recorded
                         </span>
                         <span className="font-black uppercase text-black">{data.className}</span>
                     </div>

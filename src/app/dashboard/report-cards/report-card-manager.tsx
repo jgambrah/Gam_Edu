@@ -12,13 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Eye, Save, ShieldCheck, AlertCircle, PenTool, Sparkles, BookOpen, User, ChevronRight, FileText } from 'lucide-react';
+import { Loader2, Printer, Download, Search, CheckCircle, FileCheck, GraduationCap, Eye, Save, ShieldCheck, AlertCircle, PenTool, Sparkles, BookOpen, User, ChevronRight, FileText, History } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { getGradeFromScale } from '@/lib/utils';
+import { getGradeFromScale, cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -31,11 +31,11 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 import { generateReportCommentAction } from '@/app/actions/report-ai';
-import CreditBalance from '@/components/CreditBalance';
 import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
 
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
@@ -150,6 +150,10 @@ export default function ReportCardManager() {
         (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, 
     [firestore, schoolId, classId]));
 
+    const { data: allSchoolStudents } = useCollection<any>(useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId]));
+
     const { data: subjects } = useCollection<any>(useMemoFirebase(() => 
         (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
     [firestore, schoolId]));
@@ -171,17 +175,6 @@ export default function ReportCardManager() {
             if (savedTerm) setTerm(savedTerm);
         }
     }, [schoolProfile]);
-
-    const activeStudents = useMemo(() => {
-        if (!students) return [];
-        return students.filter((s: any) => {
-            const status = s.enrollmentStatus || s.status;
-            if (status === 'Inactive' || status === 'Withdrawn' || status === 'Graduated' || s.isInactive === true || s.active === false) {
-                return false;
-            }
-            return true;
-        });
-    }, [students]);
 
     const reportCardsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !classId) return null;
@@ -205,14 +198,100 @@ export default function ReportCardManager() {
 
     const classReportCards = useMemo(() => {
         const combined = [...(rawReportCards || []), ...(rawTermReportCards || [])];
-        return combined.filter(r => {
+        const filtered = combined.filter(r => {
             const rYear = r.academicYear || r.academicYearId || r.year;
             const rTerm = r.term || r.termId || r.semester;
             const yearMatches = !academicYear || !rYear || isYearMatch(rYear, academicYear);
             const termMatches = !term || !rTerm || isTermMatch(rTerm, term);
             return yearMatches && termMatches;
         });
+
+        // Deduplicate so each student only has ONE report card (preferring 'Published' or latest updatedAt)
+        const reportMap = new Map<string, any>();
+        filtered.forEach(r => {
+            const studentKey = r.studentId || r.student?.uid || r.student?.id || r.id;
+            if (!reportMap.has(studentKey)) {
+                reportMap.set(studentKey, r);
+            } else {
+                const existing = reportMap.get(studentKey);
+                if (r.status === 'Published' && existing.status !== 'Published') {
+                    reportMap.set(studentKey, r);
+                } else if (r.updatedAt && existing.updatedAt && r.updatedAt > existing.updatedAt) {
+                    reportMap.set(studentKey, r);
+                }
+            }
+        });
+
+        return Array.from(reportMap.values());
     }, [rawReportCards, rawTermReportCards, academicYear, term]);
+
+    const activeStudents = useMemo(() => {
+        const sourceStudents = allSchoolStudents || students || [];
+        if (sourceStudents.length === 0) return [];
+
+        // 1. Students currently assigned to this class
+        const currentInClass = sourceStudents.filter((s: any) => {
+            const matchesClass = s.classId === classId;
+            const status = s.enrollmentStatus || s.status;
+            const isInactive = status === 'Inactive' || status === 'Withdrawn' || status === 'Graduated' || s.isInactive === true || s.active === false;
+            return matchesClass && !isInactive;
+        });
+
+        const studentMap = new Map<string, any>();
+        currentInClass.forEach(s => {
+            const key = s.uid || s.id || s.studentId;
+            if (key) studentMap.set(key, s);
+        });
+
+        // 2. Add students who have recorded report cards for this class & period (e.g. promoted students)
+        if (classReportCards && classReportCards.length > 0) {
+            classReportCards.forEach((rc: any) => {
+                const stuId = rc.studentId || rc.student?.uid || rc.student?.id;
+                if (stuId && !studentMap.has(stuId)) {
+                    const found = sourceStudents.find((s: any) => 
+                        s.uid === stuId || s.id === stuId || s.studentId === stuId
+                    );
+                    if (found) {
+                        studentMap.set(stuId, found);
+                    } else if (rc.student) {
+                        studentMap.set(stuId, {
+                            ...rc.student,
+                            uid: rc.student.uid || stuId,
+                            id: rc.student.id || stuId
+                        });
+                    }
+                }
+            });
+        }
+
+        const list = Array.from(studentMap.values());
+        list.sort((a, b) => (a.firstName || '').localeCompare(b.firstName || ''));
+        return list;
+    }, [allSchoolStudents, students, classId, classReportCards]);
+
+    const isHistoricalCohort = useMemo(() => {
+        if (!schoolProfile) return false;
+        const currentActiveYear = schoolProfile.academicYear || schoolProfile.activeAcademicYear;
+        const currentActiveTerm = schoolProfile.term || schoolProfile.activeTerm || schoolProfile.currentTerm;
+        const yearDiff = academicYear && currentActiveYear && !isYearMatch(academicYear, currentActiveYear);
+        const termDiff = term && currentActiveTerm && !isTermMatch(term, currentActiveTerm);
+        const hasPromoted = activeStudents.some((s: any) => s.classId && s.classId !== classId);
+        return Boolean(yearDiff || termDiff || hasPromoted);
+    }, [schoolProfile, academicYear, term, activeStudents, classId]);
+
+    const historicalCohortInfo = useMemo(() => {
+        if (!isHistoricalCohort) return null;
+        const currentClassName = classes?.find((c: any) => c.id === classId)?.name || 'Class';
+        const promotedStudents = activeStudents.filter((s: any) => s.classId && s.classId !== classId);
+        const promotedClassNames = Array.from(new Set(promotedStudents.map((s: any) => classes?.find((c: any) => c.id === s.classId)?.name).filter(Boolean)));
+        const targetPromotedClassText = promotedClassNames.length > 0 ? promotedClassNames.join(', ') : '';
+        
+        return {
+            currentClassName,
+            promotedClassText: targetPromotedClassText,
+            label: `Historical Cohort: Showing ${academicYear || ''} ${currentClassName} records${targetPromotedClassText ? ` for currently promoted ${targetPromotedClassText} students` : ''}`
+        };
+    }, [isHistoricalCohort, classes, classId, activeStudents, academicYear]);
 
     const classSummary = useMemo(() => {
         if (!activeStudents || !classReportCards) return null;
@@ -252,7 +331,10 @@ export default function ReportCardManager() {
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
         const fetchExisting = async () => {
             const docRef = doc(firestore, 'report-cards', reportId);
-            const snap = await getDoc(docRef);
+            let snap = await getDoc(docRef);
+            if (!snap.exists()) {
+                snap = await getDoc(doc(firestore, 'term_report_cards', reportId));
+            }
             if (snap.exists()) {
                 const data = snap.data();
                 setClassTeacherComment(data.classTeacherComment || '');
@@ -443,7 +525,9 @@ export default function ReportCardManager() {
                 studentPresentDays,
                 totalClassDays,
                 id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
-                schoolName: schoolProfile?.name,
+                schoolName: (schoolProfile?.name || 'SUNNY SIDE ACADEMY')
+                    .replace(/\bACADMY\b/gi, 'ACADEMY')
+                    .replace(/SUNNY\s+SIDE\s+ACADMY/gi, 'SUNNY SIDE ACADEMY'),
                 schoolMotto: schoolProfile?.motto,
                 schoolAddress: schoolProfile?.address,
                 schoolPhone: schoolProfile?.phone,
@@ -822,9 +906,6 @@ export default function ReportCardManager() {
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center gap-3">
-                        {role?.toLowerCase() !== 'student' && role?.toLowerCase() !== 'parent' && (
-                            <CreditBalance />
-                        )}
                     </div>
                 </div>
             </div>
@@ -832,8 +913,18 @@ export default function ReportCardManager() {
             {/* Filter Roster Selection Card */}
             <Card className="border border-slate-100 shadow-md rounded-[2rem] overflow-hidden bg-white">
                 <CardHeader className="border-b border-slate-50 bg-slate-50/20 p-6">
-                    <CardTitle className="text-lg font-black text-slate-800">Filter Student Records</CardTitle>
-                    <CardDescription className="text-slate-400">Select academic term settings and target student to compile report card.</CardDescription>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div>
+                            <CardTitle className="text-lg font-black text-slate-800">Filter Student Records</CardTitle>
+                            <CardDescription className="text-slate-400">Select academic term settings and target student to compile report card.</CardDescription>
+                        </div>
+                        {historicalCohortInfo && (
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold shadow-sm">
+                                <History className="h-4 w-4 text-amber-600 flex-shrink-0" />
+                                <span>{historicalCohortInfo.label}</span>
+                            </div>
+                        )}
+                    </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-white">
                     <div className="space-y-2">
@@ -869,7 +960,18 @@ export default function ReportCardManager() {
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm">
                                 <SelectValue placeholder="Choose Student"/>
                             </SelectTrigger>
-                            <SelectContent>{activeStudents.map((s:any) => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+                            <SelectContent>
+                                {activeStudents.map((s:any) => {
+                                    const isPromotedAway = s.classId && s.classId !== classId;
+                                    const promotedClassName = isPromotedAway ? classes?.find((c: any) => c.id === s.classId)?.name : null;
+                                    return (
+                                        <SelectItem key={s.uid} value={s.uid}>
+                                            {s.firstName} {s.lastName}
+                                            {promotedClassName ? ` (Now in ${promotedClassName})` : ''}
+                                        </SelectItem>
+                                    );
+                                })}
+                            </SelectContent>
                         </Select>
                     </div>
                 </CardContent>
@@ -889,27 +991,53 @@ export default function ReportCardManager() {
                 <Card className="border border-emerald-100 shadow-md rounded-[2rem] overflow-hidden bg-white">
                     <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 border-b border-slate-50">
                         <div>
-                            <CardTitle className="text-lg flex items-center gap-2 font-black text-slate-800">
+                            <CardTitle className="text-lg flex flex-wrap items-center gap-2 font-black text-slate-800">
                                 <GraduationCap className="text-emerald-600 h-5 w-5" /> 
                                 Class Status Summary: {classes?.find((c: any) => c.id === classId)?.name || ''}
+                                {historicalCohortInfo && (
+                                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1">
+                                        <History className="h-3 w-3 text-amber-600" />
+                                        {historicalCohortInfo.promotedClassText ? `Promoted to ${historicalCohortInfo.promotedClassText}` : 'Historical Cohort'}
+                                    </span>
+                                )}
                             </CardTitle>
                             <CardDescription className="text-slate-400">
                                 Overview of terminal report cards draft status for this class.
                             </CardDescription>
                         </div>
                         <div className="flex flex-wrap gap-2 items-center">
-                            {classReportCards && classReportCards.length > 0 && (
-                                <Button 
-                                    onClick={handleDownloadAllPDF} 
-                                    disabled={isExporting} 
-                                    className="bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs flex items-center"
-                                >
-                                    {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
-                                    {isExporting && exportProgress > 0 
-                                        ? `Compiling ${exportProgress} / ${classReportCards.length}...` 
-                                        : `Download Combined PDF (${classReportCards.length})`}
-                                </Button>
-                            )}
+                            {(() => {
+                                const compiledCount = classReportCards?.length || 0;
+                                const hasNoCards = compiledCount === 0;
+                                return (
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <span tabIndex={0} className={hasNoCards ? "cursor-not-allowed inline-block" : "inline-block"}>
+                                                    <Button 
+                                                        onClick={handleDownloadAllPDF} 
+                                                        disabled={hasNoCards || isExporting} 
+                                                        className={cn(
+                                                            "bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl text-white shadow h-10 px-6 text-xs flex items-center transition-all",
+                                                            hasNoCards && "opacity-60 cursor-not-allowed pointer-events-none"
+                                                        )}
+                                                    >
+                                                        {isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>}
+                                                        {isExporting && exportProgress > 0 
+                                                            ? `Compiling ${exportProgress} / ${compiledCount}...` 
+                                                            : `Download Combined PDF (${compiledCount})`}
+                                                    </Button>
+                                                </span>
+                                            </TooltipTrigger>
+                                            {hasNoCards && (
+                                                <TooltipContent className="bg-slate-900 text-white font-medium text-xs px-3 py-1.5 rounded-lg shadow-xl">
+                                                    <p>Compile report cards first</p>
+                                                </TooltipContent>
+                                            )}
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                );
+                            })()}
                             {isAdminOrDirector && (
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
