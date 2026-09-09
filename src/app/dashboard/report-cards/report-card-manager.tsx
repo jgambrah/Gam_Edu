@@ -36,6 +36,7 @@ import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 import { generateReportCommentAction } from '@/app/actions/report-ai';
 import CreditBalance from '@/components/CreditBalance';
+import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
 
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
@@ -183,16 +184,35 @@ export default function ReportCardManager() {
     }, [students]);
 
     const reportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !classId || !academicYear || !term) return null;
+        if (!firestore || !schoolId || !classId) return null;
         return query(
             collection(firestore, 'report-cards'),
             where('schoolId', '==', schoolId),
-            where('classId', '==', classId),
-            where('academicYear', '==', academicYear),
-            where('term', '==', term)
+            where('classId', '==', classId)
         );
-    }, [firestore, schoolId, classId, academicYear, term]);
-    const { data: classReportCards } = useCollection<any>(reportCardsQuery);
+    }, [firestore, schoolId, classId]);
+    const { data: rawReportCards } = useCollection<any>(reportCardsQuery);
+
+    const termReportCardsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !classId) return null;
+        return query(
+            collection(firestore, 'term_report_cards'),
+            where('schoolId', '==', schoolId),
+            where('classId', '==', classId)
+        );
+    }, [firestore, schoolId, classId]);
+    const { data: rawTermReportCards } = useCollection<any>(termReportCardsQuery);
+
+    const classReportCards = useMemo(() => {
+        const combined = [...(rawReportCards || []), ...(rawTermReportCards || [])];
+        return combined.filter(r => {
+            const rYear = r.academicYear || r.academicYearId || r.year;
+            const rTerm = r.term || r.termId || r.semester;
+            const yearMatches = !academicYear || !rYear || isYearMatch(rYear, academicYear);
+            const termMatches = !term || !rTerm || isTermMatch(rTerm, term);
+            return yearMatches && termMatches;
+        });
+    }, [rawReportCards, rawTermReportCards, academicYear, term]);
 
     const classSummary = useMemo(() => {
         if (!activeStudents || !classReportCards) return null;
@@ -202,7 +222,13 @@ export default function ReportCardManager() {
         const missing: any[] = [];
         
         activeStudents.forEach((student: any) => {
-            const report = classReportCards.find((r: any) => r.studentId === student.uid);
+            const stuId = student.uid || student.id || student.studentId;
+            const report = classReportCards.find((r: any) => 
+                (student.uid && r.studentId === student.uid) ||
+                (student.id && r.studentId === student.id) ||
+                (student.studentId && r.studentId === student.studentId) ||
+                (stuId && r.studentId === stuId)
+            );
             if (!report) {
                 missing.push(student);
             } else if (report.status === 'Published') {

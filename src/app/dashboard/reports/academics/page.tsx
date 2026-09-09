@@ -256,6 +256,8 @@ export default function AcademicReportsPage() {
         return [...rawClasses].sort(compareAcademicClasses);
     }, [rawClasses]);
 
+    const selectedClass = classes?.find(c => c.id === selectedClassId);
+
     // Query Subjects
     const subjectsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
@@ -263,94 +265,70 @@ export default function AcademicReportsPage() {
     }, [firestore, schoolId, isRoleLoading, canAccess]);
     const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-    // Query Students (dependent on selectedClassId and isReportRequested)
+    // Query Students (school-wide on-demand to support flexible classId/className matching)
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
-        if (selectedClassId === 'all') {
-            if (!isAdmin) return null;
-            return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-        }
-        return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isAdmin, isReportRequested]);
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
     const { data: rawStudents, isLoading: isLoadingStudents, forceRefetch: refetchStudents } = useCollection<Student>(studentsQuery);
 
     const students = useMemo(() => {
         if (!rawStudents) return [];
         return rawStudents.filter((s: any) => {
-            const status = s.enrollmentStatus || s.status;
-            if (status === 'Inactive' || status === 'Withdrawn' || status === 'Graduated' || s.isInactive === true || s.active === false) {
-                return false;
+            if (selectedClassId && selectedClassId !== 'all') {
+                const targetClassName = selectedClass?.name?.toLowerCase().trim();
+                const sClassId = String(s.classId || '').toLowerCase().trim();
+                const sClassName = String(s.className || (s as any).class || '').toLowerCase().trim();
+                const matchesId = s.classId === selectedClassId;
+                const matchesName = targetClassName && (sClassId === targetClassName || sClassName === targetClassName);
+                if (!matchesId && !matchesName) {
+                    return false;
+                }
             }
             return true;
         });
-    }, [rawStudents]);
+    }, [rawStudents, selectedClassId, selectedClass]);
 
     // Multi-Source On-Demand Querying: Assessments collection
     const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
-        if (selectedClassId !== 'all') {
-            return query(
-                collection(firestore, 'assessments'),
-                where('schoolId', '==', schoolId),
-                where('classId', '==', selectedClassId)
-            );
-        }
-        return query(
-            collection(firestore, 'assessments'), 
-            where('schoolId', '==', schoolId)
-        );
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isReportRequested]);
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
     const { data: rawAssessments, isLoading: isLoadingAssessments, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Multi-Source On-Demand Querying: Grades collection (alternative marks collection)
     const gradesQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
-        if (selectedClassId !== 'all') {
-            return query(
-                collection(firestore, 'grades'),
-                where('schoolId', '==', schoolId),
-                where('classId', '==', selectedClassId)
-            );
-        }
-        return query(
-            collection(firestore, 'grades'), 
-            where('schoolId', '==', schoolId)
-        );
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isReportRequested]);
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'grades'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
     const { data: rawGrades, isLoading: isLoadingGrades, forceRefetch: refetchGrades } = useCollection<any>(gradesQuery);
 
-    // Multi-Source On-Demand Querying: Report Cards collection (archived/frozen term summaries)
+    // Multi-Source On-Demand Querying: Report Cards collection (kebab-case)
     const reportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
-        if (selectedClassId !== 'all') {
-            return query(
-                collection(firestore, 'report-cards'),
-                where('schoolId', '==', schoolId),
-                where('classId', '==', selectedClassId)
-            );
-        }
-        return query(
-            collection(firestore, 'report-cards'), 
-            where('schoolId', '==', schoolId)
-        );
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isReportRequested]);
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'report-cards'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
     const { data: rawReportCards, isLoading: isLoadingReportCards, forceRefetch: refetchReportCards } = useCollection<any>(reportCardsQuery);
+
+    // Multi-Source On-Demand Querying: Report Cards collection (camelCase alternate)
+    const reportCardsAltQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'reportCards'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    const { data: rawReportCardsAlt, isLoading: isLoadingReportCardsAlt, forceRefetch: refetchReportCardsAlt } = useCollection<any>(reportCardsAltQuery);
+
+    // Multi-Source On-Demand Querying: Term Report Cards collection (archived & locked term snapshots)
+    const termReportCardsQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'term_report_cards'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    const { data: rawTermReportCards, isLoading: isLoadingTermReportCards, forceRefetch: refetchTermReportCards } = useCollection<any>(termReportCardsQuery);
 
     // Multi-Source On-Demand Querying: Marks collection
     const marksQuery = useMemoFirebase(() => {
-        if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
-        if (selectedClassId !== 'all') {
-            return query(
-                collection(firestore, 'marks'),
-                where('schoolId', '==', schoolId),
-                where('classId', '==', selectedClassId)
-            );
-        }
-        return query(
-            collection(firestore, 'marks'), 
-            where('schoolId', '==', schoolId)
-        );
-    }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, isReportRequested]);
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'marks'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
     const { data: rawMarks, isLoading: isLoadingMarks, forceRefetch: refetchMarks } = useCollection<any>(marksQuery);
 
     // Fetch School Settings for standard weighting overrides
@@ -370,7 +348,6 @@ export default function AcademicReportsPage() {
     const CA_WEIGHT = schoolProfile?.caWeight ?? 50;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 50;
 
-    const selectedClass = classes?.find(c => c.id === selectedClassId);
     const currentCaWeight = selectedClass?.caWeight ?? CA_WEIGHT;
     const currentExamWeight = selectedClass?.examWeight ?? EXAM_WEIGHT;
 
@@ -380,7 +357,7 @@ export default function AcademicReportsPage() {
         const idMap = new Map<string, any>();
         const nameMap = new Map<string, any>();
 
-        (students || []).forEach(student => {
+        (rawStudents || []).forEach(student => {
             const primaryId = getStudentId(student);
             if (!primaryId) return;
 
@@ -397,7 +374,7 @@ export default function AcademicReportsPage() {
         });
 
         return { idMap, nameMap };
-    }, [students]);
+    }, [rawStudents]);
 
     const resolveStudentForMark = useCallback((a: any) => {
         if (!a) return null;
@@ -489,12 +466,13 @@ export default function AcademicReportsPage() {
             });
         }
 
-        // 4. From report-cards collection
-        if (rawReportCards && rawReportCards.length > 0) {
-            rawReportCards.forEach((rc: any) => {
+        // 4. From report-cards, reportCards, and term_report_cards collections
+        const processReportCards = (rcArray: any[] | null | undefined, sourceLabel: string) => {
+            if (!rcArray || rcArray.length === 0) return;
+            rcArray.forEach((rc: any) => {
                 const sId = rc.studentId || rc.studentDocId || rc.studentRef || rc.studentUid || rc.uid;
                 if (!rc || !sId) return;
-                const summaries = rc.subjectSummaries || rc.subjects;
+                const summaries = rc.subjectSummaries || rc.subjects || rc.grades || rc.marks;
                 if (Array.isArray(summaries)) {
                     summaries.forEach((sub: any) => {
                         if (Array.isArray(sub.assessments) && sub.assessments.length > 0) {
@@ -502,23 +480,23 @@ export default function AcademicReportsPage() {
                                 list.push({
                                     ...a,
                                     studentId: a.studentId || sId,
-                                    classId: a.classId || rc.classId,
-                                    academicYear: a.academicYear || rc.academicYear,
-                                    term: a.term || rc.term,
+                                    classId: a.classId || rc.classId || rc.className,
+                                    academicYear: a.academicYear || rc.academicYear || rc.academicYearId || rc.year,
+                                    term: a.term || rc.term || rc.termId,
                                     subjectId: a.subjectId || sub.subjectId,
                                     subjectName: a.subjectName || sub.subjectName,
-                                    _source: 'report-cards-nested'
+                                    _source: `${sourceLabel}-nested`
                                 });
                             });
                         } else {
                             list.push({
-                                id: `rc_${rc.id}_${sub.subjectId || sub.subjectName}`,
+                                id: `rc_${rc.id}_${sub.subjectId || sub.subjectName || Math.random()}`,
                                 studentId: sId,
-                                classId: rc.classId,
-                                academicYear: rc.academicYear,
-                                term: rc.term,
+                                classId: rc.classId || rc.className,
+                                academicYear: rc.academicYear || rc.academicYearId || rc.year,
+                                term: rc.term || rc.termId,
                                 subjectId: sub.subjectId,
-                                subjectName: sub.subjectName,
+                                subjectName: sub.subjectName || sub.subject,
                                 classExercise: sub.classExercise ?? sub.classEx ?? sub.exercises,
                                 homework: sub.homework ?? sub.hw,
                                 midSem: sub.midSem ?? sub.midTerm,
@@ -530,17 +508,21 @@ export default function AcademicReportsPage() {
                                 maxScore: 100,
                                 assessmentType: 'Terminal Report Summary',
                                 isArchived: rc.isArchived === true,
-                                _source: 'report-cards'
+                                _source: sourceLabel
                             });
                         }
                     });
                 }
             });
-        }
+        };
+
+        processReportCards(rawReportCards, 'report-cards');
+        processReportCards(rawReportCardsAlt, 'reportCards');
+        processReportCards(rawTermReportCards, 'term_report_cards');
 
         // 5. From student documents (if grades/assessments/terminalReports are embedded)
-        if (students && students.length > 0) {
-            students.forEach((stu: any) => {
+        if (rawStudents && rawStudents.length > 0) {
+            rawStudents.forEach((stu: any) => {
                 const primaryId = getStudentId(stu);
                 const embedded = stu.grades || stu.assessments || stu.terminalReports || stu.marks;
                 if (Array.isArray(embedded)) {
@@ -557,7 +539,7 @@ export default function AcademicReportsPage() {
         }
 
         return list;
-    }, [rawAssessments, rawGrades, rawMarks, rawReportCards, students]);
+    }, [rawAssessments, rawGrades, rawMarks, rawReportCards, rawReportCardsAlt, rawTermReportCards, rawStudents]);
 
     // Filter candidate assessments by Selected Term, Academic Year, and Class using robust normalization
     const classAssessments = useMemo(() => {
@@ -569,15 +551,32 @@ export default function AcademicReportsPage() {
             const rawStudentId = a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.student_id || a.uid || a.admissionNumber;
             if (!rawStudentId && !matchedStudent) return false;
 
-            // Class matching
+            // Class matching (relaxed: matches classId, className, class code, or resolved student's class)
             if (selectedClassId && selectedClassId !== 'all') {
                 const targetClassName = selectedClass?.name?.toLowerCase().trim();
-                const aClassId = (a.classId || '').toLowerCase().trim();
-                const aClassName = (a.className || '').toLowerCase().trim();
-                const matchesClassId = a.classId === selectedClassId;
+                const targetClassCode = String((selectedClass as any)?.code || '').toLowerCase().trim();
+                const targetClassLevel = String((selectedClass as any)?.level || '').toLowerCase().trim();
+                const aClassId = String(a.classId || '').toLowerCase().trim();
+                const aClassName = String(a.className || '').toLowerCase().trim();
+
+                const matchesClassId = a.classId === selectedClassId || aClassId === selectedClassId.toLowerCase().trim();
                 const matchesClassName = targetClassName && (aClassId === targetClassName || aClassName === targetClassName);
-                const matchesStudent = matchedStudent && (matchedStudent.classId === selectedClassId || matchedStudent.className === targetClassName);
-                if ((a.classId || a.className) && !matchesClassId && !matchesClassName && !matchesStudent) {
+                const matchesClassCode = targetClassCode && (aClassId === targetClassCode || aClassName === targetClassCode);
+                const matchesClassLevel = targetClassLevel && (aClassId === targetClassLevel || aClassName === targetClassLevel);
+
+                const matchesStudent = matchedStudent && (
+                    matchedStudent.classId === selectedClassId || 
+                    (targetClassName && (
+                        String(matchedStudent.className || '').toLowerCase().trim() === targetClassName ||
+                        String((matchedStudent as any).class || '').toLowerCase().trim() === targetClassName
+                    ))
+                );
+
+                if ((a.classId || a.className) && !matchesClassId && !matchesClassName && !matchesClassCode && !matchesClassLevel && !matchesStudent) {
+                    return false;
+                }
+
+                if (!a.classId && !a.className && matchedStudent && !matchesStudent) {
                     return false;
                 }
             }
@@ -597,6 +596,45 @@ export default function AcademicReportsPage() {
             return true;
         });
     }, [candidateRecords, selectedClassId, selectedClass, selectedYear, selectedTerm, resolveStudentForMark]);
+
+    // Discover alternative terms and years that have marks for this class (smart recovery helper)
+    const availableTermsForClass = useMemo(() => {
+        if (!candidateRecords || candidateRecords.length === 0) return [];
+        const termCounts = new Map<string, { term: string; year: string; count: number }>();
+        
+        candidateRecords.forEach((a: any) => {
+            if (selectedClassId && selectedClassId !== 'all') {
+                const targetClassName = selectedClass?.name?.toLowerCase().trim();
+                const targetClassCode = String((selectedClass as any)?.code || '').toLowerCase().trim();
+                const aClassId = String(a.classId || '').toLowerCase().trim();
+                const aClassName = String(a.className || '').toLowerCase().trim();
+
+                const matchesClassId = a.classId === selectedClassId || aClassId === selectedClassId.toLowerCase().trim();
+                const matchesClassName = targetClassName && (aClassId === targetClassName || aClassName === targetClassName);
+                const matchesClassCode = targetClassCode && (aClassId === targetClassCode || aClassName === targetClassCode);
+                const matchedStudent = resolveStudentForMark(a);
+                const matchesStudent = matchedStudent && (
+                    matchedStudent.classId === selectedClassId || 
+                    (targetClassName && (
+                        String(matchedStudent.className || '').toLowerCase().trim() === targetClassName ||
+                        String((matchedStudent as any).class || '').toLowerCase().trim() === targetClassName
+                    ))
+                );
+
+                if (!matchesClassId && !matchesClassName && !matchesClassCode && !matchesStudent) return;
+            }
+
+            const t = a.term || a.termId || a.semester;
+            const y = a.academicYear || a.academicYearId || a.year || selectedYear || '';
+            if (!t) return;
+            const key = `${t}___${y}`;
+            const existing = termCounts.get(key) || { term: t, year: y, count: 0 };
+            existing.count++;
+            termCounts.set(key, existing);
+        });
+
+        return Array.from(termCounts.values()).sort((a, b) => b.count - a.count);
+    }, [candidateRecords, selectedClassId, selectedClass, selectedYear, resolveStudentForMark]);
 
     // Distinct subjects compiled from registered subjects and candidate assessments
     const distinctSubjectsList = useMemo(() => {
@@ -664,7 +702,9 @@ export default function AcademicReportsPage() {
             ...(rawAssessments || []),
             ...(rawGrades || []),
             ...(rawMarks || []),
-            ...(rawReportCards || [])
+            ...(rawReportCards || []),
+            ...(rawReportCardsAlt || []),
+            ...(rawTermReportCards || [])
         ];
         console.log("Query filters:", { academicYear: selectedYear, term: selectedTerm, classId: selectedClassId });
         console.log("Fetched marks count:", marksDocs.length);
@@ -674,6 +714,8 @@ export default function AcademicReportsPage() {
         refetchGrades?.();
         refetchMarks?.();
         refetchReportCards?.();
+        refetchReportCardsAlt?.();
+        refetchTermReportCards?.();
     };
 
     useEffect(() => {
@@ -682,7 +724,9 @@ export default function AcademicReportsPage() {
                 ...(rawAssessments || []),
                 ...(rawGrades || []),
                 ...(rawMarks || []),
-                ...(rawReportCards || [])
+                ...(rawReportCards || []),
+                ...(rawReportCardsAlt || []),
+                ...(rawTermReportCards || [])
             ];
             console.log("Query filters:", { academicYear: selectedYear, term: selectedTerm, classId: selectedClassId });
             console.log("Fetched marks count:", marksDocs.length);
@@ -704,7 +748,7 @@ export default function AcademicReportsPage() {
             }
             console.log("Filtered classAssessments count:", classAssessments.length);
         }
-    }, [isReportRequested, selectedYear, selectedTerm, selectedClassId, rawAssessments, rawGrades, rawMarks, rawReportCards, classAssessments.length]);
+    }, [isReportRequested, selectedYear, selectedTerm, selectedClassId, rawAssessments, rawGrades, rawMarks, rawReportCards, rawReportCardsAlt, rawTermReportCards, classAssessments.length]);
 
     // Data Aggregation Engine (Aggregates assessments by student & subject)
     const getCategoryKey = (type: string, name?: string) => {
@@ -717,9 +761,43 @@ export default function AcademicReportsPage() {
         return 'classEx';
     };
 
+    // Effective students for the selected class/session:
+    // Combines current class roster with any students who have marks in classAssessments
+    const effectiveStudents = useMemo(() => {
+        const studentMap = new Map<string, any>();
+        (students || []).forEach(s => {
+            const pid = getStudentId(s);
+            if (pid) studentMap.set(pid, s);
+        });
+
+        classAssessments.forEach((a: any) => {
+            const matched = resolveStudentForMark(a);
+            if (matched) {
+                const pid = getStudentId(matched);
+                if (pid && !studentMap.has(pid)) {
+                    studentMap.set(pid, matched);
+                }
+            } else {
+                const sId = String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || a.admissionNumber || '').trim();
+                if (sId && !studentMap.has(sId)) {
+                    studentMap.set(sId, {
+                        id: sId,
+                        studentId: sId,
+                        firstName: a.studentName || 'Student',
+                        lastName: sId.length > 4 ? `(${sId.slice(-4)})` : '',
+                        classId: selectedClassId
+                    });
+                }
+            }
+        });
+
+        return Array.from(studentMap.values());
+    }, [students, classAssessments, resolveStudentForMark, selectedClassId]);
+
     // Data Aggregation Engine (Aggregates assessments by student & subject & category)
     const academicData = useMemo(() => {
-        if (!students || students.length === 0 || distinctSubjectsList.length === 0 || classAssessments.length === 0) return null;
+        if (classAssessments.length === 0 && effectiveStudents.length === 0) return null;
+        if (effectiveStudents.length === 0 || distinctSubjectsList.length === 0) return null;
 
         // Group assessments by student, subject, and category
         interface SubGrouping {
@@ -739,7 +817,7 @@ export default function AcademicReportsPage() {
 
         const grouping: Record<string, Record<string, SubGrouping>> = {};
 
-        students.forEach(student => {
+        effectiveStudents.forEach(student => {
             const primaryId = getStudentId(student);
             if (!primaryId) return;
 
@@ -756,8 +834,8 @@ export default function AcademicReportsPage() {
         });
 
         classAssessments.forEach((a: any) => {
-            const matchedStudent = resolveStudentForMark(a);
-            const primaryStudentId = matchedStudent ? getStudentId(matchedStudent) : String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || '').trim();
+            const matched = resolveStudentForMark(a);
+            const primaryStudentId = matched ? getStudentId(matched) : String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || '').trim();
             if (!primaryStudentId) return;
 
             const subjectKey = resolveSubjectKey(a);
@@ -870,7 +948,7 @@ export default function AcademicReportsPage() {
             totalTestedSubjects: number;
         }> = [];
 
-        students.forEach(student => {
+        effectiveStudents.forEach(student => {
             const primaryId = getStudentId(student);
             const scoresMap: Record<string, number> = {};
             const subScoresMap: Record<string, { classEx: number; hw: number; midSem: number; proj: number; ca: number; exam: number; total: number }> = {};
@@ -976,7 +1054,7 @@ export default function AcademicReportsPage() {
             let countStudentsInSubject = 0;
             let passStudentsInSubject = 0;
 
-            students.forEach(student => {
+            effectiveStudents.forEach(student => {
                 const primaryId = getStudentId(student);
                 const score = studentSubjectScores[primaryId]?.[subject.id];
                 if (score !== undefined) {
@@ -1057,16 +1135,16 @@ export default function AcademicReportsPage() {
             performanceTiers,
             classAssessmentsCount: classAssessments.length
         };
-    }, [students, classAssessments, distinctSubjectsList, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark]);
+    }, [effectiveStudents, classAssessments, distinctSubjectsList, resolveSubjectKey, currentCaWeight, currentExamWeight]);
 
     // Single-Subject Detailed Deep Dive
     const subjectDetails = useMemo(() => {
-        if (!selectedSubjectId || selectedSubjectId === 'all' || !academicData || !students || classAssessments.length === 0) return null;
+        if (!selectedSubjectId || selectedSubjectId === 'all' || !academicData || !effectiveStudents || classAssessments.length === 0) return null;
 
         const subAssessments = classAssessments.filter(a => a.subjectId === selectedSubjectId || resolveSubjectKey(a) === selectedSubjectId);
 
         const studentAssessmentsMap: Record<string, any[]> = {};
-        students.forEach(s => {
+        effectiveStudents.forEach(s => {
             const primaryId = getStudentId(s);
             studentAssessmentsMap[primaryId] = subAssessments.filter(a => {
                 const st = resolveStudentForMark(a);
@@ -1076,7 +1154,7 @@ export default function AcademicReportsPage() {
         });
 
         const gradeDistribution = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
-        const studentSubjectDetails = students.map(student => {
+        const studentSubjectDetails = effectiveStudents.map(student => {
             const primaryId = getStudentId(student);
             const score = academicData.studentSubjectScores[primaryId]?.[selectedSubjectId] ?? 0;
             const grade = getGradeForScore(score);
@@ -1167,7 +1245,7 @@ export default function AcademicReportsPage() {
             lowestScore,
             passRate: parseFloat(passRate.toFixed(1))
         };
-    }, [selectedSubjectId, academicData, students, classAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark]);
+    }, [selectedSubjectId, academicData, effectiveStudents, classAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark]);
 
     const selectedSubject = distinctSubjectsList.find(s => s.id === selectedSubjectId) || subjects?.find(s => s.id === selectedSubjectId);
 
@@ -1375,6 +1453,31 @@ export default function AcademicReportsPage() {
                         </p>
                     </div>
 
+                    {availableTermsForClass.length > 0 && (
+                        <div className="bg-white border border-indigo-200 rounded-2xl p-4 text-left space-y-3 shadow-inner">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                                <Sparkles className="h-4 w-4 text-indigo-600" />
+                                Available Data Discovered in Other Terms for this Class:
+                            </h4>
+                            <div className="flex flex-wrap gap-2 pt-1">
+                                {availableTermsForClass.map(item => (
+                                    <Button
+                                        key={`${item.term}_${item.year}`}
+                                        size="sm"
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-9 shadow-sm flex items-center gap-1.5"
+                                        onClick={() => {
+                                            setSelectedTerm(item.term);
+                                            if (item.year) setSelectedYear(item.year);
+                                            setIsReportRequested(true);
+                                        }}
+                                    >
+                                        <span>⚡</span> Switch to {item.term} {item.year ? `(${item.year})` : ''} • {item.count} marks
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="bg-white border border-indigo-100 rounded-2xl p-4 text-left space-y-3 shadow-inner">
                         <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
                             <Info className="h-4 w-4 text-indigo-600" />
@@ -1405,12 +1508,43 @@ export default function AcademicReportsPage() {
         }
 
         return (
-            <div className="text-center py-20 bg-white border border-slate-200 rounded-xl shadow-sm">
-                <AlertTriangle className="mx-auto h-12 w-12 text-amber-500 mb-3"/>
+            <div className="text-center py-16 px-6 bg-white border border-slate-200 rounded-2xl shadow-sm max-w-2xl mx-auto space-y-5 my-8">
+                <AlertTriangle className="mx-auto h-12 w-12 text-amber-500 mb-1"/>
                 <h3 className="text-lg font-semibold text-slate-800">No Assessment Records Found</h3>
                 <p className="text-slate-500 text-sm max-w-sm mx-auto mt-1">
                     No continuous assessments or terminal exam marks have been posted for this class in term: <strong className="text-slate-700">{selectedTerm}</strong> ({selectedYear}).
                 </p>
+
+                {availableTermsForClass.length > 0 && (
+                    <div className="bg-gradient-to-br from-indigo-50/70 to-blue-50/70 border border-indigo-200 rounded-2xl p-5 text-left space-y-3 shadow-inner my-3">
+                        <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-indigo-600" />
+                            <h4 className="text-xs font-black uppercase tracking-wider text-indigo-950">
+                                Marks Discovered in Other Terms for this Class:
+                            </h4>
+                        </div>
+                        <p className="text-xs text-slate-600">
+                            We detected stored assessment marks for this class in other academic terms. Click below to load them instantly:
+                        </p>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                            {availableTermsForClass.map(item => (
+                                <Button
+                                    key={`${item.term}_${item.year}`}
+                                    size="sm"
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-9 shadow-sm flex items-center gap-1.5"
+                                    onClick={() => {
+                                        setSelectedTerm(item.term);
+                                        if (item.year) setSelectedYear(item.year);
+                                        setIsReportRequested(true);
+                                    }}
+                                >
+                                    <span>⚡</span> Switch to {item.term} {item.year ? `(${item.year})` : ''} • {item.count} marks
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="mt-4 gap-2 flex justify-center print:hidden">
                     <Button variant="outline" size="sm" onClick={() => { setSelectedClassId(null); setIsReportRequested(false); }}>Change Class</Button>
                     <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700" asChild>
@@ -1584,6 +1718,33 @@ export default function AcademicReportsPage() {
                 /* CLASS OVERVIEW DASHBOARD (ALL SUBJECTS SUMMARY)                          */
                 /* ========================================================================= */
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+                    {/* ARCHIVED TERM INTEGRITY BANNER */}
+                    {isTermArchived && (
+                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm print:hidden">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-amber-500 text-white rounded-xl shadow-sm">
+                                    <Archive className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-bold text-amber-950 flex items-center gap-2">
+                                        <span>Archived Term (Historical Record)</span>
+                                        <Badge className="bg-amber-200 text-amber-900 border-amber-300 font-extrabold text-[10px]">Preserved</Badge>
+                                    </h4>
+                                    <p className="text-xs text-amber-800 mt-0.5">
+                                        Continuous assessments and terminal exam marks for <strong>{selectedTerm} ({selectedYear})</strong> are frozen for historical integrity. All analytics and master sheet records remain fully accessible below.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <TermManagementModal
+                                    schoolId={schoolId || 'default'}
+                                    currentTermId={selectedTerm}
+                                    onSuccess={() => handleGenerateAnalytics()}
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     {/* VIEW TOGGLE BAR */}
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-50 border border-slate-200 p-3 rounded-xl shadow-sm print:hidden">
                         <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 w-fit">

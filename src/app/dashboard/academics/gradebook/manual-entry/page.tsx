@@ -38,6 +38,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import CreditBalance from '@/components/CreditBalance';
 import { DEFAULT_GRADING_SYSTEM, getGradeFromScale } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
 
 const ASSESSMENT_TYPES = [
     'Class Exercise (CA)', 
@@ -256,27 +257,44 @@ export default function GradebookPage() {
             ? query(
                 collection(firestore, 'students'), 
                 where('schoolId', '==', schoolId), 
-                where('classId', '==', classId),
-                where('enrollmentStatus', '==', 'Active')
+                where('classId', '==', classId)
             ) 
             : null, 
     [firestore, schoolId, classId]);
-    const { data: students, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
+    const { data: rawStudents, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
 
-    // Fetch Existing Assessments for Batch Management
+    const students = useMemo(() => {
+        if (!rawStudents) return [];
+        return rawStudents.filter((s: any) => 
+            s.enrollmentStatus !== 'Inactive' && 
+            s.enrollmentStatus !== 'Graduated' && 
+            s.enrollmentStatus !== 'Withdrawn'
+        );
+    }, [rawStudents]);
+
+    // Fetch Existing Assessments for Batch Management (flexible term & year matching)
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !classId || !subjectId) return null;
         return query(
             collection(firestore, 'assessments'),
             where('schoolId', '==', schoolId),
             where('classId', '==', classId),
-            where('subjectId', '==', subjectId),
-            where('academicYear', '==', academicYear),
-            where('term', '==', term)
+            where('subjectId', '==', subjectId)
         );
-    }, [firestore, schoolId, classId, subjectId, academicYear, term]);
+    }, [firestore, schoolId, classId, subjectId]);
 
-    const { data: rawAssessments, isLoading: loadingAssessments, forceRefetch: refetchAssessments } = useCollection<any>(assessmentsQuery);
+    const { data: allClassAssessments, isLoading: loadingAssessments, forceRefetch: refetchAssessments } = useCollection<any>(assessmentsQuery);
+
+    const rawAssessments = useMemo(() => {
+        if (!allClassAssessments) return [];
+        return allClassAssessments.filter((a: any) => {
+            const aYear = a.academicYear || a.academicYearId || a.year;
+            const aTerm = a.term || a.termId || a.semester;
+            const yearMatches = !academicYear || !aYear || isYearMatch(aYear, academicYear);
+            const termMatches = !term || !aTerm || isTermMatch(aTerm, term);
+            return yearMatches && termMatches;
+        });
+    }, [allClassAssessments, academicYear, term]);
 
     // Group assessments by type
     const groupedAssessments = useMemo(() => {
