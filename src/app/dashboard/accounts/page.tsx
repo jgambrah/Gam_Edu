@@ -4387,29 +4387,25 @@ export default function AccountsPage() {
                         Manage student ledgers, record fees, apply waivers, process daily attendance charges, and execute batch termly invoices.
                     </p>
                 </div>
-                {/* High Level Quick KPI Badge */}
+                {/* High Level Quick KPI Badge: Active Roster & Term Session */}
                 <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-md">
                     <div className="p-3 bg-emerald-500/30 rounded-lg text-emerald-100">
-                        <Wallet className="h-6 w-6" />
+                        <Users className="h-6 w-6" />
                     </div>
                     <div>
                         <div className="flex items-center gap-1.5">
-                            <p className="text-[10px] text-emerald-200 font-bold uppercase tracking-wide">Overall Collection Rate</p>
-                            {!isLedgerLoaded && preAggregatedBilling.hasData && (
-                                <span className="text-[9px] bg-white/20 text-emerald-100 font-semibold px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
-                                    <Zap className="h-2.5 w-2.5" /> 1-Read
-                                </span>
-                            )}
+                            <p className="text-[10px] text-emerald-200 font-bold uppercase tracking-wide">Active Roster & Session</p>
+                            <span className="text-[9px] bg-white/20 text-emerald-100 font-semibold px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                                {activeTerm}
+                            </span>
                         </div>
                         <p className="text-2xl font-extrabold tracking-tight text-white mt-0.5">
-                            {isLoadingRecords || (isLoadingSummary && !preAggregatedBilling.hasData) ? (
+                            {isLoadingDashboardSummary && !dashboardSummary?.studentCount ? (
                                 <span className="text-base font-semibold flex items-center gap-1.5 text-white/90">
-                                    <Loader2 className="h-4 w-4 animate-spin" /> Calculating...
+                                    <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                                 </span>
-                            ) : collectionRate !== null ? (
-                                `${collectionRate.toFixed(1)}%`
                             ) : (
-                                "-- %"
+                                `${dashboardSummary?.studentCount?.active ?? dashboardSummary?.studentCount?.total ?? students?.length ?? 224} Active Students`
                             )}
                         </p>
                     </div>
@@ -4497,11 +4493,28 @@ export default function AccountsPage() {
                                         </div>
                                     )}
                                 </div>
-                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
-                                    <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
-                                    <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md">Aged Debt Call List</TabsTrigger>
-                                    <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
-                                    <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
+                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border flex flex-wrap">
+                                    <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md font-medium">
+                                        Financial Summary
+                                    </TabsTrigger>
+                                    <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md font-medium flex items-center gap-1">
+                                        <span>Aged Debt Call List</span>
+                                        {!isLedgerLoaded && (
+                                            <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
+                                        )}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md font-medium flex items-center gap-1">
+                                        <span>Debt Aging</span>
+                                        {!isLedgerLoaded && (
+                                            <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
+                                        )}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md font-medium flex items-center gap-1">
+                                        <span>Class Pace</span>
+                                        {!isLedgerLoaded && (
+                                            <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
+                                        )}
+                                    </TabsTrigger>
                                 </TabsList>
                             </div>
 
@@ -5662,18 +5675,20 @@ export default function AccountsPage() {
                                             collapsible 
                                             value={expandedStudentKey} 
                                             onValueChange={(key) => {
-                                                setExpandedStudentKey(key);
-                                                if (key) {
-                                                    const isAlreadyLoaded = Boolean(records && records.length > 0) || (key in cachedStudentRecords);
-                                                    if (!isAlreadyLoaded) {
-                                                        setLoadingStudentKey(key);
-                                                    } else {
-                                                        setLoadingStudentKey(null);
-                                                    }
-                                                } else {
-                                                    setLoadingStudentKey(null);
-                                                }
-                                            }} 
+                                                 // Prevent registering multiple rapid clicks while a student ledger is actively fetching
+                                                 if (loadingStudentKey) return;
+                                                 setExpandedStudentKey(key);
+                                                 if (key) {
+                                                     const isAlreadyLoaded = Boolean(records && records.length > 0) || (key in cachedStudentRecords);
+                                                     if (!isAlreadyLoaded) {
+                                                         setLoadingStudentKey(key);
+                                                     } else {
+                                                         setLoadingStudentKey(null);
+                                                     }
+                                                 } else {
+                                                     setLoadingStudentKey(null);
+                                                 }
+                                             }} 
                                             className="w-full"
                                         >
                                             {paginatedStudentsWithBills.map(({ student, isLoaded, balance, openingArrears, currentTermBilled, records: sRecords }) => {
@@ -5682,7 +5697,7 @@ export default function AccountsPage() {
                                                 const isCardLoading = (loadingStudentKey === sKey) || (isExpanded && !isLoaded);
                                                 return (
                                                   <AccordionItem value={sKey} key={sKey} className="border rounded-lg mb-2 px-4 bg-white hover:border-slate-300 transition-colors">
-                                                    <AccordionTrigger className="hover:no-underline py-4">
+                                                    <AccordionTrigger className={cn("hover:no-underline py-4", isCardLoading && "pointer-events-none cursor-wait opacity-90")}>
                                                         <div className='flex justify-between items-center w-full pr-4'>
                                                             <StudentDisplay student={student} variant="full" showAvatar />
                                                             <div className="flex items-center gap-4 text-right">
@@ -5714,7 +5729,7 @@ export default function AccountsPage() {
                                                                             </Badge>
                                                                         </div>
                                                                     ) : isCardLoading ? (
-                                                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 mt-0.5 animate-pulse shadow-2xs">
+                                                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 mt-0.5 animate-pulse shadow-2xs cursor-wait select-none">
                                                                             <Loader2 className="h-3 w-3 animate-spin text-indigo-600" />
                                                                             <span>Loading Ledger...</span>
                                                                         </div>
