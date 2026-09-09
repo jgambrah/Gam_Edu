@@ -471,77 +471,88 @@ export default function AttendanceReportsPage() {
                         <p className="text-xs font-bold uppercase text-slate-500 tracking-widest">Filter Parameters</p>
                     </div>
                 </CardHeader>
-                <CardContent className="flex flex-wrap gap-4 items-end pt-6">
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold text-slate-500 uppercase">Period</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("w-full md:w-[260px] justify-start text-left font-normal border-2 h-11")}>
-                                    <CalendarIcon className="mr-2 h-4 w-4 text-indigo-600" />
-                                    {dateRange?.from 
-                                        ? dateRange.to 
-                                            ? <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</> 
-                                            : format(dateRange.from, "LLL dd, y") 
-                                        : <span>Pick a date range</span>
-                                    }
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar 
-                                    mode="range" 
-                                    selected={dateRange} 
-                                    onSelect={(range) => {
-                                        setDateRange(range);
-                                        setIsReportRequested(false);
-                                    }} 
-                                    numberOfMonths={2} 
-                                    initialFocus 
-                                />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
+                <CardContent className="pt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        {/* Column 1: Period */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Period</label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal border-2 h-11")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4 text-indigo-600 shrink-0" />
+                                        <span className="truncate">
+                                            {dateRange?.from 
+                                                ? dateRange.to 
+                                                    ? <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</> 
+                                                    : format(dateRange.from, "LLL dd, y") 
+                                                : <span>Pick a date range</span>
+                                            }
+                                        </span>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar 
+                                        mode="range" 
+                                        selected={dateRange} 
+                                        onSelect={(range) => {
+                                            setDateRange(range);
+                                            setIsReportRequested(false);
+                                        }} 
+                                        numberOfMonths={2} 
+                                        initialFocus 
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
 
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold text-slate-500 uppercase">Class</Label>
-                        <Select onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); }} value={selectedClassId}>
-                            <SelectTrigger className="w-full md:w-[200px] border-2 h-11">
-                                <SelectValue placeholder="Select Class..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Classes</SelectItem>
-                                {classes?.map((c: any) => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                        {/* Column 2: Class */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Class</label>
+                            <Select onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); }} value={selectedClassId}>
+                                <SelectTrigger className="w-full border-2 h-11">
+                                    <SelectValue placeholder="Select Class..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Classes</SelectItem>
+                                    {classes?.map((c: any) => (
+                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                    <div className="space-y-2 flex-1 min-w-[200px]">
-                        <Label className="text-xs font-bold text-slate-500 uppercase">Search Student</Label>
-                        <StudentSearchInput 
-                            value={searchStudentTerm} 
-                            onChange={setSearchStudentTerm} 
-                            className="h-11 border-2" 
-                        />
-                    </div>
+                        {/* Column 3: Search Student */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Search Student</label>
+                            <StudentSearchInput 
+                                value={searchStudentTerm} 
+                                onChange={setSearchStudentTerm} 
+                                className="w-full [&_input]:h-11 [&_input]:border-2" 
+                            />
+                        </div>
 
-                    <Button 
-                        onClick={handleGenerateReport} 
-                        disabled={reportStatus === 'LOADING'} 
-                        className="h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 gap-2 rounded-xl shrink-0 transition-all shadow-sm"
-                    >
-                        {reportStatus === 'LOADING' ? (
-                            <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Loading...
-                            </>
-                        ) : (
-                            <>
-                                <Search className="h-4 w-4" />
-                                Generate Report
-                            </>
-                        )}
-                    </Button>
+                        {/* Column 4: Generate Report Action */}
+                        <div>
+                            <label className="hidden md:block text-xs font-semibold text-transparent uppercase mb-1 select-none pointer-events-none">&nbsp;</label>
+                            <Button 
+                                onClick={handleGenerateReport} 
+                                disabled={reportStatus === 'LOADING'} 
+                                className="w-full h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 gap-2 rounded-xl transition-all shadow-sm"
+                            >
+                                {reportStatus === 'LOADING' ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Loading...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Search className="h-4 w-4" />
+                                        Generate Report
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
 
