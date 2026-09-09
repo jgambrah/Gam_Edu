@@ -218,6 +218,7 @@ function AttendanceManagerDialog({ classes, schoolId, onRefresh }: { classes: an
 }
 
 export default function AttendanceReportsPage() {
+    const { toast } = useToast();
     const { role, loading: isRoleLoading } = useRole();
     const router = useRouter();
     const firestore = useFirestore();
@@ -230,6 +231,8 @@ export default function AttendanceReportsPage() {
     const [selectedClassId, setSelectedClassId] = useState<string>('');
     const [searchStudentTerm, setSearchStudentTerm] = useState('');
     const [isReportRequested, setIsReportRequested] = useState<boolean>(false);
+
+    type ReportStatus = 'IDLE' | 'LOADING' | 'SUCCESS' | 'EMPTY';
 
     const isAdmin = ['Administrator', 'Director'].includes(role || '');
     const isTeacher = role === 'Teacher';
@@ -373,7 +376,37 @@ export default function AttendanceReportsPage() {
         return { filteredData: filtered, summaryStats: summary, trendData: trend, pieData: pie };
     }, [rawAttendance, students, classes, dateRange, selectedClassId, searchStudentTerm]);
 
-    if (isSchoolLoading || isRoleLoading || isLoadingAttendance || isLoadingStudents) {
+    const reportStatus: ReportStatus = useMemo(() => {
+        if (!isReportRequested || !selectedClassId || !dateRange?.from) return 'IDLE';
+        if (isLoadingAttendance || isLoadingStudents) return 'LOADING';
+        if (filteredData.length === 0) return 'EMPTY';
+        return 'SUCCESS';
+    }, [isReportRequested, selectedClassId, dateRange?.from, isLoadingAttendance, isLoadingStudents, filteredData]);
+
+    const handleGenerateReport = () => {
+        if (!selectedClassId) {
+            toast({
+                variant: 'destructive',
+                title: "Class Required",
+                description: "Please select a target class (or 'All Classes') to generate the report."
+            });
+            return;
+        }
+        if (!dateRange?.from) {
+            toast({
+                variant: 'destructive',
+                title: "Date Range Required",
+                description: "Please select a valid date range before generating the report."
+            });
+            return;
+        }
+        setIsReportRequested(true);
+        if (isReportRequested) {
+            forceRefetch?.();
+        }
+    };
+
+    if (isSchoolLoading || isRoleLoading) {
         return (
             <div className="p-10 flex justify-center">
                 <Loader2 className="animate-spin h-8 w-8 text-primary"/>
@@ -420,7 +453,11 @@ export default function AttendanceReportsPage() {
                             onRefresh={forceRefetch}
                         />
                     )}
-                    <Button onClick={() => window.print()} className="bg-white text-slate-800 hover:bg-slate-50 shadow-md border-0">
+                    <Button 
+                        onClick={() => window.print()} 
+                        disabled={reportStatus !== 'SUCCESS'}
+                        className="bg-white text-slate-800 hover:bg-slate-50 shadow-md border-0 disabled:opacity-50"
+                    >
                         <Printer className="mr-2 h-4 w-4"/>Print Record
                     </Button>
                 </div>
@@ -450,7 +487,16 @@ export default function AttendanceReportsPage() {
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar mode="range" selected={dateRange} onSelect={setDateRange} numberOfMonths={2} initialFocus />
+                                <Calendar 
+                                    mode="range" 
+                                    selected={dateRange} 
+                                    onSelect={(range) => {
+                                        setDateRange(range);
+                                        setIsReportRequested(false);
+                                    }} 
+                                    numberOfMonths={2} 
+                                    initialFocus 
+                                />
                             </PopoverContent>
                         </Popover>
                     </div>
@@ -480,17 +526,27 @@ export default function AttendanceReportsPage() {
                     </div>
 
                     <Button 
-                        onClick={() => setIsReportRequested(true)} 
-                        disabled={!selectedClassId || !dateRange?.from} 
-                        className="h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 gap-2 rounded-xl shrink-0"
+                        onClick={handleGenerateReport} 
+                        disabled={reportStatus === 'LOADING'} 
+                        className="h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 gap-2 rounded-xl shrink-0 transition-all shadow-sm"
                     >
-                        <Search className="h-4 w-4" />
-                        Generate Report
+                        {reportStatus === 'LOADING' ? (
+                            <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Loading...
+                            </>
+                        ) : (
+                            <>
+                                <Search className="h-4 w-4" />
+                                Generate Report
+                            </>
+                        )}
                     </Button>
                 </CardContent>
             </Card>
 
-            {(!isReportRequested || !selectedClassId) && (
+            {/* IDLE STATE: On-Demand Attendance Reporting */}
+            {reportStatus === 'IDLE' && (
                 <Card className="border-2 border-dashed border-teal-200 bg-teal-50/30 p-12 text-center rounded-3xl shadow-sm my-8 max-w-xl mx-auto space-y-4">
                     <div className="p-4 bg-teal-600 text-white rounded-2xl w-fit mx-auto shadow-md shadow-teal-200">
                         <CalendarIcon className="h-8 w-8" />
@@ -498,20 +554,44 @@ export default function AttendanceReportsPage() {
                     <div className="space-y-1.5">
                         <h3 className="text-lg font-black text-slate-900">On-Demand Attendance Reporting</h3>
                         <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                            Select a <strong>Class</strong> and <strong>Date Range</strong> above, then click <strong>"Generate Report"</strong> to load records on-demand without auto-querying database reads.
+                            Select a <strong>Class</strong> and <strong>Date Range</strong> above, then click <strong>"Generate Report"</strong> to load records on-demand without unnecessary database reads.
                         </p>
                     </div>
-                    <Button 
-                        onClick={() => setIsReportRequested(true)} 
-                        disabled={!selectedClassId || !dateRange?.from} 
-                        className="bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs px-6 py-2.5 shadow-sm"
-                    >
-                        Load Attendance Data
-                    </Button>
                 </Card>
             )}
 
-            {summaryStats && (
+            {/* LOADING STATE */}
+            {reportStatus === 'LOADING' && (
+                <Card className="border border-slate-200/80 bg-white p-16 text-center rounded-3xl shadow-sm my-8 max-w-xl mx-auto space-y-4">
+                    <div className="p-4 bg-teal-50 text-teal-600 rounded-2xl w-fit mx-auto animate-spin">
+                        <Loader2 className="h-8 w-8" />
+                    </div>
+                    <div className="space-y-1.5">
+                        <h3 className="text-lg font-black text-slate-900">Fetching Attendance Records...</h3>
+                        <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                            Querying attendance logs for the selected parameters.
+                        </p>
+                    </div>
+                </Card>
+            )}
+
+            {/* EMPTY STATE: Shown only after query executed and 0 records found */}
+            {reportStatus === 'EMPTY' && (
+                <Card className="border-dashed border-2 border-slate-300 bg-slate-50/70 rounded-3xl max-w-xl mx-auto my-8">
+                    <CardContent className="py-16 text-center">
+                        <div className="bg-white p-5 rounded-2xl w-fit mx-auto mb-4 shadow-sm border border-slate-200">
+                            <BarChartIcon className="h-10 w-10 text-slate-400" />
+                        </div>
+                        <p className="text-slate-800 font-black uppercase tracking-wider text-sm">No Attendance Data Found</p>
+                        <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto leading-relaxed">
+                            No attendance records were logged for the selected class and date range. Try selecting a different period or class filter.
+                        </p>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* SUCCESS STATE */}
+            {reportStatus === 'SUCCESS' && summaryStats && (
                 <>
                     {/* SUMMARY STAT CARDS */}
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -741,21 +821,6 @@ export default function AttendanceReportsPage() {
                         </Card>
                     </div>
                 </>
-            )}
-
-            {/* EMPTY STATE */}
-            {!summaryStats && (
-                <Card className="border-dashed border-4 bg-slate-50/50">
-                    <CardContent className="py-24 text-center">
-                        <div className="bg-white p-6 rounded-full w-fit mx-auto mb-6 shadow-sm border-2">
-                            <BarChartIcon className="h-12 w-12 text-slate-200" />
-                        </div>
-                        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No attendance data found</p>
-                        <p className="text-xs text-muted-foreground mt-2 max-w-xs mx-auto">
-                            Adjust your class, student, or date range filters to generate a report.
-                        </p>
-                    </CardContent>
-                </Card>
             )}
         </div>
     );
