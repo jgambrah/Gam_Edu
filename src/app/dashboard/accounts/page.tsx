@@ -5419,49 +5419,20 @@ export default function AccountsPage() {
 
                         {/* Interactive Financial Ledger Mode Bar */}
                         {ledgerMode === 'on-demand' ? (
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-blue-50/90 via-indigo-50/60 to-slate-50 border border-blue-200/70 rounded-xl shadow-xs text-xs mb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-blue-600 text-white font-black shadow-xs shrink-0">
-                                        <Zap className="h-4 w-4" />
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 px-3.5 py-2.5 bg-slate-50/80 border border-slate-200/80 rounded-xl text-xs mb-4">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="flex items-center justify-center h-6 w-6 rounded-md bg-blue-100 text-blue-700 font-bold shrink-0">
+                                        <Zap className="h-3.5 w-3.5" />
                                     </div>
-                                    <div>
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="font-bold text-slate-900 text-sm">
-                                                ⚡ On-Demand Cashier Mode (0 Upfront Reads)
-                                            </span>
-                                            <Badge variant="outline" className="border-blue-300 text-blue-800 bg-blue-50 text-[10px]">
-                                                Superfast & Cost Efficient
-                                            </Badge>
-                                            {Object.keys(cachedStudentRecords).length > 0 && (
-                                                <Badge variant="secondary" className="text-[10px] bg-indigo-100 text-indigo-800">
-                                                    {Object.keys(cachedStudentRecords).length} Student(s) Loaded in Session
-                                                </Badge>
-                                            )}
-                                        </div>
-                                        <p className="text-slate-500 text-[11px] mt-0.5">
-                                            Search for any student and expand them to load only their ledger on demand (~15–30 reads). Need school-wide reports or debtor lists? Load the full ledger on demand.
-                                        </p>
-                                    </div>
+                                    <p className="text-slate-600 text-xs">
+                                        <span className="font-semibold text-slate-800">On-Demand Cashier Mode:</span> Searching or clicking any student loads only their ledger on-demand (~15–30 reads).
+                                    </p>
                                 </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setLedgerMode('full-school')}
-                                        disabled={isLoadingRecords}
-                                        className="h-8 text-xs font-semibold bg-white border-blue-300 text-blue-900 hover:bg-blue-100 hover:text-blue-950 shadow-xs"
-                                    >
-                                        {isLoadingRecords ? (
-                                            <>
-                                                <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> Loading Ledger...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Database className="h-3.5 w-3.5 mr-1.5 text-blue-600" /> Load Full School Ledger (17,000+ Records)
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
+                                {Object.keys(cachedStudentRecords).length > 0 && (
+                                    <Badge variant="secondary" className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200/60 font-medium shrink-0">
+                                        {Object.keys(cachedStudentRecords).length} Student(s) Loaded in Session
+                                    </Badge>
+                                )}
                             </div>
                         ) : (
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-slate-50 border border-emerald-200/70 rounded-xl shadow-xs text-xs mb-4">
