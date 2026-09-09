@@ -135,7 +135,13 @@ export function useDashboardSummary(schoolId: string | null | undefined) {
         setIsLoading(false);
       },
       (error) => {
-        console.error('[useDashboardSummary] Listener error:', error.code, error.message);
+        if (error.code === 'permission-denied') {
+          console.warn('[useDashboardSummary] Permission denied for school summary:', schoolId);
+        } else {
+          console.error('[useDashboardSummary] Listener error:', error.code, error.message);
+        }
+        setSummary(null);
+        setIsStale(true);
         setIsLoading(false);
       }
     );

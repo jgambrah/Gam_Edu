@@ -3459,27 +3459,19 @@ export default function AccountsPage() {
   const isLedgerLoaded = Boolean(ledgerMode === 'full-school' && !isLoadingRecords && records);
 
   // Pre-aggregated single summary document subscriptions (cost: 1 Firestore read)
-  // 1. Primary: dashboard_summaries/{schoolId} (central server-aggregated cache)
+  // Primary: dashboard_summaries/{schoolId} (central server-aggregated cache)
   const { summary: dashboardSummary, isLoading: isLoadingDashboardSummary } = useDashboardSummary(schoolId);
-
-  // 2. Secondary / Dedicated fallback: schools/{schoolId}/analytics/billingSummary
-  const billingSummaryRef = useMemoFirebase(
-    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId, 'analytics', 'billingSummary') : null),
-    [firestore, schoolId]
-  );
-  const { data: directBillingSummary, isLoading: isLoadingBillingSummary } = useDoc<any>(billingSummaryRef);
-  const isLoadingSummary = isLoadingDashboardSummary && isLoadingBillingSummary;
+  const isLoadingSummary = isLoadingDashboardSummary;
 
   const preAggregatedBilling = useMemo(() => {
-    const dbs = directBillingSummary || {};
     const fin = dashboardSummary?.financials || {};
     const aging = dashboardSummary?.debtAging || {};
 
-    const rawGross = dbs.totalGrossOutstanding ?? dbs.totalOutstanding ?? fin.totalOutstanding ?? null;
-    const rawCredits = dbs.totalAdvanceCredits ?? dbs.advancePayments ?? dbs.overpayments ?? aging.overpayments ?? null;
-    const rawCollected = dbs.totalCollected ?? dbs.totalRevenue ?? fin.totalRevenue ?? fin.totalCollectedThisTerm ?? null;
-    const rawRate = dbs.overallCollectionRate ?? dbs.collectionRate ?? fin.collectionRate ?? null;
-    const rawBilled = dbs.totalBilled ?? fin.totalBilled ?? null;
+    const rawGross = fin.totalOutstanding ?? null;
+    const rawCredits = fin.advancePayments ?? fin.overpayments ?? aging.overpayments ?? null;
+    const rawCollected = fin.totalRevenue ?? fin.totalCollectedThisTerm ?? null;
+    const rawRate = fin.collectionRate ?? null;
+    const rawBilled = fin.totalBilled ?? null;
 
     const hasData = rawGross !== null || rawCollected !== null || rawRate !== null;
 
@@ -3493,7 +3485,7 @@ export default function AccountsPage() {
       rate = (totalColl / (totalGross + totalColl)) * 100;
     }
 
-    const streamDebts = dbs.streamDebts || fin.streamDebts || {
+    const streamDebts = fin.streamDebts || {
       tuition: fin.outstandingTuition || 0,
       canteen: fin.outstandingCanteen || 0,
       transport: fin.outstandingTransport || 0,
@@ -3510,7 +3502,7 @@ export default function AccountsPage() {
       totalBilled: rawBilled !== null ? Number(rawBilled) : (totalGross + totalColl),
       streamDebts
     };
-  }, [directBillingSummary, dashboardSummary]);
+  }, [dashboardSummary]);
 
   const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
   const { data: pendingWaivers, forceRefetch: refetchWaivers } = useCollection<any>(waiverRequestsQuery);
@@ -4099,14 +4091,11 @@ export default function AccountsPage() {
     if (isLedgerLoaded && categoryCollections.length > 0) {
       return categoryCollections;
     }
-    if (directBillingSummary?.categoryCollections?.length) {
-      return directBillingSummary.categoryCollections;
-    }
     if (dashboardSummary?.financials?.categoryCollections?.length) {
       return dashboardSummary.financials.categoryCollections;
     }
     return [];
-  }, [isLedgerLoaded, categoryCollections, directBillingSummary, dashboardSummary]);
+  }, [isLedgerLoaded, categoryCollections, dashboardSummary]);
 
   const topDebtors = useMemo(() => {
       if (!isLedgerLoaded) return [];
