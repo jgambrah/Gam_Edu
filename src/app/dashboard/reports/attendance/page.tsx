@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { collection, query, where, getDocs, writeBatch, doc, Timestamp } from 'firebase/firestore';
@@ -10,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle } from 'lucide-react';
+import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle, CalendarCheck, ClipboardList } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -128,8 +129,13 @@ function AttendanceManagerDialog({ classes, schoolId, onRefresh }: { classes: an
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800">
-                    <Trash2 className="h-4 w-4" /> Manage Records
+                <Button 
+                    variant="outline" 
+                    className="gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-sm backdrop-blur-sm"
+                    title="Attendance record maintenance and cleanup"
+                    aria-label="Attendance record maintenance and cleanup"
+                >
+                    <Settings2 className="h-4 w-4" /> Maintenance
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -445,7 +451,17 @@ export default function AttendanceReportsPage() {
                         Monitor student participation rates, consistency indicators, and daily attendance distributions.
                     </p>
                 </div>
-                <div className="flex gap-2 self-stretch md:self-auto justify-end items-center">
+                <div className="flex gap-2 self-stretch md:self-auto justify-end items-center flex-wrap">
+                    <Link href="/dashboard/attendance">
+                        <Button 
+                            variant="outline" 
+                            className="gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-sm backdrop-blur-sm"
+                            title="Enter or modify attendance records"
+                            aria-label="Enter or modify attendance records"
+                        >
+                            <CalendarCheck className="h-4 w-4" /> Manage Records
+                        </Button>
+                    </Link>
                     {isAdmin && schoolId && (
                         <AttendanceManagerDialog 
                             classes={classes || []} 
