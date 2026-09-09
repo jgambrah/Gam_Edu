@@ -269,6 +269,11 @@ export default function ReportCardManager() {
         return list;
     }, [allSchoolStudents, students, classId, classReportCards]);
 
+    const targetStudent = useMemo(() => {
+        if (!selectedStudentId || !activeStudents) return null;
+        return activeStudents.find((s: any) => s.uid === selectedStudentId || s.id === selectedStudentId || s.studentId === selectedStudentId) || null;
+    }, [selectedStudentId, activeStudents]);
+
     const isHistoricalCohort = useMemo(() => {
         if (!schoolProfile) return false;
         const currentActiveYear = schoolProfile.academicYear || schoolProfile.activeAcademicYear;
@@ -335,22 +340,73 @@ export default function ReportCardManager() {
             if (!snap.exists()) {
                 snap = await getDoc(doc(firestore, 'term_report_cards', reportId));
             }
+
+            const currentClassName = classes?.find((c: any) => c.id === classId)?.name || '';
+            const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
+            const stu = activeStudents.find((s: any) => s.uid === selectedStudentId || s.id === selectedStudentId || s.studentId === selectedStudentId);
+
             if (snap.exists()) {
                 const data = snap.data();
                 setClassTeacherComment(data.classTeacherComment || '');
                 setHeadmasterComment(data.headmasterComment || '');
-                setPromotionDecision(data.promotionDecision || '');
-                setPromotedToClassId(data.promotedToClassId || '');
-                setProcessedReport(data);
+
+                let decision = data.promotionDecision || '';
+                let targetPromotedId = data.promotedToClassId || '';
+
+                // Auto-bind completed promotion decision if student was promoted or remarks state it
+                if (!decision || decision === '') {
+                    if (stu?.classId && stu.classId !== classId) {
+                        decision = 'Promoted';
+                        targetPromotedId = stu.classId;
+                    } else if (stu?.enrollmentStatus === 'Graduated') {
+                        decision = 'Graduated';
+                    } else {
+                        const allComments = `${data.headmasterComment || ''} ${data.classTeacherComment || ''}`;
+                        const foundClass = classes?.find((c: any) => c.id !== classId && allComments.toLowerCase().includes(c.name.toLowerCase()));
+                        if (foundClass) {
+                            decision = 'Promoted';
+                            targetPromotedId = foundClass.id;
+                        }
+                    }
+                } else if (decision === 'Promoted' && !targetPromotedId) {
+                    if (stu?.classId && stu.classId !== classId) {
+                        targetPromotedId = stu.classId;
+                    }
+                }
+
+                setPromotionDecision(decision);
+                setPromotedToClassId(targetPromotedId);
+
+                setProcessedReport({
+                    ...data,
+                    className: currentClassName || data.className,
+                    totalStudents: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
+                    totalClassStudents: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
+                    cohortTotal: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
+                    promotionDecision: decision,
+                    promotedToClassId: targetPromotedId,
+                    promotedToClassName: decision === 'Promoted'
+                        ? (classes?.find((c: any) => c.id === targetPromotedId)?.name || 'Next Class')
+                        : (decision === 'Repeated' ? (currentClassName || data.className) : (decision === 'Graduated' ? 'Graduated' : ''))
+                });
             } else {
                 setClassTeacherComment('');
                 setHeadmasterComment('');
-                setPromotionDecision('');
-                setPromotedToClassId('');
+
+                let decision: any = '';
+                let targetPromotedId = '';
+                if (stu?.classId && stu.classId !== classId) {
+                    decision = 'Promoted';
+                    targetPromotedId = stu.classId;
+                } else if (stu?.enrollmentStatus === 'Graduated') {
+                    decision = 'Graduated';
+                }
+                setPromotionDecision(decision);
+                setPromotedToClassId(targetPromotedId);
             }
         };
         fetchExisting();
-    }, [selectedStudentId, academicYear, term, firestore, schoolId]);
+    }, [selectedStudentId, academicYear, term, firestore, schoolId, classId, classes, activeStudents, classSummary]);
 
     const generateReport = async () => {
         if (!firestore || !schoolId || !classId || !selectedStudentId || !schoolProfile) return;
@@ -512,6 +568,25 @@ export default function ReportCardManager() {
                 schoolData?.headmasterSignatureUrl ? getBase64ImageFromUrl(schoolData.headmasterSignatureUrl) : Promise.resolve(''),
                 classTeacherSignatureUrl ? getBase64ImageFromUrl(classTeacherSignatureUrl) : Promise.resolve(''),
             ]);
+            const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
+            const currentClassName = classes?.find((c: any) => c.id === classId)?.name || '';
+
+            let autoDecision = promotionDecision;
+            let autoPromotedClassId = promotedToClassId;
+            if (!autoDecision) {
+                if (targetStudent?.classId && targetStudent.classId !== classId) {
+                    autoDecision = 'Promoted';
+                    autoPromotedClassId = targetStudent.classId;
+                    setPromotionDecision('Promoted');
+                    setPromotedToClassId(targetStudent.classId);
+                } else if (targetStudent?.enrollmentStatus === 'Graduated') {
+                    autoDecision = 'Graduated';
+                    setPromotionDecision('Graduated');
+                }
+            } else if (autoDecision === 'Promoted' && !autoPromotedClassId && targetStudent?.classId && targetStudent.classId !== classId) {
+                autoPromotedClassId = targetStudent.classId;
+                setPromotedToClassId(targetStudent.classId);
+            }
 
             setProcessedReport({
                 student: targetStudent,
@@ -521,7 +596,14 @@ export default function ReportCardManager() {
                 rows: reportRows,
                 overallAverage: subjectsTaken > 0 ? Math.round(myGrandTotal / subjectsTaken) : 0,
                 classPosition,
-                totalStudents: activeStudents.length,
+                totalStudents: cohortRoll > 0 ? cohortRoll : activeStudents.length,
+                totalClassStudents: cohortRoll > 0 ? cohortRoll : activeStudents.length,
+                cohortTotal: cohortRoll > 0 ? cohortRoll : activeStudents.length,
+                promotionDecision: autoDecision,
+                promotedToClassId: autoPromotedClassId,
+                promotedToClassName: autoDecision === 'Promoted'
+                    ? (classes?.find((c: any) => c.id === autoPromotedClassId)?.name || 'Next Class')
+                    : (autoDecision === 'Repeated' ? currentClassName : (autoDecision === 'Graduated' ? 'Graduated' : '')),
                 studentPresentDays,
                 totalClassDays,
                 id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
@@ -545,7 +627,7 @@ export default function ReportCardManager() {
                 headmasterSignatureUrl: schoolData?.headmasterSignatureUrl || null,
                 term,
                 academicYear,
-                className: classes?.find((c: any) => c.id === classId)?.name || '',
+                className: currentClassName,
                 caWeight: currentCaWeight,
                 examWeight: currentExamWeight,
                 reportCardPositionMode: schoolProfile?.reportCardPositionMode || 'both',
@@ -564,19 +646,26 @@ export default function ReportCardManager() {
         if (!processedReport || !schoolId || isSaving) return;
         setIsSaving(true);
         try {
+            const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
+            const currentClassName = classes?.find((c: any) => c.id === classId)?.name || '';
+
             const finalData = {
                 ...processedReport,
                 schoolId, 
                 classId,
+                className: currentClassName || processedReport.className,
+                totalStudents: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
+                totalClassStudents: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
+                cohortTotal: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
                 status: 'Draft', 
                 classTeacherComment, 
                 headmasterComment,
-                ...(term === 'Third Term' ? {
+                ...(isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || promotionDecision ? {
                     promotionDecision: promotionDecision || null,
                     promotedToClassId: promotionDecision === 'Promoted' ? promotedToClassId || null : null,
                     promotedToClassName: promotionDecision === 'Promoted' 
                         ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || null)
-                        : (promotionDecision === 'Repeated' ? processedReport.className : (promotionDecision === 'Graduated' ? 'Graduated' : null))
+                        : (promotionDecision === 'Repeated' ? (currentClassName || processedReport.className) : (promotionDecision === 'Graduated' ? 'Graduated' : null))
                 } : {}),
                 lastUpdatedBy: user?.uid, 
                 updatedAt: serverTimestamp()
@@ -608,21 +697,27 @@ export default function ReportCardManager() {
         try {
             const schoolDoc = await getDoc(doc(firestore!, 'schools', schoolId));
             const schoolData = schoolDoc.data();
+            const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
+            const currentClassName = classes?.find((c: any) => c.id === classId)?.name || '';
 
             const finalData = {
                 ...processedReport,
-                schoolId,
+                schoolId, 
                 classId,
+                className: currentClassName || processedReport.className,
+                totalStudents: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
+                totalClassStudents: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
+                cohortTotal: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
                 status: 'Published', 
                 publishedAt: serverTimestamp(),
                 classTeacherComment, 
                 headmasterComment,
-                ...(term === 'Third Term' ? {
+                ...(isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || promotionDecision ? {
                     promotionDecision: promotionDecision || null,
                     promotedToClassId: promotionDecision === 'Promoted' ? promotedToClassId || null : null,
                     promotedToClassName: promotionDecision === 'Promoted' 
                         ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || null)
-                        : (promotionDecision === 'Repeated' ? processedReport.className : (promotionDecision === 'Graduated' ? 'Graduated' : null))
+                        : (promotionDecision === 'Repeated' ? (currentClassName || processedReport.className) : (promotionDecision === 'Graduated' ? 'Graduated' : null))
                 } : {}),
                 headmasterName: schoolData?.headmasterName || 'Head of School',
                 headmasterSignatureUrl: schoolData?.headmasterSignatureUrl || null,
@@ -1224,7 +1319,7 @@ export default function ReportCardManager() {
                                   className="rounded-xl border border-slate-200 focus-visible:ring-indigo-500 shadow-sm text-sm"
                                 />
                             </div>
-                            {term === 'Third Term' && (
+                            {(isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || promotionDecision) && (
                                 <div className="col-span-1 md:col-span-2 border-t border-slate-100 pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Promotion Decision</Label>
@@ -1234,6 +1329,8 @@ export default function ReportCardManager() {
                                                 setPromotionDecision(val);
                                                 if (val !== 'Promoted') {
                                                     setPromotedToClassId('');
+                                                } else if (!promotedToClassId && targetStudent?.classId && targetStudent.classId !== classId) {
+                                                    setPromotedToClassId(targetStudent.classId);
                                                 }
                                             }}
                                             disabled={!isTeacher && !isAdminOrDirector}
@@ -1242,7 +1339,12 @@ export default function ReportCardManager() {
                                                 <SelectValue placeholder="Select Decision" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="Promoted">Promoted</SelectItem>
+                                                <SelectItem value="Promoted">
+                                                    Promoted{(() => {
+                                                        const targetClassObj = classes?.find((c: any) => c.id === (promotedToClassId || (targetStudent?.classId !== classId ? targetStudent?.classId : '')));
+                                                        return targetClassObj ? ` to ${targetClassObj.name}` : '';
+                                                    })()}
+                                                </SelectItem>
                                                 <SelectItem value="Repeated">Repeated (Repeat Class)</SelectItem>
                                                 <SelectItem value="Graduated">Graduated</SelectItem>
                                             </SelectContent>
@@ -1291,11 +1393,15 @@ export default function ReportCardManager() {
                             <ReportCardTemplate
                                 data={{
                                     ...processedReport,
+                                    className: classes?.find((c: any) => c.id === classId)?.name || processedReport?.className || '',
+                                    totalStudents: (activeStudents.length > 0 ? activeStudents.length : null) || processedReport?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
+                                    totalClassStudents: (activeStudents.length > 0 ? activeStudents.length : null) || processedReport?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
+                                    cohortTotal: (activeStudents.length > 0 ? activeStudents.length : null) || processedReport?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
                                     promotionDecision,
                                     promotedToClassId,
                                     promotedToClassName: promotionDecision === 'Promoted'
                                         ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
-                                        : (promotionDecision === 'Repeated' ? processedReport?.className : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
+                                        : (promotionDecision === 'Repeated' ? (classes?.find((c: any) => c.id === classId)?.name || processedReport?.className) : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
                                 }}
                                 classTeacherComment={classTeacherComment}
                                 headmasterComment={headmasterComment}
@@ -1318,6 +1424,10 @@ export default function ReportCardManager() {
                             <ReportCardTemplate
                                 data={{
                                     ...report,
+                                    className: classes?.find((c: any) => c.id === classId)?.name || report?.className || '',
+                                    totalStudents: (activeStudents.length > 0 ? activeStudents.length : null) || report?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
+                                    totalClassStudents: (activeStudents.length > 0 ? activeStudents.length : null) || report?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
+                                    cohortTotal: (activeStudents.length > 0 ? activeStudents.length : null) || report?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
                                     schoolWebsite: report.schoolWebsite || report.website || schoolProfile?.website || schoolProfile?.schoolWebsite || '',
                                     website: report.website || report.schoolWebsite || schoolProfile?.website || schoolProfile?.schoolWebsite || '',
                                     gradingSystem: (report.gradingSystem && Array.isArray(report.gradingSystem) && report.gradingSystem.length > 0)
@@ -1340,11 +1450,15 @@ export default function ReportCardManager() {
                             <ReportCardTemplate
                                 data={{
                                     ...processedReport,
+                                    className: classes?.find((c: any) => c.id === classId)?.name || processedReport?.className || '',
+                                    totalStudents: (activeStudents.length > 0 ? activeStudents.length : null) || processedReport?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
+                                    totalClassStudents: (activeStudents.length > 0 ? activeStudents.length : null) || processedReport?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
+                                    cohortTotal: (activeStudents.length > 0 ? activeStudents.length : null) || processedReport?.totalStudents || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0),
                                     promotionDecision,
                                     promotedToClassId,
                                     promotedToClassName: promotionDecision === 'Promoted'
                                         ? (classes?.find((c: any) => c.id === promotedToClassId)?.name || 'Next Class')
-                                        : (promotionDecision === 'Repeated' ? processedReport?.className : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
+                                        : (promotionDecision === 'Repeated' ? (classes?.find((c: any) => c.id === classId)?.name || processedReport?.className) : (promotionDecision === 'Graduated' ? 'Graduated' : ''))
                                 }}
                                 classTeacherComment={classTeacherComment}
                                 headmasterComment={headmasterComment}

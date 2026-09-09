@@ -146,11 +146,11 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                 <Award className="h-3 w-3 text-slate-800" /> Class Position
                             </span>
                             <span className="font-black underline text-black" style={{ textDecorationColor: primaryTheme }}>
-                                {data.classPosition || '-'} of {data.totalStudents || 0}
+                                {data.classPosition || '-'} of {data.totalClassStudents || data.cohortTotal || data.totalStudents || 0}
                             </span>
                         </div>
                     )}
-                    {data.term === 'Third Term' && data.promotionDecision && (
+                    {(data.term === 'Third Term' || data.term === 'Term 3' || data.term === '3' || data.term === 'third term') && data.promotionDecision && (
                         <div className="flex justify-between items-center border-b border-slate-300 pb-1.5 col-span-2">
                             <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
                                 <GraduationCap className="h-3 w-3 text-slate-800" /> Promotion Status
