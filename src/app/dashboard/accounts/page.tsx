@@ -4371,7 +4371,7 @@ export default function AccountsPage() {
   }
 
   return (
-    <div className="space-y-6 accounts-page-container">
+    <div className="space-y-6 accounts-page-container pb-16 sm:pb-20">
         {/* PREMIUM gradient hero banner */}
         <div className="bg-gradient-to-r from-teal-600 via-emerald-600 to-green-700 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
             <div className="absolute right-0 top-0 translate-x-1/4 -translate-y-1/4 w-80 h-80 bg-white/10 rounded-full blur-2xl pointer-events-none" />
@@ -4459,13 +4459,13 @@ export default function AccountsPage() {
                     {/* Left: Collections Advisory Desk */}
                     <div className="lg:col-span-2 bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                         <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full flex-1 flex flex-col">
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-3 mb-4">
+                            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 border-b pb-3 mb-4">
                                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2 shrink-0">
                                         <BarChart3 className="h-4 w-4 text-indigo-600" /> Collections Advisory Desk
                                     </h3>
                                     {isLedgerLoaded && (
-                                        <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border text-xs">
+                                        <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border text-xs shrink-0">
                                             <button
                                                 type="button"
                                                 onClick={() => setAdvisoryScope('all-time')}
@@ -4493,29 +4493,31 @@ export default function AccountsPage() {
                                         </div>
                                     )}
                                 </div>
-                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border flex flex-nowrap overflow-x-auto no-scrollbar max-w-full items-center">
-                                    <TabsTrigger value="summary" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium shrink-0 whitespace-nowrap">
-                                        Financial Summary
-                                    </TabsTrigger>
-                                    <TabsTrigger value="debtors" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
-                                        <span>Aged Debt Call List</span>
-                                        {!isLedgerLoaded && (
-                                            <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
-                                        )}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="aging" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
-                                        <span>Debt Aging</span>
-                                        {!isLedgerLoaded && (
-                                            <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
-                                        )}
-                                    </TabsTrigger>
-                                    <TabsTrigger value="classPace" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
-                                        <span>Class Pace</span>
-                                        {!isLedgerLoaded && (
-                                            <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
-                                        )}
-                                    </TabsTrigger>
-                                </TabsList>
+                                <div className="w-full xl:w-auto overflow-x-auto no-scrollbar max-w-full">
+                                    <TabsList className="bg-slate-100 p-0.5 rounded-lg border flex flex-nowrap overflow-x-auto no-scrollbar max-w-full items-center whitespace-nowrap h-auto">
+                                        <TabsTrigger value="summary" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium shrink-0 whitespace-nowrap">
+                                            Financial Summary
+                                        </TabsTrigger>
+                                        <TabsTrigger value="debtors" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
+                                            <span>Aged Debt Call List</span>
+                                            {!isLedgerLoaded && (
+                                                <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
+                                            )}
+                                        </TabsTrigger>
+                                        <TabsTrigger value="aging" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
+                                            <span>Debt Aging</span>
+                                            {!isLedgerLoaded && (
+                                                <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
+                                            )}
+                                        </TabsTrigger>
+                                        <TabsTrigger value="classPace" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
+                                            <span>Class Pace</span>
+                                            {!isLedgerLoaded && (
+                                                <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
+                                            )}
+                                        </TabsTrigger>
+                                    </TabsList>
+                                </div>
                             </div>
 
                             {!hasDisplayStats ? (
@@ -4825,7 +4827,15 @@ export default function AccountsPage() {
                                         <div className="flex items-center justify-between">
                                             <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Collection Performance</h4>
                                             {!isLedgerLoaded && (
-                                                <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border border-slate-200 font-semibold shadow-2xs">
+                                                <Badge 
+                                                    variant="outline" 
+                                                    className={cn(
+                                                        "text-[10px] font-semibold border",
+                                                        effectiveCategoryCollections.length > 0 
+                                                            ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
+                                                            : "bg-slate-100 text-slate-700 border-slate-300 shadow-2xs"
+                                                    )}
+                                                >
                                                     {effectiveCategoryCollections.length > 0 ? "1-Read Summary" : "Standby"}
                                                 </Badge>
                                             )}
