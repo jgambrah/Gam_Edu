@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle, CalendarCheck, ClipboardList } from 'lucide-react';
+import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle, CalendarCheck, ClipboardList, BarChart3 } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -552,8 +552,9 @@ export default function AttendanceReportsPage() {
                             <label className="hidden md:block text-xs font-semibold text-transparent uppercase mb-1 select-none pointer-events-none">&nbsp;</label>
                             <Button 
                                 onClick={handleGenerateReport} 
-                                disabled={reportStatus === 'LOADING'} 
-                                className="w-full h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 gap-2 rounded-xl transition-all shadow-sm"
+                                disabled={reportStatus === 'LOADING' || !selectedClassId || !dateRange?.from} 
+                                title={!selectedClassId ? "Please select a class to generate report" : !dateRange?.from ? "Please select a date range to generate report" : "Generate attendance report"}
+                                className="w-full h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 gap-2 rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {reportStatus === 'LOADING' ? (
                                     <>
@@ -562,7 +563,7 @@ export default function AttendanceReportsPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <Search className="h-4 w-4" />
+                                        <BarChart3 className="h-4 w-4" />
                                         Generate Report
                                     </>
                                 )}
