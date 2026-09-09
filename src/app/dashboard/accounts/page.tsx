@@ -4493,23 +4493,23 @@ export default function AccountsPage() {
                                         </div>
                                     )}
                                 </div>
-                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border flex flex-wrap">
-                                    <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md font-medium">
+                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border flex flex-nowrap overflow-x-auto no-scrollbar max-w-full items-center">
+                                    <TabsTrigger value="summary" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium shrink-0 whitespace-nowrap">
                                         Financial Summary
                                     </TabsTrigger>
-                                    <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md font-medium flex items-center gap-1">
+                                    <TabsTrigger value="debtors" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
                                         <span>Aged Debt Call List</span>
                                         {!isLedgerLoaded && (
                                             <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
                                         )}
                                     </TabsTrigger>
-                                    <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md font-medium flex items-center gap-1">
+                                    <TabsTrigger value="aging" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
                                         <span>Debt Aging</span>
                                         {!isLedgerLoaded && (
                                             <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
                                         )}
                                     </TabsTrigger>
-                                    <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md font-medium flex items-center gap-1">
+                                    <TabsTrigger value="classPace" className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
                                         <span>Class Pace</span>
                                         {!isLedgerLoaded && (
                                             <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
@@ -4825,7 +4825,7 @@ export default function AccountsPage() {
                                         <div className="flex items-center justify-between">
                                             <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Collection Performance</h4>
                                             {!isLedgerLoaded && (
-                                                <Badge variant="outline" className="text-[10px] text-slate-400 border-slate-200 font-normal">
+                                                <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-600 border border-slate-200 font-semibold shadow-2xs">
                                                     {effectiveCategoryCollections.length > 0 ? "1-Read Summary" : "Standby"}
                                                 </Badge>
                                             )}
@@ -5785,7 +5785,7 @@ export default function AccountsPage() {
                                         </Accordion>
 
                                         {/* Pagination Footer */}
-                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-slate-100 text-xs text-slate-600">
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 pb-12 sm:pb-16 mb-4 border-t border-slate-100 text-xs text-slate-600">
                                             <div className="flex items-center gap-2">
                                                 <span>
                                                     Showing <strong className="text-slate-900 font-semibold">{billingPageSize === -1 ? 1 : Math.min(filteredStudentsWithBills.length, (billingPage - 1) * billingPageSize + 1)}</strong> to <strong className="text-slate-900 font-semibold">{billingPageSize === -1 ? filteredStudentsWithBills.length : Math.min(filteredStudentsWithBills.length, billingPage * billingPageSize)}</strong> of <strong className="text-slate-900 font-semibold">{filteredStudentsWithBills.length}</strong> students
