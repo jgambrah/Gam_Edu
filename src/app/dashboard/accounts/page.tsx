@@ -4578,48 +4578,116 @@ export default function AccountsPage() {
 
                                 {/* Fee Stream Breakdown Cards */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-1">
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40 transition-all", !isLedgerLoaded && "border-dashed bg-slate-50/20")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Tuition Debt</CardTitle>
                                             <BookOpen className="h-3.5 w-3.5 text-blue-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            <div className="text-base font-bold text-slate-800">
-                                                {hasDisplayStats ? `GH₵${dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
-                                            </div>
+                                            {isLedgerLoaded ? (
+                                                <>
+                                                    <div className="text-base font-bold text-slate-800 font-mono">
+                                                        GH₵{dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base font-bold text-slate-400 font-mono">GH₵ —.—</span>
+                                                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-dashed border-slate-300 text-slate-400 font-medium">
+                                                            On Demand
+                                                        </Badge>
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5" title="Requires full ledger load to calculate stream breakdown">
+                                                        Requires full ledger load
+                                                    </p>
+                                                </>
+                                            )}
                                         </CardContent>
                                     </Card>
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40 transition-all", !isLedgerLoaded && "border-dashed bg-slate-50/20")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Canteen Debt</CardTitle>
                                             <Utensils className="h-3.5 w-3.5 text-orange-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            <div className="text-base font-bold text-slate-800">
-                                                {hasDisplayStats ? `GH₵${dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
-                                            </div>
+                                            {isLedgerLoaded ? (
+                                                <>
+                                                    <div className="text-base font-bold text-slate-800 font-mono">
+                                                        GH₵{dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base font-bold text-slate-400 font-mono">GH₵ —.—</span>
+                                                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-dashed border-slate-300 text-slate-400 font-medium">
+                                                            On Demand
+                                                        </Badge>
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5" title="Requires full ledger load to calculate stream breakdown">
+                                                        Requires full ledger load
+                                                    </p>
+                                                </>
+                                            )}
                                         </CardContent>
                                     </Card>
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40 transition-all", !isLedgerLoaded && "border-dashed bg-slate-50/20")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Transport Debt</CardTitle>
                                             <BusIcon className="h-3.5 w-3.5 text-amber-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            <div className="text-base font-bold text-slate-800">
-                                                {hasDisplayStats ? `GH₵${dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
-                                            </div>
+                                            {isLedgerLoaded ? (
+                                                <>
+                                                    <div className="text-base font-bold text-slate-800 font-mono">
+                                                        GH₵{dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base font-bold text-slate-400 font-mono">GH₵ —.—</span>
+                                                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-dashed border-slate-300 text-slate-400 font-medium">
+                                                            On Demand
+                                                        </Badge>
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5" title="Requires full ledger load to calculate stream breakdown">
+                                                        Requires full ledger load
+                                                    </p>
+                                                </>
+                                            )}
                                         </CardContent>
                                     </Card>
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40 transition-all", !isLedgerLoaded && "border-dashed bg-slate-50/20")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Other Fees</CardTitle>
                                             <HandCoins className="h-3.5 w-3.5 text-slate-400" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            <div className="text-base font-bold text-slate-800">
-                                                {hasDisplayStats ? `GH₵${dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
-                                            </div>
+                                            {isLedgerLoaded ? (
+                                                <>
+                                                    <div className="text-base font-bold text-slate-800 font-mono">
+                                                        GH₵{dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base font-bold text-slate-400 font-mono">GH₵ —.—</span>
+                                                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-dashed border-slate-300 text-slate-400 font-medium">
+                                                            On Demand
+                                                        </Badge>
+                                                    </div>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5" title="Requires full ledger load to calculate stream breakdown">
+                                                        Requires full ledger load
+                                                    </p>
+                                                </>
+                                            )}
                                         </CardContent>
                                     </Card>
                                 </div>
