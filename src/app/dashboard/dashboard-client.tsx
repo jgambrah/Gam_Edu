@@ -2635,6 +2635,9 @@ function DirectorDashboard({
   const pendingWaiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending'), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
   const { data: pendingWaivers } = useCollection<any>(pendingWaiverRequestsQuery);
 
+  const pendingFeeReversalsQuery = useMemoFirebase(() => (firestore && schoolId && hasFinanceAccess) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('status', '==', 'Pending Reversal')) : null, [firestore, schoolId, hasFinanceAccess]);
+  const { data: pendingFeeReversals } = useCollection<any>(pendingFeeReversalsQuery);
+
   // Canteen restock form state
   const [restockForm, setRestockForm] = useState({ itemId: '', quantity: 0 });
   const [newPantryForm, setNewPantryForm] = useState({ sku: '', name: '', unit: 'kg', category: 'Dry Goods' });
@@ -3799,6 +3802,38 @@ function DirectorDashboard({
           />
         );
       })()}
+
+      {/* Pending Financial Authorizations Alert Banner for Executive Director */}
+      {hasFinanceAccess && ((pendingFeeReversals && pendingFeeReversals.length > 0) || (pendingWaivers && pendingWaivers.length > 0)) && (
+        <div className="bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-amber-500/10 border border-amber-500/30 rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-3.5">
+            <div className="h-11 w-11 rounded-2xl bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0 border border-amber-500/30">
+              <AlertTriangle className="h-6 w-6 animate-pulse text-amber-600" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-black uppercase tracking-wider text-slate-800">
+                  Financial Authorizations Pending
+                </p>
+                <Badge className="bg-red-500 text-white font-black text-[9px] px-2.5 py-0.5 rounded-full border-0">
+                  {(pendingFeeReversals?.length || 0) + (pendingWaivers?.length || 0)} Action Required
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-600 mt-0.5">
+                {(pendingFeeReversals?.length || 0) > 0 && `${pendingFeeReversals?.length} fee payment reversal request(s)`}
+                {(pendingFeeReversals?.length || 0) > 0 && (pendingWaivers?.length || 0) > 0 && ` and `}
+                {(pendingWaivers?.length || 0) > 0 && `${pendingWaivers?.length} fee waiver request(s)`} awaiting Director review and confirmation.
+              </p>
+            </div>
+          </div>
+          <Button asChild size="sm" className="bg-amber-600 hover:bg-amber-700 text-white font-black rounded-xl text-xs h-9 px-4 shrink-0 shadow-sm cursor-pointer">
+            <Link href="/dashboard/accounts?tab=approval" className="flex items-center gap-1.5">
+              <span>Review Approvals</span>
+              <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        </div>
+      )}
 
       {/* Main Tabs Container */}
       <div className="mt-8">

@@ -3285,8 +3285,19 @@ export default function AccountsPage() {
   const [activePrintType, setActivePrintType] = useState<'debtors-list' | 'parent-letter' | 'sponsor-statement' | null>(null);
   const [printMode, setPrintMode] = useState<'all-classes-split' | 'single-class' | 'whole-school-grouped'>('all-classes-split');
   const [selectedClassId, setSelectedClassId] = useState<string>('');
-  const [minDebt, setMinDebt] = useState<number>(1); 
   const [activeTab, setActiveTab] = useState('billing');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'approval' || tabParam === 'sponsors' || tabParam === 'billing') {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
+
+  const canApprove = role === 'Director' || role === 'Administrator' || role === 'SuperAdmin' || role === 'Admin' || (profile?.role === 'Director');
   const [analyticsTab, setAnalyticsTab] = useState('summary');
   const [advisoryScope, setAdvisoryScope] = useState<'all-time' | 'current-term'>('all-time');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
@@ -3466,10 +3477,22 @@ export default function AccountsPage() {
   const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
   const { data: pendingWaivers, forceRefetch: refetchWaivers } = useCollection<any>(waiverRequestsQuery);
   
+  // Dedicated real-time query for reversal requests awaiting Director approval (0 to a few reads, independent of heavy ledger)
+  const pendingReversalsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(
+      collection(firestore, 'financialRecords'),
+      where('schoolId', '==', schoolId),
+      where('status', '==', 'Pending Reversal')
+    ) : null,
+    [firestore, schoolId]
+  );
+  const { data: directPendingReversals, isLoading: isLoadingPendingReversals, forceRefetch: refetchPendingReversals } = useCollection<FinancialRecord>(pendingReversalsQuery);
+
   const combinedRefetch = useCallback(() => {
       forceRefetch();
       refetchWaivers();
-  }, [forceRefetch, refetchWaivers]);
+      refetchPendingReversals();
+  }, [forceRefetch, refetchWaivers, refetchPendingReversals]);
 
   const handleRecordUpdate = useCallback(async (targetStudentId?: string) => {
     if (ledgerMode === 'full-school') {
@@ -3976,7 +3999,14 @@ export default function AccountsPage() {
     return filteredStudentsWithBills.slice(start, start + billingPageSize);
   }, [filteredStudentsWithBills, billingPage, billingPageSize]);
 
-  const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
+  const pendingReversals = useMemo(() => {
+    const rawList = directPendingReversals || (records ? records.filter(r => r.status === 'Pending Reversal') : []);
+    return [...rawList].sort((a, b) => {
+      const timeA = a.reversalRequestedAt?.toMillis ? a.reversalRequestedAt.toMillis() : (a.reversalRequestedAt?.seconds ? a.reversalRequestedAt.seconds * 1000 : 0);
+      const timeB = b.reversalRequestedAt?.toMillis ? b.reversalRequestedAt.toMillis() : (b.reversalRequestedAt?.seconds ? b.reversalRequestedAt.seconds * 1000 : 0);
+      return timeB - timeA;
+    });
+  }, [directPendingReversals, records]);
 
   const collectionRate = useMemo(() => {
     if (isLedgerLoaded) {
@@ -4182,7 +4212,11 @@ export default function AccountsPage() {
         
         await batch.commit();
         toast({ title: "Reversal Approved", description: "The payment has been reversed. The bill has been reset to unpaid/partially paid on the student's ledger." });
+        refetchPendingReversals();
         forceRefetch();
+        if (record.studentId) {
+            handleRecordUpdate(record.studentId);
+        }
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Approval Failed", description: e.message });
     } finally {
@@ -4196,7 +4230,11 @@ export default function AccountsPage() {
     try {
         await updateDoc(doc(firestore, 'financialRecords', record.id), { status: 'Rejected Reversal' });
         toast({ title: "Reversal Rejected", description: "The bill remains active on the student's ledger." });
+        refetchPendingReversals();
         forceRefetch();
+        if (record.studentId) {
+            handleRecordUpdate(record.studentId);
+        }
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Rejection Failed", description: e.message });
     } finally {
@@ -4355,6 +4393,33 @@ export default function AccountsPage() {
                 <TabsTrigger value="sponsors" className="rounded-lg font-semibold px-4">Sponsors Registry</TabsTrigger>
             </TabsList>
             <TabsContent value="billing" className="space-y-6">
+                {/* Director Pending Reversals Action Alert Banner */}
+                {pendingReversals.length > 0 && (
+                    <div className="bg-amber-50/95 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs animate-in fade-in">
+                        <div className="flex items-center gap-3">
+                            <div className="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 border border-amber-200">
+                                <AlertTriangle className="h-5 w-5 text-amber-700" />
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-amber-900 flex items-center gap-2">
+                                    <span>{pendingReversals.length} Fee Payment Reversal Request{pendingReversals.length > 1 ? 's' : ''} Awaiting Director Approval</span>
+                                    <Badge className="bg-amber-200 text-amber-800 border border-amber-300 font-black text-[9px]">Action Required</Badge>
+                                </p>
+                                <p className="text-[11px] text-amber-700 mt-0.5">
+                                    Cashiers or accounts staff have submitted payment cancellation/reversal requests that require Director authorization.
+                                </p>
+                            </div>
+                        </div>
+                        <Button 
+                            size="sm" 
+                            onClick={() => setActiveTab('approval')} 
+                            className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shrink-0 gap-1.5 shadow-xs"
+                        >
+                            <span>Review Approvals</span>
+                            <Badge className="bg-white/20 text-white text-[10px] ml-1 px-1.5 py-0">{pendingReversals.length}</Badge>
+                        </Button>
+                    </div>
+                )}
                 {/* Advanced Analytics Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left: Collections Advisory Desk */}
@@ -5633,8 +5698,22 @@ export default function AccountsPage() {
             <TabsContent value="approval" className="space-y-6">
                  <Card>
                     <CardHeader>
-                        <CardTitle>Transaction Reversal Approvals</CardTitle>
-                        <CardDescription>Review requests to reverse or cancel recorded student bills.</CardDescription>
+                        <CardTitle className="flex items-center gap-2">
+                            <span>Transaction Reversal Approvals</span>
+                            {pendingReversals.length > 0 && (
+                                <Badge className="bg-red-500 text-white font-bold text-[10px] ml-1">
+                                    {pendingReversals.length} Pending
+                                </Badge>
+                            )}
+                        </CardTitle>
+                        <CardDescription>
+                            Review and authorize requests submitted by cashiers and accountants to reverse recorded fee payments or bills.
+                            {!canApprove && (
+                                <span className="text-red-500 font-bold block mt-1 text-[11px] uppercase tracking-wider">
+                                    ⚠️ Action locked: Only the Director or Administrator can approve reversals.
+                                </span>
+                            )}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                           <Table>
@@ -5644,40 +5723,71 @@ export default function AccountsPage() {
                                     <TableHead>Description</TableHead>
                                     <TableHead>Amount</TableHead>
                                     <TableHead>Reason</TableHead>
+                                    <TableHead>Requested</TableHead>
                                     <TableHead className="text-right">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
+                                {isLoadingPendingReversals && pendingReversals.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-10">
+                                            <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
+                                                <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
+                                                <span>Checking pending reversal requests...</span>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                                 {pendingReversals.map(r => (
                                     <TableRow key={r.id}>
-                                        <TableCell className="font-bold">{r.studentName}</TableCell>
-                                        <TableCell className="text-sm">{r.description}</TableCell>
-                                        <TableCell className="font-mono">GH₵{r.billedAmount.toFixed(2)}</TableCell>
-                                        <TableCell className="max-w-xs italic text-xs">{(r as any).reversalReason}</TableCell>
+                                        <TableCell>
+                                            <p className="font-bold text-slate-900">{r.studentName}</p>
+                                            <p className="text-[10px] text-slate-400 font-mono">{r.studentId}</p>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span className="text-sm font-medium">{r.description}</span>
+                                            <p className="text-[10px] uppercase font-bold text-slate-400">{r.type || 'Bill'}</p>
+                                        </TableCell>
+                                        <TableCell className="font-mono font-bold text-rose-600">GH₵{r.billedAmount.toFixed(2)}</TableCell>
+                                        <TableCell className="max-w-xs italic text-xs text-slate-600">{(r as any).reversalReason || 'No reason specified'}</TableCell>
+                                        <TableCell className="text-xs text-slate-500">
+                                            {(r as any).reversalRequestedAt?.toDate ? format((r as any).reversalRequestedAt.toDate(), 'dd MMM yy, p') : 'Pending'}
+                                        </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 <Button 
                                                     size="sm" 
                                                     variant="outline" 
-                                                    className="text-red-600" 
-                                                    disabled={isProcessingReversal === r.id || role !== 'Director'}
+                                                    className="text-slate-600 hover:text-red-600 hover:bg-red-50" 
+                                                    disabled={isProcessingReversal === r.id || !canApprove}
                                                     onClick={() => handleRejectReversal(r)}
                                                 >
                                                     {isProcessingReversal === r.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Reject"}
                                                 </Button>
                                                 <Button 
                                                     size="sm" 
-                                                    className="bg-red-600 hover:bg-red-700"
-                                                    disabled={isProcessingReversal === r.id || role !== 'Director'}
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                                                    disabled={isProcessingReversal === r.id || !canApprove}
                                                     onClick={() => handleApproveReversal(r)}
                                                 >
-                                                    {isProcessingReversal === r.id ? <Loader2 className="h-4 w-4 animate-spin"/> : "Confirm Delete"}
+                                                    {isProcessingReversal === r.id ? <Loader2 className="h-4 w-4 animate-spin"/> : (
+                                                        <span className="flex items-center gap-1">
+                                                            <CheckCircle2 className="h-3.5 w-3.5" />
+                                                            <span>Approve Reversal</span>
+                                                        </span>
+                                                    )}
                                                 </Button>
                                             </div>
                                         </TableCell>
                                     </TableRow>
                                 ))}
-{pendingReversals.length === 0 && <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground italic">No pending reversal requests.</TableCell></TableRow>}
+                                {!isLoadingPendingReversals && pendingReversals.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-10 text-muted-foreground italic">
+                                            No pending reversal requests.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                           </Table>
                     </CardContent>
@@ -6007,7 +6117,7 @@ export default function AccountsPage() {
             <ApplyWaiverDialog record={dialogState.record} open={true} setOpen={() => setDialogState({type:'waiver', record: null})} onUpdate={() => handleRecordUpdate(dialogState.record?.studentId)} />
         )}
         {dialogState.record && dialogState.type === 'reversal' && (
-            <ReversalRequestDialog record={dialogState.record} activeTill={activeTill} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={() => handleRecordUpdate(dialogState.record?.studentId)} />
+            <ReversalRequestDialog record={dialogState.record} activeTill={activeTill} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={() => { handleRecordUpdate(dialogState.record?.studentId); refetchPendingReversals(); }} />
         )}
         {editingRecord && (
             <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={() => handleRecordUpdate(editingRecord?.studentId)} />
