@@ -4400,12 +4400,12 @@ export default function AccountsPage() {
                             </span>
                         </div>
                         <p className="text-2xl font-extrabold tracking-tight text-white mt-0.5">
-                            {isLoadingDashboardSummary && !dashboardSummary?.studentCount ? (
+                            {isLoadingDashboardSummary && !students?.length && !dashboardSummary?.studentCount ? (
                                 <span className="text-base font-semibold flex items-center gap-1.5 text-white/90">
                                     <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                                 </span>
                             ) : (
-                                `${dashboardSummary?.studentCount?.active ?? dashboardSummary?.studentCount?.total ?? students?.length ?? 224} Active Students`
+                                `${students?.length ?? dashboardSummary?.studentCount?.active ?? dashboardSummary?.studentCount?.total ?? 224} Active Students`
                             )}
                         </p>
                     </div>
@@ -5274,15 +5274,15 @@ export default function AccountsPage() {
                                         <Button 
                                             onClick={handleOpenTill} 
                                             disabled={isOpeningTill || isLoadingTills}
-                                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 text-xs shadow-xs cursor-pointer"
+                                            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 text-xs shadow-xs cursor-pointer transition-all"
                                         >
                                             {isOpeningTill ? (
                                                 <>
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Activating Register...
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Opening Till Session...
                                                 </>
                                             ) : (
                                                 <>
-                                                    <PlusCircle className="mr-2 h-4 w-4" /> Open Active Till
+                                                    <PlusCircle className="mr-2 h-4 w-4 text-emerald-400" /> Open Till Session
                                                 </>
                                             )}
                                         </Button>
@@ -5587,77 +5587,79 @@ export default function AccountsPage() {
                             </div>
                         )}
 
-                        {/* Search & Filters Bar */}
-                        <div className="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center mb-4 flex-wrap">
-                            <div className="flex flex-1 items-center gap-2 min-w-[240px]">
-                                <div className="relative w-full">
-                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="pl-8" placeholder="Search student by name or ID..." />
+                        {/* Day-to-Day Cashier Search & Filter Strip */}
+                        <div className="bg-white border border-slate-200/80 rounded-xl p-3 shadow-xs mb-4">
+                            <div className="flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center flex-wrap">
+                                <div className="flex flex-1 items-center gap-2 min-w-[240px]">
+                                    <div className="relative w-full">
+                                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                        <StudentSearchInput value={searchTerm} onChange={setSearchTerm} className="pl-8 bg-slate-50/50 border-slate-200 text-xs h-9 focus:bg-white transition-colors" placeholder="Search student by name or ID..." />
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div className="flex items-center gap-2 flex-wrap">
-                                {/* Class Filter */}
-                                <Select value={selectedBillingClassId} onValueChange={setSelectedBillingClassId}>
-                                    <SelectTrigger className="h-9 text-xs w-[140px] bg-white">
-                                        <SelectValue placeholder="All Classes" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Classes</SelectItem>
-                                        {(classes || []).map(cls => (
-                                            <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    {/* Class Filter */}
+                                    <Select value={selectedBillingClassId} onValueChange={setSelectedBillingClassId}>
+                                        <SelectTrigger className="h-9 text-xs w-[135px] bg-slate-50/50 border-slate-200">
+                                            <SelectValue placeholder="All Classes" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Classes</SelectItem>
+                                            {(classes || []).map(cls => (
+                                                <SelectItem key={cls.id} value={cls.id}>{cls.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
 
-                                {/* Status Filter (Debtors vs Settled) */}
-                                <Select value={billingStatusFilter} onValueChange={(v: any) => setBillingStatusFilter(v)}>
-                                    <SelectTrigger className="h-9 text-xs w-[140px] bg-white">
-                                        <SelectValue placeholder="Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Statuses</SelectItem>
-                                        <SelectItem value="debtors">Debtors (Owing)</SelectItem>
-                                        <SelectItem value="settled">Settled (No Debt)</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                    {/* Status Filter (Debtors vs Settled) */}
+                                    <Select value={billingStatusFilter} onValueChange={(v: any) => setBillingStatusFilter(v)}>
+                                        <SelectTrigger className="h-9 text-xs w-[135px] bg-slate-50/50 border-slate-200">
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Statuses</SelectItem>
+                                            <SelectItem value="debtors">Debtors (Owing)</SelectItem>
+                                            <SelectItem value="settled">Settled (No Debt)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
 
-                                {/* Date Filter */}
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button variant={"outline"} className={cn("h-9 justify-start text-left font-normal text-xs", !globalDateRange && "text-muted-foreground")}>
-                                            <CalendarIcon className="mr-2 h-4 w-4 text-slate-400" />
-                                            {globalDateRange?.from ? (
-                                                globalDateRange.to ? (
-                                                    <>{format(globalDateRange.from, "LLL dd, y")} - {format(globalDateRange.to, "LLL dd, y")}</>
+                                    {/* Date Filter */}
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant={"outline"} className={cn("h-9 justify-start text-left font-normal text-xs bg-slate-50/50 border-slate-200", !globalDateRange && "text-muted-foreground")}>
+                                                <CalendarIcon className="mr-2 h-4 w-4 text-slate-400" />
+                                                {globalDateRange?.from ? (
+                                                    globalDateRange.to ? (
+                                                        <>{format(globalDateRange.from, "LLL dd, y")} - {format(globalDateRange.to, "LLL dd, y")}</>
+                                                    ) : (
+                                                        format(globalDateRange.from, "LLL dd, y")
+                                                    )
                                                 ) : (
-                                                    format(globalDateRange.from, "LLL dd, y")
-                                                )
-                                            ) : (
-                                                <span>Date Range</span>
-                                            )}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="end">
-                                        <Calendar initialFocus mode="range" defaultMonth={globalDateRange?.from} selected={globalDateRange} onSelect={setGlobalDateRange} numberOfMonths={2} />
-                                    </PopoverContent>
-                                </Popover>
+                                                    <span>Date Range</span>
+                                                )}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="end">
+                                            <Calendar initialFocus mode="range" defaultMonth={globalDateRange?.from} selected={globalDateRange} onSelect={setGlobalDateRange} numberOfMonths={2} />
+                                        </PopoverContent>
+                                    </Popover>
 
-                                {(searchTerm || selectedBillingClassId !== 'all' || billingStatusFilter !== 'all' || globalDateRange) && (
-                                    <Button 
-                                        variant="ghost" 
-                                        size="sm"
-                                        onClick={() => {
-                                            setSearchTerm('');
-                                            setSelectedBillingClassId('all');
-                                            setBillingStatusFilter('all');
-                                            setGlobalDateRange(undefined);
-                                        }}
-                                        className="h-9 text-xs text-slate-500 hover:text-slate-800"
-                                    >
-                                        Reset Filters
-                                    </Button>
-                                )}
+                                    {(searchTerm || selectedBillingClassId !== 'all' || billingStatusFilter !== 'all' || globalDateRange) && (
+                                        <Button 
+                                            variant="ghost" 
+                                            size="sm"
+                                            onClick={() => {
+                                                setSearchTerm('');
+                                                setSelectedBillingClassId('all');
+                                                setBillingStatusFilter('all');
+                                                setGlobalDateRange(undefined);
+                                            }}
+                                            className="h-9 text-xs text-slate-500 hover:text-slate-800"
+                                        >
+                                            Reset Filters
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         
