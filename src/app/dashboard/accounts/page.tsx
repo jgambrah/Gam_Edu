@@ -52,6 +52,7 @@ import { TargetedBillingPurgeTool } from '@/components/dashboard/finance/Targete
 import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
 import { StudentSearchInput } from '@/components/student-search';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
+import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -3408,6 +3409,60 @@ export default function AccountsPage() {
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
   const isLedgerLoaded = Boolean(ledgerMode === 'full-school' && !isLoadingRecords && records);
 
+  // Pre-aggregated single summary document subscriptions (cost: 1 Firestore read)
+  // 1. Primary: dashboard_summaries/{schoolId} (central server-aggregated cache)
+  const { summary: dashboardSummary, isLoading: isLoadingDashboardSummary } = useDashboardSummary(schoolId);
+
+  // 2. Secondary / Dedicated fallback: schools/{schoolId}/analytics/billingSummary
+  const billingSummaryRef = useMemoFirebase(
+    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId, 'analytics', 'billingSummary') : null),
+    [firestore, schoolId]
+  );
+  const { data: directBillingSummary, isLoading: isLoadingBillingSummary } = useDoc<any>(billingSummaryRef);
+  const isLoadingSummary = isLoadingDashboardSummary && isLoadingBillingSummary;
+
+  const preAggregatedBilling = useMemo(() => {
+    const dbs = directBillingSummary || {};
+    const fin = dashboardSummary?.financials || {};
+    const aging = dashboardSummary?.debtAging || {};
+
+    const rawGross = dbs.totalGrossOutstanding ?? dbs.totalOutstanding ?? fin.totalOutstanding ?? null;
+    const rawCredits = dbs.totalAdvanceCredits ?? dbs.advancePayments ?? dbs.overpayments ?? aging.overpayments ?? null;
+    const rawCollected = dbs.totalCollected ?? dbs.totalRevenue ?? fin.totalRevenue ?? fin.totalCollectedThisTerm ?? null;
+    const rawRate = dbs.overallCollectionRate ?? dbs.collectionRate ?? fin.collectionRate ?? null;
+    const rawBilled = dbs.totalBilled ?? fin.totalBilled ?? null;
+
+    const hasData = rawGross !== null || rawCollected !== null || rawRate !== null;
+
+    const totalGross = rawGross !== null ? Number(rawGross) : 0;
+    const totalCredits = rawCredits !== null ? Number(rawCredits) : 0;
+    const totalColl = rawCollected !== null ? Number(rawCollected) : 0;
+    const netOutstanding = Math.max(0, totalGross - totalCredits);
+    
+    let rate = rawRate !== null ? Number(rawRate) : null;
+    if (rate === null && (totalGross + totalColl) > 0) {
+      rate = (totalColl / (totalGross + totalColl)) * 100;
+    }
+
+    const streamDebts = dbs.streamDebts || fin.streamDebts || {
+      tuition: fin.outstandingTuition || 0,
+      canteen: fin.outstandingCanteen || 0,
+      transport: fin.outstandingTransport || 0,
+      other: fin.otherDebt || 0
+    };
+
+    return {
+      hasData,
+      totalGrossOutstanding: totalGross,
+      totalAdvanceCredits: totalCredits,
+      netOutstanding,
+      totalCollected: totalColl,
+      overallCollectionRate: rate,
+      totalBilled: rawBilled !== null ? Number(rawBilled) : (totalGross + totalColl),
+      streamDebts
+    };
+  }, [directBillingSummary, dashboardSummary]);
+
   const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
   const { data: pendingWaivers, forceRefetch: refetchWaivers } = useCollection<any>(waiverRequestsQuery);
   
@@ -3654,7 +3709,59 @@ export default function AccountsPage() {
   }, [isLedgerLoaded, records, students, advisoryScope, schoolSettings]);
 
   const dashboardStats = useMemo(() => {
-    if (!advisoryActiveRecords.length) return { 
+    if (isLedgerLoaded && advisoryActiveRecords.length > 0) {
+      let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0, totalBilled = 0;
+      let advancePayments = 0;
+
+      for (const record of advisoryActiveRecords) {
+          const billed = Number(record.billedAmount) || 0;
+          const paid = Number(record.amountPaid) || 0;
+          const waiver = Number(record.waiverAmount) || 0;
+          const balance = billed - paid - waiver;
+          totalPaid += paid;
+          totalBilled += billed;
+          
+          if (balance > 0.01) {
+              const type = (record.type || '').toLowerCase();
+              if (type.includes('tuition')) outstandingTuition += balance;
+              else if (type.includes('canteen')) outstandingCanteen += balance;
+              else if (type.includes('transport')) outstandingTransport += balance;
+              else otherDebt += balance;
+          } else if (balance < -0.01) {
+              advancePayments += Math.abs(balance);
+          }
+      }
+      const totalOutstanding = outstandingTuition + outstandingCanteen + outstandingTransport + otherDebt;
+      const netOutstanding = Math.max(0, totalOutstanding - advancePayments);
+
+      return { 
+          totalRevenue: totalPaid, 
+          totalOutstanding, 
+          advancePayments,
+          netOutstanding,
+          outstandingTuition, 
+          outstandingCanteen, 
+          outstandingTransport, 
+          otherDebt,
+          totalBilled
+      };
+    }
+
+    if (preAggregatedBilling.hasData) {
+      return { 
+        totalRevenue: preAggregatedBilling.totalCollected, 
+        totalOutstanding: preAggregatedBilling.totalGrossOutstanding, 
+        advancePayments: preAggregatedBilling.totalAdvanceCredits,
+        netOutstanding: preAggregatedBilling.netOutstanding,
+        outstandingTuition: preAggregatedBilling.streamDebts.tuition || 0, 
+        outstandingCanteen: preAggregatedBilling.streamDebts.canteen || 0, 
+        outstandingTransport: preAggregatedBilling.streamDebts.transport || 0, 
+        otherDebt: preAggregatedBilling.streamDebts.other || 0, 
+        totalBilled: preAggregatedBilling.totalBilled 
+      };
+    }
+
+    return { 
       totalRevenue: 0, 
       totalOutstanding: 0, 
       advancePayments: 0,
@@ -3665,43 +3772,9 @@ export default function AccountsPage() {
       otherDebt: 0, 
       totalBilled: 0 
     };
+  }, [isLedgerLoaded, advisoryActiveRecords, preAggregatedBilling]);
 
-    let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0, totalBilled = 0;
-    let advancePayments = 0;
-
-    for (const record of advisoryActiveRecords) {
-        const billed = Number(record.billedAmount) || 0;
-        const paid = Number(record.amountPaid) || 0;
-        const waiver = Number(record.waiverAmount) || 0;
-        const balance = billed - paid - waiver;
-        totalPaid += paid;
-        totalBilled += billed;
-        
-        if (balance > 0.01) {
-            const type = (record.type || '').toLowerCase();
-            if (type.includes('tuition')) outstandingTuition += balance;
-            else if (type.includes('canteen')) outstandingCanteen += balance;
-            else if (type.includes('transport')) outstandingTransport += balance;
-            else otherDebt += balance;
-        } else if (balance < -0.01) {
-            advancePayments += Math.abs(balance);
-        }
-    }
-    const totalOutstanding = outstandingTuition + outstandingCanteen + outstandingTransport + otherDebt;
-    const netOutstanding = Math.max(0, totalOutstanding - advancePayments);
-
-    return { 
-        totalRevenue: totalPaid, 
-        totalOutstanding, 
-        advancePayments,
-        netOutstanding,
-        outstandingTuition, 
-        outstandingCanteen, 
-        outstandingTransport, 
-        otherDebt,
-        totalBilled
-    };
-  }, [advisoryActiveRecords]);
+  const hasDisplayStats = isLedgerLoaded || preAggregatedBilling.hasData;
 
   // --- DEBT AGING CALCULATION ---
   const debtAgingStats = useMemo(() => {
@@ -3906,10 +3979,15 @@ export default function AccountsPage() {
   const pendingReversals = useMemo(() => records?.filter(r => r.status === 'Pending Reversal') || [], [records]);
 
   const collectionRate = useMemo(() => {
-    if (!isLedgerLoaded) return null;
-    const billed = dashboardStats.totalBilled;
-    return billed > 0 ? (dashboardStats.totalRevenue / billed) * 100 : 100;
-  }, [isLedgerLoaded, dashboardStats]);
+    if (isLedgerLoaded) {
+      const billed = dashboardStats.totalBilled;
+      return billed > 0 ? (dashboardStats.totalRevenue / billed) * 100 : 100;
+    }
+    if (preAggregatedBilling.hasData && preAggregatedBilling.overallCollectionRate !== null) {
+      return preAggregatedBilling.overallCollectionRate;
+    }
+    return null;
+  }, [isLedgerLoaded, dashboardStats, preAggregatedBilling]);
 
   const categoryCollections = useMemo(() => {
     if (!isLedgerLoaded || !advisoryActiveRecords.length) return [];
@@ -3948,6 +4026,19 @@ export default function AccountsPage() {
         };
     });
   }, [isLedgerLoaded, advisoryActiveRecords]);
+
+  const effectiveCategoryCollections = useMemo(() => {
+    if (isLedgerLoaded && categoryCollections.length > 0) {
+      return categoryCollections;
+    }
+    if (directBillingSummary?.categoryCollections?.length) {
+      return directBillingSummary.categoryCollections;
+    }
+    if (dashboardSummary?.financials?.categoryCollections?.length) {
+      return dashboardSummary.financials.categoryCollections;
+    }
+    return [];
+  }, [isLedgerLoaded, categoryCollections, directBillingSummary, dashboardSummary]);
 
   const topDebtors = useMemo(() => {
       if (!isLedgerLoaded) return [];
@@ -4226,18 +4317,23 @@ export default function AccountsPage() {
                         <Wallet className="h-6 w-6" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-emerald-200 font-bold uppercase tracking-wide">Overall Collection Rate</p>
+                        <div className="flex items-center gap-1.5">
+                            <p className="text-[10px] text-emerald-200 font-bold uppercase tracking-wide">Overall Collection Rate</p>
+                            {!isLedgerLoaded && preAggregatedBilling.hasData && (
+                                <span className="text-[9px] bg-white/20 text-emerald-100 font-semibold px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
+                                    <Zap className="h-2.5 w-2.5" /> 1-Read
+                                </span>
+                            )}
+                        </div>
                         <p className="text-2xl font-extrabold tracking-tight text-white mt-0.5">
-                            {isLoadingRecords ? (
+                            {isLoadingRecords || (isLoadingSummary && !preAggregatedBilling.hasData) ? (
                                 <span className="text-base font-semibold flex items-center gap-1.5 text-white/90">
                                     <Loader2 className="h-4 w-4 animate-spin" /> Calculating...
                                 </span>
-                            ) : !isLedgerLoaded ? (
-                                "-- %"
-                            ) : dashboardStats.totalBilled > 0 ? (
-                                `${((dashboardStats.totalRevenue / dashboardStats.totalBilled) * 100).toFixed(1)}%`
+                            ) : collectionRate !== null ? (
+                                `${collectionRate.toFixed(1)}%`
                             ) : (
-                                "100.0%"
+                                "-- %"
                             )}
                         </p>
                     </div>
@@ -4298,21 +4394,15 @@ export default function AccountsPage() {
                                         </div>
                                     )}
                                 </div>
-                                {isLedgerLoaded ? (
-                                    <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
-                                        <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
-                                        <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md">Aged Debt Call List</TabsTrigger>
-                                        <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
-                                        <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
-                                    </TabsList>
-                                ) : (
-                                    <Badge variant="outline" className="text-[10px] font-bold text-indigo-700 bg-indigo-50/80 border-indigo-200 uppercase tracking-wider">
-                                        ⚡ On-Demand Analytics
-                                    </Badge>
-                                )}
+                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
+                                    <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
+                                    <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md">Aged Debt Call List</TabsTrigger>
+                                    <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
+                                    <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
+                                </TabsList>
                             </div>
 
-                            {!isLedgerLoaded ? (
+                            {!hasDisplayStats ? (
                                 <div className="flex-1 my-auto py-14 px-6 text-center border-2 border-dashed border-indigo-200/80 rounded-2xl bg-gradient-to-b from-indigo-50/50 via-slate-50/20 to-white flex flex-col items-center justify-center gap-4 shadow-xs">
                                     <div className="h-16 w-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
                                         <Database className="h-8 w-8 text-indigo-600 animate-pulse" />
@@ -4360,7 +4450,7 @@ export default function AccountsPage() {
                                     <TabsContent value="summary" className="mt-0 space-y-6 animate-in fade-in-50">
                                 {/* Top Reconciled Metric Cards */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                                    <Card className={cn("border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !isLedgerLoaded && "opacity-85")}>
+                                    <Card className={cn("border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !hasDisplayStats && "opacity-85")}>
                                         <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <div>
                                                 <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Gross Outstanding</CardTitle>
@@ -4370,12 +4460,12 @@ export default function AccountsPage() {
                                         </CardHeader>
                                         <CardContent className="p-3.5 pt-1">
                                             <div className="text-lg font-black text-rose-600">
-                                                {isLedgerLoaded ? `GH₵${dashboardStats.totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className={cn("border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !isLedgerLoaded && "opacity-85")}>
+                                    <Card className={cn("border-l-4 border-l-emerald-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !hasDisplayStats && "opacity-85")}>
                                         <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <div>
                                                 <CardTitle className="text-[10px] font-bold text-emerald-700 uppercase">Advance Credits</CardTitle>
@@ -4385,12 +4475,12 @@ export default function AccountsPage() {
                                         </CardHeader>
                                         <CardContent className="p-3.5 pt-1">
                                             <div className="text-lg font-black text-emerald-600">
-                                                {isLedgerLoaded ? `(GH₵${dashboardStats.advancePayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : "(GH₵ —.—)"}
+                                                {hasDisplayStats ? `(GH₵${dashboardStats.advancePayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : "(GH₵ —.—)"}
                                             </div>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className={cn("border-l-4 border-l-red-600 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-rose-50/20", !isLedgerLoaded && "opacity-85")}>
+                                    <Card className={cn("border-l-4 border-l-red-600 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-rose-50/20", !hasDisplayStats && "opacity-85")}>
                                         <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <div>
                                                 <CardTitle className="text-[10px] font-bold text-red-700 uppercase">Net Collectible</CardTitle>
@@ -4400,12 +4490,12 @@ export default function AccountsPage() {
                                         </CardHeader>
                                         <CardContent className="p-3.5 pt-1">
                                             <div className="text-lg font-black text-red-700">
-                                                {isLedgerLoaded ? `GH₵${dashboardStats.netOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.netOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className={cn("border-l-4 border-l-indigo-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !isLedgerLoaded && "opacity-85")}>
+                                    <Card className={cn("border-l-4 border-l-indigo-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !hasDisplayStats && "opacity-85")}>
                                         <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <div>
                                                 <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
@@ -4415,7 +4505,7 @@ export default function AccountsPage() {
                                         </CardHeader>
                                         <CardContent className="p-3.5 pt-1">
                                             <div className="text-lg font-black text-indigo-600">
-                                                {isLedgerLoaded ? `GH₵${dashboardStats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -4423,47 +4513,47 @@ export default function AccountsPage() {
 
                                 {/* Fee Stream Breakdown Cards */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-1">
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Tuition Debt</CardTitle>
                                             <BookOpen className="h-3.5 w-3.5 text-blue-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
                                             <div className="text-base font-bold text-slate-800">
-                                                {isLedgerLoaded ? `GH₵${dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Canteen Debt</CardTitle>
                                             <Utensils className="h-3.5 w-3.5 text-orange-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
                                             <div className="text-base font-bold text-slate-800">
-                                                {isLedgerLoaded ? `GH₵${dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Transport Debt</CardTitle>
                                             <BusIcon className="h-3.5 w-3.5 text-amber-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
                                             <div className="text-base font-bold text-slate-800">
-                                                {isLedgerLoaded ? `GH₵${dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
-                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !isLedgerLoaded && "opacity-60")}>
+                                    <Card className={cn("border-slate-200 shadow-none bg-slate-50/40", !hasDisplayStats && "opacity-60")}>
                                         <CardHeader className="p-3 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <CardTitle className="text-[10px] font-bold text-slate-500 uppercase">Other Fees</CardTitle>
                                             <HandCoins className="h-3.5 w-3.5 text-slate-400" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
                                             <div className="text-base font-bold text-slate-800">
-                                                {isLedgerLoaded ? `GH₵${dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -4472,8 +4562,15 @@ export default function AccountsPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mt-6 pt-6 border-t border-slate-100">
                                     {/* SVG Target Collection Gauge */}
                                     <div className="md:col-span-2 flex flex-col items-center justify-center text-center p-4 bg-slate-50/50 rounded-xl border border-slate-100 min-h-[220px]">
-                                        <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4">Overall Target Pace</h4>
-                                        {isLedgerLoaded ? (
+                                        <div className="flex items-center gap-1.5 mb-4">
+                                            <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Overall Target Pace</h4>
+                                            {!isLedgerLoaded && preAggregatedBilling.hasData && (
+                                                <Badge variant="outline" className="text-[9px] bg-emerald-50 text-emerald-700 border-emerald-200">
+                                                    1-Read Summary
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        {hasDisplayStats && collectionRate !== null ? (
                                             <>
                                                 <div className="relative flex items-center justify-center h-32 w-32">
                                                     {/* Background Circle */}
@@ -4545,13 +4642,13 @@ export default function AccountsPage() {
                                             <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Collection Performance</h4>
                                             {!isLedgerLoaded && (
                                                 <Badge variant="outline" className="text-[10px] text-slate-400 border-slate-200 font-normal">
-                                                    Standby
+                                                    {effectiveCategoryCollections.length > 0 ? "1-Read Summary" : "Standby"}
                                                 </Badge>
                                             )}
                                         </div>
-                                        {isLedgerLoaded ? (
+                                        {isLedgerLoaded || effectiveCategoryCollections.length > 0 ? (
                                             <div className="space-y-3">
-                                                {categoryCollections.map(cat => {
+                                                {effectiveCategoryCollections.map(cat => {
                                                     const color = cat.rate >= 80 ? 'bg-emerald-500' : cat.rate >= 50 ? 'bg-amber-500' : 'bg-rose-500';
                                                     const textColor = cat.rate >= 80 ? 'text-emerald-700' : cat.rate >= 50 ? 'text-amber-700' : 'text-rose-700';
                                                     return (
@@ -4573,14 +4670,54 @@ export default function AccountsPage() {
                                         ) : (
                                             <div className="p-6 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center text-center space-y-2 h-[160px]">
                                                 <HandCoins className="h-6 w-6 text-slate-300" />
-                                                <p className="text-xs font-semibold text-slate-600">Fee Stream Breakdown Disabled</p>
+                                                <p className="text-xs font-semibold text-slate-600">Fee Stream Breakdown Standby</p>
                                                 <p className="text-[11px] text-slate-400 max-w-sm">
-                                                    Fee categories (Tuition, Canteen, Transport, PTA) are calculated once the full school ledger is explicitly loaded.
+                                                    Load full school ledger to calculate collection pace across Tuition, Canteen, Transport, and Levies.
                                                 </p>
                                             </div>
                                         )}
                                     </div>
                                 </div>
+
+                                {/* 1-Read Pre-Aggregated Summary Notice Banner */}
+                                {!isLedgerLoaded && preAggregatedBilling.hasData && (
+                                    <div className="mt-4 p-4 rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-blue-50/40 to-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="h-8 w-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                <Zap className="h-4 w-4" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-slate-800 flex items-center gap-2">
+                                                    <span>Pre-Aggregated School Financials</span>
+                                                    <Badge variant="outline" className="text-[10px] bg-indigo-100/80 text-indigo-800 border-indigo-200">
+                                                        ⚡ 1 Firestore Read Active
+                                                    </Badge>
+                                                </p>
+                                                <p className="text-[11px] text-slate-500 mt-0.5">
+                                                    Gross revenue and debt totals are loaded from instant server aggregation. Load full school ledger for student-level aged debtor calls or classroom pace.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            onClick={() => setLedgerMode('full-school')}
+                                            disabled={isLoadingRecords}
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-9 px-4 rounded-lg shrink-0 text-xs shadow-xs cursor-pointer"
+                                        >
+                                            {isLoadingRecords ? (
+                                                <>
+                                                    <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                                                    <span>Loading Full Ledger...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Database className="h-3.5 w-3.5 mr-1.5" />
+                                                    <span>Load Full School Ledger / Aged Debt Report</span>
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                )}
                             </TabsContent>
 
                             <TabsContent value="debtors" className="mt-0 space-y-4 animate-in fade-in-50">

@@ -94,15 +94,24 @@ service cloud.firestore {
         allow read, list: if isSignedIn();
         allow write, create, update, delete: if isSignedIn();
       }
+
+      match /analytics/{docId} {
+        allow read: if isSignedIn() && (
+          isSuperAdmin() ||
+          ((isAdmin() || isFinanceStaff() || getUserRole() in ['Director', 'Administrator', 'Accountant', 'accountant']) && getUserSchoolId() == schoolId)
+        );
+        allow write: if false; // Cloud Functions only
+      }
     }
 
     // ─── DASHBOARD SUMMARY (aggregation cache) ────────────────────────────────
-    // Read: Director or Administrator of that specific school only.
+    // Read: Director, Administrator, or Accountant of that specific school.
     // Write: Cloud Functions only (no client write access — prevents tampering).
     match /dashboard_summaries/{schoolId} {
       allow read: if isSignedIn() && (
         isSuperAdmin() ||
-        (getUserRole() in ['Director', 'Administrator'] && getUserSchoolId() == schoolId)
+        (getUserRole() in ['Director', 'Administrator', 'Accountant', 'accountant', 'Admin'] && getUserSchoolId() == schoolId) ||
+        (isFinanceStaff() && getUserSchoolId() == schoolId)
       );
       allow write: if false; // Server-side only via Cloud Functions
     }
