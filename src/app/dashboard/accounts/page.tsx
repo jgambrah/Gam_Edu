@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database, BarChart3 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -4241,66 +4241,102 @@ export default function AccountsPage() {
                 {/* Advanced Analytics Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left: Collections Advisory Desk */}
-                    <div className="lg:col-span-2 bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
-                        <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full">
+                    <div className="lg:col-span-2 bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                        <Tabs value={analyticsTab} onValueChange={setAnalyticsTab} className="w-full flex-1 flex flex-col">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-3 mb-4">
                                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider">Collections Advisory Desk</h3>
-                                    <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border text-xs">
-                                        <button
-                                            type="button"
-                                            onClick={() => setAdvisoryScope('all-time')}
-                                            className={cn(
-                                                "px-2 py-0.5 rounded-md font-semibold transition-all text-[11px]",
-                                                advisoryScope === 'all-time' 
-                                                    ? "bg-white text-indigo-700 shadow-xs border font-bold" 
-                                                    : "text-slate-500 hover:text-slate-800"
-                                            )}
-                                        >
-                                            All-Time Ledger
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setAdvisoryScope('current-term')}
-                                            className={cn(
-                                                "px-2 py-0.5 rounded-md font-semibold transition-all text-[11px]",
-                                                advisoryScope === 'current-term' 
-                                                    ? "bg-white text-indigo-700 shadow-xs border font-bold" 
-                                                    : "text-slate-500 hover:text-slate-800"
-                                            )}
-                                        >
-                                            Current Term Only
-                                        </button>
-                                    </div>
+                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                                        <BarChart3 className="h-4 w-4 text-indigo-600" /> Collections Advisory Desk
+                                    </h3>
+                                    {isLedgerLoaded && (
+                                        <div className="flex items-center p-0.5 bg-slate-100 rounded-lg border text-xs">
+                                            <button
+                                                type="button"
+                                                onClick={() => setAdvisoryScope('all-time')}
+                                                className={cn(
+                                                    "px-2 py-0.5 rounded-md font-semibold transition-all text-[11px]",
+                                                    advisoryScope === 'all-time' 
+                                                        ? "bg-white text-indigo-700 shadow-xs border font-bold" 
+                                                        : "text-slate-500 hover:text-slate-800"
+                                                )}
+                                            >
+                                                All-Time Ledger
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setAdvisoryScope('current-term')}
+                                                className={cn(
+                                                    "px-2 py-0.5 rounded-md font-semibold transition-all text-[11px]",
+                                                    advisoryScope === 'current-term' 
+                                                        ? "bg-white text-indigo-700 shadow-xs border font-bold" 
+                                                        : "text-slate-500 hover:text-slate-800"
+                                                )}
+                                            >
+                                                Current Term Only
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                                <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
-                                    <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
-                                    <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md">Aged Debt Call List</TabsTrigger>
-                                    <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
-                                    <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
-                                </TabsList>
+                                {isLedgerLoaded ? (
+                                    <TabsList className="bg-slate-100 p-0.5 rounded-lg border">
+                                        <TabsTrigger value="summary" className="text-xs px-3 py-1 rounded-md">Financial Summary</TabsTrigger>
+                                        <TabsTrigger value="debtors" className="text-xs px-3 py-1 rounded-md">Aged Debt Call List</TabsTrigger>
+                                        <TabsTrigger value="aging" className="text-xs px-3 py-1 rounded-md">Debt Aging</TabsTrigger>
+                                        <TabsTrigger value="classPace" className="text-xs px-3 py-1 rounded-md">Class Pace</TabsTrigger>
+                                    </TabsList>
+                                ) : (
+                                    <Badge variant="outline" className="text-[10px] font-bold text-indigo-700 bg-indigo-50/80 border-indigo-200 uppercase tracking-wider">
+                                        ⚡ On-Demand Analytics
+                                    </Badge>
+                                )}
                             </div>
-                            
-                            {ledgerMode === 'on-demand' && (
-                                <div className="mb-4 p-3 bg-blue-50/70 border border-blue-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-blue-900">
-                                    <div className="flex items-center gap-2">
-                                        <Info className="h-4 w-4 text-blue-600 shrink-0" />
-                                        <span>Advisory charts reflect whole-school data. Load the full ledger to view debt aging & collection pace across all 17,000+ records.</span>
-                                    </div>
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => setLedgerMode('full-school')}
-                                        disabled={isLoadingRecords}
-                                        className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-100 font-semibold shrink-0"
-                                    >
-                                        {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
-                                        Load School Ledger
-                                    </Button>
-                                </div>
-                            )}
 
-                            <TabsContent value="summary" className="mt-0 space-y-6 animate-in fade-in-50">
+                            {!isLedgerLoaded ? (
+                                <div className="flex-1 my-auto py-14 px-6 text-center border-2 border-dashed border-indigo-200/80 rounded-2xl bg-gradient-to-b from-indigo-50/50 via-slate-50/20 to-white flex flex-col items-center justify-center gap-4 shadow-xs">
+                                    <div className="h-16 w-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
+                                        <Database className="h-8 w-8 text-indigo-600 animate-pulse" />
+                                    </div>
+                                    <div className="space-y-2 max-w-md">
+                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-100/80 text-indigo-800 text-[10px] font-bold uppercase tracking-wider">
+                                            ⚡ Read Quota Optimized
+                                        </div>
+                                        <h4 className="text-xl font-black text-slate-900 tracking-tight">
+                                            School-wide Financial Analytics are Unloaded
+                                        </h4>
+                                        <p className="text-xs text-slate-500 leading-relaxed">
+                                            Aggregating 17,000+ records consumes read quota. Load on-demand only when generating debt aging, fee stream analytics, or aged debtor reports.
+                                        </p>
+                                    </div>
+                                    <div className="pt-2">
+                                        <Button
+                                            onClick={() => setLedgerMode('full-school')}
+                                            disabled={isLoadingRecords}
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 text-xs cursor-pointer"
+                                        >
+                                            {isLoadingRecords ? (
+                                                <>
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                    <span>Loading School Ledger (Computing Analytics)...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Database className="h-4 w-4" />
+                                                    <span>Load School Ledger (Compute Analytics)</span>
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                    <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-400 pt-3 border-t border-slate-100 w-full max-w-sm">
+                                        <span>⚡ 0 upfront reads</span>
+                                        <span>•</span>
+                                        <span>Debt aging brackets</span>
+                                        <span>•</span>
+                                        <span>Fee stream metrics</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <TabsContent value="summary" className="mt-0 space-y-6 animate-in fade-in-50">
                                 {/* Top Reconciled Metric Cards */}
                                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                     <Card className={cn("border-l-4 border-l-rose-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300", !isLedgerLoaded && "opacity-85")}>
@@ -4792,6 +4828,8 @@ export default function AccountsPage() {
                                     </div>
                                 )}
                             </TabsContent>
+                                </>
+                            )}
                         </Tabs>
                     </div>
                     
