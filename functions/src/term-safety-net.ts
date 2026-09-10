@@ -18,6 +18,31 @@ export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => 
   const now = new Date();
   const todayMs = now.getTime();
 
+  // ── RESET DAILY DASHBOARD SUMMARIES COLLECTIONS AT MIDNIGHT (00:00 CUT-OFF) ──
+  try {
+    const summariesSnap = await db.collection('dashboard_summaries').get();
+    if (!summariesSnap.empty) {
+      const batch = db.batch();
+      summariesSnap.forEach(docSnap => {
+        batch.update(docSnap.ref, {
+          'financials.totalCollectedToday': 0,
+          'attendance.totalPresent': 0,
+          'attendance.totalAbsent': 0,
+          'attendance.totalLate': 0,
+          'attendance.attendanceRate': 0,
+          'staff.presentToday': 0,
+          'staff.lateToday': 0,
+          'staff.absentToday': 0,
+          lastDailyMidnightResetAt: FieldValue.serverTimestamp(),
+        });
+      });
+      await batch.commit();
+      console.log(`[MIDNIGHT RESET] Successfully reset daily collections and attendance across ${summariesSnap.size} school summaries.`);
+    }
+  } catch (resetErr) {
+    console.error('[MIDNIGHT RESET] Error resetting daily summaries at midnight:', resetErr);
+  }
+
   const schoolsSnap = await db.collection('schoolSettings').get();
 
   for (const schoolDoc of schoolsSnap.docs) {

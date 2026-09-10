@@ -677,9 +677,24 @@ function AdminDashboard({
     return { positive, infractions, recent };
   }, [behavioralRecords, students]);
 
-  const startOfToday = useMemo(() => {
-    return startOfDay(new Date());
+  const [currentDayDate, setCurrentDayDate] = useState(() => new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentDayDate(prev => {
+        if (now.getDate() !== prev.getDate() || now.getMonth() !== prev.getMonth() || now.getFullYear() !== prev.getFullYear()) {
+          return now;
+        }
+        return prev;
+      });
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
+
+  const startOfToday = useMemo(() => {
+    return startOfDay(currentDayDate);
+  }, [currentDayDate]);
 
   const todayStudentAbsences = useMemo(() => {
     if (!attendance || !students) return [];
@@ -1093,12 +1108,26 @@ function AdminDashboard({
   const financials = useMemo(() => {
     if (syncedFinancialData) return syncedFinancialData;
 
+    const isSummaryToday = (() => {
+      if (!dashboardSummary?.financials?.lastPaymentAt) return false;
+      try {
+        const lastPaymentAt = dashboardSummary.financials.lastPaymentAt;
+        const lastPaymentDate = typeof (lastPaymentAt as any).toDate === 'function'
+          ? (lastPaymentAt as any).toDate()
+          : new Date((lastPaymentAt as any).seconds ? (lastPaymentAt as any).seconds * 1000 : lastPaymentAt);
+        return !isNaN(lastPaymentDate.getTime()) && lastPaymentDate >= startOfToday;
+      } catch {
+        return false;
+      }
+    })();
+    const summaryToday = isSummaryToday ? (dashboardSummary.financials.totalCollectedToday ?? 0) : 0;
+
     if (dashboardSummary?.financials?.totalBilled !== undefined && dashboardSummary.financials.totalBilled > 0) {
       return {
         totalOutstanding: dashboardSummary.financials.totalOutstanding ?? 0,
         totalRevenue: dashboardSummary.financials.totalRevenue ?? 0,
         collectedThisTerm: dashboardSummary.financials.totalCollectedThisTerm ?? dashboardSummary.financials.totalRevenue ?? 0,
-        collectedToday: Math.max(dashboardSummary.financials.totalCollectedToday ?? 0, openTillsCash || 0),
+        collectedToday: Math.max(summaryToday, openTillsCash || 0),
         collectedThisMonth: dashboardSummary.financials.totalCollectedThisMonth ?? 0,
         totalBilled: dashboardSummary.financials.totalBilled ?? 0,
         collectionRate: dashboardSummary.financials.collectionRate ?? 0,
@@ -1128,7 +1157,7 @@ function AdminDashboard({
       grossReceivables: calculated.grossReceivables,
       netReceivables: calculated.netReceivables
     };
-  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData, payments, classes, budgets, openTillsCash]);
+  }, [financialRecords, activeStudents, dashboardSummary, syncedFinancialData, payments, classes, budgets, openTillsCash, startOfToday]);
 
   const debtAgingStats = useMemo(() => {
     const calculated = computeFinancialMetrics({
@@ -2491,10 +2520,25 @@ function DirectorDashboard({
     return { positive, infractions, recent };
   }, [behavioralRecords, students]);
 
+  const [currentDayDate, setCurrentDayDate] = useState(() => new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentDayDate(prev => {
+        if (now.getDate() !== prev.getDate() || now.getMonth() !== prev.getMonth() || now.getFullYear() !== prev.getFullYear()) {
+          return now;
+        }
+        return prev;
+      });
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
   const startOfToday = useMemo(() => {
     const termStartStr = schoolData?.termStartDate;
     const termEndStr = schoolData?.termEndDate;
-    const now = startOfDay(new Date());
+    const now = startOfDay(currentDayDate);
 
     if (termStartStr && termEndStr) {
       const partsStart = termStartStr.split('-');
@@ -2527,7 +2571,7 @@ function DirectorDashboard({
       }
     }
     return now;
-  }, [schoolData?.termStartDate, schoolData?.termEndDate]);
+  }, [schoolData?.termStartDate, schoolData?.termEndDate, currentDayDate]);
 
   const todayStudentAbsences = useMemo(() => {
     if (!attendance || !students) return [];
@@ -11907,8 +11951,15 @@ export default function DashboardClient() {
 
   const openTillsCash = useMemo(() => {
     if (!tills || tills.length === 0) return 0;
-    return tills.reduce((sum: number, t: any) => sum + (Number(t.currentBalance) || 0), 0);
-  }, [tills]);
+    return tills
+      .filter((t: any) => {
+        if (!t.dateOpened) return false;
+        const d = t.dateOpened.toDate ? t.dateOpened.toDate() : new Date(t.dateOpened);
+        if (isNaN(d.getTime())) return false;
+        return d >= startOfToday;
+      })
+      .reduce((sum: number, t: any) => sum + (Number(t.currentBalance) || 0), 0);
+  }, [tills, startOfToday]);
 
   // Director gets attendance from summary (today's snapshot) and only needs raw logs when active tab is attendance.
   // Administrator is restricted to overview/attendance tabs.

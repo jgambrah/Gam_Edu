@@ -369,7 +369,8 @@ export function computeFinancialMetrics({
     const amount = Number(p.amount) || Number(p.amountPaid) || Number(p.lastPaymentAmount) || 0;
     if (amount <= 0) return;
 
-    const d = safeParseDate(p.paidAt || p.createdAt || p.date || p.timestamp || p.paymentDate || p.lastPaymentDate) || now;
+    const parsedDate = safeParseDate(p.paidAt || p.createdAt || p.date || p.timestamp || p.paymentDate || p.lastPaymentDate);
+    const d = parsedDate || new Date(0);
     const dayStr = d.toISOString().substring(0, 10);
     const cat = classifyFeeCategory(p);
 
@@ -409,7 +410,7 @@ export function computeFinancialMetrics({
     // Date aggregations
     const isInTerm = d >= termBounds.start && d <= termBounds.end;
 
-    if (d >= startOfToday) {
+    if (parsedDate && d >= startOfToday) {
       collectedToday += amount;
       todayCount++;
     }

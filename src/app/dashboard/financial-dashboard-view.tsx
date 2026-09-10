@@ -72,10 +72,25 @@ export function FinancialDashboardView({
 
   // Executive KPI Sourcing: Prefer pre-aggregated server-side summary document for true school-wide totals
   const revenueStats = useMemo(() => {
+    const isSummaryToday = (() => {
+      const lastPayment = dashboardSummary?.financials?.lastPaymentAt;
+      if (!lastPayment) return false;
+      try {
+        const d = typeof (lastPayment as any).toDate === 'function'
+          ? (lastPayment as any).toDate()
+          : new Date((lastPayment as any).seconds ? (lastPayment as any).seconds * 1000 : lastPayment);
+        const todayMidnight = new Date();
+        todayMidnight.setHours(0, 0, 0, 0);
+        return !isNaN(d.getTime()) && d >= todayMidnight;
+      } catch {
+        return false;
+      }
+    })();
+
     if (dashboardSummary?.financials) {
       const f = dashboardSummary.financials;
       return {
-        collectedToday: f.totalCollectedToday || 0,
+        collectedToday: isSummaryToday ? (f.totalCollectedToday || 0) : (metrics.collectedToday || 0),
         collectedThisMonth: f.totalCollectedThisMonth || 0,
         collectedThisTerm: f.totalCollectedThisTerm !== undefined ? f.totalCollectedThisTerm : metrics.collectedThisTerm,
         collectedThisYear: f.totalCollectedThisYear !== undefined ? f.totalCollectedThisYear : metrics.collectedThisYear,

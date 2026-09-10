@@ -117,6 +117,22 @@ export function ExecutiveDirectorCockpit({
     });
   };
 
+  // Active midnight rollover detection (re-evaluates every 15s to catch the 00:00:00 midnight cut-off)
+  const [todayMidnight, setTodayMidnight] = useState(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      setTodayMidnight(prev => (now.getTime() !== prev.getTime() ? now : prev));
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Unified Financial Analytics Engine (Single Source of Truth)
   const unifiedMetrics = useMemo(() => {
     return computeFinancialMetrics({
@@ -127,10 +143,28 @@ export function ExecutiveDirectorCockpit({
       campusId: selectedCampus,
       schoolSettings: schoolProfile,
     });
-  }, [financialRecords, payments, students, classes, selectedCampus, schoolProfile]);
+  }, [financialRecords, payments, students, classes, selectedCampus, schoolProfile, todayMidnight]);
 
   // Executive Financial Metrics Sourcing
   const financialSummary = useMemo(() => {
+    // Validate whether dashboardSummary.financials last payment actually belongs to today (>= todayMidnight)
+    const isSummaryPaymentFromToday = (() => {
+      const lastPayment = dashboardSummary?.financials?.lastPaymentAt;
+      if (!lastPayment) return false;
+      try {
+        const d = typeof (lastPayment as any).toDate === 'function'
+          ? (lastPayment as any).toDate()
+          : new Date((lastPayment as any).seconds ? (lastPayment as any).seconds * 1000 : lastPayment);
+        return !isNaN(d.getTime()) && d >= todayMidnight;
+      } catch {
+        return false;
+      }
+    })();
+
+    const validSummaryCollectedToday = isSummaryPaymentFromToday
+      ? Number(dashboardSummary?.financials?.totalCollectedToday || 0)
+      : 0;
+
     if (dashboardSummary?.financials) {
       const f = dashboardSummary.financials;
       const totalBilled = f.totalBilled || unifiedMetrics.totalBilled || 0;
@@ -140,7 +174,7 @@ export function ExecutiveDirectorCockpit({
         totalBilled,
         totalRevenue,
         collectionRate,
-        collectedToday: f.totalCollectedToday || unifiedMetrics.collectedToday || 0,
+        collectedToday: validSummaryCollectedToday > 0 ? validSummaryCollectedToday : (unifiedMetrics.collectedToday || 0),
       };
     }
     return {
@@ -149,19 +183,25 @@ export function ExecutiveDirectorCockpit({
       collectionRate: unifiedMetrics.collectionRate,
       collectedToday: unifiedMetrics.collectedToday,
     };
-  }, [dashboardSummary, unifiedMetrics]);
+  }, [dashboardSummary, unifiedMetrics, todayMidnight]);
 
-  const todayCashCollected = useMemo(() => ({
-    total: Math.max(
+  const todayCashCollected = useMemo(() => {
+    const total = Math.max(
       Number(openTillsCash) || 0,
       Number(financials?.collectedToday) || 0,
       Number(financialSummary.collectedToday) || 0,
       Number(unifiedMetrics.collectedToday) || 0
-    ),
-    count: (unifiedMetrics.todayCount > 0)
+    );
+
+    const count = (unifiedMetrics.todayCount > 0)
       ? unifiedMetrics.todayCount
-      : ((openTillsCash > 0 || financialSummary.collectedToday > 0) ? 1 : 0),
-  }), [openTillsCash, financials?.collectedToday, financialSummary, unifiedMetrics]);
+      : (total > 0 ? 1 : 0);
+
+    return {
+      total,
+      count,
+    };
+  }, [openTillsCash, financials?.collectedToday, financialSummary.collectedToday, unifiedMetrics.collectedToday, unifiedMetrics.todayCount]);
 
   // Calculate student fee arrears dynamically from real student records
   const allArrearsList = useMemo(() => {
@@ -1206,12 +1246,12 @@ export function ExecutiveDirectorCockpit({
                   <div className="flex items-center justify-between text-[11px]">
                     {todayCashCollected.total > 0 ? (
                       <span className="font-semibold text-emerald-600 flex items-center">
-                        <TrendingUp className="h-3 w-3 mr-0.5" /> +12.5% Δ vs yesterday
+                        <TrendingUp className="h-3 w-3 mr-0.5" /> Live Collections Active
                       </span>
                     ) : (
-                      <span className="font-semibold text-amber-700 flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
-                        <span>Awaiting Session Close</span>
+                      <span className="font-semibold text-slate-500 flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-slate-400 shrink-0" />
+                        <span>Awaiting Today's Receipts</span>
                       </span>
                     )}
                   </div>
@@ -1224,7 +1264,7 @@ export function ExecutiveDirectorCockpit({
                     ) : (
                       <div className="flex items-center justify-between text-slate-600">
                         <span>Ledger Status:</span>
-                        <span className="font-semibold text-slate-800">Morning Session Open</span>
+                        <span className="font-semibold text-slate-800">New Day Session Open</span>
                       </div>
                     )}
                   </div>
