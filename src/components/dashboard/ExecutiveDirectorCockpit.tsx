@@ -1776,7 +1776,13 @@ export function ExecutiveDirectorCockpit({
                     {feed.tag}
                   </Badge>
                   <button 
-                    onClick={() => onNavigateTab?.('academics')}
+                    onClick={() => {
+                      if (feed.type === 'safeguarding') {
+                        onNavigateTab?.('students', 'discipline');
+                      } else {
+                        onNavigateTab?.('academics');
+                      }
+                    }}
                     className="text-[10px] font-semibold text-indigo-600 hover:underline cursor-pointer"
                   >
                     {feed.actionLabel} →

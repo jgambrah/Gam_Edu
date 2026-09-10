@@ -1512,7 +1512,7 @@ function AdminDashboard({
               behavioralRecords={behavioralRecords}
               recentAssessments={recentAssessments}
               subjects={subjects}
-              onNavigateTab={(tab: string) => setActiveTab(tab)}
+              onNavigateTab={(tab: string, subTab?: string) => { setActiveTab(tab as any); if (subTab) setStudentSubTab(subTab as any); }}
               hasFinanceAccess={hasFinanceAccess}
               openTillsCash={openTillsCash}
               financialsMode={financialsMode}
@@ -3909,7 +3909,7 @@ function DirectorDashboard({
               behavioralRecords={behavioralRecords}
               recentAssessments={recentAssessments}
               subjects={subjects}
-              onNavigateTab={(tab: string) => setActiveTab(tab)}
+              onNavigateTab={(tab: string, subTab?: string) => { setActiveTab(tab as any); if (subTab) setStudentSubTab(subTab as any); }}
               hasFinanceAccess={hasFinanceAccess}
               openTillsCash={openTillsCash}
               financialsMode={financialsMode}
