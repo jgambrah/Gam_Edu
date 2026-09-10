@@ -12250,7 +12250,7 @@ export default function DashboardClient() {
   const roomsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     const isNeeded = (adminActiveTab === 'system' || directorActiveTab === 'system');
-    return isNeeded ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId));
+    return isNeeded ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null;
   }, [firestore, schoolId, adminActiveTab, directorActiveTab]);
   const { data: rooms, isLoading: loadingRooms } = useCollection<any>(roomsQuery);
 
