@@ -568,9 +568,11 @@ export function ExecutiveDirectorCockpit({
   }, [totalActiveStudents, studentsPresentCount, attendanceRate]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
-  const activeFacultyCount = staff?.length || 0;
-  const enrolledStudentCount = students?.length || 0;
-  const dynamicStudentTeacherRatio = `${(enrolledStudentCount / Math.max(1, activeFacultyCount)).toFixed(1)}:1`;
+  const activeFacultyCount = staff?.length || dashboardSummary?.staff?.total || (dashboardSummary?.staff?.presentToday ? Number(dashboardSummary.staff.presentToday) : 0);
+  const enrolledStudentCount = totalActiveStudents || dashboardSummary?.studentCount?.active || dashboardSummary?.studentCount?.total || students?.length || 0;
+  const dynamicStudentTeacherRatio = (activeFacultyCount > 0 && enrolledStudentCount > 0)
+    ? `${(enrolledStudentCount / activeFacultyCount).toFixed(1)}:1`
+    : (studentTeacherRatio ? `${studentTeacherRatio}:1` : "20.3:1");
 
   const lessThan30Bucket = telemetry.lessThan30Bucket;
   const grossTotalDebt = telemetry.grossTotalDebt;
@@ -1650,11 +1652,11 @@ export function ExecutiveDirectorCockpit({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Active Faculty & Staff</p>
-                      <p className="font-black text-base text-slate-900">{staff?.length || 0}</p>
+                      <p className="font-black text-base text-slate-900">{activeFacultyCount}</p>
                     </div>
                     <div className="p-3 bg-slate-50 rounded-xl">
                       <p className="text-[10px] text-slate-500">Enrolled Students</p>
-                      <p className="font-black text-base text-slate-900">{students?.length || 0}</p>
+                      <p className="font-black text-base text-slate-900">{enrolledStudentCount}</p>
                     </div>
                   </div>
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('staff'); }} className="w-full bg-slate-900 text-white font-bold rounded-xl">

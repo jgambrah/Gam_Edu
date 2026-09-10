@@ -12034,12 +12034,8 @@ export default function DashboardClient() {
 
   const staffQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !canListStaff) return null;
-    // Cost Guard: On Overview, dashboardSummary.staff supplies staff counts
-    if ((isDirector && directorActiveTab === 'overview') || (isAdminRole && adminActiveTab === 'overview')) {
-      return null;
-    }
     return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), limit(100));
-  }, [firestore, schoolId, canListStaff, isDirector, isAdminRole, directorActiveTab, adminActiveTab]);
+  }, [firestore, schoolId, canListStaff]);
   const { data: staff, isLoading: loadingStaff } = useCollection(staffQuery);
 
   const classesQuery = useMemoFirebase(() => (firestore && schoolId && (isParent || (isStaff && !isSupportStaff && !isSecretary && !isReceptionist))) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, isStaff, isSupportStaff, isSecretary, isReceptionist, isParent]);
