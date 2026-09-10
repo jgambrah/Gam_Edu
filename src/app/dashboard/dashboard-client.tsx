@@ -1511,6 +1511,7 @@ function AdminDashboard({
               behaviorStats={behaviorStats}
               behavioralRecords={behavioralRecords}
               recentAssessments={recentAssessments}
+              subjects={subjects}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
               hasFinanceAccess={hasFinanceAccess}
               openTillsCash={openTillsCash}
@@ -3907,6 +3908,7 @@ function DirectorDashboard({
               behaviorStats={behaviorStats}
               behavioralRecords={behavioralRecords}
               recentAssessments={recentAssessments}
+              subjects={subjects}
               onNavigateTab={(tab: string) => setActiveTab(tab)}
               hasFinanceAccess={hasFinanceAccess}
               openTillsCash={openTillsCash}
