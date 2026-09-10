@@ -119,6 +119,11 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
   let age90 = 0;
   let overpayments = 0;
 
+  const currentAccounts = new Set<string>();
+  const age30Accounts = new Set<string>();
+  const age60Accounts = new Set<string>();
+  const age90Accounts = new Set<string>();
+
   let totalCollectedToday = 0;
   let totalCollectedThisMonth = 0;
   let totalCollectedThisTerm = 0;

@@ -109,6 +109,10 @@ async function recalculateSchoolFinancials(schoolId, eventTermId) {
     let age60 = 0;
     let age90 = 0;
     let overpayments = 0;
+    const currentAccounts = new Set();
+    const age30Accounts = new Set();
+    const age60Accounts = new Set();
+    const age90Accounts = new Set();
     let totalCollectedToday = 0;
     let totalCollectedThisMonth = 0;
     let totalCollectedThisTerm = 0;
@@ -185,17 +189,26 @@ async function recalculateSchoolFinancials(schoolId, eventTermId) {
         const dueMs = (_f = (_e = dueTs === null || dueTs === void 0 ? void 0 : dueTs.toMillis) === null || _e === void 0 ? void 0 : _e.call(dueTs)) !== null && _f !== void 0 ? _f : (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
         const diffTime = today.getTime() - dueMs;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const accountId = String(r.studentId || r.studentUid || r.accountId || r.studentName || '').trim();
         if (diffDays <= 0) {
             current += balance;
+            if (accountId)
+                currentAccounts.add(accountId);
         }
         else if (diffDays <= 30) {
             age30 += balance;
+            if (accountId)
+                age30Accounts.add(accountId);
         }
         else if (diffDays <= 60) {
             age60 += balance;
+            if (accountId)
+                age60Accounts.add(accountId);
         }
         else {
             age90 += balance;
+            if (accountId)
+                age90Accounts.add(accountId);
         }
     });
     const processedKeys = new Set();
@@ -312,6 +325,16 @@ async function recalculateSchoolFinancials(schoolId, eventTermId) {
             age60,
             age90,
             overpayments,
+            accountCounts: {
+                current: currentAccounts.size,
+                age30: age30Accounts.size,
+                lessThan30: new Set([...currentAccounts, ...age30Accounts]).size,
+                age60: age60Accounts.size,
+                age90: age90Accounts.size,
+                over90: 0,
+                totalOverdue: new Set([...age30Accounts, ...age60Accounts, ...age90Accounts]).size,
+                overdue60Plus: new Set([...age60Accounts, ...age90Accounts]).size,
+            }
         }
     }, { merge: true });
 }
@@ -363,6 +386,12 @@ exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{reco
     const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
     if (!schoolId)
         return;
+    // COST GUARD: Only process class-level aggregated attendance documents (${schoolId}_${classId}_${dateStr})
+    // Skip individual student attendance records (prefixed with 'att-') which otherwise cause an O(N^2) read cascade!
+    const recordId = event.params.recordId;
+    if (recordId && recordId.startsWith('att-')) {
+        return;
+    }
     const dateVal = (_f = after === null || after === void 0 ? void 0 : after.date) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.date;
     const dateStr = getYYYYMMDD(dateVal);
     if (!dateStr || dateStr !== todayStr())
@@ -377,16 +406,32 @@ exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{reco
     let present = 0, absent = 0, late = 0;
     const absentIds = [];
     snap.forEach(doc => {
+        if (doc.id.startsWith('att-'))
+            return;
         const d = doc.data();
-        if (d.status === 'Present')
-            present++;
-        else if (d.status === 'Absent') {
-            absent++;
-            if (absentIds.length < 25)
-                absentIds.push(d.studentId);
+        if (typeof d.presentCount === 'number') {
+            present += d.presentCount;
+            absent += (d.absentCount || 0);
+            late += (d.lateCount || 0);
+            if (d.studentsMap && typeof d.studentsMap === 'object') {
+                Object.values(d.studentsMap).forEach((s) => {
+                    if (s.status === 'Absent' && absentIds.length < 25) {
+                        absentIds.push(s.studentId);
+                    }
+                });
+            }
         }
-        else if (d.status === 'Late')
-            late++;
+        else {
+            if (d.status === 'Present')
+                present++;
+            else if (d.status === 'Absent') {
+                absent++;
+                if (absentIds.length < 25)
+                    absentIds.push(d.studentId);
+            }
+            else if (d.status === 'Late')
+                late++;
+        }
     });
     const total = present + absent + late;
     const rate = total > 0 ? Math.round((present / total) * 100) : 0;
@@ -430,23 +475,21 @@ exports.onStaffAttendanceWrite = (0, firestore_1.onDocumentWritten)('staff_atten
     const tsMs = (_g = (_f = ts === null || ts === void 0 ? void 0 : ts.toMillis) === null || _f === void 0 ? void 0 : _f.call(ts)) !== null && _g !== void 0 ? _g : 0;
     if (tsMs < todayStartMs())
         return;
+    const todayMs = todayStartMs();
+    const todayTimestamp = firestore_2.Timestamp.fromMillis(todayMs);
+    // COST GUARD: Filter by timestamp >= todayTimestamp in Firestore directly (avoids reading historical clock-ins)
     const snap = await db.collection('staff_attendance')
         .where('schoolId', '==', schoolId)
         .where('type', '==', 'In')
+        .where('timestamp', '>=', todayTimestamp)
         .get();
-    const todayMs = todayStartMs();
     const presentSet = new Set();
     let lateCount = 0;
     snap.forEach(doc => {
-        var _a, _b;
         const d = doc.data();
-        const docTs = d.timestamp;
-        const ms = (_b = (_a = docTs === null || docTs === void 0 ? void 0 : docTs.toMillis) === null || _a === void 0 ? void 0 : _a.call(docTs)) !== null && _b !== void 0 ? _b : 0;
-        if (ms >= todayMs) {
-            presentSet.add(d.staffId);
-            if (d.status === 'Late')
-                lateCount++;
-        }
+        presentSet.add(d.staffId);
+        if (d.status === 'Late')
+            lateCount++;
     });
     await SUMMARY(schoolId).set({
         schoolId,
