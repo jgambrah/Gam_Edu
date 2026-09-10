@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { computeFinancialMetrics } from '@/lib/financial-analytics';
 import { buildExecutiveTelemetry } from '@/hooks/use-executive-telemetry';
+import { ExecutiveAIAuditorDrawer } from './ExecutiveAIAuditorDrawer';
 
 export function ExecutiveDirectorCockpit({
   profile,
@@ -692,6 +693,7 @@ export function ExecutiveDirectorCockpit({
 
   // AI Auditor Assistant State (Unified AI Credits Source of Truth: 815)
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
+  const [isAiDrawerPinned, setIsAiDrawerPinned] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiCredits, setAiCredits] = useState(815);
   const [isAiAuditing, setIsAiAuditing] = useState(false);
@@ -835,7 +837,7 @@ export function ExecutiveDirectorCockpit({
   };
 
   return (
-    <div className="space-y-4 mt-6 pb-6">
+    <div className={cn("space-y-4 mt-6 pb-6 transition-[margin] duration-300 ease-in-out", isAiDrawerOpen && isAiDrawerPinned ? "xl:mr-[480px] 2xl:mr-[500px]" : "")}>
       
       {/* ─────────────────────────────────────────────────────────────
           ZONE 1: EXECUTIVE ALERT DESK (High-Density Action Center & Ribbon)
@@ -1234,173 +1236,21 @@ export function ExecutiveDirectorCockpit({
         </div>
       )}
 
-      {/* ─── COLLAPSIBLE EXECUTIVE AI DRAWER (Native Right-Hand Slide-Over) ─── */}
-      {isAiDrawerOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex justify-end transition-opacity">
-          <div className="w-full max-w-lg bg-slate-900 text-white min-h-full shadow-2xl border-l border-slate-800 p-6 flex flex-col justify-between animate-in slide-in-from-right duration-300">
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                    <BrainCircuit className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-white text-base">Executive AI Auditor</h3>
-                    <p className="text-xs text-slate-400 font-medium">Daily briefings & 1-click memo execution</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-indigo-950/80 text-indigo-300 border-indigo-700 text-xs px-2.5 py-1 font-medium">
-                    <Sparkles className="h-3 w-3 text-amber-400 mr-1" /> {aiCredits} Credits
-                  </Badge>
-                  <Button variant="ghost" size="icon" onClick={() => setIsAiDrawerOpen(false)} className="rounded-full h-8 w-8 text-slate-400 hover:text-white">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Proactive Auto-Generated Daily Executive Briefing */}
-              <div className="p-3.5 rounded-xl bg-slate-950/90 border border-indigo-500/30 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
-                    <span className="text-xs font-bold text-indigo-200 uppercase tracking-wider">
-                      Proactive Daily Executive Briefing
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-medium">Live Audit Active</span>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/50 space-y-1">
-                    <div className="flex items-center justify-between text-red-400 font-bold">
-                      <span className="flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" /> Finance Alert</span>
-                      <Badge className="bg-red-950 text-red-300 border-red-800 text-[9px] px-1 py-0">Critical</Badge>
-                    </div>
-                    <p className="text-[11px] text-slate-300 leading-snug">
-                      3 critical financial accounts require attention (&gt;60d overdue, GH₵ 94.5k sum).
-                    </p>
-                    <button 
-                      onClick={() => handleOpenDraftTemplate('arrears')}
-                      className="text-[10px] font-semibold text-red-300 hover:text-red-200 underline flex items-center pt-0.5 cursor-pointer"
-                    >
-                      <FileText className="h-3 w-3 mr-1" /> Draft Collection Notice →
-                    </button>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/50 space-y-1">
-                    <div className="flex items-center justify-between text-emerald-400 font-bold">
-                      <span className="flex items-center gap-1.5"><Award className="h-3.5 w-3.5" /> Academic Outperformer</span>
-                      <Badge className="bg-emerald-950 text-emerald-300 border-emerald-800 text-[9px] px-1 py-0">+12.4%</Badge>
-                    </div>
-                    <p className="text-[11px] text-slate-300 leading-snug">
-                      Grade 6 Science outperforming target benchmark by +12.4% (avg API 94.2%).
-                    </p>
-                    <button 
-                      onClick={() => handleOpenDraftTemplate('academic')}
-                      className="text-[10px] font-semibold text-emerald-300 hover:text-emerald-200 underline flex items-center pt-0.5 cursor-pointer"
-                    >
-                      <FileText className="h-3 w-3 mr-1" /> Send Commendation →
-                    </button>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-900/50 space-y-1">
-                    <div className="flex items-center justify-between text-amber-400 font-bold">
-                      <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Staff Inspection</span>
-                      <Badge className="bg-amber-950 text-amber-300 border-amber-800 text-[9px] px-1 py-0">Pending</Badge>
-                    </div>
-                    <p className="text-[11px] text-slate-300 leading-snug">
-                      {telemetry.pendingStaffCheckins} staff check-ins pending morning assembly verification.
-                    </p>
-                    <button 
-                      onClick={() => handleOpenDraftTemplate('staff')}
-                      className="text-[10px] font-semibold text-amber-300 hover:text-amber-200 underline flex items-center pt-0.5 cursor-pointer"
-                    >
-                      <FileText className="h-3 w-3 mr-1" /> Draft Punctuality Memo →
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chat History Window */}
-              <div className="h-44 overflow-y-auto space-y-3 pr-2 rounded-xl bg-slate-950/80 p-3 border border-slate-800">
-                {aiChatHistory.map((msg, idx) => (
-                  <div 
-                    key={idx} 
-                    className={cn(
-                      "p-3 rounded-xl text-xs max-w-[85%] leading-relaxed space-y-1.5",
-                      msg.role === 'user' 
-                        ? "ml-auto bg-indigo-600 text-white font-medium" 
-                        : "mr-auto bg-slate-800/90 text-slate-200 border border-slate-700"
-                    )}
-                  >
-                    <p>{msg.text}</p>
-                    {msg.role === 'assistant' && (
-                      <div className="flex items-center gap-2 pt-1 border-t border-slate-700/60">
-                        <button 
-                          onClick={() => handleOpenDraftTemplate('arrears')}
-                          className="text-[10px] font-semibold text-indigo-300 hover:text-white bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 px-2 py-0.5 rounded-lg transition-colors flex items-center cursor-pointer"
-                        >
-                          <FileText className="h-3 w-3 mr-1" /> Draft Collection Notice
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {isAiAuditing && (
-                  <div className="mr-auto bg-slate-800/80 p-3 rounded-xl text-xs text-indigo-300 flex items-center gap-2">
-                    <RefreshCw className="h-3.5 w-3.5 animate-spin text-indigo-400" /> Auditing operational databases...
-                  </div>
-                )}
-              </div>
-
-              {/* Prompt Chips */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px]">
-                {[
-                  'Draft Fee Arrears Collection Notice',
-                  'Draft Staff Punctuality Memo',
-                  'What is our projected cash flow for next month?',
-                  'Which grade has highest academic gap?'
-                ].map((suggest, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleAiAuditQuery(suggest)}
-                    className="whitespace-nowrap px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-indigo-200 transition-colors font-medium cursor-pointer"
-                  >
-                    {suggest}
-                  </button>
-                ))}
-              </div>
-
-              {/* AI Input Form */}
-              <div className="flex gap-2 pt-1">
-                <Input
-                  placeholder="Ask Dr. GAM AI Auditor..."
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAiAuditQuery()}
-                  className="text-xs bg-slate-950/90 border-slate-800 text-white placeholder:text-slate-500 rounded-xl focus:border-indigo-500"
-                />
-                <Button 
-                  onClick={() => handleAiAuditQuery()}
-                  disabled={isAiAuditing}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs px-4 cursor-pointer"
-                >
-                  Ask AI
-                </Button>
-              </div>
-
-            </div>
-
-            <Button variant="ghost" onClick={() => setIsAiDrawerOpen(false)} className="w-full text-slate-400 hover:text-white text-xs mt-4">
-              Close AI Drawer
-            </Button>
-
-          </div>
-        </div>
-      )}
-
+      {/* ─── COLLAPSIBLE EXECUTIVE AI DRAWER (Persistent Dock & Split View Support) ─── */}
+      <ExecutiveAIAuditorDrawer
+        isOpen={isAiDrawerOpen}
+        onClose={() => setIsAiDrawerOpen(false)}
+        isPinned={isAiDrawerPinned}
+        onTogglePin={() => setIsAiDrawerPinned(prev => !prev)}
+        aiCredits={aiCredits}
+        aiChatHistory={aiChatHistory}
+        isAiAuditing={isAiAuditing}
+        aiPrompt={aiPrompt}
+        setAiPrompt={setAiPrompt}
+        onSendQuery={handleAiAuditQuery}
+        onOpenDraftTemplate={handleOpenDraftTemplate}
+        telemetry={telemetry}
+      />
       {/* ─────────────────────────────────────────────────────────────
           ZONE 2: TIER 1 HERO METRIC BAR (5 Core Vital Signs)
           ───────────────────────────────────────────────────────────── */}
