@@ -1925,8 +1925,10 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 transaction.set(paymentDocRef, paymentData);
             });
 
-            // Send DM payment notification to parent(s) asynchronously
+            // Send DM and SMS payment notification to parent(s) asynchronously
             if (record.studentId) {
+                const idToken = await user.getIdToken();
+                const remBal = Math.max(0, record.billedAmount - (newAmountPaid || 0) - (record.waiverAmount || 0));
                 sendPaymentNotificationToParent({
                     firestore,
                     schoolId,
@@ -1938,9 +1940,11 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                     paymentMethod: values.method,
                     senderUid: user.uid,
                     senderName: user.displayName || user.email || 'Staff',
-                    senderRole: 'Accountant'
+                    senderRole: 'Accountant',
+                    idToken,
+                    remainingBalance: remBal
                 }).catch(err => {
-                    console.error("Failed to send parent payment notification DM:", err);
+                    console.error("Failed to send parent payment notification:", err);
                 });
             }
 

@@ -122,6 +122,8 @@ export async function generateNextReceiptId(firestore: Firestore, schoolId: stri
   return `RCT-${year}-${paddedNumber}`;
 }
 
+import { sendSchoolSMSAction } from '@/app/actions/sms';
+
 export interface PaymentNotificationConfig {
   firestore: Firestore;
   schoolId: string;
@@ -134,6 +136,8 @@ export interface PaymentNotificationConfig {
   senderUid: string;
   senderName: string;
   senderRole?: string;
+  idToken?: string;
+  remainingBalance?: number;
 }
 
 /**
@@ -173,76 +177,134 @@ export async function sendPaymentNotificationToParent(config: PaymentNotificatio
     }
 
     let parentCount = 0;
+    const candidatePhones: Array<{ name: string; phone: string }> = [];
 
-    for (const parentDoc of parentsSnap.docs) {
-      const parentData = parentDoc.data();
-      const parentId = parentDoc.id;
-      const parentName = `${parentData.firstName || ''} ${parentData.lastName || ''}`.trim() || 'Parent';
+    if (!parentsSnap.empty) {
+      for (const parentDoc of parentsSnap.docs) {
+        const parentData = parentDoc.data();
+        const parentId = parentDoc.id;
+        const parentName = `${parentData.firstName || ''} ${parentData.lastName || ''}`.trim() || 'Parent';
 
-      // 3. Find if there's an existing 1-on-1 chat
-      const chatsQuery = query(
-        collection(firestore, 'direct_messages'),
-        where('schoolId', '==', schoolId),
-        where('participants', 'array-contains', parentId)
-      );
-      const chatsSnap = await getDocs(chatsQuery);
-      
-      let chatId = '';
-      const existingChat = chatsSnap.docs.find(d => {
-        const data = d.data();
-        return !data.isGroup && data.participants.includes(senderUid);
-      });
+        const rawPhone = parentData.phone || parentData.phoneNumber || parentData.telephone || parentData.contactNumber;
+        if (rawPhone) {
+          candidatePhones.push({ name: parentName, phone: String(rawPhone).trim() });
+        }
 
-      if (existingChat) {
-        chatId = existingChat.id;
-      } else {
-        // Create new direct chat
-        const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
-          participants: [senderUid, parentId],
-          participantDetails: {
-            [senderUid]: { name: senderName, role: senderRole, photoURL: null },
-            [parentId]: { name: parentName, role: 'Parent', photoURL: parentData.photoURL || null }
-          },
-          lastMessage: 'Receipt acknowledged',
-          lastMessageTime: serverTimestamp(),
-          unreadCount: { [parentId]: 1, [senderUid]: 0 },
-          schoolId,
-          isGroup: false
+        // 3. Find if there's an existing 1-on-1 chat
+        const chatsQuery = query(
+          collection(firestore, 'direct_messages'),
+          where('schoolId', '==', schoolId),
+          where('participants', 'array-contains', parentId)
+        );
+        const chatsSnap = await getDocs(chatsQuery);
+        
+        let chatId = '';
+        const existingChat = chatsSnap.docs.find(d => {
+          const data = d.data();
+          return !data.isGroup && data.participants.includes(senderUid);
         });
-        chatId = newChatRef.id;
+
+        if (existingChat) {
+          chatId = existingChat.id;
+        } else {
+          // Create new direct chat
+          const newChatRef = await addDoc(collection(firestore, 'direct_messages'), {
+            participants: [senderUid, parentId],
+            participantDetails: {
+              [senderUid]: { name: senderName, role: senderRole, photoURL: null },
+              [parentId]: { name: parentName, role: 'Parent', photoURL: parentData.photoURL || null }
+            },
+            lastMessage: 'Receipt acknowledged',
+            lastMessageTime: serverTimestamp(),
+            unreadCount: { [parentId]: 1, [senderUid]: 0 },
+            schoolId,
+            isGroup: false
+          });
+          chatId = newChatRef.id;
+        }
+
+        // 4. Construct direct message content
+        const msgText = `Dear ${parentName},\n\n` +
+          `This is to acknowledge the receipt of your payment of GH₵${paymentAmount.toFixed(2)} ` +
+          `towards ${feeType} for your ward, ${studentName}.\n\n` +
+          `Receipt Reference: ${receiptId}\n` +
+          `Payment Method: ${paymentMethod}\n\n` +
+          `Thank you for your payment. Please contact the accountant, administrator, or the director in case of any discrepancy.\n\n` +
+          `Best regards,\n` +
+          `${senderName} (${senderRole})\n` +
+          `${schoolName}`;
+
+        // 5. Send message
+        await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), {
+          text: msgText,
+          senderId: senderUid,
+          createdAt: serverTimestamp(),
+          type: 'text',
+          status: 'sent'
+        });
+
+        // 6. Update direct_messages metadata
+        const chatRef = doc(firestore, 'direct_messages', chatId);
+        const chatUpdate: any = {
+          lastMessage: `Payment acknowledged: GH₵${paymentAmount.toFixed(2)}`,
+          lastMessageTime: serverTimestamp()
+        };
+        
+        chatUpdate[`unreadCount.${parentId}`] = increment(1);
+        await updateDoc(chatRef, chatUpdate);
+
+        parentCount++;
       }
+    }
 
-      // 4. Construct direct message content
-      const msgText = `Dear ${parentName},\n\n` +
-        `This is to acknowledge the receipt of your payment of GH₵${paymentAmount.toFixed(2)} ` +
-        `towards ${feeType} for your ward, ${studentName}.\n\n` +
-        `Receipt Reference: ${receiptId}\n` +
-        `Payment Method: ${paymentMethod}\n\n` +
-        `Thank you for your payment. Please contact the accountant, administrator, or the director in case of any discrepancy.\n\n` +
-        `Best regards,\n` +
-        `${senderName} (${senderRole})\n` +
-        `${schoolName}`;
+    // Fallback: Check student document for parent phone if none found in parents collection
+    if (candidatePhones.length === 0 && studentId) {
+      try {
+        const studentSnap = await getDoc(doc(firestore, 'students', studentId));
+        if (studentSnap.exists()) {
+          const sData = studentSnap.data();
+          const fallbackPhone = sData?.parentPhone || sData?.guardianPhone || sData?.emergencyPhone;
+          if (fallbackPhone) {
+            candidatePhones.push({
+              name: sData?.parentName || sData?.guardianName || 'Parent',
+              phone: String(fallbackPhone).trim()
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch student fallback phone for SMS receipt:', err);
+      }
+    }
 
-      // 5. Send message
-      await addDoc(collection(firestore, `direct_messages/${chatId}/messages`), {
-        text: msgText,
-        senderId: senderUid,
-        createdAt: serverTimestamp(),
-        type: 'text',
-        status: 'sent'
+    // 7. Dispatch SMS receipt to connected school SMS API (Arkesel / Hubtel)
+    let token = config.idToken;
+    if (!token && typeof window !== 'undefined') {
+      try {
+        const { getAuth } = await import('firebase/auth');
+        token = await getAuth().currentUser?.getIdToken();
+      } catch {
+        // Safe fallback
+      }
+    }
+
+    if (token && candidatePhones.length > 0) {
+      const balanceSnippet = config.remainingBalance !== undefined && config.remainingBalance > 0
+        ? ` Bal: GH₵${config.remainingBalance.toFixed(2)}.`
+        : (config.remainingBalance === 0 ? ` Paid in full.` : '');
+
+      candidatePhones.forEach(({ name, phone }) => {
+        const smsContent = `Receipt Ref: ${receiptId}. Payment of GH₵${paymentAmount.toFixed(2)} received for ${studentName} (${feeType}). Method: ${paymentMethod}.${balanceSnippet} Thank you! - ${schoolName}`;
+
+        sendSchoolSMSAction(schoolId, phone, smsContent, token).then(res => {
+          if (res?.success) {
+            console.log(`[SMS Payment Receipt] Sent to ${phone} for ${studentName}`);
+          } else {
+            console.log(`[SMS Payment Receipt] Skipped/Status: ${res?.error}`);
+          }
+        }).catch(err => {
+          console.warn(`[SMS Payment Receipt] Dispatch error:`, err);
+        });
       });
-
-      // 6. Update direct_messages metadata
-      const chatRef = doc(firestore, 'direct_messages', chatId);
-      const chatUpdate: any = {
-        lastMessage: `Payment acknowledged: GH₵${paymentAmount.toFixed(2)}`,
-        lastMessageTime: serverTimestamp()
-      };
-      
-      chatUpdate[`unreadCount.${parentId}`] = increment(1);
-      await updateDoc(chatRef, chatUpdate);
-
-      parentCount++;
     }
 
     return { success: true, parentCount };

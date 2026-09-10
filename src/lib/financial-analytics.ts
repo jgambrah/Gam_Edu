@@ -104,6 +104,8 @@ export interface FinancialMetricsResult {
   // Collections by Period
   collectedToday: number;
   todayCount: number;
+  collectedYesterday?: number;
+  sevenDayDailyAverage?: number;
   collectedThisMonth: number;
   collectedThisTerm: number;
   collectedThisYear: number;
@@ -304,6 +306,9 @@ export function computeFinancialMetrics({
 }: FinancialMetricsFilterOptions): FinancialMetricsResult {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000);
+  const endOfYesterday = new Date(startOfToday.getTime() - 1);
+  const sevenDaysAgo = new Date(startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000);
   const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
   const startOfThisYear = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
   const termBounds = getActiveTermBounds(budgets, schoolSettings);
@@ -348,6 +353,8 @@ export function computeFinancialMetrics({
 
   let collectedToday = 0;
   let todayCount = 0;
+  let collectedYesterday = 0;
+  let collectedPast7Days = 0;
   let collectedThisMonth = 0;
   let collectedThisTerm = 0;
   let collectedThisYear = 0;
@@ -414,6 +421,11 @@ export function computeFinancialMetrics({
     if (parsedDate && d >= startOfToday) {
       collectedToday += amount;
       todayCount++;
+    } else if (d >= startOfYesterday && d <= endOfYesterday) {
+      collectedYesterday += amount;
+    }
+    if (d >= sevenDaysAgo && d < startOfToday) {
+      collectedPast7Days += amount;
     }
     if (d >= startOfThisMonth) collectedThisMonth += amount;
     if (isInTerm) collectedThisTerm += amount;
@@ -719,6 +731,8 @@ export function computeFinancialMetrics({
   return {
     collectedToday,
     todayCount,
+    collectedYesterday,
+    sevenDayDailyAverage: collectedPast7Days > 0 ? Math.round(collectedPast7Days / 7) : 0,
     collectedThisMonth,
     collectedThisTerm,
     collectedThisYear,

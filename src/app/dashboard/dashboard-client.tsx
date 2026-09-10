@@ -83,8 +83,9 @@ import { FinancialDashboardView } from './financial-dashboard-view';
 import { ParentDashboard } from './parent-dashboard-view';
 import { ParentSatisfactionDashboardView } from './parent-satisfaction-dashboard-view';
 import { TeacherDashboardView } from '@/components/dashboard/TeacherDashboardView';
-import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
 import { ExecutiveDirectorCockpit } from '@/components/dashboard/ExecutiveDirectorCockpit';
+import { ExecutiveCockpitHeader } from '@/components/dashboard/ExecutiveCockpitHeader';
+import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
 import { computeFinancialMetrics } from '@/lib/financial-analytics';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
@@ -3716,6 +3717,47 @@ function DirectorDashboard({
     return domainTabs.find(d => d.subTabs.some(st => st.id === activeTab) || d.id === activeTab) || domainTabs[0];
   }, [domainTabs, activeTab]);
 
+  // Dynamic Campus / Branch Resolution (Hooked to school data, non-hardcoded)
+  const availableCampuses = useMemo(() => {
+    const raw = schoolData?.campuses || schoolData?.branches || schoolSettings?.campuses || schoolSettings?.branches || profile?.campuses || profile?.branches || [];
+    if (Array.isArray(raw) && raw.length > 0) {
+      const list = raw.map((c: any, idx: number) => ({
+        id: c.id || c.code || `campus-${idx}`,
+        name: typeof c === 'string' ? c : (c.name || c.title || `Campus ${idx + 1}`),
+        code: c.code || (typeof c === 'string' ? c.substring(0, 3).toUpperCase() : `C${idx + 1}`),
+        badge: c.isMain || idx === 0 ? 'Main Campus' : 'Branch'
+      }));
+
+      if (list.length > 1) {
+        list.push({
+          id: 'all',
+          name: 'All Campuses (Consolidated Group View)',
+          code: 'ALL',
+          badge: 'Group View'
+        });
+      }
+      return list;
+    }
+
+    const schoolName = profile?.schoolName || schoolData?.name || "Main Campus";
+    return [
+      {
+        id: 'main',
+        name: schoolName.toLowerCase().includes('campus') ? schoolName : `${schoolName} (Main Campus)`,
+        code: schoolName.substring(0, 3).toUpperCase(),
+        badge: 'Main Campus'
+      }
+    ];
+  }, [schoolData, schoolSettings, profile]);
+
+  const [selectedCampus, setSelectedCampus] = useState<string>(availableCampuses[0]?.name || 'Main Campus');
+
+  useEffect(() => {
+    if (availableCampuses.length > 0) {
+      setSelectedCampus(availableCampuses[0].name);
+    }
+  }, [availableCampuses]);
+
   const handleDomainSelect = (domain: typeof domainTabs[number]) => {
     if (domain.subTabs.length > 0) {
       const isAlreadyInDomain = domain.subTabs.some(st => st.id === activeTab);
@@ -3728,20 +3770,17 @@ function DirectorDashboard({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 relative pb-16">
-      {/* Header bar */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/10 text-indigo-600 px-3.5 py-1.5 rounded-full uppercase">Director Suite</span>
-          </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Executive <span className="text-indigo-600">Console</span></h1>
-        </div>
-        
-        {/* Navigation & Controls */}
-        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+    <div className="space-y-4 animate-in fade-in duration-500 relative pb-16">
+      {/* Consolidated Clean Header for Executive Cockpit vs Legacy Domain Header for other tabs */}
+      {activeTab === 'overview' ? (
+        <ExecutiveCockpitHeader
+          campuses={availableCampuses}
+          selectedCampus={selectedCampus}
+          onSelectCampus={setSelectedCampus}
+          onExportPdf={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
+        >
           {/* Primary Domain Segmented Control */}
-          <div className="flex flex-wrap p-1.5 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-inner gap-1">
+          <div className="flex flex-wrap p-1 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-inner gap-1">
             {domainTabs.map((domain) => {
               const isSelected = activeDomain.id === domain.id;
               return (
@@ -3749,9 +3788,9 @@ function DirectorDashboard({
                   key={domain.id}
                   onClick={() => handleDomainSelect(domain)}
                   className={cn(
-                    "px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
+                    "px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
                     isSelected 
-                      ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02] border border-indigo-100/50"
+                      ? "bg-white text-indigo-600 shadow-xs font-black scale-[1.01] border border-indigo-100/50"
                       : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
                   )}
                 >
@@ -3764,18 +3803,62 @@ function DirectorDashboard({
           {/* AI Auditor Trigger Button */}
           <Button 
             onClick={handleRunAudit}
-            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-11 px-6 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden shrink-0"
+            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-9 px-4 shadow-md shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden shrink-0"
           >
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             <Sparkles className="h-4 w-4 animate-pulse group-hover:rotate-12 transition-transform" />
             <span className="text-xs uppercase tracking-wider">AI Auditor</span>
           </Button>
+        </ExecutiveCockpitHeader>
+      ) : (
+        /* Legacy Domain Header for other feature tabs */
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/10 text-indigo-600 px-3.5 py-1.5 rounded-full uppercase">Director Suite</span>
+            </div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Executive <span className="text-indigo-600">Console</span></h1>
+          </div>
+          
+          {/* Navigation & Controls */}
+          <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+            {/* Primary Domain Segmented Control */}
+            <div className="flex flex-wrap p-1.5 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-inner gap-1">
+              {domainTabs.map((domain) => {
+                const isSelected = activeDomain.id === domain.id;
+                return (
+                  <button
+                    key={domain.id}
+                    onClick={() => handleDomainSelect(domain)}
+                    className={cn(
+                      "px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
+                      isSelected 
+                        ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02] border border-indigo-100/50"
+                        : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
+                    )}
+                  >
+                    {domain.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* AI Auditor Trigger Button */}
+            <Button 
+              onClick={handleRunAudit}
+              className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-11 px-6 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden shrink-0"
+            >
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <Sparkles className="h-4 w-4 animate-pulse group-hover:rotate-12 transition-transform" />
+              <span className="text-xs uppercase tracking-wider">AI Auditor</span>
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Secondary Sub-Pill Navigation (Rendered when active domain has sub-tabs) */}
-      {activeDomain.subTabs.length > 0 && (
-        <div className="-mt-3 mb-1 flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200 w-fit">
+      {activeDomain.subTabs.length > 1 && (
+        <div className="-mt-1 mb-1 flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200 w-fit">
           {activeDomain.subTabs.map((st) => (
             <button
               key={st.id}
@@ -3793,8 +3876,8 @@ function DirectorDashboard({
         </div>
       )}
 
-      {/* Standardized Reusable Hero Banner */}
-      {activeTab !== 'academics' && (() => {
+      {/* Standardized Reusable Hero Banner (Only for non-overview tabs to eliminate vertical sprawl) */}
+      {activeTab !== 'academics' && activeTab !== 'overview' && (() => {
         const tabBanners: Record<string, { tag: string; title: string; description: string; icon: any }> = {
           overview: {
             tag: "OVERVIEW HUB",
@@ -3910,6 +3993,9 @@ function DirectorDashboard({
           <div className="space-y-8 animate-in fade-in duration-300">
             <ExecutiveDirectorCockpit
               profile={profile}
+              campuses={availableCampuses}
+              selectedCampus={selectedCampus}
+              onSelectCampus={setSelectedCampus}
               students={students}
               staff={staff}
               classes={classes}

@@ -352,7 +352,8 @@ export default function BulkDailyReceiptsPage() {
 
             await batch.commit();
 
-            // Notify parents for each processed payment asynchronously
+            // Notify parents for each processed payment asynchronously via DM and SMS
+            const currentToken = await user.getIdToken().catch(() => undefined);
             paymentsToNotify.forEach(p => {
                 sendPaymentNotificationToParent({
                     firestore,
@@ -365,7 +366,8 @@ export default function BulkDailyReceiptsPage() {
                     paymentMethod: 'Cash',
                     senderUid: user.uid,
                     senderName: user.displayName || user.email || 'Accountant',
-                    senderRole: 'Accountant'
+                    senderRole: 'Accountant',
+                    idToken: currentToken
                 }).catch(err => {
                     console.error(`Failed to send parent notification for student ${p.studentName}:`, err);
                 });
