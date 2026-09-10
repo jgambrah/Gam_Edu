@@ -3462,6 +3462,102 @@ export default function AccountsPage() {
   const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(recordsQuery);
   const isLedgerLoaded = Boolean(ledgerMode === 'full-school' && !isLoadingRecords && records);
 
+  // Daily audit quota for loading full-school financial ledger (protects Firestore read limits)
+  // Quota: 1 audit/day for Accountants, 2 audits/day for Directors/Administrators
+  const isDirectorOrAdmin = Boolean(canApprove);
+  const userMaxAudits = isDirectorOrAdmin ? 2 : 1;
+  const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
+
+  const currentQuota = useMemo(() => {
+    const q = schoolSettings?.dailyLedgerAuditQuota;
+    if (q && q.date === todayStr) {
+      return {
+        date: todayStr,
+        accountantAudits: typeof q.accountantAudits === 'number' ? q.accountantAudits : 0,
+        directorAudits: typeof q.directorAudits === 'number' ? q.directorAudits : 0,
+        lastAuditedBy: q.lastAuditedBy,
+        lastAuditedRole: q.lastAuditedRole,
+      };
+    }
+    return {
+      date: todayStr,
+      accountantAudits: 0,
+      directorAudits: 0,
+      lastAuditedBy: undefined,
+      lastAuditedRole: undefined,
+    };
+  }, [schoolSettings?.dailyLedgerAuditQuota, todayStr]);
+
+  const userAuditsUsed = isDirectorOrAdmin ? currentQuota.directorAudits : currentQuota.accountantAudits;
+  const userAuditsRemaining = Math.max(0, userMaxAudits - userAuditsUsed);
+  const isQuotaExhausted = userAuditsRemaining <= 0;
+  const [isUpdatingQuota, setIsUpdatingQuota] = useState(false);
+
+  const handleRequestFullLedger = useCallback(async () => {
+    if (ledgerMode === 'full-school') return;
+
+    if (isQuotaExhausted) {
+      toast({
+        variant: 'destructive',
+        title: 'Daily Audit Limit Reached',
+        description: isDirectorOrAdmin
+          ? `Your school has reached the daily limit of ${userMaxAudits} full-ledger audits for Directors/Administrators. Instant summaries and student balance lookups remain active.`
+          : `Accountants are limited to ${userMaxAudits} full-ledger audit per day to prevent database read spikes. Contact your Director if an additional school-wide audit is urgently required today.`,
+      });
+      return;
+    }
+
+    if (!firestore || !schoolId) {
+      setLedgerMode('full-school');
+      return;
+    }
+
+    setIsUpdatingQuota(true);
+    try {
+      const today = format(new Date(), 'yyyy-MM-dd');
+      const latestQuota = schoolSettings?.dailyLedgerAuditQuota?.date === today
+        ? schoolSettings.dailyLedgerAuditQuota
+        : { accountantAudits: 0, directorAudits: 0 };
+
+      const newAccountantAudits = isDirectorOrAdmin
+        ? (latestQuota.accountantAudits || 0)
+        : (latestQuota.accountantAudits || 0) + 1;
+      const newDirectorAudits = isDirectorOrAdmin
+        ? (latestQuota.directorAudits || 0) + 1
+        : (latestQuota.directorAudits || 0);
+
+      await setDoc(
+        doc(firestore, 'schoolSettings', schoolId),
+        {
+          dailyLedgerAuditQuota: {
+            date: today,
+            accountantAudits: newAccountantAudits,
+            directorAudits: newDirectorAudits,
+            lastAuditedBy: user?.displayName || user?.email || (isDirectorOrAdmin ? 'Director' : 'Accountant'),
+            lastAuditedRole: isDirectorOrAdmin ? 'Director/Admin' : 'Accountant',
+            lastAuditedAt: serverTimestamp(),
+          },
+        },
+        { merge: true }
+      );
+
+      setLedgerMode('full-school');
+      toast({
+        title: 'Full School Ledger Loaded',
+        description: `Full ledger loaded successfully. You have ${Math.max(0, userAuditsRemaining - 1)} audit(s) remaining today.`,
+      });
+    } catch (err: any) {
+      console.error('Error recording daily audit quota:', err);
+      setLedgerMode('full-school');
+      toast({
+        title: 'Full School Ledger Loaded',
+        description: 'School financial records retrieved.',
+      });
+    } finally {
+      setIsUpdatingQuota(false);
+    }
+  }, [ledgerMode, isQuotaExhausted, isDirectorOrAdmin, userMaxAudits, firestore, schoolId, schoolSettings?.dailyLedgerAuditQuota, user?.displayName, user?.email, userAuditsRemaining, toast]);
+
   // Pre-aggregated single summary document subscriptions (cost: 1 Firestore read)
   // Primary: dashboard_summaries/{schoolId} (central server-aggregated cache)
   const { summary: dashboardSummary, isLoading: isLoadingDashboardSummary } = useDashboardSummary(schoolId);
@@ -4526,34 +4622,46 @@ export default function AccountsPage() {
                                             School-wide Financial Analytics are Unloaded
                                         </h4>
                                         <p className="text-xs text-slate-500 leading-relaxed">
-                                            Aggregating 17,000+ records consumes read quota. Load on-demand only when generating debt aging, fee stream analytics, or aged debtor reports.
+                                            Aggregating 17,000+ records consumes high read quota. Daily quota: 1 audit/day for Accountants, 2 audits/day for Directors. Instant summaries and student balance lookups remain free and unlimited.
                                         </p>
                                     </div>
-                                    <div className="pt-2">
+                                    <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
                                         <Button
-                                            onClick={() => setLedgerMode('full-school')}
-                                            disabled={isLoadingRecords}
-                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 text-xs cursor-pointer"
+                                            onClick={handleRequestFullLedger}
+                                            disabled={isLoadingRecords || isUpdatingQuota || (isQuotaExhausted && ledgerMode !== 'full-school')}
+                                            className={cn(
+                                                "font-bold rounded-xl h-11 px-7 shadow-md transition-all gap-2 text-xs cursor-pointer",
+                                                isQuotaExhausted && ledgerMode !== 'full-school'
+                                                    ? "bg-slate-200 text-slate-500 hover:bg-slate-200 cursor-not-allowed border border-slate-300 shadow-none"
+                                                    : "bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-lg"
+                                            )}
                                         >
-                                            {isLoadingRecords ? (
+                                            {isLoadingRecords || isUpdatingQuota ? (
                                                 <>
                                                     <Loader2 className="h-4 w-4 animate-spin" />
                                                     <span>Loading School Ledger (Computing Analytics)...</span>
                                                 </>
+                                            ) : isQuotaExhausted && ledgerMode !== 'full-school' ? (
+                                                <>
+                                                    <ShieldAlert className="h-4 w-4 text-amber-600" />
+                                                    <span>Daily Limit Reached (0/{userMaxAudits} audits remaining)</span>
+                                                </>
                                             ) : (
                                                 <>
                                                     <Database className="h-4 w-4" />
-                                                    <span>Load School Ledger (Compute Analytics)</span>
+                                                    <span>Load School Ledger ({userAuditsRemaining}/{userMaxAudits} audits left today)</span>
                                                 </>
                                             )}
                                         </Button>
                                     </div>
                                     <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-400 pt-3 border-t border-slate-100 w-full max-w-sm">
-                                        <span>⚡ 0 upfront reads</span>
+                                        <span>⚡ {userAuditsRemaining}/{userMaxAudits} audits left today</span>
                                         <span>•</span>
-                                        <span>Debt aging brackets</span>
+                                        <span>0 upfront reads</span>
                                         <span>•</span>
-                                        <span>Fee stream metrics</span>
+                                        <span>Debt aging</span>
+                                        <span>•</span>
+                                        <span>Fee streams</span>
                                     </div>
                                 </div>
                             ) : (
@@ -4804,12 +4912,23 @@ export default function AccountsPage() {
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
-                                                    onClick={() => setLedgerMode('full-school')}
-                                                    disabled={isLoadingRecords}
-                                                    className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                                    onClick={handleRequestFullLedger}
+                                                    disabled={isLoadingRecords || isUpdatingQuota || (isQuotaExhausted && ledgerMode !== 'full-school')}
+                                                    className={cn(
+                                                        "h-7 text-[11px] font-semibold shadow-xs",
+                                                        isQuotaExhausted && ledgerMode !== 'full-school'
+                                                            ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                                                            : "bg-white text-blue-700 border-blue-300 hover:bg-blue-50"
+                                                    )}
                                                 >
-                                                    {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
-                                                    Load School Ledger
+                                                    {isLoadingRecords || isUpdatingQuota ? (
+                                                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                                    ) : isQuotaExhausted && ledgerMode !== 'full-school' ? (
+                                                        <ShieldAlert className="h-3 w-3 mr-1 text-amber-500" />
+                                                    ) : (
+                                                        <Database className="h-3 w-3 mr-1 text-blue-600" />
+                                                    )}
+                                                    {isQuotaExhausted && ledgerMode !== 'full-school' ? `Limit Reached (0/${userMaxAudits})` : `Load School Ledger (${userAuditsRemaining}/${userMaxAudits})`}
                                                 </Button>
                                             </div>
                                         )}
@@ -4887,19 +5006,29 @@ export default function AccountsPage() {
                                         </div>
                                         <Button
                                             size="sm"
-                                            onClick={() => setLedgerMode('full-school')}
-                                            disabled={isLoadingRecords}
-                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-9 px-4 rounded-lg shrink-0 text-xs shadow-xs cursor-pointer"
+                                            onClick={handleRequestFullLedger}
+                                            disabled={isLoadingRecords || isUpdatingQuota || (isQuotaExhausted && ledgerMode !== 'full-school')}
+                                            className={cn(
+                                                "h-9 px-4 rounded-lg shrink-0 text-xs shadow-xs font-bold transition-all",
+                                                isQuotaExhausted && ledgerMode !== 'full-school'
+                                                    ? "bg-slate-200 text-slate-500 hover:bg-slate-200 cursor-not-allowed border border-slate-300"
+                                                    : "bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+                                            )}
                                         >
-                                            {isLoadingRecords ? (
+                                            {isLoadingRecords || isUpdatingQuota ? (
                                                 <>
                                                     <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
                                                     <span>Loading Full Ledger...</span>
                                                 </>
+                                            ) : isQuotaExhausted && ledgerMode !== 'full-school' ? (
+                                                <>
+                                                    <ShieldAlert className="h-3.5 w-3.5 mr-1.5 text-amber-600" />
+                                                    <span>Daily Limit Reached (0/{userMaxAudits})</span>
+                                                </>
                                             ) : (
                                                 <>
                                                     <Database className="h-3.5 w-3.5 mr-1.5" />
-                                                    <span>Load Full School Ledger / Aged Debt Report</span>
+                                                    <span>Load Full School Ledger ({userAuditsRemaining}/{userMaxAudits} left)</span>
                                                 </>
                                             )}
                                         </Button>
@@ -4931,12 +5060,23 @@ export default function AccountsPage() {
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => setLedgerMode('full-school')}
-                                            disabled={isLoadingRecords}
-                                            className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                            onClick={handleRequestFullLedger}
+                                            disabled={isLoadingRecords || isUpdatingQuota || (isQuotaExhausted && ledgerMode !== 'full-school')}
+                                            className={cn(
+                                                "h-7 text-[11px] font-semibold shadow-xs",
+                                                isQuotaExhausted && ledgerMode !== 'full-school'
+                                                    ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                                                    : "bg-white text-blue-700 border-blue-300 hover:bg-blue-50"
+                                            )}
                                         >
-                                            {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
-                                            Load School Ledger
+                                            {isLoadingRecords || isUpdatingQuota ? (
+                                                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                            ) : isQuotaExhausted && ledgerMode !== 'full-school' ? (
+                                                <ShieldAlert className="h-3 w-3 mr-1 text-amber-500" />
+                                            ) : (
+                                                <Database className="h-3 w-3 mr-1 text-blue-600" />
+                                            )}
+                                            {isQuotaExhausted && ledgerMode !== 'full-school' ? `Limit Reached (0/${userMaxAudits})` : `Load School Ledger (${userAuditsRemaining}/${userMaxAudits})`}
                                         </Button>
                                     </div>
                                 ) : (
@@ -5021,12 +5161,23 @@ export default function AccountsPage() {
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => setLedgerMode('full-school')}
-                                            disabled={isLoadingRecords}
-                                            className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                            onClick={handleRequestFullLedger}
+                                            disabled={isLoadingRecords || isUpdatingQuota || (isQuotaExhausted && ledgerMode !== 'full-school')}
+                                            className={cn(
+                                                "h-7 text-[11px] font-semibold shadow-xs",
+                                                isQuotaExhausted && ledgerMode !== 'full-school'
+                                                    ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                                                    : "bg-white text-blue-700 border-blue-300 hover:bg-blue-50"
+                                            )}
                                         >
-                                            {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
-                                            Load School Ledger
+                                            {isLoadingRecords || isUpdatingQuota ? (
+                                                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                            ) : isQuotaExhausted && ledgerMode !== 'full-school' ? (
+                                                <ShieldAlert className="h-3 w-3 mr-1 text-amber-500" />
+                                            ) : (
+                                                <Database className="h-3 w-3 mr-1 text-blue-600" />
+                                            )}
+                                            {isQuotaExhausted && ledgerMode !== 'full-school' ? `Limit Reached (0/${userMaxAudits})` : `Load School Ledger (${userAuditsRemaining}/${userMaxAudits})`}
                                         </Button>
                                     </div>
                                 ) : (
@@ -5116,12 +5267,23 @@ export default function AccountsPage() {
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => setLedgerMode('full-school')}
-                                            disabled={isLoadingRecords}
-                                            className="h-7 text-[11px] bg-white text-blue-700 border-blue-300 hover:bg-blue-50 font-semibold shadow-xs"
+                                            onClick={handleRequestFullLedger}
+                                            disabled={isLoadingRecords || isUpdatingQuota || (isQuotaExhausted && ledgerMode !== 'full-school')}
+                                            className={cn(
+                                                "h-7 text-[11px] font-semibold shadow-xs",
+                                                isQuotaExhausted && ledgerMode !== 'full-school'
+                                                    ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                                                    : "bg-white text-blue-700 border-blue-300 hover:bg-blue-50"
+                                            )}
                                         >
-                                            {isLoadingRecords ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Database className="h-3 w-3 mr-1 text-blue-600" />}
-                                            Load School Ledger
+                                            {isLoadingRecords || isUpdatingQuota ? (
+                                                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                            ) : isQuotaExhausted && ledgerMode !== 'full-school' ? (
+                                                <ShieldAlert className="h-3 w-3 mr-1 text-amber-500" />
+                                            ) : (
+                                                <Database className="h-3 w-3 mr-1 text-blue-600" />
+                                            )}
+                                            {isQuotaExhausted && ledgerMode !== 'full-school' ? `Limit Reached (0/${userMaxAudits})` : `Load School Ledger (${userAuditsRemaining}/${userMaxAudits})`}
                                         </Button>
                                     </div>
                                 ) : classCollectionsStats.length === 0 ? (
