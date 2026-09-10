@@ -217,15 +217,51 @@ export function ExecutiveDirectorCockpit({
   }, [allArrearsList]);
 
   const displayedArrearsList = useMemo(() => {
-    if (!selectedAgingCategory) return highArrearsList;
-    return allArrearsList.filter(item => {
-      if (selectedAgingCategory === '< 30 Days') return item.daysOverdue <= 30;
-      if (selectedAgingCategory === '30 - 60 Days') return item.daysOverdue > 30 && item.daysOverdue <= 60;
-      if (selectedAgingCategory === '60 - 90 Days') return item.daysOverdue > 60 && item.daysOverdue <= 90;
-      if (selectedAgingCategory === '> 90 Days') return item.daysOverdue > 90;
+    const rawRoster = unifiedMetrics.arrearsRoster || [];
+    const targetItems = rawRoster.filter((item: any) => {
+      const days = Number(item.daysOverdue ?? 0);
+      if (!selectedAgingCategory) return days > 60;
+      if (selectedAgingCategory === '< 30 Days') return days <= 30;
+      if (selectedAgingCategory === '30 - 60 Days') return days > 30 && days <= 60;
+      if (selectedAgingCategory === '60 - 90 Days') return days > 60 && days <= 90;
+      if (selectedAgingCategory === '> 90 Days') return days > 90;
       return true;
     });
-  }, [allArrearsList, highArrearsList, selectedAgingCategory]);
+
+    const accountMap = new Map<string, {
+      studentId: string;
+      studentName: string;
+      className: string;
+      amount: number;
+      daysOverdue: number;
+      maxDaysOverdue: number;
+      feeType: string;
+      invoiceCount: number;
+    }>();
+
+    targetItems.forEach((item: any) => {
+      const accId = String(item.studentId || item.studentName || item.id || 'std').trim();
+      if (!accountMap.has(accId)) {
+        accountMap.set(accId, {
+          studentId: item.studentId,
+          studentName: item.studentName || 'Student',
+          className: item.className || 'Class Stream',
+          amount: 0,
+          daysOverdue: Number(item.daysOverdue) || 0,
+          maxDaysOverdue: Number(item.daysOverdue) || 0,
+          feeType: item.feeType || 'Tuition',
+          invoiceCount: 0,
+        });
+      }
+      const entry = accountMap.get(accId)!;
+      entry.amount += Number(item.amount) || 0;
+      entry.daysOverdue = Math.max(entry.daysOverdue, Number(item.daysOverdue) || 0);
+      entry.maxDaysOverdue = Math.max(entry.maxDaysOverdue, Number(item.daysOverdue) || 0);
+      entry.invoiceCount++;
+    });
+
+    return Array.from(accountMap.values()).sort((a, b) => b.amount - a.amount);
+  }, [unifiedMetrics.arrearsRoster, selectedAgingCategory]);
 
   const totalHighArrearsSum = useMemo(() => {
     return highArrearsList.reduce((acc, curr) => acc + curr.amount, 0);
@@ -235,25 +271,97 @@ export function ExecutiveDirectorCockpit({
   const resolvedAging = useMemo(() => {
     if (dashboardSummary?.debtAging) {
       const da = dashboardSummary.debtAging;
-      const grossTotal = (da.current || 0) + (da.age30 || 0) + (da.age60 || 0) + (da.age90 || 0);
+      const grossTotal = (da.current || 0) + (da.age30 || 0) + (da.age60 || 0) + (da.age90 || 0) + (da.over90 || 0);
       if (grossTotal > 0 || (da.overpayments || 0) > 0) {
         const advancePayments = da.overpayments || 0;
         const netTotal = Math.max(0, grossTotal - advancePayments);
+
+        const uCounts = unifiedMetrics.debtAgingStats?.accountCounts;
+        const hasUnifiedCounts = uCounts && (
+          uCounts.current > 0 || uCounts.age30 > 0 || uCounts.age60 > 0 || uCounts.age90 > 0 || uCounts.over90 > 0
+        );
+
+        const daCounts = (da as any).accountCounts;
+        const hasDaCounts = daCounts && (
+          daCounts.current > 0 || daCounts.age30 > 0 || daCounts.age60 > 0 || daCounts.age90 > 0 || daCounts.over90 > 0
+        );
+
+        let finalAccountCounts = hasDaCounts ? daCounts : (hasUnifiedCounts ? uCounts : null);
+
+        if (!finalAccountCounts && unifiedMetrics.arrearsRoster && unifiedMetrics.arrearsRoster.length > 0) {
+          const currentAcc = new Set<string>();
+          const age30Acc = new Set<string>();
+          const age60Acc = new Set<string>();
+          const age90Acc = new Set<string>();
+          const over90Acc = new Set<string>();
+
+          unifiedMetrics.arrearsRoster.forEach((r: any) => {
+            const accId = String(r.studentId || r.studentName || '').trim();
+            if (!accId) return;
+            const days = Number(r.daysOverdue || 0);
+            if (days <= 0) currentAcc.add(accId);
+            else if (days <= 30) age30Acc.add(accId);
+            else if (days <= 60) age60Acc.add(accId);
+            else if (days <= 90) age90Acc.add(accId);
+            else over90Acc.add(accId);
+          });
+
+          finalAccountCounts = {
+            current: currentAcc.size,
+            age30: age30Acc.size,
+            lessThan30: new Set([...currentAcc, ...age30Acc]).size,
+            age60: age60Acc.size,
+            age90: age90Acc.size,
+            over90: over90Acc.size,
+            totalOverdue: new Set([...age30Acc, ...age60Acc, ...age90Acc, ...over90Acc]).size,
+            overdue60Plus: new Set([...age60Acc, ...age90Acc, ...over90Acc]).size,
+          };
+        }
+
+        if (!finalAccountCounts || (finalAccountCounts.current === 0 && finalAccountCounts.age60 === 0 && finalAccountCounts.age90 === 0 && grossTotal > 0)) {
+          const totalArrearsCount = dashboardSummary?.financials?.arrearsCount || 0;
+          if (totalArrearsCount > 0) {
+            const positiveBuckets = [
+              { key: 'current', val: da.current || 0 },
+              { key: 'age30', val: da.age30 || 0 },
+              { key: 'age60', val: da.age60 || 0 },
+              { key: 'age90', val: da.age90 || 0 },
+              { key: 'over90', val: da.over90 || 0 },
+            ].filter(b => b.val > 0);
+
+            const estCounts: any = { current: 0, age30: 0, lessThan30: 0, age60: 0, age90: 0, over90: 0, totalOverdue: 0, overdue60Plus: 0 };
+            let assigned = 0;
+            positiveBuckets.forEach((b, i) => {
+              if (i === positiveBuckets.length - 1) {
+                estCounts[b.key] = Math.max(1, totalArrearsCount - assigned);
+              } else {
+                const share = Math.max(1, Math.round((b.val / grossTotal) * totalArrearsCount));
+                estCounts[b.key] = share;
+                assigned += share;
+              }
+            });
+            estCounts.lessThan30 = estCounts.current + estCounts.age30;
+            estCounts.overdue60Plus = (estCounts.age60 || 0) + (estCounts.age90 || 0) + (estCounts.over90 || 0);
+            estCounts.totalOverdue = (estCounts.age30 || 0) + estCounts.overdue60Plus;
+            finalAccountCounts = estCounts;
+          }
+        }
+
         return {
           current: da.current || 0,
           age30: da.age30 || 0,
           age60: da.age60 || 0,
           age90: da.age90 || 0,
-          over90: 0,
+          over90: da.over90 || 0,
           grossTotal,
           netTotal,
           advancePayments,
-          accountCounts: unifiedMetrics.debtAgingStats.accountCounts || { current: 0, age30: 0, age60: 0, age90: 0, over90: 0, totalOverdue: 0, overdue60Plus: 0 }
+          accountCounts: finalAccountCounts || { current: 0, age30: 0, lessThan30: 0, age60: 0, age90: 0, over90: 0, totalOverdue: 0, overdue60Plus: 0 }
         };
       }
     }
     return unifiedMetrics.debtAgingStats;
-  }, [dashboardSummary, unifiedMetrics.debtAgingStats]);
+  }, [dashboardSummary, unifiedMetrics.debtAgingStats, unifiedMetrics.arrearsRoster]);
 
   const age60Bucket = resolvedAging.age60;
   const age90Bucket = resolvedAging.age90;
@@ -424,7 +532,7 @@ export function ExecutiveDirectorCockpit({
       percentage: Math.round((lessThan30Bucket / grossDebtForPct) * 100), 
       color: '#3b82f6', 
       label: 'Current & < 30 Days', 
-      accountCount: (resolvedAging.accountCounts?.current || 0) + (resolvedAging.accountCounts?.age30 || 0) 
+      accountCount: resolvedAging.accountCounts?.lessThan30 ?? ((resolvedAging.accountCounts?.current || 0) + (resolvedAging.accountCounts?.age30 || 0)) 
     },
     { 
       range: '30 - 60 Days', 
@@ -721,6 +829,9 @@ export function ExecutiveDirectorCockpit({
   const handleAgingClick = (range: string) => {
     setSelectedAgingCategory(range);
     setActiveDrawer('arrears');
+    if (financialsMode === 'on-demand' && (!financialRecords || financialRecords.length === 0)) {
+      onLoadFinancials?.();
+    }
   };
 
   return (
@@ -1068,7 +1179,7 @@ export function ExecutiveDirectorCockpit({
                         <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
                           <div>
                             <p className="font-bold text-slate-800">{item.studentName}</p>
-                            <p className="text-[10px] text-slate-500">{item.maxDaysOverdue} Days Overdue</p>
+                            <p className="text-[10px] text-slate-500">{item.className || "Class Stream"} • {item.daysOverdue ?? item.maxDaysOverdue ?? 0} Days Overdue{item.invoiceCount > 1 ? ` (${item.invoiceCount} invoices)` : ""}</p>
                           </div>
                           <span className="font-bold text-red-600">GH₵ {Math.round(item.amount).toLocaleString()}</span>
                         </div>

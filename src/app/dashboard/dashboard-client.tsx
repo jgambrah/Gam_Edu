@@ -11949,9 +11949,9 @@ export default function DashboardClient() {
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
   // Financial records loaded on demand or when full mode is requested
-  const [financialsMode, setFinancialsMode] = useState<'on-demand' | 'full'>('on-demand');
+  const [financialsMode, setFinancialsMode] = useState<'on-demand' | 'full'>('full');
 
-  const isRecordsNeeded = (role === 'Director' || role === 'Administrator' || role === 'Accountant') && financialsMode === 'full';
+  const isRecordsNeeded = (role === 'Director' || role === 'Administrator' || role === 'Accountant');
 
   const recordsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isRecordsNeeded) 

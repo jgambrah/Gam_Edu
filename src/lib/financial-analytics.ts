@@ -78,6 +78,7 @@ export interface DebtAgingBreakdown {
   accountCounts: {
     current: number;
     age30: number;
+    lessThan30: number;
     age60: number;
     age90: number;
     over90: number;
@@ -598,12 +599,12 @@ export function computeFinancialMetrics({
   let agingOver90 = 0;
   let overpayments = 0;
 
-  const countMap = {
-    current: 0,
-    age30: 0,
-    age60: 0,
-    age90: 0,
-    over90: 0,
+  const agingAccountSets = {
+    current: new Set<string>(),
+    age30: new Set<string>(),
+    age60: new Set<string>(),
+    age90: new Set<string>(),
+    over90: new Set<string>(),
   };
 
   filteredRecords.forEach((r: any) => {
@@ -618,29 +619,31 @@ export function computeFinancialMetrics({
     }
     if (balance <= 0.01) return;
 
+    const accountId = String(r.studentId || r.studentUid || r.accountId || r.studentName || r.id || '').trim();
+
     const dueDate = safeParseDate(r.dueDate || r.date || r.createdAt);
     if (!dueDate) {
       agingCurrent += balance;
-      countMap.current++;
+      if (accountId) agingAccountSets.current.add(accountId);
       return;
     }
 
     const diffDays = Math.ceil((now.getTime() - startOfDay(dueDate).getTime()) / (1000 * 3600 * 24));
     if (diffDays <= 0) {
       agingCurrent += balance;
-      countMap.current++;
+      if (accountId) agingAccountSets.current.add(accountId);
     } else if (diffDays <= 30) {
       aging30 += balance;
-      countMap.age30++;
+      if (accountId) agingAccountSets.age30.add(accountId);
     } else if (diffDays <= 60) {
       aging60 += balance;
-      countMap.age60++;
+      if (accountId) agingAccountSets.age60.add(accountId);
     } else if (diffDays <= 90) {
       aging90 += balance;
-      countMap.age90++;
+      if (accountId) agingAccountSets.age90.add(accountId);
     } else {
       agingOver90 += balance;
-      countMap.over90++;
+      if (accountId) agingAccountSets.over90.add(accountId);
     }
   });
 
@@ -648,8 +651,23 @@ export function computeFinancialMetrics({
   const advancePaymentsCredit = overpayments;
   const netAgingTotal = Math.max(0, grossAgingTotal - advancePaymentsCredit);
 
-  const totalOverdueAccounts = countMap.age30 + countMap.age60 + countMap.age90 + countMap.over90;
-  const overdue60PlusAccounts = countMap.age60 + countMap.age90 + countMap.over90;
+  const lessThan30Accounts = new Set([
+    ...agingAccountSets.current,
+    ...agingAccountSets.age30
+  ]).size;
+
+  const totalOverdueAccounts = new Set([
+    ...agingAccountSets.age30,
+    ...agingAccountSets.age60,
+    ...agingAccountSets.age90,
+    ...agingAccountSets.over90
+  ]).size;
+
+  const overdue60PlusAccounts = new Set([
+    ...agingAccountSets.age60,
+    ...agingAccountSets.age90,
+    ...agingAccountSets.over90
+  ]).size;
 
   const debtAgingStats: DebtAgingBreakdown = {
     current: agingCurrent,
@@ -663,11 +681,12 @@ export function computeFinancialMetrics({
     grossTotal: grossAgingTotal,
     netTotal: netAgingTotal,
     accountCounts: {
-      current: countMap.current,
-      age30: countMap.age30,
-      age60: countMap.age60,
-      age90: countMap.age90,
-      over90: countMap.over90,
+      current: agingAccountSets.current.size,
+      age30: agingAccountSets.age30.size,
+      lessThan30: lessThan30Accounts,
+      age60: agingAccountSets.age60.size,
+      age90: agingAccountSets.age90.size,
+      over90: agingAccountSets.over90.size,
       totalOverdue: totalOverdueAccounts,
       overdue60Plus: overdue60PlusAccounts,
     }

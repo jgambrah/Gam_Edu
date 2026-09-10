@@ -93,6 +93,7 @@ export interface DashboardSummary {
   admissions?: AdmissionsSummary;
   behavioral?: BehavioralSummary;
   system?: SystemSummary;
+  debtAging?: any;
   lastUpdated?: { toDate?: () => Date; seconds?: number };
 }
 

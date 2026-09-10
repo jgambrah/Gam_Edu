@@ -197,14 +197,19 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
     const diffTime = today.getTime() - dueMs;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+    const accountId = String(r.studentId || r.studentUid || r.accountId || r.studentName || '').trim();
     if (diffDays <= 0) {
       current += balance;
+      if (accountId) currentAccounts.add(accountId);
     } else if (diffDays <= 30) {
       age30 += balance;
+      if (accountId) age30Accounts.add(accountId);
     } else if (diffDays <= 60) {
       age60 += balance;
+      if (accountId) age60Accounts.add(accountId);
     } else {
       age90 += balance;
+      if (accountId) age90Accounts.add(accountId);
     }
   });
 
@@ -319,6 +324,16 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
       age60,
       age90,
       overpayments,
+      accountCounts: {
+        current: currentAccounts.size,
+        age30: age30Accounts.size,
+        lessThan30: new Set([...currentAccounts, ...age30Accounts]).size,
+        age60: age60Accounts.size,
+        age90: age90Accounts.size,
+        over90: 0,
+        totalOverdue: new Set([...age30Accounts, ...age60Accounts, ...age90Accounts]).size,
+        overdue60Plus: new Set([...age60Accounts, ...age90Accounts]).size,
+      }
     }
   }, { merge: true });
 }
