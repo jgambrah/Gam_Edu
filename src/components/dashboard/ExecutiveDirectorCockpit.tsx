@@ -16,6 +16,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { computeFinancialMetrics } from '@/lib/financial-analytics';
+import { buildExecutiveTelemetry } from '@/hooks/use-executive-telemetry';
 
 export function ExecutiveDirectorCockpit({
   profile,
@@ -260,39 +261,119 @@ export function ExecutiveDirectorCockpit({
   const overdue60PlusSum = age60Bucket + age90Bucket + over90Bucket;
   const overdue60PlusCount = resolvedAging.accountCounts?.overdue60Plus || 0;
 
-  // Centralized Executive Telemetry Store (Single Source of Truth)
-  const telemetry = useMemo(() => {
-    const pendingStaffCheckins = (todayTeacherAttendance?.absent && Array.isArray(todayTeacherAttendance.absent) && todayTeacherAttendance.absent.length > 0)
-      ? todayTeacherAttendance.absent.length
-      : (staff?.length ? Math.round(staff.length * 0.1) : 0);
+  // Reconciled Student Academic Risk Computation (Synchronized with Academic Performance Dashboard)
+  const atRiskStudentsList = useMemo(() => {
+    if (!recentAssessments || recentAssessments.length === 0) return [];
+    const studentGroup: Record<string, { totalPct: number; count: number; failingSubjects: Set<string> }> = {};
 
-    const currentBucket = resolvedAging.current;
-    const age30Bucket = resolvedAging.age30;
-    const lessThan30Bucket = currentBucket + age30Bucket;
-    const grossTotalDebt = resolvedAging.grossTotal;
-    const advancePaymentsCredit = resolvedAging.advancePayments;
-    const netOutstandingDebt = resolvedAging.netTotal;
+    recentAssessments.forEach((a: any) => {
+      const sId = a.studentId || a.studentUid || a.studentName;
+      if (!sId) return;
+      const score = Number(a.score) || 0;
+      const max = Number(a.maxScore) || 100;
+      const pct = max > 0 ? Math.round((score / max) * 100) : 0;
+      const matchedSubject = subjects?.find((s: any) => s.id === a.subjectId);
+      const subjectName = matchedSubject?.name || a.subjectName || a.subjectId || "Subject";
+
+      if (!studentGroup[sId]) {
+        studentGroup[sId] = { totalPct: 0, count: 0, failingSubjects: new Set() };
+      }
+      studentGroup[sId].totalPct += pct;
+      studentGroup[sId].count++;
+      if (pct < 50) {
+        studentGroup[sId].failingSubjects.add(subjectName);
+      }
+    });
+
+    const list: any[] = [];
+    Object.entries(studentGroup).forEach(([sId, data]) => {
+      const avg = Math.round(data.totalPct / data.count);
+      if (avg < 50) {
+        const stud = students?.find((s: any) => 
+          s.uid === sId || 
+          s.id === sId || 
+          (`${s.firstName || "" } ${s.lastName || "" }`.trim().toLowerCase() === sId.trim().toLowerCase())
+        );
+        const sClass = stud?.classId ? classes?.find((c: any) => c.id === stud.classId) : null;
+        const status = avg < 40 ? "Critical" : avg < 45 ? "High Risk" : "Warning";
+        const fullName = stud 
+          ? `${stud.firstName || "" } ${stud.lastName || "" }`.trim() || stud.name || sId
+          : sId;
+        const className = sClass?.name || stud?.className || "Class Stream";
+
+        list.push({
+          id: sId,
+          name: fullName,
+          class: className,
+          average: `${avg}%`,
+          rawAvg: avg,
+          subjects: Array.from(data.failingSubjects).slice(0, 3).join(", ") || "General Academics",
+          status
+        });
+      }
+    });
+
+    list.sort((a, b) => a.rawAvg - b.rawAvg);
+    return list;
+  }, [recentAssessments, students, classes, subjects]);
+
+  // Centralized Executive Telemetry Store (Single Authoritative Source of Truth)
+  const telemetry = useMemo(() => {
+    const rawTelemetry = buildExecutiveTelemetry({
+      schoolProfile,
+      profile,
+      selectedCampus,
+      financialSummary,
+      unifiedMetrics,
+      financials,
+      resolvedAging,
+      staff,
+      todayTeacherAttendance,
+      students,
+      activeStudentsCount,
+      todayPresentCount,
+      attendanceRate,
+      academicTidbits,
+      atRiskStudentsList,
+    });
 
     return {
-      pendingStaffCheckins,
-      highArrearsCount: overdue60PlusCount,
-      highArrearsOverdueSum: overdue60PlusSum,
-      currentBucket,
-      age30Bucket,
-      lessThan30Bucket,
-      age60Bucket,
-      age90Bucket,
-      over90Bucket,
-      grossTotalDebt,
-      advancePaymentsCredit,
-      netOutstandingDebt,
-      attendancePunctuality: 96.4,
-      highestAcademicGapGrade: 'Grade 4 Mathematics',
-      highestAcademicGapValue: '-11%',
-      topPerformingSubject: 'Grade 6 Science',
-      topPerformingScore: 94.2,
+      ...rawTelemetry,
+      pendingStaffCheckins: rawTelemetry.staff.pendingCheckins,
+      highArrearsCount: rawTelemetry.financials.highArrearsCount,
+      highArrearsOverdueSum: rawTelemetry.financials.highArrearsOverdueSum,
+      currentBucket: rawTelemetry.financials.lessThan30Bucket,
+      age30Bucket: rawTelemetry.financials.age30Bucket,
+      lessThan30Bucket: rawTelemetry.financials.lessThan30Bucket,
+      age60Bucket: rawTelemetry.financials.age60Bucket,
+      age90Bucket: rawTelemetry.financials.age90Bucket,
+      over90Bucket: rawTelemetry.financials.over90Bucket,
+      grossTotalDebt: rawTelemetry.financials.grossOutstandingDebt,
+      advancePaymentsCredit: rawTelemetry.financials.advancePaymentsCredit,
+      netOutstandingDebt: rawTelemetry.financials.netOutstandingDebt,
+      attendancePunctuality: rawTelemetry.staff.punctualityRate,
+      highestAcademicGapGrade: rawTelemetry.academics.highestAcademicGapGrade,
+      highestAcademicGapValue: rawTelemetry.academics.highestAcademicGapValue,
+      topPerformingSubject: rawTelemetry.academics.topPerformingSubject,
+      topPerformingScore: rawTelemetry.academics.topPerformingScore,
     };
-  }, [todayTeacherAttendance, staff, resolvedAging, age60Bucket, age90Bucket, over90Bucket, overdue60PlusSum, overdue60PlusCount]);
+  }, [
+    schoolProfile,
+    profile,
+    selectedCampus,
+    financialSummary,
+    unifiedMetrics,
+    financials,
+    resolvedAging,
+    staff,
+    todayTeacherAttendance,
+    students,
+    activeStudentsCount,
+    todayPresentCount,
+    attendanceRate,
+    academicTidbits,
+    atRiskStudentsList,
+  ]);
 
   // Dynamic Student Attendance Resolution
   const totalActiveStudents = useMemo(() => {
@@ -393,62 +474,6 @@ export function ExecutiveDirectorCockpit({
       </svg>
     );
   };
-
-  // Reconciled Student Academic Risk Computation (Synchronized with Academic Performance Dashboard)
-  const atRiskStudentsList = useMemo(() => {
-    if (!recentAssessments || recentAssessments.length === 0) return [];
-    const studentGroup: Record<string, { totalPct: number; count: number; failingSubjects: Set<string> }> = {};
-
-    recentAssessments.forEach((a: any) => {
-      const sId = a.studentId || a.studentUid || a.studentName;
-      if (!sId) return;
-      const score = Number(a.score) || 0;
-      const max = Number(a.maxScore) || 100;
-      const pct = max > 0 ? Math.round((score / max) * 100) : 0;
-      const matchedSubject = subjects?.find((s: any) => s.id === a.subjectId);
-      const subjectName = matchedSubject?.name || a.subjectName || a.subjectId || "Subject";
-
-      if (!studentGroup[sId]) {
-        studentGroup[sId] = { totalPct: 0, count: 0, failingSubjects: new Set() };
-      }
-      studentGroup[sId].totalPct += pct;
-      studentGroup[sId].count++;
-      if (pct < 50) {
-        studentGroup[sId].failingSubjects.add(subjectName);
-      }
-    });
-
-    const list: any[] = [];
-    Object.entries(studentGroup).forEach(([sId, data]) => {
-      const avg = Math.round(data.totalPct / data.count);
-      if (avg < 50) {
-        const stud = students?.find((s: any) => 
-          s.uid === sId || 
-          s.id === sId || 
-          (`${s.firstName || "" } ${s.lastName || "" }`.trim().toLowerCase() === sId.trim().toLowerCase())
-        );
-        const sClass = stud?.classId ? classes?.find((c: any) => c.id === stud.classId) : null;
-        const status = avg < 40 ? "Critical" : avg < 45 ? "High Risk" : "Warning";
-        const fullName = stud 
-          ? `${stud.firstName || "" } ${stud.lastName || "" }`.trim() || stud.name || sId
-          : sId;
-        const className = sClass?.name || stud?.className || "Class Stream";
-
-        list.push({
-          id: sId,
-          name: fullName,
-          class: className,
-          average: `${avg}%`,
-          rawAvg: avg,
-          subjects: Array.from(data.failingSubjects).slice(0, 3).join(", ") || "General Academics",
-          status
-        });
-      }
-    });
-
-    list.sort((a, b) => a.rawAvg - b.rawAvg);
-    return list;
-  }, [recentAssessments, students, classes, subjects]);
 
   // Dynamic Macro Executive Academic & Governance Feed (Calculated directly from real database props)
   const macroAcademicConductFeed = useMemo(() => {
@@ -561,13 +586,28 @@ export function ExecutiveDirectorCockpit({
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiCredits, setAiCredits] = useState(815);
-  const [aiChatHistory, setAiChatHistory] = useState<Array<{ role: 'user' | 'assistant'; text: string }>>([
-    {
-      role: 'assistant',
-      text: `Good day Director. I have audited Sunny Side Academy’s active records today. Fee collection stands at GH₵ 187.8k (74%), academic performance is at 81% (gap -11%), and ${telemetry.pendingStaffCheckins} staff check-ins are currently pending. How can I assist your executive overview?`
-    }
-  ]);
   const [isAiAuditing, setIsAiAuditing] = useState(false);
+
+  // Dynamic AI Auditor Initial Greeting (Synchronized with Unified Telemetry)
+  const initialAiGreeting = useMemo(() => {
+    const revK = (telemetry.financials.totalRevenue / 1000).toFixed(1);
+    const pendingStaff = telemetry.staff.pendingCheckins;
+    const rate = telemetry.financials.collectionRate;
+    const school = telemetry.schoolName || "Our School";
+    return `Good day Director. I have audited ${school}’s active records today. Fee collection stands at GH₵ ${revK}k (${rate}%), academic performance is at ${telemetry.academics.avgScore}% (${telemetry.academics.atRiskCount} at-risk students flagged), and ${pendingStaff} staff check-ins are currently pending. How can I assist your executive overview?`;
+  }, [telemetry]);
+
+  const [aiChatHistory, setAiChatHistory] = useState<Array<{ role: 'user' | 'assistant'; text: string }>>([]);
+
+  // Keep the initial greeting synchronized with live telemetry whenever the chat is fresh
+  React.useEffect(() => {
+    setAiChatHistory(prev => {
+      if (prev.length === 0 || (prev.length === 1 && prev[0].role === 'assistant')) {
+        return [{ role: 'assistant', text: initialAiGreeting }];
+      }
+      return prev;
+    });
+  }, [initialAiGreeting]);
 
   // Enrollment Dynamics Data (Dynamically baseline & scale relative to active enrolled roster)
   const baseEnrolled = enrolledStudentCount || 253;
@@ -665,7 +705,7 @@ export function ExecutiveDirectorCockpit({
         reply = `I have drafted an official executive fee collection notice for ${telemetry.highArrearsCount} parent accounts with overdue balances > 60 days (GH₵ ${Math.round(telemetry.highArrearsOverdueSum / 1000)}k total). You can open and edit the template directly below for instant WhatsApp/SMS dispatch.`;
         handleOpenDraftTemplate('arrears');
       } else if (queryLower.includes('cash flow') || queryLower.includes('financial') || queryLower.includes('revenue') || queryLower.includes('inflow')) {
-        reply = `Projected net cash inflow for next month is GH₵ 48,500 based on recurring tuition installment schedules and canteen requisitions. Financial collection rate currently stands at ${financials.collectionRate || 74}%.`;
+        reply = `Projected net cash inflow for next month is GH₵ 48,500 based on recurring tuition installment schedules and canteen requisitions. Financial collection rate currently stands at ${telemetry.financials.collectionRate}%. Total collected revenue this term is GH₵ ${Math.round(telemetry.financials.totalRevenue).toLocaleString()} against a billed target of GH₵ ${Math.round(telemetry.financials.totalBilled).toLocaleString()}.`;
       } else if (queryLower.includes('staff') || queryLower.includes('attendance') || queryLower.includes('check-in') || queryLower.includes('punctuality')) {
         reply = `Faculty attendance analysis: Punctuality rate is at ${telemetry.attendancePunctuality}% over the last 30 days. Today ${telemetry.pendingStaffCheckins} staff check-ins are pending morning assembly verification.`;
       } else if (queryLower.includes('enrollment') || queryLower.includes('student')) {
@@ -1160,7 +1200,7 @@ export function ExecutiveDirectorCockpit({
                       <Badge className="bg-amber-950 text-amber-300 border-amber-800 text-[9px] px-1 py-0">Pending</Badge>
                     </div>
                     <p className="text-[11px] text-slate-300 leading-snug">
-                      11 staff check-ins pending morning assembly verification.
+                      {telemetry.pendingStaffCheckins} staff check-ins pending morning assembly verification.
                     </p>
                     <button 
                       onClick={() => handleOpenDraftTemplate('staff')}
@@ -1998,7 +2038,7 @@ export function ExecutiveDirectorCockpit({
                   </DialogDescription>
                 </DialogHeader>
                 <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl space-y-1 text-xs text-amber-900">
-                  <p className="font-bold">Pending Staff Check-ins: {todayTeacherAttendance.absent?.length || 11} Members</p>
+                  <p className="font-bold">Pending Staff Check-ins: {telemetry.pendingStaffCheckins} Members</p>
                   <p className="text-[11px] font-medium text-amber-700">Channel: Direct SMS Punctuality Notification</p>
                 </div>
                 <Button 
@@ -2008,7 +2048,7 @@ export function ExecutiveDirectorCockpit({
                   }}
                   className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs py-2.5"
                 >
-                  <Send className="h-4 w-4 mr-2" /> Send Instant Check-in SMS to {todayTeacherAttendance.absent?.length || 11} Staff
+                  <Send className="h-4 w-4 mr-2" /> Send Instant Check-in SMS to {telemetry.pendingStaffCheckins} Staff
                 </Button>
               </div>
             )}

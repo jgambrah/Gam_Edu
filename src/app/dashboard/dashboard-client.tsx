@@ -58,6 +58,7 @@ import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
 import { TermManagementModal, TermUnlockCountdownBanner } from '@/components/dashboard/term-management-modal';
 import { Input } from '@/components/ui/input';
 import { generateSchoolExecutiveBriefingAction } from '@/app/actions/insights-ai';
+import { buildExecutiveTelemetry } from '@/hooks/use-executive-telemetry';
 import { format, startOfDay, endOfDay, formatDistanceToNow, subDays } from 'date-fns';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -3623,15 +3624,36 @@ function DirectorDashboard({
     setAuditError(null);
     startTransition(async () => {
       try {
+        const executiveTelemetry = buildExecutiveTelemetry({
+          schoolProfile: schoolData,
+          schoolData,
+          financialSummary: financials,
+          financials,
+          staff,
+          todayTeacherAttendance,
+          students,
+          activeStudentsCount: activeStudents?.length,
+          attendanceRate,
+          academicTidbits,
+          atRiskStudentsList: [],
+        });
+
         const statsPayload = {
-          totalStudents: activeStudents.length,
-          attendanceRateToday: attendanceRate,
-          totalStaff,
+          totalStudents: executiveTelemetry.students.totalActiveStudents,
+          attendanceRateToday: executiveTelemetry.students.attendanceRate,
+          totalStaff: executiveTelemetry.staff.totalStaff,
+          pendingStaffCheckins: executiveTelemetry.staff.pendingCheckins,
           financials: {
-            totalOutstanding: financials.totalOutstanding,
-            totalRevenue: financials.totalRevenue,
-            collectionRate: financials.collectionRate,
-            revenueByType: financials.revenueByType,
+            totalBilled: executiveTelemetry.financials.totalBilled,
+            totalOutstanding: executiveTelemetry.financials.grossOutstandingDebt,
+            totalRevenue: executiveTelemetry.financials.totalRevenue,
+            collectionRate: executiveTelemetry.financials.collectionRate,
+            revenueByType: executiveTelemetry.financials.revenueByType,
+          },
+          academics: {
+            avgScore: executiveTelemetry.academics.avgScore,
+            passingRate: executiveTelemetry.academics.passingRate,
+            topSubject: executiveTelemetry.academics.topSubject,
           },
           classSizes: classSizes,
           announcementsCount,
