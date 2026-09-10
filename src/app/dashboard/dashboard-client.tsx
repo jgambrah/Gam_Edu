@@ -11949,6 +11949,25 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isAccountant, role, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
 
+  const [currentDayDate, setCurrentDayDate] = useState(() => new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentDayDate(prev => {
+        if (now.getDate() !== prev.getDate() || now.getMonth() !== prev.getMonth() || now.getFullYear() !== prev.getFullYear()) {
+          return now;
+        }
+        return prev;
+      });
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const startOfToday = useMemo(() => {
+    return startOfDay(currentDayDate);
+  }, [currentDayDate]);
+
   const openTillsCash = useMemo(() => {
     if (!tills || tills.length === 0) return 0;
     return tills
