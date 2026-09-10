@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -47,7 +47,7 @@ export default function StaffAttendanceRecordsPage() {
   const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
 
   const attendanceQuery = useMemoFirebase(() =>
-    (firestore && schoolId && canAccess) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc')) : null
+    (firestore && schoolId && canAccess) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc'), limit(200)) : null
   , [firestore, schoolId, canAccess]);
   const { data: attendanceLogs, isLoading: isLoadingLogs } = useCollection<StaffAttendance>(attendanceQuery);
 

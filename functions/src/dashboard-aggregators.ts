@@ -385,6 +385,13 @@ export const onAttendanceWrite = onDocumentWritten(
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
 
+    // COST GUARD: Only process class-level aggregated attendance documents (${schoolId}_${classId}_${dateStr})
+    // Skip individual student attendance records (prefixed with 'att-') which otherwise cause an O(N^2) read cascade!
+    const recordId = event.params.recordId;
+    if (recordId && recordId.startsWith('att-')) {
+      return;
+    }
+
     const dateVal = after?.date ?? before?.date;
     const dateStr = getYYYYMMDD(dateVal);
     if (!dateStr || dateStr !== todayStr()) return;
@@ -402,10 +409,24 @@ export const onAttendanceWrite = onDocumentWritten(
     const absentIds: string[] = [];
 
     snap.forEach(doc => {
+      if (doc.id.startsWith('att-')) return;
       const d = doc.data();
-      if (d.status === 'Present') present++;
-      else if (d.status === 'Absent') { absent++; if (absentIds.length < 25) absentIds.push(d.studentId as string); }
-      else if (d.status === 'Late') late++;
+      if (typeof d.presentCount === 'number') {
+        present += d.presentCount;
+        absent += (d.absentCount || 0);
+        late += (d.lateCount || 0);
+        if (d.studentsMap && typeof d.studentsMap === 'object') {
+          Object.values(d.studentsMap).forEach((s: any) => {
+            if (s.status === 'Absent' && absentIds.length < 25) {
+              absentIds.push(s.studentId);
+            }
+          });
+        }
+      } else {
+        if (d.status === 'Present') present++;
+        else if (d.status === 'Absent') { absent++; if (absentIds.length < 25) absentIds.push(d.studentId as string); }
+        else if (d.status === 'Late') late++;
+      }
     });
 
     const total = present + absent + late;
@@ -460,23 +481,23 @@ export const onStaffAttendanceWrite = onDocumentWritten(
     const tsMs = ts?.toMillis?.() ?? 0;
     if (tsMs < todayStartMs()) return;
 
+    const todayMs = todayStartMs();
+    const todayTimestamp = Timestamp.fromMillis(todayMs);
+
+    // COST GUARD: Filter by timestamp >= todayTimestamp in Firestore directly (avoids reading historical clock-ins)
     const snap = await db.collection('staff_attendance')
       .where('schoolId', '==', schoolId)
       .where('type', '==', 'In')
+      .where('timestamp', '>=', todayTimestamp)
       .get();
 
-    const todayMs = todayStartMs();
     const presentSet = new Set<string>();
     let lateCount = 0;
 
     snap.forEach(doc => {
       const d = doc.data();
-      const docTs = d.timestamp as FirebaseFirestore.Timestamp | undefined;
-      const ms = docTs?.toMillis?.() ?? 0;
-      if (ms >= todayMs) {
-        presentSet.add(d.staffId as string);
-        if (d.status === 'Late') lateCount++;
-      }
+      presentSet.add(d.staffId as string);
+      if (d.status === 'Late') lateCount++;
     });
 
     await SUMMARY(schoolId).set({

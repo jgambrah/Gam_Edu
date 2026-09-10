@@ -258,24 +258,32 @@ export default function AttendanceReportsPage() {
 
     const attendanceQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !dateRange?.from || !selectedClassId || !isReportRequested) return null;
+        const fromDate = startOfDay(dateRange.from);
+        const toDate = endOfDay(dateRange.to || dateRange.from);
         if (selectedClassId !== 'all') {
             return query(
                 collection(firestore, 'attendance'), 
                 where('schoolId', '==', schoolId),
-                where('classId', '==', selectedClassId)
+                where('classId', '==', selectedClassId),
+                where('date', '>=', Timestamp.fromDate(fromDate)),
+                where('date', '<=', Timestamp.fromDate(toDate)),
+                limit(500)
             );
         }
         return query(
             collection(firestore, 'attendance'), 
-            where('schoolId', '==', schoolId)
+            where('schoolId', '==', schoolId),
+            where('date', '>=', Timestamp.fromDate(fromDate)),
+            where('date', '<=', Timestamp.fromDate(toDate)),
+            limit(1000)
         );
     }, [firestore, schoolId, isRoleLoading, canAccess, selectedClassId, dateRange, isReportRequested]);
     const { data: rawAttendance, isLoading: isLoadingAttendance, forceRefetch } = useCollection(attendanceQuery);
     
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
-        return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess]);
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(300));
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
     const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<any>(studentsQuery);
 
     const students = useMemo(() => {
