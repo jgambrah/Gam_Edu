@@ -1503,6 +1503,8 @@ function AdminDashboard({
               debtAgingStats={debtAgingStats}
               dashboardSummary={dashboardSummary}
               attendanceRate={attendanceRate}
+              todayPresentCount={todayPresentCount}
+              activeStudentsCount={activeStudents?.length || dashboardSummary?.studentCount?.active || 0}
               studentTeacherRatio={studentTeacherRatio}
               academicTidbits={academicTidbits}
               todayTeacherAttendance={todayTeacherAttendance}
@@ -3897,6 +3899,8 @@ function DirectorDashboard({
               debtAgingStats={debtAgingStats}
               dashboardSummary={dashboardSummary}
               attendanceRate={todayAttendanceRate}
+              todayPresentCount={todayPresentCount}
+              activeStudentsCount={activeStudents?.length || dashboardSummary?.studentCount?.active || 0}
               studentTeacherRatio={studentTeacherRatio}
               academicTidbits={academicTidbits}
               todayTeacherAttendance={todayTeacherAttendance}

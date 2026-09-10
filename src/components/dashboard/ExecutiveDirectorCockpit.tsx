@@ -30,6 +30,8 @@ export function ExecutiveDirectorCockpit({
   debtAgingStats = {},
   dashboardSummary,
   attendanceRate = 83,
+  todayPresentCount,
+  activeStudentsCount,
   studentTeacherRatio = 20.3,
   academicTidbits = {},
   todayTeacherAttendance = { present: [], absent: [], late: [] },
@@ -290,6 +292,37 @@ export function ExecutiveDirectorCockpit({
       topPerformingScore: 94.2,
     };
   }, [todayTeacherAttendance, staff, resolvedAging, age60Bucket, age90Bucket, over90Bucket, overdue60PlusSum, overdue60PlusCount]);
+
+  // Dynamic Student Attendance Resolution
+  const totalActiveStudents = useMemo(() => {
+    if (activeStudentsCount !== undefined && activeStudentsCount > 0) return activeStudentsCount;
+    if (dashboardSummary?.studentCount?.active !== undefined && dashboardSummary.studentCount.active > 0) {
+      return dashboardSummary.studentCount.active;
+    }
+    const fromRoster = students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length;
+    return fromRoster || students?.length || 0;
+  }, [activeStudentsCount, dashboardSummary?.studentCount?.active, students]);
+
+  const studentsPresentCount = useMemo(() => {
+    if (todayPresentCount !== undefined && todayPresentCount !== null) return todayPresentCount;
+    if (dashboardSummary?.attendance?.totalPresent !== undefined) {
+      return dashboardSummary.attendance.totalPresent;
+    }
+    if (attendanceRate !== undefined && totalActiveStudents > 0) {
+      return Math.round((Number(attendanceRate) / 100) * totalActiveStudents);
+    }
+    return 0;
+  }, [todayPresentCount, dashboardSummary?.attendance?.totalPresent, attendanceRate, totalActiveStudents]);
+
+  const dynamicAttendancePct = useMemo(() => {
+    if (totalActiveStudents > 0 && studentsPresentCount >= 0) {
+      return ((studentsPresentCount / totalActiveStudents) * 100).toFixed(1);
+    }
+    if (attendanceRate !== undefined && attendanceRate !== null) {
+      return Number(attendanceRate).toFixed(1);
+    }
+    return "96.4";
+  }, [totalActiveStudents, studentsPresentCount, attendanceRate]);
 
   // Dynamic Student-to-Faculty Ratio Calculation
   const activeFacultyCount = staff?.length || 0;
@@ -1328,14 +1361,15 @@ export function ExecutiveDirectorCockpit({
             <div className="mt-2 space-y-1.5">
               <div className="flex items-baseline justify-between gap-1">
                 <div className="flex items-baseline gap-1.5">
-                  <h3 className="text-2xl font-bold text-slate-900">96.4%</h3>
+                  <h3 className="text-2xl font-bold text-slate-900">{dynamicAttendancePct}%</h3>
                   <span className="text-[10px] font-semibold text-slate-500">Student Pulse</span>
                 </div>
-                <Sparkline points={[92, 94, 95, 96, 96.4]} color="#f59e0b" />
+                <Sparkline points={[92, 94, 95, 96, Number(dynamicAttendancePct) || 96.4]} color="#f59e0b" />
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="font-semibold text-amber-700 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-0.5" /> +1.8% Student Punctuality
+                <span className="font-semibold text-slate-700 flex items-center">
+                  <Users className="h-3 w-3 mr-1 text-slate-500" />
+                  <span className="text-emerald-700 font-bold mr-1">{studentsPresentCount}</span> / {totalActiveStudents} Present
                 </span>
                 <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
                   Daily Verification
@@ -1343,8 +1377,12 @@ export function ExecutiveDirectorCockpit({
               </div>
               <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
                 <div className="flex items-center justify-between font-medium text-slate-600">
+                  <span>Student Attendance:</span>
+                  <span className="font-bold text-slate-800">{studentsPresentCount} of {totalActiveStudents} Active Students</span>
+                </div>
+                <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Class Registers:</span>
-                  <span className="font-semibold text-slate-800">14 Active Classes</span>
+                  <span className="font-semibold text-slate-800">{classes?.length || 14} Active Classes</span>
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Staff Verification:</span>
@@ -1495,10 +1533,20 @@ export function ExecutiveDirectorCockpit({
 
               {activeHeroModal === 'attendance' && (
                 <div className="space-y-3">
-                  <p className="text-slate-600">Class attendance submissions pending morning verification:</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-slate-50 rounded-xl">
+                      <p className="text-[10px] text-slate-500">Students Present</p>
+                      <p className="font-black text-base text-slate-900">{studentsPresentCount} / {totalActiveStudents}</p>
+                    </div>
+                    <div className="p-3 bg-emerald-50 rounded-xl">
+                      <p className="text-[10px] text-emerald-700">Attendance Rate</p>
+                      <p className="font-black text-base text-emerald-700">{dynamicAttendancePct}%</p>
+                    </div>
+                  </div>
+                  <p className="text-slate-600 text-xs">Class attendance submissions pending morning verification:</p>
                   <div className="p-3 bg-amber-50 rounded-xl text-amber-800 text-xs space-y-1">
-                    <p className="font-bold">14 Class sheets awaiting submission</p>
-                    <p className="text-[10px]">{todayTeacherAttendance.absent?.length || 0} Staff check-ins pending</p>
+                    <p className="font-bold">{classes?.length || 14} Class sheets registered</p>
+                    <p className="text-[10px]">{telemetry.pendingStaffCheckins} Staff check-ins pending</p>
                   </div>
                   <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('attendance'); }} className="w-full bg-amber-600 text-white font-bold rounded-xl">
                     Open Attendance Management Desk
