@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { 
   AlertCircle, AlertTriangle, ArrowUpRight, Award, Banknote, Bell, 
   BookOpen, BrainCircuit, CheckCircle2, ChevronRight, Clock, 
@@ -1316,7 +1317,7 @@ export function ExecutiveDirectorCockpit({
 
             {/* Metric 2: Daily Cash Collections */}
             <Card 
-              onClick={() => onNavigateTab ? onNavigateTab('financials') : null}
+              onClick={() => setActiveHeroModal('financial')}
               className="h-full flex flex-col justify-between hover:shadow-md transition-all cursor-pointer border border-slate-200/80 hover:border-slate-300 rounded-2xl bg-white shadow-sm overflow-hidden relative group"
             >
               <CardContent className="p-4 h-full flex flex-col justify-between">
@@ -1590,8 +1591,8 @@ export function ExecutiveDirectorCockpit({
                     )
                   )}
 
-                  <Button onClick={() => { setActiveHeroModal(null); onNavigateTab?.('financials'); }} className="w-full bg-slate-900 text-white font-bold rounded-xl">
-                    View Full Accounts & Receivables Ledger
+                  <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl cursor-pointer">
+                    <Link href="/dashboard/accounts">View Full Accounts & Receivables Ledger</Link>
                   </Button>
                 </div>
               )}

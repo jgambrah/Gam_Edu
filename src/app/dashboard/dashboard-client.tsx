@@ -79,7 +79,6 @@ import { AdmissionsDashboardView } from './admissions-dashboard-view';
 import { StaffPerformanceDashboardView } from './staff-performance-dashboard-view';
 import { DisciplineDashboardView } from './discipline-dashboard-view';
 import { SchoolHealthDashboardView } from './school-health-dashboard-view';
-import { FinancialDashboardView } from './financial-dashboard-view';
 import { ParentDashboard } from './parent-dashboard-view';
 import { ParentSatisfactionDashboardView } from './parent-satisfaction-dashboard-view';
 import { TeacherDashboardView } from '@/components/dashboard/TeacherDashboardView';
@@ -347,7 +346,7 @@ function AdminDashboard({
             subtitle: `Billed: GH₵ ${r.billedAmount || 0} • Outstanding: GH₵ ${r.balance || r.amount || 0}`,
             icon: Banknote,
             action: () => {
-              setActiveTab('financials');
+              router.push('/dashboard/accounts');
               setIsOmniSearchOpen(false);
             }
           });
@@ -360,7 +359,7 @@ function AdminDashboard({
       { title: 'Send Staff Attendance Reminders', subtitle: 'Dispatches instant check-in reminder SMS to unchecked faculty', icon: UserCheck, action: () => { setActiveTab('overview'); setIsOmniSearchOpen(false); } },
       { title: 'Dispatch Fee Arrears Collection Notices', subtitle: 'Opens executive 1-click fee notice collection drawer', icon: Banknote, action: () => { setActiveTab('overview'); setIsOmniSearchOpen(false); } },
       { title: 'Broadcast Executive Announcement', subtitle: 'Publish announcement to staff, teachers & parents', icon: Megaphone, action: () => { setActiveTab('overview'); setIsOmniSearchOpen(false); } },
-      { title: 'Open Financials Ledger & Accounting', subtitle: 'View billed tuition, collection rates & revenue aging', icon: Wallet, action: () => { setActiveTab('financials'); setIsOmniSearchOpen(false); } },
+      { title: 'Open Financials Ledger & Accounting', subtitle: 'View billed tuition, collection rates & revenue aging', icon: Wallet, action: () => { router.push('/dashboard/accounts'); setIsOmniSearchOpen(false); } },
       { title: 'Open Academic Performance & Grades', subtitle: 'View subject averages, API benchmarks & student reviews', icon: Award, action: () => { setActiveTab('academics'); setIsOmniSearchOpen(false); } },
     ];
 
@@ -2469,7 +2468,7 @@ function DirectorDashboard({
 
 
 
-  const [localActiveTab, localSetActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'financials' | 'canteen' | 'general' | 'satisfaction'>('overview');
+  const [localActiveTab, localSetActiveTab] = useState<'overview' | 'academics' | 'attendance' | 'students' | 'staff' | 'canteen' | 'general' | 'satisfaction'>('overview');
   const activeTab = passedActiveTab || localActiveTab;
   const setActiveTab = passedSetActiveTab || localSetActiveTab;
 
@@ -3705,11 +3704,6 @@ function DirectorDashboard({
         { id: 'canteen', label: 'Canteen' },
         { id: 'satisfaction', label: 'Satisfaction' },
       ]
-    },
-    {
-      id: 'financials',
-      label: 'Financials',
-      subTabs: []
     }
   ], []);
 
@@ -3920,12 +3914,6 @@ function DirectorDashboard({
             title: "PARENT SATISFACTION & FEEDBACK",
             description: "Parent satisfaction metrics, service feedback, and communication logs.",
             icon: Star,
-          },
-          financials: {
-            tag: "FINANCIALS CONSOLE",
-            title: "FINANCIAL INTELLIGENCE & AUDIT",
-            description: "Revenue collection, fee arrears breakdown, expenditure ledger, and 30-day cash flow projections.",
-            icon: Banknote,
           },
         };
         const banner = tabBanners[activeTab] || tabBanners.overview;
@@ -4146,25 +4134,7 @@ function DirectorDashboard({
           </div>
         )}
 
-        {activeTab === 'financials' && hasFinanceAccess && (
-          <FinancialDashboardView 
-            students={students || []}
-            classes={classes || []}
-            financialRecords={financialRecords || []}
-            payments={payments}
-            accounts={accounts || []}
-            budgets={budgets || []}
-            budgetItems={budgetItems || []}
-            journals={journals || []}
-            schoolSettings={schoolSettings}
-            arrearsThreshold={arrearsThreshold}
-            dashboardSummary={dashboardSummary}
-            financialsMode={financialsMode}
-            onLoadFinancials={onLoadFinancials}
-            onSwitchOnDemand={onSwitchOnDemand}
-            isLoadingFinancials={isLoadingFinancials}
-          />
-        )}
+
 
         {activeTab === 'general' && (
           <div className="space-y-8">
