@@ -1,25 +1,27 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useFirestore, useMemoFirebase, useCollection } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
-import { Class, Student } from '@/lib/types';
+import { Class } from '@/lib/types';
 import { ClassStoryFeed } from '@/components/dashboard/ClassStoryFeed';
 import { ClassStoryComposer } from '@/components/dashboard/ClassStoryComposer';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Camera, Plus, Sparkles, Award, Filter, Layers, Users, BookOpen } from 'lucide-react';
+import { Camera, Plus, Filter } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function ClassStoriesPage() {
-  const { role } = useRole();
+  const { role, profile } = useRole();
   const { schoolId } = useCurrentSchool();
   const firestore = useFirestore();
 
   const [composerOpen, setComposerOpen] = useState(false);
   const [selectedClassId, setSelectedClassId] = useState<string>('ALL_SCHOOL');
+  const [activeStoryTab, setActiveStoryTab] = useState<'all' | 'class' | 'school'>('all');
 
   const classesQuery = useMemoFirebase(
     () => (firestore && schoolId ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null),
@@ -27,62 +29,139 @@ export default function ClassStoriesPage() {
   );
   const { data: classes } = useCollection<Class>(classesQuery);
 
-  const canCreate = role === 'Admin' || role === 'SuperAdmin' || role === 'Teacher';
+  const canCreate = role === 'Director' || role === 'Administrator' || role === 'Teacher';
+  const schoolName = profile?.schoolName || "Sunny Side Academy";
+
+  const handleTabChange = (tab: 'all' | 'class' | 'school') => {
+    setActiveStoryTab(tab);
+    if (tab === 'all') {
+      setSelectedClassId('ALL_SCHOOL');
+    } else if (tab === 'class') {
+      if (selectedClassId === 'ALL_SCHOOL' && classes && classes.length > 0) {
+        setSelectedClassId(classes[0].id);
+      }
+    } else if (tab === 'school') {
+      setSelectedClassId('ALL_SCHOOL');
+    }
+  };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-16">
-      {/* Top Banner Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/20 text-indigo-300 px-3.5 py-1.5 rounded-full uppercase border border-indigo-500/30">
-              Classroom Moments & Stories
-            </span>
-          </div>
-          <h1 className="text-3xl font-black tracking-tight flex items-center gap-3 uppercase italic">
-            <Camera className="h-8 w-8 text-indigo-400 animate-pulse" /> Class <span className="text-indigo-400">Stories</span>
-          </h1>
-          <p className="text-slate-300 text-xs font-medium max-w-xl mt-1">
-            Celebrating classroom achievements, science projects, field trips & daily learning moments for parents and students.
-          </p>
-        </div>
+    <div className="space-y-4 animate-in fade-in duration-500 relative pb-16">
+      {/* Unified Classic Institutional Hero Banner */}
+      <SectionHeroBanner
+        eyebrow={`${schoolName.toUpperCase()} • CLASSROOM MOMENTS & STORIES`}
+        title="Class Stories 📸"
+        subtitle="Celebrating classroom achievements, science projects, field trips & daily learning moments for parents and students."
+        icon={Camera}
+        badge={{
+          label: "Live Classroom Feed",
+          variant: "success",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Community', href: '/dashboard' },
+          { label: 'Class Stories' },
+        ]}
+        stats={[
+          { label: 'Active Classes', value: classes?.length || 0 },
+          { label: 'Audience', value: 'School Community' },
+        ]}
+        actions={
+          canCreate ? (
+            <Button
+              onClick={() => setComposerOpen(true)}
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4 text-slate-950" />
+              <span>Share Class Story</span>
+            </Button>
+          ) : undefined
+        }
+      />
 
-        {canCreate && (
-          <Button
-            onClick={() => setComposerOpen(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 h-12 px-6 rounded-2xl font-black uppercase tracking-tight text-white gap-2 shrink-0"
+      {/* Story Tabs & Class Filter Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        {/* Story Category Tabs */}
+        <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/60">
+          <button
+            type="button"
+            onClick={() => handleTabChange('all')}
+            className={cn(
+              "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+              activeStoryTab === 'all'
+                ? "bg-white text-slate-900 shadow-xs font-black"
+                : "text-slate-600 hover:text-slate-900"
+            )}
           >
-            <Plus className="h-5 w-5" /> Share Class Story
-          </Button>
-        )}
-      </div>
-
-      {/* Class Selector Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-indigo-600" />
-          <span className="text-xs font-black uppercase text-slate-500">Filter By Class:</span>
+            🌟 All Stories
+          </button>
+          <button
+            type="button"
+            onClick={() => handleTabChange('class')}
+            className={cn(
+              "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+              activeStoryTab === 'class'
+                ? "bg-white text-slate-900 shadow-xs font-black"
+                : "text-slate-600 hover:text-slate-900"
+            )}
+          >
+            📚 Class Feed
+          </button>
+          <button
+            type="button"
+            onClick={() => handleTabChange('school')}
+            className={cn(
+              "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+              activeStoryTab === 'school'
+                ? "bg-white text-slate-900 shadow-xs font-black"
+                : "text-slate-600 hover:text-slate-900"
+            )}
+          >
+            🏫 School Community
+          </button>
         </div>
-        <div className="w-full sm:w-72">
-          <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-            <SelectTrigger className="h-10 bg-white border-2 rounded-xl text-xs font-bold">
+
+        {/* Filter by Class Dropdown */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Filter className="h-4 w-4 text-slate-400 shrink-0 hidden sm:block" />
+          <span className="text-xs font-black text-slate-500 uppercase tracking-wider shrink-0 hidden sm:block">
+            Filter:
+          </span>
+          <Select
+            value={selectedClassId}
+            onValueChange={(val) => {
+              setSelectedClassId(val);
+              if (val === 'ALL_SCHOOL') {
+                setActiveStoryTab('all');
+              } else {
+                setActiveStoryTab('class');
+              }
+            }}
+          >
+            <SelectTrigger className="h-9 w-full sm:w-64 bg-white border-slate-200 rounded-xl text-xs font-semibold shadow-2xs">
               <SelectValue placeholder="All School Classes" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL_SCHOOL">🌟 All School Stories</SelectItem>
-              {classes?.map(c => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+            <SelectContent className="bg-white rounded-xl border border-slate-200 shadow-xl">
+              <SelectItem value="ALL_SCHOOL" className="text-xs font-bold">
+                🌟 All School Stories
+              </SelectItem>
+              {classes?.map((c) => (
+                <SelectItem key={c.id} value={c.id} className="text-xs">
+                  📖 {c.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Main Feed List */}
+      {/* Main Story Feed */}
       {schoolId ? (
-        <ClassStoryFeed schoolId={schoolId} classId={selectedClassId} userRole={role} />
+        <ClassStoryFeed schoolId={schoolId} classId={selectedClassId} userRole={role || undefined} />
       ) : (
-        <div className="text-center p-12 text-slate-400 font-bold uppercase text-xs">Loading school workspace...</div>
+        <div className="text-center p-12 text-slate-400 font-bold uppercase text-xs bg-white rounded-2xl border border-slate-100">
+          Loading school workspace...
+        </div>
       )}
 
       {/* Composer Dialog */}
