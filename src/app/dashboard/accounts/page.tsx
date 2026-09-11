@@ -1934,13 +1934,14 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             });
 
             // Send DM and SMS payment notification to parent(s) asynchronously
-            if (record.studentId) {
+            const targetStudentId = record.studentId || (record as any).studentDocId || (record as any).student_id;
+            if (targetStudentId) {
                 const idToken = await user.getIdToken();
                 const remBal = Math.max(0, record.billedAmount - (updatedAmountPaid || 0) - (record.waiverAmount || 0));
                 sendPaymentNotificationToParent({
                     firestore,
                     schoolId,
-                    studentId: record.studentId,
+                    studentId: targetStudentId,
                     studentName: record.studentName || 'Student',
                     paymentAmount: values.amount,
                     feeType: paymentDescription,
