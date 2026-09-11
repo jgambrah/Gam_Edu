@@ -35,6 +35,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // --- TYPE DEFINITIONS ---
 type ParentMember = {
@@ -347,84 +348,113 @@ export default function ParentsPage() {
   const overallLoading = isLoadingSchoolId;
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Premium Rose/Pink Gradient Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-rose-500 via-pink-500 to-fuchsia-600 p-8 md:p-10 text-white shadow-xl shadow-pink-100/50 dark:shadow-none">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
-              <Users className="h-3.5 w-3.5 text-pink-200" /> Family Relations
-            </span>
-            <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Parent Profiles</h1>
-            <p className="mt-2 text-pink-100/90 max-w-xl text-sm leading-relaxed">
-              Manage school-parent relationships, configure student assignments, and maintain directory profiles.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Standardized Institutional Hero Banner */}
+      <SectionHeroBanner
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        eyebrow="FAMILY RELATIONS"
+        title="Parent Profiles"
+        subtitle="Manage school-parent relationships, configure student assignments, and maintain directory profiles."
+        icon={Users}
+        badge={{
+          label: "Family Relations",
+          variant: "gold",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Family Relations', href: '/dashboard' },
+          { label: 'Parent Profiles' },
+        ]}
+        stats={
+          adminSchoolId ? [
+            { 
+              label: 'Linked Guardians', 
+              value: hasLoadedParents ? `${parents.length} Accounts` : 'On-Demand' 
+            },
+            { 
+              label: 'Associated Children', 
+              value: hasLoadedParents ? `${students.filter(s => s.parentId).length} Linked` : 'On-Demand' 
+            },
+            {
+              label: 'Firestore Reads',
+              value: hasLoadedParents ? '1 Read Active' : '0 Upfront Active',
+              change: hasLoadedParents ? 'Snapshot' : 'Zero Read',
+              changeType: hasLoadedParents ? 'positive' : 'neutral',
+            }
+          ] : undefined
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Subtle Telemetry Pill */}
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-[10px] font-bold text-slate-300">
+              <Zap className={cn("h-3 w-3", hasLoadedParents ? "text-emerald-400" : "text-amber-400")} />
+              <span>{hasLoadedParents ? "1 Read Active (Snapshot)" : "0 Upfront Reads Active"}</span>
+            </div>
+
             {hasLoadedParents ? (
               <>
-                <Button variant="outline" onClick={handleRecompileParentSnapshot} disabled={isLoadingParents || isCompilingSnapshot} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
-                  <RefreshCw className={cn("h-4 w-4 mr-2", (isLoadingParents || isCompilingSnapshot) && "animate-spin")}/> Re-sync Snapshot
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleRecompileParentSnapshot} 
+                  disabled={isLoadingParents || isCompilingSnapshot} 
+                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-9 px-3 text-xs font-bold transition-all"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", (isLoadingParents || isCompilingSnapshot) && "animate-spin")}/> 
+                  <span>Re-sync</span>
                 </Button>
-                <Button variant="outline" onClick={resetToOnDemand} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
-                  <RotateCcw className="h-4 w-4 mr-2"/> Switch to On-Demand
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={resetToOnDemand} 
+                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-9 px-3 text-xs font-bold transition-all"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 mr-1.5"/> 
+                  <span>On-Demand</span>
                 </Button>
               </>
             ) : (
-              <Button onClick={loadParentData} disabled={isLoadingParents} className="bg-white text-pink-700 hover:bg-pink-50 hover:text-pink-850 font-bold px-5 h-11 rounded-xl shadow-lg border border-pink-100 gap-2 cursor-pointer">
-                {isLoadingParents ? <Loader2 className="h-4 w-4 animate-spin"/> : <PackageCheck className="h-4 w-4 text-pink-600"/>}
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={loadParentData} 
+                disabled={isLoadingParents} 
+                className="bg-white/10 text-white hover:bg-white/20 border-white/20 font-bold h-9 px-3.5 rounded-xl gap-1.5 cursor-pointer text-xs transition-all"
+              >
+                {isLoadingParents ? <Loader2 className="h-3.5 w-3.5 animate-spin"/> : <PackageCheck className="h-3.5 w-3.5"/>}
                 <span>Generate Parent List (1 Read)</span>
               </Button>
             )}
+
             {canManage && (
-              <Button onClick={() => { if (!hasLoadedParents) loadParentData(); setIsAddOpen(true); }} className="bg-white text-pink-700 hover:bg-pink-50 hover:text-pink-850 font-bold px-5 h-11 rounded-xl shadow-lg border border-pink-100" disabled={!adminSchoolId}>
-                <UserPlus className="h-4.5 w-4.5 mr-2"/> Add Parent Profile
+              <Button 
+                onClick={() => { if (!hasLoadedParents) loadParentData(); setIsAddOpen(true); }} 
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]" 
+                disabled={!adminSchoolId}
+              >
+                <UserPlus className="h-4 w-4 text-slate-950"/> 
+                <span>Add Parent Profile</span>
               </Button>
             )}
           </div>
-        </div>
-
-        {/* Dynamic Metric Badges */}
-        {adminSchoolId && (
-          <div className="relative z-10 mt-8 flex flex-wrap items-center gap-4 border-t border-white/10 pt-6">
-            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
-              <span className="text-[10px] text-pink-200 uppercase tracking-widest font-black">Linked Guardians</span>
-              <div className="text-xl font-bold mt-0.5">
-                {hasLoadedParents ? `${parents.length} Accounts` : 'On-Demand'}
-              </div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
-              <span className="text-[10px] text-pink-200 uppercase tracking-widest font-black">Associated Children</span>
-              <div className="text-xl font-bold mt-0.5">
-                {hasLoadedParents ? `${students.filter(s => s.parentId).length} Students Linked` : 'On-Demand'}
-              </div>
-            </div>
-            <div className="ml-auto hidden lg:flex items-center gap-2 rounded-xl bg-black/20 px-3.5 py-2 border border-white/10 text-xs text-pink-100">
-              <Zap className={cn("h-3.5 w-3.5", hasLoadedParents ? "text-emerald-300" : "text-amber-300")} />
-              <span>{hasLoadedParents ? "1 Read Active (In-Memory Directory)" : "0 Upfront Firestore Reads Active"}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Decorative glows */}
-        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
-      </div>
+        }
+      />
       
       {/* Main Card */}
       <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
         <CardContent className="p-6 space-y-6">
           {/* On-Demand Mode Bar when parents are loaded */}
           {hasLoadedParents && (
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-pink-50/90 via-rose-50/50 to-slate-50 border border-pink-200/70 rounded-2xl text-xs text-pink-950">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-slate-900/[0.03] border border-slate-200/80 rounded-2xl text-xs text-slate-800">
               <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-pink-600 text-white font-bold shadow-xs shrink-0">
+                <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-slate-900 text-white font-bold shadow-xs shrink-0">
                   <PackageCheck className="h-3.5 w-3.5" />
                 </div>
                 <div>
-                  <span className="font-bold text-pink-950">1-Read Consolidated Parent Directory Active</span>
-                  <span className="text-pink-700 ml-2">({filteredParents.length} of {parents.length} profiles showing)</span>
+                  <span className="font-bold text-slate-900">1-Read Consolidated Parent Directory Active</span>
+                  <span className="text-slate-600 ml-2">({filteredParents.length} of {parents.length} profiles showing)</span>
                   <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">1 Read</span>
-                  <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-pink-100 text-pink-800">⚡ Zero-Read Filtering</span>
+                  <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700">⚡ Zero-Read Filtering</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -433,17 +463,17 @@ export default function ParentsPage() {
                   size="sm"
                   onClick={handleRecompileParentSnapshot}
                   disabled={isLoadingParents || isCompilingSnapshot}
-                  className="h-8 text-xs font-semibold rounded-lg border-pink-300 text-pink-800 hover:bg-pink-100/60"
+                  className="h-8 text-xs font-semibold rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100"
                 >
-                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-pink-600", (isLoadingParents || isCompilingSnapshot) && "animate-spin")} /> Re-sync Snapshot
+                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-slate-600", (isLoadingParents || isCompilingSnapshot) && "animate-spin")} /> Re-sync Snapshot
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={resetToOnDemand}
-                  className="h-8 text-xs font-semibold rounded-lg border-pink-300 text-pink-800 hover:bg-pink-100/60"
+                  className="h-8 text-xs font-semibold rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100"
                 >
-                  <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-pink-600" /> Switch to On-Demand
+                  <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-slate-600" /> Switch to On-Demand
                 </Button>
               </div>
             </div>
@@ -460,27 +490,34 @@ export default function ParentsPage() {
                     loadParentData();
                   }
                 }} 
-                className="pl-10 h-10 border-slate-200 focus-visible:ring-pink-500 rounded-xl"
+                className="pl-10 h-10 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
                 placeholder="Search parents by name or email..."
               />
             </div>
-            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
-              {hasLoadedParents ? `${filteredParents.length} Records` : 'On-Demand'}
-            </span>
+            <div className="flex items-center gap-3">
+              {/* Telemetry Tag */}
+              <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-[11px] font-medium text-slate-600 border border-slate-200">
+                <Zap className={cn("h-3 w-3", hasLoadedParents ? "text-emerald-500" : "text-amber-500")} />
+                <span>{hasLoadedParents ? "1 Read Active (Snapshot)" : "0 Upfront Firestore Reads Active"}</span>
+              </div>
+              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
+                {hasLoadedParents ? `${filteredParents.length} Records` : 'On-Demand'}
+              </span>
+            </div>
           </div>
 
           {isLoadingParents ? (
             <div className="py-16 flex flex-col items-center justify-center text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
-              <Loader2 className="h-8 w-8 animate-spin text-pink-500 mb-2"/>
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-500 mb-2"/>
               <p className="text-xs uppercase font-bold tracking-wider font-mono">Loading Parent Directory (1 Document Read)...</p>
             </div>
           ) : !hasLoadedParents ? (
-            <div className="py-16 px-6 text-center border-2 border-dashed border-pink-200/80 rounded-3xl bg-gradient-to-b from-pink-50/50 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
-              <div className="h-16 w-16 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600 shadow-inner">
-                <HeartHandshake className="h-8 w-8 text-pink-600 animate-pulse" />
+            <div className="py-16 px-6 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-gradient-to-b from-slate-50/70 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
+              <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
+                <HeartHandshake className="h-8 w-8 text-indigo-600 animate-pulse" />
               </div>
               <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-100/80 text-pink-800 text-xs font-bold uppercase tracking-wider mb-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs font-bold uppercase tracking-wider mb-1">
                   ⚡ Single-Document Architecture
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 tracking-tight">Parent Profiles Generated in 1 Document Read</h3>
@@ -492,7 +529,7 @@ export default function ParentsPage() {
                 <Button 
                   onClick={loadParentData}
                   disabled={isLoadingParents}
-                  className="bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
                 >
                   <PackageCheck className="h-4 w-4" />
                   Generate Parent List (1 Read)
@@ -501,7 +538,7 @@ export default function ParentsPage() {
                   <Button 
                     variant="outline"
                     onClick={loadParentData}
-                    className="rounded-xl h-11 px-4 border-slate-200 hover:bg-slate-50"
+                    className="rounded-xl h-11 px-4 border-slate-200 hover:bg-slate-50 text-slate-700"
                   >
                     Search Directory for "{searchTerm.trim()}"
                   </Button>
@@ -539,7 +576,7 @@ export default function ParentsPage() {
                     <TableRow key={p.id} className="hover:bg-slate-50/30 transition-colors group">
                       <TableCell className="py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-600 font-bold border border-pink-100/50 text-sm group-hover:scale-105 transition-transform">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100/50 text-sm group-hover:scale-105 transition-transform">
                             {p.firstName?.charAt(0) || '?'}{p.lastName?.charAt(0) || ''}
                           </div>
                           <div>
@@ -638,7 +675,7 @@ export default function ParentsPage() {
                         <Label className="text-indigo-600 font-bold">
                             Link Students
                             {selectedStudentIds.length > 0 && (
-                                <span className="ml-2 text-xs font-normal text-pink-600">({selectedStudentIds.length} selected)</span>
+                                <span className="ml-2 text-xs font-normal text-indigo-600">({selectedStudentIds.length} selected)</span>
                             )}
                         </Label>
                         <div className="flex items-center space-x-2 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100">
@@ -687,7 +724,7 @@ export default function ParentsPage() {
                     </div>
                 </div>
 
-                <DialogFooter className="pt-4 border-t"><Button type="submit" className="w-full h-12 text-lg font-bold bg-pink-500 hover:bg-pink-600" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Parent Account"}</Button></DialogFooter>
+                <DialogFooter className="pt-4 border-t"><Button type="submit" className="w-full h-12 text-base font-bold bg-slate-900 hover:bg-slate-800 text-white" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Parent Account"}</Button></DialogFooter>
             </form>
         </DialogContent>
       </Dialog>
@@ -742,7 +779,7 @@ export default function ParentsPage() {
                             <Label className="text-indigo-600 font-bold">
                                 Linked Students
                                 {selectedStudentIds.length > 0 && (
-                                    <span className="ml-2 text-xs font-normal text-pink-600">({selectedStudentIds.length} selected)</span>
+                                    <span className="ml-2 text-xs font-normal text-indigo-600">({selectedStudentIds.length} selected)</span>
                                 )}
                             </Label>
                             {!isSecretary && (

@@ -96,7 +96,7 @@ export function SectionHeroBanner({
       className={cn(
         "relative overflow-hidden rounded-2xl border border-slate-800/80 shadow-2xl text-white transition-all duration-300",
         // Deep institutional gradient: Navy/Slate `#0f172a` to `#1e1b4b` with subtle gold accent hairline
-        "bg-gradient-to-br from-[#0f172a] via-[#131b35] to-[#1e1b4b]",
+        "bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80",
         "after:absolute after:inset-x-0 after:top-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-amber-400/40 after:to-transparent",
         className
       )}
