@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 const toDateSafe = (d: any): Date => {
   if (!d) return new Date();
@@ -269,24 +270,14 @@ export default function LessonPlanningPage() {
 
   return (
     <div className="space-y-6 flex flex-col h-full">
-      {/* Premium Header Banner */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white p-6 shadow-lg border border-purple-900/50">
-        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-          <ClipboardList className="h-40 w-40 transform rotate-12 text-purple-300" />
-        </div>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="bg-purple-500/20 p-2 rounded-xl border border-purple-500/30">
-                <ClipboardList className="h-6 w-6 text-purple-400" />
-              </div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Lesson Planner</h1>
-            </div>
-            <p className="text-slate-400 text-sm max-w-xl">
-              Design engaging learning paths, generate structured activities with AI, and maintain a centralized catalog.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 self-stretch md:self-auto justify-between md:justify-end">
+      <SectionHeroBanner
+        title="Lesson Planning & Syllabi"
+        subtitle="Develop modular teaching schedules, align national curriculum objectives, and organize instructional units."
+        eyebrow="INSTRUCTIONAL DESIGN"
+        icon={ClipboardList}
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
             <CreditBalance />
             <Button 
               onClick={() => {
@@ -295,14 +286,14 @@ export default function LessonPlanningPage() {
                 setIsCreateOpen(true);
               }}
               disabled={isLoading || !schoolId}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg shadow-purple-900/30 border border-purple-500/50 rounded-xl px-4 py-2 flex items-center gap-2 transition-all duration-300 active:scale-95"
+              className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wider shadow-sm transition-all flex items-center gap-2 px-4"
             >
-              <PlusCircle className="h-4.5 w-4.5" />
+              <PlusCircle className="h-4 w-4" />
               <span>Create Lesson Plan</span>
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

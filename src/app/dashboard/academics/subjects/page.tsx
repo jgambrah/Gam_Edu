@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Class, Subject } from '@/lib/types';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // --- TYPES ---
 type Staff = {
@@ -339,48 +340,40 @@ export default function SubjectsPage() {
   }
 
   return (
-    <div className="space-y-8 p-6 max-w-7xl mx-auto">
-      
-      {/* Premium Header Gradient Banner */}
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-indigo-700 via-purple-600 to-fuchsia-600 p-8 text-white shadow-xl">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 text-indigo-200 shrink-0">
-                <BookOpen className="h-6 w-6 text-white" />
-              </span>
-              <Badge className="bg-white/15 text-white font-extrabold uppercase text-[10px] border-none px-2.5 py-0.5 rounded-full tracking-widest">
-                Academic Curriculum
-              </Badge>
+    <div className="space-y-6">
+      <SectionHeroBanner
+        title="Subjects & Curriculum"
+        subtitle="Manage academic course offerings, assign lead faculty, and configure departmental grading weightage."
+        eyebrow="CURRICULUM INVENTORY"
+        icon={BookOpen}
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
+              <span className="h-2 w-2 rounded-full bg-indigo-400" />
+              <span>{totalSubjects} Courses</span>
+              <span className="text-slate-500">•</span>
+              <span>{totalPeriods} Weekly Hrs</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight uppercase italic">Curriculum Subject Catalog</h1>
-            <p className="text-slate-200 text-sm font-medium mt-1 max-w-xl">
-              Register courses, allocate weekly instructional periods, and assign qualified educators for AI-driven timetable scheduling.
-            </p>
-          </div>
-          
-          <div className="flex gap-3 shrink-0 w-full md:w-auto">
             <Button 
               variant="outline" 
               onClick={forceRefetch} 
-              className="bg-white/10 hover:bg-white/20 text-white border-white/10 rounded-2xl font-bold h-12 px-5 backdrop-blur-md transition-all duration-200 w-full md:w-auto"
+              className="bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 rounded-xl font-semibold text-xs h-10 px-3 transition-all"
             >
-               <RefreshCw className={cn("h-4 w-4 mr-2 text-white", isLoading && "animate-spin")}/> Sync Database
+              <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-slate-300", isLoading && "animate-spin")}/> Sync
             </Button>
             {canManage && (
               <Button 
                 onClick={() => handleOpenDialog()} 
                 disabled={isLoading || !schoolId} 
-                className="bg-white hover:bg-slate-50 text-indigo-950 hover:text-indigo-900 h-12 px-6 rounded-2xl font-bold shadow-lg transition-all active:scale-[0.98] w-full md:w-auto"
+                className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wider shadow-sm transition-all flex items-center gap-2 px-4"
               >
-                  <PlusCircle className="mr-2 h-4 w-4 text-indigo-700" /> Register Subject
+                <PlusCircle className="h-4 w-4" /> Add New Subject
               </Button>
             )}
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Curriculum Summary Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

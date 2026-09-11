@@ -19,6 +19,7 @@ import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 const toDateSafe = (dateVal: any): Date => {
   if (!dateVal) return new Date();
@@ -135,27 +136,29 @@ export default function StudentAssignmentsView() {
   }, [quizAttempts]);
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto p-4 md:p-6">
-      
-      {/* Premium Student Header Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-blue-650 via-indigo-600 to-violet-750 p-8 text-white shadow-xl">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-        
-        <div className="relative z-10">
-          <div className="flex items-center gap-2.5 mb-2">
-            <span className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 text-indigo-200 shrink-0">
-              <ClipboardCheck className="h-6 w-6 text-white" />
-            </span>
-            <Badge className="bg-white/15 text-white font-extrabold uppercase text-[10px] border-none px-2.5 py-0.5 rounded-full tracking-widest">
-              Student Workspace
-            </Badge>
+    <div className="space-y-6">
+      <SectionHeroBanner
+        title="Assignments & Quizzes"
+        subtitle="Publish coursework, distribute digital tests, review automated grading, and set submission deadlines."
+        eyebrow="CONTINUOUS ASSESSMENT"
+        icon={ClipboardCheck}
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                {pendingCount} PENDING
+              </span>
+              <span className="text-slate-500">•</span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                {completedCount} COMPLETED
+              </span>
+            </div>
           </div>
-          <h1 className="text-3xl font-black tracking-tight uppercase italic">Assignments & Quizzes</h1>
-          <p className="text-slate-200 text-sm font-medium mt-1 max-w-xl">
-            Keep track of due dates, submit your coursework, and review evaluation feedback from your teachers.
-          </p>
-        </div>
-      </div>
+        }
+      />
 
       {/* Student Metrics Deck */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

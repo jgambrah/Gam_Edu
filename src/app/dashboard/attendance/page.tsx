@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
+
 export default function AttendancePage() {
   const { role, loading } = useRole();
   const router = useRouter();
@@ -50,26 +52,14 @@ export default function AttendancePage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Premium Gradient Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-teal-650 via-emerald-600 to-indigo-800 p-8 md:p-12 text-white shadow-2xl border border-teal-400/20">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-2xl" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-teal-100 backdrop-blur-md">
-              <UserCheck className="h-3 w-3" /> Attendance Register
-            </span>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase leading-none">
-              Student <span className="text-teal-200">Attendance</span>
-            </h1>
-            <p className="max-w-md text-sm font-medium text-teal-50">
-              Take daily presence sheets, configure local scanning APIs, or upload biometric hardware logs.
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <SectionHeroBanner
+        title="Student Attendance"
+        subtitle="Take daily presence sheets, configure local scanning APIs, or upload biometric hardware logs."
+        eyebrow="ATTENDANCE REGISTER"
+        icon={UserCheck}
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+      />
 
       <Tabs defaultValue="manual" className="w-full">
         <TabsList className="grid w-full max-w-lg grid-cols-3 bg-slate-900 border border-slate-800 rounded-2xl p-1 mb-6 text-slate-400">

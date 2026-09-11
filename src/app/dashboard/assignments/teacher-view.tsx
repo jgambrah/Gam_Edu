@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { BlockMath, InlineMath } from 'react-katex';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 function MathText({ text }: { text: string }) {
   const [mounted, setMounted] = useState(false);
@@ -279,43 +280,40 @@ export default function TeacherAssignmentsView() {
   }, [quizzes, quizAttempts]);
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto p-4 md:p-6">
-      
-      {/* Premium Gradient Header Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-750 p-8 text-white shadow-xl">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 text-indigo-200 shrink-0">
-                <GraduationCap className="h-6 w-6 text-white" />
+    <div className="space-y-6">
+      <SectionHeroBanner
+        title="Assignments & Quizzes"
+        subtitle="Publish coursework, distribute digital tests, review automated grading, and set submission deadlines."
+        eyebrow="CONTINUOUS ASSESSMENT"
+        icon={GraduationCap}
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                PENDING REVIEW
               </span>
-              <Badge className="bg-white/15 text-white font-extrabold uppercase text-[10px] border-none px-2.5 py-0.5 rounded-full tracking-widest">
-                Academic Tasks Manager
-              </Badge>
+              <span className="text-slate-500">•</span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                {activeQuizzesCount} ACTIVE TESTS
+              </span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight uppercase italic">Assignments & Quizzes Console</h1>
-            <p className="text-slate-200 text-sm font-medium mt-1 max-w-xl">
-              Create and dispatch assignments, design AI-powered student quizzes, and review grades from a centralized command center.
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap gap-3 shrink-0 w-full md:w-auto">
             <Button 
               onClick={() => {
                 setAssignmentFormOpen(!isAssignmentFormOpen);
                 setQuizFormOpen(false);
               }}
               className={cn(
-                "h-12 px-5 rounded-2xl font-bold transition-all shadow-lg text-xs w-full md:w-auto",
+                "h-10 px-3.5 rounded-xl font-semibold text-xs transition-all shadow-sm flex items-center gap-1.5",
                 isAssignmentFormOpen 
-                  ? "bg-white text-indigo-950 hover:bg-slate-50" 
-                  : "bg-white/10 text-white border border-white/10 hover:bg-white/20"
+                  ? "bg-slate-100 text-slate-900 hover:bg-white" 
+                  : "bg-indigo-600 hover:bg-indigo-500 text-white"
               )}
             >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              {isAssignmentFormOpen ? 'Close Editor' : 'Create Assignment'}
+              <PlusCircle className="h-3.5 w-3.5" />
+              {isAssignmentFormOpen ? 'Close Form' : 'Create Assignment'}
             </Button>
             <Button 
               onClick={() => {
@@ -323,18 +321,18 @@ export default function TeacherAssignmentsView() {
                 setAssignmentFormOpen(false);
               }}
               className={cn(
-                "h-12 px-5 rounded-2xl font-bold transition-all shadow-lg text-xs w-full md:w-auto",
+                "h-10 px-3.5 rounded-xl font-semibold text-xs transition-all shadow-sm flex items-center gap-1.5",
                 isQuizFormOpen 
-                  ? "bg-white text-violet-950 hover:bg-slate-50" 
-                  : "bg-white/10 text-white border border-white/10 hover:bg-white/20"
+                  ? "bg-slate-100 text-slate-900 hover:bg-white" 
+                  : "bg-purple-600 hover:bg-purple-500 text-white"
               )}
             >
-              <Sparkles className="mr-2 h-4 w-4" />
-              {isQuizFormOpen ? 'Close Editor' : 'Create AI Quiz'}
+              <Sparkles className="h-3.5 w-3.5" />
+              {isQuizFormOpen ? 'Close Form' : 'Create AI Quiz'}
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Stats Counter Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

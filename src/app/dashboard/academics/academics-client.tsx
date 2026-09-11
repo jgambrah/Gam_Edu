@@ -66,6 +66,7 @@ import { StudentDisplay } from '@/components/student-display';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 const classSchema = z.object({
   name: z.string().min(1, "Class name is required"),
@@ -444,112 +445,119 @@ export default function AcademicsPageContent() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Premium Gradient Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-755 via-indigo-600 to-teal-500 p-8 md:p-12 text-white shadow-2xl border border-indigo-400/20">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-400/10 blur-2xl" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-indigo-100 backdrop-blur-md">
-              <GraduationCap className="h-3 w-3" /> Academic Infrastructure
-            </span>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase leading-none">
-              Class <span className="text-teal-200">Management</span>
-            </h1>
-            <p className="max-w-md text-sm font-medium text-indigo-50">
-              {role === 'Teacher' ? 'Showing classes assigned to you.' : 'View, create, and manage academic classes for your school.'}
-            </p>
+    <div className="space-y-6">
+      <SectionHeroBanner
+        title="Class Roster & Homerooms"
+        subtitle="Organize class divisions, assign primary homeroom teachers, and monitor student capacity levels."
+        eyebrow="ACADEMIC STRUCTURE"
+        icon={GraduationCap}
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
+              <span className="h-2 w-2 rounded-full bg-indigo-400" />
+              {visibleClasses?.length || 0} Cohorts
+            </div>
+            {canManageClasses && schoolId && (
+              <Button
+                className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wider shadow-sm transition-all flex items-center gap-2 px-4"
+                onClick={handleCreateClick}
+              >
+                <PlusCircle className="h-4 w-4" /> Add Class / Section
+              </Button>
+            )}
           </div>
-          
-          {canManageClasses && schoolId && (
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="h-12 rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-black uppercase tracking-wider shadow-lg transition-all hover:scale-102 active:scale-98 border-none" onClick={handleCreateClick}>
-                  <PlusCircle className="mr-2 h-4 w-4 text-indigo-600" /> Create Class
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto rounded-[2.5rem] border-slate-900 border-2">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-black uppercase italic text-slate-800">{editingClass ? 'Edit Class' : 'Create Class'}</DialogTitle>
-                  <DialogDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
-                    Configure details for the class cohort.
-                  </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
-                        <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Name</FormLabel><FormControl><Input placeholder="e.g. BS 3" {...field} className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 font-medium transition-colors" /></FormControl><FormMessage/></FormItem>
-                        )}/>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <FormField control={form.control} name="teachingModel" render={({ field }) => (
-                                <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Teaching Model</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Model"/></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="ClassTeacher">Class Teacher (Nursery-BS3)</SelectItem>
-                                            <SelectItem value="SubjectTeacher">Subject Teacher (BS4+)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </FormItem>
-                            )}/>
-                            <FormField control={form.control} name="homeRoomId" render={({ field }) => (
-                                <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Primary Room</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Select Room..."/></SelectTrigger></FormControl>
-                                        <SelectContent>
-                                            {rooms?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </FormItem>
-                            )}/>
-                        </div>
+        }
+      />
 
-                        <FormField control={form.control} name="teacherId" render={({ field }) => (
-                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Primary Teacher (Form Tutor)</FormLabel>
+      {canManageClasses && schoolId && (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto rounded-[2.5rem] border-slate-900 border-2">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black uppercase italic text-slate-800">{editingClass ? 'Edit Class' : 'Create Class'}</DialogTitle>
+              <DialogDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
+                Configure details for the class cohort.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+                    <FormField control={form.control} name="name" render={({ field }) => (
+                        <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Name</FormLabel><FormControl><Input placeholder="e.g. BS 3" {...field} className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 font-medium transition-colors" /></FormControl><FormMessage/></FormItem>
+                    )}/>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField control={form.control} name="teachingModel" render={({ field }) => (
+                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Teaching Model</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Select teacher..."/></SelectTrigger></FormControl>
+                                    <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Model"/></SelectTrigger></FormControl>
                                     <SelectContent>
-                                        <SelectItem value="unassigned">None (Unassigned)</SelectItem>
-                                        {teachers?.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
+                                        <SelectItem value="ClassTeacher">Class Teacher (Nursery-BS3)</SelectItem>
+                                        <SelectItem value="SubjectTeacher">Subject Teacher (BS4+)</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <FormMessage/>
                             </FormItem>
                         )}/>
-                        <FormField control={form.control} name="capacity" render={({ field }) => (
-                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Target Capacity</FormLabel><FormControl><Input type="number" {...field} className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 font-bold transition-colors" /></FormControl><FormMessage/></FormItem>
+                        <FormField control={form.control} name="homeRoomId" render={({ field }) => (
+                            <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Primary Room</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Select Room..."/></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        {rooms?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
                         )}/>
+                    </div>
 
-                        <div className="flex items-center space-x-2 py-2">
-                            <Checkbox 
-                                id="custom-weights-toggle"
-                                checked={hasCustomWeights} 
-                                onCheckedChange={(checked) => {
-                                    const isChecked = !!checked;
-                                    setHasCustomWeights(isChecked);
-                                    if (isChecked) {
-                                        form.setValue('caWeight', 30);
-                                        form.setValue('examWeight', 70);
-                                    } else {
-                                        form.setValue('caWeight', undefined);
-                                        form.setValue('examWeight', undefined);
-                                    }
-                                }}
-                                className="h-5 w-5 rounded-md border-2"
-                            />
-                            <label htmlFor="custom-weights-toggle" className="text-sm font-semibold text-slate-700 cursor-pointer select-none">
-                                Override School Assessment Weights
-                            </label>
-                        </div>
+                    <FormField control={form.control} name="teacherId" render={({ field }) => (
+                        <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Primary Teacher (Form Tutor)</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50"><SelectValue placeholder="Select teacher..."/></SelectTrigger></FormControl>
+                                <SelectContent>
+                                    <SelectItem value="unassigned">None (Unassigned)</SelectItem>
+                                    {teachers?.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage/>
+                        </FormItem>
+                    )}/>
+                    <FormField control={form.control} name="capacity" render={({ field }) => (
+                        <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Target Capacity</FormLabel><FormControl><Input type="number" {...field} className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 font-bold transition-colors" /></FormControl><FormMessage/></FormItem>
+                    )}/>
 
-                        {hasCustomWeights && (
-                            <div className="grid grid-cols-2 gap-4 border-2 p-4 rounded-2xl bg-slate-50 animate-in fade-in duration-200">
+                    <div className="flex items-center space-x-2 py-2">
+                        <Checkbox 
+                            id="custom-weights-toggle"
+                            checked={hasCustomWeights} 
+                            onCheckedChange={(checked) => {
+                                const isChecked = !!checked;
+                                setHasCustomWeights(isChecked);
+                                if (isChecked) {
+                                    form.setValue('caWeight', 30);
+                                    form.setValue('examWeight', 70);
+                                } else {
+                                    form.setValue('caWeight', undefined);
+                                    form.setValue('examWeight', undefined);
+                                }
+                            }}
+                        />
+                        <label 
+                            htmlFor="custom-weights-toggle" 
+                            className="text-xs font-bold text-slate-600 cursor-pointer select-none"
+                        >
+                            Override School Assessment Weighting for this Class
+                        </label>
+                    </div>
+
+                    {hasCustomWeights && (
+                        <div className="p-3 bg-indigo-50/60 rounded-2xl border border-indigo-150 space-y-3">
+                            <p className="text-[10px] font-black uppercase tracking-wider text-indigo-700">
+                                Custom Class Weighting
+                            </p>
+                            <div className="grid grid-cols-2 gap-3">
                                 <FormField control={form.control} name="caWeight" render={({ field }) => (
                                     <FormItem className="space-y-1">
-                                        <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">CA Weight (%)</FormLabel>
+                                        <FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Continuous Assessment (CA %)</FormLabel>
                                         <FormControl>
                                             <Input 
                                                 type="number" 
@@ -590,18 +598,24 @@ export default function AcademicsPageContent() {
                                     </FormItem>
                                 )}/>
                             </div>
-                        )}
+                            <p className="text-[10px] text-slate-500 font-medium">
+                                Total must equal 100%. Defaults: CA 30%, Exam 70%.
+                            </p>
+                        </div>
+                    )}
 
-                        <Button type="submit" className="w-full h-12 text-sm font-black uppercase tracking-wider bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-100 transition-all duration-200" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : (editingClass ? "Save Changes" : "Create Class")}
-                        </Button>
-                    </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
-      </div>
+                    <FormField control={form.control} name="description" render={({ field }) => (
+                        <FormItem className="space-y-1.5"><FormLabel className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Notes</FormLabel><FormControl><Input placeholder="Optional details..." {...field} className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 font-medium" /></FormControl><FormMessage/></FormItem>
+                    )}/>
+
+                    <Button type="submit" className="w-full h-12 text-sm font-black uppercase tracking-wider bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-100 transition-all duration-200" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : (editingClass ? "Save Changes" : "Create Class")}
+                    </Button>
+                </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      )}
 
       <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
         <CardHeader className="bg-slate-900 text-white pb-6 pt-8 px-8">

@@ -8,7 +8,8 @@ import { collection, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Loader2, UserCheck, PlusCircle } from 'lucide-react';
+import { Loader2, UserCheck, PlusCircle, GraduationCap } from 'lucide-react';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -226,43 +227,49 @@ export default function AlumniPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Premium Header Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-amber-600 via-orange-500 to-yellow-500 p-8 md:p-12 text-white shadow-2xl border border-amber-400/20">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-yellow-400/10 blur-2xl" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-yellow-100 backdrop-blur-md">
-              <UserCheck className="h-3 w-3" /> Graduate Network
-            </span>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase">
-              Alumni <span className="text-yellow-200">Tracking</span>
-            </h1>
-            <p className="max-w-md text-sm font-medium text-amber-50">
-              Manage the directory of graduated students, celebrate milestones, and trace mentorship initiatives.
-            </p>
+    <div className="space-y-6">
+      {/* Standardized Institutional Hero Banner */}
+      <SectionHeroBanner
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        eyebrow="GRADUATE NETWORK"
+        title="Alumni Tracking"
+        subtitle="Manage the directory of graduated students, celebrate milestones, and trace mentorship initiatives."
+        icon={GraduationCap}
+        badge={{
+          label: "Graduate Network",
+          variant: "gold",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Student Directory', href: '/dashboard/students-v3' },
+          { label: 'Alumni Tracking' },
+        ]}
+        stats={[
+          { label: 'Total Alumni', value: `${alumni.length} Graduates` },
+          { label: 'Mentors', value: `${alumni.filter(a => a.alumniDetails?.mentorshipWillingness).length} Active` },
+        ]}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Dialog open={isGraduateFormOpen} onOpenChange={setGraduateFormOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                  <PlusCircle className="h-4 w-4 text-slate-950" />
+                  <span>Graduate a Student</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="rounded-3xl border-slate-200 shadow-2xl max-w-md bg-white">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-black tracking-tight text-slate-900">Graduate Active Student</DialogTitle>
+                  <DialogDescription className="text-xs font-bold text-slate-400 uppercase">
+                    Select an active student to transition them into the alumni network.
+                  </DialogDescription>
+                </DialogHeader>
+                <GraduateStudentForm setOpen={setGraduateFormOpen} students={activeStudents} />
+              </DialogContent>
+            </Dialog>
           </div>
-          
-          <Dialog open={isGraduateFormOpen} onOpenChange={setGraduateFormOpen}>
-            <DialogTrigger asChild>
-              <Button className="h-12 rounded-2xl bg-white text-amber-700 hover:bg-yellow-50 font-black uppercase tracking-wider shadow-lg transition-all hover:scale-102 active:scale-98 border-none">
-                <PlusCircle className="mr-2 h-4 w-4 text-amber-600" /> Graduate a Student
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="rounded-[2.5rem] border-slate-900 border-2 max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-black uppercase italic text-slate-800">Graduate Active Student</DialogTitle>
-                <DialogDescription className="text-xs font-bold text-slate-400 uppercase">
-                  Select an active student to transition them into the alumni network.
-                </DialogDescription>
-              </DialogHeader>
-              <GraduateStudentForm setOpen={setGraduateFormOpen} students={activeStudents} />
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+        }
+      />
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

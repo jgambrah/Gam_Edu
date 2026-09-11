@@ -10,6 +10,7 @@ import { AssignmentSubmissionsList } from './assignment-submissions-list';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
 import { Layers, GraduationCap, CheckCircle, ClipboardCheck, HelpCircle } from 'lucide-react';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 export default function AdminAssignmentsView() {
   const firestore = useFirestore();
@@ -46,7 +47,7 @@ export default function AdminAssignmentsView() {
 
   const isLoading = isLoadingSchool || isLoadingAssignments || isLoadingSubmissions || isLoadingAttempts || isLoadingStudents;
 
-  // Dynamic statistics calculations
+  // Statistics
   const avgSubmissionRate = useMemo(() => {
     if (!assignments || !students || !submissions || assignments.length === 0) return 0;
     let totalExpected = 0;
@@ -82,29 +83,29 @@ export default function AdminAssignmentsView() {
   const activeAssignmentsCount = assignments?.length || 0;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto p-4 md:p-6">
-      
-      {/* Premium Gradient Header Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-blue-700 via-indigo-650 to-violet-800 p-8 text-white shadow-xl">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 text-indigo-200 shrink-0">
-                <ClipboardCheck className="h-6 w-6 text-white" />
+    <div className="space-y-6">
+      <SectionHeroBanner
+        title="Assignments & Quizzes"
+        subtitle="Publish coursework, distribute digital tests, review automated grading, and set submission deadlines."
+        eyebrow="CONTINUOUS ASSESSMENT"
+        icon={ClipboardCheck}
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                PENDING REVIEW
               </span>
-              <Badge className="bg-white/15 text-white font-extrabold uppercase text-[10px] border-none px-2.5 py-0.5 rounded-full tracking-widest">
-                Curriculum Overview
-              </Badge>
+              <span className="text-slate-500">•</span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                {activeAssignmentsCount} ACTIVE TASKS
+              </span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight uppercase italic">Global Assignments Registry</h1>
-            <p className="text-slate-200 text-sm font-medium mt-1 max-w-xl">
-              Monitor course tasks, student submission states, and grading metrics across all grade cohorts.
-            </p>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Stats KPI Counter Deck */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
