@@ -669,11 +669,11 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([cat, subs]) => (
                                 <Accordion key={cat} type="single" collapsible className="w-full">
                                     <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-950/80 hover:bg-slate-900 border border-slate-850 rounded-2xl mb-1 group flex items-center justify-between text-indigo-300">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/40 hover:bg-slate-850/60 border border-slate-800/80 rounded-2xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white group-data-[state=open]:border-indigo-500/40 group-data-[state=open]:bg-indigo-950/20 group-data-[state=open]:text-indigo-300 transition-all">
                                             <div className="flex items-center gap-2">
-                                                <Folder className="w-4 h-4 text-indigo-400 group-data-[state=open]:hidden" />
+                                                <Folder className="w-4 h-4 text-slate-400 group-hover:text-slate-300 group-data-[state=open]:text-indigo-400 group-data-[state=open]:hidden transition-colors" />
                                                 <FolderOpen className="w-4 h-4 text-indigo-400 hidden group-data-[state=open]:block" />
-                                                <span className="font-black text-xs uppercase tracking-wider">{cat}</span>
+                                                <span className="font-bold text-xs uppercase tracking-wider">{cat}</span>
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent className="pt-1 pl-3 space-y-1">
@@ -799,35 +799,35 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {SUGGESTED_ENGLISH_MODULES.map((mod, i) => (
                                 <div 
                                     key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group h-full"
+                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
                                 >
                                     <div>
-                                        <div className="min-h-[44px] flex items-start justify-between gap-2 mb-2">
-                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors leading-snug line-clamp-2">
-                                                {mod.title}
-                                            </h4>
-                                            <span className="text-xs text-slate-400 shrink-0 font-medium whitespace-nowrap">
+                                        <div className="flex items-center justify-between gap-2 mb-3">
+                                            <span className="text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
                                                 {mod.meta}
                                             </span>
+                                            <span className={cn(
+                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                                "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                            )}>
+                                                {mod.difficulty}
+                                            </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 h-8 min-h-[32px] leading-relaxed">
+                                        <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                            {mod.title}
+                                        </h4>
+                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
                                             {mod.description}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-auto">
-                                        <span className={cn(
-                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                        )}>
-                                            {mod.difficulty}
-                                        </span>
+                                    <div className="flex items-center justify-end pt-3.5 border-t border-slate-800/80 mt-auto">
                                         <Button
                                             size="sm"
                                             onClick={() => {
@@ -842,7 +842,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                                 });
                                                 setAnswers([]);
                                             }}
-                                            className="h-8 px-3 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                                            className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                                         >
                                             <span>Launch Lab</span>
                                             <ChevronRight className="w-3.5 h-3.5" />
@@ -965,11 +965,11 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([subject, subTopics]) => (
                                 <Accordion key={subject} type="single" collapsible className="w-full">
                                     <AccordionItem value={subject} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3.5 bg-slate-950/80 hover:bg-slate-900 border border-slate-850 rounded-2xl mb-1 group flex items-center justify-between text-emerald-400">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/40 hover:bg-slate-850/60 border border-slate-800/80 rounded-2xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white group-data-[state=open]:border-emerald-500/40 group-data-[state=open]:bg-emerald-950/20 group-data-[state=open]:text-emerald-400 transition-all">
                                             <div className="flex items-center gap-2">
-                                                <Folder className="w-4 h-4 text-emerald-400 group-data-[state=open]:hidden" />
+                                                <Folder className="w-4 h-4 text-slate-400 group-hover:text-slate-300 group-data-[state=open]:text-emerald-400 group-data-[state=open]:hidden transition-colors" />
                                                 <FolderOpen className="w-4 h-4 text-emerald-400 hidden group-data-[state=open]:block" />
-                                                <span className="font-black text-xs uppercase tracking-wider">{subject}</span>
+                                                <span className="font-bold text-xs uppercase tracking-wider">{subject}</span>
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent className="pt-1 pl-3 space-y-1">
@@ -1122,35 +1122,35 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {SUGGESTED_MATH_MODULES.map((mod, i) => (
                                 <div 
                                     key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group h-full"
+                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
                                 >
                                     <div>
-                                        <div className="min-h-[44px] flex items-start justify-between gap-2 mb-2">
-                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors leading-snug line-clamp-2">
-                                                {mod.title}
-                                            </h4>
-                                            <span className="text-xs text-slate-400 shrink-0 font-medium whitespace-nowrap">
+                                        <div className="flex items-center justify-between gap-2 mb-3">
+                                            <span className="text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
                                                 {mod.meta}
                                             </span>
+                                            <span className={cn(
+                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                                "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                            )}>
+                                                {mod.difficulty}
+                                            </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 h-8 min-h-[32px] leading-relaxed">
+                                        <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                            {mod.title}
+                                        </h4>
+                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
                                             {mod.description}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-auto">
-                                        <span className={cn(
-                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                        )}>
-                                            {mod.difficulty}
-                                        </span>
+                                    <div className="flex items-center justify-end pt-3.5 border-t border-slate-800/80 mt-auto">
                                         <Button
                                             size="sm"
                                             onClick={() => {
@@ -1167,7 +1167,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                                 setFeedback(null);
                                                 setUserInput("");
                                             }}
-                                            className="h-8 px-3 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                                            className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                                         >
                                             <span>Launch Lab</span>
                                             <ChevronRight className="w-3.5 h-3.5" />
@@ -1266,11 +1266,11 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([cat, subs]) => (
                                 <Accordion key={cat} type="single" collapsible className="w-full">
                                     <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3.5 bg-slate-950/80 hover:bg-slate-900 border border-slate-855 rounded-2xl mb-1 group flex items-center justify-between text-cyan-400">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/40 hover:bg-slate-850/60 border border-slate-800/80 rounded-2xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white group-data-[state=open]:border-cyan-500/40 group-data-[state=open]:bg-cyan-950/20 group-data-[state=open]:text-cyan-300 transition-all">
                                             <div className="flex items-center gap-2">
-                                                <Folder className="w-4 h-4 text-cyan-450 group-data-[state=open]:hidden" />
-                                                <FolderOpen className="w-4 h-4 text-cyan-450 hidden group-data-[state=open]:block" />
-                                                <span className="font-black text-xs uppercase tracking-wider">{cat}</span>
+                                                <Folder className="w-4 h-4 text-slate-400 group-hover:text-slate-300 group-data-[state=open]:text-cyan-400 group-data-[state=open]:hidden transition-colors" />
+                                                <FolderOpen className="w-4 h-4 text-cyan-400 hidden group-data-[state=open]:block" />
+                                                <span className="font-bold text-xs uppercase tracking-wider">{cat}</span>
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent className="pt-1 pl-3 space-y-1">
@@ -1485,35 +1485,35 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {SUGGESTED_SCIENCE_MODULES.map((mod, i) => (
                                 <div 
                                     key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group h-full"
+                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
                                 >
                                     <div>
-                                        <div className="min-h-[44px] flex items-start justify-between gap-2 mb-2">
-                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors leading-snug line-clamp-2">
-                                                {mod.title}
-                                            </h4>
-                                            <span className="text-xs text-slate-400 shrink-0 font-medium whitespace-nowrap">
+                                        <div className="flex items-center justify-between gap-2 mb-3">
+                                            <span className="text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
                                                 {mod.meta}
                                             </span>
+                                            <span className={cn(
+                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                                "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                            )}>
+                                                {mod.difficulty}
+                                            </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 h-8 min-h-[32px] leading-relaxed">
+                                        <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                            {mod.title}
+                                        </h4>
+                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
                                             {mod.description}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-auto">
-                                        <span className={cn(
-                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                        )}>
-                                            {mod.difficulty}
-                                        </span>
+                                    <div className="flex items-center justify-end pt-3.5 border-t border-slate-800/80 mt-auto">
                                         <Button
                                             size="sm"
                                             onClick={() => {
@@ -1531,7 +1531,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                                 });
                                                 setStage('hypothesis');
                                             }}
-                                            className="h-8 px-3 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                                            className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                                         >
                                             <span>Launch Lab</span>
                                             <ChevronRight className="w-3.5 h-3.5" />

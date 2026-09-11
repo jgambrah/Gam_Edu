@@ -110,7 +110,7 @@ export function AiChat() {
     <>
       <button
         type="button"
-        className="fixed bottom-6 right-6 z-40 bg-indigo-600 hover:bg-indigo-500 text-white p-3.5 rounded-full shadow-xl shadow-indigo-950/60 transition-all duration-200 hover:scale-105 flex items-center justify-center cursor-pointer border border-indigo-400/30"
+        className="fixed bottom-6 right-6 z-30 bg-indigo-600 hover:bg-indigo-500 text-white p-3.5 rounded-full shadow-xl shadow-indigo-950/60 transition-all duration-200 hover:scale-105 flex items-center justify-center cursor-pointer border border-indigo-400/30"
         onClick={() => setIsOpen(true)}
         title="Open AI Assistant"
       >

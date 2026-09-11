@@ -181,3 +181,11 @@
   animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Suppress dev portal badges and overlays from obscuring dashboard bottom-right FAB */
+nextjs-portal,
+[data-nextjs-toast],
+div[data-nextjs-route-announcer],
+#__next-build-watcher {
+  display: none !important;
+}
+
