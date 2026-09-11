@@ -224,6 +224,11 @@ service cloud.firestore {
       allow write, set, update: if isSignedIn() && (isAdmin() || isStaff() || isTeacher());
     }
 
+    match /assessment_records_snapshots/{snapshotId} {
+      allow read, get: if isSignedIn();
+      allow write, set, update: if isSignedIn() && (isAdmin() || isStaff() || isTeacher());
+    }
+
     match /report-cards/{reportId} {
       allow get: if isSignedIn() && (
         isTeacher() || isStaff() || isAdmin() || isDirector() ||
