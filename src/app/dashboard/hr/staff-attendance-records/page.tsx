@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, limit, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, getDocs, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,7 +18,7 @@ import {
     Clock, Loader2, Calendar as CalendarIcon, 
     Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera, 
     XCircle, ShieldCheck, Search, Users, ShieldX, UserCheck, CheckCircle2, AlertTriangle, FileText, ExternalLink,
-    Zap, RefreshCw, History, CalendarDays
+    Zap, RefreshCw, History, CalendarDays, Archive, PackageCheck
 } from 'lucide-react';
 import { format, startOfDay, endOfDay, subDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
@@ -26,6 +26,35 @@ import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
 import type { Staff, StaffAttendance } from '@/lib/types';
+
+// Compact serialized record for the 1-read aggregate basket
+interface StaffAttendanceBasketRecord {
+  id: string;
+  staffId: string;
+  staffName: string;
+  type: 'In' | 'Out';
+  status: 'Present' | 'Late';
+  leftEarly?: boolean;
+  timestamp: string; // ISO string
+  verificationPhotoUrl?: string;
+  hasProofPhoto?: boolean;
+  schoolId: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  isFlagged?: boolean;
+  distanceMeters?: number | null;
+  isIdentityFlagged?: boolean;
+  identityNotes?: string;
+}
+
+// Single-document rolling 30-day basket
+interface StaffAttendanceBasketDoc {
+  schoolId: string;
+  basketDate: string; // YYYY-MM-DD
+  updatedAt: string;  // ISO string
+  recordCount: number;
+  records: StaffAttendanceBasketRecord[];
+}
 
 export default function StaffAttendanceRecordsPage() {
   const { role } = useRole();
@@ -41,8 +70,14 @@ export default function StaffAttendanceRecordsPage() {
   const [selectedStaffId, setSelectedStaffId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [hudLog, setHudLog] = useState<StaffAttendance | null>(null);
+  const [isLoadingProofPhoto, setIsLoadingProofPhoto] = useState(false);
 
-  // ── ON-DEMAND HISTORICAL AUDIT STATE ──
+  // ── 1-READ AGGREGATED BASKET & HISTORICAL STATE ──
+  const [cachedBasket, setCachedBasket] = useState<StaffAttendanceBasketDoc | null>(null);
+  const [isBasketActive, setIsBasketActive] = useState(false);
+  const [isCompilingBasket, setIsCompilingBasket] = useState(false);
+  const [activePreset, setActivePreset] = useState<'today' | 'yesterday' | '7days' | '30days' | 'custom'>('today');
+
   const [historicalLogs, setHistoricalLogs] = useState<StaffAttendance[] | null>(null);
   const [isLoadingHistorical, setIsLoadingHistorical] = useState(false);
   const [loadedRangeKey, setLoadedRangeKey] = useState<string>('');
@@ -83,7 +118,102 @@ export default function StaffAttendanceRecordsPage() {
   , [firestore, schoolId, canAccess, isTodayOnly]);
   const { data: todayAttendanceLogs, isLoading: isLoadingTodayLogs } = useCollection<StaffAttendance>(todayAttendanceQuery);
 
-  // On-demand fetch for historical audits
+  // Helper: unpack compact basket records into full StaffAttendance objects
+  const unpackBasketRecords = (records: StaffAttendanceBasketRecord[]): StaffAttendance[] => {
+    return records.map(r => ({
+      ...r,
+      latitude: r.latitude ?? undefined,
+      longitude: r.longitude ?? undefined,
+      distanceMeters: r.distanceMeters ?? undefined,
+      timestamp: {
+        toDate: () => new Date(r.timestamp),
+        seconds: Math.floor(new Date(r.timestamp).getTime() / 1000),
+        nanoseconds: 0,
+      },
+    } as unknown as StaffAttendance));
+  };
+
+  // Compile rolling 31-day basket from staff_attendance collection
+  const compileFreshBasket = useCallback(async (targetSchoolId: string): Promise<StaffAttendanceBasketDoc | null> => {
+    if (!firestore || !targetSchoolId) return null;
+    setIsCompilingBasket(true);
+    try {
+      const thirtyDaysAgo = Timestamp.fromDate(startOfDay(subDays(new Date(), 31)));
+      let docsList: any[] = [];
+      try {
+        const q = query(
+          collection(firestore, 'staff_attendance'),
+          where('schoolId', '==', targetSchoolId),
+          where('timestamp', '>=', thirtyDaysAgo),
+          orderBy('timestamp', 'desc'),
+          limit(600)
+        );
+        const snapshot = await getDocs(q);
+        docsList = snapshot.docs;
+      } catch (err) {
+        console.warn('Fallback query for compiling staff attendance basket:', err);
+        const fallbackQ = query(
+          collection(firestore, 'staff_attendance'),
+          where('schoolId', '==', targetSchoolId),
+          orderBy('timestamp', 'desc'),
+          limit(500)
+        );
+        const snapshot = await getDocs(fallbackQ);
+        docsList = snapshot.docs.filter(d => {
+          const t = d.data().timestamp;
+          if (!t) return false;
+          const dt = t.toDate ? t.toDate() : new Date(t);
+          return dt >= startOfDay(subDays(new Date(), 31));
+        });
+      }
+
+      const basketRecords: StaffAttendanceBasketRecord[] = docsList.map(d => {
+        const data = d.data();
+        const ts = data.timestamp;
+        const iso = ts?.toDate ? ts.toDate().toISOString() : (ts ? new Date(ts).toISOString() : new Date().toISOString());
+        const photo = data.verificationPhotoUrl || '';
+        // Truncate heavy base64 strings (>2000 chars) to prevent exceeding the 1MB Firestore document limit
+        const safePhoto = (typeof photo === 'string' && photo.length < 2000) ? photo : '';
+        return {
+          id: d.id,
+          staffId: data.staffId || '',
+          staffName: data.staffName || 'Staff Member',
+          type: data.type || 'In',
+          status: data.status || 'Present',
+          leftEarly: Boolean(data.leftEarly),
+          timestamp: iso,
+          verificationPhotoUrl: safePhoto,
+          hasProofPhoto: Boolean(photo),
+          schoolId: data.schoolId || targetSchoolId,
+          latitude: data.latitude ?? null,
+          longitude: data.longitude ?? null,
+          isFlagged: Boolean(data.isFlagged),
+          distanceMeters: data.distanceMeters ?? null,
+          isIdentityFlagged: Boolean(data.isIdentityFlagged),
+          identityNotes: data.identityNotes || '',
+        };
+      });
+
+      const basketDoc: StaffAttendanceBasketDoc = {
+        schoolId: targetSchoolId,
+        basketDate: format(new Date(), 'yyyy-MM-dd'),
+        updatedAt: new Date().toISOString(),
+        recordCount: basketRecords.length,
+        records: basketRecords,
+      };
+
+      // Persist aggregated basket to Firestore -> all future historical views cost 1 SINGLE READ!
+      await setDoc(doc(firestore, 'staff_attendance_baskets', targetSchoolId), basketDoc, { merge: true });
+      return basketDoc;
+    } catch (e) {
+      console.error('Failed to compile staff attendance basket:', e);
+      return null;
+    } finally {
+      setIsCompilingBasket(false);
+    }
+  }, [firestore]);
+
+  // On-demand fetch fallback for ranges older than 31 days
   const handleFetchHistorical = useCallback(async () => {
     if (!firestore || !schoolId || !dateRange?.from) return;
     setIsLoadingHistorical(true);
@@ -102,7 +232,7 @@ export default function StaffAttendanceRecordsPage() {
           limit(500)
         );
         const snapshot = await getDocs(q);
-        records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffAttendance));
+        records = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as StaffAttendance));
       } catch (err: any) {
         console.warn('Composite index fallback for historical staff attendance:', err);
         const fallbackQ = query(
@@ -113,7 +243,7 @@ export default function StaffAttendanceRecordsPage() {
         );
         const snapshot = await getDocs(fallbackQ);
         records = snapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() } as StaffAttendance))
+          .map(d => ({ id: d.id, ...d.data() } as StaffAttendance))
           .filter(log => {
             if (!log.timestamp) return false;
             const d = log.timestamp.toDate ? log.timestamp.toDate() : new Date(log.timestamp);
@@ -123,6 +253,7 @@ export default function StaffAttendanceRecordsPage() {
 
       setHistoricalLogs(records);
       setLoadedRangeKey(currentRangeKey);
+      setIsBasketActive(false);
       toast({
         title: "Historical Audit Loaded",
         description: `Successfully loaded ${records.length} staff attendance records on-demand.`,
@@ -138,11 +269,110 @@ export default function StaffAttendanceRecordsPage() {
     }
   }, [firestore, schoolId, dateRange, currentRangeKey, toast]);
 
+  // 1-READ BASKET LOADER: Fetches exactly ONE document and unpacks in-memory
+  const loadFromBasket = useCallback(async (
+    targetRange: DateRange, 
+    presetType: 'today' | 'yesterday' | '7days' | '30days' | 'custom',
+    forceRecompile = false
+  ) => {
+    if (!firestore || !schoolId || !targetRange.from) return;
+    setIsLoadingHistorical(true);
+
+    try {
+      let basket = cachedBasket;
+
+      // 1. If not cached in memory or forceRecompile requested, fetch the single basket doc
+      if (!basket || forceRecompile) {
+        if (!forceRecompile) {
+          // Exactly 1 Firestore Read!
+          const basketSnap = await getDoc(doc(firestore, 'staff_attendance_baskets', schoolId));
+          if (basketSnap.exists()) {
+            basket = basketSnap.data() as StaffAttendanceBasketDoc;
+          }
+        }
+
+        // 2. If basket doesn't exist yet, auto-compile and save it
+        if (!basket || forceRecompile) {
+          basket = await compileFreshBasket(schoolId);
+          if (basket) {
+            toast({
+              title: "1-Read Basket Initialized",
+              description: `Aggregated ${basket.recordCount} records into a single basket. Future views will cost only 1 read!`,
+            });
+          }
+        }
+      }
+
+      // 3. Slice unpacked records in-memory
+      if (basket && basket.records) {
+        setCachedBasket(basket);
+        const unpacked = unpackBasketRecords(basket.records);
+
+        const fromTime = startOfDay(targetRange.from).getTime();
+        const toTime = endOfDay(targetRange.to || targetRange.from).getTime();
+
+        const filtered = unpacked.filter(r => {
+          if (!r.timestamp) return false;
+          const logDate = r.timestamp.toDate ? r.timestamp.toDate() : new Date(r.timestamp);
+          const t = logDate.getTime();
+          return t >= fromTime && t <= toTime;
+        });
+
+        setDateRange(targetRange);
+        setHistoricalLogs(filtered);
+        setLoadedRangeKey(`${fromTime}_${toTime}`);
+        setIsBasketActive(true);
+        setActivePreset(presetType);
+
+        const label = presetType === 'yesterday' ? 'Yesterday' : presetType === '7days' ? 'Past 7 Days' : presetType === '30days' ? 'Past 30 Days' : 'Historical';
+        toast({
+          title: `Single-Read Basket Active (${label})`,
+          description: `Loaded ${filtered.length} records instantly via 1 document read.`,
+        });
+      } else {
+        // Fallback to standard on-demand fetch if basket compilation failed
+        await handleFetchHistorical();
+      }
+    } catch (err: any) {
+      console.error('Error loading from basket:', err);
+      toast({
+        variant: 'destructive',
+        title: 'Error reading basket',
+        description: err?.message || 'Failed to read basket document.',
+      });
+    } finally {
+      setIsLoadingHistorical(false);
+    }
+  }, [firestore, schoolId, cachedBasket, compileFreshBasket, handleFetchHistorical, toast]);
+
+  // Open HUD Modal and load full-res photo on demand if needed
+  const handleOpenHud = useCallback(async (log: StaffAttendance) => {
+    setHudLog(log);
+    if (!log.verificationPhotoUrl && (log as any).hasProofPhoto && firestore) {
+      setIsLoadingProofPhoto(true);
+      try {
+        const snap = await getDoc(doc(firestore, 'staff_attendance', log.id));
+        if (snap.exists()) {
+          const photoUrl = snap.data().verificationPhotoUrl;
+          if (photoUrl) {
+            setHudLog(prev => prev && prev.id === log.id ? { ...prev, verificationPhotoUrl: photoUrl } : prev);
+          }
+        }
+      } catch (e) {
+        console.warn('Could not fetch proof scan on demand:', e);
+      } finally {
+        setIsLoadingProofPhoto(false);
+      }
+    }
+  }, [firestore]);
+
   const handleResetToToday = () => {
     setDateRange({
       from: startOfDay(new Date()),
       to: endOfDay(new Date()),
     });
+    setActivePreset('today');
+    setIsBasketActive(false);
   };
 
   // --- EFFECTIVE LOGS RESOLUTION ---
@@ -248,6 +478,10 @@ export default function StaffAttendanceRecordsPage() {
                 <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-black px-2.5 py-0.5 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> TODAY LIVE VIEW
                 </Badge>
+              ) : isBasketActive ? (
+                <Badge className="bg-indigo-500/30 text-indigo-300 border border-indigo-500/50 font-black px-2.5 py-0.5 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                  <Archive size={11} className="text-indigo-400" /> 1-READ BASKET AUDIT
+                </Badge>
               ) : (
                 <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/40 font-black px-2.5 py-0.5 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
                   <Zap size={11} className="text-amber-400" /> HISTORICAL ON-DEMAND
@@ -281,7 +515,7 @@ export default function StaffAttendanceRecordsPage() {
               <CardContent className="pb-5 px-5">
                 <p className="text-3xl font-black text-slate-900">{stats.total}</p>
                 <p className="text-[10px] font-bold text-slate-450 mt-1 uppercase">
-                  {isTodayOnly ? "Today's check-ins" : (isRangeLoaded ? "within chosen range" : "query pending")}
+                  {isTodayOnly ? "Today's check-ins" : (isBasketActive ? "1-Read Basket" : isRangeLoaded ? "Within chosen range" : "Query pending")}
                 </p>
               </CardContent>
           </Card>
@@ -353,6 +587,10 @@ export default function StaffAttendanceRecordsPage() {
                           <span className="text-[9px] font-black uppercase tracking-wide text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Today Only
                           </span>
+                        ) : isBasketActive ? (
+                          <span className="text-[9px] font-black uppercase tracking-wide text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 flex items-center gap-1">
+                            <Archive size={10} className="text-indigo-600" /> 1-Read Basket
+                          </span>
                         ) : (
                           <span className="text-[9px] font-black uppercase tracking-wide text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
                             <Zap size={10} className="text-amber-600" /> On-Demand
@@ -368,18 +606,42 @@ export default function StaffAttendanceRecordsPage() {
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
+                            <Calendar 
+                              initialFocus 
+                              mode="range" 
+                              defaultMonth={dateRange?.from} 
+                              selected={dateRange} 
+                              onSelect={(range) => {
+                                setDateRange(range);
+                                if (range?.from) {
+                                  const todayStart = startOfDay(new Date()).getTime();
+                                  const fromTime = startOfDay(range.from).getTime();
+                                  const toTime = range.to ? startOfDay(range.to).getTime() : fromTime;
+                                  if (fromTime === todayStart && toTime === todayStart) {
+                                    setActivePreset('today');
+                                    setIsBasketActive(false);
+                                  } else {
+                                    setActivePreset('custom');
+                                  }
+                                }
+                              }} 
+                              numberOfMonths={2} 
+                            />
                         </PopoverContent>
                       </Popover>
 
-                      {/* Quick Period Presets */}
+                      {/* Quick Period Presets (1-Read Basket Powered) */}
                       <div className="flex items-center gap-1.5 pt-0.5 flex-wrap">
                         <button
                           type="button"
-                          onClick={handleResetToToday}
+                          onClick={() => {
+                            handleResetToToday();
+                            setActivePreset('today');
+                            setIsBasketActive(false);
+                          }}
                           className={cn(
-                            "text-[10px] font-bold px-2 py-0.5 rounded-md transition-all",
-                            isTodayOnly ? "bg-slate-900 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            "text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all",
+                            isTodayOnly && activePreset === 'today' ? "bg-slate-900 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                           )}
                         >
                           Today (Live)
@@ -388,33 +650,46 @@ export default function StaffAttendanceRecordsPage() {
                           type="button"
                           onClick={() => {
                             const y = subDays(new Date(), 1);
-                            setDateRange({ from: startOfDay(y), to: endOfDay(y) });
+                            loadFromBasket({ from: startOfDay(y), to: endOfDay(y) }, 'yesterday');
                           }}
                           className={cn(
-                            "text-[10px] font-bold px-2 py-0.5 rounded-md transition-all",
-                            !isTodayOnly && dateRange?.from && format(dateRange.from, 'yyyy-MM-dd') === format(subDays(new Date(), 1), 'yyyy-MM-dd') && dateRange.to && format(dateRange.to, 'yyyy-MM-dd') === format(subDays(new Date(), 1), 'yyyy-MM-dd')
-                              ? "bg-slate-900 text-white shadow-sm" 
+                            "text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1",
+                            !isTodayOnly && activePreset === 'yesterday'
+                              ? "bg-indigo-600 text-white shadow-sm font-black" 
                               : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                           )}
                         >
+                          <Archive size={11} className={cn(!isTodayOnly && activePreset === 'yesterday' ? "text-indigo-200" : "text-slate-400")} />
                           Yesterday
                         </button>
                         <button
                           type="button"
                           onClick={() => {
-                            setDateRange({ from: startOfDay(subDays(new Date(), 6)), to: endOfDay(new Date()) });
+                            loadFromBasket({ from: startOfDay(subDays(new Date(), 6)), to: endOfDay(new Date()) }, '7days');
                           }}
-                          className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
+                          className={cn(
+                            "text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1",
+                            !isTodayOnly && activePreset === '7days'
+                              ? "bg-indigo-600 text-white shadow-sm font-black" 
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          )}
                         >
+                          <Archive size={11} className={cn(!isTodayOnly && activePreset === '7days' ? "text-indigo-200" : "text-slate-400")} />
                           Past 7 Days
                         </button>
                         <button
                           type="button"
                           onClick={() => {
-                            setDateRange({ from: startOfDay(subDays(new Date(), 29)), to: endOfDay(new Date()) });
+                            loadFromBasket({ from: startOfDay(subDays(new Date(), 29)), to: endOfDay(new Date()) }, '30days');
                           }}
-                          className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
+                          className={cn(
+                            "text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all flex items-center gap-1",
+                            !isTodayOnly && activePreset === '30days'
+                              ? "bg-indigo-600 text-white shadow-sm font-black" 
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          )}
                         >
+                          <Archive size={11} className={cn(!isTodayOnly && activePreset === '30days' ? "text-indigo-200" : "text-slate-400")} />
                           Past 30 Days
                         </button>
                       </div>
@@ -446,41 +721,70 @@ export default function StaffAttendanceRecordsPage() {
                   </div>
               </div>
 
-              {/* Historical On-Demand Prompt Banner */}
+              {/* Historical On-Demand / Basket Prompt Banner */}
               {!isTodayOnly && (
                 <div className={cn(
                   "p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-3 transition-all",
-                  isRangeLoaded ? "bg-emerald-50/70 border-emerald-200 text-emerald-950" : "bg-amber-50/90 border-amber-200 text-amber-950"
+                  isBasketActive 
+                    ? "bg-indigo-50/70 border-indigo-200 text-indigo-950" 
+                    : isRangeLoaded 
+                      ? "bg-emerald-50/70 border-emerald-200 text-emerald-950" 
+                      : "bg-amber-50/90 border-amber-200 text-amber-950"
                 )}>
                   <div className="flex items-center gap-3 w-full md:w-auto">
                     <div className={cn(
                       "p-2.5 rounded-xl shrink-0",
-                      isRangeLoaded ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                      isBasketActive ? "bg-indigo-100 text-indigo-700" : isRangeLoaded ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                     )}>
-                      {isRangeLoaded ? <CheckCircle2 className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
+                      {isBasketActive ? <PackageCheck className="h-5 w-5" /> : isRangeLoaded ? <CheckCircle2 className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
                     </div>
                     <div>
-                      <p className="text-xs font-black">
-                        {isRangeLoaded 
-                          ? `Historical Audit Active (${filteredLogs.length} Records Loaded)` 
-                          : 'On-Demand Historical Range Selected'}
-                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-xs font-black">
+                          {isBasketActive 
+                            ? `1-Read Aggregated Basket Active (${filteredLogs.length} Records Loaded)` 
+                            : isRangeLoaded 
+                              ? `Historical Audit Active (${filteredLogs.length} Records Loaded)` 
+                              : 'Historical Period Selected'}
+                        </p>
+                        {isBasketActive && (
+                          <Badge className="bg-indigo-600 text-white font-extrabold text-[9px] px-2 py-0.5 uppercase tracking-wide">
+                            Billed as 1 Read
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-[11px] opacity-80 mt-0.5">
                         {dateRange?.from ? format(dateRange.from, 'PPP') : ''} — {dateRange?.to ? format(dateRange.to, 'PPP') : 'Today'}
-                        {!isRangeLoaded && " · Click 'Load Historical Audit' to fetch without continuous read costs."}
+                        {isBasketActive && cachedBasket?.updatedAt && (
+                          ` · Basket synced: ${format(new Date(cachedBasket.updatedAt), 'p, MMM d')}`
+                        )}
+                        {!isRangeLoaded && " · Select a preset or click below to load records aggregated into a single document."}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 w-full md:w-auto justify-end shrink-0">
+                    {isBasketActive && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => loadFromBasket(dateRange!, activePreset, true)}
+                        disabled={isLoadingHistorical || isCompilingBasket}
+                        className="font-bold text-xs h-10 px-3.5 rounded-xl border-indigo-200 bg-white hover:bg-indigo-50 text-indigo-700 flex items-center gap-1.5"
+                        title="Recompile basket from live Firestore records"
+                      >
+                        <RefreshCw className={cn("h-3.5 w-3.5", (isLoadingHistorical || isCompilingBasket) && "animate-spin")} />
+                        {isCompilingBasket ? 'Re-syncing...' : 'Re-sync Basket'}
+                      </Button>
+                    )}
                     {!isRangeLoaded && (
                       <Button
-                        onClick={handleFetchHistorical}
+                        onClick={() => loadFromBasket(dateRange!, 'custom')}
                         disabled={isLoadingHistorical}
-                        className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs h-10 px-4 rounded-xl shadow-sm flex items-center gap-2"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs h-10 px-4 rounded-xl shadow-sm flex items-center gap-2"
                       >
-                        {isLoadingHistorical ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-                        {isLoadingHistorical ? 'Querying Records...' : 'Load Historical Audit'}
+                        {isLoadingHistorical ? <Loader2 className="h-4 w-4 animate-spin" /> : <PackageCheck className="h-4 w-4" />}
+                        {isLoadingHistorical ? 'Loading Basket...' : 'Load from 1-Read Basket'}
                       </Button>
                     )}
                     <Button
@@ -518,22 +822,22 @@ export default function StaffAttendanceRecordsPage() {
                 <TableBody>
                     {!isTodayOnly && !isRangeLoaded ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-28 bg-amber-50/10">
+                        <TableCell colSpan={5} className="text-center py-28 bg-indigo-50/10">
                           <div className="flex flex-col items-center justify-center gap-3">
-                            <div className="p-3 bg-amber-100 text-amber-700 rounded-2xl">
-                              <Zap className="h-7 w-7" />
+                            <div className="p-3 bg-indigo-100 text-indigo-700 rounded-2xl">
+                              <Archive className="h-7 w-7" />
                             </div>
-                            <p className="font-black text-sm text-slate-800">Historical Records On-Demand</p>
+                            <p className="font-black text-sm text-slate-800">1-Read Aggregated Basket Audit</p>
                             <p className="text-xs text-slate-500 max-w-md">
-                              You selected {dateRange?.from ? format(dateRange.from, 'PPP') : ''} to {dateRange?.to ? format(dateRange.to, 'PPP') : 'Today'}. Click below to query historical logs on demand.
+                              You selected {dateRange?.from ? format(dateRange.from, 'PPP') : ''} to {dateRange?.to ? format(dateRange.to, 'PPP') : 'Today'}. Load this period instantly aggregated into a single document so you are billed with a single read.
                             </p>
                             <Button
-                              onClick={handleFetchHistorical}
+                              onClick={() => loadFromBasket(dateRange!, 'custom')}
                               disabled={isLoadingHistorical}
-                              className="mt-2 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs rounded-xl h-11 px-6 shadow-md flex items-center gap-2"
+                              className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl h-11 px-6 shadow-md flex items-center gap-2"
                             >
-                              {isLoadingHistorical ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-                              {isLoadingHistorical ? 'Querying Records...' : 'Load Historical Audit'}
+                              {isLoadingHistorical ? <Loader2 className="h-4 w-4 animate-spin" /> : <PackageCheck className="h-4 w-4" />}
+                              {isLoadingHistorical ? 'Loading Basket...' : 'Load Period (1 Single Read)'}
                             </Button>
                           </div>
                         </TableCell>
@@ -596,9 +900,9 @@ export default function StaffAttendanceRecordsPage() {
                                         ) : (
                                             <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[8px] font-black uppercase tracking-wide py-0.5 px-2 rounded-md">AI VERIFIED</Badge>
                                         )}
-                                        {log.verificationPhotoUrl && (
+                                        {(log.verificationPhotoUrl || (log as any).hasProofPhoto) && (
                                           <button 
-                                              onClick={() => setHudLog(log)}
+                                              onClick={() => handleOpenHud(log)}
                                               className="text-[9px] font-black text-indigo-650 hover:text-indigo-800 uppercase hover:underline flex items-center gap-1 mt-0.5 transition-colors"
                                           >
                                               <Camera size={11} className="text-indigo-500"/> View Proof Scan
@@ -663,7 +967,12 @@ export default function StaffAttendanceRecordsPage() {
                 {/* Simulated Scanning Beam */}
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-emerald-455 to-transparent opacity-75 shadow-[0_0_8px_rgba(52,211,153,0.8)] pointer-events-none z-30 animate-pulse"></div>
 
-                {hudLog?.verificationPhotoUrl ? (
+                {isLoadingProofPhoto ? (
+                  <div className="text-center py-20 text-slate-400 flex flex-col items-center gap-3">
+                     <Loader2 className="h-10 w-10 text-emerald-400 animate-spin"/>
+                     <p className="text-xs italic font-bold">Loading Proof Scan Photo...</p>
+                  </div>
+                ) : hudLog?.verificationPhotoUrl ? (
                   <img src={hudLog.verificationPhotoUrl} alt="Staff Scan" className="w-full h-full object-cover z-10 opacity-85" />
                 ) : (
                   <div className="text-center py-20 text-slate-400 flex flex-col items-center gap-3">

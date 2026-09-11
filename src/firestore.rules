@@ -209,6 +209,11 @@ service cloud.firestore {
       allow list: if isAdmin() || (isSignedIn() && isStaff());
     }
 
+    match /staff_attendance_baskets/{schoolId} {
+      allow read, get: if isSignedIn();
+      allow write, set, update: if isSignedIn() && (isAdmin() || isStaff());
+    }
+
     match /report-cards/{reportId} {
       allow get: if isSignedIn() && (
         isTeacher() || isStaff() || isAdmin() || isDirector() ||
