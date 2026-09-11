@@ -20,6 +20,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { TimelineService } from '@/lib/timeline-service';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 /**
  * @fileOverview Class Promotion & Graduation Engine
@@ -237,28 +238,61 @@ export default function PromotionPage() {
   const studentsToMoveCount = students?.filter(s => selectedStudentIds.includes(s.uid)).length || 0;
 
   return (
-    <div className="space-y-8">
-      {/* Premium Gradient Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-700 via-indigo-600 to-teal-500 p-8 md:p-12 text-white shadow-2xl border border-indigo-400/20">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-teal-400/10 blur-2xl" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-indigo-100 backdrop-blur-md">
-              <GraduationCap className="h-3 w-3" /> Cohort Transition Engine
-            </span>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase">
-              End of Year <span className="text-teal-200">Transfer</span>
-            </h1>
-            <p className="max-w-md text-sm font-medium text-indigo-50">
-              Bulk promote class rosters, retain cohorts, or graduate final-year students into the alumni database.
-            </p>
+    <div className="space-y-6">
+      {/* Standardized Institutional Hero Banner */}
+      <SectionHeroBanner
+        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        eyebrow="COHORT TRANSITION ENGINE"
+        title="End of Year Transfer"
+        subtitle="Bulk promote class rosters, retain cohorts, or graduate final-year students into the alumni database."
+        icon={GraduationCap}
+        badge={{
+          label: "Transition Engine",
+          variant: "info",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Academic Administration', href: '/dashboard' },
+          { label: 'End of Year Transfer' },
+        ]}
+        stats={
+          sourceClassId ? [
+            { 
+              label: 'Source Cohort', 
+              value: classes?.find(c => c.id === sourceClassId)?.name || 'Selected' 
+            },
+            { 
+              label: 'Selected Roster', 
+              value: `${studentsToMoveCount} of ${students?.length || 0}` 
+            },
+            {
+              label: 'Target Action',
+              value: destinationClassId === 'GRADUATE' ? 'Graduation' : destinationClassId ? 'Promotion' : 'Pending',
+              change: destinationClassId === 'GRADUATE' ? 'Alumni Archive' : destinationClassId ? 'Cohort Advance' : undefined,
+              changeType: 'positive',
+            }
+          ] : [
+            { label: 'System Mode', value: 'Bulk Transfer' },
+            { label: 'Target Scope', value: 'Class Rosters' },
+            { label: 'Alumni Pipeline', value: 'Graduation Ready' },
+          ]
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-xs font-bold text-slate-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>ACADEMIC TRANSITION ACTIVE</span>
+            </div>
+            {studentsToMoveCount > 0 && (
+              <Badge className="bg-amber-400 text-slate-950 font-black text-xs px-3 py-1 rounded-xl">
+                {studentsToMoveCount} Selected
+              </Badge>
+            )}
           </div>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* CONFIGURATION PANEL */}
         <Card className="lg:col-span-1 h-fit border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
