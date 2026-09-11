@@ -6,7 +6,8 @@ import StudentTimetableView from './StudentTimetableView';
 import StudentCalendarView from './StudentCalendarView';
 import { AcademicPerformanceDashboardView } from '@/components/dashboard/AcademicPerformanceDashboardView';
 import { HeroBanner } from '@/components/dashboard/HeroBanner';
-import { Download } from 'lucide-react';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
+import { Download, Building2 } from 'lucide-react';
 import { AttendanceAnalyticsView } from '@/components/dashboard/AttendanceAnalyticsView';
 import { StudentRegistryDashboardView } from '@/components/dashboard/StudentRegistryDashboardView';
 import { StaffDirectoryDashboardView } from '@/components/dashboard/StaffDirectoryDashboardView';
@@ -3805,181 +3806,209 @@ function DirectorDashboard({
 
   return (
     <div className="space-y-4 animate-in fade-in duration-500 relative pb-16">
-      {/* Consolidated Clean Header for Executive Cockpit vs Legacy Domain Header for other tabs */}
-      {activeTab === 'overview' ? (
-        <ExecutiveCockpitHeader
-          campuses={availableCampuses}
-          selectedCampus={selectedCampus}
-          onSelectCampus={setSelectedCampus}
-          onExportPdf={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
-        >
-          {/* Primary Domain Segmented Control */}
-          <div className="flex flex-wrap p-1 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-inner gap-1">
-            {domainTabs.map((domain) => {
-              const isSelected = activeDomain.id === domain.id;
-              return (
-                <button
-                  key={domain.id}
-                  onClick={() => handleDomainSelect(domain)}
-                  className={cn(
-                    "px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
-                    isSelected 
-                      ? "bg-white text-indigo-600 shadow-xs font-black scale-[1.01] border border-indigo-100/50"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
-                  )}
-                >
-                  {domain.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* AI Auditor Trigger Button */}
-          <Button 
-            onClick={handleRunAudit}
-            className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-9 px-4 shadow-md shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden shrink-0"
-          >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            <Sparkles className="h-4 w-4 animate-pulse group-hover:rotate-12 transition-transform" />
-            <span className="text-xs uppercase tracking-wider">AI Auditor</span>
-          </Button>
-        </ExecutiveCockpitHeader>
-      ) : (
-        /* Legacy Domain Header for other feature tabs */
-        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/10 text-indigo-600 px-3.5 py-1.5 rounded-full uppercase">Director Suite</span>
-            </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Executive <span className="text-indigo-600">Console</span></h1>
-          </div>
-          
-          {/* Navigation & Controls */}
-          <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-            {/* Primary Domain Segmented Control */}
-            <div className="flex flex-wrap p-1.5 bg-slate-100/90 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-inner gap-1">
-              {domainTabs.map((domain) => {
-                const isSelected = activeDomain.id === domain.id;
-                return (
-                  <button
-                    key={domain.id}
-                    onClick={() => handleDomainSelect(domain)}
-                    className={cn(
-                      "px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
-                      isSelected 
-                        ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02] border border-indigo-100/50"
-                        : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
-                    )}
-                  >
-                    {domain.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* AI Auditor Trigger Button */}
-            <Button 
-              onClick={handleRunAudit}
-              className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-black rounded-2xl h-11 px-6 shadow-lg shadow-indigo-200/50 flex items-center gap-2 group transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] relative overflow-hidden shrink-0"
-            >
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              <Sparkles className="h-4 w-4 animate-pulse group-hover:rotate-12 transition-transform" />
-              <span className="text-xs uppercase tracking-wider">AI Auditor</span>
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Secondary Sub-Pill Navigation (Rendered when active domain has sub-tabs) */}
-      {activeDomain.subTabs.length > 1 && (
-        <div className="-mt-1 mb-1 flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-xs animate-in fade-in duration-200 w-fit">
-          {activeDomain.subTabs.map((st) => (
-            <button
-              key={st.id}
-              onClick={() => setActiveTab(st.id as any)}
-              className={cn(
-                "px-4 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
-                activeTab === st.id
-                  ? "bg-indigo-600 text-white shadow-sm font-black scale-[1.01]"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-              )}
-            >
-              {st.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Standardized Reusable Hero Banner (Only for non-overview tabs to eliminate vertical sprawl) */}
-      {activeTab !== 'academics' && activeTab !== 'overview' && (() => {
+      {/* Unified Classic Institutional Hero Banner across all Executive Console tabs */}
+      {(() => {
         const tabBanners: Record<string, { tag: string; title: string; description: string; icon: any }> = {
           overview: {
             tag: "OVERVIEW HUB",
-            title: "EXECUTIVE DIRECTOR COCKPIT",
-            description: "Real-time telemetry, financial health, academic velocity, and executive action desk.",
+            title: "Executive Director Cockpit",
+            description: "Real-time institutional telemetry, financial velocity & executive action desk.",
             icon: BrainCircuit,
           },
           general: {
             tag: "SYSTEM CONTROL",
-            title: "GENERAL SCHOOL OPERATIONS",
+            title: "General School Operations",
             description: "School bulletins, public web settings, global noticeboard, and system security logs.",
             icon: School,
           },
+          academics: {
+            tag: "ACADEMIC AFFAIRS",
+            title: "Academic Performance & Analytics",
+            description: "Assessment tracking, subject performance breakdown, and learning progression metrics.",
+            icon: BookOpenCheck,
+          },
           students: {
             tag: "STUDENT REGISTRY",
-            title: "STUDENT ENROLLMENT & ACADEMIC AUDIT",
+            title: "Student Enrollment & Academic Audit",
             description: "Active student roster, health records, admissions status, and class assignments.",
             icon: GraduationCap,
           },
           attendance: {
             tag: "ATTENDANCE PULSE",
-            title: "INSTITUTIONAL ATTENDANCE CONTROL",
+            title: "Institutional Attendance Control",
             description: "Daily student and staff check-in metrics, punctuality tracking, and absence alerts.",
             icon: CalendarCheck,
           },
           staff: {
             tag: "STAFF DIRECTORY",
-            title: "STAFFING & FACULTY CONTROL",
+            title: "Staffing & Faculty Control",
             description: "Workforce directory, role allocation, teacher attendance audit, and performance reviews.",
             icon: Users,
           },
           canteen: {
             tag: "CANTEEN OPERATIONS",
-            title: "CANTEEN PANTRY & REQUISITIONS",
+            title: "Canteen Pantry & Requisitions",
             description: "Kitchen inventory tracking, daily menu requisitions, and supply approvals.",
             icon: ChefHat,
           },
           satisfaction: {
             tag: "SATISFACTION CONSOLE",
-            title: "PARENT SATISFACTION & FEEDBACK",
+            title: "Parent Satisfaction & Feedback",
             description: "Parent satisfaction metrics, service feedback, and communication logs.",
             icon: Star,
           },
         };
         const banner = tabBanners[activeTab] || tabBanners.overview;
+        const schoolName = schoolData?.name || profile?.schoolName || "Sunny Side Academy";
+
         return (
-          <HeroBanner
-            tag={banner.tag}
+          <SectionHeroBanner
+            eyebrow={`${schoolName.toUpperCase()} • DIRECTOR SUITE`}
             title={banner.title}
-            description={banner.description}
+            subtitle={banner.description}
             icon={banner.icon}
-            statusBadge={
-              <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                Live Executive Data
-              </span>
-            }
+            badge={{
+              label: "Live Telemetry",
+              variant: "success",
+            }}
+            breadcrumbs={[
+              { label: 'Director Suite' },
+              { label: 'Executive Console', href: '/dashboard' },
+              { label: activeDomain.label },
+              ...(activeTab !== 'overview' ? [{ label: banner.tag }] : []),
+            ]}
+            stats={[
+              { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
+              { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length} Students` : '253 Total', change: '+4 New' },
+              { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '96.2%', change: '+1.4%' },
+            ]}
             actions={
-              <Button
-                size="sm"
-                onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
-                className="bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-sm border border-slate-200"
-              >
-                <Download className="h-3.5 w-3.5 text-slate-700" />
-                <span>Export PDF</span>
-              </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Dynamic Campus Selector */}
+                {availableCampuses && availableCampuses.length > 1 ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-xs font-semibold text-slate-100 transition shadow-xs cursor-pointer backdrop-blur-md"
+                      >
+                        <Building2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                        <span className="truncate max-w-[150px]">
+                          Campus: <strong className="text-white">{selectedCampus}</strong>
+                        </span>
+                        <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-64 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl p-1.5 text-xs z-50 text-white animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        Select Operating Branch
+                      </div>
+                      {availableCampuses.map((c: any) => (
+                        <DropdownMenuItem
+                          key={c.id}
+                          onClick={() => {
+                            setSelectedCampus(c.name);
+                            toast({
+                              title: "Campus Context Switched",
+                              description: `Active operating branch set to ${c.name}.`,
+                            });
+                          }}
+                          className={cn(
+                            "flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium cursor-pointer transition-colors",
+                            selectedCampus === c.name ? "bg-amber-500/20 text-amber-300 font-bold" : "hover:bg-white/10 text-slate-200"
+                          )}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            {c.id === 'all' ? (
+                              <Globe className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                            ) : (
+                              <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                            )}
+                            <span className="truncate">{c.name}</span>
+                          </div>
+                          {c.code && (
+                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-white/10 text-slate-300 shrink-0 ml-2 border-white/20">
+                              {c.code}
+                            </Badge>
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] border border-white/15 text-xs font-semibold text-slate-100 backdrop-blur-md">
+                    <Building2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                    <span>
+                      Campus: <strong className="text-white">{selectedCampus}</strong>
+                    </span>
+                  </div>
+                )}
+
+                {/* Export PDF Button */}
+                <Button
+                  size="sm"
+                  onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
+                  className="bg-white/10 hover:bg-white/20 text-white font-bold border border-white/15 rounded-xl text-xs h-8 px-3 gap-1.5 shadow-xs cursor-pointer backdrop-blur-md"
+                >
+                  <Download className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Export PDF</span>
+                </Button>
+
+                {/* AI Auditor Trigger Button */}
+                <Button 
+                  onClick={handleRunAudit}
+                  className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-black rounded-xl h-8 px-3.5 shadow-md shadow-amber-500/20 flex items-center gap-1.5 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-xs cursor-pointer"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-slate-950 animate-pulse group-hover:rotate-12 transition-transform" />
+                  <span className="uppercase tracking-wider">AI Auditor</span>
+                </Button>
+              </div>
             }
-          />
+          >
+            {/* Docked Domain Segmented Control & Sub-tabs */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
+              {/* Primary Domain Segmented Control */}
+              <div className="flex flex-wrap p-1 bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-inner gap-1">
+                {domainTabs.map((domain) => {
+                  const isSelected = activeDomain.id === domain.id;
+                  return (
+                    <button
+                      key={domain.id}
+                      onClick={() => handleDomainSelect(domain)}
+                      className={cn(
+                        "px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
+                        isSelected 
+                          ? "bg-amber-400 text-slate-950 shadow-md font-black scale-[1.01]"
+                          : "text-slate-300 hover:text-white hover:bg-white/10"
+                      )}
+                    >
+                      {domain.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Secondary Sub-Pill Navigation */}
+              {activeDomain.subTabs.length > 1 && (
+                <div className="flex flex-wrap items-center gap-1.5 p-1 bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-inner w-fit">
+                  {activeDomain.subTabs.map((st) => (
+                    <button
+                      key={st.id}
+                      onClick={() => setActiveTab(st.id as any)}
+                      className={cn(
+                        "px-3 py-1 text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                        activeTab === st.id
+                          ? "bg-white/20 text-white font-black shadow-xs border border-white/20"
+                          : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                      )}
+                    >
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </SectionHeroBanner>
         );
       })()}
 
