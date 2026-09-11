@@ -3862,41 +3862,36 @@ function DirectorDashboard({
         const schoolName = schoolData?.name || profile?.schoolName || "Sunny Side Academy";
 
         return (
-          <SectionHeroBanner
-            eyebrow={`${schoolName.toUpperCase()} • DIRECTOR SUITE`}
-            title={banner.title}
-            subtitle={banner.description}
-            icon={banner.icon}
-            badge={{
-              label: activeTab === 'academics' ? "Academic Pulse • Live" : "Live Telemetry",
-              variant: "success",
-            }}
-            breadcrumbs={[
-              { label: 'Director Suite' },
-              { label: 'Executive Console', href: '/dashboard' },
-              { label: activeDomain.label },
-              ...(activeTab !== 'overview' ? [{ label: banner.tag }] : []),
-            ]}
-            stats={
-              activeTab === 'academics' ? [
-                { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
-                { label: 'Term Velocity', value: '+3.2%', change: 'Growth' },
-                { label: 'Target Benchmark', value: '75%', change: 'School Avg' },
-              ] : [
-                { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
-                { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length} Students` : '253 Total', change: '+4 New' },
-                { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '96.2%', change: '+1.4%' },
-              ]
-            }
-            actions={
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Academic specific actions: Term Velocity pill & Generate Executive Term Report CTA */}
-                {activeTab === 'academics' && (
-                  <>
-                    <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-2.5 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5 shrink-0">
-                      <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>Term Velocity: +3.2% Growth</span>
-                    </span>
+          <div className="space-y-4">
+            <SectionHeroBanner
+              eyebrow={`${schoolName.toUpperCase()} • DIRECTOR SUITE`}
+              title={banner.title}
+              subtitle={banner.description}
+              icon={banner.icon}
+              badge={{
+                label: activeTab === 'academics' ? "Academic Pulse • Live" : "Live Telemetry",
+                variant: "success",
+              }}
+              breadcrumbs={[
+                { label: 'Director Suite' },
+                { label: 'Executive Console', href: '/dashboard' },
+                { label: activeDomain.label },
+              ]}
+              stats={
+                activeTab === 'academics' ? [
+                  { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
+                  { label: 'Velocity', value: '+3.2%', change: 'Growth' },
+                  { label: 'Benchmark', value: '75%', change: 'School Avg' },
+                ] : [
+                  { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
+                  { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length}` : '253', change: '+4 New' },
+                  { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '96.2%', change: '+1.4%' },
+                ]
+              }
+              actions={
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Academic specific actions: Generate Report */}
+                  {activeTab === 'academics' && (
                     <Button
                       size="sm"
                       onClick={handleSyncAcademicSummary}
@@ -3904,95 +3899,96 @@ function DirectorDashboard({
                       className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs h-8 px-3 gap-1.5 shadow-sm cursor-pointer shrink-0"
                     >
                       {isSyncingAcademics ? <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-950" /> : <FileText className="h-3.5 w-3.5 text-slate-950" />}
-                      <span>Generate Executive Term Report</span>
+                      <span>Generate Report</span>
                     </Button>
-                  </>
-                )}
-                {/* Dynamic Campus Selector */}
-                {availableCampuses && availableCampuses.length > 1 ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-xs font-semibold text-slate-100 transition shadow-xs cursor-pointer backdrop-blur-md"
-                      >
-                        <Building2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                        <span className="truncate max-w-[150px]">
-                          Campus: <strong className="text-white">{selectedCampus}</strong>
-                        </span>
-                        <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-64 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl p-1.5 text-xs z-50 text-white animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        Select Operating Branch
-                      </div>
-                      {availableCampuses.map((c: any) => (
-                        <DropdownMenuItem
-                          key={c.id}
-                          onClick={() => {
-                            setSelectedCampus(c.name);
-                            toast({
-                              title: "Campus Context Switched",
-                              description: `Active operating branch set to ${c.name}.`,
-                            });
-                          }}
-                          className={cn(
-                            "flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium cursor-pointer transition-colors",
-                            selectedCampus === c.name ? "bg-amber-500/20 text-amber-300 font-bold" : "hover:bg-white/10 text-slate-200"
-                          )}
+                  )}
+
+                  {/* Dynamic Campus Selector */}
+                  {availableCampuses && availableCampuses.length > 1 ? (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-xs font-semibold text-slate-100 transition shadow-xs cursor-pointer backdrop-blur-md"
                         >
-                          <div className="flex items-center gap-2 min-w-0">
-                            {c.id === 'all' ? (
-                              <Globe className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                            ) : (
-                              <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <Building2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                          <span className="truncate max-w-[130px]">
+                            Campus: <strong className="text-white">{selectedCampus}</strong>
+                          </span>
+                          <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-64 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl p-1.5 text-xs z-50 text-white animate-in fade-in zoom-in-95 duration-150">
+                        <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                          Select Operating Branch
+                        </div>
+                        {availableCampuses.map((c: any) => (
+                          <DropdownMenuItem
+                            key={c.id}
+                            onClick={() => {
+                              setSelectedCampus(c.name);
+                              toast({
+                                title: "Campus Context Switched",
+                                description: `Active operating branch set to ${c.name}.`,
+                              });
+                            }}
+                            className={cn(
+                              "flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium cursor-pointer transition-colors",
+                              selectedCampus === c.name ? "bg-amber-500/20 text-amber-300 font-bold" : "hover:bg-white/10 text-slate-200"
                             )}
-                            <span className="truncate">{c.name}</span>
-                          </div>
-                          {c.code && (
-                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-white/10 text-slate-300 shrink-0 ml-2 border-white/20">
-                              {c.code}
-                            </Badge>
-                          )}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] border border-white/15 text-xs font-semibold text-slate-100 backdrop-blur-md">
-                    <Building2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                    <span>
-                      Campus: <strong className="text-white">{selectedCampus}</strong>
-                    </span>
-                  </div>
-                )}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              {c.id === 'all' ? (
+                                <Globe className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                              ) : (
+                                <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                              )}
+                              <span className="truncate">{c.name}</span>
+                            </div>
+                            {c.code && (
+                              <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-white/10 text-slate-300 shrink-0 ml-2 border-white/20">
+                                {c.code}
+                              </Badge>
+                            )}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] border border-white/15 text-xs font-semibold text-slate-100 backdrop-blur-md">
+                      <Building2 className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                      <span>
+                        Campus: <strong className="text-white">{selectedCampus}</strong>
+                      </span>
+                    </div>
+                  )}
 
-                {/* Export PDF Button */}
-                <Button
-                  size="sm"
-                  onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
-                  className="bg-white/10 hover:bg-white/20 text-white font-bold border border-white/15 rounded-xl text-xs h-8 px-3 gap-1.5 shadow-xs cursor-pointer backdrop-blur-md"
-                >
-                  <Download className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Export PDF</span>
-                </Button>
+                  {/* Export PDF Button */}
+                  <Button
+                    size="sm"
+                    onClick={() => toast({ title: "Report Exported", description: "Executive summary report generated." })}
+                    className="bg-white/10 hover:bg-white/20 text-white font-bold border border-white/15 rounded-xl text-xs h-8 px-3 gap-1.5 shadow-xs cursor-pointer backdrop-blur-md"
+                  >
+                    <Download className="h-3.5 w-3.5 text-amber-400" />
+                    <span>Export PDF</span>
+                  </Button>
 
-                {/* AI Auditor Trigger Button */}
-                <Button 
-                  onClick={handleRunAudit}
-                  className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-black rounded-xl h-8 px-3.5 shadow-md shadow-amber-500/20 flex items-center gap-1.5 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-xs cursor-pointer"
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-slate-950 animate-pulse group-hover:rotate-12 transition-transform" />
-                  <span className="uppercase tracking-wider">AI Auditor</span>
-                </Button>
-              </div>
-            }
-          >
-            {/* Docked Domain Segmented Control & Sub-tabs */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
+                  {/* AI Auditor Trigger Button */}
+                  <Button 
+                    onClick={handleRunAudit}
+                    className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-black rounded-xl h-8 px-3.5 shadow-md shadow-amber-500/20 flex items-center gap-1.5 group transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-xs cursor-pointer"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-slate-950 animate-pulse group-hover:rotate-12 transition-transform" />
+                    <span className="uppercase tracking-wider">AI Auditor</span>
+                  </Button>
+                </div>
+              }
+            />
+
+            {/* Standalone Domain Segmented Control & Sub-tabs */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-1.5 bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-800/80 shadow-sm">
               {/* Primary Domain Segmented Control */}
-              <div className="flex flex-wrap p-1 bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-inner gap-1">
+              <div className="flex flex-wrap p-1 bg-white/[0.04] rounded-xl border border-white/10 shadow-inner gap-1">
                 {domainTabs.map((domain) => {
                   const isSelected = activeDomain.id === domain.id;
                   return (
@@ -4000,7 +3996,7 @@ function DirectorDashboard({
                       key={domain.id}
                       onClick={() => handleDomainSelect(domain)}
                       className={cn(
-                        "px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer",
+                        "px-3.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer",
                         isSelected 
                           ? "bg-amber-400 text-slate-950 shadow-md font-black scale-[1.01]"
                           : "text-slate-300 hover:text-white hover:bg-white/10"
@@ -4014,13 +4010,13 @@ function DirectorDashboard({
 
               {/* Secondary Sub-Pill Navigation */}
               {activeDomain.subTabs.length > 1 && (
-                <div className="flex flex-wrap items-center gap-1.5 p-1 bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-inner w-fit">
+                <div className="flex flex-wrap items-center gap-1.5 p-1 bg-black/20 rounded-xl border border-white/10 shadow-inner w-fit">
                   {activeDomain.subTabs.map((st) => (
                     <button
                       key={st.id}
                       onClick={() => setActiveTab(st.id as any)}
                       className={cn(
-                        "px-3 py-1 text-xs font-bold rounded-xl transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                        "px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
                         activeTab === st.id
                           ? "bg-white/20 text-white font-black shadow-xs border border-white/20"
                           : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
@@ -4032,7 +4028,7 @@ function DirectorDashboard({
                 </div>
               )}
             </div>
-          </SectionHeroBanner>
+          </div>
         );
       })()}
 

@@ -94,7 +94,7 @@ export function SectionHeroBanner({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-800/80 shadow-2xl text-white transition-all duration-300",
+        "relative overflow-hidden rounded-2xl border border-slate-800/80 shadow-2xl text-white transition-all duration-300",
         // Deep institutional gradient: Navy/Slate `#0f172a` to `#1e1b4b` with subtle gold accent hairline
         "bg-gradient-to-br from-[#0f172a] via-[#131b35] to-[#1e1b4b]",
         "after:absolute after:inset-x-0 after:top-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-amber-400/40 after:to-transparent",
@@ -137,10 +137,10 @@ export function SectionHeroBanner({
       </div>
 
       {/* Main Content Area */}
-      <div className="relative z-10 p-5 sm:p-6 lg:p-7 space-y-4">
+      <div className="relative z-10 py-5 px-6 space-y-3.5">
         {/* Top Bar: Breadcrumbs & Right Action Controls */}
         {(breadcrumbs?.length || actions) && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-white/[0.08]">
             {/* Breadcrumb Navigation */}
             {breadcrumbs && breadcrumbs.length > 0 ? (
               <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-400">
@@ -185,16 +185,16 @@ export function SectionHeroBanner({
         )}
 
         {/* Hero Body: Icon, Eyebrow, Title, Subtitle, Badges */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div className="flex items-start sm:items-center gap-4 max-w-3xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5 max-w-3xl">
             {/* Category / Module Icon */}
             {IconOrElement && (
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/[0.06] border border-white/10 text-amber-400 backdrop-blur-md shadow-inner shrink-0 hidden xs:flex items-center justify-center">
+              <div className="p-2.5 sm:p-3 rounded-2xl bg-white/[0.06] border border-white/10 text-amber-400 backdrop-blur-md shadow-inner shrink-0 hidden xs:flex items-center justify-center">
                 {React.isValidElement(IconOrElement) ? (
                   IconOrElement
                 ) : typeof IconOrElement === 'function' ? (
                   React.createElement(IconOrElement as React.ComponentType<{ className?: string }>, {
-                    className: "h-6 w-6 sm:h-7 sm:w-7 text-amber-400",
+                    className: "h-5 w-5 sm:h-6 sm:w-6 text-amber-400",
                   })
                 ) : null}
               </div>
@@ -202,9 +202,9 @@ export function SectionHeroBanner({
 
             <div>
               {/* Eyebrow Tag & Optional Badge */}
-              <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
                 {eyebrow && (
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-400/90 bg-amber-400/10 px-2.5 py-0.5 rounded-md border border-amber-400/20">
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-400/90 bg-amber-400/10 px-2.5 py-0.5 rounded-md border border-amber-400/20">
                     {eyebrow}
                   </span>
                 )}
@@ -225,13 +225,13 @@ export function SectionHeroBanner({
               </div>
 
               {/* Title */}
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
                 {title}
               </h1>
 
               {/* Subtitle / Description */}
               {subtitle && (
-                <p className="text-xs sm:text-sm text-slate-300/85 font-normal leading-relaxed max-w-2xl mt-1">
+                <p className="text-xs sm:text-sm text-slate-300/85 font-normal leading-relaxed max-w-2xl mt-0.5">
                   {subtitle}
                 </p>
               )}
@@ -240,23 +240,23 @@ export function SectionHeroBanner({
 
           {/* Quick Stats Chips (if provided) */}
           {stats && stats.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2.5 lg:self-center shrink-0">
+            <div className="flex flex-wrap items-center gap-2 lg:self-center shrink-0">
               {stats.map((stat, i) => (
                 <div
                   key={i}
-                  className="flex flex-col px-3.5 py-2 rounded-xl bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-xs min-w-[90px]"
+                  className="flex flex-col px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-xs min-w-[75px]"
                 >
                   <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
                     {stat.label}
                   </span>
-                  <div className="flex items-baseline gap-1.5 mt-0.5">
-                    <span className="text-base sm:text-lg font-black text-white">
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-sm sm:text-base font-black text-white">
                       {stat.value}
                     </span>
                     {stat.change && (
                       <span
                         className={cn(
-                          "text-[10px] font-bold",
+                          "text-[9px] font-bold",
                           stat.changeType === 'negative'
                             ? "text-rose-400"
                             : stat.changeType === 'neutral'
