@@ -22,6 +22,7 @@ import {
   ShieldAlert, Zap, Calendar, Filter, Layers3, Users, RotateCcw
 } from 'lucide-react';
 import { StudentBadgeShowcase } from '@/components/achievements/StudentBadgeShowcase';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -448,7 +449,7 @@ export default function AchievementsPage() {
   };
 
   return (
-    <div className="space-y-8 p-6 max-w-7xl mx-auto flex flex-col h-full">
+    <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto pb-16 animate-in fade-in duration-500 flex flex-col h-full">
       
       {/* Printable Certificate Modal */}
       <Dialog open={isCertDialogOpen} onOpenChange={setIsCertDialogOpen}>
@@ -633,40 +634,48 @@ export default function AchievementsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Main Screen Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-6 md:p-8 rounded-3xl text-white shadow-xl">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Badge className="bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 text-[10px] uppercase tracking-wider flex items-center gap-1">
-              <Zap size={10} className="fill-slate-950" /> ON-DEMAND GAMIFICATION HUB
-            </Badge>
-            {loadedClassId && (
-              <Badge className="bg-white/10 text-indigo-200 border border-white/15 font-bold px-2.5 py-0.5 text-[10px] uppercase">
-                {classNameMap.get(loadedClassId) || 'Class Cohort'} ({leaderboardStudents.length} Students)
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-3">
-            <Trophy className="h-8 w-8 text-amber-400" />
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
-              {isStudentRole ? 'My Badges & Achievements' : 'Gamification & Achievement Hub'}
-            </h1>
-          </div>
-          <p className="text-xs md:text-sm text-indigo-100/70 max-w-2xl">
-            {isStudentRole 
-              ? 'Track your level progress, XP points, and unlocked achievement badges.' 
-              : 'Recognize and motivate students with automated badges, XP points, and official PDF certificates.'}
-          </p>
-        </div>
+      {/* Standardized Classic Institutional Hero Banner */}
+      <SectionHeroBanner
+        eyebrow={`${schoolName.toUpperCase()} • ON-DEMAND GAMIFICATION HUB`}
+        title={isStudentRole ? 'My Badges & Achievements' : 'Gamification & Achievement Hub'}
+        subtitle={
+          isStudentRole
+            ? 'Track your level progress, XP points, and unlocked achievement badges.'
+            : 'Recognize and motivate students with automated badges, XP points, and official PDF certificates.'
+        }
+        icon={Trophy}
+        badge={{
+          label: loadedClassId
+            ? `${classNameMap.get(loadedClassId) || 'Class Cohort'} (${leaderboardStudents.length} Students)`
+            : 'Live Gamification Engine',
+          variant: 'gold',
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Academics', href: '/dashboard' },
+          { label: 'Achievements & Badges' },
+        ]}
+        stats={[
+          { label: 'Badges Catalog', value: BADGE_CATALOG.length || 18 },
+          { label: 'Active Classes', value: classes.length || 0 },
+        ]}
+        actions={
+          canManageBadges ? (
+            <Button
+              onClick={() => setIsAwardOpen(true)}
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <PlusCircle className="h-4 w-4 text-slate-950" />
+              <span>Award Badge Manually</span>
+            </Button>
+          ) : undefined
+        }
+      />
 
-        {canManageBadges && (
-          <Dialog open={isAwardOpen} onOpenChange={setIsAwardOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs h-11 px-5 rounded-xl shadow-lg border-0 shrink-0">
-                <PlusCircle className="h-4 w-4 mr-1.5" /> Award Badge Manually
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-white">
+      {/* Manual Badge Award Dialog */}
+      {canManageBadges && (
+        <Dialog open={isAwardOpen} onOpenChange={setIsAwardOpen}>
+          <DialogContent className="sm:max-w-md bg-white">
               <DialogHeader>
                 <DialogTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
                   <Award className="h-5 w-5 text-purple-600" /> Award Student Badge
@@ -822,7 +831,6 @@ export default function AchievementsPage() {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
 
       {/* Student Personal Showcase (If student role) */}
       {isStudentRole && currentStudent && (
