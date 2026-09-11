@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -928,7 +929,8 @@ function playNotificationSound() {
 // --- MAIN PAGE ---
 export default function MessagesPage() {
     const { user } = useUser();
-    const { role } = useRole();
+    const { role, profile } = useRole();
+    const schoolName = profile?.schoolName || 'Sunny Side Academy';
     const firestore = useFirestore();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const { toast } = useToast();
@@ -1756,7 +1758,55 @@ export default function MessagesPage() {
     }, {});
 
     return (
-        <div className="h-[calc(100vh-100px)] flex gap-0 bg-slate-50/80 backdrop-blur-md overflow-hidden rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] border border-slate-200/40">
+        <div className="space-y-6 p-4 sm:p-6 max-w-7xl mx-auto pb-16 animate-in fade-in duration-500 font-sans">
+            
+            {/* Standardized Institutional Hero Banner */}
+            <SectionHeroBanner
+                eyebrow={`${schoolName.toUpperCase()} • CAMPUS CONNECT MESSAGING`}
+                title="Direct Messages & Communication"
+                subtitle="Connect directly with teachers, parents, students, and administration via secure, moderated campus messaging."
+                icon={MessageCircle}
+                badge={{
+                    label: totalUnreadCount > 0 
+                        ? `${totalUnreadCount} Unread Message${totalUnreadCount > 1 ? 's' : ''}` 
+                        : "Safety Assistant Active",
+                    variant: totalUnreadCount > 0 ? "warning" : "success",
+                }}
+                breadcrumbs={[
+                    { label: 'Director Suite' },
+                    { label: 'Communications', href: '/dashboard' },
+                    { label: 'Direct Messages' },
+                ]}
+                stats={[
+                    { label: 'Active Conversations', value: chats?.length || 0 },
+                    { label: 'AI Safety Guard', value: 'Active' },
+                ]}
+                actions={
+                    <div className="flex items-center gap-2">
+                        {isAuthorizedSender && (
+                            <Button
+                                onClick={() => setIsBroadcastOpen(true)}
+                                disabled={!schoolId}
+                                className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider rounded-xl h-9 px-3 gap-1.5 border border-white/15 cursor-pointer shrink-0 transition-all"
+                            >
+                                <Megaphone className="h-3.5 w-3.5 text-amber-400" />
+                                <span className="hidden sm:inline">Broadcast</span>
+                            </Button>
+                        )}
+                        <Button
+                            onClick={() => setIsNewChatOpen(true)}
+                            disabled={!schoolId}
+                            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            <Plus className="h-4 w-4 text-slate-950" />
+                            <span>New Conversation</span>
+                        </Button>
+                    </div>
+                }
+            />
+
+            {/* Messenger Dual-Column Window */}
+            <div className="h-[calc(100vh-280px)] min-h-[600px] flex gap-0 bg-slate-50/80 backdrop-blur-md overflow-hidden rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] border border-slate-200/40">
 
             {/* ── SIDEBAR: CONVERSATION LIST ── */}
             <div className={cn(
@@ -2689,6 +2739,7 @@ export default function MessagesPage() {
                         </div>
                     </div>
                 )}
+            </div>
             </div>
 
             {schoolId && (
