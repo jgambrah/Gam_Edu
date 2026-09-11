@@ -26,6 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { JuniorAgeLevelSelector } from '@/components/dashboard/junior-academy/JuniorAgeLevelSelector';
 import { GuidedTracingLab } from '@/components/dashboard/junior-academy/GuidedTracingLab';
 import { 
@@ -9496,36 +9497,20 @@ export default function JuniorCampusPage() {
       <div className="absolute top-40 right-20 w-80 h-80 bg-yellow-200/30 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
       <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '4s' }}></div>
 
-      <div className="max-w-6xl mx-auto mb-2.5 sm:mb-3.5 relative">
-        <div className={cn(
-          "relative overflow-hidden bg-gradient-to-r from-pink-400 via-rose-300 to-amber-200 rounded-[28px] sm:rounded-[32px] shadow-lg border-b-6 border-rose-400/30 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 transition-all",
-          activeTab === 'abc' ? "p-3 sm:p-3.5 md:py-3 md:px-5" : "p-4 sm:p-5 md:p-6"
-        )}>
-          {/* Decorative shapes */}
-          <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
-          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full rotate-45 pointer-events-none"></div>
-          
-          <div className="flex items-center gap-4 sm:gap-5 z-10">
-            <div className="bg-white/95 p-3 rounded-2xl shadow-md hover:rotate-12 transition-transform duration-300">
-              <Rabbit className="h-10 w-10 sm:h-12 sm:w-12 text-pink-500 animate-bounce" />
+      <div className="max-w-6xl mx-auto mb-6 relative">
+        <SectionHeroBanner
+          title="Junior Campus & Early Years"
+          subtitle="Early childhood development, UK EYFS phonics pathways, sensory milestones, and foundational literacy."
+          eyebrow="EARLY YEARS FOUNDATION"
+          icon={Rabbit}
+          className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+          actions={
+            <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+              <Trophy className="h-3.5 w-3.5 text-amber-400" />
+              <span>Ready to Learn! 🌟</span>
             </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black text-slate-800 tracking-tight drop-shadow-sm flex items-center gap-2">
-                Junior Campus <Sparkles className="w-6 h-6 text-yellow-500 animate-pulse" />
-              </h1>
-              <p className="text-slate-700/80 font-bold text-sm sm:text-base mt-0.5">A magical space to learn, play, and bloom across early childhood levels!</p>
-            </div>
-          </div>
-
-          {/* Spark Status Badge */}
-          <div className="z-10 bg-white/40 backdrop-blur-md border border-white/40 px-4 py-2 rounded-2xl shadow-inner flex items-center gap-2.5">
-            <Trophy className="w-6 h-6 text-yellow-500 animate-bounce" />
-            <div>
-              <div className="text-[9px] uppercase tracking-wider font-black text-slate-700">Spark Status</div>
-              <div className="text-xs font-black text-slate-900">Ready to Learn! 🌟</div>
-            </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* Structured Age Level Selector */}
         <JuniorAgeLevelSelector 
