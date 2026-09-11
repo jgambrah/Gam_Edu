@@ -27,12 +27,25 @@ interface ParentForumProps {
     role: 'parent' | 'teacher' | 'admin';
   };
   initialPosts?: ForumPost[];
+  hideBanner?: boolean;
+  showNewPostModal?: boolean;
+  setShowNewPostModal?: (open: boolean) => void;
 }
 
-export default function ParentForum({ schoolId, currentUser, initialPosts = [] }: ParentForumProps) {
+export default function ParentForum({ 
+  schoolId, 
+  currentUser, 
+  initialPosts = [],
+  hideBanner = false,
+  showNewPostModal: externalShowModal,
+  setShowNewPostModal: externalSetShowModal,
+}: ParentForumProps) {
   const [posts, setPosts] = useState<ForumPost[]>(initialPosts);
   const [activeTab, setActiveTab] = useState<'feed' | 'my_posts' | 'moderation_queue'>('feed');
-  const [showNewPostModal, setShowNewPostModal] = useState(false);
+  const [internalShowModal, setInternalShowModal] = useState(false);
+
+  const showNewPostModal = externalShowModal !== undefined ? externalShowModal : internalShowModal;
+  const setShowNewPostModal = externalSetShowModal || setInternalShowModal;
 
   // New Post Form State
   const [newTitle, setNewTitle] = useState('');
@@ -168,28 +181,30 @@ export default function ParentForum({ schoolId, currentUser, initialPosts = [] }
     <div className="space-y-6 max-w-5xl mx-auto font-sans">
       
       {/* Top Banner: Mode 4 Pre-Moderated Forum Indicator */}
-      <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white p-5 rounded-3xl border border-teal-800/60 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            <h2 className="text-lg font-black tracking-tight">Parent Community & Idea Hub</h2>
-            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/40">
-              AI & Staff Pre-Moderated
-            </span>
+      {!hideBanner && (
+        <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white p-5 rounded-3xl border border-teal-800/60 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <h2 className="text-lg font-black tracking-tight">Parent Community & Idea Hub</h2>
+              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/40">
+                AI & Staff Pre-Moderated
+              </span>
+            </div>
+            <p className="text-xs text-slate-300">
+              Share constructive suggestions and ideas. Posts & comments are protected by Google Gemini AI & Staff Moderation.
+            </p>
           </div>
-          <p className="text-xs text-slate-300">
-            Share constructive suggestions and ideas. Posts & comments are protected by Google Gemini AI & Staff Moderation.
-          </p>
-        </div>
 
-        <button
-          onClick={() => setShowNewPostModal(true)}
-          className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:shadow-teal-500/30 flex items-center justify-center space-x-2 shrink-0 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>+ Submit New Idea</span>
-        </button>
-      </div>
+          <button
+            onClick={() => setShowNewPostModal(true)}
+            className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs px-4 py-3 rounded-2xl transition-all shadow-lg hover:shadow-teal-500/30 flex items-center justify-center space-x-2 shrink-0 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ Submit New Idea</span>
+          </button>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="flex border-b border-slate-200 gap-2">

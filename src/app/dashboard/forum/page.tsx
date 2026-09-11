@@ -23,6 +23,7 @@ import { getAuth } from 'firebase/auth';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import ParentForum from '@/components/community/parent-forum';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // --- Create Thread Form (Academic Forum) ---
 function CreateThreadForm({ setOpen, forceRefetch, schoolId }: { setOpen: (open: boolean) => void; forceRefetch: () => void; schoolId: string }) {
@@ -332,10 +333,13 @@ export default function ForumPage() {
 
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser(); 
-    const { role } = useRole();
+    const { role, profile } = useRole();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
+    const [isParentNewPostOpen, setIsParentNewPostOpen] = useState(false);
+
+    const schoolName = profile?.schoolName || 'Sunny Side Academy';
   
     const threadsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId) return null;
@@ -370,128 +374,162 @@ export default function ForumPage() {
 
     const isLoading = isUserLoading || isDataLoading || isLoadingSchool;
     const currentUserRole: 'parent' | 'teacher' | 'admin' = 
-      role === 'admin' || role === 'super_admin' ? 'admin' : role === 'teacher' ? 'teacher' : 'parent';
+      ['Administrator', 'Director', 'admin', 'super_admin'].includes((role || '') as string) 
+        ? 'admin' 
+        : ['Teacher', 'teacher'].includes((role || '') as string) 
+        ? 'teacher' 
+        : 'parent';
 
     if (selectedThread && forumTab === 'academic') {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
     }
 
     return (
-        <div className="space-y-6 p-6 max-w-5xl mx-auto pb-16 font-sans">
+        <div className="space-y-6 p-4 sm:p-6 max-w-5xl mx-auto pb-16 animate-in fade-in duration-500 font-sans">
             
             {/* Top Forum Selector Tabs: Academic Student Forum vs Parent Community Hub */}
-            <div className="flex border-b border-slate-200 gap-4">
+            <div className="flex border-b border-slate-200 gap-2 sm:gap-4 overflow-x-auto">
                 <button
                     onClick={() => setForumTab('academic')}
-                    className={`pb-3 px-5 text-sm font-black transition-all border-b-4 flex items-center space-x-2 cursor-pointer ${
+                    className={`pb-3 px-4 sm:px-5 text-xs sm:text-sm font-black transition-all border-b-2 sm:border-b-4 flex items-center space-x-2 cursor-pointer shrink-0 ${
                         forumTab === 'academic'
-                            ? 'border-cyan-600 text-cyan-700'
+                            ? 'border-amber-500 text-slate-900'
                             : 'border-transparent text-slate-400 hover:text-slate-700'
                     }`}
                 >
-                    <GraduationCap className="w-5 h-5 text-cyan-600" />
-                    <span>Academic & Homework Q&A Forum (With AI Copilot)</span>
+                    <GraduationCap className="w-4 h-4 text-amber-500" />
+                    <span>Academic & Homework Q&A Forum</span>
                 </button>
 
                 <button
                     onClick={() => setForumTab('parent_community')}
-                    className={`pb-3 px-5 text-sm font-black transition-all border-b-4 flex items-center space-x-2 cursor-pointer ${
+                    className={`pb-3 px-4 sm:px-5 text-xs sm:text-sm font-black transition-all border-b-2 sm:border-b-4 flex items-center space-x-2 cursor-pointer shrink-0 ${
                         forumTab === 'parent_community'
-                            ? 'border-teal-600 text-teal-700'
+                            ? 'border-amber-500 text-slate-900'
                             : 'border-transparent text-slate-400 hover:text-slate-700'
                     }`}
                 >
-                    <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                    <span>Parent Community & Idea Hub (AI & Staff Moderated)</span>
+                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    <span>Parent Community & Idea Hub</span>
                 </button>
             </div>
 
+            {/* Standardized Institutional Hero Banner */}
+            <SectionHeroBanner
+                eyebrow={forumTab === 'academic'
+                    ? `${schoolName.toUpperCase()} • STUDENT & TEACHER Q&A`
+                    : `${schoolName.toUpperCase()} • PARENT COMMUNITY & IDEA HUB`
+                }
+                title={forumTab === 'academic'
+                    ? "Academic Q&A & AI Homework Copilot"
+                    : "Parent Community & Idea Hub"
+                }
+                subtitle={forumTab === 'academic'
+                    ? "Ask homework questions or discuss topics. Teachers, classmates, and our AI Homework Copilot assist students 24/7!"
+                    : "Connect with fellow parents, share constructive suggestions, and discuss school events in an AI-moderated safe space."
+                }
+                icon={forumTab === 'academic' ? GraduationCap : ShieldCheck}
+                badge={{
+                    label: forumTab === 'academic' ? "AI Homework Copilot Active" : "AI & Staff Pre-Moderated",
+                    variant: forumTab === 'academic' ? "info" : "success",
+                }}
+                breadcrumbs={[
+                    { label: 'Director Suite' },
+                    { label: 'Community', href: '/dashboard' },
+                    { label: forumTab === 'academic' ? 'Academic Q&A' : 'Parent Hub' },
+                ]}
+                stats={forumTab === 'academic' ? [
+                    { label: 'Discussion Threads', value: threads.length },
+                    { label: 'AI Tutor Assistance', value: '24/7 Active' },
+                ] : [
+                    { label: 'Safety Guard', value: 'Enforced' },
+                    { label: 'Moderation Queue', value: 'Pre-Approved' },
+                ]}
+                actions={forumTab === 'academic' ? (
+                    <Button 
+                        disabled={!schoolId} 
+                        onClick={() => setCreateOpen(true)}
+                        className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <Plus className="h-4 w-4 text-slate-950"/>
+                        <span>Ask Academic Question</span>
+                    </Button>
+                ) : (
+                    <Button 
+                        disabled={!schoolId} 
+                        onClick={() => setIsParentNewPostOpen(true)}
+                        className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <Plus className="h-4 w-4 text-slate-950"/>
+                        <span>Submit Parent Topic</span>
+                    </Button>
+                )}
+            />
+
+            {/* Ask Academic Question Modal */}
+            <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
+                <DialogContent className="rounded-3xl p-6 bg-white max-w-md">
+                    <DialogHeader className="mb-2">
+                        <DialogTitle className="text-lg font-black uppercase text-slate-800 flex items-center gap-2">
+                            <GraduationCap className="h-5 w-5 text-amber-500" /> Ask Question
+                        </DialogTitle>
+                        <DialogDescription className="text-xs font-semibold text-slate-500">
+                            Ask for help with homework, subjects, or exam prep.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {schoolId && <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} schoolId={schoolId} />}
+                </DialogContent>
+            </Dialog>
+
             {/* TAB 1: Academic & Homework Forum */}
             {forumTab === 'academic' && (
-                <div className="space-y-6">
-                    {/* Header Banner */}
-                    <div className="relative p-8 rounded-[2.5rem] text-white overflow-hidden shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-cyan-950 via-slate-900 to-indigo-950 border border-cyan-500/20">
-                        <div className="space-y-2">
-                            <span className="text-[9px] font-black tracking-widest px-3 py-1 rounded-full uppercase bg-cyan-500/20 text-cyan-300">
-                                Student & Teacher Q&A
-                            </span>
-                            <h1 className="text-2xl font-black uppercase italic">Academic Q&A & AI Homework Copilot</h1>
-                            <p className="text-xs text-slate-300 max-w-lg">
-                                Ask homework questions or discuss topics. Teachers, classmates, and our AI Homework Copilot assist students 24/7!
-                            </p>
-                        </div>
-
-                        <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
-                            <DialogTrigger asChild>
-                                <Button 
-                                    disabled={!schoolId} 
-                                    className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase rounded-2xl h-11 px-5 shadow-lg border-none shrink-0"
-                                >
-                                    <Plus className="mr-2 h-4 w-4"/> Ask Academic Question
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="rounded-3xl p-6 bg-white max-w-md">
-                                <DialogHeader className="mb-2">
-                                    <DialogTitle className="text-lg font-black uppercase text-slate-800 flex items-center gap-2">
-                                        <GraduationCap className="h-5 w-5 text-cyan-600" /> Ask Question
-                                    </DialogTitle>
-                                    <DialogDescription className="text-xs font-semibold text-slate-500">
-                                        Ask for help with homework, subjects, or exam prep.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                {schoolId && <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} schoolId={schoolId} />}
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-
+                <div className="space-y-4">
                     {/* DISCUSSION FEED */}
-                    <div className="space-y-4">
-                        {isLoading ? (
-                            <div className="flex flex-col items-center py-16 text-slate-400 gap-2">
-                                <Loader2 className="h-8 w-8 animate-spin text-cyan-600"/>
-                                <p className="text-xs uppercase font-black tracking-widest">Loading academic threads...</p>
-                            </div>
-                        ) : threads.length === 0 ? (
-                            <div className="text-center py-16 border border-slate-200 rounded-3xl bg-white shadow-xs space-y-3">
-                                <GraduationCap className="h-10 w-10 text-cyan-600 mx-auto" />
-                                <h4 className="text-base font-extrabold text-slate-800">No Academic Questions Yet</h4>
-                                <p className="text-xs text-slate-500">Be the first student or teacher to ask an academic question!</p>
-                            </div>
-                        ) : (
-                            <div className="grid gap-4">
-                                {threads.map(thread => (
-                                    <Card 
-                                        key={thread.id} 
-                                        onClick={() => setSelectedThread(thread)} 
-                                        className="border border-slate-200 border-l-8 border-l-cyan-600 rounded-3xl bg-white shadow-xs hover:shadow-md transition-all cursor-pointer p-6 flex justify-between items-center"
-                                    >
-                                        <div className="space-y-1">
-                                            <div className="flex items-center space-x-2">
-                                                {thread.aiModeratorEnabled && (
-                                                    <span className="bg-cyan-100 text-cyan-800 text-[10px] font-extrabold px-2 py-0.5 rounded font-mono flex items-center space-x-1">
-                                                        <Bot className="w-3 h-3 text-cyan-600" />
-                                                        <span>AI Homework Copilot</span>
-                                                    </span>
-                                                )}
-                                                <span className="text-[10px] text-slate-400 font-mono">
-                                                    {safeFormatDate(thread.lastReplyAt || thread.createdAt)}
+                    {isLoading ? (
+                        <div className="flex flex-col items-center py-16 text-slate-400 gap-2">
+                            <Loader2 className="h-8 w-8 animate-spin text-cyan-600"/>
+                            <p className="text-xs uppercase font-black tracking-widest">Loading academic threads...</p>
+                        </div>
+                    ) : threads.length === 0 ? (
+                        <div className="text-center py-16 border border-slate-200 rounded-3xl bg-white shadow-xs space-y-3">
+                            <GraduationCap className="h-10 w-10 text-cyan-600 mx-auto" />
+                            <h4 className="text-base font-extrabold text-slate-800">No Academic Questions Yet</h4>
+                            <p className="text-xs text-slate-500">Be the first student or teacher to ask an academic question!</p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4">
+                            {threads.map(thread => (
+                                <Card 
+                                    key={thread.id} 
+                                    onClick={() => setSelectedThread(thread)} 
+                                    className="border border-slate-200 border-l-8 border-l-cyan-600 rounded-3xl bg-white shadow-xs hover:shadow-md transition-all cursor-pointer p-6 flex justify-between items-center"
+                                >
+                                    <div className="space-y-1">
+                                        <div className="flex items-center space-x-2">
+                                            {thread.aiModeratorEnabled && (
+                                                <span className="bg-cyan-100 text-cyan-800 text-[10px] font-extrabold px-2 py-0.5 rounded font-mono flex items-center space-x-1">
+                                                    <Bot className="w-3 h-3 text-cyan-600" />
+                                                    <span>AI Homework Copilot</span>
                                                 </span>
-                                            </div>
-                                            <h3 className="text-base font-extrabold text-slate-900">{thread.title}</h3>
-                                            <p className="text-xs text-slate-500 font-medium">Asked by {thread.createdBy?.name || 'Student'}</p>
-                                        </div>
-
-                                        <div className="flex items-center space-x-3">
-                                            <span className="bg-slate-100 text-slate-800 text-xs font-bold px-3 py-1 rounded-xl">
-                                                {thread.replyCount || 0} Replies
+                                            )}
+                                            <span className="text-[10px] text-slate-400 font-mono">
+                                                {safeFormatDate(thread.lastReplyAt || thread.createdAt)}
                                             </span>
-                                            <ChevronRight className="w-5 h-5 text-slate-300" />
                                         </div>
-                                    </Card>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                                        <h3 className="text-base font-extrabold text-slate-900">{thread.title}</h3>
+                                        <p className="text-xs text-slate-500 font-medium">Asked by {thread.createdBy?.name || 'Student'}</p>
+                                    </div>
+
+                                    <div className="flex items-center space-x-3">
+                                        <span className="bg-slate-100 text-slate-800 text-xs font-bold px-3 py-1 rounded-xl">
+                                            {thread.replyCount || 0} Replies
+                                        </span>
+                                        <ChevronRight className="w-5 h-5 text-slate-300" />
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -504,6 +542,9 @@ export default function ForumPage() {
                         name: user?.displayName || user?.email?.split('@')[0] || 'School Parent',
                         role: currentUserRole
                     }}
+                    hideBanner={true}
+                    showNewPostModal={isParentNewPostOpen}
+                    setShowNewPostModal={setIsParentNewPostOpen}
                 />
             )}
         </div>
