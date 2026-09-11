@@ -286,6 +286,296 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
     }
 ];
 
+const DEFAULT_ENGLISH_STRANDS: Record<string, { subTopic: string; story: any }[]> = {
+    'LITERATURE & POETRY': [
+        {
+            subTopic: 'Poetic Meter & Literary Imagery',
+            story: {
+                id: 'def-eng-1',
+                title: 'The Whispering Pines',
+                category: 'LITERATURE & POETRY',
+                subTopic: 'Poetic Meter & Literary Imagery',
+                content: 'The wind swept through the ancient forest, whispering forgotten ballads to the wandering stars above.',
+                quiz: [
+                    { question: 'What literary device is present in "whispering forgotten ballads"?', options: ['Personification', 'Hyperbole', 'Irony', 'Onomatopoeia'], answer: 'Personification' }
+                ]
+            }
+        }
+    ],
+    'NARRATIVE & COMPREHENSION': [
+        {
+            subTopic: 'Narrative Structure & Perspective',
+            story: {
+                id: 'def-eng-2',
+                title: 'Echoes of the High Plains',
+                category: 'NARRATIVE & COMPREHENSION',
+                subTopic: 'Narrative Structure & Perspective',
+                content: 'I watched the morning mist roll down the hills, feeling the quiet rhythm of the school waking to another dawn of discovery and ambition.',
+                quiz: [
+                    { question: 'What point of view is used in the passage?', options: ['First person', 'Second person', 'Third person omniscient', 'Third person limited'], answer: 'First person' }
+                ]
+            }
+        }
+    ],
+    'RHETORIC & ESSAYS': [
+        {
+            subTopic: 'Rhetorical Devices & Argumentation',
+            story: {
+                id: 'def-eng-3',
+                title: 'The Pillars of Civic Progress',
+                category: 'RHETORIC & ESSAYS',
+                subTopic: 'Rhetorical Devices & Argumentation',
+                content: 'To argue for progress is not merely to suggest change; it is to demand that justice and equity form the very foundation upon which tomorrow is constructed.',
+                quiz: [
+                    { question: 'What is the primary rhetorical appeal in demanding justice and equity?', options: ['Ethos & Pathos', 'Paparazzi', 'Satire', 'Allegory'], answer: 'Ethos & Pathos' }
+                ]
+            }
+        }
+    ]
+};
+
+const DEFAULT_MATH_STRANDS: Record<string, { subTopic: string; problem: any }[]> = {
+    'ALGEBRA': [
+        {
+            subTopic: 'Linear & Quadratic Equations',
+            problem: {
+                id: 'def-alg-1',
+                title: 'Linear & Quadratic Equations',
+                category: 'ALGEBRA',
+                subTopic: 'Linear & Quadratic Equations',
+                instruction: 'Solve for positive x in the quadratic equation:',
+                latexFormula: '2x^2 - 8x + 6 = 0',
+                answer: '3',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Algebraic Fractions & Indices',
+            problem: {
+                id: 'def-alg-2',
+                title: 'Algebraic Fractions & Indices',
+                category: 'ALGEBRA',
+                subTopic: 'Algebraic Fractions & Indices',
+                instruction: 'Simplify and evaluate the exponential index expression:',
+                latexFormula: '\\frac{2^3 \\times 2^4}{2^5}',
+                answer: '4',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Simultaneous Systems',
+            problem: {
+                id: 'def-alg-3',
+                title: 'Simultaneous Systems',
+                category: 'ALGEBRA',
+                subTopic: 'Simultaneous Systems',
+                instruction: 'Solve for the value of y in the simultaneous system:',
+                latexFormula: '\\begin{cases} 2x + y = 11 \\\\ x - y = 1 \\end{cases}',
+                answer: '3',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Inequalities & Graphs',
+            problem: {
+                id: 'def-alg-4',
+                title: 'Inequalities & Graphs',
+                category: 'ALGEBRA',
+                subTopic: 'Inequalities & Graphs',
+                instruction: 'Find the maximum integer value for x satisfying the inequality:',
+                latexFormula: '3x - 5 < 10',
+                answer: '4',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        }
+    ],
+    'ARITHMETIC & NUMERACY': [
+        {
+            subTopic: 'Fractions, Decimals & Percentages',
+            problem: {
+                id: 'def-arith-1',
+                title: 'Percentages & Conversions',
+                category: 'ARITHMETIC & NUMERACY',
+                subTopic: 'Fractions, Decimals & Percentages',
+                instruction: 'Calculate 25% of 240 in integer format:',
+                latexFormula: '25\\% \\times 240',
+                answer: '60',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Ratios & Proportions',
+            problem: {
+                id: 'def-arith-2',
+                title: 'Direct Proportions',
+                category: 'ARITHMETIC & NUMERACY',
+                subTopic: 'Ratios & Proportions',
+                instruction: 'If 3 pencils cost $15, find the cost of 7 pencils:',
+                latexFormula: '\\frac{15}{3} \\times 7',
+                answer: '35',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Financial Math & Interest',
+            problem: {
+                id: 'def-arith-3',
+                title: 'Simple Interest',
+                category: 'ARITHMETIC & NUMERACY',
+                subTopic: 'Financial Math & Interest',
+                instruction: 'Calculate simple interest for Principal $500 at 5% for 2 years:',
+                latexFormula: 'I = \\frac{500 \\times 5 \\times 2}{100}',
+                answer: '50',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        }
+    ],
+    'GEOMETRY & TRIGONOMETRY': [
+        {
+            subTopic: 'Pythagoras Theorem',
+            problem: {
+                id: 'def-geom-1',
+                title: 'Right-Angled Triangle Hypotenuse',
+                category: 'GEOMETRY & TRIGONOMETRY',
+                subTopic: 'Pythagoras Theorem',
+                instruction: 'Find hypotenuse c where a = 3 and b = 4:',
+                latexFormula: 'c = \\sqrt{3^2 + 4^2}',
+                answer: '5',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Angles & Polygons',
+            problem: {
+                id: 'def-geom-2',
+                title: 'Interior Angle Sums',
+                category: 'GEOMETRY & TRIGONOMETRY',
+                subTopic: 'Angles & Polygons',
+                instruction: 'Find the interior angle sum of a pentagon (5 sides) in degrees:',
+                latexFormula: '(5 - 2) \\times 180^\\circ',
+                answer: '540',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Trigonometric Ratios',
+            problem: {
+                id: 'def-geom-3',
+                title: 'Sine & Cosine Relations',
+                category: 'GEOMETRY & TRIGONOMETRY',
+                subTopic: 'Trigonometric Ratios',
+                instruction: 'In a right triangle with opposite = 6 and hypotenuse = 10, find sin(theta):',
+                latexFormula: '\\sin(\\theta) = \\frac{6}{10}',
+                answer: '0.6',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        }
+    ],
+    'STATISTICS & PROBABILITY': [
+        {
+            subTopic: 'Central Tendency (Mean, Median, Mode)',
+            problem: {
+                id: 'def-stat-1',
+                title: 'Arithmetic Mean',
+                category: 'STATISTICS & PROBABILITY',
+                subTopic: 'Central Tendency (Mean, Median, Mode)',
+                instruction: 'Calculate the mean of 10, 15, and 20:',
+                latexFormula: '\\frac{10 + 15 + 20}{3}',
+                answer: '15',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Frequency Tables',
+            problem: {
+                id: 'def-stat-2',
+                title: 'Cumulative Frequency',
+                category: 'STATISTICS & PROBABILITY',
+                subTopic: 'Frequency Tables',
+                instruction: 'A survey of 50 students has 30 preferring Science. Find the relative frequency percentage:',
+                latexFormula: '\\frac{30}{50} \\times 100\\%',
+                answer: '60',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        },
+        {
+            subTopic: 'Theoretical Probability',
+            problem: {
+                id: 'def-stat-3',
+                title: 'Dice & Coin Probability',
+                category: 'STATISTICS & PROBABILITY',
+                subTopic: 'Theoretical Probability',
+                instruction: 'Calculate the probability of rolling an even number on a standard 6-sided die (decimal):',
+                latexFormula: 'P(\\text{Even}) = \\frac{3}{6}',
+                answer: '0.5',
+                gradeLevel: 'Junior Secondary (JHS)'
+            }
+        }
+    ]
+};
+
+const DEFAULT_SCIENCE_STRANDS: Record<string, { subTopic: string; lab: any }[]> = {
+    'PHYSICAL SCIENCES & PHYSICS': [
+        {
+            subTopic: 'Projectile Motion & Gravity',
+            lab: {
+                id: 'def-sci-1',
+                title: 'Trajectory of Projectiles',
+                category: 'PHYSICAL SCIENCES & PHYSICS',
+                subTopic: 'Projectile Motion & Gravity',
+                background: 'Examine ballistic curves under gravitational acceleration g = 9.8 m/s^2.',
+                hypothesisPrompt: 'State your hypothesis regarding launch angle vs range.',
+                hypothesisOptions: ['Maximum range occurs at 45 degrees', 'Maximum range occurs at 90 degrees', 'Angle has no effect on range'],
+                steps: [
+                    { stepNumber: 1, action: 'Set launch velocity to 20 m/s at 45 degrees.' },
+                    { stepNumber: 2, action: 'Measure flight time and horizontal impact distance.' }
+                ],
+                conclusion: 'Symmetric projectile range is maximized at a 45 degree launch elevation.',
+                explanation: 'Equal distribution of vertical flight time and horizontal speed maximizes horizontal displacement.'
+            }
+        }
+    ],
+    'CHEMICAL REACTIONS & MATTER': [
+        {
+            subTopic: 'Reaction Kinetics & Catalysis',
+            lab: {
+                id: 'def-sci-2',
+                title: 'Enzyme & Catalyst Rates',
+                category: 'CHEMICAL REACTIONS & MATTER',
+                subTopic: 'Reaction Kinetics & Catalysis',
+                background: 'Observe the thermal acceleration of catalytic decomposition of hydrogen peroxide.',
+                hypothesisPrompt: 'How does temperature affect enzyme reaction velocity?',
+                hypothesisOptions: ['Reaction rate increases up to the optimal denaturation point', 'Temperature has no effect', 'Reaction rate always decreases with temperature'],
+                steps: [
+                    { stepNumber: 1, action: 'Prepare 10ml H2O2 at 25C and 40C.' },
+                    { stepNumber: 2, action: 'Add catalase and record gas volume evolved per minute.' }
+                ],
+                conclusion: 'Enzymatic catalysis rate doubles per 10C rise until thermal denaturation occurs.',
+                explanation: 'Higher kinetic energy increases molecular collision frequency up to the structural integrity threshold.'
+            }
+        }
+    ],
+    'LIFE SCIENCES & BIOLOGY': [
+        {
+            subTopic: 'Photosynthesis & Light Absorption',
+            lab: {
+                id: 'def-sci-3',
+                title: 'Chlorophyll Action Spectrum',
+                category: 'LIFE SCIENCES & BIOLOGY',
+                subTopic: 'Photosynthesis & Light Absorption',
+                background: 'Analyze oxygen production rates under red, green, and blue light wavelengths.',
+                hypothesisPrompt: 'Which light wavelength yields highest photosynthetic output?',
+                hypothesisOptions: ['Blue and red wavelengths yield maximum photosynthetic rate', 'Green light yields highest rate', 'All wavelengths yield identical rate'],
+                steps: [
+                    { stepNumber: 1, action: 'Place Elodea pondweed under blue filter LED.' },
+                    { stepNumber: 2, action: 'Count oxygen bubbles produced over 5 minutes.' }
+                ],
+                conclusion: 'Chlorophyll a and b absorb blue and red photons while reflecting green light.',
+                explanation: 'Pigment absorption peaks in the blue (430nm) and red (660nm) bands drive light-dependent reactions.'
+            }
+        }
+    ]
+};
 
 // --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
@@ -304,18 +594,31 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     [firestore]);
     const { data: library, forceRefetch } = useCollection<any>(storiesQuery);
 
-    // Folder Logic for English
+    // Folder Logic for English with default curriculum strands
     const folderStructure = useMemo(() => {
-        if (!library) return {};
-        const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
-        return filtered.reduce((acc, s) => {
-            const category = s.category || s.genre || 'General Reading'; // Folder 1
-            const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
-            if (!acc[category]) acc[category] = {};
-            if (!acc[category][subTopic]) acc[category][subTopic] = [];
-            acc[category][subTopic].push(s);
-            return acc;
-        }, {} as Record<string, Record<string, any[]>>);
+        const structure: Record<string, Record<string, any[]>> = {};
+
+        // Populate baseline strands
+        Object.entries(DEFAULT_ENGLISH_STRANDS).forEach(([strand, subItems]) => {
+            structure[strand] = {};
+            subItems.forEach(item => {
+                structure[strand][item.subTopic] = [{ ...item.story, gradeLevel: selectedGrade }];
+            });
+        });
+
+        // Overlay DB items if available
+        if (library && library.length > 0) {
+            const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+            filtered.forEach(s => {
+                const category = (s.category || s.genre || 'LITERATURE & POETRY').toUpperCase();
+                const subTopic = s.subTopic || 'Standard Comprehension';
+                if (!structure[category]) structure[category] = {};
+                if (!structure[category][subTopic]) structure[category][subTopic] = [];
+                structure[category][subTopic].push(s);
+            });
+        }
+
+        return structure;
     }, [library, selectedGrade]);
 
     const { data: studentRecord } = useCollection<Student>(
@@ -344,18 +647,18 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     return (
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
             {/* SIDEBAR NAVIGATION */}
-            <div className="lg:col-span-1 space-y-4">
-                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-800">
-                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
+            <div className="lg:col-span-1 space-y-3">
+                <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
+                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">English Level</Label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-slate-950 border-slate-850 text-white rounded-2xl h-12">
+                        <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
 
-                <ScrollArea className="h-[70vh] rounded-3xl border border-indigo-500/20 bg-slate-900 p-2 shadow-2xl">
+                <ScrollArea className="h-[calc(100vh-280px)] min-h-[440px] rounded-2xl border border-slate-800 bg-slate-900/60 p-2 shadow-xl mt-3">
                     <div className="p-2 space-y-2">
                         {Object.keys(folderStructure).length === 0 ? (
                             <div className="text-center py-20 text-slate-500">
@@ -496,27 +799,27 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                             {SUGGESTED_ENGLISH_MODULES.map((mod, i) => (
                                 <div 
                                     key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group"
+                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group h-full"
                                 >
                                     <div>
-                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                                        <div className="min-h-[44px] flex items-start justify-between gap-2 mb-2">
+                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors leading-snug line-clamp-2">
                                                 {mod.title}
                                             </h4>
-                                            <span className="text-xs text-slate-400 shrink-0 font-medium">
+                                            <span className="text-xs text-slate-400 shrink-0 font-medium whitespace-nowrap">
                                                 {mod.meta}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4">
+                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 h-8 min-h-[32px] leading-relaxed">
                                             {mod.description}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-auto">
                                         <span className={cn(
                                             "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
                                             mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
@@ -533,8 +836,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                                     title: mod.title,
                                                     content: mod.content,
                                                     quiz: [
-                                                        { question: mod.sampleInstruction, answer: mod.sampleAnswer },
-                                                        { question: "What is the primary rhetorical goal of the passage?", answer: "To inspire analytical perspective" }
+                                                        { question: mod.sampleInstruction, options: [mod.sampleAnswer, 'Alternative interpretation', 'Contrasting viewpoint', 'None of the above'], answer: mod.sampleAnswer }
                                                     ],
                                                     gradeLevel: selectedGrade
                                                 });
@@ -593,20 +895,29 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const { data: dbProblems, isLoading, forceRefetch } = useCollection<any>(mathQuery);
 
     const folderStructure = useMemo(() => {
-        if (!dbProblems) return {};
-        
-        const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+        const structure: Record<string, Record<string, any[]>> = {};
 
-        return filtered.reduce((acc, p) => {
-            const subject = p.category || 'General Mathematics';
-            const sub = p.subTopic || 'Standard Practice';
-            
-            if (!acc[subject]) acc[subject] = {};
-            if (!acc[subject][sub]) acc[subject][sub] = [];
-            
-            acc[subject][sub].push(p);
-            return acc;
-        }, {} as Record<string, Record<string, any[]>>);
+        // Populate baseline strands (Algebra, Arithmetic, Geometry, Statistics)
+        Object.entries(DEFAULT_MATH_STRANDS).forEach(([strand, subItems]) => {
+            structure[strand] = {};
+            subItems.forEach(item => {
+                structure[strand][item.subTopic] = [{ ...item.problem, gradeLevel: selectedGrade }];
+            });
+        });
+
+        // Overlay DB items if available
+        if (dbProblems && dbProblems.length > 0) {
+            const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+            filtered.forEach(p => {
+                const subject = (p.category || 'ALGEBRA').toUpperCase();
+                const sub = p.subTopic || 'Standard Practice';
+                if (!structure[subject]) structure[subject] = {};
+                if (!structure[subject][sub]) structure[subject][sub] = [];
+                structure[subject][sub].push(p);
+            });
+        }
+
+        return structure;
     }, [dbProblems, selectedGrade]);
 
     const { data: studentRecord } = useCollection<Student>(
@@ -633,17 +944,17 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     return (
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
             {/* SIDEBAR */}
-            <div className="lg:col-span-1 space-y-4">
-                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-700">
-                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">Student Category</Label>
+            <div className="lg:col-span-1 space-y-3">
+                <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
+                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">Student Category</Label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white font-bold rounded-2xl h-12">
+                        <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
-                <ScrollArea className="h-[70vh] rounded-3xl border border-emerald-500/20 bg-slate-900 p-2 shadow-2xl">
+                <ScrollArea className="h-[calc(100vh-280px)] min-h-[440px] rounded-2xl border border-slate-800 bg-slate-900/60 p-2 shadow-xl mt-3">
                     <div className="space-y-2 p-2">
                         {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
                             <div className="text-center py-20 text-slate-500">
@@ -815,23 +1126,23 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             {SUGGESTED_MATH_MODULES.map((mod, i) => (
                                 <div 
                                     key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group"
+                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group h-full"
                                 >
                                     <div>
-                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                                        <div className="min-h-[44px] flex items-start justify-between gap-2 mb-2">
+                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors leading-snug line-clamp-2">
                                                 {mod.title}
                                             </h4>
-                                            <span className="text-xs text-slate-400 shrink-0 font-medium">
+                                            <span className="text-xs text-slate-400 shrink-0 font-medium whitespace-nowrap">
                                                 {mod.meta}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4">
+                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 h-8 min-h-[32px] leading-relaxed">
                                             {mod.description}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-auto">
                                         <span className={cn(
                                             "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
                                             mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
@@ -905,33 +1216,46 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const { data: dbLabs } = useCollection<any>(labQuery);
 
     const folderStructure = useMemo(() => {
-        if (!dbLabs) return {};
-        const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
-        return filtered.reduce((acc, l) => {
-            const category = l.category || 'Science Journal';
-            const subTopic = l.subTopic || 'Research Mission';
-            if (!acc[category]) acc[category] = {};
-            if (!acc[category][subTopic]) acc[category][subTopic] = [];
-            acc[category][subTopic].push(l);
-            return acc;
-        }, {} as Record<string, Record<string, any[]>>);
+        const structure: Record<string, Record<string, any[]>> = {};
+
+        // Populate baseline strands
+        Object.entries(DEFAULT_SCIENCE_STRANDS).forEach(([strand, subItems]) => {
+            structure[strand] = {};
+            subItems.forEach(item => {
+                structure[strand][item.subTopic] = [{ ...item.lab, gradeLevel: selectedGrade }];
+            });
+        });
+
+        // Overlay DB items if available
+        if (dbLabs && dbLabs.length > 0) {
+            const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+            filtered.forEach(l => {
+                const category = (l.category || 'PHYSICAL SCIENCES & PHYSICS').toUpperCase();
+                const subTopic = l.subTopic || 'Research Mission';
+                if (!structure[category]) structure[category] = {};
+                if (!structure[category][subTopic]) structure[category][subTopic] = [];
+                structure[category][subTopic].push(l);
+            });
+        }
+
+        return structure;
     }, [dbLabs, selectedGrade]);
     
     return (
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
             {/* SIDEBAR NAVIGATION */}
-            <div className="lg:col-span-1 space-y-4">
-                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-800">
-                    <Label className="text-cyan-300 text-[10px] uppercase font-black ml-2 mb-2 block">Research Level</Label>
+            <div className="lg:col-span-1 space-y-3">
+                <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
+                    <Label className="text-cyan-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">Research Level</Label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-slate-950 border-slate-850 text-white rounded-2xl h-12">
+                        <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
 
-                <ScrollArea className="h-[70vh] rounded-3xl border border-cyan-500/20 bg-slate-900 p-2 shadow-2xl">
+                <ScrollArea className="h-[calc(100vh-280px)] min-h-[440px] rounded-2xl border border-slate-800 bg-slate-900/60 p-2 shadow-xl mt-3">
                     <div className="p-2 space-y-2">
                          {Object.keys(folderStructure).length === 0 ? (
                             <div className="text-center py-20 text-slate-500">
@@ -1161,27 +1485,27 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                             {SUGGESTED_SCIENCE_MODULES.map((mod, i) => (
                                 <div 
                                     key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group"
+                                    className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 hover:border-indigo-500/40 hover:bg-slate-850 transition-all flex flex-col justify-between group h-full"
                                 >
                                     <div>
-                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                                        <div className="min-h-[44px] flex items-start justify-between gap-2 mb-2">
+                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors leading-snug line-clamp-2">
                                                 {mod.title}
                                             </h4>
-                                            <span className="text-xs text-slate-400 shrink-0 font-medium">
+                                            <span className="text-xs text-slate-400 shrink-0 font-medium whitespace-nowrap">
                                                 {mod.meta}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4">
+                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 h-8 min-h-[32px] leading-relaxed">
                                             {mod.description}
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-auto">
                                         <span className={cn(
                                             "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
                                             mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
@@ -1199,9 +1523,11 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                                     background: mod.background,
                                                     hypothesisPrompt: mod.hypothesisPrompt,
                                                     hypothesisOptions: mod.hypothesisOptions,
+                                                    steps: [
+                                                        { stepNumber: 1, action: mod.sampleInstruction }
+                                                    ],
                                                     conclusion: mod.conclusion,
-                                                    explanation: mod.explanation,
-                                                    gradeLevel: selectedGrade
+                                                    explanation: mod.explanation
                                                 });
                                                 setStage('hypothesis');
                                             }}

@@ -110,27 +110,24 @@ export function AiChat() {
     <>
       <button
         type="button"
-        className="fixed bottom-6 right-6 z-40 bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-full shadow-lg shadow-indigo-950/60 transition-all duration-200 hover:scale-105 flex items-center justify-center cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 bg-indigo-600 hover:bg-indigo-500 text-white p-3.5 rounded-full shadow-xl shadow-indigo-950/60 transition-all duration-200 hover:scale-105 flex items-center justify-center cursor-pointer border border-indigo-400/30"
         onClick={() => setIsOpen(true)}
         title="Open AI Assistant"
       >
-        <div className="relative flex items-center justify-center">
-            <Bot className="h-6 w-6 text-white" />
-            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-emerald-400 rounded-full border-2 border-indigo-600 animate-pulse" />
-        </div>
+        <Bot className="h-6 w-6 text-white" />
         <span className="sr-only">Open AI Assistant</span>
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[425px] md:max-w-lg lg:max-w-2xl h-full max-h-[85vh] flex flex-col rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
-          <DialogHeader className="bg-purple-600 p-6 text-white shrink-0">
+          <DialogHeader className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 p-6 text-white shrink-0 border-b border-indigo-500/20">
             <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-2 rounded-xl">
-                    <Bot className="h-6 w-6" />
+                <div className="bg-indigo-500/20 border border-indigo-400/30 p-2.5 rounded-xl">
+                    <Bot className="h-6 w-6 text-indigo-300" />
                 </div>
                 <div>
                     <DialogTitle className="text-white text-xl font-black uppercase tracking-tight">GAM Edu Assistant</DialogTitle>
-                    <DialogDescription className="text-purple-100 font-medium">
+                    <DialogDescription className="text-indigo-200/70 font-medium text-xs">
                         How can I help you manage your school today?
                     </DialogDescription>
                 </div>
