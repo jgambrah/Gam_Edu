@@ -108,16 +108,18 @@ export function AiChat() {
 
   return (
     <>
-      <Button
-        className="fixed bottom-36 right-6 h-14 w-14 rounded-full shadow-2xl bg-purple-600 hover:bg-purple-700 z-[150] transition-all duration-300 hover:scale-105"
+      <button
+        type="button"
+        className="fixed bottom-6 right-6 z-40 bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-full shadow-lg shadow-indigo-950/60 transition-all duration-200 hover:scale-105 flex items-center justify-center cursor-pointer"
         onClick={() => setIsOpen(true)}
+        title="Open AI Assistant"
       >
-        <div className="relative">
-            <Bot className="h-8 w-8 text-white" />
-            <div className="absolute -top-1 -right-1 h-3 w-3 bg-green-400 rounded-full border-2 border-purple-600 animate-pulse" />
+        <div className="relative flex items-center justify-center">
+            <Bot className="h-6 w-6 text-white" />
+            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 bg-emerald-400 rounded-full border-2 border-indigo-600 animate-pulse" />
         </div>
         <span className="sr-only">Open AI Assistant</span>
-      </Button>
+      </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[425px] md:max-w-lg lg:max-w-2xl h-full max-h-[85vh] flex flex-col rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">

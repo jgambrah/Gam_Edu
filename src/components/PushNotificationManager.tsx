@@ -117,7 +117,7 @@ export function PushNotificationManager({ collectionName }: { collectionName: st
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 left-6 md:left-auto md:w-96 bg-indigo-950 text-white p-5 rounded-[2rem] shadow-2xl z-[100] flex items-start gap-4 animate-in slide-in-from-bottom-10 border-4 border-white/10 backdrop-blur-xl">
+    <div className="fixed bottom-20 right-6 left-6 md:left-auto md:w-96 bg-indigo-950 text-white p-5 rounded-[2rem] shadow-2xl z-[100] flex items-start gap-4 animate-in slide-in-from-bottom-10 border-4 border-white/10 backdrop-blur-xl">
       <div className="bg-indigo-500/20 p-3 rounded-2xl shrink-0">
         <BellRing className="h-6 w-6 text-indigo-400" />
       </div>
