@@ -26,6 +26,7 @@ import {
   Play, X, Calendar, User, Sparkles, Film, Tag, Loader2, HeartHandshake, Eye
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // Schema for publishing gallery items
 const galleryPostSchema = z.object({
@@ -73,6 +74,8 @@ export default function GalleryPage() {
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
+
+  const schoolName = profile?.schoolName || "Sunny Side Academy";
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -252,144 +255,148 @@ export default function GalleryPage() {
   }, [posts, searchTerm, selectedCategory, selectedMediaType]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-6 animate-in fade-in duration-300">
       
-      {/* Premium Header Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-teal-650 via-teal-600 to-indigo-850 p-8 md:p-12 text-white shadow-2xl border border-teal-400/20">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl animate-pulse" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-2xl animate-pulse" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-teal-100 backdrop-blur-md">
-              <Camera className="h-3.5 w-3.5 text-teal-300" /> Life at School
-            </span>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase leading-none">
-              School <span className="text-teal-200">Gallery</span>
-            </h1>
-            <p className="max-w-md text-sm font-medium text-teal-50">
-              Browse snapshots, activity logs, excursions, sports events, and classroom memories. Connect directly with school events.
-            </p>
-          </div>
-          
-          {canPublish && (
-            <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="h-12 rounded-2xl bg-white text-teal-700 hover:bg-teal-50 font-black uppercase tracking-wider shadow-lg transition-all hover:scale-102 active:scale-98 border-none shrink-0">
-                  <PlusCircle className="mr-2 h-5 w-5 text-teal-605" /> Publish Media
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md rounded-[2.5rem] border-slate-900 border-2 max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-black uppercase italic text-slate-800 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-teal-605" /> Publish New Media
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+      {/* Standardized Institutional Hero Banner */}
+      <SectionHeroBanner
+        eyebrow={`${schoolName.toUpperCase()} • SCHOOL GALLERY`}
+        title="School Gallery"
+        subtitle="Browse snapshots, activity logs, excursions, sports events, and classroom memories. Connect directly with school events."
+        icon={Camera}
+        badge={{
+          label: "Life at School",
+          variant: "info",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Community', href: '/dashboard' },
+          { label: 'School Gallery' },
+        ]}
+        actions={
+          canPublish ? (
+            <Button
+              onClick={() => setIsUploadDialogOpen(true)}
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <PlusCircle className="h-4 w-4 text-slate-950" />
+              <span>Publish Media</span>
+            </Button>
+          ) : undefined
+        }
+      />
+
+      {/* Upload/Publish Dialog */}
+      {canPublish && (
+        <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+          <DialogContent className="sm:max-w-md rounded-[2.5rem] border-slate-900 border-2 max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black uppercase italic text-slate-800 flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-teal-605" /> Publish New Media
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+              
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Title</Label>
+                <Input placeholder="e.g. Sports Day 100m Finals" {...form.register('title')} className="h-11 border-2 rounded-xl bg-slate-50 focus:ring-teal-500" />
+                {form.formState.errors.title && <span className="text-xs text-red-500 font-semibold">{form.formState.errors.title.message}</span>}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Description</Label>
+                <Textarea placeholder="Describe the memory, who participated..." {...form.register('description')} className="border-2 rounded-xl bg-slate-50 focus:ring-teal-500 min-h-[80px]" />
+                {form.formState.errors.description && <span className="text-xs text-red-500 font-semibold">{form.formState.errors.description.message}</span>}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Category</Label>
+                  <Select 
+                    onValueChange={(v) => form.setValue('category', v as any)} 
+                    defaultValue={form.getValues('category')}
+                  >
+                    <SelectTrigger className="h-11 border-2 rounded-xl bg-slate-50">
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="Classroom">Classroom Activity</SelectItem>
+                      <SelectItem value="Sports">Sports Activity</SelectItem>
+                      <SelectItem value="Excursions">Excursions</SelectItem>
+                      <SelectItem value="Awards">Awards Ceremony</SelectItem>
+                      <SelectItem value="Cultural">Cultural Event</SelectItem>
+                      <SelectItem value="Other">Other Event</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Media Type</Label>
+                  <Select 
+                    onValueChange={(v) => {
+                      form.setValue('mediaType', v as any);
+                      setFileBase64(null);
+                      form.setValue('fileUpload', '');
+                    }} 
+                    defaultValue={form.getValues('mediaType')}
+                  >
+                    <SelectTrigger className="h-11 border-2 rounded-xl bg-slate-50">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectItem value="image">Photo</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {formMediaType === 'image' ? (
+                <div className="space-y-3 p-4 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider block">Upload Image File</Label>
+                  <Input type="file" accept="image/*" onChange={handleFileChange} className="h-11 bg-white border-2 border-slate-100 rounded-xl" />
                   
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Title</Label>
-                    <Input placeholder="e.g. Sports Day 100m Finals" {...form.register('title')} className="h-11 border-2 rounded-xl bg-slate-50 focus:ring-teal-500" />
-                    {form.formState.errors.title && <span className="text-xs text-red-500 font-semibold">{form.formState.errors.title.message}</span>}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Description</Label>
-                    <Textarea placeholder="Describe the memory, who participated..." {...form.register('description')} className="border-2 rounded-xl bg-slate-50 focus:ring-teal-500 min-h-[80px]" />
-                    {form.formState.errors.description && <span className="text-xs text-red-500 font-semibold">{form.formState.errors.description.message}</span>}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Category</Label>
-                      <Select 
-                        onValueChange={(v) => form.setValue('category', v as any)} 
-                        defaultValue={form.getValues('category')}
-                      >
-                        <SelectTrigger className="h-11 border-2 rounded-xl bg-slate-50">
-                          <SelectValue placeholder="Category" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                          <SelectItem value="Classroom">Classroom Activity</SelectItem>
-                          <SelectItem value="Sports">Sports Activity</SelectItem>
-                          <SelectItem value="Excursions">Excursions</SelectItem>
-                          <SelectItem value="Awards">Awards Ceremony</SelectItem>
-                          <SelectItem value="Cultural">Cultural Event</SelectItem>
-                          <SelectItem value="Other">Other Event</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Media Type</Label>
-                      <Select 
-                        onValueChange={(v) => {
-                          form.setValue('mediaType', v as any);
+                  {fileBase64 ? (
+                    <div className="relative h-32 w-full rounded-xl overflow-hidden border">
+                      <img src={fileBase64} alt="Upload preview" className="object-cover h-full w-full" />
+                      <Button 
+                        type="button" 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                        onClick={() => {
                           setFileBase64(null);
                           form.setValue('fileUpload', '');
-                        }} 
-                        defaultValue={form.getValues('mediaType')}
+                        }}
                       >
-                        <SelectTrigger className="h-11 border-2 rounded-xl bg-slate-50">
-                          <SelectValue placeholder="Type" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl">
-                          <SelectItem value="image">Photo</SelectItem>
-                          <SelectItem value="video">Video</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {formMediaType === 'image' ? (
-                    <div className="space-y-3 p-4 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider block">Upload Image File</Label>
-                      <Input type="file" accept="image/*" onChange={handleFileChange} className="h-11 bg-white border-2 border-slate-100 rounded-xl" />
-                      
-                      {fileBase64 ? (
-                        <div className="relative h-32 w-full rounded-xl overflow-hidden border">
-                          <img src={fileBase64} alt="Upload preview" className="object-cover h-full w-full" />
-                          <Button 
-                            type="button" 
-                            variant="destructive" 
-                            size="icon" 
-                            className="absolute top-2 right-2 h-6 w-6 rounded-full"
-                            onClick={() => {
-                              setFileBase64(null);
-                              form.setValue('fileUpload', '');
-                            }}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="text-center py-2 text-xs font-semibold text-slate-400 uppercase">OR PASTE DIRECT URL BELOW</div>
-                      )}
-
-                      <div className="space-y-1">
-                        <Label className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Direct Image Link</Label>
-                        <Input placeholder="https://example.com/photo.jpg" {...form.register('mediaUrl')} className="h-10 border-2 rounded-xl bg-white" />
-                      </div>
+                        <X className="h-3 w-3" />
+                      </Button>
                     </div>
                   ) : (
-                    <div className="space-y-1.5 p-4 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-                      <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider block">YouTube Link or Direct Video MP4 URL</Label>
-                      <Input placeholder="e.g. https://www.youtube.com/watch?v=..." {...form.register('mediaUrl')} className="h-11 border-2 rounded-xl bg-white focus:ring-teal-500" />
-                      <p className="text-[10px] text-slate-405 font-bold uppercase mt-1">YouTube links will be converted to high-performance embed elements.</p>
-                      {form.formState.errors.mediaUrl && <span className="text-xs text-red-500 font-semibold">{form.formState.errors.mediaUrl.message}</span>}
-                    </div>
+                    <div className="text-center py-2 text-xs font-semibold text-slate-400 uppercase">OR PASTE DIRECT URL BELOW</div>
                   )}
 
-                  <Button type="submit" className="w-full h-12 text-sm font-black uppercase tracking-wider bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg transition-all" disabled={isSubmitting}>
-                    {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Publish to Gallery"}
-                  </Button>
+                  <div className="space-y-1">
+                    <Label className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Direct Image Link</Label>
+                    <Input placeholder="https://example.com/photo.jpg" {...form.register('mediaUrl')} className="h-10 border-2 rounded-xl bg-white" />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-1.5 p-4 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider block">YouTube Link or Direct Video MP4 URL</Label>
+                  <Input placeholder="e.g. https://www.youtube.com/watch?v=..." {...form.register('mediaUrl')} className="h-11 border-2 rounded-xl bg-white focus:ring-teal-500" />
+                  <p className="text-[10px] text-slate-405 font-bold uppercase mt-1">YouTube links will be converted to high-performance embed elements.</p>
+                  {form.formState.errors.mediaUrl && <span className="text-xs text-red-500 font-semibold">{form.formState.errors.mediaUrl.message}</span>}
+                </div>
+              )}
 
-                </form>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
-      </div>
+              <Button type="submit" className="w-full h-12 text-sm font-black uppercase tracking-wider bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-lg transition-all" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Publish to Gallery"}
+              </Button>
+
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* FILTER PANEL */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/70 backdrop-blur-md p-4 rounded-2xl border border-slate-100 shadow-sm flex-shrink-0">
