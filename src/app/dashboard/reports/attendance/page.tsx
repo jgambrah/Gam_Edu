@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
-import { collection, query, where, getDocs, writeBatch, doc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, setDoc, writeBatch, doc, Timestamp, orderBy, limit } from 'firebase/firestore';
 import { sanitizeErrorMessage } from '@/lib/error-handler'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle, CalendarCheck, ClipboardList, BarChart3 } from 'lucide-react';
+import { Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, TrendingUp, Users, AlertCircle, Clock, Trash2, Search, Settings2, ShieldAlert, AlertTriangle, CalendarCheck, ClipboardList, BarChart3, PackageCheck, Zap, RefreshCw, Database } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -48,6 +48,35 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+export interface CompactAttendanceSnapshotRecord {
+    id: string;
+    studentId: string;
+    studentName?: string;
+    student?: {
+        id?: string;
+        uid?: string;
+        firstName?: string;
+        lastName?: string;
+        studentId?: string;
+        [key: string]: any;
+    };
+    classId: string;
+    className?: string;
+    date: string | Timestamp | { seconds: number; nanoseconds: number } | any;
+    status: 'Present' | 'Absent' | 'Late' | 'Excused' | string;
+    notes?: string;
+}
+
+export interface AttendanceReportSnapshotDoc {
+    id: string;
+    schoolId: string;
+    classId: string;
+    className?: string;
+    updatedAt: string;
+    recordCount: number;
+    records: CompactAttendanceSnapshotRecord[];
+}
 
 const STATUS_COLORS: Record<string, string> = {
     'Present': '#22c55e',
@@ -237,6 +266,9 @@ export default function AttendanceReportsPage() {
     const [selectedClassId, setSelectedClassId] = useState<string>('');
     const [searchStudentTerm, setSearchStudentTerm] = useState('');
     const [isReportRequested, setIsReportRequested] = useState<boolean>(false);
+    const [activeSnapshot, setActiveSnapshot] = useState<AttendanceReportSnapshotDoc | null>(null);
+    const [isLoadingSnapshot, setIsLoadingSnapshot] = useState<boolean>(false);
+    const [isCompilingSnapshot, setIsCompilingSnapshot] = useState<boolean>(false);
 
     type ReportStatus = 'IDLE' | 'LOADING' | 'SUCCESS' | 'EMPTY';
 
@@ -257,7 +289,7 @@ export default function AttendanceReportsPage() {
     const { data: classes } = useCollection(classesQuery);
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !dateRange?.from || !selectedClassId || !isReportRequested) return null;
+        if (activeSnapshot || !firestore || !schoolId || isRoleLoading || !canAccess || !dateRange?.from || !selectedClassId || !isReportRequested) return null;
         const fromDate = startOfDay(dateRange.from);
         const toDate = endOfDay(dateRange.to || dateRange.from);
         if (selectedClassId !== 'all') {
@@ -277,13 +309,13 @@ export default function AttendanceReportsPage() {
             where('date', '<=', Timestamp.fromDate(toDate)),
             limit(1000)
         );
-    }, [firestore, schoolId, isRoleLoading, canAccess, selectedClassId, dateRange, isReportRequested]);
+    }, [activeSnapshot, firestore, schoolId, isRoleLoading, canAccess, selectedClassId, dateRange, isReportRequested]);
     const { data: rawAttendance, isLoading: isLoadingAttendance, forceRefetch } = useCollection(attendanceQuery);
     
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (activeSnapshot || !firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(300));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [activeSnapshot, firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
     const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<any>(studentsQuery);
 
     const students = useMemo(() => {
@@ -295,22 +327,28 @@ export default function AttendanceReportsPage() {
     const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
 
     const { filteredData, summaryStats, trendData, pieData } = useMemo(() => {
-        if (!rawAttendance || !students || !classes || !dateRange?.from) {
+        const recordsSource = activeSnapshot ? activeSnapshot.records : rawAttendance;
+
+        if (!recordsSource || !classes || !dateRange?.from) {
             return { filteredData: [], summaryStats: null, trendData: [], pieData: [] };
         }
 
-        const studentMap = new Map(students.map(s => [s.uid || s.id, s]));
-        const classMap = new Map(classes.map(c => [c.id, c.name]));
+        const studentMap = students && students.length > 0 
+            ? new Map(students.map((s: any) => [s.uid || s.id, s]))
+            : new Map();
+        const classMap = new Map(classes.map((c: any) => [c.id, c.name]));
         const fromDate = startOfDay(dateRange.from);
         const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
-        const filtered = rawAttendance
+        const filtered = (recordsSource as any[])
             .filter(record => {
                 if (!record) return false;
                 
                 let recordDate: Date | null = null;
                 if (record.date?.toDate) {
                     recordDate = record.date.toDate();
+                } else if (record.date?.seconds) {
+                    recordDate = new Date(record.date.seconds * 1000);
                 } else if (record.date) {
                     recordDate = new Date(record.date);
                 }
@@ -318,20 +356,35 @@ export default function AttendanceReportsPage() {
                 if (recordDate && (recordDate < fromDate || recordDate > toDate)) return false;
                 if (selectedClassId !== 'all' && record.classId !== selectedClassId) return false;
                 
-                const student = studentMap.get(record.studentId);
-                const studentName = student ? `${student.firstName || ''} ${student.lastName || ''}`.trim() : (record.studentName || 'Student');
+                const student = record.student || studentMap.get(record.studentId);
+                const studentName = student 
+                    ? `${student.firstName || ''} ${student.lastName || ''}`.trim() 
+                    : (record.studentName || 'Student');
 
                 if (searchStudentTerm.trim()) {
                     if (!studentName.toLowerCase().includes(searchStudentTerm.toLowerCase().trim())) return false;
                 }
                 return true;
             })
-            .map(record => ({
-                ...record,
-                dateObj: record.date?.toDate ? record.date.toDate() : new Date(record.date),
-                student: studentMap.get(record.studentId),
-                className: classMap.get(record.classId) || 'Unknown Class'
-            }))
+            .map(record => {
+                let recordDate: Date;
+                if (record.date?.toDate) {
+                    recordDate = record.date.toDate();
+                } else if (record.date?.seconds) {
+                    recordDate = new Date(record.date.seconds * 1000);
+                } else if (record.date) {
+                    recordDate = new Date(record.date);
+                } else {
+                    recordDate = new Date();
+                }
+
+                return {
+                    ...record,
+                    dateObj: recordDate,
+                    student: record.student || studentMap.get(record.studentId),
+                    className: record.className || classMap.get(record.classId) || 'Unknown Class'
+                };
+            })
             .sort((a, b) => b.dateObj.getTime() - a.dateObj.getTime());
 
         const counts = { Present: 0, Absent: 0, Late: 0, Excused: 0 };
@@ -388,16 +441,149 @@ export default function AttendanceReportsPage() {
             .sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
 
         return { filteredData: filtered, summaryStats: summary, trendData: trend, pieData: pie };
-    }, [rawAttendance, students, classes, dateRange, selectedClassId, searchStudentTerm]);
+    }, [activeSnapshot, rawAttendance, students, classes, dateRange, selectedClassId, searchStudentTerm]);
 
     const reportStatus: ReportStatus = useMemo(() => {
         if (!isReportRequested || !selectedClassId || !dateRange?.from) return 'IDLE';
-        if (isLoadingAttendance || isLoadingStudents) return 'LOADING';
+        if (isLoadingSnapshot || isCompilingSnapshot || (!activeSnapshot && (isLoadingAttendance || isLoadingStudents))) return 'LOADING';
         if (filteredData.length === 0) return 'EMPTY';
         return 'SUCCESS';
-    }, [isReportRequested, selectedClassId, dateRange?.from, isLoadingAttendance, isLoadingStudents, filteredData]);
+    }, [isReportRequested, selectedClassId, dateRange?.from, isLoadingSnapshot, isCompilingSnapshot, activeSnapshot, isLoadingAttendance, isLoadingStudents, filteredData]);
 
-    const handleGenerateReport = () => {
+    const handleRecompileSnapshot = async (targetClassId?: string) => {
+        const classToSync = targetClassId || selectedClassId;
+        if (!firestore || !schoolId || !classToSync) return;
+        
+        setIsCompilingSnapshot(true);
+        try {
+            toast({
+                title: "Compiling Snapshot...",
+                description: "Fetching raw attendance logs to build a single consolidated document."
+            });
+
+            // 1. Fetch attendance records
+            let snapAttendance;
+            try {
+                const qAttendance = classToSync !== 'all'
+                    ? query(
+                        collection(firestore, 'attendance'),
+                        where('schoolId', '==', schoolId),
+                        where('classId', '==', classToSync),
+                        orderBy('date', 'desc'),
+                        limit(1500)
+                    )
+                    : query(
+                        collection(firestore, 'attendance'),
+                        where('schoolId', '==', schoolId),
+                        orderBy('date', 'desc'),
+                        limit(1500)
+                    );
+                snapAttendance = await getDocs(qAttendance);
+            } catch (idxErr: any) {
+                console.warn("Index fallback for attendance snapshot:", idxErr);
+                const fallbackQuery = classToSync !== 'all' 
+                    ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId), where('classId', '==', classToSync), limit(1000))
+                    : query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId), limit(1000));
+                snapAttendance = await getDocs(fallbackQuery);
+            }
+
+            // 2. Fetch students to embed student metadata (name, studentId)
+            let snapStudents;
+            try {
+                const qStudents = classToSync !== 'all'
+                    ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classToSync), limit(300))
+                    : query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(500));
+                snapStudents = await getDocs(qStudents);
+            } catch (e) {
+                snapStudents = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId), limit(300)));
+            }
+
+            const studentMap = new Map();
+            snapStudents.docs.forEach(doc => {
+                const data = doc.data();
+                const sid = doc.id;
+                const uid = data.uid || sid;
+                const sObj = {
+                    id: sid,
+                    uid: uid,
+                    firstName: data.firstName || '',
+                    lastName: data.lastName || '',
+                    studentId: data.studentId || data.admissionNumber || '',
+                    classId: data.classId || ''
+                };
+                studentMap.set(sid, sObj);
+                studentMap.set(uid, sObj);
+            });
+
+            const classMap = new Map((classes || []).map((c: any) => [c.id, c.name]));
+
+            const compactRecords: CompactAttendanceSnapshotRecord[] = snapAttendance.docs.map(doc => {
+                const data = doc.data();
+                const studentInfo = studentMap.get(data.studentId);
+                let dateVal = data.date;
+                if (data.date?.toDate) {
+                    dateVal = data.date.toDate().toISOString();
+                } else if (data.date instanceof Date) {
+                    dateVal = data.date.toISOString();
+                }
+
+                return {
+                    id: doc.id,
+                    studentId: data.studentId || '',
+                    studentName: data.studentName || (studentInfo ? `${studentInfo.firstName} ${studentInfo.lastName}`.trim() : 'Student'),
+                    student: studentInfo || (data.student ? {
+                        id: data.student.id,
+                        uid: data.student.uid,
+                        firstName: data.student.firstName,
+                        lastName: data.student.lastName,
+                        studentId: data.student.studentId
+                    } : undefined),
+                    classId: data.classId || '',
+                    className: classMap.get(data.classId) || data.className || 'Unknown Class',
+                    date: dateVal,
+                    status: data.status || 'Present',
+                    notes: data.notes || ''
+                };
+            });
+
+            const snapshotDocId = `${schoolId}_${classToSync}`;
+            const targetClassName = classToSync === 'all' 
+                ? 'All Classes' 
+                : (classes?.find((c: any) => c.id === classToSync)?.name || 'Selected Class');
+
+            const newSnapshot: AttendanceReportSnapshotDoc = {
+                id: snapshotDocId,
+                schoolId,
+                classId: classToSync,
+                className: targetClassName,
+                updatedAt: new Date().toISOString(),
+                recordCount: compactRecords.length,
+                records: compactRecords
+            };
+
+            const snapRef = doc(firestore, 'attendance_report_snapshots', snapshotDocId);
+            await setDoc(snapRef, newSnapshot, { merge: true });
+
+            setActiveSnapshot(newSnapshot);
+            setIsReportRequested(true);
+            toast({
+                title: "Snapshot Generated & Saved",
+                description: `Compiled and saved ${compactRecords.length} attendance records into 1 consolidated document for future 1-read loads.`
+            });
+        } catch (err: any) {
+            console.error("Error compiling attendance snapshot:", err);
+            const errorMsg = sanitizeErrorMessage(err);
+            toast({
+                variant: 'destructive',
+                title: "Compilation Failed",
+                description: errorMsg
+            });
+        } finally {
+            setIsCompilingSnapshot(false);
+        }
+    };
+
+    const handleGenerateReport = async () => {
         if (!selectedClassId) {
             toast({
                 variant: 'destructive',
@@ -414,9 +600,48 @@ export default function AttendanceReportsPage() {
             });
             return;
         }
-        setIsReportRequested(true);
-        if (isReportRequested) {
-            forceRefetch?.();
+
+        // Check if snapshot is already loaded for this class
+        if (activeSnapshot && activeSnapshot.classId === selectedClassId) {
+            setIsReportRequested(true);
+            toast({
+                title: "Filtered In-Memory (0 Reads)",
+                description: `Applied ${format(dateRange.from, 'MMM d')} - ${format(dateRange.to || dateRange.from, 'MMM d')} to active snapshot without database queries.`
+            });
+            return;
+        }
+
+        if (!firestore || !schoolId) return;
+
+        setIsLoadingSnapshot(true);
+        try {
+            const snapshotDocId = `${schoolId}_${selectedClassId}`;
+            const snapRef = doc(firestore, 'attendance_report_snapshots', snapshotDocId);
+            const snapDoc = await getDoc(snapRef); // EXACTLY 1 FIRESTORE READ!
+
+            if (snapDoc.exists()) {
+                const data = snapDoc.data() as AttendanceReportSnapshotDoc;
+                setActiveSnapshot(data);
+                setIsReportRequested(true);
+                toast({
+                    title: "1-Read Snapshot Loaded",
+                    description: `Loaded ${data.records?.length || 0} attendance records in 1 document read. Period changes operate with 0 additional reads.`
+                });
+            } else {
+                // Snapshot not yet compiled, compile it once and save for all future reads
+                await handleRecompileSnapshot(selectedClassId);
+            }
+        } catch (error: any) {
+            console.error("Error reading attendance snapshot:", error);
+            toast({
+                variant: 'destructive',
+                title: "Snapshot Load Failed",
+                description: sanitizeErrorMessage(error)
+            });
+            // Fallback to legacy query if snapshot fails
+            setIsReportRequested(true);
+        } finally {
+            setIsLoadingSnapshot(false);
         }
     };
 
@@ -474,7 +699,13 @@ export default function AttendanceReportsPage() {
                         <AttendanceManagerDialog 
                             classes={classes || []} 
                             schoolId={schoolId} 
-                            onRefresh={forceRefetch}
+                            onRefresh={() => {
+                                if (activeSnapshot) {
+                                    handleRecompileSnapshot(selectedClassId);
+                                } else {
+                                    forceRefetch?.();
+                                }
+                            }}
                         />
                     )}
                     <Button 
@@ -486,6 +717,55 @@ export default function AttendanceReportsPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* 1-READ SNAPSHOT ACTIVE BANNER */}
+            {activeSnapshot && (
+                <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200/80 rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-slate-800 shadow-sm print:hidden">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-emerald-600 text-white rounded-xl shadow-sm shadow-emerald-200 shrink-0">
+                            <PackageCheck className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-extrabold text-sm text-emerald-950">1-Read Consolidated Snapshot Active</span>
+                                <Badge className="bg-emerald-600 text-white text-[10px] font-black tracking-wider uppercase">
+                                    1 Firestore Read
+                                </Badge>
+                                <Badge variant="outline" className="border-emerald-300 text-emerald-800 text-[10px] font-bold flex items-center gap-1">
+                                    <Zap className="h-3 w-3 text-amber-500 fill-amber-500" /> In-Memory Period Slicing
+                                </Badge>
+                            </div>
+                            <p className="text-xs text-emerald-800/80 mt-0.5">
+                                Viewing <strong>{activeSnapshot.className}</strong>. All period selections and student searches operate in memory at <strong>0 additional Firestore reads</strong>.
+                                {activeSnapshot.updatedAt && (
+                                    <span className="text-[11px] text-slate-500 ml-2">
+                                        (Updated {format(new Date(activeSnapshot.updatedAt), "MMM d, h:mm a")})
+                                    </span>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRecompileSnapshot(selectedClassId)}
+                        disabled={isCompilingSnapshot}
+                        className="border-emerald-300 text-emerald-900 hover:bg-emerald-100 font-bold text-xs gap-1.5 shrink-0 bg-white"
+                    >
+                        {isCompilingSnapshot ? (
+                            <>
+                                <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-600" />
+                                Re-syncing...
+                            </>
+                        ) : (
+                            <>
+                                <RefreshCw className="h-3.5 w-3.5 text-emerald-600" />
+                                Re-sync Snapshot
+                            </>
+                        )}
+                    </Button>
+                </div>
+            )}
 
             {/* FILTERS */}
             <Card className="print:hidden shadow-sm border border-slate-200/80">
@@ -520,7 +800,9 @@ export default function AttendanceReportsPage() {
                                         selected={dateRange} 
                                         onSelect={(range) => {
                                             setDateRange(range);
-                                            setIsReportRequested(false);
+                                            if (!activeSnapshot) {
+                                                setIsReportRequested(false);
+                                            }
                                         }} 
                                         numberOfMonths={2} 
                                         initialFocus 
@@ -532,7 +814,7 @@ export default function AttendanceReportsPage() {
                         {/* Column 2: Class */}
                         <div>
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Class</label>
-                            <Select onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); }} value={selectedClassId}>
+                            <Select onValueChange={(val) => { setSelectedClassId(val); setActiveSnapshot(null); setIsReportRequested(false); }} value={selectedClassId}>
                                 <SelectTrigger className="w-full border-2 h-11">
                                     <SelectValue placeholder="Select Class..." />
                                 </SelectTrigger>
@@ -588,9 +870,9 @@ export default function AttendanceReportsPage() {
                         <CalendarIcon className="h-8 w-8" />
                     </div>
                     <div className="space-y-1.5">
-                        <h3 className="text-lg font-black text-slate-900">On-Demand Attendance Reporting</h3>
+                        <h3 className="text-lg font-black text-slate-900">On-Demand 1-Read Attendance Reporting</h3>
                         <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                            Select a <strong>Class</strong> and <strong>Date Range</strong> above, then click <strong>"Generate Report"</strong> to load records on-demand without unnecessary database reads.
+                            Select a <strong>Class</strong> and <strong>Date Range</strong> above, then click <strong>"Generate Report"</strong> to load records from a single consolidated snapshot (<strong>1 document read</strong> regardless of period length).
                         </p>
                     </div>
                 </Card>
@@ -603,9 +885,13 @@ export default function AttendanceReportsPage() {
                         <Loader2 className="h-8 w-8" />
                     </div>
                     <div className="space-y-1.5">
-                        <h3 className="text-lg font-black text-slate-900">Fetching Attendance Records...</h3>
+                        <h3 className="text-lg font-black text-slate-900">
+                            {isCompilingSnapshot ? "Compiling Master Snapshot..." : "Fetching 1-Read Snapshot..."}
+                        </h3>
                         <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-                            Querying attendance logs for the selected parameters.
+                            {isCompilingSnapshot 
+                                ? "Aggregating historical class attendance into a consolidated document." 
+                                : "Reading single consolidated report snapshot from Firestore (1 Read)."}
                         </p>
                     </div>
                 </Card>

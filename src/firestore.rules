@@ -229,6 +229,11 @@ service cloud.firestore {
       allow write, set, update: if isSignedIn() && (isAdmin() || isStaff() || isTeacher());
     }
 
+    match /attendance_report_snapshots/{snapshotId} {
+      allow read, get: if isSignedIn();
+      allow write, set, update: if isSignedIn() && (isAdmin() || isStaff() || isTeacher());
+    }
+
     match /report-cards/{reportId} {
       allow get: if isSignedIn() && (
         isTeacher() || isStaff() || isAdmin() || isDirector() ||
