@@ -58,10 +58,6 @@ export default function AttendancePage() {
         title="Student Attendance"
         subtitle="Take daily presence sheets, configure local scanning APIs, or upload biometric hardware logs."
         eyebrow="ATTENDANCE REGISTER"
-        badge={{
-          label: "ATTENDANCE REGISTER",
-          variant: "gold",
-        }}
         icon={UserCheck}
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={

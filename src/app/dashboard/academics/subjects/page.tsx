@@ -348,9 +348,9 @@ export default function SubjectsPage() {
         icon={BookOpen}
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
-              <span className="h-2 w-2 rounded-full bg-indigo-400" />
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs font-semibold text-slate-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
               <span>{totalSubjects} Courses</span>
               <span className="text-slate-500">•</span>
               <span>{totalPeriods} Weekly Hrs</span>
@@ -358,17 +358,18 @@ export default function SubjectsPage() {
             <Button 
               variant="outline" 
               onClick={forceRefetch} 
-              className="bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 rounded-xl font-semibold text-xs h-10 px-3 transition-all"
+              className="h-9 px-3 rounded-xl border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all"
             >
-              <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-slate-300", isLoading && "animate-spin")}/> Sync
+              <RefreshCw className={cn("h-3.5 w-3.5 mr-1 text-slate-300", isLoading && "animate-spin")}/> Sync
             </Button>
             {canManage && (
               <Button 
                 onClick={() => handleOpenDialog()} 
                 disabled={isLoading || !schoolId} 
-                className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wider shadow-sm transition-all flex items-center gap-2 px-4"
+                className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center shrink-0"
               >
-                <PlusCircle className="h-4 w-4" /> Add New Subject
+                <PlusCircle className="h-4 w-4 text-slate-950" />
+                <span>Add New Subject</span>
               </Button>
             )}
           </div>

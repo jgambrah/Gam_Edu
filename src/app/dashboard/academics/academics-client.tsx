@@ -450,10 +450,6 @@ export default function AcademicsPageContent() {
         title="Class Roster & Homerooms"
         subtitle="Organize class divisions, assign primary homeroom teachers, and monitor student capacity levels."
         eyebrow="ACADEMIC STRUCTURE"
-        badge={{
-          label: "ACADEMIC STRUCTURE",
-          variant: "gold",
-        }}
         icon={GraduationCap}
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={

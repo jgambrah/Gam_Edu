@@ -288,7 +288,7 @@ export default function TeacherAssignmentsView() {
         icon={GraduationCap}
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2.5 shrink-0">
             <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs font-medium text-slate-300">
               <span className="flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
@@ -306,14 +306,14 @@ export default function TeacherAssignmentsView() {
                 setQuizFormOpen(false);
               }}
               className={cn(
-                "h-10 px-3.5 rounded-xl font-semibold text-xs transition-all shadow-sm flex items-center gap-1.5",
+                "h-9 px-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 shrink-0",
                 isAssignmentFormOpen 
                   ? "bg-slate-100 text-slate-900 hover:bg-white" 
-                  : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                  : "bg-amber-400 hover:bg-amber-300 text-slate-950 hover:scale-[1.02] active:scale-[0.98]"
               )}
             >
               <PlusCircle className="h-3.5 w-3.5" />
-              {isAssignmentFormOpen ? 'Close Form' : 'Create Assignment'}
+              <span>{isAssignmentFormOpen ? 'Close Form' : 'Create Assignment'}</span>
             </Button>
             <Button 
               onClick={() => {
@@ -321,14 +321,14 @@ export default function TeacherAssignmentsView() {
                 setAssignmentFormOpen(false);
               }}
               className={cn(
-                "h-10 px-3.5 rounded-xl font-semibold text-xs transition-all shadow-sm flex items-center gap-1.5",
+                "h-9 px-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center gap-1.5 shrink-0",
                 isQuizFormOpen 
                   ? "bg-slate-100 text-slate-900 hover:bg-white" 
-                  : "bg-purple-600 hover:bg-purple-500 text-white"
+                  : "bg-indigo-600 hover:bg-indigo-500 text-white hover:scale-[1.02] active:scale-[0.98]"
               )}
             >
               <Sparkles className="h-3.5 w-3.5" />
-              {isQuizFormOpen ? 'Close Form' : 'Create AI Quiz'}
+              <span>{isQuizFormOpen ? 'Close Form' : 'Create AI Quiz'}</span>
             </Button>
           </div>
         }

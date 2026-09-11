@@ -232,7 +232,7 @@ export default function SchoolCalendarPageContent() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       
       {/* STANDARDIZED SECTION HERO BANNER */}
       <SectionHeroBanner

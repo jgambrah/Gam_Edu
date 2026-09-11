@@ -1119,7 +1119,7 @@ export default function GradebookPage() {
     const gradingScale = schoolSettings?.gradingSystem || DEFAULT_GRADING_SYSTEM;
 
     return (
-        <div className="p-6 pb-52 space-y-6">
+        <div className="space-y-6 pb-52">
             {/* Standardized Hero Banner */}
             <SectionHeroBanner
               title="Batch Entry & Gradebook"

@@ -183,8 +183,8 @@ export function SectionHeroBanner({
         )}
 
         {/* Hero Body: Icon, Eyebrow, Title, Subtitle, Badges */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex items-start sm:items-center gap-3.5 max-w-3xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="flex items-start sm:items-center gap-3.5 max-w-3xl min-w-0">
             {/* Category / Module Icon */}
             {IconOrElement && (
               <div className="p-2.5 sm:p-3 rounded-2xl bg-white/[0.06] border border-white/10 text-amber-400 backdrop-blur-md shadow-inner shrink-0 hidden xs:flex items-center justify-center">
@@ -198,11 +198,11 @@ export function SectionHeroBanner({
               </div>
             )}
 
-            <div>
+            <div className="min-w-0">
               {/* Eyebrow Tag & Optional Badge */}
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 {eyebrow && (
-                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-400/90 bg-amber-400/10 px-2.5 py-0.5 rounded-md border border-amber-400/20">
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-400/90 bg-amber-400/10 px-2.5 py-0.5 rounded-md border border-amber-400/20 shrink-0">
                     {eyebrow}
                   </span>
                 )}
@@ -210,7 +210,7 @@ export function SectionHeroBanner({
                 {badge && (
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border",
+                      "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border shrink-0",
                       currentBadgeStyle.bg,
                       currentBadgeStyle.text,
                       currentBadgeStyle.border
@@ -223,13 +223,13 @@ export function SectionHeroBanner({
               </div>
 
               {/* Title */}
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+              <h1 className="text-2xl font-bold tracking-tight text-white leading-snug truncate">
                 {title}
               </h1>
 
               {/* Subtitle / Description */}
               {subtitle && (
-                <p className="text-xs sm:text-sm text-slate-300/85 font-normal leading-relaxed max-w-2xl mt-0.5">
+                <p className="text-xs text-slate-400 max-w-2xl truncate mt-0.5 font-normal">
                   {subtitle}
                 </p>
               )}
@@ -238,7 +238,7 @@ export function SectionHeroBanner({
 
           {/* Right Slot: Quick Stats Chips and/or Actions (when breadcrumbs are absent) */}
           {((stats && stats.length > 0) || (actions && (!breadcrumbs || breadcrumbs.length === 0))) && (
-            <div className="flex flex-wrap items-center gap-2 lg:self-center shrink-0">
+            <div className="flex items-center gap-3 shrink-0 self-start lg:self-center">
               {stats && stats.map((stat, i) => (
                 <div
                   key={i}

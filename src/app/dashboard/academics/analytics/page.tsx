@@ -416,7 +416,7 @@ export default function LearningAnalyticsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
         {/* Standardized Hero Banner */}
         <SectionHeroBanner
           title="Learning Analytics Engine"
