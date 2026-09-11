@@ -48,6 +48,7 @@ import { sendSMSAction } from '@/app/actions/sms';
 import { TimelineService } from '@/lib/timeline-service';
 import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 export interface StudentDirectorySnapshotDoc {
   id: string;
@@ -69,6 +70,7 @@ export default function StudentsV3Page() {
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchool } = useCurrentSchool();
   const { summary: dashboardSummary } = useDashboardSummary(adminSchoolId);
+  const schoolName = profile?.schoolName || "Sunny Side Academy";
 
   // Data State
   const [students, setStudents] = useState<Student[]>([]);
@@ -647,79 +649,106 @@ export default function StudentsV3Page() {
   }
 
   return (
-    <div className="space-y-8 p-6">
-      {/* Executive Emerald/Green Gradient Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 p-8 md:p-10 text-white shadow-xl shadow-emerald-100/50 dark:shadow-none">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
-              <GraduationCap className="h-3.5 w-3.5 text-emerald-200" /> Academic Registry
-            </span>
-            <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Student Directory</h1>
-            <p className="mt-2 text-emerald-100/90 max-w-xl text-sm leading-relaxed">
-              Maintain the central student database, classes distribution tracking, parent relationship configurations, and service billing flags.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Standardized Institutional Hero Banner */}
+      <SectionHeroBanner
+        eyebrow={`${schoolName.toUpperCase()} • REGISTRY`}
+        title="Student Directory"
+        subtitle="Maintain the central student database, class distribution tracking, parent relationship configurations, and service billing flags."
+        icon={GraduationCap}
+        badge={{
+          label: "Academic Registry",
+          variant: "info",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Academic Registry', href: '/dashboard' },
+          { label: 'Student Directory' },
+        ]}
+        stats={
+          adminSchoolId ? [
+            { 
+              label: 'Registered', 
+              value: hasLoadedStudents ? `${students.length} Total` : `${dashboardSummary?.studentCount?.total ?? '—'} Total` 
+            },
+            { 
+              label: 'Active Cohorts', 
+              value: hasLoadedStudents 
+                ? `${students.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length} Enrolled`
+                : `${dashboardSummary?.studentCount?.active ?? '—'} Enrolled` 
+            },
+            { 
+              label: 'Placement', 
+              value: hasLoadedStudents ? `${students.filter(s => !s.classId).length} Needs Class` : 'On-Demand' 
+            },
+          ] : undefined
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Subtle Telemetry Pill */}
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-[10px] font-bold text-slate-300">
+              <Zap className={cn("h-3 w-3", hasLoadedStudents ? "text-emerald-400" : "text-amber-400")} />
+              <span>{hasLoadedStudents ? "1 Read Active (Snapshot)" : "0 Upfront Reads Active"}</span>
+            </div>
+
             {hasLoadedStudents ? (
               <>
-                <Button variant="outline" onClick={handleRecompileStudentSnapshot} disabled={isCompilingSnapshot || isLoadingStudents} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
-                  <RefreshCw className={cn("h-4 w-4 mr-2", (isCompilingSnapshot || isLoadingStudents) && "animate-spin")}/> Re-sync Snapshot
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleRecompileStudentSnapshot} 
+                  disabled={isCompilingSnapshot || isLoadingStudents} 
+                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-9 px-3 text-xs font-bold transition-all"
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", (isCompilingSnapshot || isLoadingStudents) && "animate-spin")}/> 
+                  <span>Re-sync</span>
                 </Button>
-                <Button variant="outline" onClick={resetToOnDemand} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
-                  <RotateCcw className="h-4 w-4 mr-2"/> Switch to On-Demand
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={resetToOnDemand} 
+                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-9 px-3 text-xs font-bold transition-all"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 mr-1.5"/> 
+                  <span>On-Demand</span>
                 </Button>
               </>
             ) : (
-              <Button onClick={loadStudentData} disabled={isLoadingStudents || isCompilingSnapshot} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-5 h-11 rounded-xl shadow-lg border border-emerald-400/50 gap-2 cursor-pointer">
-                {isLoadingStudents || isCompilingSnapshot ? <Loader2 className="h-4 w-4 animate-spin"/> : <PackageCheck className="h-4 w-4"/>}
+              <Button 
+                size="sm"
+                onClick={loadStudentData} 
+                disabled={isLoadingStudents || isCompilingSnapshot} 
+                className="bg-white/10 text-white hover:bg-white/20 border-white/20 font-bold h-9 px-3.5 rounded-xl gap-1.5 cursor-pointer text-xs transition-all"
+              >
+                {isLoadingStudents || isCompilingSnapshot ? <Loader2 className="h-3.5 w-3.5 animate-spin"/> : <PackageCheck className="h-3.5 w-3.5"/>}
                 <span>Generate Student List</span>
               </Button>
             )}
-            <Button onClick={handleOpenPrintDialog} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white font-bold px-5 h-11 rounded-xl shadow-md border-0" disabled={!adminSchoolId}>
-              <Printer className="h-4.5 w-4.5 mr-2"/> Print Class List
+
+            <Button 
+              variant="outline"
+              size="sm"
+              onClick={handleOpenPrintDialog} 
+              className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white font-bold h-9 px-3.5 rounded-xl text-xs gap-1.5 transition-all" 
+              disabled={!adminSchoolId}
+            >
+              <Printer className="h-3.5 w-3.5"/> 
+              <span>Print Class List</span>
             </Button>
+
             {canManage && (
-              <Button onClick={() => setIsAddOpen(true)} className="bg-white text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 font-bold px-5 h-11 rounded-xl shadow-lg border border-emerald-100" disabled={!adminSchoolId}>
-                <UserPlus className="h-4.5 w-4.5 mr-2"/> Enroll Student
+              <Button 
+                onClick={() => setIsAddOpen(true)} 
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]" 
+                disabled={!adminSchoolId}
+              >
+                <UserPlus className="h-4 w-4 text-slate-950"/> 
+                <span>Enroll Student</span>
               </Button>
             )}
           </div>
-        </div>
-
-        {/* Dynamic Metric Badges */}
-        {adminSchoolId && (
-          <div className="relative z-10 mt-8 flex flex-wrap items-center gap-4 border-t border-white/10 pt-6">
-            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
-              <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Registered Students</span>
-              <div className="text-xl font-bold mt-0.5">
-                {hasLoadedStudents ? `${students.length} Total` : `${dashboardSummary?.studentCount?.total ?? '—'} Total`}
-              </div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
-              <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Active Cohorts</span>
-              <div className="text-xl font-bold mt-0.5">
-                {hasLoadedStudents 
-                  ? `${students.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length} Enrolled`
-                  : `${dashboardSummary?.studentCount?.active ?? '—'} Enrolled`}
-              </div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
-              <span className="text-[10px] text-emerald-200 uppercase tracking-widest font-black">Pending Placement</span>
-              <div className="text-xl font-bold mt-0.5 text-amber-200">
-                {hasLoadedStudents ? `${students.filter(s => !s.classId).length} Needs Class` : 'On-Demand'}
-              </div>
-            </div>
-            <div className="ml-auto hidden lg:flex items-center gap-2 rounded-xl bg-black/20 px-3.5 py-2 border border-white/10 text-xs text-emerald-100">
-              <Zap className={cn("h-3.5 w-3.5", hasLoadedStudents ? "text-emerald-300" : "text-amber-300")} />
-              <span>{hasLoadedStudents ? "1 Read Active (In-Memory Directory)" : "0 Upfront Firestore Reads Active"}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Decorative glows */}
-        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
-      </div>
+        }
+      />
       
       {/* Main card */}
       <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">

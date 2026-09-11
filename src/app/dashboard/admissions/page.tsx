@@ -42,7 +42,7 @@ import { AdmissionApplication, Class, Student, studentRegistrationSchema, Studen
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format, differenceInYears } from 'date-fns';
-import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle, GraduationCap, MessageCircle, PhoneCall, Mail, UserCheck } from 'lucide-react';
+import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle, GraduationCap, MessageCircle, PhoneCall, Mail, UserCheck, Download } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
@@ -63,6 +63,7 @@ import { generateNextStudentId } from '@/lib/student-utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 import { TimelineService } from '@/lib/timeline-service';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void, schoolId: string }) {
     const { user } = useUser();
@@ -219,6 +220,7 @@ function AdminApplicationDashboard() {
     // Student Credentials State
     const [studentEmail, setStudentEmail] = useState('');
     const [studentPassword, setStudentPassword] = useState('password123');
+    const [isNewAppOpen, setIsNewAppOpen] = useState(false);
 
     // School data query
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
@@ -772,6 +774,38 @@ function AdminApplicationDashboard() {
         );
     };
 
+    const schoolName = profile?.schoolName || schoolData?.name || "Sunny Side Academy";
+
+    const handleExportIntakeLogs = () => {
+        if (!applications || applications.length === 0) {
+            toast({ variant: 'destructive', title: 'No Data', description: 'No admission applications to export.' });
+            return;
+        }
+        const headers = ['Application ID', 'Student Name', 'Desired Grade', 'Gender', 'Parent Name', 'Parent Phone', 'Parent Email', 'Status', 'Submitted Date'];
+        const rows = applications.map(a => [
+            `"${a.applicationId || ''}"`,
+            `"${a.student?.fullName || ''}"`,
+            `"${a.student?.desiredGrade || ''}"`,
+            `"${a.student?.gender || ''}"`,
+            `"${a.parent1?.name || ''}"`,
+            `"${a.parent1?.phone || ''}"`,
+            `"${a.parent1?.email || ''}"`,
+            `"${a.status || ''}"`,
+            `"${a.submittedAt?.toDate ? format(a.submittedAt.toDate(), 'yyyy-MM-dd') : ''}"`
+        ]);
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `admissions_intake_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast({ title: 'Export Complete', description: 'Admission intake records downloaded as CSV.' });
+    };
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center p-12 text-slate-500 bg-slate-50 border border-dashed rounded-3xl min-h-[300px]">
@@ -782,35 +816,79 @@ function AdminApplicationDashboard() {
     }
 
     return (
-        <div className="space-y-8">
-            {/* Executive Gradient Header */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-600 p-8 md:p-10 text-white shadow-xl shadow-violet-100/50 dark:shadow-none">
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-violet-100 backdrop-blur-md">
-                            <Sparkles className="h-3.5 w-3.5 text-violet-200" /> Admissions & Intake
-                        </span>
-                        <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Admissions Control Center</h1>
-                        <p className="mt-2 text-violet-100/80 max-w-xl text-sm md:text-base leading-relaxed">
-                            Process incoming student applications, utilize AI-powered placement recommendations, and manage class distribution settings.
-                        </p>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-4 shrink-0">
-                        <div className="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-md border border-white/10">
-                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">New/Pending</div>
-                            <div className="text-2xl md:text-3xl font-black mt-1">{pendingApps.length} Applications</div>
+        <div className="space-y-6">
+            {/* Standardized Institutional Hero Banner */}
+            <SectionHeroBanner
+                eyebrow="ADMISSIONS & INTAKE"
+                title="Admissions Control Center"
+                subtitle="Process incoming student applications, utilize AI-powered placement recommendations, and manage class distribution settings."
+                icon={GraduationCap}
+                badge={{
+                    label: "ADMISSIONS & INTAKE",
+                    variant: "gold",
+                }}
+                breadcrumbs={[
+                    { label: 'Director Suite' },
+                    { label: 'Students & Intake', href: '/dashboard' },
+                    { label: 'Admissions' },
+                ]}
+                stats={[
+                    { label: 'NEW/PENDING', value: pendingApps.length },
+                    { label: 'IN REVIEW', value: underReviewApps.length },
+                ]}
+                actions={
+                    <div className="flex flex-wrap items-center gap-2">
+                        {/* Mobile horizontal status chips */}
+                        <div className="flex sm:hidden items-center gap-1.5">
+                            <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-300">
+                                NEW: {pendingApps.length}
+                            </span>
+                            <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold text-indigo-300">
+                                REVIEW: {underReviewApps.length}
+                            </span>
                         </div>
-                        <div className="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur-md border border-white/10">
-                            <div className="text-xs text-violet-200 uppercase tracking-wider font-bold">In Review</div>
-                            <div className="text-2xl md:text-3xl font-black mt-1">{underReviewApps.length} Applications</div>
-                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleExportIntakeLogs}
+                            className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold text-xs h-9 px-3 rounded-xl gap-1.5 transition-all"
+                        >
+                            <Download className="h-3.5 w-3.5 text-slate-300" />
+                            <span className="hidden sm:inline">Export Intake Logs</span>
+                        </Button>
+                        <Button
+                            onClick={() => setIsNewAppOpen(true)}
+                            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            <UserPlus className="h-4 w-4 text-slate-950" />
+                            <span>New Application</span>
+                        </Button>
                     </div>
-                </div>
-                {/* Visual Glows */}
-                <div className="absolute right-0 top-0 -mr-12 -mt-12 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
-                <div className="absolute left-1/3 bottom-0 -mb-12 h-48 w-48 rounded-full bg-violet-400/20 blur-3xl pointer-events-none"></div>
-            </div>
+                }
+            />
+
+            {/* New Application Registration Modal */}
+            <Dialog open={isNewAppOpen} onOpenChange={setIsNewAppOpen}>
+                <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-black uppercase text-slate-800 flex items-center gap-2">
+                            <UserPlus className="h-5 w-5 text-amber-500" /> New Student Admission Application
+                        </DialogTitle>
+                        <DialogDescription>
+                            Submit an admission application on behalf of a walk-in parent or prospective student.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {schoolId && (
+                        <ParentApplicationForm 
+                            onSuccess={() => {
+                                setIsNewAppOpen(false);
+                                toast({ title: "Application Registered", description: "The new student application has been submitted and added to pending review." });
+                            }} 
+                            schoolId={schoolId} 
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
 
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -1483,29 +1561,27 @@ function ParentDashboard({ schoolId }: { schoolId: string }) {
     }
 
     return (
-        <div className="space-y-8">
-            {/* Parent admissions Header */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-500 p-8 md:p-10 text-white shadow-xl shadow-fuchsia-100/50 dark:shadow-none">
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
-                            <GraduationCap className="h-3.5 w-3.5 text-pink-200" /> Parent Portal
-                        </span>
-                        <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Admissions Portal</h1>
-                        <p className="mt-2 text-white/80 max-w-xl text-sm leading-relaxed">
-                            Apply for your child's enrollment, track the step-by-step progress of your application, and manage admissions details here.
-                        </p>
-                    </div>
+        <div className="space-y-6">
+            {/* Standardized Institutional Hero Banner for Parent Portal */}
+            <SectionHeroBanner
+                eyebrow="PARENT PORTAL • ADMISSIONS"
+                title="Admissions Portal"
+                subtitle="Apply for your child's enrollment, track the step-by-step progress of your application, and manage admissions details here."
+                icon={GraduationCap}
+                badge={{
+                    label: "Admissions Portal",
+                    variant: "gold",
+                }}
+                actions={
                     <Button 
                         onClick={() => setShowForm(true)} 
-                        className="bg-white text-violet-700 hover:bg-violet-50 hover:text-violet-800 font-bold px-6 py-5 rounded-2xl shadow-lg hover:shadow-xl transition-all self-start md:self-center shrink-0 border border-violet-100"
+                        className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        <UserPlus className="mr-2 h-5 w-5 text-violet-600" /> New Application
+                        <UserPlus className="h-4 w-4 text-slate-950" /> 
+                        <span>New Application</span>
                     </Button>
-                </div>
-                {/* Decorative glows */}
-                <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
-            </div>
+                }
+            />
 
             {loading ? (
                 <div className="flex flex-col items-center justify-center p-12 text-slate-500">

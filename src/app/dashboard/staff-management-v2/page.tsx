@@ -29,6 +29,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // ─── types ────────────────────────────────────────────────────────────────────
 type StaffMember = {
@@ -67,6 +68,7 @@ export default function StaffManagementPage() {
   const { profile } = useRole();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
+  const schoolName = profile?.schoolName || "Sunny Side Academy";
 
   // ── state ──────────────────────────────────────────────────────────────────
   const [staff, setStaff] = useState<StaffMember[]>([]);
@@ -256,55 +258,51 @@ export default function StaffManagementPage() {
 
   // ── render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-8 p-6">
-      {/* Premium Indigo/Purple Gradient Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 p-8 md:p-10 text-white shadow-xl shadow-indigo-150/50 dark:shadow-none">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
-              <UserCog className="h-3.5 w-3.5 text-purple-200" /> Administration
-            </span>
-            <h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight">Staff Management</h1>
-            <p className="mt-2 text-indigo-100/90 max-w-xl text-sm leading-relaxed">
-              Manage accounts and system access configurations for administrative, academic, and operations team members.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 self-start md:self-center shrink-0">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Standardized Institutional Hero Banner */}
+      <SectionHeroBanner
+        eyebrow={`${schoolName.toUpperCase()} • STAFF DIRECTORY`}
+        title="Staff Management"
+        subtitle="Manage accounts and system access configurations for administrative, academic, and operations team members."
+        icon={UserCog}
+        badge={{
+          label: "Administration & Personnel",
+          variant: "info",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Administration', href: '/dashboard' },
+          { label: 'Staff Management' },
+        ]}
+        stats={
+          adminSchoolId ? [
+            { label: 'Total Personnel', value: `${staff.length} Active` },
+            { label: 'Public Directory', value: `${staff.filter(s => s.showOnWebsite).length} Listed` },
+          ] : undefined
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
             <Button 
               variant="outline" 
+              size="sm"
               onClick={loadData} 
               disabled={overallLoading || !adminSchoolId}
-              className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11"
+              className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-9 px-3 text-xs font-bold transition-all"
             >
-              <RefreshCw className={cn('h-4 w-4 mr-2', overallLoading && 'animate-spin')} /> Refresh
+              <RefreshCw className={cn('h-3.5 w-3.5 mr-1.5', overallLoading && 'animate-spin')} />
+              <span>Refresh</span>
             </Button>
             <Button 
               onClick={() => setIsAddOpen(true)} 
-              className="bg-white text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 font-bold px-5 h-11 rounded-xl shadow-lg border border-indigo-100" 
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]" 
               disabled={!adminSchoolId}
             >
-              <UserPlus className="h-4.5 w-4.5 mr-2" /> Add Staff Account
+              <UserPlus className="h-4 w-4 text-slate-950" />
+              <span>Add Staff Account</span>
             </Button>
           </div>
-        </div>
-
-        {/* Dynamic Metric Badges */}
-        {adminSchoolId && (
-          <div className="relative z-10 mt-8 flex flex-wrap gap-4 border-t border-white/10 pt-6">
-            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
-              <span className="text-[10px] text-indigo-200 uppercase tracking-widest font-black">Total Personnel</span>
-              <div className="text-xl font-bold mt-0.5">{staff.length} Active</div>
-            </div>
-            <div className="rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-md border border-white/5">
-              <span className="text-[10px] text-indigo-200 uppercase tracking-widest font-black">Public Directory</span>
-              <div className="text-xl font-bold mt-0.5">{staff.filter(s => s.showOnWebsite).length} Listed</div>
-            </div>
-          </div>
-        )}
-        
-        {/* Glowing Accents */}
-        <div className="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
-      </div>
+        }
+      />
 
       {/* Main Table Content container */}
       <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
