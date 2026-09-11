@@ -5922,14 +5922,14 @@ export default function AccountsPage() {
                                     <div>
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span className="font-bold text-slate-900 text-sm">
-                                                ✅ Complete School Ledger Active (100% Exact Balances)
+                                                ✅ 2-Tier Precision Ledger Active ({effectiveAcademicYear})
                                             </span>
                                             <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-[10px]">
                                                 {records?.length || 0} Records Reconciled
                                             </Badge>
                                         </div>
                                         <p className="text-slate-500 text-[11px] mt-0.5">
-                                            All historical bills, payments, and credits across all classes are loaded for school-wide auditing and reports.
+                                            Preserving 100% of unpaid arrears across all prior years, combined with all itemized transactions for {effectiveAcademicYear}.
                                         </p>
                                     </div>
                                 </div>
