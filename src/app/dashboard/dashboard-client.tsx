@@ -719,8 +719,10 @@ function AdminDashboard({
   const todayTeacherAttendance = useMemo(() => {
     if (!staff) return { present: [], absent: [], late: [] };
     
-    const presentIds = new Set<string>();
+    const presentIdentifiers = new Set<string>();
+    const presentNames = new Set<string>();
     const lates: any[] = [];
+    const calendarToday = startOfDay(currentDayDate);
 
     // 1. Process staff_attendance records for today
     if (staffAttendance && staffAttendance.length > 0) {
@@ -728,18 +730,32 @@ function AdminDashboard({
         if (!r.timestamp && !r.date && !r.createdAt) return false;
         const ts = r.timestamp || r.date || r.createdAt;
         const dateObj = ts.toDate ? ts.toDate() : new Date(ts);
-        return startOfDay(dateObj).getTime() === startOfToday.getTime();
+        const recDay = startOfDay(dateObj).getTime();
+        return recDay === calendarToday.getTime() || recDay === startOfToday.getTime();
       });
 
       todayRecs.forEach((r: any) => {
-        const isPresentOrLate = r.type === 'In' || r.type === 'check-in' || r.status === 'Present' || r.status === 'Late' || r.status === 'On Time' || !r.type;
-        if (isPresentOrLate) {
-          if (r.staffId) presentIds.add(r.staffId);
-          if (r.uid) presentIds.add(r.uid);
-          if (r.userId) presentIds.add(r.userId);
-          if (r.email) presentIds.add(r.email.toLowerCase());
+        const isPresentOrLate = 
+          r.type === 'In' || 
+          r.type === 'check-in' || 
+          r.type === 'ARRIVAL' || 
+          r.status === 'Present' || 
+          r.status === 'Late' || 
+          r.status === 'LATE ARRIVAL' || 
+          r.status === 'On Time' || 
+          !r.type || 
+          r.timestamp != null;
 
-          if (r.status === 'Late') {
+        if (isPresentOrLate) {
+          if (r.staffId) presentIdentifiers.add(String(r.staffId).trim());
+          if (r.uid) presentIdentifiers.add(String(r.uid).trim());
+          if (r.userId) presentIdentifiers.add(String(r.userId).trim());
+          if (r.email) presentIdentifiers.add(String(r.email).trim().toLowerCase());
+          if (r.staffName && r.staffName !== 'N/A') {
+            presentNames.add(String(r.staffName).trim().toLowerCase());
+          }
+
+          if (r.status === 'Late' || r.status === 'LATE ARRIVAL') {
             const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : (r.timestamp ? format(new Date(r.timestamp), 'hh:mm a') : 'Today');
             lates.push({
               id: r.staffId || r.uid,
@@ -756,30 +772,45 @@ function AdminDashboard({
       attendance.forEach((r: any) => {
         if (!r.date) return;
         const dObj = r.date.toDate ? r.date.toDate() : new Date(r.date);
-        if (startOfDay(dObj).getTime() === startOfToday.getTime()) {
+        const recDay = startOfDay(dObj).getTime();
+        if (recDay === calendarToday.getTime() || recDay === startOfToday.getTime()) {
           const tId = r.teacherId || r.staffId || r.createdBy || r.updatedBy;
-          if (tId) presentIds.add(tId);
+          if (tId) presentIdentifiers.add(String(tId).trim());
         }
       });
     }
 
     const staffList = staff && staff.length > 0 ? staff : [];
 
-    const today = startOfToday;
+    const today = calendarToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     const isVacation = schoolData?.vacationMode === true;
-    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && presentIds.size === 0;
+    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && presentIdentifiers.size === 0 && presentNames.size === 0;
 
     const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
 
+    const isMemberPresent = (t: any) => {
+      const tid = String(t.uid || t.id || '').trim();
+      const temail = String(t.email || '').trim().toLowerCase();
+      const fullName = `${t.firstName || ''} ${t.lastName || ''}`.trim().toLowerCase();
+      const displayName = String(t.displayName || t.name || t.fullName || '').trim().toLowerCase();
+
+      if (tid && presentIdentifiers.has(tid)) return true;
+      if (temail && presentIdentifiers.has(temail)) return true;
+      if (fullName && presentNames.has(fullName)) return true;
+      if (displayName && presentNames.has(displayName)) return true;
+
+      for (const name of presentNames) {
+        if (fullName && (name.includes(fullName) || fullName.includes(name))) return true;
+        if (displayName && (name.includes(displayName) || displayName.includes(name))) return true;
+      }
+      return false;
+    };
+
+    const presentMembers = staffList.filter(isMemberPresent);
     const absentStaff = shouldFlagAbsences
-      ? staffList.filter((t: any) => {
-          const tid = t.uid || t.id;
-          const temail = t.email?.toLowerCase();
-          const isPresent = (tid && presentIds.has(tid)) || (temail && presentIds.has(temail));
-          return !isPresent;
-        }).map((t: any) => {
-          const fullName = `${t.firstName || ""} ${t.lastName || ""}`.trim();
+      ? staffList.filter((t: any) => !isMemberPresent(t)).map((t: any) => {
+          const fullName = `${t.firstName || ""}`.trim() + (t.lastName ? ` ${t.lastName.trim()}` : "");
           const name = fullName || t.name || t.displayName || t.fullName || t.email || "Staff Member";
           return {
             id: t.uid || t.id,
@@ -790,8 +821,14 @@ function AdminDashboard({
         })
       : [];
 
-    return { present: Array.from(presentIds), absent: absentStaff, late: lates };
-  }, [staffAttendance, attendance, staff, startOfToday, schoolData]);
+    // Distinct list of present staff IDs
+    const presentIdsSet = new Set<string>(presentMembers.map((t: any) => String(t.uid || t.id)));
+    presentIdentifiers.forEach(id => {
+      if (!id.includes('@')) presentIdsSet.add(id);
+    });
+
+    return { present: Array.from(presentIdsSet), absent: absentStaff, late: lates };
+  }, [staffAttendance, attendance, staff, startOfToday, currentDayDate, schoolData]);
 
   const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
   const [syncedAcademicData, setSyncedAcademicData] = useState<any>(null);
@@ -2540,42 +2577,8 @@ function DirectorDashboard({
   }, []);
 
   const startOfToday = useMemo(() => {
-    const termStartStr = schoolData?.termStartDate;
-    const termEndStr = schoolData?.termEndDate;
-    const now = startOfDay(currentDayDate);
-
-    if (termStartStr && termEndStr) {
-      const partsStart = termStartStr.split('-');
-      const partsEnd = termEndStr.split('-');
-      if (partsStart.length === 3 && partsEnd.length === 3) {
-        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
-        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
-        
-        if (now < termStart) {
-          return termStart;
-        } else if (now > termEnd) {
-          return termEnd;
-        }
-      }
-    } else if (termEndStr) {
-      const partsEnd = termEndStr.split('-');
-      if (partsEnd.length === 3) {
-        const termEnd = startOfDay(new Date(Number(partsEnd[0]), Number(partsEnd[1]) - 1, Number(partsEnd[2])));
-        if (now > termEnd) {
-          return termEnd;
-        }
-      }
-    } else if (termStartStr) {
-      const partsStart = termStartStr.split('-');
-      if (partsStart.length === 3) {
-        const termStart = startOfDay(new Date(Number(partsStart[0]), Number(partsStart[1]) - 1, Number(partsStart[2])));
-        if (now < termStart) {
-          return termStart;
-        }
-      }
-    }
-    return now;
-  }, [schoolData?.termStartDate, schoolData?.termEndDate, currentDayDate]);
+    return startOfDay(currentDayDate);
+  }, [currentDayDate]);
 
   const todayStudentAbsences = useMemo(() => {
     if (!attendance || !students) return [];
@@ -2599,8 +2602,10 @@ function DirectorDashboard({
   const todayTeacherAttendance = useMemo(() => {
     if (!staff) return { present: [], absent: [], late: [] };
     
-    const presentIds = new Set<string>();
+    const presentIdentifiers = new Set<string>();
+    const presentNames = new Set<string>();
     const lates: any[] = [];
+    const calendarToday = startOfDay(currentDayDate);
 
     // 1. Process staff_attendance records for today
     if (staffAttendance && staffAttendance.length > 0) {
@@ -2608,18 +2613,32 @@ function DirectorDashboard({
         if (!r.timestamp && !r.date && !r.createdAt) return false;
         const ts = r.timestamp || r.date || r.createdAt;
         const dateObj = ts.toDate ? ts.toDate() : new Date(ts);
-        return startOfDay(dateObj).getTime() === startOfToday.getTime();
+        const recDay = startOfDay(dateObj).getTime();
+        return recDay === calendarToday.getTime() || recDay === startOfToday.getTime();
       });
 
       todayRecs.forEach((r: any) => {
-        const isPresentOrLate = r.type === 'In' || r.type === 'check-in' || r.status === 'Present' || r.status === 'Late' || r.status === 'On Time' || !r.type;
-        if (isPresentOrLate) {
-          if (r.staffId) presentIds.add(r.staffId);
-          if (r.uid) presentIds.add(r.uid);
-          if (r.userId) presentIds.add(r.userId);
-          if (r.email) presentIds.add(r.email.toLowerCase());
+        const isPresentOrLate = 
+          r.type === 'In' || 
+          r.type === 'check-in' || 
+          r.type === 'ARRIVAL' || 
+          r.status === 'Present' || 
+          r.status === 'Late' || 
+          r.status === 'LATE ARRIVAL' || 
+          r.status === 'On Time' || 
+          !r.type || 
+          r.timestamp != null;
 
-          if (r.status === 'Late') {
+        if (isPresentOrLate) {
+          if (r.staffId) presentIdentifiers.add(String(r.staffId).trim());
+          if (r.uid) presentIdentifiers.add(String(r.uid).trim());
+          if (r.userId) presentIdentifiers.add(String(r.userId).trim());
+          if (r.email) presentIdentifiers.add(String(r.email).trim().toLowerCase());
+          if (r.staffName && r.staffName !== 'N/A') {
+            presentNames.add(String(r.staffName).trim().toLowerCase());
+          }
+
+          if (r.status === 'Late' || r.status === 'LATE ARRIVAL') {
             const timeStr = r.timestamp?.toDate ? format(r.timestamp.toDate(), 'hh:mm a') : (r.timestamp ? format(new Date(r.timestamp), 'hh:mm a') : 'Today');
             lates.push({
               id: r.staffId || r.uid,
@@ -2636,30 +2655,45 @@ function DirectorDashboard({
       attendance.forEach((r: any) => {
         if (!r.date) return;
         const dObj = r.date.toDate ? r.date.toDate() : new Date(r.date);
-        if (startOfDay(dObj).getTime() === startOfToday.getTime()) {
+        const recDay = startOfDay(dObj).getTime();
+        if (recDay === calendarToday.getTime() || recDay === startOfToday.getTime()) {
           const tId = r.teacherId || r.staffId || r.createdBy || r.updatedBy;
-          if (tId) presentIds.add(tId);
+          if (tId) presentIdentifiers.add(String(tId).trim());
         }
       });
     }
 
     const staffList = staff && staff.length > 0 ? staff : [];
 
-    const today = startOfToday;
+    const today = calendarToday;
     const isWeekend = today.getDay() === 0 || today.getDay() === 6;
     const isVacation = schoolData?.vacationMode === true;
-    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && presentIds.size === 0;
+    const isWeekendBypassed = isWeekend && schoolData?.trackStaffOnWeekends !== true && presentIdentifiers.size === 0 && presentNames.size === 0;
 
     const shouldFlagAbsences = !isVacation && !isWeekendBypassed;
 
+    const isMemberPresent = (t: any) => {
+      const tid = String(t.uid || t.id || '').trim();
+      const temail = String(t.email || '').trim().toLowerCase();
+      const fullName = `${t.firstName || ''} ${t.lastName || ''}`.trim().toLowerCase();
+      const displayName = String(t.displayName || t.name || t.fullName || '').trim().toLowerCase();
+
+      if (tid && presentIdentifiers.has(tid)) return true;
+      if (temail && presentIdentifiers.has(temail)) return true;
+      if (fullName && presentNames.has(fullName)) return true;
+      if (displayName && presentNames.has(displayName)) return true;
+
+      for (const name of presentNames) {
+        if (fullName && (name.includes(fullName) || fullName.includes(name))) return true;
+        if (displayName && (name.includes(displayName) || displayName.includes(name))) return true;
+      }
+      return false;
+    };
+
+    const presentMembers = staffList.filter(isMemberPresent);
     const absentStaff = shouldFlagAbsences
-      ? staffList.filter((t: any) => {
-          const tid = t.uid || t.id;
-          const temail = t.email?.toLowerCase();
-          const isPresent = (tid && presentIds.has(tid)) || (temail && presentIds.has(temail));
-          return !isPresent;
-        }).map((t: any) => {
-          const fullName = `${t.firstName || ""} ${t.lastName || ""}`.trim();
+      ? staffList.filter((t: any) => !isMemberPresent(t)).map((t: any) => {
+          const fullName = `${t.firstName || ""}`.trim() + (t.lastName ? ` ${t.lastName.trim()}` : "");
           const name = fullName || t.name || t.displayName || t.fullName || t.email || "Staff Member";
           return {
             id: t.uid || t.id,
@@ -2670,8 +2704,14 @@ function DirectorDashboard({
         })
       : [];
 
-    return { present: Array.from(presentIds), absent: absentStaff, late: lates };
-  }, [staffAttendance, attendance, staff, startOfToday, schoolData]);
+    // Distinct list of present staff IDs
+    const presentIdsSet = new Set<string>(presentMembers.map((t: any) => String(t.uid || t.id)));
+    presentIdentifiers.forEach(id => {
+      if (!id.includes('@')) presentIdsSet.add(id);
+    });
+
+    return { present: Array.from(presentIdsSet), absent: absentStaff, late: lates };
+  }, [staffAttendance, attendance, staff, startOfToday, currentDayDate, schoolData]);
 
   // Canteen Inventory & Requisitions
   const canteenInventoryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'kitchen_inventory'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -12012,7 +12052,7 @@ export default function DashboardClient() {
   const { data: classes, isLoading: loadingClasses } = useCollection(classesQuery);
 
   // Cost Guard: On-Demand financial records via one-time getDocs (0 background listener reads)
-  const [financialsMode, setFinancialsMode] = useState<'on-demand' | 'loaded'>('on-demand');
+  const [financialsMode, setFinancialsMode] = useState<'on-demand' | 'full' | 'loaded'>('on-demand');
   const [onDemandRecords, setOnDemandRecords] = useState<any[]>([]);
   const [loadingOnDemandRecords, setLoadingOnDemandRecords] = useState(false);
 
@@ -12259,9 +12299,13 @@ export default function DashboardClient() {
 
   const staffAttendanceQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
-    const isNeeded = (adminActiveTab === 'attendance' || directorActiveTab === 'attendance');
-    return isNeeded ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), limit(100)) : null;
-  }, [firestore, schoolId, adminActiveTab, directorActiveTab]);
+    const isNeeded = 
+      (role === 'Director' && (directorActiveTab === 'overview' || directorActiveTab === 'attendance' || directorActiveTab === 'staff')) ||
+      (role === 'Administrator' && (adminActiveTab === 'overview' || adminActiveTab === 'attendance' || adminActiveTab === 'staff')) ||
+      adminActiveTab === 'attendance' || 
+      directorActiveTab === 'attendance';
+    return isNeeded ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc'), limit(100)) : null;
+  }, [firestore, schoolId, role, adminActiveTab, directorActiveTab]);
   const { data: staffAttendance, isLoading: loadingStaffAttendance } = useCollection<any>(staffAttendanceQuery);
 
   const performanceQuery = useMemoFirebase(() => {
