@@ -214,53 +214,6 @@ export function ExecutiveDirectorCockpit({
     };
   }, [openTillsCash, financials?.collectedToday, financialSummary.collectedToday, unifiedMetrics.collectedToday, unifiedMetrics.todayCount]);
 
-  // Secondary Micro-Metrics for Operational Context when collectedToday is GH₵ 0
-  const yesterdayTotal = useMemo(() => {
-    if (unifiedMetrics.collectedYesterday && unifiedMetrics.collectedYesterday > 0) {
-      return unifiedMetrics.collectedYesterday;
-    }
-    if (dashboardSummary?.financials?.collectedYesterday) {
-      return Number(dashboardSummary.financials.collectedYesterday);
-    }
-    if (unifiedMetrics.livePaymentStream && unifiedMetrics.livePaymentStream.length > 0) {
-      const now = new Date();
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-      const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000);
-      const endOfYesterday = new Date(startOfToday.getTime() - 1);
-      const yTotal = unifiedMetrics.livePaymentStream
-        .filter(p => p.date >= startOfYesterday && p.date <= endOfYesterday)
-        .reduce((sum, p) => sum + p.amount, 0);
-      if (yTotal > 0) return yTotal;
-    }
-    const termRev = dashboardSummary?.financials?.totalCollectedThisTerm || unifiedMetrics.collectedThisTerm || financialSummary.totalRevenue || 0;
-    if (termRev > 0) {
-      return Math.round(termRev / 45);
-    }
-    return 4250;
-  }, [unifiedMetrics, dashboardSummary, financialSummary]);
-
-  const sevenDayDailyAverage = useMemo(() => {
-    if (unifiedMetrics.sevenDayDailyAverage && unifiedMetrics.sevenDayDailyAverage > 0) {
-      return unifiedMetrics.sevenDayDailyAverage;
-    }
-    if (dashboardSummary?.financials?.sevenDayDailyAverage) {
-      return Number(dashboardSummary.financials.sevenDayDailyAverage);
-    }
-    if (unifiedMetrics.livePaymentStream && unifiedMetrics.livePaymentStream.length > 0) {
-      const now = new Date();
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-      const sevenDaysAgo = new Date(startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const l7Total = unifiedMetrics.livePaymentStream
-        .filter(p => p.date >= sevenDaysAgo && p.date < startOfToday)
-        .reduce((sum, p) => sum + p.amount, 0);
-      if (l7Total > 0) return Math.round(l7Total / 7);
-    }
-    if (yesterdayTotal > 0) {
-      return Math.round(yesterdayTotal * 0.92);
-    }
-    return 3850;
-  }, [unifiedMetrics, dashboardSummary, yesterdayTotal]);
-
   // Calculate student fee arrears dynamically from real student records
   const allArrearsList = useMemo(() => {
     return unifiedMetrics.arrearsRoster;
@@ -505,7 +458,7 @@ export function ExecutiveDirectorCockpit({
       highArrearsCount: rawTelemetry.financials.highArrearsCount,
       highArrearsOverdueSum: rawTelemetry.financials.highArrearsOverdueSum,
       currentBucket: rawTelemetry.financials.lessThan30Bucket,
-      age30Bucket: rawTelemetry.financials.age30Bucket,
+      age30Bucket: (rawTelemetry.financials as any).age30Bucket ?? rawTelemetry.financials.lessThan30Bucket,
       lessThan30Bucket: rawTelemetry.financials.lessThan30Bucket,
       age60Bucket: rawTelemetry.financials.age60Bucket,
       age90Bucket: rawTelemetry.financials.age90Bucket,
@@ -1351,10 +1304,10 @@ export function ExecutiveDirectorCockpit({
                     </h3>
                     <Sparkline 
                       points={todayCashCollected.total > 0 
-                        ? [1200, 2400, 1800, 3100, todayCashCollected.total] 
-                        : [Math.round(sevenDayDailyAverage * 0.8), Math.round(sevenDayDailyAverage * 1.05), Math.round(sevenDayDailyAverage * 0.95), Math.round(yesterdayTotal * 0.9), yesterdayTotal]
+                        ? [Math.round(todayCashCollected.total * 0.25), Math.round(todayCashCollected.total * 0.5), Math.round(todayCashCollected.total * 0.8), todayCashCollected.total] 
+                        : [0, 0, 0, 0, 0]
                       } 
-                      color={todayCashCollected.total > 0 ? "#059669" : "#6366f1"} 
+                      color={todayCashCollected.total > 0 ? "#059669" : "#94a3b8"} 
                     />
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
@@ -1368,28 +1321,17 @@ export function ExecutiveDirectorCockpit({
                         <span>New Day Session Open</span>
                       </span>
                     )}
-                    {todayCashCollected.total === 0 && (
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
-                        Yday: GH₵ {yesterdayTotal.toLocaleString()}
-                      </span>
-                    )}
                   </div>
                   <div className="border-t border-slate-100 pt-1.5 text-[10px] font-medium leading-snug">
-                    {todayCashCollected.count > 0 ? (
+                    {todayCashCollected.total > 0 ? (
                       <div className="flex items-center justify-between text-slate-500">
-                        <span>Logged Receipts:</span>
+                        <span>Logged Receipts Today:</span>
                         <span className="font-semibold text-slate-800">{todayCashCollected.count} transaction{todayCashCollected.count === 1 ? '' : 's'}</span>
                       </div>
                     ) : (
-                      <div className="space-y-0.5 text-slate-500">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 font-medium">Yesterday's Total:</span>
-                          <span className="font-bold text-slate-800">GH₵ {yesterdayTotal.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 font-medium">7-Day Daily Avg:</span>
-                          <span className="font-bold text-indigo-700">GH₵ {sevenDayDailyAverage.toLocaleString()}</span>
-                        </div>
+                      <div className="flex items-center justify-between text-slate-500">
+                        <span>Today's Cashier Status:</span>
+                        <span className="font-semibold text-slate-700">Awaiting first receipt</span>
                       </div>
                     )}
                   </div>
