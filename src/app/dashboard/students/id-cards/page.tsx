@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Student, Class } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
 import { Badge } from '@/components/ui/badge';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // Helper to get base64 via proxy to avoid CORS issues with html2canvas
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
@@ -445,26 +446,52 @@ export default function IDCardGeneratorPage() {
     if (isLoadingSchool) return <div className="p-10 flex justify-center"><Loader2 className="animate-spin h-8 w-8 text-blue-600" /></div>;
 
     return (
-        <div className="space-y-8">
-            {/* Premium Gradient Banner */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 p-8 md:p-12 text-white shadow-2xl border border-slate-700/30">
-                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-2xl" />
-                <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-slate-500/10 blur-2xl" />
-                
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="space-y-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-indigo-200 backdrop-blur-md">
-                            <IdCard className="h-3 w-3" /> Digital Badge Studio
-                        </span>
-                        <h1 className="text-3xl md:text-4xl font-black tracking-tight italic uppercase">
-                            ID Card <span className="text-indigo-400">Generator</span>
-                        </h1>
-                        <p className="max-w-md text-sm font-medium text-slate-300">
-                            Configure, preview, and generate print-ready student identification cards in compliance with CR80 badge templates.
-                        </p>
+        <div className="space-y-6">
+            {/* Standardized Institutional Hero Banner */}
+            <SectionHeroBanner
+                className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+                eyebrow="DIGITAL BADGE STUDIO"
+                title="ID Card Generator"
+                subtitle="Configure, preview, and generate print-ready student identification cards in compliance with CR80 badge templates."
+                icon={IdCard}
+                badge={{
+                    label: "CR80 Standard",
+                    variant: "info",
+                }}
+                breadcrumbs={[
+                    { label: 'Director Suite' },
+                    { label: 'Student Directory', href: '/dashboard/students-v3' },
+                    { label: 'ID Card Generator' },
+                ]}
+                stats={
+                    classId ? [
+                        { label: 'Target Class', value: classes?.find(c => c.id === classId)?.name || 'Selected' },
+                        { label: 'Batch Queue', value: `${studentsToExport.length} Badges` },
+                    ] : [
+                        { label: 'Badge Standard', value: 'CR80 (ISO 7810)' },
+                        { label: 'Print DPI', value: '300 DPI Ready' },
+                    ]
+                }
+                actions={
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-xs font-bold text-slate-200">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span>CR80 STANDARD</span>
+                        </div>
+                        {classId && (
+                            <Button
+                                size="sm"
+                                onClick={handleDownloadPDF}
+                                disabled={isGenerating || !studentsToExport.length || unresolvedPhotosCount > 0}
+                                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                {isGenerating ? <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-950" /> : <Download className="h-3.5 w-3.5 text-slate-950" />}
+                                <span>Export ({studentsToExport.length})</span>
+                            </Button>
+                        )}
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             {/* ── Controls Card ── */}
             <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden print:hidden">
