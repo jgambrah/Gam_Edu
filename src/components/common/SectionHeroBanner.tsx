@@ -31,7 +31,7 @@ export interface SectionHeroBannerProps {
   /** Explanatory subtitle or institutional descriptor */
   subtitle?: string;
   /** Eyebrow tag preceding title, defaults to "SUNNY SIDE ACADEMY • DIRECTOR SUITE" */
-  eyebrow?: string;
+  eyebrow?: React.ReactNode;
   /** Status badge indicating system state, telemetry, or active term */
   badge?: SectionHeroBadge;
   /** Navigation breadcrumb path */
@@ -202,9 +202,13 @@ export function SectionHeroBanner({
               {/* Eyebrow Tag & Optional Badge */}
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 {eyebrow && (
-                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-400/90 bg-amber-400/10 px-2.5 py-0.5 rounded-md border border-amber-400/20 shrink-0">
-                    {eyebrow}
-                  </span>
+                  typeof eyebrow === 'string' ? (
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-md border border-amber-500/20 shrink-0">
+                      {eyebrow}
+                    </span>
+                  ) : (
+                    eyebrow
+                  )
                 )}
 
                 {badge && (
@@ -229,7 +233,7 @@ export function SectionHeroBanner({
 
               {/* Subtitle / Description */}
               {subtitle && (
-                <p className="text-xs text-slate-400 max-w-2xl truncate mt-0.5 font-normal">
+                <p className="text-xs sm:text-sm text-slate-400 max-w-2xl truncate mt-0.5 font-normal">
                   {subtitle}
                 </p>
               )}

@@ -3,8 +3,10 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, addDoc } from 'firebase/firestore';
 import { 
   Sigma, Languages, Microscope, BookOpen, 
@@ -38,7 +40,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import CreditBalance from '@/components/CreditBalance';
 import { cn } from '@/lib/utils';
 
 
@@ -986,6 +987,11 @@ export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
+
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolData } = useDoc<any>(schoolRef);
+    const aiCredits = schoolData?.aiCredits ?? 810;
     
     // Memoize forceRefetch to prevent re-creation on every render
     const { forceRefetch: forceMath } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_math') : null, [firestore]));
@@ -999,36 +1005,73 @@ export default function SeniorAcademyPage() {
     }, [forceMath, forceEnglish, forceScience]);
     
     return (
-        <div className="space-y-8 p-6 bg-slate-950 text-slate-100 rounded-3xl min-h-screen relative overflow-hidden border border-slate-900 shadow-2xl">
+        <div className="p-6 bg-slate-950 text-slate-100 rounded-3xl min-h-screen relative overflow-hidden border border-slate-900 shadow-2xl">
             {/* Ambient background glows */}
             <div className="absolute top-10 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
             <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
 
-            <Card className="bg-gradient-to-br from-indigo-950 via-slate-900 to-violet-950 text-white rounded-[36px] shadow-2xl relative overflow-hidden border-b-8 border-indigo-500/20 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-800">
-                <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full rotate-45 pointer-events-none"></div>
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full rotate-45 pointer-events-none"></div>
-                
-                <div className="flex items-center gap-6 z-10">
-                    <div className="bg-white/10 backdrop-blur-md p-4 rounded-3xl border border-white/10 shadow-lg hover:rotate-12 transition-transform duration-300">
-                        <Rocket className="h-14 w-14 text-indigo-400 animate-pulse" />
-                    </div>
-                    <div>
-                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight flex items-center gap-2">
-                            Senior Academy <Sparkles className="w-7 h-7 text-indigo-400 animate-pulse" />
-                        </h1>
-                        <p className="text-slate-300/80 font-bold text-lg mt-1">Advanced subject modules and scientific discoveries.</p>
-                    </div>
-                </div>
+            <SectionHeroBanner
+                title="Senior Academy"
+                subtitle="Advanced subject modules, curriculum labs, and scientific discoveries."
+                eyebrow="SUNNY SIDE ACADEMY • ACADEMICS"
+                badge={{
+                    label: "LIVE MODULES",
+                    variant: "success",
+                }}
+                icon={Rocket}
+                className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+                actions={
+                    <div className="bg-slate-950/60 border border-slate-800/60 rounded-xl px-3.5 py-1.5 divide-x divide-slate-800 flex items-center shadow-inner">
+                        {/* Stat 1: AI BALANCE */}
+                        <div className="flex items-center gap-2 pr-3.5">
+                            <div className="flex flex-col">
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                                    AI Balance
+                                </span>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                    <span className="inline-flex items-center justify-center text-amber-400 text-xs">
+                                        ⚡
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-black text-white">
+                                        {aiCredits} Credits
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-                <div className="z-10 bg-slate-900/60 backdrop-blur-md border border-slate-800 p-4 rounded-2xl shadow-inner min-w-[200px] flex justify-center items-center">
-                    <CreditBalance />
+                        {/* Stat 2: TARGET GRADE */}
+                        <div className="flex flex-col px-3.5">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                                Target Grade
+                            </span>
+                            <span className="text-xs sm:text-sm font-black text-slate-200 mt-0.5">
+                                Junior Secondary (JHS)
+                            </span>
+                        </div>
+
+                        {/* Stat 3: STATUS */}
+                        <div className="flex flex-col pl-3.5">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                                Status
+                            </span>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="text-xs sm:text-sm font-black text-emerald-400">
+                                    Active
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            />
+
+            {canEdit && (
+                <div className="mb-6">
+                    <AdminConsole onContentAdded={handleContentUpdate} />
                 </div>
-            </Card>
+            )}
 
             <div className="space-y-12">
-                
-                {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
-
                 <Tabs defaultValue="math" className="w-full">
                     <TabsList className="grid w-full grid-cols-3 h-20 bg-slate-950 p-2 rounded-[24px] shadow-2xl border border-slate-850 mb-12">
                         <TabsTrigger 
