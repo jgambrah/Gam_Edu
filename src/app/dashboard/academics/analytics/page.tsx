@@ -2,12 +2,12 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
-import { collection, query, where, doc } from 'firebase/firestore';
+import { collection, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ScatterChart, Scatter
 } from 'recharts';
 import { 
-  Loader2, BrainCircuit, TrendingUp, AlertTriangle, Users, BookOpen, CheckCircle, Search, Sparkles, Wand2, Calendar, Award, ChevronRight, GraduationCap, RefreshCw
+  Loader2, BrainCircuit, TrendingUp, AlertTriangle, Users, BookOpen, CheckCircle, Search, Sparkles, Wand2, Calendar, Award, ChevronRight, GraduationCap, RefreshCw, PackageCheck, Zap, Database
 } from 'lucide-react';
 import { generateLearningInsights } from '@/ai/flows/learning-analytics';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -26,6 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Class, Student, Assessment, AttendanceRecord } from '@/lib/types';
 import CreditBalance from '@/components/CreditBalance';
+import { cn } from '@/lib/utils';
 
 const LOADING_PHASES = [
   "Gathering student enrollment profiles...",
@@ -35,6 +36,35 @@ const LOADING_PHASES = [
   "Identifying silent struggles and outliers...",
   "Generating targeted pedagogical action strategies..."
 ];
+
+export interface LearningAnalyticsSnapshotDoc {
+  id: string;
+  schoolId: string;
+  classId: string;
+  className: string;
+  updatedAt: string;
+  classMetrics: {
+    size: number;
+    averageGrade: number;
+    averageAttendance: number;
+    safetyRate: number;
+  };
+  scatterData: Array<{
+    x: number;
+    y: number;
+    name: string;
+    z: number;
+  }>;
+  studentStats: Array<{
+    uid: string;
+    name: string;
+    studentName: string;
+    attendanceRate: number;
+    averageGrade: number;
+    missedAssessments: number;
+  }>;
+  aiReport?: any;
+}
 
 export default function LearningAnalyticsPage() {
   const firestore = useFirestore();
@@ -52,6 +82,11 @@ export default function LearningAnalyticsPage() {
   const [aiReport, setAiReport] = useState<any>(null);
   const [loadingPhaseIndex, setLoadingPhaseIndex] = useState(0);
   const [studentSearchQuery, setStudentSearchQuery] = useState('');
+
+  // 1-Document Snapshot State for Zero-Spike Learning Analytics
+  const [activeSnapshot, setActiveSnapshot] = useState<LearningAnalyticsSnapshotDoc | null>(null);
+  const [isLoadingSnapshot, setIsLoadingSnapshot] = useState<boolean>(false);
+  const [isRecompiling, setIsRecompiling] = useState<boolean>(false);
 
   const isAdmin = ['Administrator', 'Director'].includes(role || '');
   const isTeacher = role === 'Teacher';
@@ -115,31 +150,75 @@ export default function LearningAnalyticsPage() {
     }
   }, [selectedClassId, role, visibleClasses, classesLoading, toast]);
 
-  // 2. Fetch Data (Dependent on selected Class)
+  // Load 1-Document Snapshot when class is selected (Exact 1 Firestore Read)
+  useEffect(() => {
+    let isCancelled = false;
+    if (!selectedClassId || !firestore || !schoolId) {
+      setActiveSnapshot(null);
+      setIsLoadingSnapshot(false);
+      return;
+    }
+
+    const snapshotDocId = `${schoolId}_${selectedClassId}`;
+    setIsLoadingSnapshot(true);
+
+    getDoc(doc(firestore, 'learning_analytics_snapshots', snapshotDocId))
+      .then(snap => {
+        if (isCancelled) return;
+        if (snap.exists()) {
+          const data = snap.data() as LearningAnalyticsSnapshotDoc;
+          setActiveSnapshot(data);
+          if (data.aiReport) {
+            setAiReport(data.aiReport);
+          } else {
+            setAiReport(null);
+          }
+        } else {
+          setActiveSnapshot(null);
+          setAiReport(null);
+        }
+      })
+      .catch(err => {
+        console.warn("Learning analytics snapshot lookup error:", err);
+        if (!isCancelled) {
+          setActiveSnapshot(null);
+          setAiReport(null);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setIsLoadingSnapshot(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedClassId, firestore, schoolId]);
+
+  // 2. Fetch Raw Data (Short-circuited and bypassed whenever activeSnapshot is present)
   const studentsQuery = useMemoFirebase(() => {
-    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || activeSnapshot) return null;
     return query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
-  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
-  const { data: students, isLoading: studentsLoading } = useCollection<Student>(studentsQuery);
+  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, activeSnapshot]);
+  const { data: students, isLoading: studentsLoading, forceRefetch: refetchStudents } = useCollection<Student>(studentsQuery);
 
   const assessmentsQuery = useMemoFirebase(() => {
-    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || activeSnapshot) return null;
     return query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
-  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
-  const { data: assessments, isLoading: assessmentsLoading } = useCollection<Assessment>(assessmentsQuery);
+  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, activeSnapshot]);
+  const { data: assessments, isLoading: assessmentsLoading, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
 
   const attendanceQuery = useMemoFirebase(() => {
-    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess) return null;
+    if (!firestore || !selectedClassId || !schoolId || isRoleLoading || !canAccess || activeSnapshot) return null;
     return query(collection(firestore, 'attendance'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId));
-  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess]);
-  const { data: attendance, isLoading: attendanceLoading } = useCollection<AttendanceRecord>(attendanceQuery);
+  }, [firestore, selectedClassId, schoolId, isRoleLoading, canAccess, activeSnapshot]);
+  const { data: attendance, isLoading: attendanceLoading, forceRefetch: refetchAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
 
-  const isLoading = schoolLoading || isRoleLoading || classesLoading || (selectedClassId && (studentsLoading || assessmentsLoading || attendanceLoading));
+  const isLoading = schoolLoading || isRoleLoading || classesLoading || isLoadingSnapshot || (selectedClassId && !activeSnapshot && (studentsLoading || assessmentsLoading || attendanceLoading));
 
   // --- DATA AGGREGATION ENGINE ---
-  const { studentStats, scatterData, classMetrics } = useMemo(() => {
+  const { rawStudentStats, rawScatterData, rawClassMetrics } = useMemo(() => {
     if (!students || !assessments || !attendance || students.length === 0) {
-      return { studentStats: [], scatterData: [], classMetrics: { size: 0, averageGrade: 0, averageAttendance: 0, safetyRate: 0 } };
+      return { rawStudentStats: [], rawScatterData: [], rawClassMetrics: { size: 0, averageGrade: 0, averageAttendance: 0, safetyRate: 0 } };
     }
 
     const activeStudents = students.filter((s: any) => {
@@ -151,7 +230,7 @@ export default function LearningAnalyticsPage() {
     });
 
     if (activeStudents.length === 0) {
-      return { studentStats: [], scatterData: [], classMetrics: { size: 0, averageGrade: 0, averageAttendance: 0, safetyRate: 0 } };
+      return { rawStudentStats: [], rawScatterData: [], rawClassMetrics: { size: 0, averageGrade: 0, averageAttendance: 0, safetyRate: 0 } };
     }
 
     const stats = activeStudents.map(student => {
@@ -190,9 +269,9 @@ export default function LearningAnalyticsPage() {
     const safetyRate = (passingCount / stats.length) * 100;
 
     return { 
-      studentStats: sortedStats, 
-      scatterData: scatter,
-      classMetrics: {
+      rawStudentStats: sortedStats, 
+      rawScatterData: scatter,
+      rawClassMetrics: {
         size: stats.length,
         averageGrade: overallGrade,
         averageAttendance: overallAttendance,
@@ -200,6 +279,75 @@ export default function LearningAnalyticsPage() {
       }
     };
   }, [students, assessments, attendance]);
+
+  // Derived effective data (Single-read snapshot when available, raw calculation fallback)
+  const studentStats = activeSnapshot ? activeSnapshot.studentStats : rawStudentStats;
+  const scatterData = activeSnapshot ? activeSnapshot.scatterData : rawScatterData;
+  const classMetrics = activeSnapshot ? activeSnapshot.classMetrics : rawClassMetrics;
+
+  // Auto-persist snapshot rollup to Firestore when raw records are calculated
+  useEffect(() => {
+    if (
+      !activeSnapshot &&
+      !isLoadingSnapshot &&
+      selectedClassId &&
+      firestore &&
+      schoolId &&
+      rawStudentStats &&
+      rawStudentStats.length > 0 &&
+      !studentsLoading &&
+      !assessmentsLoading &&
+      !attendanceLoading
+    ) {
+      const snapshotDocId = `${schoolId}_${selectedClassId}`;
+      const targetClass = visibleClasses?.find((c: any) => c.id === selectedClassId);
+
+      const snapshotPayload: LearningAnalyticsSnapshotDoc = {
+        id: snapshotDocId,
+        schoolId,
+        classId: selectedClassId,
+        className: targetClass?.name || 'Class',
+        updatedAt: new Date().toISOString(),
+        classMetrics: rawClassMetrics,
+        scatterData: rawScatterData,
+        studentStats: rawStudentStats,
+        aiReport: aiReport || undefined
+      };
+
+      setDoc(doc(firestore, 'learning_analytics_snapshots', snapshotDocId), snapshotPayload, { merge: true })
+        .then(() => {
+          console.log("Learning analytics snapshot rollup created:", snapshotDocId);
+          setActiveSnapshot(snapshotPayload);
+          setIsRecompiling(false);
+        })
+        .catch(err => {
+          console.warn("Failed to persist learning analytics snapshot:", err);
+          setIsRecompiling(false);
+        });
+    }
+  }, [
+    activeSnapshot,
+    isLoadingSnapshot,
+    selectedClassId,
+    firestore,
+    schoolId,
+    rawStudentStats,
+    rawClassMetrics,
+    rawScatterData,
+    studentsLoading,
+    assessmentsLoading,
+    attendanceLoading,
+    visibleClasses,
+    aiReport
+  ]);
+
+  const handleRecompileSnapshot = () => {
+    setIsRecompiling(true);
+    setActiveSnapshot(null);
+    refetchStudents?.();
+    refetchAssessments?.();
+    refetchAttendance?.();
+  };
 
   // Filter roster by search input
   const filteredStudentStats = useMemo(() => {
@@ -223,6 +371,21 @@ export default function LearningAnalyticsPage() {
           if (result.success) {
               setAiReport(result.data);
               toast({ title: "Analysis Complete! 📊", description: "Successfully updated learning diagnostic report." });
+
+              // Persist the AI report into the snapshot document
+              if (selectedClassId && firestore) {
+                const snapshotDocId = `${schoolId}_${selectedClassId}`;
+                setDoc(doc(firestore, 'learning_analytics_snapshots', snapshotDocId), {
+                  aiReport: result.data,
+                  updatedAt: new Date().toISOString()
+                }, { merge: true }).catch(err => console.warn("Failed to persist AI report to snapshot:", err));
+
+                setActiveSnapshot(prev => prev ? {
+                  ...prev,
+                  aiReport: result.data,
+                  updatedAt: new Date().toISOString()
+                } : null);
+              }
           } else {
               toast({ variant: 'destructive', title: "Insight Engine Failed", description: result.error });
           }
@@ -295,10 +458,51 @@ export default function LearningAnalyticsPage() {
             </CardHeader>
         </Card>
 
+        {/* 1-Read Learning Analytics Snapshot Notice */}
+        {selectedClassId && activeSnapshot && !isLoading && (
+          <div className="bg-gradient-to-r from-emerald-50 via-teal-50/70 to-cyan-50/50 border-2 border-emerald-300 p-4 sm:p-5 rounded-[1.75rem] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm print:hidden">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="p-2.5 bg-emerald-600 text-white rounded-2xl shadow-md shadow-emerald-200 shrink-0">
+                <PackageCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="text-sm font-black text-emerald-950">
+                    1-Read Learning Analytics Snapshot Active
+                  </h4>
+                  <Badge className="bg-emerald-200 text-emerald-900 border-emerald-300 font-extrabold text-[10px]">
+                    1 Firestore Read
+                  </Badge>
+                  <Badge className="bg-blue-100 text-blue-900 border-blue-200 font-bold text-[10px]">
+                    ⚡ Spike Protection
+                  </Badge>
+                </div>
+                <p className="text-xs text-emerald-800 mt-0.5 leading-relaxed">
+                  All roster scores, grade averages, attendance correlations, and class metrics are served from a single aggregated rollup document ({activeSnapshot.updatedAt ? `updated ${new Date(activeSnapshot.updatedAt).toLocaleDateString()} ${new Date(activeSnapshot.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'cached'}).
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRecompileSnapshot}
+                disabled={isRecompiling}
+                className="bg-white hover:bg-emerald-100 text-emerald-900 border-emerald-300 font-bold text-xs h-9 shadow-sm flex items-center gap-1.5"
+              >
+                <RefreshCw className={cn("h-3.5 w-3.5", isRecompiling && "animate-spin")} />
+                {isRecompiling ? "Recompiling..." : "Recompile Snapshot"}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {selectedClassId && isLoading && (
              <div className="flex flex-col items-center justify-center py-24 text-slate-450 gap-3 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm">
                 <Loader2 className="h-10 w-10 animate-spin text-indigo-600"/>
-                <p className="font-semibold text-sm">Compiling learning matrix datasets...</p>
+                <p className="font-semibold text-sm">
+                  {isLoadingSnapshot ? "Loading 1-read class analytics snapshot..." : "Compiling learning matrix datasets..."}
+                </p>
             </div>
         )}
 
