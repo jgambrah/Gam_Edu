@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, getDocs, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,28 +17,57 @@ import { Input } from '@/components/ui/input';
 import { 
     Clock, Loader2, Calendar as CalendarIcon, 
     Printer, MapPin, ShieldAlert, ArrowDownLeft, ArrowUpRight, Camera, 
-    XCircle, ShieldCheck, Search, Users, ShieldX, UserCheck, CheckCircle2, AlertTriangle, FileText, ExternalLink
+    XCircle, ShieldCheck, Search, Users, ShieldX, UserCheck, CheckCircle2, AlertTriangle, FileText, ExternalLink,
+    Zap, RefreshCw, History, CalendarDays
 } from 'lucide-react';
-import { format, startOfDay, endOfDay } from 'date-fns';
+import { format, startOfDay, endOfDay, subDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useToast } from '@/hooks/use-toast';
 import type { Staff, StaffAttendance } from '@/lib/types';
 
 export default function StaffAttendanceRecordsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
+  const { toast } = useToast();
 
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: startOfDay(new Date(new Date().setDate(new Date().getDate() - 7))),
+  // ✅ DEFAULT: Today only (low cost, immediate live load)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => ({
+    from: startOfDay(new Date()),
     to: endOfDay(new Date()),
-  });
+  }));
   const [selectedStaffId, setSelectedStaffId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [hudLog, setHudLog] = useState<StaffAttendance | null>(null);
 
+  // ── ON-DEMAND HISTORICAL AUDIT STATE ──
+  const [historicalLogs, setHistoricalLogs] = useState<StaffAttendance[] | null>(null);
+  const [isLoadingHistorical, setIsLoadingHistorical] = useState(false);
+  const [loadedRangeKey, setLoadedRangeKey] = useState<string>('');
+
   const canAccess = role === 'Director' || role === 'Administrator' || role === 'Secretary';
+
+  // Check if dateRange represents today only
+  const isTodayOnly = useMemo(() => {
+    if (!dateRange?.from) return true;
+    const todayStart = startOfDay(new Date()).getTime();
+    const fromTime = startOfDay(dateRange.from).getTime();
+    const toTime = dateRange.to ? startOfDay(dateRange.to).getTime() : fromTime;
+    return fromTime === todayStart && toTime === todayStart;
+  }, [dateRange]);
+
+  const currentRangeKey = useMemo(() => {
+    const fromTime = dateRange?.from ? startOfDay(dateRange.from).getTime() : 0;
+    const toTime = dateRange?.to ? endOfDay(dateRange.to).getTime() : fromTime;
+    return `${fromTime}_${toTime}`;
+  }, [dateRange]);
+
+  const isRangeLoaded = useMemo(() => {
+    if (isTodayOnly) return true;
+    return loadedRangeKey === currentRangeKey && historicalLogs !== null;
+  }, [isTodayOnly, loadedRangeKey, currentRangeKey, historicalLogs]);
 
   // --- DATA FETCHING (Guarded by canAccess) ---
   const staffQuery = useMemoFirebase(() =>
@@ -46,20 +75,100 @@ export default function StaffAttendanceRecordsPage() {
   , [firestore, schoolId, canAccess]);
   const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
 
-  const attendanceQuery = useMemoFirebase(() =>
-    (firestore && schoolId && canAccess) ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc'), limit(200)) : null
-  , [firestore, schoolId, canAccess]);
-  const { data: attendanceLogs, isLoading: isLoadingLogs } = useCollection<StaffAttendance>(attendanceQuery);
+  // Live query strictly for today (capped at 60 records with 0 historical leakage)
+  const todayAttendanceQuery = useMemoFirebase(() =>
+    (firestore && schoolId && canAccess && isTodayOnly)
+      ? query(collection(firestore, 'staff_attendance'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc'), limit(60))
+      : null
+  , [firestore, schoolId, canAccess, isTodayOnly]);
+  const { data: todayAttendanceLogs, isLoading: isLoadingTodayLogs } = useCollection<StaffAttendance>(todayAttendanceQuery);
+
+  // On-demand fetch for historical audits
+  const handleFetchHistorical = useCallback(async () => {
+    if (!firestore || !schoolId || !dateRange?.from) return;
+    setIsLoadingHistorical(true);
+    try {
+      const fromTimestamp = Timestamp.fromDate(startOfDay(dateRange.from));
+      const toTimestamp = Timestamp.fromDate(endOfDay(dateRange.to || dateRange.from));
+
+      let records: StaffAttendance[] = [];
+      try {
+        const q = query(
+          collection(firestore, 'staff_attendance'),
+          where('schoolId', '==', schoolId),
+          where('timestamp', '>=', fromTimestamp),
+          where('timestamp', '<=', toTimestamp),
+          orderBy('timestamp', 'desc'),
+          limit(500)
+        );
+        const snapshot = await getDocs(q);
+        records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffAttendance));
+      } catch (err: any) {
+        console.warn('Composite index fallback for historical staff attendance:', err);
+        const fallbackQ = query(
+          collection(firestore, 'staff_attendance'),
+          where('schoolId', '==', schoolId),
+          orderBy('timestamp', 'desc'),
+          limit(300)
+        );
+        const snapshot = await getDocs(fallbackQ);
+        records = snapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() } as StaffAttendance))
+          .filter(log => {
+            if (!log.timestamp) return false;
+            const d = log.timestamp.toDate ? log.timestamp.toDate() : new Date(log.timestamp);
+            return d >= startOfDay(dateRange.from!) && d <= endOfDay(dateRange.to || dateRange.from!);
+          });
+      }
+
+      setHistoricalLogs(records);
+      setLoadedRangeKey(currentRangeKey);
+      toast({
+        title: "Historical Audit Loaded",
+        description: `Successfully loaded ${records.length} staff attendance records on-demand.`,
+      });
+    } catch (e: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error loading historical logs',
+        description: e?.message || 'Failed to fetch historical attendance records.',
+      });
+    } finally {
+      setIsLoadingHistorical(false);
+    }
+  }, [firestore, schoolId, dateRange, currentRangeKey, toast]);
+
+  const handleResetToToday = () => {
+    setDateRange({
+      from: startOfDay(new Date()),
+      to: endOfDay(new Date()),
+    });
+  };
+
+  // --- EFFECTIVE LOGS RESOLUTION ---
+  const effectiveLogs = useMemo(() => {
+    if (isTodayOnly) {
+      if (!todayAttendanceLogs) return [];
+      const todayStart = startOfDay(new Date()).getTime();
+      return todayAttendanceLogs.filter(log => {
+        if (!log.timestamp) return false;
+        const d = log.timestamp.toDate ? log.timestamp.toDate() : new Date(log.timestamp);
+        return startOfDay(d).getTime() === todayStart;
+      });
+    }
+    return isRangeLoaded ? (historicalLogs || []) : [];
+  }, [isTodayOnly, todayAttendanceLogs, isRangeLoaded, historicalLogs]);
 
   // --- FILTERING & STATS ---
   const { filteredLogs, stats } = useMemo(() => {
-    if (!attendanceLogs) return { filteredLogs: [], stats: { total: 0, late: 0, flagged: 0, early: 0, identityIssues: 0 } };
+    if (!isTodayOnly && !isRangeLoaded) {
+      return { 
+        filteredLogs: [], 
+        stats: { total: '—', late: '—', flagged: '—', early: '—', identityIssues: '—' } 
+      };
+    }
 
-    const filtered = attendanceLogs.filter(log => {
-      if (!log.timestamp) return false;
-      const logDate = log.timestamp.toDate();
-      if (dateRange?.from && logDate < startOfDay(dateRange.from)) return false;
-      if (dateRange?.to && logDate > endOfDay(dateRange.to)) return false;
+    const filtered = effectiveLogs.filter(log => {
       if (selectedStaffId !== 'all' && log.staffId !== selectedStaffId) return false;
       if (searchQuery) {
         const queryLower = searchQuery.toLowerCase();
@@ -79,7 +188,7 @@ export default function StaffAttendanceRecordsPage() {
         filteredLogs: filtered,
         stats: { total: filtered.length, late: lateArrivals, flagged: flaggedCount, early: earlyDepartures, identityIssues }
     };
-  }, [attendanceLogs, dateRange, selectedStaffId, searchQuery]);
+  }, [effectiveLogs, selectedStaffId, searchQuery, isTodayOnly, isRangeLoaded]);
 
   const getInitials = (name?: string) => {
     if (!name) return 'ST';
@@ -102,7 +211,7 @@ export default function StaffAttendanceRecordsPage() {
     return gradients[code % gradients.length];
   };
 
-  const isLoading = isSchoolLoading || isLoadingStaff || isLoadingLogs;
+  const isLoading = isSchoolLoading || isLoadingStaff || (isTodayOnly && isLoadingTodayLogs);
 
   if (!canAccess && !isSchoolLoading) {
     return (
@@ -135,6 +244,15 @@ export default function StaffAttendanceRecordsPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <Badge className="bg-indigo-500 text-white font-extrabold px-2.5 py-0.5 text-[10px] uppercase tracking-wider">ADMIN CONTROL CENTER</Badge>
               <Badge className="bg-white/10 text-indigo-200 border border-white/10 font-bold px-2.5 py-0.5 text-[10px] uppercase">SECURITY AUDITING</Badge>
+              {isTodayOnly ? (
+                <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-black px-2.5 py-0.5 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> TODAY LIVE VIEW
+                </Badge>
+              ) : (
+                <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/40 font-black px-2.5 py-0.5 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                  <Zap size={11} className="text-amber-400" /> HISTORICAL ON-DEMAND
+                </Badge>
+              )}
             </div>
             <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white animate-in slide-in-from-left-4 duration-300">Institutional Staff Audit</h1>
             <p className="text-indigo-100/70 text-sm max-w-xl">Monitor real-time shift check-ins, campus proximity records, and biometrics validation results across your teaching and support personnel.</p>
@@ -162,7 +280,9 @@ export default function StaffAttendanceRecordsPage() {
               </CardHeader>
               <CardContent className="pb-5 px-5">
                 <p className="text-3xl font-black text-slate-900">{stats.total}</p>
-                <p className="text-[10px] font-bold text-slate-450 mt-1 uppercase">within chosen range</p>
+                <p className="text-[10px] font-bold text-slate-450 mt-1 uppercase">
+                  {isTodayOnly ? "Today's check-ins" : (isRangeLoaded ? "within chosen range" : "query pending")}
+                </p>
               </CardContent>
           </Card>
           
@@ -174,8 +294,8 @@ export default function StaffAttendanceRecordsPage() {
               </CardHeader>
               <CardContent className="pb-5 px-5">
                 <p className="text-3xl font-black text-orange-600">{stats.identityIssues}</p>
-                <p className={cn("text-[10px] font-bold mt-1 uppercase", stats.identityIssues > 0 ? "text-orange-500 animate-pulse" : "text-slate-400")}>
-                  {stats.identityIssues > 0 ? 'Verification issues' : 'All clear'}
+                <p className={cn("text-[10px] font-bold mt-1 uppercase", typeof stats.identityIssues === 'number' && stats.identityIssues > 0 ? "text-orange-500 animate-pulse" : "text-slate-400")}>
+                  {typeof stats.identityIssues === 'number' && stats.identityIssues > 0 ? 'Verification issues' : 'All clear'}
                 </p>
               </CardContent>
           </Card>
@@ -188,8 +308,8 @@ export default function StaffAttendanceRecordsPage() {
               </CardHeader>
               <CardContent className="pb-5 px-5">
                 <p className="text-3xl font-black text-rose-600">{stats.flagged}</p>
-                <p className={cn("text-[10px] font-bold mt-1 uppercase", stats.flagged > 0 ? "text-rose-500 animate-pulse" : "text-slate-400")}>
-                  {stats.flagged > 0 ? 'Out of boundary' : 'On-campus verified'}
+                <p className={cn("text-[10px] font-bold mt-1 uppercase", typeof stats.flagged === 'number' && stats.flagged > 0 ? "text-rose-500 animate-pulse" : "text-slate-400")}>
+                  {typeof stats.flagged === 'number' && stats.flagged > 0 ? 'Out of boundary' : 'On-campus verified'}
                 </p>
               </CardContent>
           </Card>
@@ -227,7 +347,19 @@ export default function StaffAttendanceRecordsPage() {
               {/* Row 1: Period and Staff Select */}
               <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Audit Period</Label>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Audit Period</Label>
+                        {isTodayOnly ? (
+                          <span className="text-[9px] font-black uppercase tracking-wide text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Today Only
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-black uppercase tracking-wide text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
+                            <Zap size={10} className="text-amber-600" /> On-Demand
+                          </span>
+                        )}
+                      </div>
+
                       <Popover>
                         <PopoverTrigger asChild>
                             <Button variant="outline" className={cn("w-full justify-start text-left font-bold border rounded-xl h-11 bg-white shadow-sm hover:border-indigo-300 transition-all text-xs")}>
@@ -239,6 +371,53 @@ export default function StaffAttendanceRecordsPage() {
                             <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
                         </PopoverContent>
                       </Popover>
+
+                      {/* Quick Period Presets */}
+                      <div className="flex items-center gap-1.5 pt-0.5 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={handleResetToToday}
+                          className={cn(
+                            "text-[10px] font-bold px-2 py-0.5 rounded-md transition-all",
+                            isTodayOnly ? "bg-slate-900 text-white shadow-sm" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          )}
+                        >
+                          Today (Live)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const y = subDays(new Date(), 1);
+                            setDateRange({ from: startOfDay(y), to: endOfDay(y) });
+                          }}
+                          className={cn(
+                            "text-[10px] font-bold px-2 py-0.5 rounded-md transition-all",
+                            !isTodayOnly && dateRange?.from && format(dateRange.from, 'yyyy-MM-dd') === format(subDays(new Date(), 1), 'yyyy-MM-dd') && dateRange.to && format(dateRange.to, 'yyyy-MM-dd') === format(subDays(new Date(), 1), 'yyyy-MM-dd')
+                              ? "bg-slate-900 text-white shadow-sm" 
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          )}
+                        >
+                          Yesterday
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDateRange({ from: startOfDay(subDays(new Date(), 6)), to: endOfDay(new Date()) });
+                          }}
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
+                        >
+                          Past 7 Days
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDateRange({ from: startOfDay(subDays(new Date(), 29)), to: endOfDay(new Date()) });
+                          }}
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
+                        >
+                          Past 30 Days
+                        </button>
+                      </div>
                   </div>
                   
                   <div className="space-y-2">
@@ -266,6 +445,55 @@ export default function StaffAttendanceRecordsPage() {
                       </div>
                   </div>
               </div>
+
+              {/* Historical On-Demand Prompt Banner */}
+              {!isTodayOnly && (
+                <div className={cn(
+                  "p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-3 transition-all",
+                  isRangeLoaded ? "bg-emerald-50/70 border-emerald-200 text-emerald-950" : "bg-amber-50/90 border-amber-200 text-amber-950"
+                )}>
+                  <div className="flex items-center gap-3 w-full md:w-auto">
+                    <div className={cn(
+                      "p-2.5 rounded-xl shrink-0",
+                      isRangeLoaded ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                    )}>
+                      {isRangeLoaded ? <CheckCircle2 className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
+                    </div>
+                    <div>
+                      <p className="text-xs font-black">
+                        {isRangeLoaded 
+                          ? `Historical Audit Active (${filteredLogs.length} Records Loaded)` 
+                          : 'On-Demand Historical Range Selected'}
+                      </p>
+                      <p className="text-[11px] opacity-80 mt-0.5">
+                        {dateRange?.from ? format(dateRange.from, 'PPP') : ''} — {dateRange?.to ? format(dateRange.to, 'PPP') : 'Today'}
+                        {!isRangeLoaded && " · Click 'Load Historical Audit' to fetch without continuous read costs."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full md:w-auto justify-end shrink-0">
+                    {!isRangeLoaded && (
+                      <Button
+                        onClick={handleFetchHistorical}
+                        disabled={isLoadingHistorical}
+                        className="bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs h-10 px-4 rounded-xl shadow-sm flex items-center gap-2"
+                      >
+                        {isLoadingHistorical ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+                        {isLoadingHistorical ? 'Querying Records...' : 'Load Historical Audit'}
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResetToToday}
+                      className="font-bold text-xs h-10 px-3.5 rounded-xl border-slate-300 bg-white hover:bg-slate-50 text-slate-700"
+                    >
+                      Return to Today
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </CardHeader>
           
@@ -288,7 +516,30 @@ export default function StaffAttendanceRecordsPage() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {filteredLogs.map(log => {
+                    {!isTodayOnly && !isRangeLoaded ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-28 bg-amber-50/10">
+                          <div className="flex flex-col items-center justify-center gap-3">
+                            <div className="p-3 bg-amber-100 text-amber-700 rounded-2xl">
+                              <Zap className="h-7 w-7" />
+                            </div>
+                            <p className="font-black text-sm text-slate-800">Historical Records On-Demand</p>
+                            <p className="text-xs text-slate-500 max-w-md">
+                              You selected {dateRange?.from ? format(dateRange.from, 'PPP') : ''} to {dateRange?.to ? format(dateRange.to, 'PPP') : 'Today'}. Click below to query historical logs on demand.
+                            </p>
+                            <Button
+                              onClick={handleFetchHistorical}
+                              disabled={isLoadingHistorical}
+                              className="mt-2 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs rounded-xl h-11 px-6 shadow-md flex items-center gap-2"
+                            >
+                              {isLoadingHistorical ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+                              {isLoadingHistorical ? 'Querying Records...' : 'Load Historical Audit'}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredLogs.map(log => {
                         const logDate = log.timestamp?.toDate ? log.timestamp.toDate() : new Date();
                         const initials = getInitials(log.staffName);
                         const grad = getAvatarGradient(log.staffName);
@@ -309,7 +560,7 @@ export default function StaffAttendanceRecordsPage() {
                                         </div>
                                         <div>
                                           <div className="font-extrabold text-slate-805 text-sm">{log.staffName}</div>
-                                          <div className="text-[10px] text-slate-400 font-bold uppercase font-mono tracking-tighter">UID: {log.staffId.slice(0, 8)}</div>
+                                          <div className="text-[10px] text-slate-400 font-bold uppercase font-mono tracking-tighter">UID: {log.staffId?.slice(0, 8)}</div>
                                         </div>
                                     </div>
                                 </TableCell>
@@ -376,8 +627,9 @@ export default function StaffAttendanceRecordsPage() {
                                 </TableCell>
                             </TableRow>
                         );
-                    })}
-                    {filteredLogs.length === 0 && (
+                      })
+                    )}
+                    {((isTodayOnly || isRangeLoaded) && filteredLogs.length === 0) && (
                         <TableRow>
                             <TableCell colSpan={5} className="text-center py-32 text-slate-450 italic font-black uppercase tracking-[0.2em] text-xs bg-slate-50/10">No matching attendance records found</TableCell>
                         </TableRow>
