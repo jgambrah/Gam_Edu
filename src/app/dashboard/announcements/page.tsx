@@ -10,6 +10,7 @@ import {
   Megaphone, Plus, Trash2, Loader2, Calendar, User, AlertCircle, Wand2, Users,
   Sparkles, Clock, CheckCircle2, Bell, ShieldAlert, BookOpen
 } from 'lucide-react';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -281,7 +282,7 @@ function PostAnnouncementForm({
 // --- MAIN PAGE ---
 export default function AnnouncementsPage() {
   const firestore = useFirestore();
-  const { role, loading: isRoleLoading } = useRole();
+  const { role, profile, loading: isRoleLoading } = useRole();
   const { user } = useUser();
   const { toast } = useToast();
   const { schoolId, loading: schoolLoading } = useCurrentSchool(); 
@@ -289,6 +290,7 @@ export default function AnnouncementsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const canManage = role ? ['Administrator', 'Director'].includes(role) : false;
+  const schoolName = profile?.schoolName || "Sunny Side Academy";
 
   const announcementsQuery = useMemoFirebase(() => {
       if (!firestore || !schoolId) return null; 
@@ -367,34 +369,35 @@ export default function AnnouncementsPage() {
   const pageLoading = isLoading || isRoleLoading || schoolLoading;
 
   return (
-    <div className="space-y-8 p-6 max-w-5xl mx-auto pb-16">
+    <div className="space-y-6 p-4 sm:p-6 max-w-6xl mx-auto pb-16 animate-in fade-in duration-500">
       
-      {/* PREMIUM Tab-themed Gradient Banner Header */}
-      <div className="relative p-8 xl:p-10 rounded-[2.5rem] text-white overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 border border-indigo-500/20 border-b-8 border-black/10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-        <div className="space-y-3 relative z-10 max-w-xl">
-          <span className="text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase bg-indigo-500/20 text-indigo-300">
-            Noticeboard Suite
-          </span>
-          <h1 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">Global Noticeboard</h1>
-          <p className="text-xs text-slate-300 leading-relaxed font-medium">
-            Post institutional announcements, issue urgent notifications, and coordinate target audience coverage.
-          </p>
-        </div>
-        <div className="flex gap-4 items-center relative z-10">
-            {canManage && schoolId && (
-                <Button 
-                    onClick={() => setIsFormOpen(true)} 
-                    className="bg-white hover:bg-slate-50 text-indigo-950 font-black text-xs uppercase tracking-wider rounded-2xl h-11 px-6 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-                >
-                    <Plus className="mr-2 h-4 w-4 text-indigo-600"/> Post Announcement
-                </Button>
-            )}
-            <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] shrink-0">
-                <Megaphone className="h-10 w-10 text-white opacity-80" />
-            </div>
-        </div>
-      </div>
+      {/* Standardized Classic Institutional Hero Banner */}
+      <SectionHeroBanner
+        eyebrow={`${schoolName.toUpperCase()} • NOTICEBOARD SUITE`}
+        title="Global Noticeboard"
+        subtitle="Post institutional announcements, issue urgent notifications, and coordinate target audience coverage."
+        icon={Megaphone}
+        badge={{
+          label: announcementStats.urgentCount > 0 ? `${announcementStats.urgentCount} Urgent Notices Active` : "Broadcasting Active",
+          variant: announcementStats.urgentCount > 0 ? "warning" : "success",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Communications', href: '/dashboard' },
+          { label: 'Global Noticeboard' },
+        ]}
+        actions={
+          canManage && schoolId ? (
+            <Button 
+              onClick={() => setIsFormOpen(true)} 
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4 text-slate-950"/>
+              <span>Post Announcement</span>
+            </Button>
+          ) : undefined
+        }
+      />
 
       {/* QUICK METRICS SECTION */}
       {!pageLoading && announcements && announcements.length > 0 && (
