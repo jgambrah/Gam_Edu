@@ -7,6 +7,7 @@ import { logAuditEvent } from '@/lib/audit';
 import { 
   collection, 
   getDocs, 
+  getDoc,
   doc, 
   setDoc, 
   updateDoc, 
@@ -36,7 +37,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer, Zap, Users, Sparkles } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer, Zap, Users, Sparkles, PackageCheck } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -47,6 +48,17 @@ import { sendSMSAction } from '@/app/actions/sms';
 import { TimelineService } from '@/lib/timeline-service';
 import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
+
+export interface StudentDirectorySnapshotDoc {
+  id: string;
+  schoolId: string;
+  updatedAt: string;
+  studentCount: number;
+  students: Student[];
+  classes?: Class[];
+  hostelAllocations?: any[];
+  parentMap?: Record<string, any>;
+}
 
 
 export default function StudentsV3Page() {
@@ -67,6 +79,8 @@ export default function StudentsV3Page() {
   // On-Demand Student Loading State
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
+  const [activeSnapshot, setActiveSnapshot] = useState<StudentDirectorySnapshotDoc | null>(null);
+  const [isCompilingSnapshot, setIsCompilingSnapshot] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [statusMsg, setStatusMsg] = useState("Initializing...");
@@ -158,12 +172,13 @@ export default function StudentsV3Page() {
     if (adminSchoolId) loadClasses();
   }, [loadClasses, adminSchoolId]);
 
-  // --- ON-DEMAND STUDENT DATA FETCHING ---
-  const loadStudentData = useCallback(async () => {
+  // --- RECOMPILE 1-READ SNAPSHOT (SWEEPS RAW COLLECTIONS ONCE AND SAVES CONSOLIDATED DOCUMENT) ---
+  const handleRecompileStudentSnapshot = useCallback(async () => {
     if (isUserLoading || !firestore || !adminSchoolId) return;
     
+    setIsCompilingSnapshot(true);
     setIsLoadingStudents(true);
-    setStatusMsg("Retrieving Student Records...");
+    setStatusMsg("Compiling 1-Read Student Directory Snapshot...");
 
     try {
       const classQuery = query(collection(firestore, 'classes'), where('schoolId', '==', adminSchoolId));
@@ -201,25 +216,90 @@ export default function StudentsV3Page() {
           }
       });
       setParentMap(pMap);
-      
+
+      const snapshotDocId = adminSchoolId;
+      const snapshotPayload: StudentDirectorySnapshotDoc = {
+        id: snapshotDocId,
+        schoolId: adminSchoolId,
+        updatedAt: new Date().toISOString(),
+        studentCount: studentList.length,
+        students: studentList,
+        classes: classList,
+        hostelAllocations: allocationList,
+        parentMap: pMap
+      };
+
+      const snapRef = doc(firestore, 'student_directory_snapshots', snapshotDocId);
+      await setDoc(snapRef, snapshotPayload, { merge: true });
+
+      setActiveSnapshot(snapshotPayload);
       setHasLoadedStudents(true);
       setStatusMsg("Ready");
-      toast({ title: "Student Directory Loaded", description: `Loaded ${studentList.length} student records on-demand.` });
+      toast({ 
+        title: "1-Read Snapshot Compiled & Saved 📦", 
+        description: `Consolidated ${studentList.length} student records into 1 document for future instant, 1-read loads.` 
+      });
     } catch (err: any) {
-      console.error("Load Error:", err);
-      setStatusMsg("Error loading data");
-      toast({ variant: 'destructive', title: "Error", description: "Could not fetch student database." });
+      console.error("Recompile Error:", err);
+      setStatusMsg("Error compiling snapshot");
+      toast({ variant: 'destructive', title: "Compilation Failed", description: err.message || "Could not compile snapshot." });
     } finally {
+      setIsCompilingSnapshot(false);
       setIsLoadingStudents(false);
     }
   }, [firestore, adminSchoolId, isUserLoading, toast]);
 
-  const loadData = loadStudentData;
+  // --- ON-DEMAND 1-READ STUDENT DATA FETCHING ---
+  const loadStudentData = useCallback(async () => {
+    if (isUserLoading || !firestore || !adminSchoolId) return;
+    
+    setIsLoadingStudents(true);
+    setStatusMsg("Loading 1-Read Snapshot...");
+
+    try {
+      const snapDocId = adminSchoolId;
+      const snapRef = doc(firestore, 'student_directory_snapshots', snapDocId);
+      const snap = await getDoc(snapRef); // EXACTLY 1 FIRESTORE READ!
+
+      if (snap.exists()) {
+        const data = snap.data() as StudentDirectorySnapshotDoc;
+        setStudents(data.students || []);
+        if (data.classes && data.classes.length > 0) {
+          setClasses(data.classes);
+        }
+        setHostelAllocations(data.hostelAllocations || []);
+        setParentMap(data.parentMap || {});
+        setActiveSnapshot(data);
+        setHasLoadedStudents(true);
+        setStatusMsg("Ready");
+        toast({ 
+          title: "1-Read Student Directory Loaded! 📦", 
+          description: `Retrieved ${data.students?.length || 0} student profiles in a single document read.` 
+        });
+      } else {
+        // Snapshot not yet compiled, compile it once and save for all future reads
+        await handleRecompileStudentSnapshot();
+      }
+    } catch (err: any) {
+      console.error("Snapshot Load Error:", err);
+      try {
+        await handleRecompileStudentSnapshot();
+      } catch (fallbackErr: any) {
+        setStatusMsg("Error loading data");
+        toast({ variant: 'destructive', title: "Error", description: "Could not fetch student database." });
+      }
+    } finally {
+      setIsLoadingStudents(false);
+    }
+  }, [firestore, adminSchoolId, isUserLoading, toast, handleRecompileStudentSnapshot]);
+
+  const loadData = handleRecompileStudentSnapshot;
 
   const resetToOnDemand = useCallback(() => {
     setStudents([]);
     setHostelAllocations([]);
     setParentMap({});
+    setActiveSnapshot(null);
     setHasLoadedStudents(false);
     toast({ title: "Switched to On-Demand Mode", description: "Student records unloaded from memory to prevent unnecessary reads." });
   }, [toast]);
@@ -583,16 +663,16 @@ export default function StudentsV3Page() {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             {hasLoadedStudents ? (
               <>
-                <Button variant="outline" onClick={loadStudentData} disabled={isLoadingStudents} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
-                  <RefreshCw className={cn("h-4 w-4 mr-2", isLoadingStudents && "animate-spin")}/> Refresh
+                <Button variant="outline" onClick={handleRecompileStudentSnapshot} disabled={isCompilingSnapshot || isLoadingStudents} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
+                  <RefreshCw className={cn("h-4 w-4 mr-2", (isCompilingSnapshot || isLoadingStudents) && "animate-spin")}/> Re-sync Snapshot
                 </Button>
                 <Button variant="outline" onClick={resetToOnDemand} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
                   <RotateCcw className="h-4 w-4 mr-2"/> Switch to On-Demand
                 </Button>
               </>
             ) : (
-              <Button onClick={loadStudentData} disabled={isLoadingStudents} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-5 h-11 rounded-xl shadow-lg border border-emerald-400/50 gap-2 cursor-pointer">
-                {isLoadingStudents ? <Loader2 className="h-4 w-4 animate-spin"/> : <Zap className="h-4 w-4"/>}
+              <Button onClick={loadStudentData} disabled={isLoadingStudents || isCompilingSnapshot} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-5 h-11 rounded-xl shadow-lg border border-emerald-400/50 gap-2 cursor-pointer">
+                {isLoadingStudents || isCompilingSnapshot ? <Loader2 className="h-4 w-4 animate-spin"/> : <PackageCheck className="h-4 w-4"/>}
                 <span>Generate Student List</span>
               </Button>
             )}
@@ -632,7 +712,7 @@ export default function StudentsV3Page() {
             </div>
             <div className="ml-auto hidden lg:flex items-center gap-2 rounded-xl bg-black/20 px-3.5 py-2 border border-white/10 text-xs text-emerald-100">
               <Zap className={cn("h-3.5 w-3.5", hasLoadedStudents ? "text-emerald-300" : "text-amber-300")} />
-              <span>{hasLoadedStudents ? "Full Directory In Memory" : "0 Upfront Firestore Reads Active"}</span>
+              <span>{hasLoadedStudents ? "1 Read Active (In-Memory Directory)" : "0 Upfront Firestore Reads Active"}</span>
             </div>
           </div>
         )}
@@ -649,30 +729,40 @@ export default function StudentsV3Page() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-slate-50 border border-emerald-200/70 rounded-2xl text-xs text-emerald-950">
                 <div className="flex items-center gap-2.5">
                   <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-emerald-600 text-white font-bold shadow-xs shrink-0">
-                    <Zap className="h-3.5 w-3.5" />
+                    <PackageCheck className="h-4 w-4" />
                   </div>
                   <div>
-                    <span className="font-bold text-emerald-950">Active Student Registry Mode</span>
-                    <span className="text-emerald-700 ml-2">({filteredStudents.length} of {students.length} students showing)</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-extrabold text-emerald-950">1-Read Consolidated Student Registry Active</span>
+                      <Badge className="bg-emerald-600 text-white text-[10px] font-black tracking-wider uppercase">
+                        1 Read
+                      </Badge>
+                      <Badge variant="outline" className="border-emerald-300 text-emerald-800 text-[10px] font-bold">
+                        ⚡ Zero-Read Filtering
+                      </Badge>
+                    </div>
+                    <span className="text-emerald-700 mt-0.5 block">
+                      Viewing {filteredStudents.length} of {students.length} students. Searches and class filters operate locally at <strong>0 additional Firestore reads</strong>.
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={loadStudentData}
-                    disabled={isLoadingStudents}
-                    className="h-8 text-xs font-semibold rounded-lg border-emerald-300 text-emerald-800 hover:bg-emerald-100/60"
+                    onClick={handleRecompileStudentSnapshot}
+                    disabled={isCompilingSnapshot || isLoadingStudents}
+                    className="h-8 text-xs font-bold rounded-lg border-emerald-300 text-emerald-800 hover:bg-emerald-100/60 bg-white"
                   >
-                    <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-emerald-600", isLoadingStudents && "animate-spin")} /> Refresh
+                    <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-emerald-600", (isCompilingSnapshot || isLoadingStudents) && "animate-spin")} /> Re-sync Snapshot
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={resetToOnDemand}
-                    className="h-8 text-xs font-semibold rounded-lg border-emerald-300 text-emerald-800 hover:bg-emerald-100/60"
+                    className="h-8 text-xs font-semibold rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100/60 bg-white"
                   >
-                    <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-emerald-600" /> Switch to On-Demand
+                    <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-slate-500" /> Switch to On-Demand
                   </Button>
                 </div>
               </div>
@@ -734,25 +824,25 @@ export default function StudentsV3Page() {
             ) : !hasLoadedStudents ? (
                 <div className="py-16 px-6 text-center border-2 border-dashed border-emerald-200/80 rounded-3xl bg-gradient-to-b from-emerald-50/50 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
                     <div className="h-16 w-16 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-inner">
-                        <Zap className="h-8 w-8 text-emerald-600 animate-pulse" />
+                        <PackageCheck className="h-8 w-8 text-emerald-600 animate-pulse" />
                     </div>
                     <div className="space-y-1.5">
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-1">
-                            ⚡ Cost-Saving Architecture
+                            ⚡ Cost-Saving Architecture • 1-Read Snapshot
                         </div>
-                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Student Directory Generated On-Demand</h3>
+                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Student Directory Generated in 1 Document Read</h3>
                         <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
-                            To prevent high Firestore read cost spikes and speed up loading across GAM Edu, full student records are retrieved only when requested.
+                            To prevent high Firestore read cost spikes and speed up loading across GAM Edu, full student records are retrieved in a single consolidated document read (<strong>1 read for all 253+ students</strong>).
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                         <Button 
                             onClick={loadStudentData}
-                            disabled={isLoadingStudents}
+                            disabled={isLoadingStudents || isCompilingSnapshot}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
                         >
-                            <Zap className="h-4 w-4" />
-                            Generate Student List
+                            {isLoadingStudents || isCompilingSnapshot ? <Loader2 className="h-4 w-4 animate-spin"/> : <Zap className="h-4 w-4" />}
+                            Generate Student List (1 Read)
                         </Button>
                         {searchTerm.trim().length > 0 && (
                             <Button 
@@ -765,7 +855,7 @@ export default function StudentsV3Page() {
                         )}
                     </div>
                     <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400 pt-3 border-t border-slate-100 w-full">
-                        <span>⚡ 0 upfront Firestore reads</span>
+                        <span>⚡ 1 single Firestore read</span>
                         <span>•</span>
                         <span>Housing details & allocations</span>
                         <span>•</span>
