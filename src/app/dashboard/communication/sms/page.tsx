@@ -25,6 +25,9 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FinancialRecord, Student, Class } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { useRole } from '@/context/role-context';
+import { Badge } from '@/components/ui/badge';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 interface ParentRecipient {
   id: string;
@@ -64,6 +67,8 @@ const QUICK_SMS_TEMPLATES = [
 
 export default function BulkSMSPage() {
   const { user } = useUser();
+  const { role, profile } = useRole();
+  const schoolName = profile?.schoolName || 'Sunny Side Academy';
   const { schoolId } = useCurrentSchool();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -289,24 +294,48 @@ export default function BulkSMSPage() {
     : schoolSettings?.enableWhatsApp;
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8 font-sans">
+    <div className="space-y-6 p-4 sm:p-6 max-w-6xl mx-auto pb-16 animate-in fade-in duration-500 font-sans">
         
-        {/* Dynamic Executive Banner */}
-        <div className={cn(
-          "p-8 text-white relative overflow-hidden rounded-[2.5rem] shadow-xl border border-white/10 transition-all duration-750 ease-in-out",
-          channel === 'sms'
-            ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-700 shadow-blue-100/40"
-            : "bg-gradient-to-r from-emerald-600 via-teal-600 to-green-700 shadow-emerald-100/40"
-        )}>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.08),_rgba(255,255,255,0))] pointer-events-none" />
-            <h1 className="text-3xl font-black uppercase italic tracking-tight flex items-center gap-3">
-              <Send className="h-8 w-8 animate-pulse shrink-0" />
-              Communication Gateway Hub
-            </h1>
-            <p className="text-white/85 text-xs font-semibold mt-1.5 max-w-xl leading-relaxed">
-              Dispatch bulk text alerts or rich instant messages directly to your student body's parent base. Instantly target specific classes, overdue debtors, or search individual custom recipient tags.
-            </p>
-        </div>
+        {/* Standardized Institutional Hero Banner */}
+        <SectionHeroBanner
+            eyebrow={`${schoolName.toUpperCase()} • COMMUNICATION & TELEMETRY`}
+            title="Communication Gateway Hub"
+            subtitle="Dispatch bulk text alerts or rich instant messages directly to your student body's parent base. Instantly target specific classes, overdue debtors, or search individual recipient tags."
+            icon={Send}
+            badge={{
+                label: isConfigured ? "Hubtel / Arkesel Integrated" : "Gateway Active",
+                variant: isConfigured ? "success" : "info",
+            }}
+            breadcrumbs={[
+                { label: 'Director Suite' },
+                { label: 'Communications', href: '/dashboard' },
+                { label: 'Bulk SMS & Telemetry' },
+            ]}
+            stats={[
+                { label: 'Targeted Recipients', value: finalRecipients.length },
+                { label: 'Registered Parents', value: parents?.length || 0 },
+            ]}
+            actions={
+                <div className="flex items-center gap-2">
+                    <Badge className="bg-white/10 text-slate-200 border border-white/15 font-bold text-[10px] px-2.5 py-1 uppercase tracking-wider hidden sm:flex items-center gap-1.5">
+                        <span className={cn("h-2 w-2 rounded-full", isConfigured ? "bg-emerald-400 animate-pulse" : "bg-amber-400")} />
+                        {isConfigured ? "SMS Balance: Active" : "Gateway Ready"}
+                    </Badge>
+                    <Button
+                        onClick={() => {
+                            toast({
+                                title: "Gateway Configuration",
+                                description: "SMS and WhatsApp credentials are automatically validated from your school environment settings.",
+                            });
+                        }}
+                        className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <Settings className="h-4 w-4 text-slate-950" />
+                        <span>Gateway Keys</span>
+                    </Button>
+                </div>
+            }
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* LEFT COLUMN: Target Configuration */}
