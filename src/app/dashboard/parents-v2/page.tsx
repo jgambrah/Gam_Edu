@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck, KeyRound, Zap, RotateCcw, Sparkles } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck, KeyRound, Zap, RotateCcw, Sparkles, PackageCheck } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
@@ -60,6 +60,15 @@ type Student = {
     enrollmentStatus?: 'Active' | 'Graduated' | 'Inactive';
 };
 
+export interface ParentDirectorySnapshotDoc {
+  id: string;
+  schoolId: string;
+  updatedAt: string;
+  parentCount: number;
+  parents: ParentMember[];
+  students: Student[];
+}
+
 // --- MAIN PAGE COMPONENT ---
 export default function ParentsPage() {
   const auth = useAuth();
@@ -75,6 +84,8 @@ export default function ParentsPage() {
   // On-Demand Parent Loading State
   const [hasLoadedParents, setHasLoadedParents] = useState(false);
   const [isLoadingParents, setIsLoadingParents] = useState(false);
+  const [activeSnapshot, setActiveSnapshot] = useState<ParentDirectorySnapshotDoc | null>(null);
+  const [isCompilingSnapshot, setIsCompilingSnapshot] = useState(false);
 
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -104,10 +115,11 @@ export default function ParentsPage() {
     );
   };
 
-  // --- 1. ON-DEMAND DATA FETCHING ---
-  const loadParentData = useCallback(async () => {
+  // --- RECOMPILE 1-READ SNAPSHOT (SWEEPS RAW COLLECTIONS ONCE AND SAVES CONSOLIDATED DOCUMENT) ---
+  const handleRecompileParentSnapshot = useCallback(async () => {
     if (!firestore || !adminSchoolId) return;
     
+    setIsCompilingSnapshot(true);
     setIsLoadingParents(true);
     try {
         const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
@@ -121,23 +133,78 @@ export default function ParentsPage() {
         const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as ParentMember[];
         const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
 
+        const snapshotDocId = adminSchoolId;
+        const snapshotPayload: ParentDirectorySnapshotDoc = {
+          id: snapshotDocId,
+          schoolId: adminSchoolId,
+          updatedAt: new Date().toISOString(),
+          parentCount: parentList.length,
+          parents: parentList,
+          students: studentList
+        };
+
+        const snapRef = doc(firestore, 'parent_directory_snapshots', snapshotDocId);
+        await setDoc(snapRef, snapshotPayload, { merge: true });
+
         setParents(parentList);
         setStudents(studentList);
+        setActiveSnapshot(snapshotPayload);
         setHasLoadedParents(true);
-        toast({ title: "Directory Loaded", description: `Loaded ${parentList.length} parent profiles on-demand.` });
+        toast({ 
+          title: "1-Read Snapshot Compiled & Saved 📦", 
+          description: `Consolidated ${parentList.length} parent profiles into 1 document for future instant, 1-read loads.` 
+        });
     } catch (err: any) {
-        console.error("Load Data Error:", err);
-        toast({ variant: 'destructive', title: "Error", description: "Failed to load parent profiles." });
+        console.error("Recompile Parent Snapshot Error:", err);
+        toast({ variant: 'destructive', title: "Compilation Failed", description: err.message || "Failed to compile parent snapshot." });
     } finally {
+        setIsCompilingSnapshot(false);
         setIsLoadingParents(false);
     }
   }, [firestore, adminSchoolId, toast]);
 
-  const loadData = loadParentData;
+  // --- ON-DEMAND 1-READ DATA FETCHING ---
+  const loadParentData = useCallback(async () => {
+    if (!firestore || !adminSchoolId) return;
+    
+    setIsLoadingParents(true);
+    try {
+        const snapDocId = adminSchoolId;
+        const snapRef = doc(firestore, 'parent_directory_snapshots', snapDocId);
+        const snap = await getDoc(snapRef); // EXACTLY 1 FIRESTORE READ!
+
+        if (snap.exists()) {
+          const data = snap.data() as ParentDirectorySnapshotDoc;
+          setParents(data.parents || []);
+          setStudents(data.students || []);
+          setActiveSnapshot(data);
+          setHasLoadedParents(true);
+          toast({ 
+            title: "1-Read Parent Profiles Loaded! 📦", 
+            description: `Retrieved ${data.parents?.length || 0} parent accounts in a single document read.` 
+          });
+        } else {
+          // Snapshot not compiled yet: compile once and save
+          await handleRecompileParentSnapshot();
+        }
+    } catch (err: any) {
+        console.error("Snapshot Load Error:", err);
+        try {
+          await handleRecompileParentSnapshot();
+        } catch (fallbackErr: any) {
+          toast({ variant: 'destructive', title: "Error", description: "Failed to load parent profiles." });
+        }
+    } finally {
+        setIsLoadingParents(false);
+    }
+  }, [firestore, adminSchoolId, toast, handleRecompileParentSnapshot]);
+
+  const loadData = handleRecompileParentSnapshot;
 
   const resetToOnDemand = useCallback(() => {
     setParents([]);
     setStudents([]);
+    setActiveSnapshot(null);
     setHasLoadedParents(false);
     toast({ title: "Switched to On-Demand Mode", description: "Parent records unloaded from memory to eliminate reads." });
   }, [toast]);
@@ -296,8 +363,8 @@ export default function ParentsPage() {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             {hasLoadedParents ? (
               <>
-                <Button variant="outline" onClick={loadParentData} disabled={isLoadingParents} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
-                  <RefreshCw className={cn("h-4 w-4 mr-2", isLoadingParents && "animate-spin")}/> Refresh
+                <Button variant="outline" onClick={handleRecompileParentSnapshot} disabled={isLoadingParents || isCompilingSnapshot} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11">
+                  <RefreshCw className={cn("h-4 w-4 mr-2", (isLoadingParents || isCompilingSnapshot) && "animate-spin")}/> Re-sync Snapshot
                 </Button>
                 <Button variant="outline" onClick={resetToOnDemand} className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-11 text-xs font-semibold">
                   <RotateCcw className="h-4 w-4 mr-2"/> Switch to On-Demand
@@ -305,8 +372,8 @@ export default function ParentsPage() {
               </>
             ) : (
               <Button onClick={loadParentData} disabled={isLoadingParents} className="bg-white text-pink-700 hover:bg-pink-50 hover:text-pink-850 font-bold px-5 h-11 rounded-xl shadow-lg border border-pink-100 gap-2 cursor-pointer">
-                {isLoadingParents ? <Loader2 className="h-4 w-4 animate-spin"/> : <Zap className="h-4 w-4 text-pink-600"/>}
-                <span>Generate Parent List</span>
+                {isLoadingParents ? <Loader2 className="h-4 w-4 animate-spin"/> : <PackageCheck className="h-4 w-4 text-pink-600"/>}
+                <span>Generate Parent List (1 Read)</span>
               </Button>
             )}
             {canManage && (
@@ -333,8 +400,8 @@ export default function ParentsPage() {
               </div>
             </div>
             <div className="ml-auto hidden lg:flex items-center gap-2 rounded-xl bg-black/20 px-3.5 py-2 border border-white/10 text-xs text-pink-100">
-              <Zap className={cn("h-3.5 w-3.5", hasLoadedParents ? "text-pink-300" : "text-amber-300")} />
-              <span>{hasLoadedParents ? "Full Directory In Memory" : "0 Upfront Firestore Reads Active"}</span>
+              <Zap className={cn("h-3.5 w-3.5", hasLoadedParents ? "text-emerald-300" : "text-amber-300")} />
+              <span>{hasLoadedParents ? "1 Read Active (In-Memory Directory)" : "0 Upfront Firestore Reads Active"}</span>
             </div>
           </div>
         )}
@@ -351,22 +418,24 @@ export default function ParentsPage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-pink-50/90 via-rose-50/50 to-slate-50 border border-pink-200/70 rounded-2xl text-xs text-pink-950">
               <div className="flex items-center gap-2.5">
                 <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-pink-600 text-white font-bold shadow-xs shrink-0">
-                  <Zap className="h-3.5 w-3.5" />
+                  <PackageCheck className="h-3.5 w-3.5" />
                 </div>
                 <div>
-                  <span className="font-bold text-pink-950">Active Parent Directory Mode</span>
+                  <span className="font-bold text-pink-950">1-Read Consolidated Parent Directory Active</span>
                   <span className="text-pink-700 ml-2">({filteredParents.length} of {parents.length} profiles showing)</span>
+                  <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">1 Read</span>
+                  <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-pink-100 text-pink-800">⚡ Zero-Read Filtering</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={loadParentData}
-                  disabled={isLoadingParents}
+                  onClick={handleRecompileParentSnapshot}
+                  disabled={isLoadingParents || isCompilingSnapshot}
                   className="h-8 text-xs font-semibold rounded-lg border-pink-300 text-pink-800 hover:bg-pink-100/60"
                 >
-                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-pink-600", isLoadingParents && "animate-spin")} /> Refresh
+                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-pink-600", (isLoadingParents || isCompilingSnapshot) && "animate-spin")} /> Re-sync Snapshot
                 </Button>
                 <Button 
                   variant="outline" 
@@ -403,7 +472,7 @@ export default function ParentsPage() {
           {isLoadingParents ? (
             <div className="py-16 flex flex-col items-center justify-center text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
               <Loader2 className="h-8 w-8 animate-spin text-pink-500 mb-2"/>
-              <p className="text-xs uppercase font-bold tracking-wider font-mono">Loading Parent Directory On Demand...</p>
+              <p className="text-xs uppercase font-bold tracking-wider font-mono">Loading Parent Directory (1 Document Read)...</p>
             </div>
           ) : !hasLoadedParents ? (
             <div className="py-16 px-6 text-center border-2 border-dashed border-pink-200/80 rounded-3xl bg-gradient-to-b from-pink-50/50 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
@@ -412,11 +481,11 @@ export default function ParentsPage() {
               </div>
               <div className="space-y-1.5">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-100/80 text-pink-800 text-xs font-bold uppercase tracking-wider mb-1">
-                  ⚡ Cost-Saving Architecture
+                  ⚡ Single-Document Architecture
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Parent Profiles Generated On-Demand</h3>
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Parent Profiles Generated in 1 Document Read</h3>
                 <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
-                  To prevent automatic Firestore read spikes upon page open, parent records and linked student relationships are loaded only when requested.
+                  To prevent automatic Firestore read spikes upon page open, parent records and linked student relationships are loaded from a single consolidated document snapshot (1 read for all parents and children).
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -425,8 +494,8 @@ export default function ParentsPage() {
                   disabled={isLoadingParents}
                   className="bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
                 >
-                  <Zap className="h-4 w-4" />
-                  Generate Parent List
+                  <PackageCheck className="h-4 w-4" />
+                  Generate Parent List (1 Read)
                 </Button>
                 {searchTerm.trim().length > 0 && (
                   <Button 
@@ -439,7 +508,7 @@ export default function ParentsPage() {
                 )}
               </div>
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400 pt-3 border-t border-slate-100 w-full">
-                <span>⚡ 0 upfront Firestore reads</span>
+                <span>⚡ 1 single Firestore read</span>
                 <span>•</span>
                 <span>Associated child linkages</span>
                 <span>•</span>
