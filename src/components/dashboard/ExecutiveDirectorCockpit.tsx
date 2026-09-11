@@ -16,7 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { computeFinancialMetrics } from '@/lib/financial-analytics';
+import { computeFinancialMetrics, safeParseDate } from '@/lib/financial-analytics';
 import { buildExecutiveTelemetry } from '@/hooks/use-executive-telemetry';
 import { ExecutiveAIAuditorDrawer } from './ExecutiveAIAuditorDrawer';
 
@@ -160,21 +160,20 @@ export function ExecutiveDirectorCockpit({
   const financialSummary = useMemo(() => {
     // Validate whether dashboardSummary.financials last payment actually belongs to today (>= todayMidnight)
     const isSummaryPaymentFromToday = (() => {
-      const lastPayment = dashboardSummary?.financials?.lastPaymentAt;
+      const lastPayment = dashboardSummary?.financials?.lastPaymentAt ||
+                          (dashboardSummary?.financials as any)?.lastPaymentDate ||
+                          dashboardSummary?.lastUpdated;
       if (!lastPayment) return false;
-      try {
-        const d = typeof (lastPayment as any).toDate === 'function'
-          ? (lastPayment as any).toDate()
-          : new Date((lastPayment as any).seconds ? (lastPayment as any).seconds * 1000 : lastPayment);
-        return !isNaN(d.getTime()) && d >= todayMidnight;
-      } catch {
-        return false;
-      }
+      const d = safeParseDate(lastPayment);
+      return !!(d && d >= todayMidnight);
     })();
 
+    const rawSummaryCollectedToday = Number(dashboardSummary?.financials?.totalCollectedToday || 0);
     const validSummaryCollectedToday = isSummaryPaymentFromToday
-      ? Number(dashboardSummary?.financials?.totalCollectedToday || 0)
-      : 0;
+      ? rawSummaryCollectedToday
+      : (rawSummaryCollectedToday > 0 && dashboardSummary?.lastUpdated && safeParseDate(dashboardSummary.lastUpdated)! >= todayMidnight
+          ? rawSummaryCollectedToday
+          : 0);
 
     if (dashboardSummary?.financials) {
       const f = dashboardSummary.financials;

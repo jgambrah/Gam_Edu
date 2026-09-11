@@ -86,7 +86,7 @@ import { TeacherDashboardView } from '@/components/dashboard/TeacherDashboardVie
 import { ExecutiveDirectorCockpit } from '@/components/dashboard/ExecutiveDirectorCockpit';
 import { ExecutiveCockpitHeader } from '@/components/dashboard/ExecutiveCockpitHeader';
 import { StudentSubjectRoadmap } from '@/components/curriculum/StudentSubjectRoadmap';
-import { computeFinancialMetrics } from '@/lib/financial-analytics';
+import { computeFinancialMetrics, safeParseDate } from '@/lib/financial-analytics';
 
 function StatCard({ title, value, icon: Icon, link, isLoading, color = "text-indigo-600", subtitle }: any) {
   return (
@@ -1148,18 +1148,19 @@ function AdminDashboard({
     if (syncedFinancialData) return syncedFinancialData;
 
     const isSummaryToday = (() => {
-      if (!dashboardSummary?.financials?.lastPaymentAt) return false;
-      try {
-        const lastPaymentAt = dashboardSummary.financials.lastPaymentAt;
-        const lastPaymentDate = typeof (lastPaymentAt as any).toDate === 'function'
-          ? (lastPaymentAt as any).toDate()
-          : new Date((lastPaymentAt as any).seconds ? (lastPaymentAt as any).seconds * 1000 : lastPaymentAt);
-        return !isNaN(lastPaymentDate.getTime()) && lastPaymentDate >= startOfToday;
-      } catch {
-        return false;
-      }
+      const lastPayment = dashboardSummary?.financials?.lastPaymentAt ||
+                          (dashboardSummary?.financials as any)?.lastPaymentDate ||
+                          dashboardSummary?.lastUpdated;
+      if (!lastPayment) return false;
+      const d = safeParseDate(lastPayment);
+      return !!(d && d >= startOfToday);
     })();
-    const summaryToday = isSummaryToday ? (dashboardSummary.financials.totalCollectedToday ?? 0) : 0;
+    const rawSummaryToday = Number(dashboardSummary?.financials?.totalCollectedToday || 0);
+    const summaryToday = isSummaryToday
+      ? rawSummaryToday
+      : (rawSummaryToday > 0 && dashboardSummary?.lastUpdated && safeParseDate(dashboardSummary.lastUpdated)! >= startOfToday
+          ? rawSummaryToday
+          : 0);
 
     if (dashboardSummary?.financials?.totalBilled !== undefined && dashboardSummary.financials.totalBilled > 0) {
       return {
@@ -3615,40 +3616,35 @@ function DirectorDashboard({
 
   const collectedToday = useMemo(() => {
     let clientTotal = 0;
-    if (payments) {
+    if (payments && payments.length > 0) {
       payments.forEach((p: any) => {
-        const amount = Number(p.amount) || 0;
+        const amount = Number(p.amount) || Number(p.amountPaid) || 0;
         if (amount <= 0) return;
-        const dateVal = p.paidAt || p.createdAt || p.date;
+        const dateVal = p.paidAt || p.createdAt || p.date || p.timestamp;
         if (!dateVal) return;
-        const d = dateVal.toDate ? dateVal.toDate() : new Date(dateVal);
-        if (isNaN(d.getTime())) return;
-        if (startOfDay(d).getTime() === startOfToday.getTime()) {
+        const d = safeParseDate(dateVal);
+        if (!d) return;
+        if (d >= startOfToday) {
           clientTotal += amount;
         }
       });
     }
     const isSummaryToday = (() => {
-      if (!dashboardSummary?.financials?.lastPaymentAt) return false;
-      try {
-        const lastPaymentAt = dashboardSummary.financials.lastPaymentAt;
-        const lastPaymentDate = typeof lastPaymentAt.toDate === 'function'
-          ? lastPaymentAt.toDate()
-          : new Date(lastPaymentAt.seconds ? lastPaymentAt.seconds * 1000 : lastPaymentAt);
-        const todayUTCStr = format(startOfToday, 'yyyy-MM-dd');
-        const lastPaymentUTCStr = lastPaymentDate.toISOString().slice(0, 10);
-        
-        const todayLocalStr = format(startOfToday, 'yyyy-MM-dd');
-        const lastPaymentLocalStr = format(lastPaymentDate, 'yyyy-MM-dd');
-        
-        return lastPaymentUTCStr === todayUTCStr || lastPaymentLocalStr === todayLocalStr;
-      } catch (e) {
-        return false;
-      }
+      const lastPayment = dashboardSummary?.financials?.lastPaymentAt ||
+                          (dashboardSummary?.financials as any)?.lastPaymentDate ||
+                          dashboardSummary?.lastUpdated;
+      if (!lastPayment) return false;
+      const d = safeParseDate(lastPayment);
+      return !!(d && d >= startOfToday);
     })();
-    const finalSummaryToday = isSummaryToday ? (summaryCollectedToday ?? 0) : 0;
+    const rawSummaryToday = Number(summaryCollectedToday ?? 0);
+    const finalSummaryToday = isSummaryToday
+      ? rawSummaryToday
+      : (rawSummaryToday > 0 && dashboardSummary?.lastUpdated && safeParseDate(dashboardSummary.lastUpdated)! >= startOfToday
+          ? rawSummaryToday
+          : 0);
     return Math.max(clientTotal, finalSummaryToday, openTillsCash || 0);
-  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, startOfToday, openTillsCash]);
+  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, dashboardSummary?.lastUpdated, startOfToday, openTillsCash]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -4078,7 +4074,7 @@ function DirectorDashboard({
               classes={classes}
               financials={{
                 ...financials,
-                collectedToday: collectedToday,
+                collectedToday: Math.max(Number(financials?.collectedToday) || 0, Number(collectedToday) || 0, Number(openTillsCash) || 0),
               }}
               financialRecords={financialRecords || []}
               payments={payments}
@@ -12128,10 +12124,21 @@ export default function DashboardClient() {
   const allRecords = onDemandRecords;
   const loadingAllRecords = loadingOnDemandRecords;
 
-  // Bounded collectionGroup query disabled to eliminate Firestore data read costs completely
-  const paymentsQuery = null;
-  const payments = useMemo(() => [], []);
-  const loadingPayments = false;
+  // Live recent payments query (bounded to 50 items to minimize Firestore reads while giving real-time visibility)
+  const paymentsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    if (role === 'Director' || role === 'Administrator' || isAccountant) {
+      return query(
+        collectionGroup(firestore, 'payments'),
+        where('schoolId', '==', schoolId),
+        orderBy('paidAt', 'desc'),
+        limit(50)
+      );
+    }
+    return null;
+  }, [firestore, schoolId, role, isAccountant]);
+  const { data: recentPayments, isLoading: loadingPayments } = useCollection(paymentsQuery);
+  const payments = useMemo(() => recentPayments || [], [recentPayments]);
 
   const tillsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
@@ -12144,6 +12151,24 @@ export default function DashboardClient() {
     return null;
   }, [firestore, schoolId, isAccountant, role, profile?.uid]);
   const { data: tills, isLoading: loadingTills } = useCollection(tillsQuery);
+
+  const pendingTillsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    if (role === 'Director' || role === 'Administrator') {
+      return query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'PendingApproval'));
+    }
+    return null;
+  }, [firestore, schoolId, role]);
+  const { data: pendingTills } = useCollection(pendingTillsQuery);
+
+  const recentClosedTillsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    if (role === 'Director' || role === 'Administrator') {
+      return query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'Closed'), orderBy('dateClosed', 'desc'), limit(5));
+    }
+    return null;
+  }, [firestore, schoolId, role]);
+  const { data: closedTills } = useCollection(recentClosedTillsQuery);
 
   const [currentDayDate, setCurrentDayDate] = useState(() => new Date());
 
@@ -12165,16 +12190,33 @@ export default function DashboardClient() {
   }, [currentDayDate]);
 
   const openTillsCash = useMemo(() => {
-    if (!tills || tills.length === 0) return 0;
-    return tills
-      .filter((t: any) => {
-        if (!t.dateOpened) return false;
-        const d = t.dateOpened.toDate ? t.dateOpened.toDate() : new Date(t.dateOpened);
-        if (isNaN(d.getTime())) return false;
-        return d >= startOfToday;
-      })
-      .reduce((sum: number, t: any) => sum + (Number(t.currentBalance) || 0), 0);
-  }, [tills, startOfToday]);
+    const combinedTills = [...(tills || []), ...(pendingTills || []), ...(closedTills || [])];
+    if (combinedTills.length === 0) return 0;
+
+    const seenTillIds = new Set<string>();
+    return combinedTills.reduce((sum: number, t: any) => {
+      if (!t || !t.id || seenTillIds.has(t.id)) return sum;
+      seenTillIds.add(t.id);
+
+      const bal = Number(t.actualCashCounted ?? t.expectedBalance ?? t.closingBalance ?? t.currentBalance ?? 0);
+      if (bal <= 0) return sum;
+
+      // 1. If the till is actively Open, its current balance is live register cash
+      if (t.status === 'Open') {
+        return sum + bal;
+      }
+
+      // 2. If PendingApproval or Closed, check if it was opened or closed today
+      const dateOpened = safeParseDate(t.dateOpened);
+      const dateClosed = safeParseDate(t.dateClosed);
+      const isToday = (dateOpened && dateOpened >= startOfToday) || (dateClosed && dateClosed >= startOfToday);
+      if (isToday) {
+        return sum + bal;
+      }
+
+      return sum;
+    }, 0);
+  }, [tills, pendingTills, closedTills, startOfToday]);
 
   // Director gets attendance from summary (today's snapshot) and only needs raw logs when active tab is attendance.
   // Administrator is restricted to overview/attendance tabs.

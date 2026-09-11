@@ -183,6 +183,14 @@ export function safeParseDate(val: any): Date | null {
       return null;
     }
   }
+  if (typeof val?.seconds === 'number') {
+    const d = new Date(val.seconds * 1000);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  if (typeof val?._seconds === 'number') {
+    const d = new Date(val._seconds * 1000);
+    return isNaN(d.getTime()) ? null : d;
+  }
   if (typeof val === 'number') {
     const d = new Date(val);
     return isNaN(d.getTime()) ? null : d;
