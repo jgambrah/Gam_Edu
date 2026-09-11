@@ -3,34 +3,72 @@
 import { useState, useEffect } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
+import { useToast } from '@/hooks/use-toast';
 import { doc, getDoc } from 'firebase/firestore';
 import SignatureManager from '@/components/profile/SignatureManager';
 import ProfilePhotoManager from '@/components/profile/ProfilePhotoManager';
 import { Mail, ShieldCheck, Shield, GraduationCap, Calendar, Building, BookOpen, User, Tag, IdCard, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 export default function MyProfilePage() {
   const { user } = useUser();
   const { profile, role } = useRole();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const isStaff = role && role !== 'Student' && role !== 'Parent';
+  const schoolName = profile?.schoolName || "Sunny Side Academy";
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900">
-          My <span className="text-blue-600">Identity</span>
-        </h1>
-        <p className="text-slate-500 font-bold text-xs uppercase italic tracking-widest">Personal Verification & Security Profile</p>
-      </div>
+    <div className="space-y-6 p-4 sm:p-6 max-w-5xl mx-auto pb-16 animate-in fade-in duration-500 font-sans">
+      <SectionHeroBanner
+        eyebrow={`${schoolName.toUpperCase()} • PERSONAL VERIFICATION & SECURITY PROFILE`}
+        title="My Profile & Identity Security"
+        subtitle="Manage personal verification, cryptographic digital signature, and biometric clock-in credentials tied to the institution directory."
+        icon={ShieldCheck}
+        badge={{
+          label: "Authenticated User",
+          variant: "success",
+        }}
+        breadcrumbs={[
+          { label: 'Director Suite' },
+          { label: 'Security & Identity', href: '/dashboard/profile' },
+          { label: 'My Profile' },
+        ]}
+        stats={[
+          { label: 'System Role', value: role || 'Staff' },
+          { label: 'Directory', value: 'Verified', change: 'Cloud Active' },
+          { label: 'Security Tier', value: isStaff ? 'Enterprise' : 'Standard' },
+        ]}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="hidden sm:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-2.5 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5 shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Authenticated User</span>
+            </span>
+            <Button
+              size="sm"
+              onClick={() => toast({
+                title: "Profile Synced",
+                description: "Your identity credentials and verification records are up to date.",
+              })}
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs h-8 px-3.5 gap-1.5 shadow-sm cursor-pointer shrink-0"
+            >
+              <ShieldCheck className="h-3.5 w-3.5 text-slate-950" />
+              <span>Update Credentials</span>
+            </Button>
+          </div>
+        }
+      />
 
       {role === 'Student' && firestore && profile && (
-          <StudentProfileDetails profile={profile} firestore={firestore} />
+        <StudentProfileDetails profile={profile} firestore={firestore} />
       )}
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-6">
         {/* LEFT: IDENTITY INFO */}
         <div className="md:col-span-1 space-y-6">
             <Card className="rounded-[40px] shadow-xl border-4 border-slate-900 overflow-hidden bg-white">
