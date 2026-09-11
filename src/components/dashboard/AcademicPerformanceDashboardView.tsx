@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { HeroBanner } from './HeroBanner';
 
 export function AcademicPerformanceDashboardView({
   students: rawStudents,
@@ -422,33 +421,7 @@ export function AcademicPerformanceDashboardView({
     <div className="space-y-4 pb-8 animate-in fade-in duration-300">
       
       {/* ─────────────────────────────────────────────────────────────
-          ZONE 1: ACADEMIC INTELLIGENCE HUB DARK BANNER
-          ───────────────────────────────────────────────────────────── */}
-      <HeroBanner
-        tag="ACADEMICS PULSE"
-        title="ACADEMIC INTELLIGENCE HUB"
-        description="Class sizes skew, teacher staffing ratio distributions, and student score variance analytics."
-        icon={GraduationCap}
-        statusBadge={
-          <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5 shrink-0">
-            <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Term Velocity: +3.2% Growth</span>
-          </span>
-        }
-        actions={
-          <Button
-            onClick={handleSyncAcademicSummary}
-            disabled={isSyncingAcademics}
-            className="bg-white hover:bg-slate-100 text-slate-900 font-extrabold rounded-xl text-xs h-9 px-3.5 gap-1.5 shrink-0 cursor-pointer shadow-sm border border-slate-200"
-          >
-            <FileText className="h-3.5 w-3.5 text-slate-700" />
-            <span>Generate Executive Term Report</span>
-          </Button>
-        }
-      />
-
-      {/* ─────────────────────────────────────────────────────────────
-          ZONE 2: 6 VITAL ACADEMIC KPI CARDS
+          ZONE 1: 6 VITAL ACADEMIC KPI CARDS
           ───────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         

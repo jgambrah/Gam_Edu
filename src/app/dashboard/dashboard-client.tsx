@@ -3868,7 +3868,7 @@ function DirectorDashboard({
             subtitle={banner.description}
             icon={banner.icon}
             badge={{
-              label: "Live Telemetry",
+              label: activeTab === 'academics' ? "Academic Pulse • Live" : "Live Telemetry",
               variant: "success",
             }}
             breadcrumbs={[
@@ -3877,13 +3877,37 @@ function DirectorDashboard({
               { label: activeDomain.label },
               ...(activeTab !== 'overview' ? [{ label: banner.tag }] : []),
             ]}
-            stats={[
-              { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
-              { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length} Students` : '253 Total', change: '+4 New' },
-              { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '96.2%', change: '+1.4%' },
-            ]}
+            stats={
+              activeTab === 'academics' ? [
+                { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
+                { label: 'Term Velocity', value: '+3.2%', change: 'Growth' },
+                { label: 'Target Benchmark', value: '75%', change: 'School Avg' },
+              ] : [
+                { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
+                { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length} Students` : '253 Total', change: '+4 New' },
+                { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '96.2%', change: '+1.4%' },
+              ]
+            }
             actions={
               <div className="flex flex-wrap items-center gap-2">
+                {/* Academic specific actions: Term Velocity pill & Generate Executive Term Report CTA */}
+                {activeTab === 'academics' && (
+                  <>
+                    <span className="hidden md:inline-flex text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 px-2.5 py-1.5 rounded-xl border border-emerald-500/30 items-center gap-1.5 shrink-0">
+                      <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>Term Velocity: +3.2% Growth</span>
+                    </span>
+                    <Button
+                      size="sm"
+                      onClick={handleSyncAcademicSummary}
+                      disabled={isSyncingAcademics}
+                      className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs h-8 px-3 gap-1.5 shadow-sm cursor-pointer shrink-0"
+                    >
+                      {isSyncingAcademics ? <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-950" /> : <FileText className="h-3.5 w-3.5 text-slate-950" />}
+                      <span>Generate Executive Term Report</span>
+                    </Button>
+                  </>
+                )}
                 {/* Dynamic Campus Selector */}
                 {availableCampuses && availableCampuses.length > 1 ? (
                   <DropdownMenu>
