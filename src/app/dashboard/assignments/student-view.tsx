@@ -145,16 +145,12 @@ export default function StudentAssignmentsView() {
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-400" />
-                {pendingCount} PENDING
-              </span>
+            <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span>{pendingCount} PENDING</span>
               <span className="text-slate-500">•</span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                {completedCount} COMPLETED
-              </span>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>{completedCount} COMPLETED</span>
             </div>
           </div>
         }

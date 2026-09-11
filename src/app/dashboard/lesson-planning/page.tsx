@@ -22,7 +22,6 @@ import { generateLessonEnhancementsAction } from '@/app/actions/insights-ai';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import ReactMarkdown from 'react-markdown';
-import CreditBalance from '@/components/CreditBalance';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -89,6 +88,13 @@ export default function LessonPlanningPage() {
     [firestore, schoolId, isAdminOrDirector]
   );
   const { data: staff, isLoading: isLoadingStaff } = useCollection<StaffData>(staffQuery);
+
+  const schoolRef = useMemoFirebase(
+    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+    [firestore, schoolId]
+  );
+  const { data: schoolData } = useDoc<any>(schoolRef);
+  const aiCredits = schoolData?.aiCredits ?? 810;
   
   const isLoading = isLoadingPlans || isLoadingClasses || (isAdminOrDirector && isLoadingStaff) || isLoadingSchool;
 
@@ -275,10 +281,13 @@ export default function LessonPlanningPage() {
         subtitle="Develop modular teaching schedules, align national curriculum objectives, and organize instructional units."
         eyebrow="INSTRUCTIONAL DESIGN"
         icon={ClipboardList}
-        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={
-          <div className="flex flex-wrap items-center gap-3">
-            <CreditBalance />
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+            <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+              <span className="text-amber-400">⚡</span>
+              <span>{aiCredits} AI Credits</span>
+            </div>
             <Button 
               onClick={() => {
                 setEditingPlan(undefined);
@@ -286,9 +295,9 @@ export default function LessonPlanningPage() {
                 setIsCreateOpen(true);
               }}
               disabled={isLoading || !schoolId}
-              className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wider shadow-sm transition-all flex items-center gap-2 px-4"
+              className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center shrink-0"
             >
-              <PlusCircle className="h-4 w-4" />
+              <PlusCircle className="h-4 w-4 text-slate-950" />
               <span>Create Lesson Plan</span>
             </Button>
           </div>

@@ -25,7 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Class, Student, Assessment, AttendanceRecord } from '@/lib/types';
-import CreditBalance from '@/components/CreditBalance';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { cn } from '@/lib/utils';
 
 const LOADING_PHASES = [
@@ -74,6 +74,7 @@ export default function LearningAnalyticsPage() {
   
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData } = useDoc<any>(schoolRef);
+  const aiCredits = schoolData?.aiCredits ?? 810;
   const { role, loading: isRoleLoading } = useRole();
   const router = useRouter();
   
@@ -416,27 +417,20 @@ export default function LearningAnalyticsPage() {
 
   return (
     <div className="space-y-6 p-6">
-        {/* Premium Gradient Header Banner */}
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 md:p-12 shadow-2xl border border-white/10 group">
-            <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
-                <BrainCircuit className="h-60 w-60 animate-pulse" />
+        {/* Standardized Hero Banner */}
+        <SectionHeroBanner
+          title="Learning Analytics Engine"
+          subtitle="Identify silent struggles, evaluate student performance-attendance correlations, and run AI predictive classroom diagnostics."
+          eyebrow="ACADEMIC INTELLIGENCE"
+          icon={BrainCircuit}
+          className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+          actions={
+            <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+              <span className="text-amber-400">⚡</span>
+              <span>{aiCredits} AI Credits</span>
             </div>
-            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-3">
-                        Learning Analytics Engine
-                    </h1>
-                    <p className="text-indigo-200 text-lg max-w-2xl font-light leading-relaxed">
-                        Identify silent struggles, evaluate student performance-attendance correlations, and run AI predictive classroom diagnostic diagnostics.
-                    </p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                    {(role as string) !== 'Student' && (role as string) !== 'Parent' && (
-                        <CreditBalance />
-                    )}
-                </div>
-            </div>
-        </div>
+          }
+        />
 
         {/* Control Toolbar */}
         <Card className="border border-slate-100 shadow-md rounded-[2rem] overflow-hidden bg-white">

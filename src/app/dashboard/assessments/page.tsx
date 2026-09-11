@@ -29,7 +29,7 @@ import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
-import CreditBalance from '@/components/CreditBalance';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -113,6 +113,9 @@ export default function AssessmentsPage() {
     const [filterClassId, setFilterClassId] = useState<string>('all');
 
     const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolData } = useDoc<any>(schoolRef);
+    const aiCredits = schoolData?.aiCredits ?? 810;
     const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
 
     useEffect(() => {
@@ -473,29 +476,20 @@ export default function AssessmentsPage() {
 
     return (
         <div className="space-y-6 flex flex-col h-full">
-            {/* Header banner */}
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white p-6 shadow-lg border border-purple-900/50">
-              <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                <ClipboardCheck className="h-40 w-40 transform rotate-12 text-purple-300" />
-              </div>
-              
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <div className="bg-purple-500/20 p-2 rounded-xl border border-purple-500/30">
-                      <ClipboardCheck className="h-6 w-6 text-purple-400" />
-                    </div>
-                    <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Assessments & Records</h1>
-                  </div>
-                  <p className="text-slate-400 text-sm max-w-xl">
-                    Log and track student grades, behavioral milestones, and build custom tests with AI utilities.
-                  </p>
+            {/* Standardized Hero Banner */}
+            <SectionHeroBanner
+              title="Assessments & Records"
+              subtitle="Log and track student grades, behavioral milestones, and build custom tests with AI utilities."
+              eyebrow="ACADEMIC EVALUATION"
+              icon={ClipboardCheck}
+              className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+              actions={
+                <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+                  <span className="text-amber-400">⚡</span>
+                  <span>{aiCredits} AI Credits</span>
                 </div>
-                <div className="flex flex-wrap items-center gap-3 self-stretch md:self-auto justify-between md:justify-end">
-                  <CreditBalance />
-                </div>
-              </div>
-            </div>
+              }
+            />
 
             {/* ── ON-DEMAND CONTROL TOOLBAR ── */}
             <Card className="border border-slate-200 shadow-sm rounded-2xl bg-gradient-to-r from-slate-50 via-white to-slate-50 p-4">

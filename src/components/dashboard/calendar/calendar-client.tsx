@@ -15,6 +15,7 @@ import {
 } from 'date-fns';
 
 // UI Components
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -233,20 +234,25 @@ export default function SchoolCalendarPageContent() {
   return (
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
       
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-            <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
-                <CalendarIcon className="h-8 w-8 text-indigo-600"/> School Calendar
-            </h1>
-            <p className="text-slate-500">Upcoming events, holidays, and academic schedules.</p>
-        </div>
-        {canManage && schoolId && (
-            <Button onClick={() => setIsAddOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
-                <Plus className="mr-2 h-4 w-4"/> Add Event
+      {/* STANDARDIZED SECTION HERO BANNER */}
+      <SectionHeroBanner
+        title="School Calendar"
+        subtitle="Track upcoming campus events, institutional holidays, exam periods, and academic term schedules."
+        eyebrow="CAMPUS SCHEDULE"
+        icon={CalendarIcon}
+        className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          canManage && schoolId ? (
+            <Button
+              onClick={() => setIsAddOpen(true)}
+              className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center shrink-0"
+            >
+              <Plus className="h-4 w-4 text-slate-950" />
+              <span>Add Event</span>
             </Button>
-        )}
-      </div>
+          ) : undefined
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           

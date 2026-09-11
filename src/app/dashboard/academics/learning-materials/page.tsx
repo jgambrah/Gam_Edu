@@ -40,6 +40,7 @@ import CreditBalance from '@/components/CreditBalance';
 import ReactMarkdown from 'react-markdown';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // --- DATA TYPES ---
 export type ResourceType = 'PDF' | 'Video' | 'Document' | 'Spreadsheet' | 'Link';
@@ -968,23 +969,55 @@ export default function LearningMaterialsPage() {
 
   if (canManage && !activeClassId) {
       return (
-          <div className="p-8 max-w-2xl mx-auto space-y-4">
-              <Card className="border-slate-200 shadow-md">
-                  <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b pb-4">
-                    <CardTitle className="flex items-center gap-2">
-                      <Folder className="h-5 w-5 text-violet-600" />
-                      Learning Materials Manager
-                    </CardTitle>
-                    <CardDescription>Select a class folder to review and manage learning resources.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                      <Label className="text-slate-700 font-bold dark:text-slate-300">Select Class</Label>
-                      <Select onValueChange={setSelectedClassId}>
-                          <SelectTrigger className="border-slate-200 mt-2 rounded-xl focus:border-violet-500 focus:ring-violet-500/20"><SelectValue placeholder="Select Class..." /></SelectTrigger>
-                          <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id} className="cursor-pointer">{c.name}</SelectItem>)}</SelectContent>
-                      </Select>
-                  </CardContent>
-              </Card>
+          <div className="space-y-6 flex flex-col h-full">
+              <SectionHeroBanner
+                title="Learning Materials & Resources"
+                subtitle="Organize digital courseware, syllabi attachments, lecture notes, and classroom resource repositories."
+                eyebrow="DIGITAL REPOSITORY"
+                icon={BookOpen}
+                className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+                actions={
+                  <Button 
+                    onClick={handleCreate}
+                    className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center shrink-0"
+                  >
+                    <Plus className="h-4 w-4 text-slate-950" />
+                    <span>Upload Resource</span>
+                  </Button>
+                }
+              />
+
+              <div className="max-w-2xl mx-auto w-full">
+                <Card className="border-slate-200 shadow-md">
+                    <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b pb-4">
+                      <CardTitle className="flex items-center gap-2">
+                        <Folder className="h-5 w-5 text-violet-600" />
+                        LEARNING MATERIALS MANAGER
+                      </CardTitle>
+                      <CardDescription>Select a class folder to review and manage learning resources.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        <Label className="text-slate-700 font-bold dark:text-slate-300">Select Class</Label>
+                        <Select onValueChange={setSelectedClassId}>
+                            <SelectTrigger className="border-slate-200 mt-2 rounded-xl focus:border-violet-500 focus:ring-violet-500/20"><SelectValue placeholder="Select Class..." /></SelectTrigger>
+                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id} className="cursor-pointer">{c.name}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </CardContent>
+                </Card>
+              </div>
+
+              {isFormOpen && schoolId && (
+                  <MaterialForm 
+                      open={isFormOpen} 
+                      setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
+                      classes={classes ?? undefined}
+                      materialToEdit={editingMaterial}
+                      subjectsList={subjectsList}
+                      preSelectedSubject={currentSubject || undefined}
+                      preSelectedClassId={activeClassId || ''}
+                      schoolId={schoolId}
+                  />
+              )}
           </div>
       )
   }
@@ -1014,36 +1047,35 @@ export default function LearningMaterialsPage() {
       return (
         <div className="space-y-6 flex flex-col h-full">
             {/* Header banner */}
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white p-6 shadow-lg border border-purple-900/50">
-              <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                <Folder className="h-40 w-40 transform rotate-12 text-purple-300" />
-              </div>
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <div className="bg-purple-500/20 p-2 rounded-xl border border-purple-500/30">
-                      <BookOpen className="h-6 w-6 text-purple-400" />
-                    </div>
-                    <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Academics Catalog</h1>
-                  </div>
-                  <p className="text-slate-400 text-sm max-w-xl">
-                    Access and organize study guides, lesson videos, PDFs, and practice tests.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 self-stretch md:self-auto justify-between md:justify-end">
+            <SectionHeroBanner
+              title="Academics Catalog"
+              subtitle="Access and organize study guides, lesson videos, PDFs, and practice tests across subjects."
+              eyebrow="DIGITAL REPOSITORY"
+              icon={BookOpen}
+              className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+              actions={
+                <div className="flex items-center gap-2.5">
                   {canManage && (
-                    <Button variant="outline" onClick={() => setSelectedClassId('')} className="bg-white/10 hover:bg-white/20 border-white/20 hover:border-white/30 text-white rounded-xl">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSelectedClassId('')} 
+                      className="h-9 px-3.5 rounded-xl border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 text-slate-200 text-xs font-semibold cursor-pointer transition-colors"
+                    >
                       Switch Class
                     </Button>
                   )}
                   {canManage && (
-                    <Button onClick={handleCreate} className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg border border-purple-500/50 rounded-xl flex items-center gap-2">
-                      <Plus className="h-4.5 w-4.5"/> Add Material
+                    <Button 
+                      onClick={handleCreate} 
+                      className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center shrink-0"
+                    >
+                      <Plus className="h-4 w-4 text-slate-950" />
+                      <span>Add Material</span>
                     </Button>
                   )}
                 </div>
-              </div>
-            </div>
+              }
+            />
 
             {/* Folder Grid view */}
             <div className="bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -1112,29 +1144,34 @@ export default function LearningMaterialsPage() {
   return (
     <div className="space-y-6 flex flex-col h-full">
       {/* Dynamic Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4 shrink-0">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={() => setCurrentSubject(null)} className="h-9 w-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/60 shrink-0 p-0">
-            <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
-          </Button>
-          <div>
-            <h1 className="text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
-              {currentSubject}
-            </h1>
-            <p className="text-xs text-slate-400">
-              Folder items for {classes?.find(c => c.id === activeClassId)?.name}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 self-stretch md:self-auto justify-between md:justify-end">
-          <CreditBalance />
-          {canManage && (
-            <Button onClick={handleCreate} className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl shadow-md px-4 py-2 flex items-center gap-1.5 text-xs md:text-sm font-semibold active:scale-95 transition-all">
-              <Plus className="h-4.5 w-4.5"/> Add Topic Folder
+      <SectionHeroBanner
+        title={currentSubject}
+        subtitle={`Folder items for ${classes?.find(c => c.id === activeClassId)?.name || 'Class Grade'}`}
+        eyebrow="SUBJECT REPOSITORY"
+        icon={BookOpen}
+        className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="flex items-center gap-2.5">
+            <Button 
+              variant="outline" 
+              onClick={() => setCurrentSubject(null)} 
+              className="h-9 px-3.5 rounded-xl border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 text-slate-200 text-xs font-semibold flex items-center gap-1.5"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Subjects</span>
             </Button>
-          )}
-        </div>
-      </div>
+            {canManage && (
+              <Button 
+                onClick={handleCreate} 
+                className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center shrink-0"
+              >
+                <Plus className="h-4 w-4 text-slate-950" />
+                <span>Add Topic Folder</span>
+              </Button>
+            )}
+          </div>
+        }
+      />
 
       {/* Main split grid */}
       {(!sortedMaterials || sortedMaterials.length === 0) ? (

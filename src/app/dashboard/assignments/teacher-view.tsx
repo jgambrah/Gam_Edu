@@ -289,14 +289,14 @@ export default function TeacherAssignmentsView() {
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs font-medium text-slate-300">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
                 PENDING REVIEW
               </span>
               <span className="text-slate-500">•</span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 {activeQuizzesCount} ACTIVE TESTS
               </span>
             </div>

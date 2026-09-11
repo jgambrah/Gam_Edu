@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { generateClassInsightsAction } from '@/app/actions/insights-ai';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import CreditBalance from '@/components/CreditBalance';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { DEFAULT_GRADING_SYSTEM, getGradeFromScale } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
@@ -132,6 +132,9 @@ export default function GradebookPage() {
 
     const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolData } = useDoc<any>(schoolRef);
+    const aiCredits = schoolData?.aiCredits ?? 810;
 
     useEffect(() => {
         if (schoolSettings) {
@@ -1117,37 +1120,30 @@ export default function GradebookPage() {
 
     return (
         <div className="p-6 pb-52 space-y-6">
-            {/* Header Banner */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-12 shadow-2xl border border-white/10 group">
-                <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
-                    <FileSpreadsheet className="h-60 w-60" />
-                </div>
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <Button asChild variant="outline" className="border-indigo-800 text-indigo-200 bg-indigo-950/40 hover:bg-indigo-900/40 hover:text-white rounded-xl h-9 px-3">
-                                <Link href="/dashboard/report-cards">
-                                    <ArrowLeft className="mr-2 h-4 w-4"/> Back to Reports
-                                </Link>
-                            </Button>
-                            <Badge className="bg-indigo-800 text-indigo-100 uppercase tracking-widest font-black text-[9px] py-1 px-2.5 rounded-full border border-indigo-700/50">
-                                {entryMode === 'matrix' ? 'Terminal SBA Matrix' : 'Single Batch'}
-                            </Badge>
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-2">
-                            Batch Entry & Gradebook
-                        </h1>
-                        <p className="text-indigo-200 text-lg max-w-xl font-light">
-                            Continuous assessment (SBA), multiple tests averaging, project grading, and terminal results.
-                        </p>
+            {/* Standardized Hero Banner */}
+            <SectionHeroBanner
+              title="Batch Entry & Gradebook"
+              subtitle="Continuous assessment (SBA), multiple tests averaging, project grading, and terminal results."
+              eyebrow="TERMINAL SBA MATRIX"
+              icon={FileSpreadsheet}
+              className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+              actions={
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+                  <Button asChild variant="outline" className="h-9 px-3.5 rounded-xl border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 text-slate-200 text-xs font-semibold cursor-pointer transition-colors">
+                    <Link href="/dashboard/report-cards" className="flex items-center gap-1.5">
+                      <ArrowLeft className="h-4 w-4" />
+                      <span>Back to Reports</span>
+                    </Link>
+                  </Button>
+                  {role !== 'Student' && role !== 'Parent' && (
+                    <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+                      <span className="text-amber-400">⚡</span>
+                      <span>{aiCredits} AI Credits</span>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-center gap-3">
-                        {role !== 'Student' && role !== 'Parent' && (
-                            <CreditBalance />
-                        )}
-                    </div>
+                  )}
                 </div>
-            </div>
+              }
+            />
 
             {/* Entry Mode Switcher */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 rounded-[1.8rem] border border-slate-200 shadow-sm">

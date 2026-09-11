@@ -37,6 +37,7 @@ import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 import { generateReportCommentAction } from '@/app/actions/report-ai';
 import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     try {
@@ -1126,32 +1127,31 @@ export default function ReportCardManager() {
 
     return (
         <div className="space-y-6 p-6">
-            {/* Premium Gradient Header Banner */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 md:p-12 shadow-2xl border border-white/10 group">
-                <div className="absolute right-[-40px] bottom-[-40px] opacity-10 text-white transition-transform duration-700 group-hover:scale-110 pointer-events-none">
-                    <FileText className="h-60 w-60 animate-pulse" />
+            {/* Standardized Hero Banner */}
+            <SectionHeroBanner
+              title="Report Card Manager"
+              subtitle="Draft remarks, sign with electronic stamps, and batch publish certified academic terminal reports."
+              eyebrow="ACADEMIC CERTIFICATION"
+              icon={FileText}
+              className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+              actions={
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+                  <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0 uppercase">
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                    <span>{role || 'DIRECTOR'}</span>
+                  </div>
+                  <div className={cn(
+                    "border text-xs font-medium px-3 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0",
+                    isAdminOrDirector 
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                      : "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                  )}>
+                    <span className={cn("h-1.5 w-1.5 rounded-full", isAdminOrDirector ? "bg-emerald-400" : "bg-amber-400")} />
+                    <span>{isAdminOrDirector ? 'SIGN & PUBLISH ACTIVE' : 'DRAFT ONLY'}</span>
+                  </div>
                 </div>
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div>
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-2">
-                            Report Card Manager
-                        </h1>
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
-                            <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-white/10 text-indigo-300 rounded-full border border-white/5">
-                                Resolved Role: {role || 'Loading...'}
-                            </span>
-                            <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-indigo-500/20 text-indigo-200 rounded-full border border-indigo-500/10">
-                                Permission: {isAdminOrDirector ? 'Admin/Director (Sign & Publish Active)' : 'Staff/Teacher (Draft Only)'}
-                            </span>
-                        </div>
-                        <p className="text-indigo-200 text-sm max-w-2xl font-light leading-relaxed">
-                            Draft remarks, sign with electronic stamps, and batch publish certified academic terminal reports.
-                        </p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-center gap-3">
-                    </div>
-                </div>
-            </div>
+              }
+            />
 
             {/* Filter Roster Selection Card */}
             <Card className="border border-slate-100 shadow-md rounded-[2rem] overflow-hidden bg-white">

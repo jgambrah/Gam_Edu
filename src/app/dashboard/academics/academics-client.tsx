@@ -450,20 +450,25 @@ export default function AcademicsPageContent() {
         title="Class Roster & Homerooms"
         subtitle="Organize class divisions, assign primary homeroom teachers, and monitor student capacity levels."
         eyebrow="ACADEMIC STRUCTURE"
+        badge={{
+          label: "ACADEMIC STRUCTURE",
+          variant: "gold",
+        }}
         icon={GraduationCap}
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
-              <span className="h-2 w-2 rounded-full bg-indigo-400" />
-              {visibleClasses?.length || 0} Cohorts
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+            <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+              <span>{visibleClasses?.length || 0} Cohorts</span>
             </div>
             {canManageClasses && schoolId && (
               <Button
-                className="h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs tracking-wider shadow-sm transition-all flex items-center gap-2 px-4"
+                className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
                 onClick={handleCreateClick}
               >
-                <PlusCircle className="h-4 w-4" /> Add Class / Section
+                <PlusCircle className="h-4 w-4 text-slate-950" />
+                <span>Add Class / Section</span>
               </Button>
             )}
           </div>

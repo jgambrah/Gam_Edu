@@ -40,7 +40,7 @@ import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import CreditBalance from '@/components/CreditBalance';
+import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
 
@@ -655,6 +655,9 @@ export default function TimetablePage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+  const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+  const { data: schoolData } = useDoc<any>(schoolRef);
+  const aiCredits = schoolData?.aiCredits ?? 810;
 
   const [selectedClassId, setSelectedClassId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -843,31 +846,20 @@ export default function TimetablePage() {
 
   return (
     <div className="space-y-6">
-      {/* Premium Gradient Banner */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-10 shadow-xl border border-indigo-950/20 text-white">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/15 rounded-full blur-[80px]" />
-          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-600/10 rounded-full blur-[80px]" />
-
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-indigo-200 text-xs font-black uppercase tracking-wider">
-                      <CalendarDays className="h-3.5 w-3.5" /> Academic Planning Hub
-                  </div>
-                  <div className="space-y-2">
-                      <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight uppercase italic">
-                          Timetable & AI Planner
-                      </h1>
-                      <p className="text-indigo-200/80 text-sm md:text-base max-w-xl font-medium leading-relaxed font-sans">
-                          Generate weekly timetables dynamically, manage room locations, and configure time slots. Powered by Gemini AI constraints engine.
-                      </p>
-                  </div>
-              </div>
-              
-              <div className="shrink-0 bg-white/5 border border-white/10 rounded-2xl p-3 backdrop-blur-sm">
-                  <CreditBalance />
-              </div>
+      {/* Standardized Hero Banner */}
+      <SectionHeroBanner
+        title="Timetable & AI Planner"
+        subtitle="Generate weekly timetables dynamically, manage room locations, and configure time slots powered by Gemini AI constraints engine."
+        eyebrow="ACADEMIC PLANNING HUB"
+        icon={CalendarDays}
+        className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+        actions={
+          <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+            <span className="text-amber-400">⚡</span>
+            <span>{aiCredits} AI Credits</span>
           </div>
-      </div>
+        }
+      />
 
       <Tabs defaultValue="view" className="w-full">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">

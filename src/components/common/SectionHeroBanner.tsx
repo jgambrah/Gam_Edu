@@ -138,44 +138,42 @@ export function SectionHeroBanner({
 
       {/* Main Content Area */}
       <div className="relative z-10 py-5 px-6 space-y-3.5">
-        {/* Top Bar: Breadcrumbs & Right Action Controls */}
-        {(breadcrumbs?.length || actions) && (
+        {/* Top Bar: Breadcrumbs & Right Action Controls (only when breadcrumbs are provided) */}
+        {breadcrumbs && breadcrumbs.length > 0 && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-white/[0.08]">
             {/* Breadcrumb Navigation */}
-            {breadcrumbs && breadcrumbs.length > 0 ? (
-              <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-400">
-                {breadcrumbs.map((crumb, idx) => {
-                  const isLast = idx === breadcrumbs.length - 1;
-                  return (
-                    <React.Fragment key={idx}>
-                      {crumb.href && !isLast ? (
-                        <Link
-                          href={crumb.href}
-                          className="hover:text-amber-300 transition-colors duration-150"
-                        >
-                          {crumb.label}
-                        </Link>
-                      ) : (
-                        <span
-                          className={cn(
-                            isLast
-                              ? "text-slate-200 font-bold px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/10"
-                              : "text-slate-400"
-                          )}
-                        >
-                          {crumb.label}
-                        </span>
-                      )}
-                      {!isLast && (
-                        <ChevronRight className="h-3 w-3 text-slate-500 shrink-0" />
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </nav>
-            ) : <div />}
+            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-slate-400">
+              {breadcrumbs.map((crumb, idx) => {
+                const isLast = idx === breadcrumbs.length - 1;
+                return (
+                  <React.Fragment key={idx}>
+                    {crumb.href && !isLast ? (
+                      <Link
+                        href={crumb.href}
+                        className="hover:text-amber-300 transition-colors duration-150"
+                      >
+                        {crumb.label}
+                      </Link>
+                    ) : (
+                      <span
+                        className={cn(
+                          isLast
+                            ? "text-slate-200 font-bold px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/10"
+                            : "text-slate-400"
+                        )}
+                      >
+                        {crumb.label}
+                      </span>
+                    )}
+                    {!isLast && (
+                      <ChevronRight className="h-3 w-3 text-slate-500 shrink-0" />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </nav>
 
-            {/* Actions Slot */}
+            {/* Actions Slot in Top Bar when breadcrumbs exist */}
             {actions && (
               <div className="flex flex-wrap items-center gap-2 shrink-0 self-start sm:self-auto">
                 {actions}
@@ -238,10 +236,10 @@ export function SectionHeroBanner({
             </div>
           </div>
 
-          {/* Quick Stats Chips (if provided) */}
-          {stats && stats.length > 0 && (
+          {/* Right Slot: Quick Stats Chips and/or Actions (when breadcrumbs are absent) */}
+          {((stats && stats.length > 0) || (actions && (!breadcrumbs || breadcrumbs.length === 0))) && (
             <div className="flex flex-wrap items-center gap-2 lg:self-center shrink-0">
-              {stats.map((stat, i) => (
+              {stats && stats.map((stat, i) => (
                 <div
                   key={i}
                   className="flex flex-col px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-xs min-w-[75px]"
@@ -270,6 +268,7 @@ export function SectionHeroBanner({
                   </div>
                 </div>
               ))}
+              {actions && (!breadcrumbs || breadcrumbs.length === 0) && actions}
             </div>
           )}
         </div>

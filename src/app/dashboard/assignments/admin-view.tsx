@@ -9,12 +9,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AssignmentSubmissionsList } from './assignment-submissions-list';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
-import { Layers, GraduationCap, CheckCircle, ClipboardCheck, HelpCircle } from 'lucide-react';
+import { Layers, GraduationCap, CheckCircle, ClipboardCheck, HelpCircle, PlusCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AssignmentCreationForm } from './assignment-creation-form';
+import { QuizCreationForm } from './quiz-creation-form';
+import { cn } from '@/lib/utils';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 export default function AdminAssignmentsView() {
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [createMode, setCreateMode] = useState<'assignment' | 'quiz'>('assignment');
 
   const assignmentsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId)) : null,
@@ -91,18 +98,21 @@ export default function AdminAssignmentsView() {
         icon={ClipboardCheck}
         className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
         actions={
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-amber-400" />
-                PENDING REVIEW
-              </span>
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+            <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span>PENDING REVIEW</span>
               <span className="text-slate-500">•</span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                {activeAssignmentsCount} ACTIVE TASKS
-              </span>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>{activeAssignmentsCount} ACTIVE TASKS</span>
             </div>
+            <Button
+              className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
+              onClick={() => setIsCreateOpen(true)}
+            >
+              <PlusCircle className="h-4 w-4 text-slate-950" />
+              <span>Create Assignment / Quiz</span>
+            </Button>
           </div>
         }
       />
@@ -183,6 +193,43 @@ export default function AdminAssignmentsView() {
           )}
         </CardContent>
       </Card>
+
+      {/* Creation Modal */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Coursework</DialogTitle>
+            <DialogDescription>
+              Publish a new coursework assignment or distribute an interactive quiz.
+            </DialogDescription>
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant={createMode === 'assignment' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCreateMode('assignment')}
+                className="rounded-lg text-xs"
+              >
+                Assignment
+              </Button>
+              <Button
+                type="button"
+                variant={createMode === 'quiz' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCreateMode('quiz')}
+                className="rounded-lg text-xs"
+              >
+                Quiz
+              </Button>
+            </div>
+          </DialogHeader>
+          {createMode === 'assignment' ? (
+            <AssignmentCreationForm setOpen={setIsCreateOpen} />
+          ) : (
+            <QuizCreationForm setOpen={setIsCreateOpen} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
