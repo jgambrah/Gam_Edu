@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, where, doc } from 'firebase/firestore';
+import { collection, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,7 +21,7 @@ import {
     FileText, Printer, BarChart2, Users, Loader2, ShieldAlert, Award, TrendingUp, 
     TrendingDown, AlertTriangle, BookOpen, Search, Sparkles, Wand2, ChevronRight, 
     GraduationCap, Info, FileSpreadsheet, RefreshCw, BookOpenCheck, UserCheck, Archive,
-    BarChart3
+    BarChart3, PackageCheck, Zap, Database
 } from 'lucide-react';
 import { Class, Subject, Student, Assessment } from '@/lib/types';
 import Link from 'next/link';
@@ -195,6 +195,41 @@ export const isTermMatch = (t1?: string | null, t2?: string | null): boolean => 
     return false;
 };
 
+interface AcademicReportSnapshotDoc {
+    id: string;
+    schoolId: string;
+    academicYear: string;
+    term: string;
+    classId: string;
+    className: string;
+    isArchived: boolean;
+    snapshotCreatedAt: string;
+    updatedAt: string;
+    distinctSubjectsList: Array<{ id: string; name: string }>;
+    activeSubjects: Array<{ id: string; name: string }>;
+    rankedStudents: Array<any>;
+    academicData: {
+        studentAverages: Array<{
+            studentId: string;
+            studentName: string;
+            average: number;
+            subjectScores: Record<string, number>;
+            subjectSubScores: Record<string, any>;
+            passCount: number;
+            totalTestedSubjects: number;
+        }>;
+        studentSubjectScores: Record<string, Record<string, number>>;
+        subjectPerformance: Array<any>;
+        classOverallAverage: number;
+        classPassRate: number;
+        classAssessmentsCount: number;
+        atRiskStudents: Array<any>;
+        topPerformer: any;
+        performanceTiers: Array<any>;
+    };
+    subjectDetailsMap?: Record<string, any>;
+}
+
 export default function AcademicReportsPage() {
     const { role, loading: isRoleLoading } = useRole();
     const router = useRouter();
@@ -214,6 +249,10 @@ export default function AcademicReportsPage() {
     const [isReportRequested, setIsReportRequested] = useState<boolean>(false);
     const [viewMode, setViewMode] = useState<'dashboard' | 'master_report'>('dashboard');
     const [mounted, setMounted] = useState(false);
+
+    // 1-Document Rollup Snapshot State (Single Firestore Read for entire class academic load)
+    const [activeSnapshot, setActiveSnapshot] = useState<AcademicReportSnapshotDoc | null>(null);
+    const [isLoadingSnapshot, setIsLoadingSnapshot] = useState<boolean>(false);
 
     useEffect(() => {
         setMounted(true);
@@ -267,9 +306,9 @@ export default function AcademicReportsPage() {
 
     // Query Students (school-wide on-demand to support flexible classId/className matching)
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
     const { data: rawStudents, isLoading: isLoadingStudents, forceRefetch: refetchStudents } = useCollection<Student>(studentsQuery);
 
     const students = useMemo(() => {
@@ -291,44 +330,44 @@ export default function AcademicReportsPage() {
 
     // Multi-Source On-Demand Querying: Assessments collection
     const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
     const { data: rawAssessments, isLoading: isLoadingAssessments, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Multi-Source On-Demand Querying: Grades collection (alternative marks collection)
     const gradesQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         return query(collection(firestore, 'grades'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
     const { data: rawGrades, isLoading: isLoadingGrades, forceRefetch: refetchGrades } = useCollection<any>(gradesQuery);
 
     // Multi-Source On-Demand Querying: Report Cards collection (kebab-case)
     const reportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         return query(collection(firestore, 'report-cards'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
     const { data: rawReportCards, isLoading: isLoadingReportCards, forceRefetch: refetchReportCards } = useCollection<any>(reportCardsQuery);
 
     // Multi-Source On-Demand Querying: Report Cards collection (camelCase alternate)
     const reportCardsAltQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         return query(collection(firestore, 'reportCards'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
     const { data: rawReportCardsAlt, isLoading: isLoadingReportCardsAlt, forceRefetch: refetchReportCardsAlt } = useCollection<any>(reportCardsAltQuery);
 
     // Multi-Source On-Demand Querying: Term Report Cards collection (archived & locked term snapshots)
     const termReportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         return query(collection(firestore, 'term_report_cards'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
     const { data: rawTermReportCards, isLoading: isLoadingTermReportCards, forceRefetch: refetchTermReportCards } = useCollection<any>(termReportCardsQuery);
 
     // Multi-Source On-Demand Querying: Marks collection
     const marksQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested) return null;
+        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         return query(collection(firestore, 'marks'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
     const { data: rawMarks, isLoading: isLoadingMarks, forceRefetch: refetchMarks } = useCollection<any>(marksQuery);
 
     // Fetch School Settings for standard weighting overrides
@@ -637,7 +676,7 @@ export default function AcademicReportsPage() {
     }, [candidateRecords, selectedClassId, selectedClass, selectedYear, resolveStudentForMark]);
 
     // Distinct subjects compiled from registered subjects and candidate assessments
-    const distinctSubjectsList = useMemo(() => {
+    const rawDistinctSubjectsList = useMemo(() => {
         const map = new Map<string, { id: string; name: string }>();
 
         // 1. Registered subjects
@@ -666,6 +705,8 @@ export default function AcademicReportsPage() {
         return Array.from(map.values());
     }, [subjects, classAssessments]);
 
+    const distinctSubjectsList = activeSnapshot ? activeSnapshot.distinctSubjectsList : rawDistinctSubjectsList;
+
     // Helper to resolve an assessment's subject to an entry in distinctSubjectsList
     const resolveSubjectKey = useCallback((a: any): string => {
         if (a.subjectId && distinctSubjectsList.some(s => s.id === a.subjectId)) {
@@ -681,7 +722,7 @@ export default function AcademicReportsPage() {
     }, [distinctSubjectsList]);
 
     // Check if current term data is archived (or if an active unlock window is open on schoolSettings)
-    const isTermArchived = useMemo(() => {
+    const rawIsTermArchived = useMemo(() => {
         if (schoolProfile?.isTermCorrectionActive) {
             const activeTerm = schoolProfile.activeUnlockedTermId;
             const expires = schoolProfile.termUnlockExpiresAt || schoolProfile.unlockedUntil;
@@ -694,20 +735,36 @@ export default function AcademicReportsPage() {
         return classAssessments.every(a => (a as any).isArchived === true);
     }, [classAssessments, schoolProfile, selectedTerm]);
 
-    const handleGenerateAnalytics = () => {
-        if (!selectedClassId) return;
-        setIsReportRequested(true);
+    const isTermArchived = activeSnapshot ? activeSnapshot.isArchived : rawIsTermArchived;
 
-        const marksDocs = [
-            ...(rawAssessments || []),
-            ...(rawGrades || []),
-            ...(rawMarks || []),
-            ...(rawReportCards || []),
-            ...(rawReportCardsAlt || []),
-            ...(rawTermReportCards || [])
-        ];
-        console.log("Query filters:", { academicYear: selectedYear, term: selectedTerm, classId: selectedClassId });
-        console.log("Fetched marks count:", marksDocs.length);
+    const handleGenerateAnalytics = useCallback(async (forceRefresh: boolean = false) => {
+        if (!selectedClassId || !firestore || !schoolId) return;
+
+        const normalizedYear = (selectedYear || 'current').trim().replace(/\s+/g, '').replace(/[\/\\]/g, '-');
+        const normalizedTerm = (selectedTerm || 'current').trim().toLowerCase().replace(/\s+/g, '_');
+        const snapshotDocId = `${schoolId}_${normalizedYear}_${normalizedTerm}_${selectedClassId}`;
+
+        if (!forceRefresh) {
+            setIsLoadingSnapshot(true);
+            try {
+                const snapRef = doc(firestore, 'academic_report_snapshots', snapshotDocId);
+                const snap = await getDoc(snapRef);
+                if (snap.exists()) {
+                    const data = snap.data() as AcademicReportSnapshotDoc;
+                    setActiveSnapshot(data);
+                    setIsReportRequested(true);
+                    setIsLoadingSnapshot(false);
+                    return; // EXACTLY 1 READ - FULL ACADEMIC LOAD READY!
+                }
+            } catch (err) {
+                console.warn("Snapshot lookup error, falling back to live compilation:", err);
+            }
+            setIsLoadingSnapshot(false);
+        }
+
+        // Live compilation fallback
+        setActiveSnapshot(null);
+        setIsReportRequested(true);
 
         refetchStudents?.();
         refetchAssessments?.();
@@ -716,7 +773,7 @@ export default function AcademicReportsPage() {
         refetchReportCards?.();
         refetchReportCardsAlt?.();
         refetchTermReportCards?.();
-    };
+    }, [selectedClassId, firestore, schoolId, selectedYear, selectedTerm, refetchStudents, refetchAssessments, refetchGrades, refetchMarks, refetchReportCards, refetchReportCardsAlt, refetchTermReportCards]);
 
     useEffect(() => {
         if (isReportRequested) {
@@ -795,7 +852,7 @@ export default function AcademicReportsPage() {
     }, [students, classAssessments, resolveStudentForMark, selectedClassId]);
 
     // Data Aggregation Engine (Aggregates assessments by student & subject & category)
-    const academicData = useMemo(() => {
+    const rawAcademicData = useMemo(() => {
         if (classAssessments.length === 0 && effectiveStudents.length === 0) return null;
         if (effectiveStudents.length === 0 || distinctSubjectsList.length === 0) return null;
 
@@ -1137,11 +1194,14 @@ export default function AcademicReportsPage() {
         };
     }, [effectiveStudents, classAssessments, distinctSubjectsList, resolveSubjectKey, currentCaWeight, currentExamWeight]);
 
-    // Single-Subject Detailed Deep Dive
-    const subjectDetails = useMemo(() => {
-        if (!selectedSubjectId || selectedSubjectId === 'all' || !academicData || !effectiveStudents || classAssessments.length === 0) return null;
+    // Effective academicData (defaults to 1-read snapshot when loaded, else raw computation)
+    const academicData = activeSnapshot ? activeSnapshot.academicData : rawAcademicData;
 
-        const subAssessments = classAssessments.filter(a => a.subjectId === selectedSubjectId || resolveSubjectKey(a) === selectedSubjectId);
+    // Reusable single-subject calculator (used for both real-time Subject Zoom and snapshot pre-compilation)
+    const computeSubjectDetails = useCallback((subId: string) => {
+        if (!subId || subId === 'all' || !academicData || !effectiveStudents || classAssessments.length === 0) return null;
+
+        const subAssessments = classAssessments.filter(a => a.subjectId === subId || resolveSubjectKey(a) === subId);
 
         const studentAssessmentsMap: Record<string, any[]> = {};
         effectiveStudents.forEach(s => {
@@ -1156,7 +1216,7 @@ export default function AcademicReportsPage() {
         const gradeDistribution = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
         const studentSubjectDetails = effectiveStudents.map(student => {
             const primaryId = getStudentId(student);
-            const score = academicData.studentSubjectScores[primaryId]?.[selectedSubjectId] ?? 0;
+            const score = academicData.studentSubjectScores[primaryId]?.[subId] ?? 0;
             const grade = getGradeForScore(score);
             if (grade !== 'N/A') {
                 gradeDistribution[grade]++;
@@ -1245,7 +1305,16 @@ export default function AcademicReportsPage() {
             lowestScore,
             passRate: parseFloat(passRate.toFixed(1))
         };
-    }, [selectedSubjectId, academicData, effectiveStudents, classAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark]);
+    }, [academicData, effectiveStudents, classAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark]);
+
+    // Single-Subject Detailed Deep Dive
+    const rawSubjectDetails = useMemo(() => {
+        return computeSubjectDetails(selectedSubjectId);
+    }, [selectedSubjectId, computeSubjectDetails]);
+
+    const subjectDetails = activeSnapshot 
+        ? (activeSnapshot.subjectDetailsMap?.[selectedSubjectId] || rawSubjectDetails) 
+        : rawSubjectDetails;
 
     const selectedSubject = distinctSubjectsList.find(s => s.id === selectedSubjectId) || subjects?.find(s => s.id === selectedSubjectId);
 
@@ -1255,8 +1324,10 @@ export default function AcademicReportsPage() {
         return academicData.studentAverages
             .filter(s => s.studentName.toLowerCase().includes(searchQuery.toLowerCase()))
             .sort((a, b) => {
-                const totalA = Object.values(a.subjectScores).reduce((sum, val) => sum + val, 0);
-                const totalB = Object.values(b.subjectScores).reduce((sum, val) => sum + val, 0);
+                const scoresA = (a.subjectScores || {}) as Record<string, number>;
+                const scoresB = (b.subjectScores || {}) as Record<string, number>;
+                const totalA = Object.values(scoresA).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
+                const totalB = Object.values(scoresB).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
                 if (totalB !== totalA) return totalB - totalA;
                 return b.average - a.average;
             });
@@ -1268,8 +1339,10 @@ export default function AcademicReportsPage() {
         return [...academicData.studentAverages]
             .filter(s => s.totalTestedSubjects > 0)
             .sort((a, b) => {
-                const totalA = Object.values(a.subjectScores).reduce((sum, val) => sum + val, 0);
-                const totalB = Object.values(b.subjectScores).reduce((sum, val) => sum + val, 0);
+                const scoresA = (a.subjectScores || {}) as Record<string, number>;
+                const scoresB = (b.subjectScores || {}) as Record<string, number>;
+                const totalA = Object.values(scoresA).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
+                const totalB = Object.values(scoresB).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
                 if (totalB !== totalA) return totalB - totalA;
                 return b.average - a.average;
             })
@@ -1277,7 +1350,7 @@ export default function AcademicReportsPage() {
     }, [academicData]);
 
     // Filter subjects to only those that have at least one grade recorded for the selected class/cohort
-    const activeSubjects = useMemo(() => {
+    const rawActiveSubjects = useMemo(() => {
         if (!academicData?.studentSubjectScores) return [];
 
         // 1. Scored subjects
@@ -1303,15 +1376,18 @@ export default function AcademicReportsPage() {
         });
     }, [distinctSubjectsList, academicData]);
 
+    const activeSubjects = activeSnapshot ? activeSnapshot.activeSubjects : rawActiveSubjects;
+
     // Rank students by total marks descending (with average as tiebreaker)
-    const rankedStudents = useMemo(() => {
+    const rawRankedStudents = useMemo(() => {
         if (!academicData?.studentAverages) return [];
         
         const list = academicData.studentAverages.map(s => {
-            const totalMarks = Object.values(s.subjectScores).reduce((sum, val) => sum + val, 0);
+            const scores = (s.subjectScores || {}) as Record<string, number>;
+            const totalMarks = Object.values(scores).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
             return {
                 ...s,
-                totalMarks: Math.round(totalMarks)
+                totalMarks: Math.round(Number(totalMarks))
             };
         });
 
@@ -1345,6 +1421,87 @@ export default function AcademicReportsPage() {
             };
         });
     }, [academicData]);
+
+    const rankedStudents = activeSnapshot ? activeSnapshot.rankedStudents : rawRankedStudents;
+
+    // Auto-save snapshot to Firestore when raw records are calculated
+    useEffect(() => {
+        if (
+            isReportRequested && 
+            !activeSnapshot && 
+            !isLoadingSnapshot &&
+            rawAcademicData && 
+            rawRankedStudents.length > 0 && 
+            !isLoadingAssessments && 
+            !isLoadingStudents && 
+            !isLoadingGrades &&
+            !isLoadingMarks &&
+            !isLoadingReportCards &&
+            firestore && 
+            schoolId && 
+            selectedClassId
+        ) {
+            const normalizedYear = (selectedYear || 'current').trim().replace(/\s+/g, '').replace(/[\/\\]/g, '-');
+            const normalizedTerm = (selectedTerm || 'current').trim().toLowerCase().replace(/\s+/g, '_');
+            const snapshotDocId = `${schoolId}_${normalizedYear}_${normalizedTerm}_${selectedClassId}`;
+
+            // Pre-compile subjectDetailsMap for all class subjects
+            const detailsMap: Record<string, any> = {};
+            rawDistinctSubjectsList.forEach(sub => {
+                const details = computeSubjectDetails(sub.id);
+                if (details) {
+                    detailsMap[sub.id] = details;
+                }
+            });
+
+            const snapshotPayload: AcademicReportSnapshotDoc = {
+                id: snapshotDocId,
+                schoolId,
+                academicYear: selectedYear,
+                term: selectedTerm,
+                classId: selectedClassId,
+                className: selectedClass?.name || 'All Classes',
+                isArchived: rawIsTermArchived,
+                snapshotCreatedAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                distinctSubjectsList: rawDistinctSubjectsList,
+                activeSubjects: rawActiveSubjects,
+                rankedStudents: rawRankedStudents,
+                academicData: rawAcademicData,
+                subjectDetailsMap: detailsMap
+            };
+
+            setDoc(doc(firestore, 'academic_report_snapshots', snapshotDocId), snapshotPayload, { merge: true })
+                .then(() => {
+                    console.log("Academic report snapshot persisted successfully (1-read rollup created):", snapshotDocId);
+                    setActiveSnapshot(snapshotPayload);
+                })
+                .catch(err => {
+                    console.warn("Failed to persist academic report snapshot:", err);
+                });
+        }
+    }, [
+        isReportRequested, 
+        activeSnapshot, 
+        isLoadingSnapshot,
+        rawAcademicData, 
+        rawRankedStudents, 
+        rawDistinctSubjectsList, 
+        rawActiveSubjects, 
+        rawIsTermArchived,
+        isLoadingAssessments, 
+        isLoadingStudents, 
+        isLoadingGrades,
+        isLoadingMarks,
+        isLoadingReportCards,
+        firestore, 
+        schoolId, 
+        selectedClassId, 
+        selectedYear, 
+        selectedTerm, 
+        selectedClass, 
+        computeSubjectDetails
+    ]);
 
     const handleDownloadCSV = () => {
         if (!rankedStudents || rankedStudents.length === 0 || !activeSubjects) return;
@@ -1622,7 +1779,7 @@ export default function AcademicReportsPage() {
                         {/* Column 1: Academic Year */}
                         <div className="space-y-1.5">
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Academic Year</label>
-                            <Select value={selectedYear} onValueChange={(val) => { setSelectedYear(val); setIsReportRequested(false); }}>
+                            <Select value={selectedYear} onValueChange={(val) => { setSelectedYear(val); setIsReportRequested(false); setActiveSnapshot(null); }}>
                                 <SelectTrigger className="w-full bg-white h-11 border-2"><SelectValue placeholder="Select Year" /></SelectTrigger>
                                 <SelectContent>{MOCK_ACADEMIC_YEARS?.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
                             </Select>
@@ -1631,7 +1788,7 @@ export default function AcademicReportsPage() {
                         {/* Column 2: Term */}
                         <div className="space-y-1.5">
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Term</label>
-                            <Select value={selectedTerm} onValueChange={(val) => { setSelectedTerm(val); setIsReportRequested(false); }}>
+                            <Select value={selectedTerm} onValueChange={(val) => { setSelectedTerm(val); setIsReportRequested(false); setActiveSnapshot(null); }}>
                                 <SelectTrigger className="w-full bg-white h-11 border-2"><SelectValue placeholder="Select Term" /></SelectTrigger>
                                 <SelectContent>{MOCK_TERMS?.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                             </Select>
@@ -1640,7 +1797,7 @@ export default function AcademicReportsPage() {
                         {/* Column 3: Class */}
                         <div className="space-y-1.5">
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Class</label>
-                            <Select value={selectedClassId || ''} onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); }}>
+                            <Select value={selectedClassId || ''} onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); setActiveSnapshot(null); }}>
                                 <SelectTrigger className="w-full bg-indigo-50/50 border-2 border-indigo-200 focus:ring-indigo-500 font-medium h-11">
                                     <SelectValue placeholder="Choose a Class..." />
                                 </SelectTrigger>
@@ -1669,12 +1826,17 @@ export default function AcademicReportsPage() {
                         <div className="space-y-1.5">
                             <label className="hidden md:block text-xs font-semibold text-transparent uppercase mb-1 select-none pointer-events-none">&nbsp;</label>
                             <Button 
-                                onClick={handleGenerateAnalytics} 
-                                disabled={!selectedClassId || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards} 
+                                onClick={() => handleGenerateAnalytics(false)} 
+                                disabled={!selectedClassId || isLoadingSnapshot || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards} 
                                 title={!selectedClassId ? "Please select a class to generate analytics" : "Generate academic analytics"}
                                 className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 gap-2 rounded-xl transition-all shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                             >
-                                {isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards ? (
+                                {isLoadingSnapshot ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <span>Checking Snapshot...</span>
+                                    </>
+                                ) : isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards ? (
                                     <>
                                         <Loader2 className="h-4 w-4 animate-spin" />
                                         <span>Generating...</span>
@@ -1706,10 +1868,12 @@ export default function AcademicReportsPage() {
                         </p>
                     </div>
                 </Card>
-            ) : (isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards) ? (
+            ) : (isLoadingSnapshot || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards) ? (
                  <div className="text-center py-24 bg-white border border-slate-200 rounded-xl shadow-sm">
                      <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600 mb-3"/>
-                     <p className="text-slate-500 font-medium text-sm">Loading and calculating student gradebook data...</p>
+                     <p className="text-slate-500 font-medium text-sm">
+                         {isLoadingSnapshot ? "Loading institutional academic snapshot (1 document read)..." : "Loading and calculating student gradebook data..."}
+                     </p>
                  </div>
             ) : !academicData ? (
                 renderEmptyOrArchivedCard()
@@ -1718,6 +1882,44 @@ export default function AcademicReportsPage() {
                 /* CLASS OVERVIEW DASHBOARD (ALL SUBJECTS SUMMARY)                          */
                 /* ========================================================================= */
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+                    {/* 1-READ ACADEMIC DOCUMENT SNAPSHOT BANNER */}
+                    {activeSnapshot && (
+                        <div className="bg-gradient-to-r from-emerald-50 via-teal-50/70 to-cyan-50/50 border-2 border-emerald-300 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm print:hidden">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-emerald-600 text-white rounded-xl shadow-md shadow-emerald-200">
+                                    <PackageCheck className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h4 className="text-sm font-black text-emerald-950">
+                                            1-Read Institutional Academic Snapshot Active
+                                        </h4>
+                                        <Badge className="bg-emerald-200 text-emerald-900 border-emerald-300 font-extrabold text-[10px]">
+                                            1 Firestore Read
+                                        </Badge>
+                                        <Badge className="bg-blue-100 text-blue-900 border-blue-200 font-bold text-[10px]">
+                                            ⚡ Fast Load
+                                        </Badge>
+                                    </div>
+                                    <p className="text-xs text-emerald-800 mt-0.5">
+                                        All master sheet positions, subject scores, and analytics for <strong>{selectedClass?.name || 'Class'}</strong> ({selectedTerm}, {selectedYear}) are served from a single aggregated rollup document.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleGenerateAnalytics(true)}
+                                    className="bg-white hover:bg-emerald-100 text-emerald-900 border-emerald-300 font-bold text-xs h-9 shadow-sm flex items-center gap-1.5"
+                                    title="Force re-query raw collections and recompile this snapshot"
+                                >
+                                    <RefreshCw className="h-3.5 w-3.5" /> Recompile Snapshot
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* ARCHIVED TERM INTEGRITY BANNER */}
                     {isTermArchived && (
                         <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm print:hidden">
@@ -1739,7 +1941,7 @@ export default function AcademicReportsPage() {
                                 <TermManagementModal
                                     schoolId={schoolId || 'default'}
                                     currentTermId={selectedTerm}
-                                    onSuccess={() => handleGenerateAnalytics()}
+                                    onSuccess={() => handleGenerateAnalytics(true)}
                                 />
                             </div>
                         </div>
@@ -2131,6 +2333,24 @@ export default function AcademicReportsPage() {
                 /* ========================================================================= */
                 subjectDetails && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+                        {/* 1-READ ACADEMIC DOCUMENT SNAPSHOT BADGE */}
+                        {activeSnapshot && (
+                            <div className="bg-emerald-50 border border-emerald-300 p-3 rounded-xl flex items-center justify-between shadow-sm text-xs text-emerald-900 font-semibold print:hidden">
+                                <div className="flex items-center gap-2">
+                                    <PackageCheck className="h-4 w-4 text-emerald-600" />
+                                    <span>Subject analytics served from 1-Read Document Snapshot ({selectedClass?.name}, {selectedTerm}, {selectedYear})</span>
+                                    <Badge className="bg-emerald-600 text-white font-bold text-[10px]">1 Document Read</Badge>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleGenerateAnalytics(true)}
+                                    className="bg-white hover:bg-emerald-100 text-emerald-900 border-emerald-300 font-bold text-xs h-7 px-2.5"
+                                >
+                                    <RefreshCw className="h-3 w-3 mr-1" /> Recompile
+                                </Button>
+                            </div>
+                        )}
                         
                         {/* SUBJECT HEADER BANNER */}
                         <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center justify-between shadow-sm">
@@ -2214,10 +2434,9 @@ export default function AcademicReportsPage() {
                                         <BarChart data={subjectDetails.chartData} margin={{ top: 10, right: 10, bottom: 20, left: -20 }}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                             <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 600 }} />
-                                            <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
                                             <Tooltip formatter={(value) => [`${value} Students`, 'Total']} />
                                             <Bar dataKey="count" fill="#6366f1" radius={[4, 4, 0, 0]} name="Students">
-                                                {subjectDetails.chartData.map((entry, index) => {
+                                                {subjectDetails.chartData.map((entry: any, index: number) => {
                                                     const colors = ['#10b981', '#3b82f6', '#84cc16', '#eab308', '#f97316', '#ef4444'];
                                                     return <Cell key={`cell-${index}`} fill={colors[index] || '#6366f1'} />;
                                                 })}
@@ -2246,7 +2465,7 @@ export default function AcademicReportsPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {subjectDetails.assessmentAudit.map((audit, idx) => (
+                                            {subjectDetails.assessmentAudit.map((audit: any, idx: number) => (
                                                 <TableRow key={idx}>
                                                     <TableCell className="font-bold text-slate-700 text-xs">{audit.name}</TableCell>
                                                     <TableCell><Badge variant="secondary" className="text-[10px] font-semibold">{audit.type}</Badge></TableCell>
@@ -2291,7 +2510,7 @@ export default function AcademicReportsPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {subjectDetails.studentScores.map(row => (
+                                        {subjectDetails.studentScores.map((row: any) => (
                                             <TableRow key={row.studentId} className="hover:bg-slate-50 transition-colors">
                                                 <TableCell className="font-bold text-slate-700">{row.studentName}</TableCell>
                                                 <TableCell className="text-right text-xs text-slate-500 font-semibold">{row.caRaw}</TableCell>
