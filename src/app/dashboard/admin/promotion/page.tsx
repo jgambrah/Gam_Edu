@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, GraduationCap, ArrowRight, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
+import { Loader2, GraduationCap, ArrowRight, CheckCircle2, AlertTriangle, Users, BookOpen, Info, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { StudentDisplay } from '@/components/student-display';
 import { Student, Class } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -40,6 +40,7 @@ export default function PromotionPage() {
   
   // Custom Confirmation State
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(true);
 
   const canAccess = ['Administrator', 'Director'].includes(role || '');
 
@@ -59,6 +60,17 @@ export default function PromotionPage() {
     ) : null,
   [firestore, schoolId, sourceClassId]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+
+  // 3. Fetch Active Students in Destination Class to alert on occupancy collisions
+  const destStudentsQuery = useMemoFirebase(() => 
+    (firestore && schoolId && destinationClassId && destinationClassId !== 'GRADUATE') ? query(
+        collection(firestore, 'students'), 
+        where('schoolId', '==', schoolId),
+        where('classId', '==', destinationClassId),
+        where('enrollmentStatus', '==', 'Active')
+    ) : null,
+  [firestore, schoolId, destinationClassId]);
+  const { data: destStudents } = useCollection<Student>(destStudentsQuery);
 
   // Auto-select all students when the class list is loaded or changed
   useEffect(() => {
@@ -292,6 +304,113 @@ export default function PromotionPage() {
         }
       />
 
+      {/* --- PROMOTION PROTOCOL & STEP-BY-STEP GUIDELINES --- */}
+      <Card className="border border-indigo-100/90 bg-gradient-to-br from-indigo-50/70 via-white to-slate-50 shadow-md rounded-2xl overflow-hidden">
+        <div 
+          onClick={() => setIsGuideOpen(!isGuideOpen)}
+          className="p-5 flex items-center justify-between cursor-pointer hover:bg-indigo-50/40 transition-colors"
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200 shrink-0">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-black uppercase tracking-wide text-slate-900">
+                  Standard Academic Promotion Protocol & Golden Rules
+                </h3>
+                <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-[10px] font-bold px-2 py-0.5">
+                  CRITICAL PROCESS
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Always promote top-down (start with the graduating class) and uncheck repeating students to avoid class collisions.
+              </p>
+            </div>
+          </div>
+          <Button variant="ghost" size="sm" className="text-xs font-bold text-indigo-600 hover:text-indigo-800 gap-1 shrink-0">
+            {isGuideOpen ? (
+              <>
+                <span>Hide Guide</span>
+                <ChevronUp className="w-4 h-4" />
+              </>
+            ) : (
+              <>
+                <span>Show Guide</span>
+                <ChevronDown className="w-4 h-4" />
+              </>
+            )}
+          </Button>
+        </div>
+
+        {isGuideOpen && (
+          <CardContent className="pt-0 pb-6 px-6 border-t border-indigo-100/60 mt-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+              
+              {/* Pillar 1: Top-Down Waterfall */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-2.5">
+                <div className="flex items-center gap-2 text-indigo-700 font-black text-xs uppercase tracking-wider">
+                  <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                  <span>Start from the Top (Waterfall)</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  <strong>Always start with your final/graduating class</strong> (e.g. JHS 3 / SHS 3 / Class 6). Transfer them to <span className="text-amber-700 font-bold">🎓 Final Graduation (Alumni)</span>.
+                </p>
+                <div className="p-2.5 bg-slate-50 rounded-lg text-[11px] text-slate-600 border border-slate-200/60">
+                  <strong className="text-slate-800">Why?</strong> Vacating the highest class first ensures that classroom is completely empty before you move the next cohort up into it.
+                </div>
+              </div>
+
+              {/* Pillar 2: Cascade Downwards */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-2.5">
+                <div className="flex items-center gap-2 text-indigo-700 font-black text-xs uppercase tracking-wider">
+                  <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                  <span>Cascade Downward One-by-One</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Move the next highest class up (e.g. <strong>JHS 2 ➔ JHS 3</strong>), then <strong>JHS 1 ➔ JHS 2</strong>, working all the way down to your entry class (e.g. <strong>KG ➔ Class 1</strong>).
+                </p>
+                <div className="p-2.5 bg-rose-50 rounded-lg text-[11px] text-rose-800 border border-rose-200/60">
+                  <strong className="text-rose-900">Never Move Bottom-Up:</strong> If you move Class 1 to Class 2 before moving Class 2 out, both cohorts will mix together in Class 2 and cannot be automatically unbundled!
+                </div>
+              </div>
+
+              {/* Pillar 3: Repeating Students */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm space-y-2.5">
+                <div className="flex items-center gap-2 text-indigo-700 font-black text-xs uppercase tracking-wider">
+                  <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                  <span>Retaining Repeating Students</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  All students are checked by default. <strong>Uncheck the box</strong> next to any student who is repeating/retained in the roster below.
+                </p>
+                <div className="p-2.5 bg-emerald-50 rounded-lg text-[11px] text-emerald-800 border border-emerald-200/60">
+                  <strong className="text-emerald-900">Visual Verification:</strong> Unchecked students will display <span className="font-bold text-slate-600">RETAIN (STAY)</span> and will safely remain in their current class.
+                </div>
+              </div>
+
+            </div>
+
+            {/* Quick Flow Sequence Bar */}
+            <div className="mt-4 p-3.5 bg-slate-900 text-white rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 font-bold text-indigo-200">
+                <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>Recommended Sequence Flow:</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+                <span className="bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700 text-amber-300">1. JHS 3 ➔ Graduate</span>
+                <span className="text-slate-500 font-bold">➔</span>
+                <span className="bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700 text-indigo-200">2. JHS 2 ➔ JHS 3</span>
+                <span className="text-slate-500 font-bold">➔</span>
+                <span className="bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700 text-indigo-200">3. JHS 1 ➔ JHS 2</span>
+                <span className="text-slate-500 font-bold">➔</span>
+                <span className="bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700 text-emerald-300">4. Class 6 ➔ JHS 1</span>
+              </div>
+            </div>
+          </CardContent>
+        )}
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* CONFIGURATION PANEL */}
@@ -337,9 +456,23 @@ export default function PromotionPage() {
 
             {destinationClassId === 'GRADUATE' && (
               <Alert className="bg-amber-50 border-amber-200 rounded-2xl animate-in slide-in-from-top-2">
-                <GraduationCap className="h-4 w-4 text-amber-650" />
+                <GraduationCap className="h-4 w-4 text-amber-600" />
                 <AlertDescription className="text-amber-800 text-xs font-semibold">
                   Students will be archived as <strong>Graduated</strong>. They will stop being billed and move to the alumni directory.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {destinationClassId && destinationClassId !== 'GRADUATE' && destStudents && destStudents.length > 0 && (
+              <Alert className="bg-amber-50 border-amber-300 rounded-2xl animate-in slide-in-from-top-2">
+                <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <AlertDescription className="text-amber-900 text-xs space-y-1">
+                  <p className="font-bold">
+                    ⚠️ Destination Class Currently Occupied ({destStudents.length} active student{destStudents.length > 1 ? 's' : ''})
+                  </p>
+                  <p className="text-[11px] leading-relaxed text-amber-800">
+                    <strong>{classes?.find(c => c.id === destinationClassId)?.name}</strong> already has students in it! Have you already promoted or graduated them? If not, promoting now will mix both cohorts into the same class. Always promote top-down!
+                  </p>
                 </AlertDescription>
               </Alert>
             )}
@@ -374,10 +507,26 @@ export default function PromotionPage() {
               )}
             </div>
           </CardHeader>
+
+          {/* Repeating Student Instruction Strip */}
+          <div className="bg-amber-50/90 border-b border-amber-200/80 px-8 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 text-amber-950 font-medium">
+              <Info className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>
+                <strong>Repeating / Retained Students:</strong> Simply <strong>uncheck the box</strong> next to their name. Unchecked students show <span className="font-bold text-slate-700">RETAIN (STAY)</span> and will NOT be moved.
+              </span>
+            </div>
+            {students && students.length > 0 && (
+              <span className="text-[11px] font-black uppercase text-amber-900 shrink-0">
+                {selectedStudentIds.length} Promoting • {students.length - selectedStudentIds.length} Retaining
+              </span>
+            )}
+          </div>
+
           <CardContent className="p-0 bg-slate-50/30 min-h-[400px]">
             {loadingStudents ? (
               <div className="flex flex-col items-center justify-center py-32 gap-4 text-slate-400">
-                <Loader2 className="animate-spin h-8 w-8 text-indigo-650" />
+                <Loader2 className="animate-spin h-8 w-8 text-indigo-600" />
                 <p className="text-[10px] uppercase font-black tracking-widest">Scanning School Directory...</p>
               </div>
             ) : !sourceClassId ? (
@@ -418,7 +567,7 @@ export default function PromotionPage() {
                             <TableCell className="text-right pr-8 py-4">
                             {isChecked ? (
                               destinationClassId === 'GRADUATE' ? (
-                                <Badge className="bg-amber-50 text-amber-700 border-amber-250 font-black text-[9px] uppercase tracking-wider px-2.5 py-1">
+                                <Badge className="bg-amber-50 text-amber-700 border-amber-200 font-black text-[9px] uppercase tracking-wider px-2.5 py-1">
                                     🎓 GRADUATE
                                 </Badge>
                               ) : (
@@ -449,12 +598,47 @@ export default function PromotionPage() {
               <AlertTriangle size={40} className="animate-pulse" />
             </div>
             
-            <div>
+            <div className="space-y-3">
               <h2 className="text-2xl font-black uppercase italic text-black">
-                  Confirm <span className="text-indigo-655">{destinationClassId === 'GRADUATE' ? 'Graduation' : 'Promotion'}</span>
+                  Confirm <span className="text-indigo-600">{destinationClassId === 'GRADUATE' ? 'Graduation' : 'Promotion'}</span>
               </h2>
-              <p className="text-xs font-bold text-slate-400 uppercase mt-2 leading-relaxed">
-                Are you sure you want to process {studentsToMoveCount} students? This batch operation will update the school records immediately.
+              
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 text-left space-y-2 text-xs">
+                <div className="flex justify-between items-center text-slate-600">
+                  <span>Source Cohort:</span>
+                  <span className="font-bold text-slate-900">{classes?.find(c => c.id === sourceClassId)?.name}</span>
+                </div>
+                <div className="flex justify-between items-center text-slate-600">
+                  <span>Destination:</span>
+                  <span className="font-bold text-indigo-600">{destinationClassId === 'GRADUATE' ? 'Graduation (Alumni)' : classes?.find(c => c.id === destinationClassId)?.name}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                  <span>{destinationClassId === 'GRADUATE' ? 'Graduating' : 'Promoting'}:</span>
+                  <span className="font-bold text-emerald-800">{studentsToMoveCount} Student{studentsToMoveCount > 1 ? 's' : ''}</span>
+                </div>
+                {students && students.length > studentsToMoveCount && (
+                  <div className="flex justify-between items-center text-amber-700 font-semibold">
+                    <span>Retaining (Repeating):</span>
+                    <span className="font-bold text-amber-800">{students.length - studentsToMoveCount} Student{students.length - studentsToMoveCount > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+              </div>
+
+              {destinationClassId !== 'GRADUATE' && destStudents && destStudents.length > 0 && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-left text-xs text-amber-900">
+                  <p className="font-bold flex items-center gap-1.5 text-amber-800">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                    Caution: Destination Class Has {destStudents.length} Students
+                  </p>
+                  <p className="text-[11px] mt-0.5 text-amber-800 leading-snug">
+                    Confirm that existing students in {classes?.find(c => c.id === destinationClassId)?.name} have already been moved out before proceeding.
+                  </p>
+                </div>
+              )}
+
+              <p className="text-[11px] font-bold text-slate-400 uppercase mt-2 leading-relaxed">
+                This batch operation will update student enrollment records immediately.
               </p>
             </div>
 
