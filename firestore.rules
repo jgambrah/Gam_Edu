@@ -34,6 +34,7 @@ service cloud.firestore {
 
     function isSuperAdmin() {
       return isSignedIn() && (
+        (request.auth.token != null && request.auth.token.role == 'super_admin') ||
         request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" ||
         request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2" ||
         (request.auth.token != null && request.auth.token.email == "jamesgambrah@gmail.com")
@@ -79,6 +80,61 @@ service cloud.firestore {
 
     function parentOwnsStudent(studentId) {
       return isParent() && studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds;
+    }
+
+    // =========================================================
+    // 1B. GLOBAL SHARED CURRICULUM REPOSITORY
+    // =========================================================
+
+    match /global_curriculum/{document=**} {
+      // Grant read-only access for all students, visitors and users
+      allow read, list: if true;
+
+      // Restrict all write, update, and delete access to platform super-admins only
+      allow write, create, update, delete: if request.auth != null && (
+        request.auth.token.role == 'super_admin' ||
+        isSuperAdmin()
+      );
+    }
+
+    // =========================================================
+    // 1C. MULTI-TENANT STUDENT QUIZ ATTEMPTS & PROGRESS
+    // =========================================================
+
+    match /tenants/{tenantId}/students/{studentId}/quiz_attempts/{attemptId} {
+      // Student can only read their own school tenant records
+      allow read, list: if request.auth != null && (
+        (request.auth.uid == studentId && (
+          (request.auth.token != null && (request.auth.token.tenantId == tenantId || request.auth.token.schoolId == tenantId)) ||
+          getUserSchoolId() == tenantId
+        )) ||
+        (request.auth.token != null && request.auth.token.role == 'super_admin') ||
+        isSuperAdmin() ||
+        ((isAdmin() || isTeacher()) && (
+          (request.auth.token != null && (request.auth.token.tenantId == tenantId || request.auth.token.schoolId == tenantId)) ||
+          getUserSchoolId() == tenantId
+        ))
+      );
+
+      // Student can only write their own school tenant records
+      allow create, update: if request.auth != null && (
+        (request.auth.uid == studentId && (
+          (request.auth.token != null && (request.auth.token.tenantId == tenantId || request.auth.token.schoolId == tenantId)) ||
+          getUserSchoolId() == tenantId
+        )) ||
+        (request.auth.token != null && request.auth.token.role == 'super_admin') ||
+        isSuperAdmin()
+      );
+
+      // Delete access restricted to school admin or platform super-admins
+      allow delete: if request.auth != null && (
+        (request.auth.token != null && request.auth.token.role == 'super_admin') ||
+        isSuperAdmin() ||
+        (isAdmin() && (
+          (request.auth.token != null && (request.auth.token.tenantId == tenantId || request.auth.token.schoolId == tenantId)) ||
+          getUserSchoolId() == tenantId
+        ))
+      );
     }
 
     // =========================================================
@@ -1122,10 +1178,10 @@ service cloud.firestore {
     }
 
     // =========================================================
-    // 9. CATCH-ALL (Admin only — keep at bottom)
+    // 9. CATCH-ALL (Platform Super-Admin only — keep at bottom)
     // =========================================================
     match /{document=**} {
-      allow read, write: if isAdmin();
+      allow read, write: if isSuperAdmin();
     }
 
   }

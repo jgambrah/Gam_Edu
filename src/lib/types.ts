@@ -1738,4 +1738,4 @@ export interface StudentPortfolio {
   publicToken?: string;
 }
 
-
+export * from './global-curriculum-types';

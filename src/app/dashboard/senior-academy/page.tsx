@@ -18,6 +18,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
+import { QuestionRunner } from '@/components/curriculum/QuestionRunner';
+import { getTopicQuestionSets } from '@/lib/services/curriculumService';
+import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
 import {
   Select,
   SelectContent,
@@ -125,6 +128,20 @@ export type SecondaryGradeTier =
     | 'Junior Secondary (JHS)'
     | 'Senior Secondary (SHS)';
 
+export function mapGradeTierToLevelId(tier: SecondaryGradeTier): GlobalCurriculumLevelId {
+    switch (tier) {
+        case 'Lower Primary (BS 1 - 3)':
+            return 'lower_primary';
+        case 'Upper Primary (BS 4 - 6)':
+            return 'upper_primary';
+        case 'Junior Secondary (JHS)':
+            return 'jhs';
+        case 'Senior Secondary (SHS)':
+        default:
+            return 'shs';
+    }
+}
+
 interface SuggestedModuleCard {
     title: string;
     domain: string;
@@ -141,6 +158,8 @@ interface SuggestedModuleCard {
     hypothesisOptions?: string[];
     conclusion?: string;
     explanation?: string;
+    topicId?: string;
+    setId?: string;
 }
 
 const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
@@ -278,6 +297,32 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleInstruction: "A fair 6-sided die is rolled. Calculate the probability of rolling a prime number (decimal form):",
         sampleFormula: "P(\\text{Prime}) = \\frac{3}{6}",
         sampleAnswer: "0.5"
+    },
+    {
+        title: "Junior Core Mathematics • Paper 1 (Objective Mastery)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Test",
+        description: "Standardized 40-question objective examination variant with step-by-step worked solutions and hints.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-01",
+        sampleInstruction: "If set A = {3, 5, 7, 11} and set B = {3, 6, 9, 12}, find A ∩ B.",
+        sampleFormula: "A \\cap B = \\{3\\}",
+        sampleAnswer: "{3}"
+    },
+    {
+        title: "Junior Core Mathematics • Paper 2 (Structured Problem-Solving)",
+        domain: "ALGEBRA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Essay",
+        description: "Comprehensive multi-part mathematical modeling and structured essay problems with detailed worked derivations.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-02",
+        sampleInstruction: "Evaluate (0.048 × 1.05) / 0.00012, leaving your final answer in standard form:",
+        sampleFormula: "\\frac{0.048 \\times 1.05}{0.00012} = 4.2 \\times 10^2",
+        sampleAnswer: "4.2 × 10²"
     },
 
     // Upper Primary (BS 4 - 6)
@@ -1019,16 +1064,59 @@ const ENGLISH_DOMAINS = [
     'RHETORIC & ESSAYS'
 ];
 
-function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit: boolean; activeGrade?: SecondaryGradeTier }) {
+function EnglishMastery({ 
+    canEdit, 
+    activeGrade = 'Senior Secondary (SHS)',
+    tenantId,
+    studentId
+}: { 
+    canEdit: boolean; 
+    activeGrade?: SecondaryGradeTier;
+    tenantId?: string;
+    studentId?: string;
+}) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [activeStory, setActiveStory] = useState<any>(null);
     const [answers, setAnswers] = useState<string[]>([]);
     const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
+    const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
+    const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
+    const [isLoadingSet, setIsLoadingSet] = useState(false);
 
     const isJunior = isJuniorLevel(activeGrade);
     const isPrimary = (activeGrade as string) === 'Early Childhood' || (activeGrade as string) === 'Lower Primary' || (activeGrade as string) === 'Upper Primary';
+
+    const handleLaunchModule = async (mod: any) => {
+        const levelId = mapGradeTierToLevelId(activeGrade);
+        const subjectId = 'english';
+        
+        let topicId = 'phonics-blends';
+        const titleLower = (mod.title || '').toLowerCase();
+        if (titleLower.includes('phonic') || titleLower.includes('blend') || titleLower.includes('rhym')) {
+            topicId = 'phonics-blends';
+        } else {
+            topicId = titleLower.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        }
+
+        setActiveTopicMeta({ title: mod.title, topicId });
+        setIsLoadingSet(true);
+
+        try {
+            const sets = await getTopicQuestionSets(levelId, subjectId, topicId);
+            if (sets && sets.length > 0) {
+                setActiveQuestionSet(sets[0]);
+            } else {
+                setActiveQuestionSet(null);
+            }
+        } catch (e) {
+            console.warn('Error loading english question set:', e);
+            setActiveQuestionSet(null);
+        } finally {
+            setIsLoadingSet(false);
+        }
+    };
 
     const storiesQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
@@ -1093,7 +1181,29 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { c
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
-            {activeStory ? (
+            {activeTopicMeta ? (
+                isLoadingSet ? (
+                    <div className="flex flex-col items-center justify-center p-16 space-y-4 bg-slate-900/60 rounded-3xl border border-slate-800 shadow-2xl">
+                        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+                        <p className="text-xs text-slate-400 font-medium">Synchronizing curriculum practice sets...</p>
+                    </div>
+                ) : (
+                    <QuestionRunner
+                        questionSet={activeQuestionSet}
+                        topicTitle={activeTopicMeta.title}
+                        gradeTier={activeGrade}
+                        levelId={mapGradeTierToLevelId(activeGrade)}
+                        subjectId="english"
+                        topicId={activeTopicMeta.topicId}
+                        tenantId={tenantId}
+                        studentId={studentId}
+                        onBack={() => {
+                            setActiveTopicMeta(null);
+                            setActiveQuestionSet(null);
+                        }}
+                    />
+                )
+            ) : activeStory ? (
                 /* FULL-WIDTH INTERACTIVE READING WORKSTATION */
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -1243,18 +1353,7 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { c
                                     </span>
                                     <Button
                                         size="sm"
-                                        onClick={() => {
-                                            setActiveStory({
-                                                id: `suggested-eng-${i}`,
-                                                title: mod.title,
-                                                content: mod.content,
-                                                quiz: [
-                                                    { question: mod.sampleInstruction, options: [mod.sampleAnswer, 'Alternative interpretation', 'Contrasting viewpoint', 'None of the above'], answer: mod.sampleAnswer }
-                                                ],
-                                                gradeLevel: activeGrade
-                                            });
-                                            setAnswers([]);
-                                        }}
+                                        onClick={() => handleLaunchModule(mod)}
                                         className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                                     >
                                         <span>Launch Lab</span>
@@ -1293,11 +1392,11 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { c
                                                             {items.map((item: any) => (
                                                                 <button
                                                                     key={item.id}
-                                                                    onClick={() => { setActiveStory(item); setAnswers([]); }}
-                                                                    className="w-full text-left p-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 truncate flex items-center gap-1.5 transition-colors"
+                                                                    onClick={() => handleLaunchModule({ title: item.title || item.subTopic })}
+                                                                    className="w-full text-left p-2.5 rounded-lg hover:bg-slate-800/80 text-xs text-slate-400 hover:text-indigo-300 transition-all flex items-center justify-between group cursor-pointer"
                                                                 >
-                                                                    <FileText className="w-3 h-3 text-slate-500 shrink-0" />
                                                                     <span className="truncate">{item.title}</span>
+                                                                    <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                                 </button>
                                                             ))}
                                                         </div>
@@ -1343,7 +1442,17 @@ const MATH_DOMAINS = [
     'STATISTICS & PROBABILITY'
 ];
 
-function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; }) {
+function MathLab({ 
+    canEdit, 
+    activeGrade = 'Senior Secondary (SHS)',
+    tenantId,
+    studentId
+}: { 
+    canEdit: boolean; 
+    activeGrade?: SecondaryGradeTier;
+    tenantId?: string;
+    studentId?: string;
+}) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -1351,6 +1460,9 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit:
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
     const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
+    const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
+    const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
+    const [isLoadingSet, setIsLoadingSet] = useState(false);
 
     const isJunior = isJuniorLevel(activeGrade);
     const theme = isJunior ? juniorStyles : null;
@@ -1386,6 +1498,50 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit:
         return structure;
     }, [dbProblems, activeGrade]);
 
+    const handleLaunchModule = async (mod: any) => {
+        setProblem(null);
+        const levelId = mapGradeTierToLevelId(activeGrade);
+        const subjectId = 'math';
+        
+        let topicId = mod.topicId || 'visual_blocks_addition';
+        if (!mod.topicId) {
+            const titleLower = (mod.title || mod.subTopic || '').toLowerCase();
+            if (titleLower.includes('mastery') || titleLower.includes('problem-solving') || titleLower.includes('core curriculum') || titleLower.includes('series')) {
+                topicId = 'core_curriculum_mastery';
+            } else if (titleLower.includes('2012') || titleLower.includes('mock') || titleLower.includes('past paper') || titleLower.includes('bece')) {
+                topicId = 'bece_past_papers';
+            } else if (titleLower.includes('visual number blocks') || titleLower.includes('visual blocks') || titleLower.includes('addition') || titleLower.includes('bonds')) {
+                topicId = 'visual_blocks_addition';
+            } else if (titleLower.includes('fraction') || titleLower.includes('decimal') || titleLower.includes('percentage') || titleLower.includes('proportion')) {
+                topicId = 'fractions_decimals';
+            } else if (titleLower.includes('linear') || titleLower.includes('quadratic') || titleLower.includes('equation') || titleLower.includes('algebra')) {
+                topicId = 'linear_equations';
+            } else if (titleLower.includes('calculus') || titleLower.includes('differentiation') || titleLower.includes('derivative')) {
+                topicId = 'calculus_differentiation';
+            } else {
+                topicId = titleLower.replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '');
+            }
+        }
+
+        setActiveTopicMeta({ title: mod.title || mod.subTopic, topicId });
+        setIsLoadingSet(true);
+
+        try {
+            const sets = await getTopicQuestionSets(levelId, subjectId, topicId);
+            if (sets && sets.length > 0) {
+                const targetSet = mod.setId ? (sets.find(s => s.id === mod.setId) || sets[0]) : sets[0];
+                setActiveQuestionSet(targetSet);
+            } else {
+                setActiveQuestionSet(null);
+            }
+        } catch (e) {
+            console.warn('Error loading topic question set:', e);
+            setActiveQuestionSet(null);
+        } finally {
+            setIsLoadingSet(false);
+        }
+    };
+
     const { data: studentRecord } = useCollection<Student>(
         useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
     );
@@ -1409,7 +1565,29 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit:
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {problem ? (
+            {activeTopicMeta ? (
+                isLoadingSet ? (
+                    <div className="flex flex-col items-center justify-center p-16 space-y-4 bg-slate-900/60 rounded-3xl border border-slate-800 shadow-2xl">
+                        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+                        <p className="text-xs text-slate-400 font-medium">Synchronizing curriculum practice sets...</p>
+                    </div>
+                ) : (
+                    <QuestionRunner
+                        questionSet={activeQuestionSet}
+                        topicTitle={activeTopicMeta.title}
+                        gradeTier={activeGrade}
+                        levelId={mapGradeTierToLevelId(activeGrade)}
+                        subjectId="mathematics"
+                        topicId={activeTopicMeta.topicId}
+                        tenantId={tenantId}
+                        studentId={studentId}
+                        onBack={() => {
+                            setActiveTopicMeta(null);
+                            setActiveQuestionSet(null);
+                        }}
+                    />
+                )
+            ) : problem ? (
                 /* FULL-WIDTH INTERACTIVE SOLVER WORKSTATION */
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -1584,20 +1762,7 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit:
                                     </span>
                                     <Button
                                         size="sm"
-                                        onClick={() => {
-                                            setProblem({
-                                                id: `suggested-math-${i}`,
-                                                title: mod.title,
-                                                category: mod.domain,
-                                                subTopic: mod.title,
-                                                instruction: mod.sampleInstruction,
-                                                latexFormula: mod.sampleFormula,
-                                                answer: mod.sampleAnswer,
-                                                gradeLevel: activeGrade
-                                            });
-                                            setFeedback(null);
-                                            setUserInput("");
-                                        }}
+                                        onClick={() => handleLaunchModule(mod)}
                                         className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                                     >
                                         <span>Launch Lab</span>
@@ -1650,15 +1815,14 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit:
                                                                                 {items.map((item: any) => (
                                                                                     <button
                                                                                         key={item.id}
-                                                                                        onClick={() => { setProblem(item); setFeedback(null); setUserInput(""); }}
-                                                                                        className={`w-full text-left p-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-all ${
-                                                                                            problem?.id === item.id 
-                                                                                                ? 'bg-indigo-600 text-white' 
-                                                                                                : 'hover:bg-slate-800 text-slate-300 hover:text-white'
-                                                                                        }`}
+                                                                                        onClick={() => handleLaunchModule({ title: item.title || item.subTopic, ...item })}
+                                                                                        className={`w-full text-left p-2 rounded-lg text-xs font-medium flex items-center justify-between transition-all hover:bg-slate-800 text-slate-300 hover:text-white group`}
                                                                                     >
-                                                                                        <FileText className="w-3.5 h-3.5 shrink-0 opacity-70" />
-                                                                                        <span className="truncate">{item.title}</span>
+                                                                                        <div className="flex items-center gap-2 truncate">
+                                                                                            <FileText className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                                                                                            <span className="truncate">{item.title}</span>
+                                                                                        </div>
+                                                                                        <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-indigo-400 shrink-0" />
                                                                                     </button>
                                                                                 ))}
                                                                             </AccordionContent>
@@ -1690,16 +1854,59 @@ const SCIENCE_DOMAINS = [
     'LIFE SCIENCES & BIOLOGY'
 ];
 
-function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; }) {
+function DiscoveryLab({ 
+    canEdit, 
+    activeGrade = 'Senior Secondary (SHS)',
+    tenantId,
+    studentId
+}: { 
+    canEdit: boolean; 
+    activeGrade?: SecondaryGradeTier;
+    tenantId?: string;
+    studentId?: string;
+}) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
     const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
+    const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
+    const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
+    const [isLoadingSet, setIsLoadingSet] = useState(false);
 
     const isJunior = isJuniorLevel(activeGrade);
     const theme = isJunior ? juniorStyles : null;
+
+    const handleLaunchModule = async (mod: any) => {
+        const levelId = mapGradeTierToLevelId(activeGrade);
+        const subjectId = 'science';
+        
+        let topicId = 'states-of-matter';
+        const titleLower = (mod.title || '').toLowerCase();
+        if (titleLower.includes('state') || titleLower.includes('matter') || titleLower.includes('phase')) {
+            topicId = 'states-of-matter';
+        } else {
+            topicId = titleLower.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        }
+
+        setActiveTopicMeta({ title: mod.title, topicId });
+        setIsLoadingSet(true);
+
+        try {
+            const sets = await getTopicQuestionSets(levelId, subjectId, topicId);
+            if (sets && sets.length > 0) {
+                setActiveQuestionSet(sets[0]);
+            } else {
+                setActiveQuestionSet(null);
+            }
+        } catch (e) {
+            console.warn('Error loading science question set:', e);
+            setActiveQuestionSet(null);
+        } finally {
+            setIsLoadingSet(false);
+        }
+    };
 
     const { data: studentRecord } = useCollection<Student>(
         useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
@@ -1749,7 +1956,29 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { can
     
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {lab ? (
+            {activeTopicMeta ? (
+                isLoadingSet ? (
+                    <div className="flex flex-col items-center justify-center p-16 space-y-4 bg-slate-900/60 rounded-3xl border border-slate-800 shadow-2xl">
+                        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+                        <p className="text-xs text-slate-400 font-medium">Synchronizing science practice sets...</p>
+                    </div>
+                ) : (
+                    <QuestionRunner
+                        questionSet={activeQuestionSet}
+                        topicTitle={activeTopicMeta.title}
+                        gradeTier={activeGrade}
+                        levelId={mapGradeTierToLevelId(activeGrade)}
+                        subjectId="science"
+                        topicId={activeTopicMeta.topicId}
+                        tenantId={tenantId}
+                        studentId={studentId}
+                        onBack={() => {
+                            setActiveTopicMeta(null);
+                            setActiveQuestionSet(null);
+                        }}
+                    />
+                )
+            ) : lab ? (
                 /* FULL-WIDTH INTERACTIVE LAB WORKSTATION */
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -1985,21 +2214,7 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { can
                                     </span>
                                     <Button
                                         size="sm"
-                                        onClick={() => {
-                                            setLab({
-                                                id: `suggested-sci-${i}`,
-                                                title: mod.title,
-                                                background: mod.background,
-                                                hypothesisPrompt: mod.hypothesisPrompt,
-                                                hypothesisOptions: mod.hypothesisOptions,
-                                                steps: [
-                                                    { stepNumber: 1, action: mod.sampleInstruction }
-                                                ],
-                                                conclusion: mod.conclusion,
-                                                explanation: mod.explanation
-                                            });
-                                            setStage('hypothesis');
-                                        }}
+                                        onClick={() => handleLaunchModule(mod)}
                                         className="h-8 px-3.5 bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white border border-cyan-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                                     >
                                         <span>Launch Lab</span>
@@ -2122,7 +2337,8 @@ const QUICK_TOPICS_BY_SUBJECT_AND_TIER: Record<SecondaryGradeTier, Record<'math'
             "Fractions, Percentages & Proportions",
             "Pythagorean Theorem & Trig Ratios",
             "Set Theory & Basic Probability",
-            "Perimeter, Area & Volume of Prisms"
+            "Junior Core Mathematics • Paper 1 (Objective)",
+            "Junior Core Mathematics • Paper 2 (Structured)"
         ],
         english: [
             "Narrative Structure & Perspective",
@@ -2607,6 +2823,12 @@ export default function SeniorAcademyPage() {
     const { data: schoolData } = useDoc<any>(schoolRef);
     const aiCredits = schoolData?.aiCredits ?? 810;
     
+    const { user } = useUser();
+    const { data: studentRecord } = useCollection<Student>(
+        useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
+    );
+    const studentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user?.uid;
+
     // Memoize forceRefetch to prevent re-creation on every render
     const { forceRefetch: forceMath } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_math') : null, [firestore]));
     const { forceRefetch: forceEnglish } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_stories') : null, [firestore]));
@@ -2759,9 +2981,9 @@ export default function SeniorAcademyPage() {
 
             {/* DIRECT FULL-WIDTH ACTIVE LAB RENDERING */}
             <div className="space-y-4 sm:space-y-5">
-                {activeSubject === 'math' && <MathLab canEdit={canEdit} activeGrade={activeGradeTier} />}
-                {activeSubject === 'english' && <EnglishMastery canEdit={canEdit} activeGrade={activeGradeTier} />}
-                {activeSubject === 'science' && <DiscoveryLab canEdit={canEdit} activeGrade={activeGradeTier} />}
+                {activeSubject === 'math' && <MathLab canEdit={canEdit} activeGrade={activeGradeTier} tenantId={schoolId || undefined} studentId={studentId || undefined} />}
+                {activeSubject === 'english' && <EnglishMastery canEdit={canEdit} activeGrade={activeGradeTier} tenantId={schoolId || undefined} studentId={studentId || undefined} />}
+                {activeSubject === 'science' && <DiscoveryLab canEdit={canEdit} activeGrade={activeGradeTier} tenantId={schoolId || undefined} studentId={studentId || undefined} />}
             </div>
 
             <style jsx global>{`

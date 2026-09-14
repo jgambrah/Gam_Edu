@@ -5,7 +5,13 @@ import React, { useMemo, type ReactNode } from 'react';
 import { FirebaseProvider } from '@/firebase/provider';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, getFirestore, Firestore, memoryLocalCache } from 'firebase/firestore'; 
+import {
+  initializeFirestore,
+  getFirestore,
+  Firestore,
+  persistentLocalCache,
+  persistentMultipleTabManager
+} from 'firebase/firestore'; 
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
@@ -46,13 +52,15 @@ function initializeFirebaseOnClient(): FirebaseServices | null {
   
   let firestoreInstance: Firestore;
   try {
-    // Disable offline IndexedDB cache to prevent loading latency and transaction abort errors
+    // Enable persistent offline IndexedDB cache across multiple tabs to minimize Firestore document reads
     firestoreInstance = initializeFirestore(app, {
-      localCache: memoryLocalCache({})
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
     });
   } catch (e) {
-    // Fallback if initialization settings differ
-    console.warn("Firestore initialization failed, falling back to default:", e);
+    // Fallback if initialization settings differ or already initialized
+    console.warn("Firestore persistent cache initialization, falling back to existing instance:", e);
     firestoreInstance = getFirestore(app);
   }
 
