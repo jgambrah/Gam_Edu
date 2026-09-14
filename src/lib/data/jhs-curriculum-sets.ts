@@ -399,7 +399,7 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
       totalMarks: 15,
       points: 15,
       format: "structured_essay",
-      prompt: "Answer all parts of this question:\n(a) Evaluate $\\frac{0.048 \\times 1.05}{0.00012}$, leaving your final answer in standard form.\n(b) An amount of GH¢ 5,400.00 was shared between Esi and Kwesi. If Esi received $\\frac{4}{9}$ of the total amount, find Kwesi's share and what percentage of Esi's share Kwesi received.\n(c) Three angles meet at a common vertex point $O$ on a plane: $(3x - 10)^\\circ$, $(2x + 40)^\\circ$, and $(x + 30)^\\circ$. Calculate the value of $x$.",
+      prompt: "Answer all parts of this question:\n\n**(a)** Evaluate $\\frac{0.048 \\times 1.05}{0.00012}$, leaving your final answer in standard form.\n\n**(b)** An amount of GH¢ 5,400.00 was shared between Esi and Kwesi. If Esi received $\\frac{4}{9}$ of the total amount, find Kwesi's share and what percentage of Esi's share Kwesi received.\n\n**(c)** Three angles meet at a common vertex point $O$ on a plane: $(3x - 10)^\\circ$, $(2x + 40)^\\circ$, and $(x + 30)^\\circ$. Calculate the value of $x$.",
       hint: "Review decimal simplification using powers of 10, fractional sharing of quantities, and the sum of angles meeting at a point.",
       workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
       parts: [
@@ -439,7 +439,7 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
     },
     {
       id: "q02",
-      prompt: "Answer all parts of this question:\n(a) A commercial delivery van uses 1 litre of diesel for every 25 km travelled. A courier begins a 450 km journey with 11 litres of fuel already in the tank.\n   (i) How many additional litres of fuel are needed to complete the trip?\n   (ii) If diesel costs GH¢ 12.00 per litre, calculate the total cost of fuel used for the 450 km journey.\n(b) The average daily attendance at a regional conference for the first four days was 1,250 delegates. On the fifth day, 1,650 delegates attended. Calculate:\n   (i) The total attendance for the first 4 days.\n   (ii) The mean daily attendance across the 5 days.\n(c) The area of a square playground is 169 m². Determine the total perimeter (distance around) the playground.",
+      prompt: "Answer all parts of this question:\n\n**(a)** A commercial delivery van uses 1 litre of diesel for every 25 km travelled. A courier begins a 450 km journey with 11 litres of fuel already in the tank.\n   - **(i)** How many additional litres of fuel are needed to complete the trip?\n   - **(ii)** If diesel costs GH¢ 12.00 per litre, calculate the total cost of fuel used for the 450 km journey.\n\n**(b)** The average daily attendance at a regional conference for the first four days was 1,250 delegates. On the fifth day, 1,650 delegates attended. Calculate:\n   - **(i)** The total attendance for the first 4 days.\n   - **(ii)** The mean daily attendance across the 5 days.\n\n**(c)** The area of a square playground is 169 m². Determine the total perimeter (distance around) the playground.",
       options: [
         "(a)(i) 7 litres, (ii) GH¢ 216.00 | (b)(i) 5,000, (ii) 1,330 | (c) 52 m",
         "(a)(i) 8 litres, (ii) GH¢ 220.00 | (b)(i) 5,000, (ii) 1,350 | (c) 48 m",
@@ -453,7 +453,7 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
     },
     {
       id: "q03",
-      prompt: "Answer all parts of this question:\n(a) A survey of 120 senior high school students shows their preferred elective subjects: General Arts (36), Visual Arts (24), Business (30), and Science (30).\n   (i) Calculate the sector angle for General Arts and Visual Arts in a pie chart.\n   (ii) If a student is picked at random, what is the probability that they prefer Visual Arts?\n(b) A market vendor purchased 180 grapefruits for GH¢ 30.00. She packed and sold them in groups of 3 for 80 Pesewas (GH¢ 0.80).\n   (i) Calculate the total selling price of all the grapefruits.\n   (ii) Determine the percentage profit made by the vendor.",
+      prompt: "Answer all parts of this question:\n\n**(a)** A survey of 120 senior high school students shows their preferred elective subjects: General Arts (36), Visual Arts (24), Business (30), and Science (30).\n   - **(i)** Calculate the sector angle for General Arts and Visual Arts in a pie chart.\n   - **(ii)** If a student is picked at random, what is the probability that they prefer Visual Arts?\n\n**(b)** A market vendor purchased 180 grapefruits for GH¢ 30.00. She packed and sold them in groups of 3 for 80 Pesewas (GH¢ 0.80).\n   - **(i)** Calculate the total selling price of all the grapefruits.\n   - **(ii)** Determine the percentage profit made by the vendor.",
       options: [
         "(a)(i) 108° & 72°, (ii) 1/5 | (b)(i) GH¢ 48.00, (ii) 60%",
         "(a)(i) 90° & 60°, (ii) 1/4 | (b)(i) GH¢ 45.00, (ii) 50%",
@@ -467,7 +467,7 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
     },
     {
       id: "q04",
-      prompt: "The test scores of 25 students in an ICT quiz are recorded as follows:\n5, 7, 4, 6, 5, 8, 7, 5, 6, 5, 7, 4, 8, 5, 6, 7, 5, 6, 4, 7, 5, 8, 6, 7, 5.\n(a) Construct a frequency table and determine the modal score.\n(b) Calculate the mean mark for the distribution.\n(c) Find the median score of the class.",
+      prompt: "The test scores of 25 students in an ICT quiz are recorded as follows:\n\n`5, 7, 4, 6, 5, 8, 7, 5, 6, 5, 7, 4, 8, 5, 6, 7, 5, 6, 4, 7, 5, 8, 6, 7, 5`\n\n**(a)** Construct a frequency table and determine the modal score.\n\n**(b)** Calculate the mean mark for the distribution.\n\n**(c)** Find the median score of the class.",
       options: [
         "(a) Mode = 5 (Frequency 8) | (b) Mean = 5.92 | (c) Median = 6",
         "(a) Mode = 6 (Frequency 8) | (b) Mean = 5.80 | (c) Median = 5",
@@ -481,7 +481,7 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
     },
     {
       id: "q05",
-      prompt: "Answer all parts of this question:\n(a) (i) Find the Least Common Multiple (LCM) of 8, 12, and 20.\n   (ii) Arrange the fractions 5/8, 7/12, and 11/20 in ascending order of magnitude.\n(b) In a geometric construction of triangle ABC, |AB| = 9 cm, angle CAB = 60°, and angle CBA = 45°. Perpendicular bisectors of AC and BC intersect at point O. If O is the circumcentre, state the geometric relationship between OA, OB, and OC.",
+      prompt: "Answer all parts of this question:\n\n**(a)**\n   - **(i)** Find the Least Common Multiple (LCM) of 8, 12, and 20.\n   - **(ii)** Arrange the fractions $\\frac{5}{8}$, $\\frac{7}{12}$, and $\\frac{11}{20}$ in ascending order of magnitude.\n\n**(b)** In a geometric construction of triangle ABC, $|AB| = 9\\text{ cm}$, angle $CAB = 60^\\circ$, and angle $CBA = 45^\\circ$. Perpendicular bisectors of $AC$ and $BC$ intersect at point $O$. If $O$ is the circumcentre, state the geometric relationship between $OA$, $OB$, and $OC$.",
       options: [
         "(a)(i) 120, (ii) 11/20, 7/12, 5/8 | (b) OA = OB = OC (Equidistant circumradius)",
         "(a)(i) 240, (ii) 7/12, 11/20, 5/8 | (b) OA + OB = OC",
@@ -495,7 +495,7 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
     },
     {
       id: "q06",
-      prompt: "Answer all parts of this question:\n(a) Triangle PQR has vertices P(3, 1), Q(1, 4), and R(1, 1).\n   (i) Write down the coordinates of image P₁Q₁R₁ after a reflection in the x-axis.\n   (ii) Write down the coordinates of image P₂Q₂R₂ after translating triangle PQR by vector v = (-2, 3)ᵀ.\n(b) Factorize completely the algebraic expression: 4x² - 6xy + 8xz - 12yz.",
+      prompt: "Answer all parts of this question:\n\n**(a)** Triangle $PQR$ has vertices $P(3, 1)$, $Q(1, 4)$, and $R(1, 1)$.\n   - **(i)** Write down the coordinates of image $P_1Q_1R_1$ after a reflection in the x-axis.\n   - **(ii)** Write down the coordinates of image $P_2Q_2R_2$ after translating triangle $PQR$ by vector $\\vec{v} = \\begin{pmatrix} -2 \\\\ 3 \\end{pmatrix}$.\n\n**(b)** Factorize completely the algebraic expression: $4x^2 - 6xy + 8xz - 12yz$.",
       options: [
         "(a)(i) P₁(3,-1), Q₁(1,-4), R₁(1,-1) | (ii) P₂(1,4), Q₂(-1,7), R₂(-1,4) | (b) 2(2x - 3y)(x + 2z)",
         "(a)(i) P₁(-3,1), Q₁(-1,4), R₁(-1,1) | (ii) P₂(1,4), Q₂(-1,7), R₂(-1,4) | (b) (2x - 3y)(2x + 4z)",

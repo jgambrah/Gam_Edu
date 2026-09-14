@@ -19,41 +19,33 @@ interface MathRendererProps {
  * with fallback KaTeX compilation for guaranteed rendering.
  */
 export function MathRenderer({ content, className = '' }: MathRendererProps) {
-  // Pre-process math expressions with KaTeX to ensure 100% reliable rendering
-  // regardless of markdown parsing variances
-  const processedContent = useMemo(() => {
+  // Gracefully clean content and recover from any pre-rendered KaTeX HTML if present
+  const processed = useMemo(() => {
     if (!content) return '';
 
-    // First, compile block math ($$...$$)
-    let text = content.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
-      try {
-        const rendered = katex.renderToString(formula.trim(), {
-          displayMode: true,
-          throwOnError: false
-        });
-        return `\n\n<div class="katex-block-wrapper my-3 overflow-x-auto text-center">${rendered}</div>\n\n`;
-      } catch (err) {
-        console.warn('[MathRenderer] KaTeX block error:', err);
-        return match;
-      }
-    });
+    let text = content;
 
-    // Second, compile inline math ($...$)
-    text = text.replace(/\$([^\$\n\r]+?)\$/g, (match, formula) => {
-      try {
-        const rendered = katex.renderToString(formula.trim(), {
-          displayMode: false,
-          throwOnError: false
-        });
-        return `<span class="katex-inline-wrapper">${rendered}</span>`;
-      } catch (err) {
-        console.warn('[MathRenderer] KaTeX inline error:', err);
-        return match;
-      }
-    });
+    // Safety fallback: if content contains pre-rendered KaTeX HTML tags
+    // (from previous buggy compiles or legacy database saves), extract the raw TeX
+    if (text.includes('annotation encoding="application/x-tex"')) {
+      text = text.replace(
+        /<span[^>]*class="katex-inline-wrapper"[^>]*>[\s\S]*?<annotation encoding="application\/x-tex">([\s\S]*?)<\/annotation>[\s\S]*?<\/span>\s*<\/span>/gi,
+        (_, tex) => `$${tex.trim()}$`
+      );
+      text = text.replace(
+        /<div[^>]*class="katex-block-wrapper[^"]*"[^>]*>[\s\S]*?<annotation encoding="application\/x-tex">([\s\S]*?)<\/annotation>[\s\S]*?<\/div>/gi,
+        (_, tex) => `\n\n$$${tex.trim()}$$\n\n`
+      );
+      text = text.replace(
+        /<span class="katex">[\s\S]*?<annotation encoding="application\/x-tex">([\s\S]*?)<\/annotation>[\s\S]*?<\/span>/gi,
+        (_, tex) => `$${tex.trim()}$`
+      );
+    }
 
     return text;
   }, [content]);
+
+  if (!processed) return null;
 
   return (
     <div className={`prose prose-invert max-w-none text-sm leading-relaxed ${className}`}>
@@ -61,15 +53,24 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
         remarkPlugins={[remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
-          // Render HTML produced by KaTeX compiler
-          div: ({ node, ...props }) => <div {...props} />,
-          span: ({ node, ...props }) => <span {...props} />,
-          p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+          p: ({ children }) => (
+            <p className="mb-2 last:mb-0 leading-relaxed whitespace-pre-line text-slate-200">
+              {children}
+            </p>
+          ),
           strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
-          em: ({ children }) => <em className="italic text-slate-300">{children}</em>
+          em: ({ children }) => <em className="italic text-slate-300">{children}</em>,
+          ul: ({ children }) => <ul className="list-disc pl-5 my-2 space-y-1 text-slate-200">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal pl-5 my-2 space-y-1 text-slate-200">{children}</ol>,
+          li: ({ children }) => <li className="text-slate-200 leading-relaxed">{children}</li>,
+          code: ({ children }) => (
+            <code className="px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300 font-mono text-xs">
+              {children}
+            </code>
+          )
         }}
       >
-        {processedContent}
+        {processed}
       </ReactMarkdown>
     </div>
   );
