@@ -11,7 +11,7 @@ import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, add
 import { 
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
-  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock
+  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -98,7 +98,7 @@ const CATEGORIES = [
 ];
 
 const isJuniorLevel = (grade: string) => 
-    grade === 'Early Childhood' || grade === 'Lower Primary';
+    grade === 'Early Childhood' || grade === 'Lower Primary' || grade === 'Lower Primary (BS 1 - 3)';
 
 const juniorStyles = {
     // English Storybook styles
@@ -119,7 +119,11 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
-export type SecondaryGradeTier = 'Senior Secondary (SHS)' | 'Junior Secondary (JHS)';
+export type SecondaryGradeTier = 
+    | 'Lower Primary (BS 1 - 3)'
+    | 'Upper Primary (BS 4 - 6)'
+    | 'Junior Secondary (JHS)'
+    | 'Senior Secondary (SHS)';
 
 interface SuggestedModuleCard {
     title: string;
@@ -274,6 +278,87 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleInstruction: "A fair 6-sided die is rolled. Calculate the probability of rolling a prime number (decimal form):",
         sampleFormula: "P(\\text{Prime}) = \\frac{3}{6}",
         sampleAnswer: "0.5"
+    },
+
+    // Upper Primary (BS 4 - 6)
+    {
+        title: "Fractions, Decimals & Percentages",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "5 Units • 40 mins",
+        description: "Equivalence between fractions, decimal place values, and percentage conversions with visual models.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Convert the fraction to a percentage value (%):",
+        sampleFormula: "\\frac{3}{4} \\times 100",
+        sampleAnswer: "75"
+    },
+    {
+        title: "Perimeter, Area & 2D Shapes",
+        domain: "GEOMETRY & TRIGONOMETRY",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "4 Units • 35 mins",
+        description: "Calculate area and perimeter of composite rectangles, triangles, and parallelograms.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Calculate the area of a rectangle with length 8cm and width 5cm:",
+        sampleFormula: "A = 8 \\times 5",
+        sampleAnswer: "40"
+    },
+    {
+        title: "Factors, Multiples & Prime Numbers",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "4 Units • 35 mins",
+        description: "Prime factorization trees, Greatest Common Factor (GCF), and Least Common Multiple (LCM).",
+        difficulty: "Intermediate",
+        sampleInstruction: "Find the Least Common Multiple (LCM) of 4 and 6:",
+        sampleFormula: "\\text{LCM}(4, 6) = 12",
+        sampleAnswer: "12"
+    },
+    {
+        title: "Coordinate Grids & Basic Linear Patterns",
+        domain: "ALGEBRA",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "3 Units • 30 mins",
+        description: "Plot (x, y) coordinates in Quadrant 1, identify horizontal and vertical line patterns, and input-output rules.",
+        difficulty: "Foundation",
+        sampleInstruction: "Find the missing term in the sequence: 3, 7, 11, __:",
+        sampleFormula: "11 + 4 = ?",
+        sampleAnswer: "15"
+    },
+
+    // Lower Primary (BS 1 - 3)
+    {
+        title: "Visual Number Blocks & Addition Facts",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Lower Primary (BS 1 - 3)",
+        meta: "4 Units • 25 mins",
+        description: "Base-10 block counting, number bonds up to 20, and single-digit addition jumps.",
+        difficulty: "Foundation",
+        sampleInstruction: "Count and add the visual blocks:",
+        sampleFormula: "7 + 5 = ?",
+        sampleAnswer: "12"
+    },
+    {
+        title: "2D Shapes, Patterns & Symmetry",
+        domain: "GEOMETRY & TRIGONOMETRY",
+        gradeTier: "Lower Primary (BS 1 - 3)",
+        meta: "3 Units • 20 mins",
+        description: "Identify circles, squares, triangles, line symmetry, and repeating color/shape sequences.",
+        difficulty: "Foundation",
+        sampleInstruction: "How many corners (vertices) does a triangle have?",
+        sampleFormula: "\\text{Vertices of } \\Delta = ?",
+        sampleAnswer: "3"
+    },
+    {
+        title: "Money, Coins & Basic Change",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Lower Primary (BS 1 - 3)",
+        meta: "3 Units • 25 mins",
+        description: "Recognize currency denominations, tally coin amounts, and calculate simple market change.",
+        difficulty: "Foundation",
+        sampleInstruction: "You buy an apple for $3 with a $10 bill. How much change do you receive?",
+        sampleFormula: "10 - 3 = ?",
+        sampleAnswer: "7"
     }
 ];
 
@@ -368,6 +453,65 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         sampleInstruction: "Identify the persuasive technique used in the concluding sentence.",
         sampleAnswer: "Call to action",
         content: "We cannot wait for another generation to take up this mantle. Today, let us step forward together into the light of shared responsibility."
+    },
+
+    // Upper Primary (BS 4 - 6)
+    {
+        title: "Reading Comprehension & Context Clues",
+        domain: "NARRATIVE & COMPREHENSION",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "4 Modules • 35 mins",
+        description: "Decipher unfamiliar vocabulary using surrounding context clues, summary statements, and main idea deductions.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Determine the meaning of 'tenacious' from the context provided.",
+        sampleAnswer: "Determined",
+        content: "Despite the howling blizzard and steep cliffs, the tenacious mountaineer refused to turn back before reaching the summit."
+    },
+    {
+        title: "Persuasive Writing & Opinion Speeches",
+        domain: "RHETORIC & ESSAYS",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "3 Modules • 30 mins",
+        description: "Draft clear thesis statements, structure reason paragraphs, and conclude with powerful calls to action.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Identify the supporting reason given in the passage.",
+        sampleAnswer: "Environmental protection",
+        content: "Trees in our schoolyard provide shade and clean air for everyone. Therefore, every student should participate in planting a sapling this term."
+    },
+    {
+        title: "Figurative Language, Similes & Metaphors",
+        domain: "LITERATURE & POETRY",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "3 Modules • 30 mins",
+        description: "Recognize similes, metaphors, hyperbole, and idioms in poems and descriptive story writing.",
+        difficulty: "Foundation",
+        sampleInstruction: "Identify whether the phrase 'as quiet as a whisper' is a simile or metaphor.",
+        sampleAnswer: "Simile",
+        content: "The library was as quiet as a whisper, with only the gentle rustling of pages turning in the afternoon light."
+    },
+
+    // Lower Primary (BS 1 - 3)
+    {
+        title: "Phonics, Vowel Blends & Rhyming Pairs",
+        domain: "NARRATIVE & COMPREHENSION",
+        gradeTier: "Lower Primary (BS 1 - 3)",
+        meta: "3 Modules • 20 mins",
+        description: "Listen for vowel digraphs (ee, oa, ai), identify rhyming pairs, and match sound patterns.",
+        difficulty: "Foundation",
+        sampleInstruction: "Which word rhymes with 'bright' in the story sentence?",
+        sampleAnswer: "Night",
+        content: "The stars shone bright through the dark of night, guiding the little owl safely to its nest."
+    },
+    {
+        title: "Sight Words & Expressive Story Sentences",
+        domain: "LITERATURE & POETRY",
+        gradeTier: "Lower Primary (BS 1 - 3)",
+        meta: "3 Modules • 20 mins",
+        description: "High-frequency sight words, capitalization, punctuation, and expressive character dialogue.",
+        difficulty: "Foundation",
+        sampleInstruction: "Find the high-frequency sight word connecting the characters.",
+        sampleAnswer: "Together",
+        content: "Sam and Leo walked together to the playground, smiling as they saw their friends waving."
     }
 ];
 
@@ -494,6 +638,85 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         hypothesisOptions: ["It floats on the surface", "It sinks to the bottom", "It dissolves instantly"],
         conclusion: "Substances with a density lower than the surrounding fluid experience net positive buoyancy and float.",
         explanation: "The weight of the displaced water exceeds the object's gravitational pull, maintaining equilibrium at the surface."
+    },
+
+    // Upper Primary (BS 4 - 6)
+    {
+        title: "States of Matter & Phase Changes",
+        domain: "CHEMICAL REACTIONS & MATTER",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "3 Labs • 35 mins",
+        description: "Explore particle movement in solids, liquids, and gases during evaporation, condensation, and melting.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Identify the temperature at which pure water boils under standard atmospheric pressure.",
+        sampleAnswer: "100°C",
+        background: "Heating particles causes them to gain thermal energy and vibrate faster, breaking intermolecular bonds.",
+        hypothesisPrompt: "What happens to water particles when temperature reaches 100°C?",
+        hypothesisOptions: ["They transition from liquid to gas vapor", "They freeze solid into ice", "They turn into stone"],
+        conclusion: "At boiling point, thermal energy overcomes liquid cohesion, generating water vapor steam.",
+        explanation: "Latent heat of vaporization separates water molecules into a gaseous phase."
+    },
+    {
+        title: "Simple Machines, Levers & Pulleys",
+        domain: "PHYSICAL SCIENCES & PHYSICS",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "4 Labs • 40 mins",
+        description: "Test mechanical advantage using first, second, and third-class levers, inclined planes, and pulley wheels.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Identify which machine reduces the effort needed to lift heavy crates vertically.",
+        sampleAnswer: "Pulley",
+        background: "Simple machines redistribute applied forces over greater distances to make work easier.",
+        hypothesisPrompt: "How does moving the fulcrum closer to a heavy load affect the required effort?",
+        hypothesisOptions: ["Effort required decreases", "Effort required increases", "No change occurs"],
+        conclusion: "Shortening the load arm relative to the effort arm multiplies output mechanical advantage.",
+        explanation: "Torque equilibrium (Force x Distance) ensures a smaller effort applied over a longer arm balances a heavy load."
+    },
+    {
+        title: "Ecosystems, Food Chains & Energy Flow",
+        domain: "LIFE SCIENCES & BIOLOGY",
+        gradeTier: "Upper Primary (BS 4 - 6)",
+        meta: "3 Labs • 35 mins",
+        description: "Map primary producers, herbivores, carnivores, and apex predators across savannah and forest biomes.",
+        difficulty: "Foundation",
+        sampleInstruction: "Identify the primary energy source powering all photosynthetic food chains.",
+        sampleAnswer: "The Sun",
+        background: "Energy enters ecosystems through solar radiation and flows through successive trophic levels.",
+        hypothesisPrompt: "What role do green plants play in a terrestrial food chain?",
+        hypothesisOptions: ["Primary producers synthesizing glucose", "Secondary consumers hunting herbivores", "Decomposers breaking down soil"],
+        conclusion: "Producers capture sunlight through photosynthesis to form the base of ecological food webs.",
+        explanation: "Solar energy is converted into chemical bond energy in glucose for all downstream consumers."
+    },
+
+    // Lower Primary (BS 1 - 3)
+    {
+        title: "Living Things & The Five Senses",
+        domain: "LIFE SCIENCES & BIOLOGY",
+        gradeTier: "Lower Primary (BS 1 - 3)",
+        meta: "3 Labs • 25 mins",
+        description: "Discover how animals and humans use sight, hearing, smell, taste, and touch to explore their environment.",
+        difficulty: "Foundation",
+        sampleInstruction: "Which human sense organ is responsible for detecting musical sounds?",
+        sampleAnswer: "Ears",
+        background: "Our sense organs send signals to the brain to help us understand and safely navigate our surroundings.",
+        hypothesisPrompt: "Which sense helps us identify the sweet scent of a flowering garden?",
+        hypothesisOptions: ["Sense of smell (nose)", "Sense of sight (eyes)", "Sense of touch (hands)"],
+        conclusion: "Olfactory receptors in the nose detect airborne scent molecules.",
+        explanation: "Sensory nerves transmit fragrance signals directly to the brain."
+    },
+    {
+        title: "Weather, Seasons & Day-Night Cycles",
+        domain: "PHYSICAL SCIENCES & PHYSICS",
+        gradeTier: "Lower Primary (BS 1 - 3)",
+        meta: "3 Labs • 25 mins",
+        description: "Observe sunny, rainy, windy, and cloudy days, and learn how Earth's rotation creates sunrise and sunset.",
+        difficulty: "Foundation",
+        sampleInstruction: "What celestial body illuminates our skies and brings warmth during the daytime?",
+        sampleAnswer: "The Sun",
+        background: "Earth's rotation on its axis causes day and night as different parts face toward or away from the Sun.",
+        hypothesisPrompt: "Why does the sun appear to rise in the morning and set in the evening?",
+        hypothesisOptions: ["The Earth is spinning on its axis", "The Sun is orbiting around a flat Earth", "The clouds pull the Sun down"],
+        conclusion: "Planetary rotation toward the Sun creates the perception of sunrise and daylight.",
+        explanation: "As Earth spins from west to east, the horizon turns into sunlight, creating the diurnal cycle."
     }
 ];
 
@@ -948,11 +1171,8 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { c
                             <div className="flex items-center gap-2.5">
                                 <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                                     <Sparkles className="w-4 h-4 text-indigo-400" />
-                                    Curriculum Labs & Recommended Modules
+                                    Curriculum Labs & Recommended Modules • {activeGrade}
                                 </h3>
-                                <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                                    {activeGrade}
-                                </span>
                             </div>
                             <p className="text-xs text-slate-400">
                                 Interactive literary comprehension passages, rhetorical analyses, and guided textual breakdowns.
@@ -1920,6 +2140,58 @@ const QUICK_TOPICS_BY_SUBJECT_AND_TIER: Record<SecondaryGradeTier, Record<'math'
             "Electric Circuits, Voltage & Current",
             "States of Matter & Thermal Expansion"
         ]
+    },
+    'Upper Primary (BS 4 - 6)': {
+        math: [
+            "Fractions, Decimals & Percentages",
+            "Perimeter, Area & 2D Shapes",
+            "Factors, Multiples & Prime Numbers",
+            "Coordinate Grids & Linear Patterns",
+            "Ratios, Scales & Unit Rates",
+            "Basic Data Handling & Bar Charts"
+        ],
+        english: [
+            "Reading Comprehension & Context Clues",
+            "Persuasive Writing & Opinion Speeches",
+            "Figurative Language, Similes & Metaphors",
+            "Complex Sentences, Conjunctions & Clauses",
+            "Narrative Writing & Character Dialogue",
+            "Formal Letters & Descriptive Essays"
+        ],
+        science: [
+            "States of Matter & Phase Changes",
+            "Simple Machines, Levers & Pulleys",
+            "Ecosystems, Food Chains & Energy Flow",
+            "Plant Nutrition, Leaves & Germination",
+            "Electricity, Conductors & Insulators",
+            "The Water Cycle, Weather & Clouds"
+        ]
+    },
+    'Lower Primary (BS 1 - 3)': {
+        math: [
+            "Visual Number Blocks & Addition Facts",
+            "2D Shapes, Patterns & Symmetry",
+            "Money, Coins & Basic Change",
+            "Skip Counting by 2s, 5s & 10s",
+            "Telling Time to the Hour & Half Hour",
+            "Measuring Length with Non-Standard Units"
+        ],
+        english: [
+            "Phonics, Vowel Blends & Rhyming Pairs",
+            "Sight Words & Expressive Story Sentences",
+            "Capital Letters, Full Stops & Question Marks",
+            "Action Verbs, Nouns & Adjectives",
+            "Story Retelling & Picture Sequence",
+            "Vocabulary: Animals, Colors & Family"
+        ],
+        science: [
+            "Living Things & The Five Senses",
+            "Weather, Seasons & Day-Night Cycles",
+            "Parts of a Plant & Seeds",
+            "Animal Habitats, Sounds & Diets",
+            "Push and Pull: Basic Forces",
+            "Sink or Float: Exploring Materials"
+        ]
     }
 };
 
@@ -2171,7 +2443,23 @@ function AdminConsole({
                                         onChange={e => setTopic(e.target.value)} 
                                         onKeyDown={e => { if (e.key === 'Enter' && !loading && topic.trim()) handleAiGenerate(); }}
                                         placeholder={
-                                            activeGrade === 'Junior Secondary (JHS)'
+                                            activeGrade === 'Lower Primary (BS 1 - 3)'
+                                                ? (
+                                                    activeSubject === 'math'
+                                                        ? "e.g. Visual Number Blocks, Addition Facts, 2D Shapes..."
+                                                        : activeSubject === 'english'
+                                                        ? "e.g. Phonics Blends, Sight Words, Expressive Sentences..."
+                                                        : "e.g. Five Senses, Living Things, Weather & Seasons..."
+                                                )
+                                                : activeGrade === 'Upper Primary (BS 4 - 6)'
+                                                ? (
+                                                    activeSubject === 'math'
+                                                        ? "e.g. Fractions & Decimals, Area of Shapes, Factors & Multiples..."
+                                                        : activeSubject === 'english'
+                                                        ? "e.g. Reading Comprehension, Persuasive Writing, Similes & Idioms..."
+                                                        : "e.g. States of Matter, Simple Machines, Ecosystems & Energy..."
+                                                )
+                                                : activeGrade === 'Junior Secondary (JHS)'
                                                 ? (
                                                     activeSubject === 'math'
                                                         ? "e.g. Linear Equations, Algebraic Indices, Pythagorean Theorem..."
@@ -2348,26 +2636,39 @@ export default function SeniorAcademyPage() {
                 className="mb-3.5 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
                 actions={
                     <div className="flex flex-wrap items-center gap-3">
-                        {/* SEGMENTED CONTROL FOR JHS / SHS */}
-                        <div className="bg-slate-950/90 border border-slate-800/90 p-1 rounded-xl flex items-center shadow-lg">
+                        {/* SEGMENTED CONTROL FOR ALL 4 STUDY LEVELS */}
+                        <div className="bg-slate-950/90 border border-slate-800/90 p-1 rounded-xl flex flex-wrap items-center gap-1 shadow-lg">
                             <button
                                 type="button"
-                                onClick={() => setActiveGradeTier('Senior Secondary (SHS)')}
+                                onClick={() => setActiveGradeTier('Lower Primary (BS 1 - 3)')}
                                 className={cn(
-                                    "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
-                                    activeGradeTier === 'Senior Secondary (SHS)'
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                                    activeGradeTier === 'Lower Primary (BS 1 - 3)'
+                                        ? "bg-amber-600 text-white shadow-md shadow-amber-600/30"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                                )}
+                            >
+                                <Star className="w-3.5 h-3.5" />
+                                <span>Lower Primary (BS 1 - 3)</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveGradeTier('Upper Primary (BS 4 - 6)')}
+                                className={cn(
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                                    activeGradeTier === 'Upper Primary (BS 4 - 6)'
                                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                                         : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
                                 )}
                             >
-                                <GraduationCap className="w-3.5 h-3.5" />
-                                <span>Senior Secondary (SHS)</span>
+                                <Sparkles className="w-3.5 h-3.5" />
+                                <span>Upper Primary (BS 4 - 6)</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setActiveGradeTier('Junior Secondary (JHS)')}
                                 className={cn(
-                                    "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
                                     activeGradeTier === 'Junior Secondary (JHS)'
                                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                                         : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
@@ -2375,6 +2676,19 @@ export default function SeniorAcademyPage() {
                             >
                                 <BookOpen className="w-3.5 h-3.5" />
                                 <span>Junior Secondary (JHS)</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveGradeTier('Senior Secondary (SHS)')}
+                                className={cn(
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                                    activeGradeTier === 'Senior Secondary (SHS)'
+                                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                                )}
+                            >
+                                <GraduationCap className="w-3.5 h-3.5" />
+                                <span>Senior Secondary (SHS)</span>
                             </button>
                         </div>
 
