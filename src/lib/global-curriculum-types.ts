@@ -49,6 +49,7 @@ export interface StructuredQuestionPart {
   hint?: string;
   modelAnswer: string;
   workedSolution: string;
+  diagramSvg?: string;
 }
 
 export interface CurriculumQuestion {
@@ -56,12 +57,13 @@ export interface CurriculumQuestion {
   title?: string;
   format?: 'multiple_choice' | 'structured_essay';
   totalMarks?: number;
-  prompt: string;
+  prompt?: string;
   options?: string[];
   correctAnswer?: string;
-  hint: string;
-  workedSolution: string;
+  hint?: string;
+  workedSolution?: string;
   points: number;
+  diagramSvg?: string;
   parts?: StructuredQuestionPart[];
 }
 

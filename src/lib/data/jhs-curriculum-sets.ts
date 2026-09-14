@@ -884,3 +884,264 @@ export const SET_JHS_MASTERY_SERIES_03: CurriculumQuestionSet = {
   seededAt: "2026-09-14T12:00:00.000Z",
   lastUpdated: "2026-09-14T12:00:00.000Z"
 };
+
+export const SET_JHS_MASTERY_SERIES_04: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-04",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 4)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Set Theory, Changing Subject of Formula & Commercial Profit",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the Venn diagram and problem descriptions provided below:",
+      diagramSvg: "<svg viewBox='0 0 360 190' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='180' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='20' y='28' font-family='sans-serif' font-size='14' font-weight='bold' fill='#0f172a'>U = 280</text><circle cx='130' cy='105' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='230' cy='105' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='100' y='40' font-family='sans-serif' font-size='13' font-weight='bold' fill='#2563eb'>Computing (C)</text><text x='215' y='40' font-family='sans-serif' font-size='13' font-weight='bold' fill='#059669'>French (F)</text><text x='105' y='110' font-family='sans-serif' font-size='14' fill='#1e293b'>90</text><text x='173' y='110' font-family='sans-serif' font-size='14' font-weight='bold' fill='#dc2626'>x</text><text x='240' y='110' font-family='sans-serif' font-size='14' fill='#1e293b'>140</text></svg>",
+      hint: "Review Venn diagram subset disjoint equations, algebraic isolation of variables, and percentage profit calculations.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)(i)",
+          marks: 3,
+          prompt: "In an academy of $280$ students, $90$ study Computing only and $140$ study French only. Every student studies at least one of the two elective subjects.\nUsing the Venn diagram provided above, write an equation connecting the subsets to find the number of students who study **both** subjects.",
+          hint: "The sum of all disjoint regions inside the universal set equals $280$.",
+          modelAnswer: "50 students",
+          workedSolution: "From the Venn diagram:\n$$90 + x + 140 = 280$$\n$$x + 230 = 280$$\n$$x = 280 - 230 = 50$$\nTherefore, **$50$ students study both Computing and French**."
+        },
+        {
+          partLabel: "(a)(ii)",
+          marks: 2,
+          prompt: "How many students study French altogether?",
+          hint: "Total French students = French only + Both subjects.",
+          modelAnswer: "190 students",
+          workedSolution: "$$\\text{Total French} = x + 140 = 50 + 140 = 190\\text{ students}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 4,
+          prompt: "Make $h$ the subject of the formula:\n$$V = \\frac{1}{3}\\pi r^2 h$$",
+          hint: "Multiply both sides by 3 to clear the denominator, then divide by $\\pi r^2$.",
+          modelAnswer: "$$h = \\frac{3V}{\\pi r^2}$$",
+          workedSolution: "$$V = \\frac{1}{3}\\pi r^2 h$$\nMultiply both sides by $3$:\n$$3V = \\pi r^2 h$$\nDivide both sides by $\\pi r^2$:\n$$h = \\frac{3V}{\\pi r^2}$$"
+        },
+        {
+          partLabel: "(c)",
+          marks: 6,
+          prompt: "A bookstore manager bought $60$ copies of a STEM workbook at $\\text{GH¢ } 4.50$ per copy. She sold each copy at $\\text{GH¢ } 5.40$.\nCalculate:\n(i) The total cost price of the workbooks.\n(ii) Her percentage profit.",
+          hint: "Total CP = number of books × unit CP. Percentage profit = (Profit / Cost Price) × 100%.",
+          modelAnswer: "(i) GH¢ 270.00, (ii) 20%",
+          workedSolution: "**(i) Total Cost Price:**\n$$\\text{Total CP} = 60 \\times \\text{GH¢ } 4.50 = \\text{GH¢ } 270.00$$\n\n**(ii) Percentage Profit:**\n$$\\text{Profit per book} = 5.40 - 4.50 = \\text{GH¢ } 0.90$$\n$$\\text{Percentage Profit} = \\left(\\frac{0.90}{4.50}\\right) \\times 100\\% = \\left(\\frac{1}{5}\\right) \\times 100\\% = 20\\%$$\n*(Alternatively: Total SP = $60 \\times 5.40 = \\text{GH¢ } 324.00$. Total profit = $324 - 270 = \\text{GH¢ } 54.00$. Profit % = $\\frac{54}{270} \\times 100\\% = 20\\%$)*."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Pie Chart Angle Distributions & Linear Inequalities",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the pie chart and problem descriptions provided below:",
+      diagramSvg: "<svg viewBox='0 0 320 280' width='100%' height='260' xmlns='http://www.w3.org/2000/svg'><circle cx='160' cy='130' r='100' fill='#f1f5f9' stroke='#334155' stroke-width='2'/><path d='M160,130 L160,30 A100,100 0 0,1 254,96 Z' fill='#bfdbfe' stroke='#1e3a8a'/><path d='M160,130 L254,96 A100,100 0 0,1 256,164 Z' fill='#bbf7d0' stroke='#14532d'/><path d='M160,130 L256,164 A100,100 0 0,1 126,224 Z' fill='#fed7aa' stroke='#7c2d12'/><path d='M160,130 L126,224 A100,100 0 0,1 66,96 Z' fill='#fef08a' stroke='#713f12'/><path d='M160,130 L66,96 A100,100 0 0,1 160,30 Z' fill='#e9d5ff' stroke='#581c87'/><text x='180' y='75' font-size='12' font-weight='bold'>A: 70°</text><text x='200' y='130' font-size='12' font-weight='bold'>B: 40°</text><text x='170' y='185' font-size='12' font-weight='bold'>C: 90°</text><text x='85' y='160' font-size='12' font-weight='bold'>D: 100°</text><text x='95' y='85' font-size='12' font-weight='bold'>E: x°</text><text x='35' y='260' font-size='12' font-style='italic' fill='#475569'>Distribution of 7,200 textbooks across 5 schools</text></svg>",
+      hint: "The sum of angles in a pie chart is 360°. Scale factor connects total books to 360 degrees.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)(i)",
+          marks: 3,
+          prompt: "The pie chart above shows the allocation of $7,200$ science textbooks across five community schools ($A, B, C, D,$ and $E$).\nCalculate the sector angle $x^\\circ$ for School $E$.",
+          hint: "The sum of angles in a pie chart equals $360^\\circ$.",
+          modelAnswer: "60°",
+          workedSolution: "$$70^\\circ + 40^\\circ + 90^\\circ + 100^\\circ + x^\\circ = 360^\\circ$$\n$$300^\\circ + x^\\circ = 360^\\circ$$\n$$x = 360 - 300 = 60^\\circ$$."
+        },
+        {
+          partLabel: "(a)(ii)",
+          marks: 4,
+          prompt: "How many textbooks were allocated to School $C$ and School $E$?",
+          hint: "Textbooks = (sector angle / 360) × 7,200.",
+          modelAnswer: "School C = 1,800 books; School E = 1,200 books",
+          workedSolution: "Notice the scale factor: $$\\frac{7,200}{360^\\circ} = 20\\text{ books per degree}$$.\n- School C ($90^\\circ$): $$90 \\times 20 = 1,800\\text{ books}$$.\n- School E ($60^\\circ$): $$60 \\times 20 = 1,200\\text{ books}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Solve the inequality below and express the truth set:\n$$\\frac{1}{2}x + 2 \\ge \\frac{2}{3}x + \\frac{1}{6}(4 - x)$$",
+          hint: "Multiply every term by 6 (the LCM of 2, 3, and 6) to eliminate all fractions.",
+          modelAnswer: "$$\\{x : x \\in \\mathbb{R}\\}$$ or True for all x (Identity)",
+          workedSolution: "Multiply through by $6$:\n$$6\\left(\\frac{1}{2}x\\right) + 6(2) \\ge 6\\left(\\frac{2}{3}x\\right) + 6\\left(\\frac{1}{6}(4 - x)\\right)$$\n$$3x + 12 \\ge 4x + (4 - x)$$\n$$3x + 12 \\ge 3x + 4$$\nSubtract $3x$ from both sides:\n$$12 \\ge 4$$\nSince $12 \\ge 4$ is always true regardless of $x$, the inequality holds for all real numbers: $$\\{x : x \\in \\mathbb{R}\\}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 3,
+          prompt: "A student spent $\\frac{2}{5}$ of her monthly allowance on study books and had $\\text{GH¢ } 36.00$ remaining. What was her total allowance?",
+          hint: "The remaining fraction is $1 - \\frac{2}{5} = \\frac{3}{5}$.",
+          modelAnswer: "GH¢ 60.00",
+          workedSolution: "Fraction left = $$1 - \\frac{2}{5} = \\frac{3}{5}$$.\nLet $A$ be the total allowance:\n$$\\frac{3}{5}A = 36.00 \\implies A = 36 \\times \\frac{5}{3} = 12 \\times 5 = \\text{GH¢ } 60.00$$."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Algebraic Perimeter, Area & Isosceles Angle Geometry",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the geometric diagram and algebraic specifications below:",
+      diagramSvg: "<svg viewBox='0 0 340 180' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><polygon points='40,140 170,30 300,140' fill='#eff6ff' stroke='#1e40af' stroke-width='2.5'/><line x1='10' y1='140' x2='330' y2='140' stroke='#334155' stroke-width='1.5'/><text x='165' y='22' font-size='13' font-weight='bold'>C (x°)</text><text x='30' y='158' font-size='13' font-weight='bold'>A</text><text x='295' y='158' font-size='13' font-weight='bold'>B</text><path d='M20,140 A20,20 0 0,1 40,123' fill='none' stroke='#dc2626' stroke-width='2'/><text x='20' y='132' font-size='12' font-weight='bold' fill='#dc2626'>w</text><path d='M300,140 A25,25 0 0,1 322,140' fill='none' stroke='#047857' stroke-width='2'/><text x='305' y='130' font-size='11' font-weight='bold' fill='#047857'>126°</text><line x1='100' y1='80' x2='110' y2='90' stroke='#1e40af' stroke-width='2'/><line x1='230' y1='80' x2='240' y2='90' stroke='#1e40af' stroke-width='2'/></svg>",
+      hint: "Perimeter is 2(length + width). Isosceles triangles have equal base angles.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)(i)",
+          marks: 4,
+          prompt: "The perimeter of a rectangular farm plot of length $(3x + 4)\\text{ m}$ and width $(x - 2)\\text{ m}$ is $68\\text{ m}$.\nFind the value of $x$.",
+          hint: "Perimeter = 2(length + width).",
+          modelAnswer: "x = 8",
+          workedSolution: "$$2[(3x + 4) + (x - 2)] = 68$$\n$$2[4x + 2] = 68$$\n$$8x + 4 = 68$$\n$$8x = 64 \\implies x = 8$$."
+        },
+        {
+          partLabel: "(a)(ii)",
+          marks: 3,
+          prompt: "Find the area of the plot and the cost of clearing it at $\\text{GH¢ } 0.50\\text{ per m}^2$.",
+          hint: "Compute actual length and width using x = 8, then calculate Area = length × width.",
+          modelAnswer: "Area = 168 m², Cost = GH¢ 84.00",
+          workedSolution: "$$\\text{Length} = 3(8) + 4 = 28\\text{ m}$$\n$$\\text{Width} = 8 - 2 = 6\\text{ m}$$\n$$\\text{Area} = 28\\text{ m} \\times 6\\text{ m} = 168\\text{ m}^2$$\n$$\\text{Cost} = 168 \\times \\text{GH¢ } 0.50 = \\text{GH¢ } 84.00$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "In the diagram above, $|AC| = |BC|$, the exterior angle at vertex $B$ is $126^\\circ$, and the exterior angle at vertex $A$ is $w^\\circ$.\nFind the values of $x$ and $w$.",
+          hint: "Interior angle B and the 126° angle lie on a straight line. Base angles of an isosceles triangle are equal.",
+          modelAnswer: "x = 72°, w = 126°",
+          workedSolution: "1. Interior angle $B = 180^\\circ - 126^\\circ = 54^\\circ$.\n2. Since $|AC| = |BC|$, triangle $ABC$ is isosceles with base $AB$. Thus interior angle $A = \\text{interior angle } B = 54^\\circ$.\n3. Exterior angle $w = 180^\\circ - 54^\\circ = 126^\\circ$.\n4. Sum of angles in triangle: $$x + 54^\\circ + 54^\\circ = 180^\\circ \\implies x + 108^\\circ = 180^\\circ \\implies x = 72^\\circ$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 3,
+          prompt: "Factorize completely: $$4a^2 - 12ac + 3ab - 9bc$$.",
+          hint: "Group into pairs of two terms and factor out the common factor.",
+          modelAnswer: "(a - 3c)(4a + 3b)",
+          workedSolution: "$$4a(a - 3c) + 3b(a - 3c) = (a - 3c)(4a + 3b)$$"
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Vector Operations, Base Conversions & Class Frequency Distribution",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question:",
+      hint: "Perform vector scalar multiplication before component addition. Mean = total students / number of classes.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "Given column vectors $$u = \\begin{pmatrix} -4 \\\\ 5 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$$, evaluate:\n(i) $$u + 2v$$\n(ii) $$\\frac{1}{2}(2u - 4v)$$",
+          hint: "Multiply vectors by their scalar multipliers component-wise before adding or subtracting.",
+          modelAnswer: "(i) (2, 1)ᵀ, (ii) (-10, 9)ᵀ",
+          workedSolution: "**(i)** $$u + 2v = \\begin{pmatrix} -4 \\\\ 5 \\end{pmatrix} + 2\\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix} = \\begin{pmatrix} -4 + 6 \\\\ 5 - 4 \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ 1 \\end{pmatrix}$$.\n\n**(ii)** $$\\frac{1}{2}(2u - 4v) = u - 2v = \\begin{pmatrix} -4 \\\\ 5 \\end{pmatrix} - 2\\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix} = \\begin{pmatrix} -4 - 6 \\\\ 5 - (-4) \\end{pmatrix} = \\begin{pmatrix} -10 \\\\ 9 \\end{pmatrix}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 3,
+          prompt: "Convert $$423_{\\text{five}}$$ to a numeral in base ten.",
+          hint: "Expand: $4(5^2) + 2(5^1) + 3(5^0)$.",
+          modelAnswer: "113",
+          workedSolution: "$$4(25) + 2(5) + 3(1) = 100 + 10 + 3 = 113_{\\text{ten}}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 7,
+          prompt: "The table below shows the distribution of students across classes in a basic school:\n\n| Class | BS 1 | BS 2 | BS 3 | BS 4 | BS 5 | BS 6 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Students | 30 | 38 | 32 | 26 | 34 | 40 |\n\n(i) Find the total number of students in the school.\n(ii) Calculate the mean number of students per class.\n(iii) What percentage of students are in BS 6?",
+          hint: "Sum all class counts for total. Mean = Total / 6. Percentage = (BS 6 students / Total) × 100%.",
+          modelAnswer: "(i) 200 students, (ii) 33.3 students, (iii) 20%",
+          workedSolution: "**(i)** $$\\text{Total} = 30 + 38 + 32 + 26 + 34 + 40 = 200\\text{ students}$$.\n**(ii)** $$\\text{Mean} = \\frac{200}{6} = 33\\frac{1}{3} \\approx 33.3\\text{ students/class}$$.\n**(iii)** $$\\text{Percentage in BS 6} = \\left(\\frac{40}{200}\\right) \\times 100\\% = 20\\%$$."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Linear Cost-Weight Graphing Relations",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the market rate graph and specifications below:",
+      diagramSvg: "<svg viewBox='0 0 350 240' width='100%' height='220' xmlns='http://www.w3.org/2000/svg'><line x1='50' y1='200' x2='320' y2='200' stroke='#334155' stroke-width='2'/><line x1='50' y1='200' x2='50' y2='20' stroke='#334155' stroke-width='2'/><text x='300' y='225' font-size='11' font-weight='bold'>Weight (g)</text><text x='10' y='30' font-size='11' font-weight='bold'>Cost (GH¢)</text><line x1='50' y1='200' x2='290' y2='40' stroke='#2563eb' stroke-width='3'/><circle cx='90' cy='173' r='4' fill='#dc2626'/><circle cx='130' cy='147' r='4' fill='#dc2626'/><circle cx='170' cy='120' r='4' fill='#dc2626'/><circle cx='210' cy='93' r='4' fill='#dc2626'/><circle cx='250' cy='67' r='4' fill='#dc2626'/><text x='75' y='215' font-size='10'>50</text><text x='115' y='215' font-size='10'>100</text><text x='155' y='215' font-size='10'>150</text><text x='195' y='215' font-size='10'>200</text><text x='235' y='215' font-size='10'>250</text><text x='25' y='178' font-size='10'>2.00</text><text x='25' y='125' font-size='10'>6.00</text><text x='20' y='72' font-size='10'>10.00</text></svg>",
+      hint: "Use y = x / 25. For gradient, compare with y = mx.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 4,
+          prompt: "The relation between cost $y$ (in $\\text{GH¢}$) and weight $x$ (in grams) of premium seed grain sold in a market is given by:\n$$y = \\frac{x}{25}$$\nCopy and complete the table of values:\n\n| Weight $x$ (g) | 50 | 100 | 150 | 200 | 250 | 300 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Cost $y$ (GH¢) | **?** | 4.00 | **?** | 8.00 | **?** | **?** |",
+          hint: "Divide each weight x by 25 to get the corresponding cost y.",
+          modelAnswer: "x=50: 2.00, x=150: 6.00, x=250: 10.00, x=300: 12.00",
+          workedSolution: "- For $x = 50$: $$y = 50 / 25 = \\text{GH¢ } 2.00$$\n- For $x = 150$: $$y = 150 / 25 = \\text{GH¢ } 6.00$$\n- For $x = 250$: $$y = 250 / 25 = \\text{GH¢ } 10.00$$\n- For $x = 300$: $$y = 300 / 25 = \\text{GH¢ } 12.00$$"
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Using the relation $$y = \\frac{x}{25}$$, determine:\n(i) The cost of $175\\text{ grams}$ of seed grain.\n(ii) The weight of seed grain that can be purchased with $\\text{GH¢ } 18.00$.",
+          hint: "For (i), substitute x = 175. For (ii), substitute y = 18.00 and solve for x.",
+          modelAnswer: "(i) GH¢ 7.00, (ii) 450 grams",
+          workedSolution: "**(i)** Cost for $175\\text{ g}$:\n$$y = \\frac{175}{25} = \\text{GH¢ } 7.00$$\n\n**(ii)** Weight for $\\text{GH¢ } 18.00$:\n$$18 = \\frac{x}{25} \\implies x = 18 \\times 25 = 450\\text{ grams}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Find the gradient (rate of cost increase per gram) of the line represented by $$y = \\frac{x}{25}$$.",
+          hint: "Compare with the standard linear equation y = mx.",
+          modelAnswer: "m = 0.04 (or 1/25 GH¢/g)",
+          workedSolution: "In $y = mx + c$, $m$ represents the slope. Here, $$m = \\frac{1}{25} = 0.04\\text{ GH¢ per gram}$$. Each additional gram costs $4\\text{ pesewas}$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Cartesian Coordinate Transformations & Symmetry",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the Cartesian coordinate illustration below:",
+      diagramSvg: "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='140' x2='300' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='250' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12' fill='#334155'>x</text><text x='165' y='30' font-size='12' fill='#334155'>y</text><polygon points='220,110 190,50 190,110' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='225' y='110' font-size='11' font-weight='bold' fill='#1e40af'>P(4,2)</text><text x='195' y='45' font-size='11' font-weight='bold' fill='#1e40af'>Q(2,5)</text><text x='160' y='105' font-size='11' font-weight='bold' fill='#1e40af'>R(2,2)</text><polygon points='220,170 190,230 190,170' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='225' y='175' font-size='11' font-weight='bold' fill='#b91c1c'>P₁(4,-2)</text><text x='195' y='245' font-size='11' font-weight='bold' fill='#b91c1c'>Q₁(2,-5)</text><text x='160' y='180' font-size='11' font-weight='bold' fill='#b91c1c'>R₁(2,-2)</text></svg>",
+      hint: "Reflection in x-axis: (x, y) -> (x, -y). Translation by (a, b) -> (x+a, y+b).",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Triangle $PQR$ has vertices $P(4, 2)$, $Q(2, 5)$, and $R(2, 2)$.\n(i) Write down the coordinates of image triangle $P_1Q_1R_1$ under a reflection in the $x$-axis.\n(ii) What is the length of side $PR$?",
+          hint: "Under reflection in the x-axis, (x, y) → (x, -y). Length of PR = difference in x coordinates between P and R.",
+          modelAnswer: "(i) P₁(4,-2), Q₁(2,-5), R₁(2,-2); (ii) 2 units",
+          workedSolution: "**(i)** Under reflection in the $x$-axis: $$(x, y) \\to (x, -y)$$.\n- $$P(4, 2) \\to P_1(4, -2)$$\n- $$Q(2, 5) \\to Q_1(2, -5)$$\n- $$R(2, 2) \\to R_1(2, -2)$$\n\n**(ii)** Since $P(4, 2)$ and $R(2, 2)$ share the same $y$-coordinate, the length of $$PR = 4 - 2 = 2\\text{ units}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Triangle $PQR$ is translated by vector $$T = \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$$ to produce image $P_2Q_2R_2$.\nDetermine the coordinates of vertices $P_2$, $Q_2$, and $R_2$.",
+          hint: "Under translation by (a, b)ᵀ: (x, y) → (x + a, y + b).",
+          modelAnswer: "P₂(1, 4), Q₂(-1, 7), R₂(-1, 4)",
+          workedSolution: "$$(x, y) \\to (x - 3, y + 2)$$\n- $$P(4, 2) \\to P_2(4 - 3, 2 + 2) = P_2(1, 4)$$\n- $$Q(2, 5) \\to Q_2(2 - 3, 5 + 2) = Q_2(-1, 7)$$\n- $$R(2, 2) \\to R_2(2 - 3, 2 + 2) = R_2(-1, 4)$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 3,
+          prompt: "Calculate the area of the original triangle $PQR$.",
+          hint: "Triangle PQR is right-angled at vertex R. Area = 1/2 × base × height.",
+          modelAnswer: "3 square units",
+          workedSolution: "Base $$PR = 4 - 2 = 2\\text{ units}$$.\nHeight $$RQ = 5 - 2 = 3\\text{ units}$$.\n$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 2 \\times 3 = 3\\text{ square units}$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-14T12:30:00.000Z",
+  lastUpdated: "2026-09-14T12:30:00.000Z"
+};
+

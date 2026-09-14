@@ -423,9 +423,24 @@ export function QuestionRunner({
               </h3>
             )}
 
-            <div className="text-sm sm:text-base text-slate-200 leading-relaxed">
-              <MathRenderer content={currentQuestion.prompt} />
-            </div>
+            {currentQuestion.prompt && (
+              <div className="text-sm sm:text-base text-slate-200 leading-relaxed">
+                <MathRenderer content={currentQuestion.prompt} />
+              </div>
+            )}
+
+            {/* SVG Diagram Rendering (Geometry, Venn Diagrams, Coordinate Planes) */}
+            {currentQuestion.diagramSvg && (
+              <div className="my-5 p-5 sm:p-7 rounded-3xl bg-slate-950/80 border border-slate-800 shadow-xl flex flex-col items-center justify-center overflow-x-auto">
+                <div
+                  className="w-full max-w-lg flex justify-center [&>svg]:max-w-full [&>svg]:h-auto [&>svg]:rounded-xl [&>svg]:drop-shadow-md"
+                  dangerouslySetInnerHTML={{ __html: currentQuestion.diagramSvg }}
+                />
+                <span className="text-[11px] text-slate-500 font-mono mt-3 tracking-wider uppercase font-semibold">
+                  Figure Illustration • {currentQuestion.title || `Question ${currentIndex + 1}`}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* ============================================================ */}
@@ -463,6 +478,16 @@ export function QuestionRunner({
                     <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 text-sm text-slate-100 leading-relaxed">
                       <MathRenderer content={part.prompt} />
                     </div>
+
+                    {/* Sub-part Specific Diagram (if any) */}
+                    {part.diagramSvg && (
+                      <div className="my-3 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex justify-center overflow-x-auto">
+                        <div
+                          className="max-w-md [&>svg]:max-w-full [&>svg]:h-auto"
+                          dangerouslySetInnerHTML={{ __html: part.diagramSvg }}
+                        />
+                      </div>
+                    )}
 
                     {/* Student Working / Answer Draft Area */}
                     <div className="space-y-1.5">
