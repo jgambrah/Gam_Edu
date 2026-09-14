@@ -2,7 +2,8 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -11,7 +12,8 @@ import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, add
 import { 
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
-  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star
+  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star,
+  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -160,6 +162,11 @@ interface SuggestedModuleCard {
     explanation?: string;
     topicId?: string;
     setId?: string;
+    kind?: 'topical' | 'exam_series';
+    format?: 'objective' | 'structured_essay' | 'standard';
+    questionCount?: number;
+    examTag?: string;
+    subject?: 'Mathematics' | 'English' | 'Integrated Science' | 'Computing';
 }
 
 const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
@@ -220,15 +227,22 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleAnswer: "2"
     },
     {
-        title: "Probability Distributions & Combinatorics",
-        domain: "STATISTICS & PROBABILITY",
+        title: "WASSCE Elective Math • Paper 1 (Calculus & Core Analysis)",
+        domain: "ALGEBRA",
         gradeTier: "Senior Secondary (SHS)",
-        meta: "4 Subtopics • 40 mins",
-        description: "Permutations, combinations nCr, binomial distributions, and expected value variances.",
+        meta: "40 Questions • 60 mins • Objective Examination",
+        description: "Official-standard SHS WASSCE examination series variant covering differential calculus, polynomials, matrices, and vectors.",
         difficulty: "Advanced",
-        sampleInstruction: "Calculate combinations 5C2 for choosing 2 lab partners from 5 candidates:",
-        sampleFormula: "\\binom{5}{2} = \\frac{5 \\times 4}{2 \\times 1}",
-        sampleAnswer: "10"
+        topicId: "calculus-differentiation",
+        setId: "shs-math-calc-01",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Automated Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "Evaluate derivative f'(x) for f(x) = 2x^3 - 4x at x = 2:",
+        sampleFormula: "f'(x) = 6x^2 - 4",
+        sampleAnswer: "20"
     },
 
     // Junior Secondary (JHS)
@@ -307,6 +321,11 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         difficulty: "Advanced",
         topicId: "core_curriculum_mastery",
         setId: "jhs-math-mastery-series-01",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Automated Stepper",
+        subject: "Mathematics",
         sampleInstruction: "If set A = {3, 5, 7, 11} and set B = {3, 6, 9, 12}, find A ∩ B.",
         sampleFormula: "A \\cap B = \\{3\\}",
         sampleAnswer: "{3}"
@@ -320,9 +339,32 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         difficulty: "Advanced",
         topicId: "core_curriculum_mastery",
         setId: "jhs-math-mastery-series-02",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Essay Modules • Step-by-Step Marking Guide",
+        subject: "Mathematics",
         sampleInstruction: "Evaluate (0.048 × 1.05) / 0.00012, leaving your final answer in standard form:",
         sampleFormula: "\\frac{0.048 \\times 1.05}{0.00012} = 4.2 \\times 10^2",
         sampleAnswer: "4.2 × 10²"
+    },
+    {
+        title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Past Paper Variant",
+        description: "Full BECE standard past paper variant with 40 syllabus-aligned objective questions and instant step-by-step verification.",
+        difficulty: "Advanced",
+        topicId: "bece_past_papers",
+        setId: "jhs-math-2012-paper1",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Automated Stepper",
+        subject: "Mathematics",
+        sampleInstruction: "If set A = {3, 5, 7, 11} and set B = {3, 6, 9, 12}, find A ∩ B.",
+        sampleFormula: "A \\cap B = \\{3\\}",
+        sampleAnswer: "{3}"
     },
 
     // Upper Primary (BS 4 - 6)
@@ -1446,12 +1488,22 @@ function MathLab({
     canEdit, 
     activeGrade = 'Senior Secondary (SHS)',
     tenantId,
-    studentId
+    studentId,
+    viewMode = 'topical',
+    onViewModeChange,
+    searchQuery = '',
+    filterSubject = 'ALL',
+    filterFormat = 'ALL'
 }: { 
     canEdit: boolean; 
     activeGrade?: SecondaryGradeTier;
     tenantId?: string;
     studentId?: string;
+    viewMode?: 'topical' | 'exam_series';
+    onViewModeChange?: (mode: 'topical' | 'exam_series') => void;
+    searchQuery?: string;
+    filterSubject?: string;
+    filterFormat?: string;
 }) {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -1497,6 +1549,65 @@ function MathLab({
 
         return structure;
     }, [dbProblems, activeGrade]);
+
+    // Zero Read-Cost Client-Side Filter over SUGGESTED_MATH_MODULES
+    const filteredModules = useMemo(() => {
+        return SUGGESTED_MATH_MODULES.filter(mod => {
+            // 1. Tier Match
+            if (mod.gradeTier !== activeGrade) return false;
+
+            // 2. Dual-Track Mode Match
+            const isExam = mod.kind === 'exam_series' || 
+                           mod.title.toLowerCase().includes('paper 1') || 
+                           mod.title.toLowerCase().includes('paper 2') || 
+                           mod.title.toLowerCase().includes('past paper') ||
+                           mod.title.toLowerCase().includes('objective test') ||
+                           mod.title.toLowerCase().includes('structured essay');
+            
+            if (viewMode === 'exam_series') {
+                if (!isExam) return false;
+            } else {
+                if (isExam) return false;
+            }
+
+            // 3. Subject Filter (when explicitly set)
+            if (filterSubject !== 'ALL') {
+                const modSub = (mod.subject || 'Mathematics').toLowerCase();
+                const targetSub = filterSubject.toLowerCase();
+                if (!modSub.includes(targetSub) && !targetSub.includes(modSub)) return false;
+            }
+
+            // 4. Question Format Filter
+            if (filterFormat === 'objective') {
+                const isObj = mod.format === 'objective' || mod.meta.toLowerCase().includes('objective') || mod.title.toLowerCase().includes('paper 1');
+                if (!isObj) return false;
+            } else if (filterFormat === 'structured_essay') {
+                const isEssay = mod.format === 'structured_essay' || mod.meta.toLowerCase().includes('essay') || mod.title.toLowerCase().includes('paper 2');
+                if (!isEssay) return false;
+            }
+
+            // 5. Domain Filter (for topical mode)
+            if (viewMode === 'topical' && selectedDomain !== 'ALL DOMAINS') {
+                if (mod.domain !== selectedDomain) return false;
+            }
+
+            // 6. Search Query (debounced instant match over in-memory catalog)
+            if (searchQuery.trim()) {
+                const q = searchQuery.toLowerCase().trim();
+                const matchTitle = mod.title.toLowerCase().includes(q);
+                const matchDesc = mod.description.toLowerCase().includes(q);
+                const matchDomain = mod.domain.toLowerCase().includes(q);
+                const matchMeta = mod.meta.toLowerCase().includes(q);
+                const matchSample = (mod.sampleInstruction || '').toLowerCase().includes(q);
+                const matchTag = (mod.examTag || '').toLowerCase().includes(q);
+                if (!matchTitle && !matchDesc && !matchDomain && !matchMeta && !matchSample && !matchTag) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }, [activeGrade, viewMode, filterSubject, filterFormat, selectedDomain, searchQuery]);
 
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
@@ -1687,91 +1798,174 @@ function MathLab({
             ) : (
                 /* FULL-WIDTH CURRICULUM MODULES & CATALOG ARCHIVE */
                 <div className="space-y-4">
-                    {/* Section Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80">
+                    {/* Section Sub-Header with mode indicator */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-800/80">
                         <div>
                             <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-indigo-400" />
-                                Curriculum Labs & Recommended Modules • {activeGrade}
+                                {viewMode === 'exam_series' ? (
+                                    <>
+                                        <Award className="w-4 h-4 text-amber-400" />
+                                        <span>Standard Exam Series & Past Paper Variants • {activeGrade}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Sparkles className="w-4 h-4 text-indigo-400" />
+                                        <span>Topical Practice Labs & Mastery Drills • {activeGrade}</span>
+                                    </>
+                                )}
                             </h3>
                             <p className="text-xs text-slate-400 mt-0.5">
-                                Launch an interactive laboratory module below or browse the full syllabus catalog below.
+                                {viewMode === 'exam_series' 
+                                    ? "Timed official examination sets, Paper 1 objective steppers, and Paper 2 structured theory rubrics."
+                                    : "Subject-by-subject unit drills, conceptual frameworks, and interactive laboratory problems."}
                             </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
+                                {filteredModules.length} {viewMode === 'exam_series' ? 'Exam Papers' : 'Topical Labs'}
+                            </span>
                         </div>
                     </div>
 
-                    {/* SUBJECT DOMAIN PILL BAR */}
-                    <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
-                        {MATH_DOMAINS.map((domain) => {
-                            const isActive = selectedDomain === domain;
-                            return (
-                                <button
-                                    key={domain}
-                                    type="button"
-                                    onClick={() => setSelectedDomain(domain)}
-                                    className={cn(
-                                        "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
-                                        isActive
-                                            ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
-                                            : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
-                                    )}
-                                >
-                                    <span>{domain}</span>
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {/* FULL-WIDTH 3-COLUMN MODULE CARDS GRID */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {SUGGESTED_MATH_MODULES.filter(mod => {
-                            const matchesGrade = mod.gradeTier === activeGrade;
-                            const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
-                            return matchesGrade && matchesDomain;
-                        }).map((mod, i) => (
-                            <div 
-                                key={i} 
-                                className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
-                            >
-                                <div>
-                                    <div className="flex items-center justify-between gap-2 mb-3">
-                                        <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                            {mod.domain}
-                                        </span>
-                                        <span className={cn(
-                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                        )}>
-                                            {mod.difficulty}
-                                        </span>
-                                    </div>
-                                    <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
-                                        {mod.title}
-                                    </h4>
-                                    <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
-                                        {mod.description}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
-                                    <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
-                                        <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                                        {mod.meta}
-                                    </span>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => handleLaunchModule(mod)}
-                                        className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                    {/* SUBJECT DOMAIN PILL BAR - Rendered only in Topical Practice Labs mode */}
+                    {viewMode === 'topical' && (
+                        <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+                            {MATH_DOMAINS.map((domain) => {
+                                const isActive = selectedDomain === domain;
+                                return (
+                                    <button
+                                        key={domain}
+                                        type="button"
+                                        onClick={() => setSelectedDomain(domain)}
+                                        className={cn(
+                                            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                            isActive
+                                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                                : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                        )}
                                     >
-                                        <span>Launch Lab</span>
-                                        <ChevronRight className="w-3.5 h-3.5" />
-                                    </Button>
-                                </div>
+                                        <span>{domain}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* EMPTY & FILTERED STATE */}
+                    {filteredModules.length === 0 ? (
+                        <div className="py-16 px-6 text-center bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl space-y-3">
+                            <div className="w-12 h-12 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center mx-auto text-slate-400">
+                                <Search className="w-6 h-6 opacity-60" />
                             </div>
-                        ))}
-                    </div>
+                            <h4 className="text-sm sm:text-base font-bold text-white">No matching curriculum sets found</h4>
+                            <p className="text-xs text-slate-400 max-w-md mx-auto">
+                                Try adjusting your search keywords, clearing search filters, or switching academic tiers.
+                            </p>
+                        </div>
+                    ) : (
+                        /* FULL-WIDTH 3-COLUMN MODULE CARDS GRID */
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredModules.map((mod, i) => {
+                                const isExamCard = viewMode === 'exam_series' || mod.kind === 'exam_series';
+                                const isPaper2 = mod.format === 'structured_essay' || mod.title.toLowerCase().includes('paper 2');
+                                return (
+                                    <div 
+                                        key={i} 
+                                        className={cn(
+                                            "border rounded-2xl p-5 transition-all flex flex-col justify-between group h-full shadow-lg",
+                                            isExamCard 
+                                                ? (isPaper2 
+                                                    ? "bg-gradient-to-br from-amber-950/20 via-slate-900/90 to-slate-900/90 border-amber-500/30 hover:border-amber-400/60" 
+                                                    : "bg-gradient-to-br from-indigo-950/30 via-slate-900/90 to-slate-900/90 border-indigo-500/30 hover:border-indigo-400/60")
+                                                : "bg-slate-900/60 border-slate-800 hover:border-indigo-500/40 hover:bg-slate-850/80"
+                                        )}
+                                    >
+                                        <div>
+                                            {/* Card Badges */}
+                                            <div className="flex items-center justify-between gap-2 mb-3">
+                                                {isExamCard ? (
+                                                    <span className={cn(
+                                                        "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border uppercase tracking-wider flex items-center gap-1.5",
+                                                        isPaper2 
+                                                            ? "bg-amber-500/15 text-amber-300 border-amber-500/30" 
+                                                            : "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
+                                                    )}>
+                                                        {isPaper2 ? (
+                                                            <>
+                                                                <FileSpreadsheet className="w-3 h-3" />
+                                                                <span>Paper 2 • Structured Theory</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Award className="w-3 h-3" />
+                                                                <span>Paper 1 • Objective Test</span>
+                                                            </>
+                                                        )}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                                        {mod.domain}
+                                                    </span>
+                                                )}
+
+                                                <span className={cn(
+                                                    "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                    mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                    mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                                    "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                                )}>
+                                                    {mod.difficulty}
+                                                </span>
+                                            </div>
+
+                                            {/* Exam Series Highlights / Automated Tags */}
+                                            {isExamCard && (
+                                                <div className="mb-2">
+                                                    <span className={cn(
+                                                        "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border",
+                                                        isPaper2 
+                                                            ? "bg-amber-400/10 text-amber-300 border-amber-400/20" 
+                                                            : "bg-sky-400/10 text-sky-300 border-sky-400/20"
+                                                    )}>
+                                                        {mod.examTag || (isPaper2 ? '6 Essay Modules • Step-by-Step Marking Guide' : '40 Objective Questions • Automated Stepper')}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                                {mod.title}
+                                            </h4>
+                                            <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
+                                                {mod.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                            <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
+                                                <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                                                {mod.meta}
+                                            </span>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleLaunchModule(mod)}
+                                                className={cn(
+                                                    "h-8 px-3.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border",
+                                                    isExamCard
+                                                        ? (isPaper2 
+                                                            ? "bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border-amber-500/40" 
+                                                            : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40")
+                                                        : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40"
+                                                )}
+                                            >
+                                                <span>{isExamCard ? "Launch Exam Paper" : "Launch Practice Lab"}</span>
+                                                <ChevronRight className="w-3.5 h-3.5" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
 
                     {/* EXPANDABLE SYLLABUS CATALOG ARCHIVE ACCORDION */}
                     <div className="pt-6 border-t border-slate-800/80">
@@ -2809,14 +3003,53 @@ function AdminConsole({
 }
 
 
-// --- MAIN PAGE ---
-export default function SeniorAcademyPage() {
+function SeniorAcademyPageContent() {
     const { role } = useRole();
     const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-    const [activeGradeTier, setActiveGradeTier] = useState<SecondaryGradeTier>('Senior Secondary (SHS)');
+    // URL sync for active view mode (?view=topical vs ?view=exam_series)
+    const urlView = searchParams.get('view');
+    const initialViewMode = urlView === 'exam_series' ? 'exam_series' : 'topical';
+    const [viewMode, setViewMode] = useState<'topical' | 'exam_series'>(initialViewMode);
+
+    // Sync state if URL changes externally
+    useEffect(() => {
+        if (urlView === 'exam_series' && viewMode !== 'exam_series') {
+            setViewMode('exam_series');
+        } else if ((!urlView || urlView === 'topical') && viewMode !== 'topical') {
+            setViewMode('topical');
+        }
+    }, [urlView]);
+
+    const handleViewModeToggle = (mode: 'topical' | 'exam_series') => {
+        setViewMode(mode);
+        const params = new URLSearchParams(searchParams.toString());
+        if (mode === 'exam_series') {
+            params.set('view', 'exam_series');
+        } else {
+            params.set('view', 'topical');
+        }
+        router.replace(`?${params.toString()}`, { scroll: false });
+    };
+
+    // Instant Client-Side Zero-Cost Search & Tag Filters
+    const [rawSearchQuery, setRawSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [filterSubject, setFilterSubject] = useState('ALL');
+    const [filterFormat, setFilterFormat] = useState('ALL');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(rawSearchQuery);
+        }, 150);
+        return () => clearTimeout(timer);
+    }, [rawSearchQuery]);
+
+    const [activeGradeTier, setActiveGradeTier] = useState<SecondaryGradeTier>('Junior Secondary (JHS)');
     const [activeSubject, setActiveSubject] = useState<'math' | 'english' | 'science'>('math');
 
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
@@ -2848,14 +3081,14 @@ export default function SeniorAcademyPage() {
 
             <SectionHeroBanner
                 title="Senior Academy"
-                subtitle="Advanced subject modules, curriculum labs, and scientific discoveries across secondary tiers."
+                subtitle="Curriculum mastery laboratory, instant resource search, and standardized exam variant series."
                 eyebrow="SUNNY SIDE ACADEMY • ACADEMICS"
                 badge={{
-                    label: "LIVE MODULES",
+                    label: "DUAL-TRACK LIVE",
                     variant: "success",
                 }}
                 icon={Rocket}
-                className="mb-3.5 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
+                className="mb-4 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
                 actions={
                     <div className="flex flex-wrap items-center gap-3">
                         {/* SEGMENTED CONTROL FOR ALL 4 STUDY LEVELS */}
@@ -2934,9 +3167,136 @@ export default function SeniorAcademyPage() {
                 </div>
             )}
 
+            {/* 1. DUAL-TRACK RESOURCE SWITCHER & 2. INSTANT CLIENT-SIDE ZERO-COST SEARCH ENGINE */}
+            <div className="mb-5 space-y-3 bg-slate-900/70 border border-slate-800/80 p-3.5 sm:p-4 rounded-2xl shadow-xl backdrop-blur-md">
+                {/* DUAL-TRACK SEGMENTED MODE CONTROL */}
+                <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pb-3 border-b border-slate-800/70">
+                    <div className="inline-flex p-1 bg-slate-950/90 rounded-xl border border-slate-800 shadow-inner">
+                        <button
+                            type="button"
+                            onClick={() => handleViewModeToggle('topical')}
+                            className={cn(
+                                "px-4 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer",
+                                viewMode === 'topical'
+                                    ? "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30"
+                                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-850/60"
+                            )}
+                        >
+                            <span>📚 Topical Practice Labs</span>
+                            <span className="text-[10px] opacity-75 hidden sm:inline font-normal">(Unit & Strand Drills)</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleViewModeToggle('exam_series')}
+                            className={cn(
+                                "px-4 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer",
+                                viewMode === 'exam_series'
+                                    ? "bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-md shadow-amber-600/30 border border-amber-400/30"
+                                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-850/60"
+                            )}
+                        >
+                            <span>🏛️ Standard Exam Series</span>
+                            <span className="text-[10px] opacity-75 hidden sm:inline font-normal">(Paper 1 & Paper 2)</span>
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-slate-400 self-end md:self-center">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">
+                            <Sparkles className="w-3 h-3" /> Zero Firestore Read-Cost
+                        </span>
+                    </div>
+                </div>
+
+                {/* SEARCH BAR & DYNAMIC TAG FILTERS */}
+                <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5 pt-0.5">
+                    {/* Debounced Search Input */}
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                        <Input
+                            type="text"
+                            placeholder="Search by topic title, strand, keyword, or paper number (e.g. 'Fractions', 'Indices', 'Paper 1', 'Paper 2')..."
+                            value={rawSearchQuery}
+                            onChange={(e) => setRawSearchQuery(e.target.value)}
+                            className="h-10 pl-10 pr-9 bg-slate-950/90 border-slate-800 text-white placeholder:text-slate-500 text-xs rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        />
+                        {rawSearchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setRawSearchQuery('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5"
+                                title="Clear search"
+                            >
+                                <XCircle className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Dynamic Filters Row */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        {/* Subject Filter Tag */}
+                        <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-800/90 rounded-xl p-1 text-xs">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase px-1.5 flex items-center gap-1">
+                                <Filter className="w-3 h-3" /> Subject:
+                            </span>
+                            {[
+                                { id: 'ALL', label: 'All Subjects' },
+                                { id: 'math', label: 'Mathematics' },
+                                { id: 'english', label: 'English' },
+                                { id: 'science', label: 'Science' }
+                            ].map((s) => (
+                                <button
+                                    key={s.id}
+                                    type="button"
+                                    onClick={() => {
+                                        setFilterSubject(s.id);
+                                        if (s.id === 'math' || s.id === 'english' || s.id === 'science') {
+                                            setActiveSubject(s.id);
+                                        }
+                                    }}
+                                    className={cn(
+                                        "px-2.5 py-1 rounded-lg font-bold transition-all text-xs cursor-pointer",
+                                        filterSubject === s.id
+                                            ? "bg-indigo-600 text-white shadow-sm"
+                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                                    )}
+                                >
+                                    {s.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Question Format Filter Tag */}
+                        <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-800/90 rounded-xl p-1 text-xs">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase px-1.5 flex items-center gap-1">
+                                <SlidersHorizontal className="w-3 h-3" /> Format:
+                            </span>
+                            {[
+                                { id: 'ALL', label: 'All Formats' },
+                                { id: 'objective', label: 'Objective (MCQ)' },
+                                { id: 'structured_essay', label: 'Structured Theory / Essay' }
+                            ].map((f) => (
+                                <button
+                                    key={f.id}
+                                    type="button"
+                                    onClick={() => setFilterFormat(f.id)}
+                                    className={cn(
+                                        "px-2.5 py-1 rounded-lg font-bold transition-all text-xs cursor-pointer",
+                                        filterFormat === f.id
+                                            ? "bg-indigo-600 text-white shadow-sm"
+                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                                    )}
+                                >
+                                    {f.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* SUBJECT NAVIGATION FOR STUDENTS (when canEdit is false) */}
             {!canEdit && (
-                <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-6 w-fit">
+                <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-5 w-fit">
                     <button
                         type="button"
                         onClick={() => setActiveSubject('math')}
@@ -2979,11 +3339,37 @@ export default function SeniorAcademyPage() {
                 </div>
             )}
 
-            {/* DIRECT FULL-WIDTH ACTIVE LAB RENDERING */}
+            {/* DIRECT FULL-WIDTH ACTIVE LAB RENDERING WITH DUAL-TRACK & SEARCH PARAMS */}
             <div className="space-y-4 sm:space-y-5">
-                {activeSubject === 'math' && <MathLab canEdit={canEdit} activeGrade={activeGradeTier} tenantId={schoolId || undefined} studentId={studentId || undefined} />}
-                {activeSubject === 'english' && <EnglishMastery canEdit={canEdit} activeGrade={activeGradeTier} tenantId={schoolId || undefined} studentId={studentId || undefined} />}
-                {activeSubject === 'science' && <DiscoveryLab canEdit={canEdit} activeGrade={activeGradeTier} tenantId={schoolId || undefined} studentId={studentId || undefined} />}
+                {activeSubject === 'math' && (
+                    <MathLab 
+                        canEdit={canEdit} 
+                        activeGrade={activeGradeTier} 
+                        tenantId={schoolId || undefined} 
+                        studentId={studentId || undefined}
+                        viewMode={viewMode}
+                        onViewModeChange={handleViewModeToggle}
+                        searchQuery={debouncedSearch}
+                        filterSubject={filterSubject}
+                        filterFormat={filterFormat}
+                    />
+                )}
+                {activeSubject === 'english' && (
+                    <EnglishMastery 
+                        canEdit={canEdit} 
+                        activeGrade={activeGradeTier} 
+                        tenantId={schoolId || undefined} 
+                        studentId={studentId || undefined} 
+                    />
+                )}
+                {activeSubject === 'science' && (
+                    <DiscoveryLab 
+                        canEdit={canEdit} 
+                        activeGrade={activeGradeTier} 
+                        tenantId={schoolId || undefined} 
+                        studentId={studentId || undefined} 
+                    />
+                )}
             </div>
 
             <style jsx global>{`
@@ -2991,6 +3377,20 @@ export default function SeniorAcademyPage() {
                 .katex-display { margin: 0 !important; }
             `}</style>
         </div>
+    );
+}
+
+// --- MAIN PAGE WITH SUSPENSE (Required by Next.js for useSearchParams) ---
+export default function SeniorAcademyPage() {
+    return (
+        <Suspense fallback={
+            <div className="p-8 text-center bg-slate-950 rounded-3xl border border-slate-900 min-h-screen flex flex-col items-center justify-center space-y-4">
+                <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+                <p className="text-xs text-slate-400 font-medium">Loading Senior Academy Explorer...</p>
+            </div>
+        }>
+            <SeniorAcademyPageContent />
+        </Suspense>
     );
 }
 
