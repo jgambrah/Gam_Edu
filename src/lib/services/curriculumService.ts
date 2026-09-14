@@ -70,6 +70,32 @@ export const curriculumKeys = {
     ['tenants', tenantId, 'students', studentId, 'quiz_attempts'] as const
 };
 
+/**
+ * Invalidates cached curriculum queries so new Firestore documents show up immediately.
+ */
+export function invalidateCurriculumCache(levelId?: string, subjectId?: string, topicId?: string) {
+  if (levelId && subjectId && topicId) {
+    curriculumQueryClient.invalidateQueries({
+      queryKey: curriculumKeys.topic(levelId, subjectId, topicId)
+    });
+  } else if (levelId) {
+    curriculumQueryClient.invalidateQueries({
+      queryKey: curriculumKeys.level(levelId)
+    });
+  } else {
+    curriculumQueryClient.invalidateQueries({
+      queryKey: curriculumKeys.all
+    });
+    curriculumQueryClient.clear();
+  }
+  console.log('[curriculumService] Invalidate cache called for:', { levelId, subjectId, topicId });
+}
+
+export function clearCurriculumQueryCache() {
+  curriculumQueryClient.clear();
+  console.log('[curriculumService] Entire curriculum query cache cleared.');
+}
+
 // ============================================================================
 // Core Fetchers (Capped at 1 Read per Document via Firestore Cache)
 // ============================================================================
@@ -89,6 +115,8 @@ export async function fetchTopicQuestionSetsFromFirestore(
     ? [topicId, topicId.replace(/-/g, '_')]
     : (topicId.includes('_') ? [topicId, topicId.replace(/_/g, '-')] : [topicId]);
 
+  console.log(`[curriculumService] fetchTopicQuestionSetsFromFirestore: level="${levelId}", subjects=${JSON.stringify(subjectAliases)}, topics=${JSON.stringify(topicAliases)}`);
+
   try {
     // Try primary path first
     for (const sId of subjectAliases) {
@@ -101,11 +129,15 @@ export async function fetchTopicQuestionSetsFromFirestore(
         const colRef = collection(db, colPath);
         const snapshot = await getDocs(colRef);
 
+        console.log(`[curriculumService] Path "${colPath}" returned ${snapshot.size} documents.`);
+
         if (!snapshot.empty) {
-          return snapshot.docs.map((d) => ({
+          const sets = snapshot.docs.map((d) => ({
             ...(d.data() as CurriculumQuestionSet),
             id: d.id
           }));
+          console.log("[curriculumService] Fetched sets from Firestore:", sets.map(s => ({ id: s.id, title: s.title, qCount: s.questions?.length })));
+          return sets;
         }
       }
     }
@@ -126,6 +158,8 @@ export async function fetchTopicQuestionSetsFromFirestore(
                 unique.push(m.questionSet);
               }
             }
+            console.log(`[curriculumService] Firestore empty for "${levelId}/${sId}/${tId}". Returning ${unique.length} fallback sets: ${unique.map(u => u.id).join(', ')}`);
+            console.log("Fetched sets:", unique);
             return unique;
           }
         }

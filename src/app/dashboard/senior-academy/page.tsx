@@ -13,7 +13,7 @@ import {
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
   Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star,
-  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal
+  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 import { QuestionRunner } from '@/components/curriculum/QuestionRunner';
-import { getTopicQuestionSets } from '@/lib/services/curriculumService';
+import { getTopicQuestionSets, invalidateCurriculumCache } from '@/lib/services/curriculumService';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
 import {
   Select,
@@ -347,6 +347,42 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleInstruction: "Evaluate (0.048 × 1.05) / 0.00012, leaving your final answer in standard form:",
         sampleFormula: "\\frac{0.048 \\times 1.05}{0.00012} = 4.2 \\times 10^2",
         sampleAnswer: "4.2 × 10²"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 3)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 3 / 2011 Variant)",
+        description: "Official-standard 40-question objective examination variant (Set 3 / 2011 past paper variant) covering prime factors, base-two conversions, sets, algebraic simplification, and plane geometry with complete worked solutions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-03",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2011 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Which of the following represents the set of prime factors of 18?",
+        sampleFormula: "18 = 2 \\times 3^2 \\implies \\{2, 3\\}",
+        sampleAnswer: "{2, 3}"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 4)",
+        domain: "ALGEBRA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 4 / 2011 Variant)",
+        description: "Official-standard 6-question structured theory examination variant (Set 4 / 2011 past paper variant) featuring SVG geometry diagrams, coordinate reflections & translations, algebraic fractions, and frequency distributions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-04",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "Solve for x in: (x + 2)/3 - (2x - 1)/4 = 1",
+        sampleFormula: "\\frac{x + 2}{3} - \\frac{2x - 1}{4} = 1 \\implies 4(x + 2) - 3(2x - 1) = 12",
+        sampleAnswer: "x = -0.5"
     },
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
@@ -1126,6 +1162,57 @@ function EnglishMastery({
     const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
     const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
     const [isLoadingSet, setIsLoadingSet] = useState(false);
+    const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    // Dynamic scanning of seeded question sets across topics for JHS/SHS
+    const refreshCurriculumSets = useCallback(async (manual = false) => {
+        setIsRefreshing(true);
+        const levelId = mapGradeTierToLevelId(activeGrade);
+        if (manual) {
+            invalidateCurriculumCache(levelId, 'math');
+        }
+
+        try {
+            const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers'];
+            const scanned: SuggestedModuleCard[] = [];
+            for (const tId of topicsToScan) {
+                const sets = await getTopicQuestionSets(levelId, 'math', tId);
+                console.log("[senior-academy] Fetched sets for topic", tId, ":", sets);
+                if (sets && sets.length > 0) {
+                    sets.forEach((s) => {
+                        scanned.push({
+                            title: s.title,
+                            domain: s.format === 'structured_essay' || s.title.toLowerCase().includes('paper 2') || s.title.toLowerCase().includes('structured') ? 'ALGEBRA' : 'ARITHMETIC & NUMERACY',
+                            gradeTier: activeGrade,
+                            meta: `${s.totalQuestions || s.questions?.length || 40} Questions • 60 mins • ${s.variantType === 'past_paper_variant' ? 'Past Paper Variant' : 'Mastery Series'}`,
+                            description: s.topic || s.title,
+                            difficulty: 'Advanced',
+                            topicId: tId,
+                            setId: s.id,
+                            kind: 'exam_series',
+                            format: s.format || (s.questions?.[0]?.options && s.questions[0].options.length > 0 ? 'objective' : 'structured_essay'),
+                            questionCount: s.totalQuestions || s.questions?.length || 0,
+                            examTag: `${s.totalQuestions || s.questions?.length || 0} Questions • Live Stepper`,
+                            subject: 'Mathematics'
+                        });
+                    });
+                }
+            }
+            setDynamicSets(scanned);
+            if (manual) {
+                toast({ title: 'Curriculum Cache Refreshed! ⚡', description: 'Live Firestore resources & practice sets re-synchronized.' });
+            }
+        } catch (err) {
+            console.warn('[senior-academy] Error scanning dynamic sets:', err);
+        } finally {
+            setIsRefreshing(false);
+        }
+    }, [activeGrade, toast]);
+
+    useEffect(() => {
+        refreshCurriculumSets(false);
+    }, [refreshCurriculumSets]);
 
     const isJunior = isJuniorLevel(activeGrade);
     const isPrimary = (activeGrade as string) === 'Early Childhood' || (activeGrade as string) === 'Lower Primary' || (activeGrade as string) === 'Upper Primary';
@@ -1550,19 +1637,28 @@ function MathLab({
         return structure;
     }, [dbProblems, activeGrade]);
 
-    // Zero Read-Cost Client-Side Filter over SUGGESTED_MATH_MODULES
+    // Zero Read-Cost Client-Side Filter over merged static + dynamic sets
     const filteredModules = useMemo(() => {
-        return SUGGESTED_MATH_MODULES.filter(mod => {
+        const combined = [...SUGGESTED_MATH_MODULES];
+        dynamicSets.forEach(dyn => {
+            const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
+            if (!exists) combined.push(dyn);
+        });
+
+        return combined.filter(mod => {
             // 1. Tier Match
             if (mod.gradeTier !== activeGrade) return false;
 
             // 2. Dual-Track Mode Match
             const isExam = mod.kind === 'exam_series' || 
+                           (mod as any).variantType === 'past_paper_variant' ||
+                           (mod as any).variantType === 'standard' ||
                            mod.title.toLowerCase().includes('paper 1') || 
                            mod.title.toLowerCase().includes('paper 2') || 
                            mod.title.toLowerCase().includes('past paper') ||
                            mod.title.toLowerCase().includes('objective test') ||
-                           mod.title.toLowerCase().includes('structured essay');
+                           mod.title.toLowerCase().includes('structured essay') ||
+                           mod.title.toLowerCase().includes('mastery series');
             
             if (viewMode === 'exam_series') {
                 if (!isExam) return false;
@@ -1637,10 +1733,13 @@ function MathLab({
         setActiveTopicMeta({ title: mod.title || mod.subTopic, topicId });
         setIsLoadingSet(true);
 
+        console.log(`[senior-academy] Launching module: "${mod.title}", Topic: "${topicId}", SetId: "${mod.setId}"`);
         try {
             const sets = await getTopicQuestionSets(levelId, subjectId, topicId);
+            console.log("Fetched sets:", sets);
             if (sets && sets.length > 0) {
                 const targetSet = mod.setId ? (sets.find(s => s.id === mod.setId) || sets[0]) : sets[0];
+                console.log("[senior-academy] Activated target set:", targetSet.id, targetSet.title, `(${targetSet.questions?.length} questions)`);
                 setActiveQuestionSet(targetSet);
             } else {
                 setActiveQuestionSet(null);
