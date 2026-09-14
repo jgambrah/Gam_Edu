@@ -11,7 +11,7 @@ import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, add
 import { 
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
-  Folder, FileText, ChevronRight, ChevronLeft
+  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -119,8 +119,12 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
+export type SecondaryGradeTier = 'Senior Secondary (SHS)' | 'Junior Secondary (JHS)';
+
 interface SuggestedModuleCard {
     title: string;
+    domain: string;
+    gradeTier: SecondaryGradeTier;
     meta: string;
     description: string;
     difficulty: 'Foundation' | 'Intermediate' | 'Advanced';
@@ -136,8 +140,79 @@ interface SuggestedModuleCard {
 }
 
 const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
+    // Senior Secondary (SHS)
+    {
+        title: "Polynomials & Quadratic Functions",
+        domain: "ALGEBRA",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "5 Subtopics • 50 mins",
+        description: "Formulate and solve higher-degree polynomial systems, remainder theorem, discriminant analysis, and roots of quadratic equations.",
+        difficulty: "Advanced",
+        sampleInstruction: "Solve for the positive value of x in the quadratic expression:",
+        sampleFormula: "3x^2 - 12x + 9 = 0",
+        sampleAnswer: "3"
+    },
+    {
+        title: "Differential Calculus & Tangent Slopes",
+        domain: "ALGEBRA",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "4 Subtopics • 45 mins",
+        description: "First-principles differentiation, product/quotient power rules, and rate of change tangent derivations.",
+        difficulty: "Advanced",
+        sampleInstruction: "Evaluate derivative f'(x) for f(x) = 2x^3 - 4x at x = 2:",
+        sampleFormula: "f'(x) = 6x^2 - 4",
+        sampleAnswer: "20"
+    },
+    {
+        title: "Financial Math & Compound Amortization",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "4 Subtopics • 40 mins",
+        description: "Compound interest formulas, sinking funds, capital depreciation schedules, and annuity investments.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Calculate the total compound value A of Principal $1000 at 10% compounded annually for 2 years:",
+        sampleFormula: "A = 1000(1 + 0.10)^2",
+        sampleAnswer: "1210"
+    },
+    {
+        title: "Trigonometric Identities & Circle Theorems",
+        domain: "GEOMETRY & TRIGONOMETRY",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "5 Subtopics • 55 mins",
+        description: "Compound angle proofs, unit circle radian measures, sine/cosine rules, and cyclic quadrilateral geometry.",
+        difficulty: "Advanced",
+        sampleInstruction: "Evaluate tan(theta) if sin(theta) = 3/5 and cos(theta) = 4/5:",
+        sampleFormula: "\\tan(\\theta) = \\frac{3/5}{4/5}",
+        sampleAnswer: "0.75"
+    },
+    {
+        title: "Vectors & Coordinate Geometry",
+        domain: "GEOMETRY & TRIGONOMETRY",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "4 Subtopics • 45 mins",
+        description: "Scalar dot products, vector equations of lines in 2D space, and perpendicular slope conditions.",
+        difficulty: "Advanced",
+        sampleInstruction: "Find the scalar dot product of vectors u = (3, 4) and v = (2, -1):",
+        sampleFormula: "\\mathbf{u} \\cdot \\mathbf{v} = (3)(2) + (4)(-1)",
+        sampleAnswer: "2"
+    },
+    {
+        title: "Probability Distributions & Combinatorics",
+        domain: "STATISTICS & PROBABILITY",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "4 Subtopics • 40 mins",
+        description: "Permutations, combinations nCr, binomial distributions, and expected value variances.",
+        difficulty: "Advanced",
+        sampleInstruction: "Calculate combinations 5C2 for choosing 2 lab partners from 5 candidates:",
+        sampleFormula: "\\binom{5}{2} = \\frac{5 \\times 4}{2 \\times 1}",
+        sampleAnswer: "10"
+    },
+
+    // Junior Secondary (JHS)
     {
         title: "Linear & Quadratic Equations",
+        domain: "ALGEBRA",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "4 Subtopics • 45 mins",
         description: "Formulate and solve first and second-degree polynomial systems using factoring and the quadratic formula.",
         difficulty: "Intermediate",
@@ -147,6 +222,8 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
     },
     {
         title: "Algebraic Fractions & Indices",
+        domain: "ALGEBRA",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "3 Subtopics • 35 mins",
         description: "Simplifying rational algebraic expressions, fractional exponents, and exponential power laws.",
         difficulty: "Advanced",
@@ -156,6 +233,8 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
     },
     {
         title: "Simultaneous Systems",
+        domain: "ALGEBRA",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "5 Subtopics • 50 mins",
         description: "Solve coupled multi-variable linear equations using substitution, elimination, and graph intersections.",
         difficulty: "Intermediate",
@@ -164,16 +243,20 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleAnswer: "3"
     },
     {
-        title: "Inequalities & Graphs",
-        meta: "3 Subtopics • 40 mins",
-        description: "Linear inequalities on the Cartesian plane, number line plotting, and boundary solutions.",
+        title: "Fractions, Percentages & Proportions",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "4 Subtopics • 30 mins",
+        description: "Ratios, direct proportions, fraction conversions, and commercial percentage discount calculations.",
         difficulty: "Foundation",
-        sampleInstruction: "Find the maximum integer value for x satisfying the inequality:",
-        sampleFormula: "3x - 5 < 10",
-        sampleAnswer: "4"
+        sampleInstruction: "Calculate 25% of 240 in integer format:",
+        sampleFormula: "25\\% \\times 240",
+        sampleAnswer: "60"
     },
     {
         title: "Pythagorean & Trig Ratios",
+        domain: "GEOMETRY & TRIGONOMETRY",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "4 Subtopics • 45 mins",
         description: "Right-angled triangle geometry, sine, cosine, and tangent trigonometric relationships.",
         difficulty: "Intermediate",
@@ -183,6 +266,8 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
     },
     {
         title: "Set Theory & Probability",
+        domain: "STATISTICS & PROBABILITY",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "3 Subtopics • 30 mins",
         description: "Venn diagrams, sample spaces, union, intersection, and event outcome odds.",
         difficulty: "Foundation",
@@ -193,8 +278,11 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
 ];
 
 const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
+    // Senior Secondary (SHS)
     {
         title: "Rhetorical Devices & Argumentation",
+        domain: "RHETORIC & ESSAYS",
+        gradeTier: "Senior Secondary (SHS)",
         meta: "4 Modules • 45 mins",
         description: "Master ethos, pathos, logos, antithesis, and persuasive rhetoric in contemporary and classical essays.",
         difficulty: "Advanced",
@@ -203,7 +291,44 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         content: "To argue for progress is not merely to suggest change; it is to demand that justice and equity form the very foundation upon which tomorrow is constructed."
     },
     {
+        title: "Tragic Hero Archetypes & Dramatic Verse",
+        domain: "LITERATURE & POETRY",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "4 Modules • 50 mins",
+        description: "Examine hubris, hamartia, catharsis, and iambic pentameter in classical and modern theatrical drama.",
+        difficulty: "Advanced",
+        sampleInstruction: "Identify the primary archetype exemplified in the monologue.",
+        sampleAnswer: "Tragic Hero",
+        content: "He stood upon the precipice of his ambition, blinded by pride, refusing to heed the whispers of impending doom."
+    },
+    {
+        title: "Critical Reading & Scholarly Inferences",
+        domain: "NARRATIVE & COMPREHENSION",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "3 Modules • 40 mins",
+        description: "Deconstruct implicit author stances, synthesize conflicting evidence, and evaluate argumentative theses.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Infer the main conclusion drawn by the author.",
+        sampleAnswer: "Dedication",
+        content: "Success in inquiry is seldom accidental; it is born from countless hours of patient trial, steady observation, and unwavering curiosity."
+    },
+    {
+        title: "Post-Colonial Literary Imagery & Symbolism",
+        domain: "LITERATURE & POETRY",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "3 Modules • 45 mins",
+        description: "Explore motifs of identity, cultural resonance, and sensory symbolism in West African and world literature.",
+        difficulty: "Advanced",
+        sampleInstruction: "Evaluate the primary poetic device used in the passage.",
+        sampleAnswer: "Metaphor",
+        content: "Knowledge is an unending river, carving through solid stone of doubt with patient, unrelenting grace."
+    },
+
+    // Junior Secondary (JHS)
+    {
         title: "Narrative Structure & Perspective",
+        domain: "NARRATIVE & COMPREHENSION",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "3 Modules • 35 mins",
         description: "Examine first, second, and third-person omniscient viewpoints, non-linear timelines, and story pacing.",
         difficulty: "Intermediate",
@@ -212,41 +337,46 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
         content: "I watched the morning mist roll down the hills, feeling the quiet rhythm of the school waking to another dawn of discovery and ambition."
     },
     {
-        title: "Poetic Meter & Literary Imagery",
+        title: "Poetic Meter & Sensory Imagery",
+        domain: "LITERATURE & POETRY",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "3 Modules • 40 mins",
         description: "Understand iambic pentameter, metaphor, personification, and sensory imagery in lyric verse.",
-        difficulty: "Advanced",
-        sampleInstruction: "Evaluate the primary poetic device used in the passage.",
-        sampleAnswer: "Metaphor",
-        content: "Knowledge is an unending river, carving through solid stone of doubt with patient, unrelenting grace."
+        difficulty: "Foundation",
+        sampleInstruction: "Identify the literary device used in the passage.",
+        sampleAnswer: "Personification",
+        content: "The wind whispered secrets through the ancient cedar boughs as twilight descended upon the peaceful valley."
     },
     {
-        title: "Critical Reading & Textual Inferences",
+        title: "Informational Text & Central Idea Inferences",
+        domain: "NARRATIVE & COMPREHENSION",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "4 Modules • 30 mins",
         description: "Draw deductive conclusions, synthesize implicit author intentions, and analyze text evidence.",
         difficulty: "Foundation",
-        sampleInstruction: "Infer the main conclusion drawn by the author.",
-        sampleAnswer: "Dedication",
-        content: "Success in inquiry is seldom accidental; it is born from countless hours of patient trial, steady observation, and unwavering curiosity."
+        sampleInstruction: "Infer the author's primary intended takeaway.",
+        sampleAnswer: "Curiosity",
+        content: "Scientific breakthrough begins with simple curiosity, nurtured through disciplined exploration and persistent question-asking."
+    },
+    {
+        title: "Persuasive Speeches & Basic Rhetoric",
+        domain: "RHETORIC & ESSAYS",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "3 Modules • 35 mins",
+        description: "Identify call-to-action techniques, repetition, and emotive diction in youth debates.",
+        difficulty: "Intermediate",
+        sampleInstruction: "Identify the persuasive technique used in the concluding sentence.",
+        sampleAnswer: "Call to action",
+        content: "We cannot wait for another generation to take up this mantle. Today, let us step forward together into the light of shared responsibility."
     }
 ];
 
 const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
+    // Senior Secondary (SHS)
     {
-        title: "Photosynthesis & Cellular Respiration",
-        meta: "3 Labs • 45 mins",
-        description: "Investigate light and dark reaction stages, chlorophyll absorption, and ATP energy synthesis in plant cells.",
-        difficulty: "Intermediate",
-        sampleInstruction: "Hypothesize oxygen output under concentrated light spectra.",
-        sampleAnswer: "Increases",
-        background: "Green plants convert sunlight, water, and carbon dioxide into glucose and oxygen through chloroplasts.",
-        hypothesisPrompt: "What happens to the rate of photosynthesis when light intensity doubles?",
-        hypothesisOptions: ["Photosynthetic rate increases up to saturation", "Photosynthetic rate drops to zero", "No measurable change"],
-        conclusion: "Light intensity directly accelerates the photolysis of water until enzyme saturation occurs.",
-        explanation: "Chlorophyll pigments absorb photons, transferring energy to reaction centers for ATP generation."
-    },
-    {
-        title: "Newtonian Mechanics & Force Labs",
+        title: "Newtonian Mechanics & Force Dynamics",
+        domain: "PHYSICAL SCIENCES & PHYSICS",
+        gradeTier: "Senior Secondary (SHS)",
         meta: "4 Labs • 50 mins",
         description: "Simulate velocity, momentum conservation, kinetic energy transfers, and friction coefficients.",
         difficulty: "Advanced",
@@ -259,9 +389,73 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         explanation: "According to Newton's Second Law (F = ma), a = F/m, hence doubling m halves a."
     },
     {
-        title: "Acids, Bases & Neutralization Titration",
+        title: "Acid-Base Titration & pH Equilibrium",
+        domain: "CHEMICAL REACTIONS & MATTER",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "3 Labs • 45 mins",
+        description: "Measure stoichiometric equivalence, buffer capacities, and Henderson-Hasselbalch endpoints.",
+        difficulty: "Advanced",
+        sampleInstruction: "Calculate neutralization equivalence endpoint.",
+        sampleAnswer: "pH 7",
+        background: "When hydrochloric acid reacts with sodium hydroxide, neutralization produces salt and water.",
+        hypothesisPrompt: "What is the expected pH at the stoichiometric equivalence point for a strong acid and strong base?",
+        hypothesisOptions: ["pH = 7.0 (Neutral)", "pH = 3.5 (Acidic)", "pH = 10.0 (Basic)"],
+        conclusion: "Strong acid and strong base titrations yield a neutral salt solution at equivalence.",
+        explanation: "Equal moles of H+ and OH- ions combine to form neutral H2O molecules."
+    },
+    {
+        title: "Cellular Respiration & ATP Synthase Pathways",
+        domain: "LIFE SCIENCES & BIOLOGY",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "4 Labs • 45 mins",
+        description: "Investigate glycolysis, the Krebs cycle, mitochondrial electron transport chains, and chemiosmosis.",
+        difficulty: "Advanced",
+        sampleInstruction: "Determine the primary cellular location of oxidative phosphorylation.",
+        sampleAnswer: "Mitochondria",
+        background: "Cellular respiration converts biochemical energy from nutrients into ATP, releasing waste products.",
+        hypothesisPrompt: "Which cellular component generates the largest yield of ATP during aerobic respiration?",
+        hypothesisOptions: ["Mitochondrial inner membrane", "Cytoplasm cytosol", "Nuclear membrane"],
+        conclusion: "The electron transport chain on the inner mitochondrial membrane yields the bulk of cellular ATP.",
+        explanation: "Proton gradient electrochemical potential drives ATP synthase rotary phosphorylation."
+    },
+    {
+        title: "Electromagnetic Induction & Faraday's Law",
+        domain: "PHYSICAL SCIENCES & PHYSICS",
+        gradeTier: "Senior Secondary (SHS)",
         meta: "3 Labs • 40 mins",
-        description: "Measure pH shifts, indicator color endpoints, and stoichiometric salt-water yields.",
+        description: "Construct virtual solenoid coils, observe induced electromotive forces, and test Lenz's Law.",
+        difficulty: "Advanced",
+        sampleInstruction: "State the polarity rule determined by Lenz's Law.",
+        sampleAnswer: "Opposes change",
+        background: "A changing magnetic flux through a conductor induces an electromotive force (EMF).",
+        hypothesisPrompt: "What happens to the induced voltage when the magnet is plunged through the coil at twice the speed?",
+        hypothesisOptions: ["Induced voltage doubles", "Induced voltage drops to zero", "Induced voltage remains unchanged"],
+        conclusion: "Induced electromotive force is directly proportional to the rate of change of magnetic flux.",
+        explanation: "Faraday's Law specifies EMF = -d(Phi)/dt; higher relative velocity induces greater potential difference."
+    },
+
+    // Junior Secondary (JHS)
+    {
+        title: "Photosynthesis & Light Absorption",
+        domain: "LIFE SCIENCES & BIOLOGY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "3 Labs • 40 mins",
+        description: "Investigate light and dark reaction stages, chlorophyll absorption, and oxygen bubble synthesis in plant cells.",
+        difficulty: "Foundation",
+        sampleInstruction: "Hypothesize oxygen output under concentrated light spectra.",
+        sampleAnswer: "Increases",
+        background: "Green plants convert sunlight, water, and carbon dioxide into glucose and oxygen through chloroplasts.",
+        hypothesisPrompt: "What happens to the rate of photosynthesis when light intensity doubles?",
+        hypothesisOptions: ["Photosynthetic rate increases up to saturation", "Photosynthetic rate drops to zero", "No measurable change"],
+        conclusion: "Light intensity directly accelerates the photolysis of water until enzyme saturation occurs.",
+        explanation: "Chlorophyll pigments absorb photons, transferring energy to reaction centers for ATP generation."
+    },
+    {
+        title: "Acids, Bases & Neutralization Titration",
+        domain: "CHEMICAL REACTIONS & MATTER",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "3 Labs • 35 mins",
+        description: "Measure pH shifts, litmus indicator endpoints, and stoichiometric salt-water yields.",
         difficulty: "Intermediate",
         sampleInstruction: "Calculate neutralization equivalence endpoint.",
         sampleAnswer: "pH 7",
@@ -273,6 +467,8 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
     },
     {
         title: "Electric Circuits, Voltage & Ohm's Law",
+        domain: "PHYSICAL SCIENCES & PHYSICS",
+        gradeTier: "Junior Secondary (JHS)",
         meta: "4 Labs • 35 mins",
         description: "Construct virtual series and parallel circuits to measure current, potential difference, and resistance.",
         difficulty: "Foundation",
@@ -283,6 +479,21 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         hypothesisOptions: ["Current is halved", "Current doubles", "Voltage drops to zero"],
         conclusion: "Current flowing through a conductor is inversely proportional to resistance.",
         explanation: "By Ohm's Law (I = V/R), increasing resistance diminishes electron flow rate."
+    },
+    {
+        title: "Density, Pressure & Liquid Upthrust",
+        domain: "PHYSICAL SCIENCES & PHYSICS",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "3 Labs • 30 mins",
+        description: "Archimedes' principle, displacement cans, buoyant force, and sinking vs floating criteria.",
+        difficulty: "Foundation",
+        sampleInstruction: "State the condition for an object to float in water.",
+        sampleAnswer: "Density less than water",
+        background: "An object immersed in fluid experiences an upward buoyant force equal to the weight of fluid displaced.",
+        hypothesisPrompt: "What happens when an object with density 0.8 g/cm³ is placed in water (1.0 g/cm³)?",
+        hypothesisOptions: ["It floats on the surface", "It sinks to the bottom", "It dissolves instantly"],
+        conclusion: "Substances with a density lower than the surrounding fluid experience net positive buoyancy and float.",
+        explanation: "The weight of the displaced water exceeds the object's gravitational pull, maintaining equilibrium at the surface."
     }
 ];
 
@@ -578,13 +789,32 @@ const DEFAULT_SCIENCE_STRANDS: Record<string, { subTopic: string; lab: any }[]> 
 };
 
 // --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
-function EnglishMastery({ canEdit }: { canEdit: boolean }) {
+const ENGLISH_DOMAINS = [
+    'ALL DOMAINS',
+    'LITERATURE & POETRY',
+    'NARRATIVE & COMPREHENSION',
+    'RHETORIC & ESSAYS'
+];
+
+function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChange }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; onGradeChange?: (grade: SecondaryGradeTier) => void; }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [activeStory, setActiveStory] = useState<any>(null);
     const [answers, setAnswers] = useState<string[]>([]);
-    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+    const [selectedGrade, setSelectedGrade] = useState<string>(activeGrade);
+    const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
+
+    useEffect(() => {
+        setSelectedGrade(activeGrade);
+    }, [activeGrade]);
+
+    const handleGradeSelect = (grade: string) => {
+        setSelectedGrade(grade);
+        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
+            onGradeChange(grade);
+        }
+    };
 
     const isJunior = isJuniorLevel(selectedGrade);
     const isPrimary = selectedGrade === 'Early Childhood' || selectedGrade === 'Lower Primary' || selectedGrade === 'Upper Primary';
@@ -787,28 +1017,56 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                 </div>
                 ) : (
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
                             <div>
                                 <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                                     <Sparkles className="w-4 h-4 text-indigo-400" />
                                     Literary Modules & Guided Reading • {selectedGrade}
                                 </h3>
                                 <p className="text-xs text-slate-400 mt-0.5">
-                                    Launch an interactive literary session or select an archived passage from the left.
+                                    Launch an interactive literary session or select an archived passage from the catalog folders.
                                 </p>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {SUGGESTED_ENGLISH_MODULES.map((mod, i) => (
+                        {/* SUBJECT DOMAIN PILL BAR */}
+                        <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+                            {ENGLISH_DOMAINS.map((domain) => {
+                                const isActive = selectedDomain === domain;
+                                return (
+                                    <button
+                                        key={domain}
+                                        type="button"
+                                        onClick={() => setSelectedDomain(domain)}
+                                        className={cn(
+                                            "px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                            isActive
+                                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                                : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                        )}
+                                    >
+                                        <span>{domain}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* STANDARDIZED CARD GRID */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {SUGGESTED_ENGLISH_MODULES.filter(mod => {
+                                const matchesGrade = mod.gradeTier === selectedGrade;
+                                const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
+                                return matchesGrade && matchesDomain;
+                            }).map((mod, i) => (
                                 <div 
                                     key={i} 
                                     className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
                                 >
                                     <div>
+                                        {/* Standardized Header Badges: Domain top-left, Difficulty top-right */}
                                         <div className="flex items-center justify-between gap-2 mb-3">
-                                            <span className="text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
-                                                {mod.meta}
+                                            <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                                {mod.domain}
                                             </span>
                                             <span className={cn(
                                                 "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
@@ -827,7 +1085,12 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-end pt-3.5 border-t border-slate-800/80 mt-auto">
+                                    {/* Standardized Footer: Duration/Subtopics bottom-left, Uniform Launch Lab CTA bottom-right */}
+                                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                        <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
+                                            <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                                            {mod.meta}
+                                        </span>
                                         <Button
                                             size="sm"
                                             onClick={() => {
@@ -877,7 +1140,15 @@ function CounterDisplay({ count }: { count: number }) {
     );
 }
 
-function MathLab({ canEdit }: { canEdit: boolean }) {
+const MATH_DOMAINS = [
+    'ALL DOMAINS',
+    'ALGEBRA',
+    'ARITHMETIC & NUMERACY',
+    'GEOMETRY & TRIGONOMETRY',
+    'STATISTICS & PROBABILITY'
+];
+
+function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChange }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; onGradeChange?: (grade: SecondaryGradeTier) => void; }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -885,7 +1156,20 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
 
-    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+    const [selectedGrade, setSelectedGrade] = useState<string>(activeGrade);
+    const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
+
+    useEffect(() => {
+        setSelectedGrade(activeGrade);
+    }, [activeGrade]);
+
+    const handleGradeSelect = (grade: string) => {
+        setSelectedGrade(grade);
+        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
+            onGradeChange(grade);
+        }
+    };
+
     const isJunior = isJuniorLevel(selectedGrade);
     const theme = isJunior ? juniorStyles : null;
 
@@ -947,7 +1231,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
             <div className="lg:col-span-1 space-y-3">
                 <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
                     <Label className="text-slate-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">Student Category</Label>
-                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                    <Select value={selectedGrade} onValueChange={handleGradeSelect}>
                         <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
                             <SelectValue />
                         </SelectTrigger>
@@ -1110,7 +1394,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 </div>
                 ) : (
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
                             <div>
                                 <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                                     <Sparkles className="w-4 h-4 text-indigo-400" />
@@ -1122,16 +1406,44 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {SUGGESTED_MATH_MODULES.map((mod, i) => (
+                        {/* SUBJECT DOMAIN PILL BAR - CONSOLIDATED & NO DUPLICATE ARITHMETIC */}
+                        <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+                            {MATH_DOMAINS.map((domain) => {
+                                const isActive = selectedDomain === domain;
+                                return (
+                                    <button
+                                        key={domain}
+                                        type="button"
+                                        onClick={() => setSelectedDomain(domain)}
+                                        className={cn(
+                                            "px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                            isActive
+                                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                                : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                        )}
+                                    >
+                                        <span>{domain}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* STANDARDIZED CARD GRID */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {SUGGESTED_MATH_MODULES.filter(mod => {
+                                const matchesGrade = mod.gradeTier === selectedGrade;
+                                const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
+                                return matchesGrade && matchesDomain;
+                            }).map((mod, i) => (
                                 <div 
                                     key={i} 
                                     className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
                                 >
                                     <div>
+                                        {/* Standardized Header Badges: Domain top-left, Difficulty top-right */}
                                         <div className="flex items-center justify-between gap-2 mb-3">
-                                            <span className="text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
-                                                {mod.meta}
+                                            <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                                {mod.domain}
                                             </span>
                                             <span className={cn(
                                                 "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
@@ -1150,14 +1462,19 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-end pt-3.5 border-t border-slate-800/80 mt-auto">
+                                    {/* Standardized Footer: Duration/Subtopics bottom-left, Uniform Launch Lab CTA bottom-right */}
+                                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                        <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
+                                            <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                                            {mod.meta}
+                                        </span>
                                         <Button
                                             size="sm"
                                             onClick={() => {
                                                 setProblem({
                                                     id: `suggested-math-${i}`,
                                                     title: mod.title,
-                                                    category: 'Algebra',
+                                                    category: mod.domain,
                                                     subTopic: mod.title,
                                                     instruction: mod.sampleInstruction,
                                                     latexFormula: mod.sampleFormula,
@@ -1184,13 +1501,32 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 3. DISCOVERY LAB (FOLDER ORGANIZED) ---
-function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
+const SCIENCE_DOMAINS = [
+    'ALL DOMAINS',
+    'PHYSICAL SCIENCES & PHYSICS',
+    'CHEMICAL REACTIONS & MATTER',
+    'LIFE SCIENCES & BIOLOGY'
+];
+
+function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChange }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; onGradeChange?: (grade: SecondaryGradeTier) => void; }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
-    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+    const [selectedGrade, setSelectedGrade] = useState<string>(activeGrade);
+    const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
+
+    useEffect(() => {
+        setSelectedGrade(activeGrade);
+    }, [activeGrade]);
+
+    const handleGradeSelect = (grade: string) => {
+        setSelectedGrade(grade);
+        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
+            onGradeChange(grade);
+        }
+    };
 
     const isJunior = isJuniorLevel(selectedGrade);
     const theme = isJunior ? juniorStyles : null;
@@ -1247,7 +1583,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
             <div className="lg:col-span-1 space-y-3">
                 <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
                     <Label className="text-cyan-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">Research Level</Label>
-                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                    <Select value={selectedGrade} onValueChange={handleGradeSelect}>
                         <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
                             <SelectValue />
                         </SelectTrigger>
@@ -1326,12 +1662,12 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                 <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
                             </Button>
                             <span className="text-xs text-slate-400">
-                                Active Module: <strong className="text-indigo-300">{lab.title}</strong>
+                                Active Module: <strong className="text-cyan-300">{lab.title}</strong>
                             </span>
                         </div>
                         <Card className={`overflow-hidden ${isJunior ? theme?.card : "rounded-[48px] bg-slate-900 border border-slate-855 shadow-2xl animate-in zoom-in"}`}>
                         <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
-                            <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-950 text-white p-10 space-y-8 border-r border-slate-850 relative`}>
+                            <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-950 text-white p-10 space-y-8 border-r border-slate-855 relative`}>
                                 {!isJunior && (
                                     <div className="absolute left-[38px] top-12 bottom-36 w-0.5 bg-gradient-to-b from-cyan-500 via-indigo-500 to-violet-500/20 hidden md:block" />
                                 )}
@@ -1419,7 +1755,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                             <p className={isJunior ? "text-2xl font-bold text-slate-600" : "text-slate-400"}>Running active variable simulation model...</p>
                                         </div>
 
-                                        <div className="h-64 bg-slate-950/80 border-2 border-slate-850 rounded-[40px] flex items-center justify-center relative overflow-hidden shadow-inner">
+                                        <div className="h-64 bg-slate-950/80 border-2 border-slate-855 rounded-[40px] flex items-center justify-center relative overflow-hidden shadow-inner">
                                             <div className="absolute w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
                                             <div className="absolute w-48 h-48 border-2 border-dashed border-cyan-500/20 rounded-full animate-spin [animation-duration:15s]" />
                                             <div className="relative z-10 flex flex-col items-center gap-4">
@@ -1452,7 +1788,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                             </div>
                                             <p className={`leading-relaxed font-bold ${isJunior ? 'text-3xl text-emerald-900' : 'text-lg text-emerald-200'}`}>{lab.conclusion}</p>
                                         </div>
-                                        <div className="p-8 bg-slate-950/60 border border-slate-850 rounded-[32px] space-y-2">
+                                        <div className="p-8 bg-slate-950/60 border border-slate-855 rounded-[32px] space-y-2">
                                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Core Principle</span>
                                             <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-base text-slate-300'}`}>{lab.explanation}</p>
                                         </div>
@@ -1473,10 +1809,10 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                 </div>
                 ) : (
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
                             <div>
                                 <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                                    <Sparkles className="w-4 h-4 text-cyan-400" />
                                     Active Scientific Research Labs • {selectedGrade}
                                 </h3>
                                 <p className="text-xs text-slate-400 mt-0.5">
@@ -1485,19 +1821,46 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {SUGGESTED_SCIENCE_MODULES.map((mod, i) => (
+                        {/* SUBJECT DOMAIN PILL BAR */}
+                        <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+                            {SCIENCE_DOMAINS.map((domain) => {
+                                const isActive = selectedDomain === domain;
+                                return (
+                                    <button
+                                        key={domain}
+                                        type="button"
+                                        onClick={() => setSelectedDomain(domain)}
+                                        className={cn(
+                                            "px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                            isActive
+                                                ? "bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-600/30"
+                                                : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                        )}
+                                    >
+                                        <span>{domain}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* STANDARDIZED CARD GRID */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {SUGGESTED_SCIENCE_MODULES.filter(mod => {
+                                const matchesGrade = mod.gradeTier === selectedGrade;
+                                const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
+                                return matchesGrade && matchesDomain;
+                            }).map((mod, i) => (
                                 <div 
                                     key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
+                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-cyan-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
                                 >
                                     <div>
                                         <div className="flex items-center justify-between gap-2 mb-3">
-                                            <span className="text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
-                                                {mod.meta}
+                                            <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider truncate max-w-[170px]">
+                                                {mod.domain}
                                             </span>
                                             <span className={cn(
-                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider shrink-0",
                                                 mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                                                 mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
                                                 "bg-amber-500/10 text-amber-400 border-amber-500/20"
@@ -1505,7 +1868,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                                 {mod.difficulty}
                                             </span>
                                         </div>
-                                        <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                        <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
                                             {mod.title}
                                         </h4>
                                         <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
@@ -1513,7 +1876,10 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                         </p>
                                     </div>
 
-                                    <div className="flex items-center justify-end pt-3.5 border-t border-slate-800/80 mt-auto">
+                                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                        <span className="text-[11px] font-medium text-slate-500">
+                                            {mod.meta}
+                                        </span>
                                         <Button
                                             size="sm"
                                             onClick={() => {
@@ -1531,7 +1897,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                                 });
                                                 setStage('hypothesis');
                                             }}
-                                            className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                                            className="h-8 px-3.5 bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white border border-cyan-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                                         >
                                             <span>Launch Lab</span>
                                             <ChevronRight className="w-3.5 h-3.5" />
@@ -1547,8 +1913,46 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
+// Quick syllabus topic suggestions for module creator
+const QUICK_TOPICS_BY_SUBJECT: Record<'math' | 'english' | 'science', string[]> = {
+    math: [
+        "Simultaneous Linear & Quadratic Systems",
+        "Polynomial Factorization & Remainder Theorem",
+        "Trigonometric Functions & Unit Circle",
+        "Calculus: Differential Limits & Rates of Change",
+        "Calculus: Definite & Indefinite Integrals",
+        "Probability Distributions & Hypothesis Testing",
+        "Vector Algebra & 3D Coordinate Geometry",
+        "Financial Mathematics: Compound Interest & Annuities"
+    ],
+    english: [
+        "Rhetorical Devices, Ethos, Pathos & Logos",
+        "Tragic Hero Archetypes in Dramatic Literature",
+        "Comparative Analysis of Post-Colonial Poetry",
+        "Critical Inferences & Scholarly Text Synthesis",
+        "Style, Syntax & Tone in Argumentative Essays",
+        "Narrative Structure, Pacing & Point of View"
+    ],
+    science: [
+        "Newtonian Mechanics, Momentum & Kinetic Energy",
+        "Acid-Base Titration & Chemical Equilibrium",
+        "Cellular Respiration, Glycolysis & Krebs Cycle",
+        "Electromagnetic Induction & Faraday's Law",
+        "Genetics: Mendelian Inheritance & DNA Replication",
+        "Thermodynamics, Heat Transfer & Entropy"
+    ]
+};
+
 // --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
-function AdminConsole({ onContentAdded, activeGrade = 'Junior Secondary (JHS)' }: { onContentAdded: () => void; activeGrade?: string }) {
+function AdminConsole({ 
+    onContentAdded, 
+    activeGrade = 'Senior Secondary (SHS)',
+    onGradeChange
+}: { 
+    onContentAdded: () => void; 
+    activeGrade?: string;
+    onGradeChange?: (g: SecondaryGradeTier) => void;
+}) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
@@ -1579,6 +1983,16 @@ function AdminConsole({ onContentAdded, activeGrade = 'Junior Secondary (JHS)' }
         explanation: '',
         icon: '🔬'
     });
+
+    useEffect(() => {
+        setManualData((prev: any) => ({ ...prev, gradeLevel: activeGrade }));
+    }, [activeGrade]);
+
+    const handleGradeSelect = (grade: string) => {
+        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
+            onGradeChange(grade);
+        }
+    };
 
     const handleAiGenerate = async () => {
         if (!topic.trim()) return;
@@ -1634,85 +2048,256 @@ function AdminConsole({ onContentAdded, activeGrade = 'Junior Secondary (JHS)' }
     return (
         <Card className="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl text-white p-5 mb-8 shadow-xl relative overflow-hidden">
             {/* Header Strip */}
-            <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
-                <div className="flex items-center gap-2.5">
-                    <h2 className="text-base sm:text-lg font-bold flex items-center gap-2 text-white">
-                        <PenTool className="w-4 h-4 text-indigo-400" /> Professor's Desk
-                    </h2>
-                    <span className="bg-indigo-950/80 text-indigo-300 text-[11px] px-2.5 py-0.5 rounded-full font-medium border border-indigo-800/40 flex items-center gap-1.5">
-                        <Sparkles className="w-3 h-3 text-indigo-400 animate-pulse" /> Costs 10 Credits
-                    </span>
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-5 pb-4 border-b border-slate-800/80">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <PenTool className="w-4 h-4" />
+                    </div>
+                    <div>
+                        <h2 className="text-base font-bold text-white flex items-center gap-2">
+                            Professor's Desk
+                            <span className="text-[11px] font-semibold text-slate-400">Curriculum Generator</span>
+                        </h2>
+                        <p className="text-xs text-slate-400">Create new syllabus-aligned academic modules or publish custom lab exercises.</p>
+                    </div>
                 </div>
-                <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+                
+                {/* Creation Mode Segmented Toggle */}
+                <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800 shadow-inner">
                     <Button 
                         variant={creationMode === 'ai' ? 'secondary' : 'ghost'} 
                         size="sm" 
                         onClick={() => setCreationMode('ai')} 
-                        className={cn("rounded-lg font-semibold text-xs h-7 px-3", creationMode === 'ai' ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm' : 'text-slate-400 hover:text-slate-200')}
+                        className={cn(
+                            "rounded-lg font-bold text-xs h-7 px-3.5 transition-all cursor-pointer", 
+                            creationMode === 'ai' 
+                                ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-600/30' 
+                                : 'text-slate-400 hover:text-slate-200'
+                        )}
                     >
+                        <Wand2 className="w-3.5 h-3.5 mr-1.5" />
                         AI Magic
                     </Button>
                     <Button 
                         variant={creationMode === 'manual' ? 'secondary' : 'ghost'} 
                         size="sm" 
                         onClick={() => setCreationMode('manual')} 
-                        className={cn("rounded-lg font-semibold text-xs h-7 px-3", creationMode === 'manual' ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm' : 'text-slate-400 hover:text-slate-200')}
+                        className={cn(
+                            "rounded-lg font-bold text-xs h-7 px-3.5 transition-all cursor-pointer", 
+                            creationMode === 'manual' 
+                                ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-600/30' 
+                                : 'text-slate-400 hover:text-slate-200'
+                        )}
                     >
+                        <Save className="w-3.5 h-3.5 mr-1.5" />
                         Manual
                     </Button>
                 </div>
             </div>
             
             {creationMode === 'ai' ? (
-                /* Sleek Single-Line AI Prompt Bar */
-                <div className="animate-in fade-in flex flex-col sm:flex-row items-center gap-2 p-1.5 bg-slate-950/60 border border-slate-800 rounded-xl">
-                    <div className="flex items-center gap-2.5 flex-1 w-full px-3 py-1">
-                        <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
-                        <Input 
-                            value={topic} 
-                            onChange={e => setTopic(e.target.value)} 
-                            onKeyDown={e => { if (e.key === 'Enter' && !loading && topic.trim()) handleAiGenerate(); }}
-                            placeholder="Generate academic module... (e.g. Simultaneous Systems, Cell Respiration, Shakespearean Sonnets)" 
-                            className="h-9 bg-transparent border-0 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 shadow-none" 
-                        />
+                <div className="space-y-4 animate-in fade-in">
+                    {/* SECTION 1: INPUT CONTROLS */}
+                    <div className="bg-slate-950/40 border border-slate-800/80 rounded-xl p-4 space-y-3.5">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                                1. Input Controls
+                            </span>
+                            <span className="text-[11px] text-slate-400">Configure subject parameters and topic</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {/* Subject Selector */}
+                            <div className="space-y-1.5">
+                                <Label className="text-[10px] uppercase font-bold text-slate-400">Academic Subject</Label>
+                                <Select value={subject} onValueChange={setSubject as any}>
+                                    <SelectTrigger className="capitalize h-9 bg-slate-900 border-slate-800 text-xs font-semibold text-slate-200 rounded-lg">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
+                                        <SelectItem value="math">Mathematics Lab</SelectItem>
+                                        <SelectItem value="english">English Mastery</SelectItem>
+                                        <SelectItem value="science">Discovery Lab</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Target Grade Tier */}
+                            <div className="space-y-1.5">
+                                <Label className="text-[10px] uppercase font-bold text-slate-400">Target Level</Label>
+                                <Select value={activeGrade} onValueChange={handleGradeSelect}>
+                                    <SelectTrigger className="h-9 bg-slate-900 border-slate-800 text-xs font-semibold text-slate-200 rounded-lg">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
+                                        {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Quick Topics Dropdown */}
+                            <div className="space-y-1.5">
+                                <Label className="text-[10px] uppercase font-bold text-slate-400">Curriculum Quick-Pick</Label>
+                                <Select onValueChange={(val) => setTopic(val)}>
+                                    <SelectTrigger className="h-9 bg-slate-900 border-slate-800 text-xs font-medium text-slate-300 rounded-lg">
+                                        <span className="truncate">Select suggested topic...</span>
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-200 max-h-56">
+                                        {QUICK_TOPICS_BY_SUBJECT[subject].map((item) => (
+                                            <SelectItem key={item} value={item} className="text-xs">
+                                                {item}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        {/* Topic Input Field */}
+                        <div className="space-y-1.5 pt-1">
+                            <Label className="text-[10px] uppercase font-bold text-slate-400">Topic Prompt or Objective</Label>
+                            <div className="flex items-center gap-2.5 px-3 py-1 bg-slate-900/90 border border-slate-800 rounded-xl focus-within:border-indigo-500/60 transition-colors">
+                                <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
+                                <Input 
+                                    value={topic} 
+                                    onChange={e => setTopic(e.target.value)} 
+                                    onKeyDown={e => { if (e.key === 'Enter' && !loading && topic.trim()) handleAiGenerate(); }}
+                                    placeholder="Enter academic topic... (e.g. Simultaneous Equations, Photosynthesis Reactions, Shakespearean Dramatic Irony)" 
+                                    className="h-9 bg-transparent border-0 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 shadow-none" 
+                                />
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end px-1 pb-1 sm:pb-0">
-                        <Select value={subject} onValueChange={setSubject as any}>
-                            <SelectTrigger className="capitalize h-8 w-28 bg-slate-900 border-slate-700/80 text-xs font-medium text-slate-200 rounded-lg focus:ring-0">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
-                                <SelectItem value="math">Math</SelectItem>
-                                <SelectItem value="english">English</SelectItem>
-                                <SelectItem value="science">Science</SelectItem>
-                            </SelectContent>
-                        </Select>
+
+                    {/* SECTION 2: ACTION BUTTONS & CREDIT BADGE */}
+                    <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 text-xs text-slate-400">
+                            <span className="bg-indigo-950/80 text-indigo-300 text-[11px] px-2.5 py-0.5 rounded-full font-bold border border-indigo-800/40 flex items-center gap-1.5 shrink-0">
+                                <Sparkles className="w-3 h-3 text-indigo-400 animate-pulse" /> Costs 10 Credits
+                            </span>
+                            <span className="text-[11px]">Generates complete syllabus theory, worked examples, formulas, or lab simulations.</span>
+                        </div>
+
                         <Button 
                             onClick={handleAiGenerate} 
                             disabled={loading || !topic.trim()} 
-                            size="sm"
-                            className="h-8 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                            className="w-full sm:w-auto h-9 px-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 shrink-0"
                         >
-                            {loading ? <Loader2 className="animate-spin h-3.5 w-3.5" /> : <><Wand2 className="h-3.5 w-3.5"/> Generate</>}
+                            {loading ? <Loader2 className="animate-spin h-3.5 w-3.5" /> : <><Wand2 className="h-3.5 w-3.5"/> Generate Module</>}
                         </Button>
                     </div>
                 </div>
             ) : (
-                <div className="space-y-6 animate-in slide-in-from-top-4 pt-2">
-                    <div className="grid md:grid-cols-3 gap-4">
-                        <div className="space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase tracking-wider">Category (Main Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-10 rounded-xl focus:border-indigo-550 focus:ring-0 text-xs" /></div>
-                        <div className="space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase tracking-wider">Sub-Topic (Sub Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-10 rounded-xl focus:border-indigo-550 focus:ring-0 text-xs" /></div>
-                        <div className="space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase tracking-wider">Target Student Category</Label><Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}><SelectTrigger className="h-10 bg-slate-950 border-slate-800 text-white font-bold rounded-xl text-xs"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-5 animate-in slide-in-from-top-4">
+                    {/* SECTION 1: INPUT CONTROLS */}
+                    <div className="bg-slate-950/40 border border-slate-800/80 rounded-xl p-4 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                                1. Module Specifications
+                            </span>
+                            <span className="text-[11px] text-slate-400">Manual taxonomy and lesson data</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="space-y-1.5">
+                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Academic Subject</Label>
+                                <Select value={subject} onValueChange={setSubject as any}>
+                                    <SelectTrigger className="capitalize h-9 bg-slate-900 border-slate-800 text-xs font-semibold text-slate-200 rounded-lg">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
+                                        <SelectItem value="math">Mathematics Lab</SelectItem>
+                                        <SelectItem value="english">English Mastery</SelectItem>
+                                        <SelectItem value="science">Discovery Lab</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Category (Main Folder)</Label>
+                                <Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Sub-Topic (Sub Folder)</Label>
+                                <Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Target Student Category</Label>
+                                <Select value={manualData.gradeLevel} onValueChange={(v) => { setManualData({...manualData, gradeLevel: v}); handleGradeSelect(v); }}>
+                                    <SelectTrigger className="h-9 bg-slate-900 border-slate-800 text-white font-bold rounded-lg text-xs">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Module Title</Label>
+                                <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg text-xs font-bold focus:border-indigo-500 focus:ring-0" />
+                            </div>
+                        </div>
+
+                        {subject === 'math' && (
+                            <div className="grid md:grid-cols-2 gap-4 pt-2">
+                                <div className="space-y-2">
+                                    <Label className="text-slate-400 text-[10px] font-bold uppercase">Formula & Instructions</Label>
+                                    <Textarea placeholder="LaTeX Formula (e.g. \frac{x}{y})" value={manualData.latexFormula} onChange={e => setManualData({...manualData, latexFormula: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-24 rounded-lg font-mono focus:border-indigo-500 focus:ring-0 text-xs" />
+                                    <Input placeholder="Instruction (e.g. Solve for x)" value={manualData.instruction} onChange={e => setManualData({...manualData, instruction: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg text-xs" />
+                                    <Input placeholder="Final Answer" value={manualData.answer} onChange={e => setManualData({...manualData, answer: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg text-xs" />
+                                </div>
+                                <div className="bg-slate-900 p-4 rounded-xl flex flex-col justify-center items-center border border-slate-800">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Live Math Preview</p>
+                                    <div className="text-lg text-indigo-300">
+                                        {manualData.latexFormula ? <SafeMath formula={manualData.latexFormula} /> : <span className="opacity-30 italic text-xs text-slate-500">Formula preview renders here</span>}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {subject === 'english' && (
+                            <div className="space-y-3 pt-2">
+                                <Label className="text-slate-400 text-[10px] font-bold uppercase">Literary Passage Content</Label>
+                                <Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-28 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                                    {[0,1,2].map(i => (
+                                        <div key={i} className="p-2.5 bg-slate-900 border border-slate-800 rounded-lg space-y-1.5">
+                                            <Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label>
+                                            <Input placeholder="Question" className="h-7 text-xs bg-slate-950 border-slate-800 text-white focus:ring-0" value={manualData.quiz[i].question} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], question: e.target.value}; setManualData({...manualData, quiz: n});}} />
+                                            <Input placeholder="Answer" className="h-7 text-xs bg-slate-950 border-slate-800 text-white focus:ring-0" value={manualData.quiz[i].answer} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], answer: e.target.value}; setManualData({...manualData, quiz: n});}} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {subject === 'science' && (
+                            <div className="grid md:grid-cols-2 gap-3 pt-2">
+                                <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-24 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                                <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-24 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    {manualData.hypothesisOptions.map((opt: string, i: number) => (
+                                        <Input key={i} placeholder={`Hypothesis Option ${i+1}`} value={opt} onChange={e => {const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});}} className="bg-slate-900 border-slate-800 text-white h-8 rounded-lg text-xs" />
+                                    ))}
+                                </div>
+                                <Input placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-8 rounded-lg text-xs" />
+                                <Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-16 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                            </div>
+                        )}
                     </div>
-                    <div className="space-y-4">
-                        <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-11 rounded-xl text-base font-bold focus:border-indigo-550 focus:ring-0" />
-                        {subject === 'math' && <div className="grid md:grid-cols-2 gap-4"><div><Textarea placeholder="LaTeX Formula (e.g. \frac{x}{y})" value={manualData.latexFormula} onChange={e => setManualData({...manualData, latexFormula: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-28 rounded-xl font-mono focus:border-indigo-550 focus:ring-0 text-xs" /><Input placeholder="Instruction (e.g. Solve for x)" value={manualData.instruction} onChange={e => setManualData({...manualData, instruction: e.target.value})} className="bg-slate-950 border-slate-800 text-white mt-2 h-10 rounded-lg text-xs" /><Input placeholder="Final Answer" value={manualData.answer} onChange={e => setManualData({...manualData, answer: e.target.value})} className="bg-slate-950 border-slate-800 text-white mt-2 h-10 rounded-lg text-xs" /></div><div className="bg-slate-950 p-6 rounded-2xl flex flex-col justify-center items-center border border-slate-800"><p className="text-[10px] font-black text-slate-500 uppercase mb-4 tracking-widest">Live Math Preview</p><div className="text-xl text-indigo-300">{manualData.latexFormula ? <SafeMath formula={manualData.latexFormula} /> : <span className="opacity-20 italic text-sm text-slate-500">Formula will render here</span>}</div></div></div>}
-                        {subject === 'english' && <div className="space-y-4"><Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-36 rounded-xl focus:border-indigo-550 focus:ring-0 text-xs" /><div className="grid grid-cols-3 gap-2">{[0,1,2].map(i => (<div key={i} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2"><Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label><Input placeholder="Question" className="h-8 text-xs bg-slate-900 border-none text-white focus:ring-0" value={manualData.quiz[i].question} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], question: e.target.value}; setManualData({...manualData, quiz: n});}} /><Input placeholder="Answer" className="h-8 text-xs bg-slate-900 border-none text-white focus:ring-0" value={manualData.quiz[i].answer} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], answer: e.target.value}; setManualData({...manualData, quiz: n});}} /></div>))}</div></div>}
-                        {subject === 'science' && <div className="grid md:grid-cols-2 gap-4"><Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-28 rounded-xl focus:border-indigo-550 focus:ring-0 text-xs" /><Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-28 rounded-xl focus:border-indigo-550 focus:ring-0 text-xs" /><div className="md:col-span-2 grid grid-cols-3 gap-2">{manualData.hypothesisOptions.map((opt: string, i: number) => (<Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});}} className="bg-slate-950 border-slate-800 text-white h-9 rounded-lg text-xs" />))}<Input placeholder="Icon Emoji (e.g. 🔬)" value={manualData.icon} onChange={e => setManualData({...manualData, icon: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-10 rounded-xl mt-2 text-xs" /><Input placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-950 border-slate-800 text-white h-10 rounded-xl mt-2 text-xs" /><Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="md:col-span-2 bg-slate-950 border-slate-800 text-white h-20 rounded-xl mt-2 focus:border-indigo-550 focus:ring-0 text-xs" /></div></div>}
+
+                    {/* SECTION 2: ACTION BUTTON */}
+                    <div className="flex justify-end pt-1">
+                        <Button 
+                            onClick={handleManualSave} 
+                            disabled={loading} 
+                            className="w-full sm:w-auto h-9 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                            {loading ? <Loader2 className="animate-spin h-3.5 w-3.5" /> : <><Save className="h-3.5 w-3.5" /> Publish Manual Module</>}
+                        </Button>
                     </div>
-                    <Button onClick={handleManualSave} disabled={loading} className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-xl flex items-center justify-center gap-2">
-                        {loading ? <Loader2 className="animate-spin h-4 w-4" /> : <><Save className="h-4 w-4" /> Publish Manual Mission</>}
-                    </Button>
                 </div>
             )}
         </Card>
@@ -1726,6 +2311,8 @@ export default function SeniorAcademyPage() {
     const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
+
+    const [activeGradeTier, setActiveGradeTier] = useState<SecondaryGradeTier>('Senior Secondary (SHS)');
 
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolData } = useDoc<any>(schoolRef);
@@ -1750,7 +2337,7 @@ export default function SeniorAcademyPage() {
 
             <SectionHeroBanner
                 title="Senior Academy"
-                subtitle="Advanced subject modules, curriculum labs, and scientific discoveries."
+                subtitle="Advanced subject modules, curriculum labs, and scientific discoveries across secondary tiers."
                 eyebrow="SUNNY SIDE ACADEMY • ACADEMICS"
                 badge={{
                     label: "LIVE MODULES",
@@ -1759,45 +2346,41 @@ export default function SeniorAcademyPage() {
                 icon={Rocket}
                 className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
                 actions={
-                    <div className="bg-slate-950/60 border border-slate-800/60 rounded-xl px-3.5 py-1.5 divide-x divide-slate-800 flex items-center shadow-inner">
-                        {/* Stat 1: AI BALANCE */}
-                        <div className="flex items-center gap-2 pr-3.5">
-                            <div className="flex flex-col">
-                                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                                    AI Balance
-                                </span>
-                                <div className="flex items-center gap-1.5 mt-0.5">
-                                    <span className="inline-flex items-center justify-center text-amber-400 text-xs">
-                                        ⚡
-                                    </span>
-                                    <span className="text-xs sm:text-sm font-black text-white">
-                                        {aiCredits} Credits
-                                    </span>
-                                </div>
-                            </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* SEGMENTED CONTROL FOR JHS / SHS */}
+                        <div className="bg-slate-950/90 border border-slate-800/90 p-1 rounded-xl flex items-center shadow-lg">
+                            <button
+                                type="button"
+                                onClick={() => setActiveGradeTier('Senior Secondary (SHS)')}
+                                className={cn(
+                                    "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                                    activeGradeTier === 'Senior Secondary (SHS)'
+                                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                                )}
+                            >
+                                <GraduationCap className="w-3.5 h-3.5" />
+                                <span>Senior Secondary (SHS)</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveGradeTier('Junior Secondary (JHS)')}
+                                className={cn(
+                                    "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                                    activeGradeTier === 'Junior Secondary (JHS)'
+                                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                                )}
+                            >
+                                <BookOpen className="w-3.5 h-3.5" />
+                                <span>Junior Secondary (JHS)</span>
+                            </button>
                         </div>
 
-                        {/* Stat 2: TARGET GRADE */}
-                        <div className="flex flex-col px-3.5">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                                Target Grade
-                            </span>
-                            <span className="text-xs sm:text-sm font-black text-slate-200 mt-0.5">
-                                Junior Secondary (JHS)
-                            </span>
-                        </div>
-
-                        {/* Stat 3: STATUS */}
-                        <div className="flex flex-col pl-3.5">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                                Status
-                            </span>
-                            <div className="flex items-center gap-1.5 mt-0.5">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                <span className="text-xs sm:text-sm font-black text-emerald-400">
-                                    Active
-                                </span>
-                            </div>
+                        {/* STATUS BADGE */}
+                        <div className="hidden sm:flex items-center gap-2 bg-slate-950/60 border border-slate-800/80 px-3 py-1.5 rounded-xl shadow-inner text-xs">
+                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="font-bold text-slate-300">Curriculum Synced</span>
                         </div>
                     </div>
                 }
@@ -1805,7 +2388,11 @@ export default function SeniorAcademyPage() {
 
             {canEdit && (
                 <div className="mb-6">
-                    <AdminConsole onContentAdded={handleContentUpdate} activeGrade="Junior Secondary (JHS)" />
+                    <AdminConsole 
+                        onContentAdded={handleContentUpdate} 
+                        activeGrade={activeGradeTier} 
+                        onGradeChange={setActiveGradeTier} 
+                    />
                 </div>
             )}
 
@@ -1816,7 +2403,7 @@ export default function SeniorAcademyPage() {
                             value="math" 
                             className={cn(
                               "h-full rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200",
-                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-800/50",
+                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-850",
                               "data-[state=active]:bg-indigo-600/20 data-[state=active]:text-indigo-300 data-[state=active]:border-indigo-500/50 data-[state=active]:shadow-sm data-[state=active]:shadow-indigo-950/50"
                             )}
                         >
@@ -1826,7 +2413,7 @@ export default function SeniorAcademyPage() {
                             value="english" 
                             className={cn(
                               "h-full rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200",
-                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-800/50",
+                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-850",
                               "data-[state=active]:bg-indigo-600/20 data-[state=active]:text-indigo-300 data-[state=active]:border-indigo-500/50 data-[state=active]:shadow-sm data-[state=active]:shadow-indigo-950/50"
                             )}
                         >
@@ -1836,7 +2423,7 @@ export default function SeniorAcademyPage() {
                             value="science" 
                             className={cn(
                               "h-full rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200",
-                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-800/50",
+                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-850",
                               "data-[state=active]:bg-indigo-600/20 data-[state=active]:text-indigo-300 data-[state=active]:border-indigo-500/50 data-[state=active]:shadow-sm data-[state=active]:shadow-indigo-950/50"
                             )}
                         >
@@ -1844,9 +2431,15 @@ export default function SeniorAcademyPage() {
                         </TabsTrigger>
                     </TabsList>
                     
-                    <TabsContent value="math"><MathLab canEdit={canEdit} /></TabsContent>
-                    <TabsContent value="english"><EnglishMastery canEdit={canEdit} /></TabsContent>
-                    <TabsContent value="science"><DiscoveryLab canEdit={canEdit} /></TabsContent>
+                    <TabsContent value="math">
+                        <MathLab canEdit={canEdit} activeGrade={activeGradeTier} onGradeChange={setActiveGradeTier} />
+                    </TabsContent>
+                    <TabsContent value="english">
+                        <EnglishMastery canEdit={canEdit} activeGrade={activeGradeTier} onGradeChange={setActiveGradeTier} />
+                    </TabsContent>
+                    <TabsContent value="science">
+                        <DiscoveryLab canEdit={canEdit} activeGrade={activeGradeTier} onGradeChange={setActiveGradeTier} />
+                    </TabsContent>
                 </Tabs>
             </div>
              <style jsx global>{`

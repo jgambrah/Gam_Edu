@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, PanelLeft, RefreshCw, User as UserIcon } from 'lucide-react';
+import { LogOut, Settings, PanelLeft, RefreshCw, User as UserIcon, ChevronRight } from 'lucide-react';
 import { navItems } from '@/lib/data';
 import { useFirebase, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -105,41 +105,52 @@ export default function Header() {
           </SheetContent>
         </Sheet>
         
-        <h1 className="text-lg font-black text-slate-900 tracking-tight uppercase italic md:text-xl hidden lg:block">
-            {pageTitle}
-        </h1>
+        {pathname === '/dashboard/senior-academy' ? (
+          <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+            <Link href="/dashboard" className="hover:text-indigo-600 transition-colors">Dashboard</Link>
+            <ChevronRight className="h-3 w-3 text-slate-400" />
+            <span className="text-slate-400 font-medium">Academics</span>
+            <ChevronRight className="h-3 w-3 text-slate-400" />
+            <span className="text-slate-900 font-bold bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/80">Senior Academy</span>
+          </nav>
+        ) : (
+          <h1 className="text-lg font-black text-slate-900 tracking-tight uppercase italic md:text-xl hidden lg:block">
+              {pageTitle}
+          </h1>
+        )}
       </div>
 
       {/* QUICK SEARCH INTEGRATION */}
-      <div className="flex-1 max-w-md mx-4">
+      <div className="flex-1 max-w-md mx-2 sm:mx-4">
           <GlobalSearch />
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* UNIFIED UTILITY BAR */}
+      <div className="flex items-center gap-2 bg-slate-50/80 border border-slate-200/80 rounded-2xl p-1 pl-2 shadow-xs">
+        <div className="hidden sm:block">
+            <CreditBalance />
+        </div>
+
         <Button 
             variant="ghost" 
             size="icon" 
             onClick={handleRefresh} 
             disabled={isRefreshing}
             title="Refresh Application"
-            className="text-slate-400 hover:text-slate-900 rounded-xl"
+            className="text-slate-400 hover:text-slate-900 rounded-xl h-8 w-8"
         >
-            <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin text-indigo-600")} />
+            <RefreshCw className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin text-indigo-600")} />
             <span className="sr-only">Refresh</span>
         </Button>
-        
-        <div className="hidden sm:block">
-            <CreditBalance />
-        </div>
         
         <NotificationBell />
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full border-2 border-slate-100 shadow-sm overflow-hidden p-0">
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-slate-200 shadow-xs overflow-hidden p-0">
               <Avatar className="h-full w-full rounded-none">
                 <AvatarImage src={profile?.photoURL || user?.photoURL || ''} alt="User Avatar" className="object-cover" />
-                <AvatarFallback className="bg-slate-50 text-indigo-600 font-bold">{getInitials(user?.email)}</AvatarFallback>
+                <AvatarFallback className="bg-indigo-50 text-indigo-700 font-bold text-xs">{getInitials(user?.email)}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
