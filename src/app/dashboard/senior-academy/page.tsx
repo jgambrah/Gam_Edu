@@ -385,6 +385,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleAnswer: "x = -0.5"
     },
     {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 5)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 5 / 2010 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 5 / 2010 past paper variant) covering well-defined sets, base-five sequences, ratio, inverse proportion, plane transformations, and probability.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-05",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2010 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Which of the following collections represents a well-defined set in mathematics?",
+        sampleFormula: "\\{Kwame, Ama, Kofi, Abena\\}",
+        sampleAnswer: "{Kwame, Ama, Kofi, Abena}"
+    },
+
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",

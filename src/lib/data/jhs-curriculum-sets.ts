@@ -1145,3 +1145,578 @@ export const SET_JHS_MASTERY_SERIES_04: CurriculumQuestionSet = {
   lastUpdated: "2026-09-14T12:30:00.000Z"
 };
 
+
+export const SET_JHS_MASTERY_SERIES_05: CurriculumQuestionSet = {
+  "id": "jhs-math-mastery-series-05",
+  "title": "Junior Core Mathematics • Objective Mastery Series (Set 5)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Comprehensive Objective Exam Series",
+  "variantType": "standard",
+  "totalQuestions": 40,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "prompt": "Which of the following collections represents a well-defined set in mathematics?",
+      "options": [
+        "{Dog, Blue, 12, Table}",
+        "{Kwame, Ama, Kofi, Abena}",
+        "{Tall, Heavy, Short, Beautiful}",
+        "{Hot, Warm, Cold, Pleasant}"
+      ],
+      "correctAnswer": "{Kwame, Ama, Kofi, Abena}",
+      "hint": "A well-defined set has clear, objective criteria for membership without subjective opinions.",
+      "workedSolution": "A well-defined set contains elements that can be definitively identified without ambiguity or subjective judgment. Names of specific individuals form a distinct, objective set.",
+      "points": 1
+    },
+    {
+      "id": "q02",
+      "prompt": "If set $P$ is a proper subset of set $Q$ (i.e. $P \\subset Q$), which of the following statements is always true?",
+      "options": [
+        "Every member of set P is also a member of set Q",
+        "Set P and set Q contain the exact same number of elements",
+        "No member of set P is found in set Q",
+        "Set P contains more elements than set Q"
+      ],
+      "correctAnswer": "Every member of set P is also a member of set Q",
+      "hint": "Recall the definition of a subset: $A \\subset B$ means all elements of $A$ belong to $B$.",
+      "workedSolution": "By definition, if $P \\subset Q$, every element belonging to set $P$ is necessarily an element of set $Q$.",
+      "points": 1
+    },
+    {
+      "id": "q03",
+      "prompt": "Find the Least Common Multiple (LCM) of $12$, $20$, and $30$.",
+      "options": [
+        "60",
+        "120",
+        "180",
+        "240"
+      ],
+      "correctAnswer": "60",
+      "hint": "Find the prime factors: $12 = 2^2 \\times 3$, $20 = 2^2 \\times 5$, $30 = 2 \\times 3 \\times 5$.",
+      "workedSolution": "Prime factorizations: $12 = 2^2 \\times 3$; $20 = 2^2 \\times 5$; $30 = 2 \\times 3 \\times 5$. Taking the highest power of each prime: $2^2 \\times 3 \\times 5 = 4 \\times 15 = 60$.",
+      "points": 1
+    },
+    {
+      "id": "q04",
+      "prompt": "The sum of $7$ and $x$, when divided by $5$, is equal to $3.6$. What is the value of $x$?",
+      "options": [
+        "11",
+        "9",
+        "18",
+        "13"
+      ],
+      "correctAnswer": "11",
+      "hint": "Write the algebraic equation: $\\frac{7 + x}{5} = 3.6$ and multiply both sides by 5.",
+      "workedSolution": "$$\\frac{7 + x}{5} = 3.6 \\implies 7 + x = 3.6 \\times 5 = 18 \\implies x = 18 - 7 = 11$$.",
+      "points": 1
+    },
+    {
+      "id": "q05",
+      "prompt": "The numbers $21_{\\text{five}}, 22_{\\text{five}}, 23_{\\text{five}}, \\dots, \\dots, 31_{\\text{five}}$ form a consecutive sequence in base five. Find the two missing numbers.",
+      "options": [
+        "$$24_{\\text{five}}, 30_{\\text{five}}$$",
+        "$$24_{\\text{five}}, 25_{\\text{five}}$$",
+        "$$25_{\\text{five}}, 30_{\\text{five}}$$",
+        "$$30_{\\text{five}}, 31_{\\text{five}}$$"
+      ],
+      "correctAnswer": "$$24_{\\text{five}}, 30_{\\text{five}}$$",
+      "hint": "In base 5, the largest allowed digit is 4. Counting past 24 gives 30.",
+      "workedSolution": "Counting in base five: after 23 comes 24. Since 5 cannot be written as a single digit, the next number is 30, followed by 31. The missing numbers are $$24_{\\text{five}}, 30_{\\text{five}}$$.",
+      "points": 1
+    },
+    {
+      "id": "q06",
+      "prompt": "Identify all the integers in the set: $$S = \\left\\{-12, -5, 0, \\frac{3}{4}, 3\\frac{1}{2}, 50, 120\\right\\}$$.",
+      "options": [
+        "{-12, -5, 0, 50, 120}",
+        "{-12, -5}",
+        "{0, 50, 120}",
+        "{3/4, 3 1/2}"
+      ],
+      "correctAnswer": "{-12, -5, 0, 50, 120}",
+      "hint": "Integers are positive and negative whole numbers including zero, excluding fractions.",
+      "workedSolution": "The numbers $3/4$ and $3\\frac{1}{2}$ are fractions. All other elements ($-12, -5, 0, 50, 120$) are integers.",
+      "points": 1
+    },
+    {
+      "id": "q07",
+      "prompt": "Calculate the total cost of $30$ exercise books at $\\text{GH¢ } 0.40$ each and $20$ pens at $\\text{GH¢ } 0.50$ each.",
+      "options": [
+        "GH¢ 22.00",
+        "GH¢ 24.00",
+        "GH¢ 20.00",
+        "GH¢ 18.50"
+      ],
+      "correctAnswer": "GH¢ 22.00",
+      "hint": "Total = (30 × 0.40) + (20 × 0.50).",
+      "workedSolution": "$$30 \\times 0.40 = \\text{GH¢ } 12.00$$. $$20 \\times 0.50 = \\text{GH¢ } 10.00$$. Total cost = $12.00 + 10.00 = \\text{GH¢ } 22.00$.",
+      "points": 1
+    },
+    {
+      "id": "q08",
+      "prompt": "Simplify: $$-32 + 20 - (12 - 17) - (-4)$$.",
+      "options": [
+        "-3",
+        "-7",
+        "-15",
+        "-21"
+      ],
+      "correctAnswer": "-3",
+      "hint": "Evaluate the expression inside parentheses first: $12 - 17 = -5$.",
+      "workedSolution": "$$-32 + 20 - (-5) - (-4) = -12 + 5 + 4 = -12 + 9 = -3$$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "Arrange the following numbers in ascending order (from lowest to highest): $$0.4, 2, -6, 0$$.",
+      "options": [
+        "-6, 0, 0.4, 2",
+        "0, -6, 0.4, 2",
+        "-6, 0.4, 0, 2",
+        "0, 0.4, 2, -6"
+      ],
+      "correctAnswer": "-6, 0, 0.4, 2",
+      "hint": "Negative numbers are less than zero; arrange from the most negative to the largest positive.",
+      "workedSolution": "$$-6 < 0 < 0.4 < 2$$.",
+      "points": 1
+    },
+    {
+      "id": "q10",
+      "prompt": "How many ribbons each of length $$4\\frac{1}{2}\\text{ m}$$ can be cut from a roll measuring $108\\text{ m}$?",
+      "options": [
+        "24",
+        "22",
+        "26",
+        "20"
+      ],
+      "correctAnswer": "24",
+      "hint": "Divide 108 by 4.5 (or 9/2).",
+      "workedSolution": "$$108 \\div \\frac{9}{2} = 108 \\times \\frac{2}{9} = 12 \\times 2 = 24\\text{ ribbons}$$.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "Find the sum of $132.5$, $0.364$, and $81.08$, correcting your result to one decimal place.",
+      "options": [
+        "213.9",
+        "213.8",
+        "214.0",
+        "214.2"
+      ],
+      "correctAnswer": "213.9",
+      "hint": "Add the exact decimal numbers, then look at the second decimal place to round.",
+      "workedSolution": "$$132.5 + 0.364 + 81.08 = 213.944$$. Rounded to 1 decimal place: $213.9$.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "Kojo and Esi are $15$ and $10$ years old respectively. They share $75$ oranges in the ratio of their ages. How many oranges does Kojo receive?",
+      "options": [
+        "45",
+        "30",
+        "50",
+        "25"
+      ],
+      "correctAnswer": "45",
+      "hint": "Ratio = 15 : 10 = 3 : 2. Total units = 5. Kojo's share = (3/5) × 75.",
+      "workedSolution": "Ratio in simplest terms: $$15 : 10 = 3 : 2$$. Total parts = $3 + 2 = 5$. Kojo gets $$\\frac{3}{5} \\times 75 = 3 \\times 15 = 45\\text{ oranges}$$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "It takes $8$ workers $1\\text{ hour}$ to clear a school compound. How long will it take $20$ workers to clear the same compound working at the same rate?",
+      "options": [
+        "24 minutes",
+        "15 minutes",
+        "30 minutes",
+        "12 minutes"
+      ],
+      "correctAnswer": "24 minutes",
+      "hint": "This is inverse proportion: Work = Workers × Time.",
+      "workedSolution": "Total work = $8 \\times 60\\text{ minutes} = 480\\text{ worker-minutes}$. Time for 20 workers = $$480 \\div 20 = 24\\text{ minutes}$$.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "A property broker earns a commission of $\\text{GH¢ } 84,000.00$ on selling a commercial building valued at $\\text{GH¢ } 700,000.00$. Calculate the percentage commission.",
+      "options": [
+        "12.0%",
+        "10.0%",
+        "8.5%",
+        "14.0%"
+      ],
+      "correctAnswer": "12.0%",
+      "hint": "Commission % = (Commission / Sale Price) × 100%.",
+      "workedSolution": "$$\\frac{84,000}{700,000} \\times 100\\% = \\frac{84}{7} \\% = 12.0\\%$$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "An investor earns simple interest of $\\text{GH¢ } 45,000.00$ on a principal of $\\text{GH¢ } 300,000.00$ over $3\\text{ years}$. Find the annual interest rate.",
+      "options": [
+        "5.0%",
+        "4.5%",
+        "6.0%",
+        "7.5%"
+      ],
+      "correctAnswer": "5.0%",
+      "hint": "Rate $R = \\frac{100 \\times I}{P \\times T}$.",
+      "workedSolution": "$$R = \\frac{100 \\times 45,000}{300,000 \\times 3} = \\frac{4,500,000}{900,000} = 5.0\\%$$.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "Simplify: $$(6a^3 b^2)\\left(\\frac{2}{3}ab^4\\right)$$.",
+      "options": [
+        "$$4a^4 b^6$$",
+        "$$4a^3 b^6$$",
+        "$$4a^4 b^8$$",
+        "$$9a^4 b^6$$"
+      ],
+      "correctAnswer": "$$4a^4 b^6$$",
+      "hint": "Multiply coefficients: $6 \\times \\frac{2}{3} = 4$, then add exponents for $a$ and $b$.",
+      "workedSolution": "$$(6 \\times 2/3) \\times a^{3+1} \\times b^{2+4} = 4a^4 b^6$$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "The examination marks of eight candidates are: $$42, 18, 70, 85, 50, 48, 22, 65$$. Determine the median mark.",
+      "options": [
+        "49",
+        "48",
+        "50",
+        "52"
+      ],
+      "correctAnswer": "49",
+      "hint": "Order the scores: 18, 22, 42, 48, 50, 65, 70, 85. The median is the average of the 4th and 5th terms.",
+      "workedSolution": "Arranging in ascending order: $18, 22, 42, 48, 50, 65, 70, 85$. Middle values are 48 and 50. Median = $$\\frac{48 + 50}{2} = 49$$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "In a school crop production survey, Maize accounts for $40\\%$ of the farm yield. What is the angle of the sector representing Maize on a pie chart?",
+      "options": [
+        "$$144.0^\\circ$$",
+        "$$120.0^\\circ$$",
+        "$$108.0^\\circ$$",
+        "$$136.0^\\circ$$"
+      ],
+      "correctAnswer": "$$144.0^\\circ$$",
+      "hint": "Angle = (Percentage / 100) × 360°.",
+      "workedSolution": "$$\\frac{40}{100} \\times 360^\\circ = 4 \\times 36^\\circ = 144.0^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "Twenty cards are numbered from $11$ to $30$. If one card is picked at random, what is the probability that its number contains the digit $2$?",
+      "options": [
+        "$$\\frac{11}{20}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{9}{20}$$",
+        "$$\\frac{3}{5}$$"
+      ],
+      "correctAnswer": "$$\\frac{11}{20}$$",
+      "hint": "List cards with 2: 12, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29.",
+      "workedSolution": "Total cards = $30 - 11 + 1 = 20$. Cards containing digit 2: 12, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 (11 cards). Probability = $$\\frac{11}{20}$$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "Solve for $x$ in the equation: $$\\frac{x}{5} + 2 = 6$$.",
+      "options": [
+        "20",
+        "25",
+        "16",
+        "30"
+      ],
+      "correctAnswer": "20",
+      "hint": "Subtract 2 from both sides, then multiply by 5.",
+      "workedSolution": "$$\\frac{x}{5} = 6 - 2 = 4 \\implies x = 4 \\times 5 = 20$$.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "Factorize completely: $$mn + 4m + 3n + 12$$.",
+      "options": [
+        "$$(m + 3)(n + 4)$$",
+        "$$(m + 4)(n + 3)$$",
+        "$$(mn + 4)(3n + 12)$$",
+        "$$(m - 3)(n - 4)$$"
+      ],
+      "correctAnswer": "$$(m + 3)(n + 4)$$",
+      "hint": "Factor in pairs: $m(n + 4) + 3(n + 4)$.",
+      "workedSolution": "$$m(n + 4) + 3(n + 4) = (m + 3)(n + 4)$$.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "If $$x \\in \\{1, 2, 3, 4, 5\\}$$, find the truth set of $$3x - 2 < 8$$.",
+      "options": [
+        "{1, 2, 3}",
+        "{1, 2}",
+        "{2, 3, 4}",
+        "{1, 2, 3, 4}"
+      ],
+      "correctAnswer": "{1, 2, 3}",
+      "hint": "Solve $3x < 10 \\implies x < 3.33$.",
+      "workedSolution": "$$3x < 8 + 2 \\implies 3x < 10 \\implies x < 3\\frac{1}{3}$$. Within the given replacement set, the values satisfying this are {1, 2, 3}.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "Solve the linear inequality: $$8x - (12x + 4) \\ge -16$$.",
+      "options": [
+        "$$x \\le 3$$",
+        "$$x \\ge 3$$",
+        "$$x \\le -3$$",
+        "$$x \\ge -3$$"
+      ],
+      "correctAnswer": "$$x \\le 3$$",
+      "hint": "Expand the parentheses: $8x - 12x - 4 \\ge -16$. Remember dividing by a negative reverses the inequality sign.",
+      "workedSolution": "$$-4x - 4 \\ge -16 \\implies -4x \\ge -12 \\implies x \\le \\frac{-12}{-4} \\implies x \\le 3$$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "State the rule for the linear mapping where inputs $$1, 2, 3, 4$$ yield outputs $$6, 11, 16, 21$$.",
+      "options": [
+        "$$x \\to 5x + 1$$",
+        "$$x \\to 5x - 1$$",
+        "$$x \\to 4x + 2$$",
+        "$$x \\to 6x$$"
+      ],
+      "correctAnswer": "$$x \\to 5x + 1$$",
+      "hint": "Check the common difference between consecutive outputs: $11 - 6 = 5$.",
+      "workedSolution": "Common difference is 5 ($5x$). When $x = 1$, output is $5(1) + 1 = 6$. The rule is $$x \\to 5x + 1$$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "Find the circumference of a circle whose area is $$100\\pi\\text{ cm}^2$$.",
+      "options": [
+        "$$20\\pi\\text{ cm}$$",
+        "$$10\\pi\\text{ cm}$$",
+        "$$40\\pi\\text{ cm}$$",
+        "$$50\\pi\\text{ cm}$$"
+      ],
+      "correctAnswer": "$$20\\pi\\text{ cm}$$",
+      "hint": "Area = $\\pi r^2 = 100\\pi \\implies r = 10$. Circumference = $2\\pi r$.",
+      "workedSolution": "$$\\pi r^2 = 100\\pi \\implies r = \\sqrt{100} = 10\\text{ cm}$$. Circumference $$= 2\\pi r = 2\\pi(10) = 20\\pi\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "Which of the following plane geometric shapes forms the faces of a regular octahedron?",
+      "options": [
+        "Equilateral triangle",
+        "Square",
+        "Regular hexagon",
+        "Rhombus"
+      ],
+      "correctAnswer": "Equilateral triangle",
+      "hint": "An octahedron has 8 congruent triangular faces.",
+      "workedSolution": "A regular octahedron is composed of 8 congruent equilateral triangular faces.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "How many lines of symmetry does an equilateral triangle have?",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "6"
+      ],
+      "correctAnswer": "3",
+      "hint": "Each line of symmetry passes through a vertex and bisects the opposite side.",
+      "workedSolution": "An equilateral triangle has 3 lines of symmetry corresponding to its three altitude/median lines.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "A solid rectangular storage chest has dimensions $30\\text{ cm}$ by $8\\text{ cm}$ by $6\\text{ cm}$. How many solid cubes of edge $2\\text{ cm}$ can fit inside?",
+      "options": [
+        "180",
+        "90",
+        "120",
+        "240"
+      ],
+      "correctAnswer": "180",
+      "hint": "Calculate the volume of the chest and divide by the volume of 1 cube ($2^3 = 8$).",
+      "workedSolution": "Chest volume = $30 \\times 8 \\times 6 = 1440\\text{ cm}^3$. Cube volume = $2^3 = 8\\text{ cm}^3$. Number of cubes = $$1440 \\div 8 = 180$$ (or $15 \\times 4 \\times 3 = 180$).",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "The interior angle of a regular polygon is $140^\\circ$. How many sides does this polygon have?",
+      "options": [
+        "9",
+        "8",
+        "10",
+        "12"
+      ],
+      "correctAnswer": "9",
+      "hint": "Exterior angle = $180^\\circ - 140^\\circ = 40^\\circ$. Number of sides = $360^\\circ \\div \\text{exterior angle}$.",
+      "workedSolution": "$$\\text{Exterior angle} = 180^\\circ - 140^\\circ = 40^\\circ$$. Number of sides $$n = \\frac{360^\\circ}{40^\\circ} = 9$$.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "In an isosceles triangle $PQR$, $|PQ| = |PR|$. An exterior angle adjacent to base angle $R$ measures $118^\\circ$. Find the vertex angle $P$.",
+      "options": [
+        "$$56^\\circ$$",
+        "$$62^\\circ$$",
+        "$$68^\\circ$$",
+        "$$48^\\circ$$"
+      ],
+      "correctAnswer": "$$56^\\circ$$",
+      "hint": "Interior angle R = 180° - 118° = 62°. Base angles are equal: Q = R = 62°.",
+      "workedSolution": "Interior angle $R = 180^\\circ - 118^\\circ = 62^\\circ$. Since $|PQ| = |PR|$, angle $Q = \\text{angle } R = 62^\\circ$. Vertex angle $$P = 180^\\circ - (62^\\circ + 62^\\circ) = 180^\\circ - 124^\\circ = 56^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "In a right-angled triangle $ABC$ with right angle at $B$, hypotenuse $AC = m$, base $BC = k$, and height $AB = h$. Which equation correctly gives $h^2$?",
+      "options": [
+        "$$h^2 = m^2 - k^2$$",
+        "$$h^2 = m^2 + k^2$$",
+        "$$h^2 = k^2 - m^2$$",
+        "$$h^2 = (m - k)^2$$"
+      ],
+      "correctAnswer": "$$h^2 = m^2 - k^2$$",
+      "hint": "Apply Pythagoras' theorem: $\\text{Hypotenuse}^2 = \\text{Base}^2 + \\text{Height}^2$.",
+      "workedSolution": "By Pythagoras' theorem: $$m^2 = h^2 + k^2 \\implies h^2 = m^2 - k^2$$.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "Express $9\\text{ minutes } 36\\text{ seconds}$ as a percentage of $1\\text{ hour}$.",
+      "options": [
+        "16.0%",
+        "15.0%",
+        "12.5%",
+        "18.0%"
+      ],
+      "correctAnswer": "16.0%",
+      "hint": "Convert both durations to seconds: 1 hour = 3600 seconds.",
+      "workedSolution": "$$9\\text{ min } 36\\text{ s} = (9 \\times 60) + 36 = 540 + 36 = 576\\text{ seconds}$$. $$1\\text{ hour} = 3600\\text{ seconds}$$. Percentage = $$\\frac{576}{3600} \\times 100\\% = \\frac{576}{36}\\% = 16.0\\%$$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "The point $A(5, 7)$ is translated to $A'(2, 3)$. What is the translation vector?",
+      "options": [
+        "$$\\begin{pmatrix} -3 \\\\ -4 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 3 \\\\ 4 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -3 \\\\ 4 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 3 \\\\ -4 \\end{pmatrix}$$"
+      ],
+      "correctAnswer": "$$\\begin{pmatrix} -3 \\\\ -4 \\end{pmatrix}$$",
+      "hint": "Translation vector = Image - Object: $\\begin{pmatrix} 2 - 5 \\\\ 3 - 7 \\end{pmatrix}$.",
+      "workedSolution": "$$\\begin{pmatrix} x' - x \\\\ y' - y \\end{pmatrix} = \\begin{pmatrix} 2 - 5 \\\\ 3 - 7 \\end{pmatrix} = \\begin{pmatrix} -3 \\\\ -4 \\end{pmatrix}$$.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "A scale enlargement maps triangle $ABC$ with perimeter $16\\text{ cm}$ to triangle $A'B'C'$ with perimeter $40\\text{ cm}$. Find the linear scale factor.",
+      "options": [
+        "2.5",
+        "2.0",
+        "3.0",
+        "1.5"
+      ],
+      "correctAnswer": "2.5",
+      "hint": "Scale factor = Perimeter of Image ÷ Perimeter of Object.",
+      "workedSolution": "$$k = \\frac{40}{16} = \\frac{5}{2} = 2.5$$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "A rectangular photo measuring $6\\text{ cm}$ by $10\\text{ cm}$ is enlarged such that its longer side becomes $25\\text{ cm}$. Find the length of the shorter side of the enlarged photo.",
+      "options": [
+        "15 cm",
+        "12 cm",
+        "18 cm",
+        "14 cm"
+      ],
+      "correctAnswer": "15 cm",
+      "hint": "Scale factor = 25 ÷ 10 = 2.5. Multiply the shorter side by 2.5.",
+      "workedSolution": "$$k = \\frac{25}{10} = 2.5$$. Shorter side = $$6 \\times 2.5 = 15\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "Express $5,068$ in standard form.",
+      "options": [
+        "$$5.068 \\times 10^3$$",
+        "$$5.068 \\times 10^4$$",
+        "$$5.068 \\times 10^{-3}$$",
+        "$$50.68 \\times 10^2$$"
+      ],
+      "correctAnswer": "$$5.068 \\times 10^3$$",
+      "hint": "Move the decimal point 3 places to the left: $5.068 \\times 10^3$.",
+      "workedSolution": "$$5,068 = 5.068 \\times 10^3$$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "In a geometric compass construction on line segment $AB$, arcs of equal radii drawn from $A$ and $B$ intersect above and below the line. Joining the intersection points constructs:",
+      "options": [
+        "The perpendicular bisector of AB",
+        "An angle of 60° at A",
+        "A line parallel to AB",
+        "The angle bisector of AB"
+      ],
+      "correctAnswer": "The perpendicular bisector of AB",
+      "hint": "Intersecting equidistant arcs from two endpoints of a segment produce its perpendicular mediator.",
+      "workedSolution": "Drawing equal arcs from both endpoints of a line segment that intersect on both sides forms the perpendicular bisector (mediator) of the segment.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "Given vectors $$u = \\begin{pmatrix} -6 \\\\ 15 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} 12k \\\\ 15 \\end{pmatrix}$$. If $u = v$, find the value of $k$.",
+      "options": [
+        "-1/2",
+        "1/2",
+        "-2",
+        "2"
+      ],
+      "correctAnswer": "-1/2",
+      "hint": "Equate the x-components: $12k = -6$.",
+      "workedSolution": "$$12k = -6 \\implies k = -\\frac{6}{12} = -\\frac{1}{2}$$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "The three-figure bearing of lighthouse $B$ from port $A$ is $055^\\circ$. Calculate the back bearing of port $A$ from lighthouse $B$.",
+      "options": [
+        "235°",
+        "125°",
+        "215°",
+        "305°"
+      ],
+      "correctAnswer": "235°",
+      "hint": "Since the forward bearing is less than 180°, add 180° to find the back bearing.",
+      "workedSolution": "$$\\text{Back bearing} = 055^\\circ + 180^\\circ = 235^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "Kwame is $10\\text{ years}$ older than Ama. If Ama is $20\\text{ years}$ old, find the ratio of Ama's age to Kwame's age in its simplest form.",
+      "options": [
+        "2 : 3",
+        "3 : 2",
+        "1 : 2",
+        "2 : 5"
+      ],
+      "correctAnswer": "2 : 3",
+      "hint": "Ama = 20 years, Kwame = 20 + 10 = 30 years. Ratio = 20 : 30.",
+      "workedSolution": "Ama's age = 20. Kwame's age = $20 + 10 = 30$. Ratio Ama : Kwame = $$20 : 30 = 2 : 3$$.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-14T15:30:00.000Z",
+  "lastUpdated": "2026-09-14T15:30:00.000Z"
+};

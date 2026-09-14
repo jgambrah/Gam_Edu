@@ -967,6 +967,18 @@ export async function runCurriculumSeeding() {
 
   console.log('\n----------------------------------------------------------------\n');
 
+  // Seed Set 8: JHS Math -> Core Curriculum Series (Set 5 Objective in core_curriculum_mastery)
+  console.log('▶ Ingesting Set 8: Junior Core Math Objective Mastery Series (Set 5)...');
+  const result8 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_05
+  );
+  results.push(result8);
+
+  console.log('\n----------------------------------------------------------------\n');
+
   // Seed Set 7: JHS Math -> Core Curriculum Series (Set 4 Structured in core_curriculum_mastery)
   console.log('▶ Ingesting Set 7: Junior Core Math Structured Problem-Solving Series (Set 4)...');
   const result7 = await seedTopicSet(
