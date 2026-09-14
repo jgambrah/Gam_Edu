@@ -528,9 +528,11 @@ export function ExecutiveDirectorCockpit({
     : (studentTeacherRatio ? `${studentTeacherRatio}:1` : "20.3:1");
 
   const lessThan30Bucket = telemetry.lessThan30Bucket;
-  const grossTotalDebt = telemetry.grossTotalDebt;
+  const summaryOutstanding = Number(dashboardSummary?.financials?.totalOutstanding || unifiedMetrics?.grossReceivables || 0);
+  const rawGrossTotalDebt = telemetry.grossTotalDebt;
+  const grossTotalDebt = rawGrossTotalDebt > 0 ? rawGrossTotalDebt : summaryOutstanding;
   const advancePaymentsCredit = telemetry.advancePaymentsCredit;
-  const netOutstandingDebt = telemetry.netOutstandingDebt;
+  const netOutstandingDebt = telemetry.netOutstandingDebt > 0 ? telemetry.netOutstandingDebt : grossTotalDebt;
 
   const grossDebtForPct = grossTotalDebt > 0 ? grossTotalDebt : 1;
   const agingData = [
@@ -1501,39 +1503,11 @@ export function ExecutiveDirectorCockpit({
                     </div>
                   </div>
 
-                  {financialsMode === 'on-demand' && (!financialRecords || financialRecords.length === 0) ? (
-                    <Button 
-                      onClick={() => { onLoadFinancials?.(); }}
-                      disabled={isLoadingFinancials}
-                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl gap-2 cursor-pointer text-xs h-10 shadow-sm"
-                    >
-                      {isLoadingFinancials ? (
-                        <>
-                          <RefreshCw className="h-4 w-4 animate-spin" />
-                          <span>Loading School Records...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Banknote className="h-4 w-4" />
-                          <span>Load Complete Financial Ledger On-Demand</span>
-                        </>
-                      )}
-                    </Button>
-                  ) : (
-                    financialsMode === 'full' && (
-                      <Button 
-                        variant="outline"
-                        onClick={() => { onSwitchOnDemand?.(); }}
-                        className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold rounded-xl gap-2 cursor-pointer text-xs h-10"
-                      >
-                        <Zap className="h-4 w-4 text-amber-500" />
-                        <span>Switch to On-Demand Mode</span>
-                      </Button>
-                    )
-                  )}
-
-                  <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl cursor-pointer">
-                    <Link href="/dashboard/accounts">View Full Accounts & Receivables Ledger</Link>
+                  <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl h-11 text-xs shadow-sm gap-2 cursor-pointer">
+                    <Link href="/dashboard/accounts">
+                      <Banknote className="h-4 w-4" />
+                      <span>Open Student Billing & Live Receivables Ledger &rarr;</span>
+                    </Link>
                   </Button>
                 </div>
               )}
@@ -1629,6 +1603,12 @@ export function ExecutiveDirectorCockpit({
                   <CardDescription className="text-xs text-slate-500 font-medium">All-time student ledger debt breakdown (all terms) vs parent advance tuition deposits & credit balances</CardDescription>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
+                  <Button asChild variant="outline" size="sm" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/60 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 transition cursor-pointer shadow-xs h-auto">
+                    <Link href="/dashboard/accounts">
+                      <Banknote className="h-3.5 w-3.5" />
+                      <span>Student Billing & Aging &rarr;</span>
+                    </Link>
+                  </Button>
                   <button
                     onClick={() => setShowDebtDetailsToggle(prev => prev === 'net' ? 'gross' : 'net')}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-xs font-semibold text-slate-700 transition cursor-pointer shadow-xs"
@@ -1717,6 +1697,18 @@ export function ExecutiveDirectorCockpit({
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Quick-Action Link to Student Accounts & Billing */}
+              <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="font-medium">Complete debtor rosters, fee schedules, waiver approvals, and aging tiers are managed in Student Billing.</span>
+                </div>
+                <Button asChild size="sm" className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs shrink-0 cursor-pointer">
+                  <Link href="/dashboard/accounts">
+                    Open Full Accounts & Billing &rarr;
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>

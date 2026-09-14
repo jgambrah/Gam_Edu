@@ -3984,7 +3984,7 @@ function DirectorDashboard({
             {/* Standalone Domain Segmented Control & Sub-tabs */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-1.5 bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-800/80 shadow-sm">
               {/* Primary Domain Segmented Control */}
-              <div className="flex flex-wrap p-1 bg-white/[0.04] rounded-xl border border-white/10 shadow-inner gap-1">
+              <div className="flex flex-wrap items-center p-1 bg-white/[0.04] rounded-xl border border-white/10 shadow-inner gap-1">
                 {domainTabs.map((domain) => {
                   const isSelected = activeDomain.id === domain.id;
                   return (
@@ -4002,6 +4002,16 @@ function DirectorDashboard({
                     </button>
                   );
                 })}
+
+                {hasFinanceAccess && (
+                  <Link
+                    href="/dashboard/accounts"
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/20 ml-1 cursor-pointer"
+                  >
+                    <Banknote className="h-3.5 w-3.5" />
+                    <span>Student Billing &rarr;</span>
+                  </Link>
+                )}
               </div>
 
               {/* Secondary Sub-Pill Navigation */}
