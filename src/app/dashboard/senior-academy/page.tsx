@@ -11,7 +11,7 @@ import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, add
 import { 
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
-  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap
+  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -796,33 +796,21 @@ const ENGLISH_DOMAINS = [
     'RHETORIC & ESSAYS'
 ];
 
-function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChange }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; onGradeChange?: (grade: SecondaryGradeTier) => void; }) {
+function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit: boolean; activeGrade?: SecondaryGradeTier }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [activeStory, setActiveStory] = useState<any>(null);
     const [answers, setAnswers] = useState<string[]>([]);
-    const [selectedGrade, setSelectedGrade] = useState<string>(activeGrade);
     const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
 
-    useEffect(() => {
-        setSelectedGrade(activeGrade);
-    }, [activeGrade]);
-
-    const handleGradeSelect = (grade: string) => {
-        setSelectedGrade(grade);
-        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
-            onGradeChange(grade);
-        }
-    };
-
-    const isJunior = isJuniorLevel(selectedGrade);
-    const isPrimary = selectedGrade === 'Early Childhood' || selectedGrade === 'Lower Primary' || selectedGrade === 'Upper Primary';
+    const isJunior = isJuniorLevel(activeGrade);
+    const isPrimary = (activeGrade as string) === 'Early Childhood' || (activeGrade as string) === 'Lower Primary' || (activeGrade as string) === 'Upper Primary';
 
     const storiesQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: library, forceRefetch } = useCollection<any>(storiesQuery);
+    const { data: library } = useCollection<any>(storiesQuery);
 
     // Folder Logic for English with default curriculum strands
     const folderStructure = useMemo(() => {
@@ -832,13 +820,13 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGra
         Object.entries(DEFAULT_ENGLISH_STRANDS).forEach(([strand, subItems]) => {
             structure[strand] = {};
             subItems.forEach(item => {
-                structure[strand][item.subTopic] = [{ ...item.story, gradeLevel: selectedGrade }];
+                structure[strand][item.subTopic] = [{ ...item.story, gradeLevel: activeGrade }];
             });
         });
 
         // Overlay DB items if available
         if (library && library.length > 0) {
-            const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+            const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === activeGrade);
             filtered.forEach(s => {
                 const category = (s.category || s.genre || 'LITERATURE & POETRY').toUpperCase();
                 const subTopic = s.subTopic || 'Standard Comprehension';
@@ -849,7 +837,7 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGra
         }
 
         return structure;
-    }, [library, selectedGrade]);
+    }, [library, activeGrade]);
 
     const { data: studentRecord } = useCollection<Student>(
         useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
@@ -874,110 +862,46 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGra
         else { speak(`Keep investigating. You found ${correct} insights.`); }
     };
 
+    const filteredModules = SUGGESTED_ENGLISH_MODULES.filter(mod => {
+        const matchesGrade = mod.gradeTier === activeGrade;
+        const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
+        return matchesGrade && matchesDomain;
+    });
+
     return (
-        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
-            {/* SIDEBAR NAVIGATION */}
-            <div className="lg:col-span-1 space-y-3">
-                <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
-                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">English Level</Label>
-                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                    </Select>
-                </div>
-
-                <ScrollArea className="h-[calc(100vh-280px)] min-h-[440px] rounded-2xl border border-slate-800 bg-slate-900/60 p-2 shadow-xl mt-3">
-                    <div className="p-2 space-y-2">
-                        {Object.keys(folderStructure).length === 0 ? (
-                            <div className="text-center py-20 text-slate-500">
-                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                                <p className="text-xs font-bold">No passages in this category yet.</p>
-                            </div>
-                        ) : (
-                            Object.entries(folderStructure).map(([cat, subs]) => (
-                                <Accordion key={cat} type="single" collapsible className="w-full">
-                                    <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/40 hover:bg-slate-850/60 border border-slate-800/80 rounded-2xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white group-data-[state=open]:border-indigo-500/40 group-data-[state=open]:bg-indigo-950/20 group-data-[state=open]:text-indigo-300 transition-all">
-                                            <div className="flex items-center gap-2">
-                                                <Folder className="w-4 h-4 text-slate-400 group-hover:text-slate-300 group-data-[state=open]:text-indigo-400 group-data-[state=open]:hidden transition-colors" />
-                                                <FolderOpen className="w-4 h-4 text-indigo-400 hidden group-data-[state=open]:block" />
-                                                <span className="font-bold text-xs uppercase tracking-wider">{cat}</span>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="pt-1 pl-3 space-y-1">
-                                            {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
-                                                <Accordion key={subTitle} type="single" collapsible>
-                                                    <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-300 py-2.5 hover:text-indigo-400 pl-2 flex items-center justify-between group">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <Folder className="w-3.5 h-3.5 text-indigo-500/80 group-data-[state=open]:hidden" />
-                                                                <FolderOpen className="w-3.5 h-3.5 text-indigo-500/80 hidden group-data-[state=open]:block" />
-                                                                <span>{subTitle}</span>
-                                                            </div>
-                                                        </AccordionTrigger>
-                                                        <AccordionContent className="space-y-1 pl-3">
-                                                            {items.map((item: any) => (
-                                                                <button 
-                                                                    key={item.id} 
-                                                                    onClick={() => { setActiveStory(item); setAnswers([]); }} 
-                                                                    className={`w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
-                                                                        activeStory?.id === item.id 
-                                                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' 
-                                                                            : 'hover:bg-slate-800/60 text-slate-200 hover:text-white'
-                                                                    }`}
-                                                                >
-                                                                    <FileText className="w-3.5 h-3.5 shrink-0 opacity-80" />
-                                                                    <span className="truncate">{item.title}</span>
-                                                                </button>
-                                                            ))}
-                                                        </AccordionContent>
-                                                    </AccordionItem>
-                                                </Accordion>
-                                            ))}
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            ))
-                        )}
+        <div className="space-y-6 animate-in fade-in duration-300">
+            {activeStory ? (
+                /* FULL-WIDTH INTERACTIVE READING WORKSTATION */
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => { setActiveStory(null); setAnswers([]); }}
+                            className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent"
+                        >
+                            <ChevronLeft className="w-4 h-4" /> Back to Recommended Modules
+                        </Button>
+                        <span className="text-xs text-slate-400">
+                            Active Module: <strong className="text-indigo-300">{activeStory.title}</strong>
+                        </span>
                     </div>
-                </ScrollArea>
-            </div>
-
-            {/* WORKSTATION */}
-            <div className="lg:col-span-3">
-                {activeStory ? (
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => { setActiveStory(null); setAnswers([]); }}
-                                className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent"
-                            >
-                                <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
-                            </Button>
-                            <span className="text-xs text-slate-400">
-                                Active Module: <strong className="text-indigo-300">{activeStory.title}</strong>
-                            </span>
-                        </div>
-                        <Card className={`overflow-hidden ${isJunior ? juniorStyles.storybook : "rounded-[48px] bg-slate-900 border border-slate-800 shadow-2xl animate-in zoom-in"}`}>
-                        <div className={isJunior ? "text-center mb-8" : "bg-gradient-to-r from-indigo-950 to-slate-900 p-10 border-b border-indigo-900/30 text-white"}>
+                    <Card className={`overflow-hidden ${isJunior ? juniorStyles.storybook : "rounded-[36px] bg-slate-900 border border-slate-800 shadow-2xl animate-in zoom-in"}`}>
+                        <div className={isJunior ? "text-center mb-8" : "bg-gradient-to-r from-indigo-950 to-slate-900 p-8 sm:p-10 border-b border-indigo-900/30 text-white"}>
                             {isJunior && <div className="text-7xl mb-4 animate-bounce">📖</div>}
-                            <CardTitle className={isJunior ? "text-5xl font-black text-orange-800" : "text-4xl font-black text-white"}>
+                            <CardTitle className={isJunior ? "text-4xl sm:text-5xl font-black text-orange-800" : "text-3xl sm:text-4xl font-black text-white"}>
                                 {activeStory.title}
                             </CardTitle>
                             {isJunior && <p className="text-orange-400 font-black mt-2 uppercase tracking-widest">A Magic Tale</p>}
                         </div>
 
-                        <CardContent className={isJunior ? "space-y-12" : "p-10 space-y-10"}>
+                        <CardContent className={isJunior ? "space-y-12" : "p-6 sm:p-10 space-y-10"}>
                             <div className={cn(
-                                "relative overflow-hidden font-serif leading-relaxed whitespace-pre-wrap rounded-3xl p-8 md:p-12 shadow-inner",
+                                "relative overflow-hidden font-serif leading-relaxed whitespace-pre-wrap rounded-3xl p-6 sm:p-10 shadow-inner",
                                 isJunior 
-                                    ? "bg-[#FFFDF7] text-orange-950 text-2xl pl-12 md:pl-16 border-4 border-orange-100" 
+                                    ? "bg-[#FFFDF7] text-orange-950 text-2xl pl-10 md:pl-16 border-4 border-orange-100" 
                                     : isPrimary 
-                                        ? "bg-[#FCFBF7] text-slate-800 text-lg pl-12 md:pl-16 border border-slate-200" 
+                                        ? "bg-[#FCFBF7] text-slate-800 text-lg pl-10 md:pl-16 border border-slate-200" 
                                         : "bg-[#FCFAF2] text-slate-850 text-lg md:columns-2 gap-10 border border-[#EADFCA]"
                             )}>
                                 {activeStory.content}
@@ -985,7 +909,7 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGra
 
                             {/* QUIZ SECTION */}
                             <div className="space-y-8 pt-8 border-t border-slate-800">
-                                <h3 className={isJunior ? "text-4xl font-black text-orange-600 text-center" : "text-2xl font-black text-white flex items-center gap-3"}>
+                                <h3 className={isJunior ? "text-4xl font-black text-orange-600 text-center" : "text-xl sm:text-2xl font-black text-white flex items-center gap-3"}>
                                     <Sparkles className="text-indigo-400" /> Comprehension & Literary Check
                                 </h3>
 
@@ -1015,108 +939,159 @@ function EnglishMastery({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGra
                         </CardContent>
                     </Card>
                 </div>
-                ) : (
-                    <div className="space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
-                            <div>
-                                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+            ) : (
+                /* FULL-WIDTH CURRICULUM MODULES */
+                <div className="space-y-5">
+                    {/* FULL-WIDTH SECTION HEADER */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2.5">
+                                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                                     <Sparkles className="w-4 h-4 text-indigo-400" />
-                                    Literary Modules & Guided Reading • {selectedGrade}
+                                    Curriculum Labs & Recommended Modules
                                 </h3>
-                                <p className="text-xs text-slate-400 mt-0.5">
-                                    Launch an interactive literary session or select an archived passage from the catalog folders.
-                                </p>
+                                <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                    {activeGrade}
+                                </span>
                             </div>
+                            <p className="text-xs text-slate-400">
+                                Interactive literary comprehension passages, rhetorical analyses, and guided textual breakdowns.
+                            </p>
                         </div>
-
-                        {/* SUBJECT DOMAIN PILL BAR */}
-                        <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
-                            {ENGLISH_DOMAINS.map((domain) => {
-                                const isActive = selectedDomain === domain;
-                                return (
-                                    <button
-                                        key={domain}
-                                        type="button"
-                                        onClick={() => setSelectedDomain(domain)}
-                                        className={cn(
-                                            "px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
-                                            isActive
-                                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
-                                                : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
-                                        )}
-                                    >
-                                        <span>{domain}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* STANDARDIZED CARD GRID */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {SUGGESTED_ENGLISH_MODULES.filter(mod => {
-                                const matchesGrade = mod.gradeTier === selectedGrade;
-                                const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
-                                return matchesGrade && matchesDomain;
-                            }).map((mod, i) => (
-                                <div 
-                                    key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
-                                >
-                                    <div>
-                                        {/* Standardized Header Badges: Domain top-left, Difficulty top-right */}
-                                        <div className="flex items-center justify-between gap-2 mb-3">
-                                            <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                                {mod.domain}
-                                            </span>
-                                            <span className={cn(
-                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                                mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                                mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                                "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                            )}>
-                                                {mod.difficulty}
-                                            </span>
-                                        </div>
-                                        <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
-                                            {mod.title}
-                                        </h4>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
-                                            {mod.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Standardized Footer: Duration/Subtopics bottom-left, Uniform Launch Lab CTA bottom-right */}
-                                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
-                                        <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
-                                            <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                                            {mod.meta}
-                                        </span>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => {
-                                                setActiveStory({
-                                                    id: `suggested-eng-${i}`,
-                                                    title: mod.title,
-                                                    content: mod.content,
-                                                    quiz: [
-                                                        { question: mod.sampleInstruction, options: [mod.sampleAnswer, 'Alternative interpretation', 'Contrasting viewpoint', 'None of the above'], answer: mod.sampleAnswer }
-                                                    ],
-                                                    gradeLevel: selectedGrade
-                                                });
-                                                setAnswers([]);
-                                            }}
-                                            className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
-                                        >
-                                            <span>Launch Lab</span>
-                                            <ChevronRight className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-xs text-slate-400 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl font-semibold">
+                                {filteredModules.length} Modules Available
+                            </span>
                         </div>
                     </div>
-                )}
-            </div>
+
+                    {/* DOMAIN FILTER PILL BAR */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+                        {ENGLISH_DOMAINS.map((domain) => {
+                            const isActive = selectedDomain === domain;
+                            return (
+                                <button
+                                    key={domain}
+                                    type="button"
+                                    onClick={() => setSelectedDomain(domain)}
+                                    className={cn(
+                                        "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                        isActive
+                                            ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                            : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                    )}
+                                >
+                                    <span>{domain}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* STANDARDIZED 3-COLUMN CARD GRID */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredModules.map((mod, i) => (
+                            <div 
+                                key={i} 
+                                className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
+                            >
+                                <div>
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider truncate max-w-[170px]">
+                                            {mod.domain}
+                                        </span>
+                                        <span className={cn(
+                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider shrink-0",
+                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                        )}>
+                                            {mod.difficulty}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                        {mod.title}
+                                    </h4>
+                                    <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
+                                        {mod.description}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                    <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
+                                        <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                                        {mod.meta}
+                                    </span>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => {
+                                            setActiveStory({
+                                                id: `suggested-eng-${i}`,
+                                                title: mod.title,
+                                                content: mod.content,
+                                                quiz: [
+                                                    { question: mod.sampleInstruction, options: [mod.sampleAnswer, 'Alternative interpretation', 'Contrasting viewpoint', 'None of the above'], answer: mod.sampleAnswer }
+                                                ],
+                                                gradeLevel: activeGrade
+                                            });
+                                            setAnswers([]);
+                                        }}
+                                        className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                        <span>Launch Lab</span>
+                                        <ChevronRight className="w-3.5 h-3.5" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* EXPANDABLE COMPLETE SYLLABUS CATALOG ARCHIVE */}
+                    <div className="mt-8 pt-6 border-t border-slate-800/60">
+                        <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="archive" className="border border-slate-800/80 bg-slate-900/40 rounded-2xl px-5 overflow-hidden">
+                                <AccordionTrigger className="hover:no-underline py-4 text-xs font-bold text-slate-300 hover:text-white group flex items-center justify-between">
+                                    <div className="flex items-center gap-2.5">
+                                        <FolderOpen className="w-4 h-4 text-indigo-400" />
+                                        <span>Browse Complete Syllabus Catalog & Archived Passages</span>
+                                        <span className="text-[11px] font-normal text-slate-500">
+                                            ({Object.keys(folderStructure).length} Subject Strands)
+                                        </span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="pt-2 pb-5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                        {Object.entries(folderStructure).map(([cat, subs]) => (
+                                            <div key={cat} className="p-3.5 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2">
+                                                <div className="flex items-center gap-1.5 text-indigo-300 font-bold text-xs uppercase tracking-wider">
+                                                    <Folder className="w-3.5 h-3.5" />
+                                                    <span>{cat}</span>
+                                                </div>
+                                                <div className="space-y-1 pl-1">
+                                                    {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
+                                                        <div key={subTitle} className="space-y-1">
+                                                            <span className="text-[10px] text-slate-400 font-semibold block">{subTitle}</span>
+                                                            {items.map((item: any) => (
+                                                                <button
+                                                                    key={item.id}
+                                                                    onClick={() => { setActiveStory(item); setAnswers([]); }}
+                                                                    className="w-full text-left p-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 truncate flex items-center gap-1.5 transition-colors"
+                                                                >
+                                                                    <FileText className="w-3 h-3 text-slate-500 shrink-0" />
+                                                                    <span className="truncate">{item.title}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -1148,35 +1123,22 @@ const MATH_DOMAINS = [
     'STATISTICS & PROBABILITY'
 ];
 
-function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChange }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; onGradeChange?: (grade: SecondaryGradeTier) => void; }) {
+function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [problem, setProblem] = useState<any>(null);
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
-
-    const [selectedGrade, setSelectedGrade] = useState<string>(activeGrade);
     const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
 
-    useEffect(() => {
-        setSelectedGrade(activeGrade);
-    }, [activeGrade]);
-
-    const handleGradeSelect = (grade: string) => {
-        setSelectedGrade(grade);
-        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
-            onGradeChange(grade);
-        }
-    };
-
-    const isJunior = isJuniorLevel(selectedGrade);
+    const isJunior = isJuniorLevel(activeGrade);
     const theme = isJunior ? juniorStyles : null;
 
     const mathQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: dbProblems, isLoading, forceRefetch } = useCollection<any>(mathQuery);
+    const { data: dbProblems, isLoading } = useCollection<any>(mathQuery);
 
     const folderStructure = useMemo(() => {
         const structure: Record<string, Record<string, any[]>> = {};
@@ -1185,13 +1147,13 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChang
         Object.entries(DEFAULT_MATH_STRANDS).forEach(([strand, subItems]) => {
             structure[strand] = {};
             subItems.forEach(item => {
-                structure[strand][item.subTopic] = [{ ...item.problem, gradeLevel: selectedGrade }];
+                structure[strand][item.subTopic] = [{ ...item.problem, gradeLevel: activeGrade }];
             });
         });
 
         // Overlay DB items if available
         if (dbProblems && dbProblems.length > 0) {
-            const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+            const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === activeGrade);
             filtered.forEach(p => {
                 const subject = (p.category || 'ALGEBRA').toUpperCase();
                 const sub = p.subTopic || 'Standard Practice';
@@ -1202,7 +1164,7 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChang
         }
 
         return structure;
-    }, [dbProblems, selectedGrade]);
+    }, [dbProblems, activeGrade]);
 
     const { data: studentRecord } = useCollection<Student>(
         useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
@@ -1226,105 +1188,37 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChang
     };
 
     return (
-        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
-            {/* SIDEBAR */}
-            <div className="lg:col-span-1 space-y-3">
-                <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
-                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">Student Category</Label>
-                    <Select value={selectedGrade} onValueChange={handleGradeSelect}>
-                        <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                    </Select>
-                </div>
-                <ScrollArea className="h-[calc(100vh-280px)] min-h-[440px] rounded-2xl border border-slate-800 bg-slate-900/60 p-2 shadow-xl mt-3">
-                    <div className="space-y-2 p-2">
-                        {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
-                            <div className="text-center py-20 text-slate-500">
-                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                                <p className="text-xs font-bold">No questions in this category yet.</p>
-                            </div>
-                        ) : (
-                            Object.entries(folderStructure).map(([subject, subTopics]) => (
-                                <Accordion key={subject} type="single" collapsible className="w-full">
-                                    <AccordionItem value={subject} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/40 hover:bg-slate-850/60 border border-slate-800/80 rounded-2xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white group-data-[state=open]:border-emerald-500/40 group-data-[state=open]:bg-emerald-950/20 group-data-[state=open]:text-emerald-400 transition-all">
-                                            <div className="flex items-center gap-2">
-                                                <Folder className="w-4 h-4 text-slate-400 group-hover:text-slate-300 group-data-[state=open]:text-emerald-400 group-data-[state=open]:hidden transition-colors" />
-                                                <FolderOpen className="w-4 h-4 text-emerald-400 hidden group-data-[state=open]:block" />
-                                                <span className="font-bold text-xs uppercase tracking-wider">{subject}</span>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="pt-1 pl-3 space-y-1">
-                                            {Object.entries(subTopics as any).map(([subTitle, items]: [string, any]) => (
-                                                <Accordion key={subTitle} type="single" collapsible>
-                                                    <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-300 py-2.5 hover:text-emerald-400 pl-2 flex items-center justify-between group">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <Folder className="w-3.5 h-3.5 text-emerald-500/80 group-data-[state=open]:hidden" />
-                                                                <FolderOpen className="w-3.5 h-3.5 text-emerald-500/80 hidden group-data-[state=open]:block" />
-                                                                <span>{subTitle} ({items.length})</span>
-                                                            </div>
-                                                        </AccordionTrigger>
-                                                        <AccordionContent className="space-y-1 pl-3">
-                                                            {items.map((item: any) => (
-                                                                <button
-                                                                    key={item.id}
-                                                                    onClick={() => { setProblem(item); setFeedback(null); setUserInput(""); }}
-                                                                    className={`w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
-                                                                        problem?.id === item.id 
-                                                                            ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' 
-                                                                            : 'hover:bg-slate-800/60 text-slate-200 hover:text-white'
-                                                                    }`}
-                                                                >
-                                                                    <FileText className="w-3.5 h-3.5 shrink-0 opacity-80" />
-                                                                    <span className="truncate">{item.title}</span>
-                                                                </button>
-                                                            ))}
-                                                        </AccordionContent>
-                                                    </AccordionItem>
-                                                </Accordion>
-                                            ))}
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            ))
-                        )}
+        <div className="space-y-6 animate-in fade-in duration-500">
+            {problem ? (
+                /* FULL-WIDTH INTERACTIVE SOLVER WORKSTATION */
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => { setProblem(null); setFeedback(null); }}
+                            className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent cursor-pointer"
+                        >
+                            <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
+                        </Button>
+                        <span className="text-xs text-slate-400">
+                            Active Module: <strong className="text-indigo-300">{problem.title || problem.subTopic}</strong>
+                        </span>
                     </div>
-                </ScrollArea>
-            </div>
 
-            {/* MAIN STAGE */}
-            <div className="lg:col-span-3">
-                {problem ? (
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => { setProblem(null); setFeedback(null); }}
-                                className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent"
-                            >
-                                <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
-                            </Button>
-                            <span className="text-xs text-slate-400">
-                                Active Module: <strong className="text-indigo-300">{problem.title || problem.subTopic}</strong>
-                            </span>
-                        </div>
-                        <Card className={isJunior ? theme?.card : "rounded-[48px] bg-slate-900 border border-slate-850 shadow-2xl overflow-hidden text-white animate-in zoom-in"}>
-                        <div className={isJunior ? theme?.header : "bg-gradient-to-r from-emerald-950 to-slate-900 p-10 border-b border-emerald-900/30 text-white"}>
+                    <Card className={isJunior ? theme?.card : "rounded-[36px] bg-slate-900/90 border border-slate-800 shadow-2xl overflow-hidden text-white animate-in zoom-in"}>
+                        <div className={isJunior ? theme?.header : "bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950/80 p-8 border-b border-emerald-900/30 text-white"}>
                             <div className="flex justify-between items-center">
-                                <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black text-white"}>
+                                <CardTitle className={isJunior ? "text-4xl font-black text-blue-900" : "text-3xl font-black text-white"}>
                                     {isJunior && "🌈 "} {problem.title}
                                 </CardTitle>
-                                <Badge className={isJunior ? "bg-white text-pink-500 text-lg px-4" : "bg-emerald-600"}>
-                                    {problem.gradeLevel}
+                                <Badge className={isJunior ? "bg-white text-pink-500 text-base px-4" : "bg-emerald-600 text-white font-bold"}>
+                                    {problem.gradeLevel || activeGrade}
                                 </Badge>
                             </div>
                         </div>
 
-                        <CardContent className="p-12 space-y-10">
+                        <CardContent className="p-8 md:p-12 space-y-8">
                             {isJunior ? (
                                 <div className={theme?.mathBox}>
                                     <div className="text-7xl text-blue-600 flex justify-center">
@@ -1338,44 +1232,44 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChang
                                     )}
                                 </div>
                             ) : (
-                                <div className="bg-slate-950 border border-slate-800 shadow-2xl rounded-[36px] overflow-hidden">
-                                  {/* Terminal Bar */}
-                                  <div className="bg-slate-900/80 px-5 py-3 border-b border-slate-850 flex items-center justify-between">
-                                    <div className="flex gap-2">
-                                      <div className="w-3 h-3 rounded-full bg-rose-500" />
-                                      <div className="w-3 h-3 rounded-full bg-amber-500" />
-                                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                <div className="bg-slate-950 border border-slate-800 shadow-2xl rounded-3xl overflow-hidden">
+                                    {/* Terminal Bar */}
+                                    <div className="bg-slate-900/80 px-5 py-3 border-b border-slate-800 flex items-center justify-between">
+                                        <div className="flex gap-2">
+                                            <div className="w-3 h-3 rounded-full bg-rose-500" />
+                                            <div className="w-3 h-3 rounded-full bg-amber-500" />
+                                            <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                        </div>
+                                        <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">DERIVATION ENGINE v1.0</span>
+                                        <div className="w-12" />
                                     </div>
-                                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">DERIVATION ENGINE v1.0</span>
-                                    <div className="w-12" />
-                                  </div>
-                                  <div className="p-10 md:p-14 flex flex-col justify-center items-center">
-                                    <div className="text-4xl md:text-5xl text-emerald-450 font-mono tracking-wide drop-shadow-[0_0_8px_rgba(52,211,153,0.25)]">
-                                      <SafeMath formula={problem.latexFormula} />
+                                    <div className="p-8 md:p-12 flex flex-col justify-center items-center">
+                                        <div className="text-3xl md:text-4xl text-emerald-400 font-mono tracking-wide drop-shadow-[0_0_8px_rgba(52,211,153,0.25)]">
+                                            <SafeMath formula={problem.latexFormula} />
+                                        </div>
                                     </div>
-                                  </div>
                                 </div>
                             )}
 
-                            <div className="text-center space-y-8">
-                                <p className={isJunior ? "text-3xl font-black text-blue-800" : "text-2xl font-semibold text-slate-350 italic"}>
+                            <div className="text-center space-y-6">
+                                <p className={isJunior ? "text-2xl font-black text-blue-800" : "text-xl font-semibold text-slate-300 italic"}>
                                     {isJunior ? "✨ " + problem.instruction : `"${problem.instruction}"`}
                                 </p>
-                                <div className="flex flex-col items-center gap-6">
+                                <div className="flex flex-col items-center gap-4">
                                     <Input 
                                         value={userInput} 
                                         onChange={e => setUserInput(e.target.value)} 
                                         placeholder={isJunior ? "Type Number Here..." : "Enter Solution..."} 
                                         className={isJunior 
                                             ? juniorStyles.input 
-                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-800 bg-slate-950 text-emerald-400 rounded-[24px] focus:border-emerald-500 focus:ring-0 shadow-inner max-w-md w-full"
+                                            : "h-16 text-3xl font-mono text-center border-2 border-slate-800 bg-slate-950 text-emerald-400 rounded-2xl focus:border-emerald-500 focus:ring-0 shadow-inner max-w-md w-full"
                                         }
                                     />
                                     <Button 
                                         onClick={checkAnswer} 
                                         className={isJunior 
                                             ? theme?.button 
-                                            : "h-16 px-16 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_#047857] hover:shadow-[0_2px_0_#047857] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
+                                            : "h-14 px-12 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-base rounded-xl shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
                                         }
                                     >
                                         {isJunior ? "I'M FINISHED! 🚀" : "VERIFY ANSWER"}
@@ -1384,118 +1278,186 @@ function MathLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChang
                             </div>
 
                             {feedback && (
-                                <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
-                                    {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
-                                    <p className="text-xl font-black">{feedback.msg}</p>
+                                <div className={`p-6 rounded-2xl border flex items-center justify-center gap-3 animate-bounce ${feedback.ok ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/10 border-rose-500/30 text-rose-400'}`}>
+                                    {feedback.ok ? <CheckCircle2 className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
+                                    <p className="text-base font-bold">{feedback.msg}</p>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
                 </div>
-                ) : (
-                    <div className="space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
-                            <div>
-                                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-indigo-400" />
-                                    Curriculum Labs & Recommended Modules • {selectedGrade}
-                                </h3>
-                                <p className="text-xs text-slate-400 mt-0.5">
-                                    Launch an interactive laboratory module below or select from your catalog folders on the left.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* SUBJECT DOMAIN PILL BAR - CONSOLIDATED & NO DUPLICATE ARITHMETIC */}
-                        <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
-                            {MATH_DOMAINS.map((domain) => {
-                                const isActive = selectedDomain === domain;
-                                return (
-                                    <button
-                                        key={domain}
-                                        type="button"
-                                        onClick={() => setSelectedDomain(domain)}
-                                        className={cn(
-                                            "px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
-                                            isActive
-                                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
-                                                : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
-                                        )}
-                                    >
-                                        <span>{domain}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* STANDARDIZED CARD GRID */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {SUGGESTED_MATH_MODULES.filter(mod => {
-                                const matchesGrade = mod.gradeTier === selectedGrade;
-                                const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
-                                return matchesGrade && matchesDomain;
-                            }).map((mod, i) => (
-                                <div 
-                                    key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
-                                >
-                                    <div>
-                                        {/* Standardized Header Badges: Domain top-left, Difficulty top-right */}
-                                        <div className="flex items-center justify-between gap-2 mb-3">
-                                            <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                                {mod.domain}
-                                            </span>
-                                            <span className={cn(
-                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                                mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                                mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                                "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                            )}>
-                                                {mod.difficulty}
-                                            </span>
-                                        </div>
-                                        <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
-                                            {mod.title}
-                                        </h4>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
-                                            {mod.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Standardized Footer: Duration/Subtopics bottom-left, Uniform Launch Lab CTA bottom-right */}
-                                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
-                                        <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
-                                            <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                                            {mod.meta}
-                                        </span>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => {
-                                                setProblem({
-                                                    id: `suggested-math-${i}`,
-                                                    title: mod.title,
-                                                    category: mod.domain,
-                                                    subTopic: mod.title,
-                                                    instruction: mod.sampleInstruction,
-                                                    latexFormula: mod.sampleFormula,
-                                                    answer: mod.sampleAnswer,
-                                                    gradeLevel: selectedGrade
-                                                });
-                                                setFeedback(null);
-                                                setUserInput("");
-                                            }}
-                                            className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
-                                        >
-                                            <span>Launch Lab</span>
-                                            <ChevronRight className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+            ) : (
+                /* FULL-WIDTH CURRICULUM MODULES & CATALOG ARCHIVE */
+                <div className="space-y-6">
+                    {/* Section Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+                        <div>
+                            <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-indigo-400" />
+                                Curriculum Labs & Recommended Modules • {activeGrade}
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                                Launch an interactive laboratory module below or browse the full syllabus catalog below.
+                            </p>
                         </div>
                     </div>
-                )}
-            </div>
+
+                    {/* SUBJECT DOMAIN PILL BAR */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+                        {MATH_DOMAINS.map((domain) => {
+                            const isActive = selectedDomain === domain;
+                            return (
+                                <button
+                                    key={domain}
+                                    type="button"
+                                    onClick={() => setSelectedDomain(domain)}
+                                    className={cn(
+                                        "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                        isActive
+                                            ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                            : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                    )}
+                                >
+                                    <span>{domain}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* FULL-WIDTH 3-COLUMN MODULE CARDS GRID */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {SUGGESTED_MATH_MODULES.filter(mod => {
+                            const matchesGrade = mod.gradeTier === activeGrade;
+                            const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
+                            return matchesGrade && matchesDomain;
+                        }).map((mod, i) => (
+                            <div 
+                                key={i} 
+                                className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-indigo-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
+                            >
+                                <div>
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                            {mod.domain}
+                                        </span>
+                                        <span className={cn(
+                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                        )}>
+                                            {mod.difficulty}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                        {mod.title}
+                                    </h4>
+                                    <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
+                                        {mod.description}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                    <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
+                                        <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                                        {mod.meta}
+                                    </span>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => {
+                                            setProblem({
+                                                id: `suggested-math-${i}`,
+                                                title: mod.title,
+                                                category: mod.domain,
+                                                subTopic: mod.title,
+                                                instruction: mod.sampleInstruction,
+                                                latexFormula: mod.sampleFormula,
+                                                answer: mod.sampleAnswer,
+                                                gradeLevel: activeGrade
+                                            });
+                                            setFeedback(null);
+                                            setUserInput("");
+                                        }}
+                                        className="h-8 px-3.5 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                        <span>Launch Lab</span>
+                                        <ChevronRight className="w-3.5 h-3.5" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* EXPANDABLE SYLLABUS CATALOG ARCHIVE ACCORDION */}
+                    <div className="pt-6 border-t border-slate-800/80">
+                        <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="catalog" className="border border-slate-800/80 rounded-2xl bg-slate-900/40 px-4">
+                                <AccordionTrigger className="hover:no-underline py-4 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200">
+                                    <div className="flex items-center gap-2">
+                                        <FolderOpen className="w-4 h-4 text-indigo-400" />
+                                        <span>Browse Full Syllabus Catalog & Repository ({Object.keys(folderStructure).length} Strands)</span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="pb-4 pt-2">
+                                    <ScrollArea className="max-h-[380px] rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                                        <div className="space-y-2">
+                                            {isLoading ? <Skeleton className="h-32 w-full" /> : Object.keys(folderStructure).length === 0 ? (
+                                                <div className="text-center py-12 text-slate-500">
+                                                    <FolderOpen className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                                                    <p className="text-xs font-medium">No archived problems in this category yet.</p>
+                                                </div>
+                                            ) : (
+                                                Object.entries(folderStructure).map(([subject, subTopics]) => (
+                                                    <Accordion key={subject} type="single" collapsible className="w-full">
+                                                        <AccordionItem value={subject} className="border-none">
+                                                            <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/60 hover:bg-slate-850 border border-slate-800 rounded-xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white transition-all text-xs font-bold">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Folder className="w-3.5 h-3.5 text-indigo-400" />
+                                                                    <span className="uppercase tracking-wider">{subject}</span>
+                                                                </div>
+                                                            </AccordionTrigger>
+                                                            <AccordionContent className="pt-1 pl-3 space-y-1">
+                                                                {Object.entries(subTopics as any).map(([subTitle, items]: [string, any]) => (
+                                                                    <Accordion key={subTitle} type="single" collapsible>
+                                                                        <AccordionItem value={subTitle} className="border-none">
+                                                                            <AccordionTrigger className="text-xs font-semibold text-slate-400 py-2 hover:text-indigo-300 pl-2 flex items-center justify-between">
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <Folder className="w-3 h-3 text-slate-500" />
+                                                                                    <span>{subTitle} ({items.length})</span>
+                                                                                </div>
+                                                                            </AccordionTrigger>
+                                                                            <AccordionContent className="space-y-1 pl-3">
+                                                                                {items.map((item: any) => (
+                                                                                    <button
+                                                                                        key={item.id}
+                                                                                        onClick={() => { setProblem(item); setFeedback(null); setUserInput(""); }}
+                                                                                        className={`w-full text-left p-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-all ${
+                                                                                            problem?.id === item.id 
+                                                                                                ? 'bg-indigo-600 text-white' 
+                                                                                                : 'hover:bg-slate-800 text-slate-300 hover:text-white'
+                                                                                        }`}
+                                                                                    >
+                                                                                        <FileText className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                                                                                        <span className="truncate">{item.title}</span>
+                                                                                    </button>
+                                                                                ))}
+                                                                            </AccordionContent>
+                                                                        </AccordionItem>
+                                                                    </Accordion>
+                                                                ))}
+                                                            </AccordionContent>
+                                                        </AccordionItem>
+                                                    </Accordion>
+                                                ))
+                                            )}
+                                        </div>
+                                    </ScrollArea>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -1508,27 +1470,15 @@ const SCIENCE_DOMAINS = [
     'LIFE SCIENCES & BIOLOGY'
 ];
 
-function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGradeChange }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; onGradeChange?: (grade: SecondaryGradeTier) => void; }) {
+function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)' }: { canEdit: boolean; activeGrade?: SecondaryGradeTier; }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
-    const [selectedGrade, setSelectedGrade] = useState<string>(activeGrade);
     const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
 
-    useEffect(() => {
-        setSelectedGrade(activeGrade);
-    }, [activeGrade]);
-
-    const handleGradeSelect = (grade: string) => {
-        setSelectedGrade(grade);
-        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
-            onGradeChange(grade);
-        }
-    };
-
-    const isJunior = isJuniorLevel(selectedGrade);
+    const isJunior = isJuniorLevel(activeGrade);
     const theme = isJunior ? juniorStyles : null;
 
     const { data: studentRecord } = useCollection<Student>(
@@ -1549,7 +1499,7 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
     const labQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: dbLabs } = useCollection<any>(labQuery);
+    const { data: dbLabs, isLoading } = useCollection<any>(labQuery);
 
     const folderStructure = useMemo(() => {
         const structure: Record<string, Record<string, any[]>> = {};
@@ -1558,13 +1508,13 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
         Object.entries(DEFAULT_SCIENCE_STRANDS).forEach(([strand, subItems]) => {
             structure[strand] = {};
             subItems.forEach(item => {
-                structure[strand][item.subTopic] = [{ ...item.lab, gradeLevel: selectedGrade }];
+                structure[strand][item.subTopic] = [{ ...item.lab, gradeLevel: activeGrade }];
             });
         });
 
         // Overlay DB items if available
         if (dbLabs && dbLabs.length > 0) {
-            const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+            const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === activeGrade);
             filtered.forEach(l => {
                 const category = (l.category || 'PHYSICAL SCIENCES & PHYSICS').toUpperCase();
                 const subTopic = l.subTopic || 'Research Mission';
@@ -1575,99 +1525,30 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
         }
 
         return structure;
-    }, [dbLabs, selectedGrade]);
+    }, [dbLabs, activeGrade]);
     
     return (
-        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
-            {/* SIDEBAR NAVIGATION */}
-            <div className="lg:col-span-1 space-y-3">
-                <div className="bg-slate-900/90 p-3.5 rounded-2xl shadow-lg border border-slate-800">
-                    <Label className="text-cyan-400 text-[10px] uppercase font-black ml-1 mb-1.5 block tracking-wider">Research Level</Label>
-                    <Select value={selectedGrade} onValueChange={handleGradeSelect}>
-                        <SelectTrigger className="bg-slate-950 border-slate-800 text-white font-bold rounded-xl h-10 text-xs">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                    </Select>
-                </div>
-
-                <ScrollArea className="h-[calc(100vh-280px)] min-h-[440px] rounded-2xl border border-slate-800 bg-slate-900/60 p-2 shadow-xl mt-3">
-                    <div className="p-2 space-y-2">
-                         {Object.keys(folderStructure).length === 0 ? (
-                            <div className="text-center py-20 text-slate-500">
-                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
-                                <p className="text-xs font-bold">No labs in this category yet.</p>
-                            </div>
-                          ) : (
-                            Object.entries(folderStructure).map(([cat, subs]) => (
-                                <Accordion key={cat} type="single" collapsible className="w-full">
-                                    <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/40 hover:bg-slate-850/60 border border-slate-800/80 rounded-2xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white group-data-[state=open]:border-cyan-500/40 group-data-[state=open]:bg-cyan-950/20 group-data-[state=open]:text-cyan-300 transition-all">
-                                            <div className="flex items-center gap-2">
-                                                <Folder className="w-4 h-4 text-slate-400 group-hover:text-slate-300 group-data-[state=open]:text-cyan-400 group-data-[state=open]:hidden transition-colors" />
-                                                <FolderOpen className="w-4 h-4 text-cyan-400 hidden group-data-[state=open]:block" />
-                                                <span className="font-bold text-xs uppercase tracking-wider">{cat}</span>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="pt-1 pl-3 space-y-1">
-                                            {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
-                                                <Accordion key={subTitle} type="single" collapsible>
-                                                    <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-300 py-2.5 hover:text-cyan-400 pl-2 flex items-center justify-between group">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <Folder className="w-3.5 h-3.5 text-cyan-500/80 group-data-[state=open]:hidden" />
-                                                                <FolderOpen className="w-3.5 h-3.5 text-cyan-500/80 hidden group-data-[state=open]:block" />
-                                                                <span>{subTitle}</span>
-                                                            </div>
-                                                        </AccordionTrigger>
-                                                        <AccordionContent className="space-y-1 pl-3">
-                                                            {items.map((item: any) => (
-                                                                <button 
-                                                                    key={item.id} 
-                                                                    onClick={() => { setLab(item); setStage('hypothesis'); }} 
-                                                                    className={`w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
-                                                                        lab?.id === item.id 
-                                                                            ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30' 
-                                                                            : 'hover:bg-slate-800/60 text-slate-200 hover:text-white'
-                                                                    }`}
-                                                                >
-                                                                    <FileText className="w-3.5 h-3.5 shrink-0 opacity-80" />
-                                                                    <span className="truncate">{item.title}</span>
-                                                                </button>
-                                                            ))}
-                                                        </AccordionContent>
-                                                    </AccordionItem>
-                                                </Accordion>
-                                            ))}
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            ))
-                        )}
+        <div className="space-y-6 animate-in fade-in duration-500">
+            {lab ? (
+                /* FULL-WIDTH INTERACTIVE LAB WORKSTATION */
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => { setLab(null); }}
+                            className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent cursor-pointer"
+                        >
+                            <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
+                        </Button>
+                        <span className="text-xs text-slate-400">
+                            Active Module: <strong className="text-cyan-300">{lab.title}</strong>
+                        </span>
                     </div>
-                </ScrollArea>
-            </div>
 
-            {/* WORKSTATION (Discovery View) */}
-            <div className="lg:col-span-3">
-                {lab ? (
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => { setLab(null); }}
-                                className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 pl-0 hover:bg-transparent"
-                            >
-                                <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
-                            </Button>
-                            <span className="text-xs text-slate-400">
-                                Active Module: <strong className="text-cyan-300">{lab.title}</strong>
-                            </span>
-                        </div>
-                        <Card className={`overflow-hidden ${isJunior ? theme?.card : "rounded-[48px] bg-slate-900 border border-slate-855 shadow-2xl animate-in zoom-in"}`}>
+                    <Card className={`overflow-hidden ${isJunior ? theme?.card : "rounded-[36px] bg-slate-900/90 border border-slate-800 shadow-2xl animate-in zoom-in"}`}>
                         <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
-                            <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-950 text-white p-10 space-y-8 border-r border-slate-855 relative`}>
+                            <div className={isJunior ? `p-8 space-y-8 ${theme?.questCard}` : `bg-slate-950 text-white p-8 md:p-10 space-y-8 border-r border-slate-800 relative`}>
                                 {!isJunior && (
                                     <div className="absolute left-[38px] top-12 bottom-36 w-0.5 bg-gradient-to-b from-cyan-500 via-indigo-500 to-violet-500/20 hidden md:block" />
                                 )}
@@ -1706,20 +1587,20 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
                                     <p className={`text-[10px] font-black uppercase tracking-widest ${isJunior ? 'text-blue-200' : 'text-cyan-400 flex items-center gap-1'}`}>🧪 Scientific Background</p>
                                     <p className={isJunior 
                                         ? "text-sm leading-relaxed italic opacity-85" 
-                                        : "text-xs leading-relaxed text-slate-400 italic bg-slate-900/40 p-4 rounded-2xl border border-slate-855 shadow-inner"
+                                        : "text-xs leading-relaxed text-slate-400 italic bg-slate-900/40 p-4 rounded-2xl border border-slate-800 shadow-inner"
                                     }>
                                         {lab.background}
                                     </p>
                                 </div>
                             </div>
                             
-                            <div className="md:col-span-2 p-12 flex flex-col justify-center bg-slate-900/10">
+                            <div className="md:col-span-2 p-8 md:p-12 flex flex-col justify-center bg-slate-900/10">
                                 {stage === 'hypothesis' && (
                                     <div className="space-y-8 animate-in slide-in-from-right-4">
-                                        <h2 className={isJunior ? "text-5xl font-black text-blue-600 text-center" : "text-3xl font-black text-slate-200"}>
+                                        <h2 className={isJunior ? "text-4xl font-black text-blue-600 text-center" : "text-2xl md:text-3xl font-black text-slate-200"}>
                                             {isJunior ? '🤔 What is your Guess?' : lab.question}
                                         </h2>
-                                        <div className={isJunior ? "p-10 bg-white rounded-[60px] border-8 border-blue-100 shadow-inner animate-in zoom-in" : "p-8 bg-slate-950 border border-slate-800 rounded-[32px] shadow-2xl animate-in zoom-in"}>
+                                        <div className={isJunior ? "p-8 bg-white rounded-[36px] border-4 border-blue-100 shadow-inner animate-in zoom-in" : "p-8 bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl animate-in zoom-in"}>
                                             {isJunior && <p className="text-blue-400 font-bold mb-6 text-center uppercase tracking-widest">Pick a card!</p>}
                                             <div className="grid grid-cols-1 gap-4">
                                                 {lab.hypothesisOptions.map((opt: string) => (
@@ -1727,8 +1608,8 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
                                                         key={opt} 
                                                         variant="outline" 
                                                         className={isJunior 
-                                                            ? "h-24 text-2xl font-black border-4 border-blue-50 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-[35px] transition-all" 
-                                                            : "bg-slate-900 border-2 border-slate-800 hover:border-cyan-500 hover:bg-slate-850 text-slate-200 hover:text-white h-auto py-6 px-8 text-left justify-start font-bold rounded-2xl transition-all duration-300 flex items-center gap-4 group shadow-md"
+                                                            ? "h-20 text-xl font-black border-4 border-blue-50 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-2xl transition-all" 
+                                                            : "bg-slate-900 border-2 border-slate-800 hover:border-cyan-500 hover:bg-slate-850 text-slate-200 hover:text-white h-auto py-5 px-6 text-left justify-start font-bold rounded-xl transition-all duration-300 flex items-center gap-4 group shadow-md cursor-pointer"
                                                         } 
                                                         onClick={() => setStage('experiment')}
                                                     >
@@ -1737,7 +1618,7 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
                                                                 <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-black group-hover:bg-cyan-500 group-hover:text-white transition-colors shrink-0">
                                                                     →
                                                                 </div>
-                                                                <span className="text-base">{opt}</span>
+                                                                <span className="text-sm md:text-base">{opt}</span>
                                                             </>
                                                         )}
                                                     </Button>
@@ -1748,19 +1629,19 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
                                 )}
                                 {stage === 'experiment' && (
                                     <div className="space-y-8 animate-in zoom-in-95">
-                                        <div className="text-center space-y-4">
-                                            <h2 className={isJunior ? "text-5xl font-black text-blue-600" : "text-3xl font-black text-cyan-400"}>
+                                        <div className="text-center space-y-3">
+                                            <h2 className={isJunior ? "text-4xl font-black text-blue-600" : "text-2xl md:text-3xl font-black text-cyan-400"}>
                                                 {isJunior ? '🚀 Experiment Time!' : 'Simulation in Progress'}
                                             </h2>
-                                            <p className={isJunior ? "text-2xl font-bold text-slate-600" : "text-slate-400"}>Running active variable simulation model...</p>
+                                            <p className={isJunior ? "text-xl font-bold text-slate-600" : "text-sm text-slate-400"}>Running active variable simulation model...</p>
                                         </div>
 
-                                        <div className="h-64 bg-slate-950/80 border-2 border-slate-855 rounded-[40px] flex items-center justify-center relative overflow-hidden shadow-inner">
+                                        <div className="h-56 bg-slate-950/80 border border-slate-800 rounded-3xl flex items-center justify-center relative overflow-hidden shadow-inner">
                                             <div className="absolute w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
                                             <div className="absolute w-48 h-48 border-2 border-dashed border-cyan-500/20 rounded-full animate-spin [animation-duration:15s]" />
-                                            <div className="relative z-10 flex flex-col items-center gap-4">
-                                                <span className="text-6xl animate-bounce">🧪</span>
-                                                <Badge className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-4 py-1 text-xs">
+                                            <div className="relative z-10 flex flex-col items-center gap-3">
+                                                <span className="text-5xl animate-bounce">🧪</span>
+                                                <Badge className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-3 py-1 text-xs font-semibold">
                                                     Data Collecting...
                                                 </Badge>
                                             </div>
@@ -1770,7 +1651,7 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
                                             onClick={() => setStage('conclusion')} 
                                             className={isJunior 
                                                 ? juniorStyles.button 
-                                                : "w-full h-16 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_#0284c7] hover:shadow-[0_2px_0_#0284c7] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
+                                                : "w-full h-14 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-base rounded-xl shadow-lg shadow-cyan-600/30 transition-all cursor-pointer"
                                             }
                                         >
                                             {isJunior ? "SEE RESULTS! 🔍" : "OBSERVE FINDINGS"}
@@ -1778,25 +1659,25 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
                                     </div>
                                 )}
                                 {stage === 'conclusion' && (
-                                    <div className="space-y-8 animate-in slide-in-from-bottom-6">
-                                        <div className="p-8 bg-emerald-500/10 border-2 border-emerald-500/30 rounded-[32px] space-y-4">
+                                    <div className="space-y-6 animate-in slide-in-from-bottom-6">
+                                        <div className="p-6 md:p-8 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl space-y-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-black">
+                                                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-black">
                                                     ✓
                                                 </div>
-                                                <h3 className="text-xl font-black text-emerald-400">Scientific Finding</h3>
+                                                <h3 className="text-lg font-black text-emerald-400">Scientific Finding</h3>
                                             </div>
-                                            <p className={`leading-relaxed font-bold ${isJunior ? 'text-3xl text-emerald-900' : 'text-lg text-emerald-200'}`}>{lab.conclusion}</p>
+                                            <p className={`leading-relaxed font-bold ${isJunior ? 'text-2xl text-emerald-900' : 'text-base md:text-lg text-emerald-200'}`}>{lab.conclusion}</p>
                                         </div>
-                                        <div className="p-8 bg-slate-950/60 border border-slate-855 rounded-[32px] space-y-2">
+                                        <div className="p-6 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-1.5">
                                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Core Principle</span>
-                                            <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-base text-slate-300'}`}>{lab.explanation}</p>
+                                            <p className={`leading-relaxed ${isJunior ? 'text-xl text-slate-600' : 'text-sm text-slate-300'}`}>{lab.explanation}</p>
                                         </div>
                                         <Button 
                                             onClick={handleCompleteMission} 
                                             className={isJunior 
                                                 ? juniorStyles.button 
-                                                : "w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_#047857] hover:shadow-[0_2px_0_#047857] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all"
+                                                : "w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-base rounded-xl shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
                                             }
                                         >
                                             {isJunior ? "COMPLETE MY MISSION! 🏆" : "COMPLETE MISSION"}
@@ -1807,108 +1688,178 @@ function DiscoveryLab({ canEdit, activeGrade = 'Senior Secondary (SHS)', onGrade
                         </div>
                     </Card>
                 </div>
-                ) : (
-                    <div className="space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
-                            <div>
-                                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-cyan-400" />
-                                    Active Scientific Research Labs • {selectedGrade}
-                                </h3>
-                                <p className="text-xs text-slate-400 mt-0.5">
-                                    Select a research module to explore hypotheses, virtual experiments, and findings.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* SUBJECT DOMAIN PILL BAR */}
-                        <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
-                            {SCIENCE_DOMAINS.map((domain) => {
-                                const isActive = selectedDomain === domain;
-                                return (
-                                    <button
-                                        key={domain}
-                                        type="button"
-                                        onClick={() => setSelectedDomain(domain)}
-                                        className={cn(
-                                            "px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
-                                            isActive
-                                                ? "bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-600/30"
-                                                : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
-                                        )}
-                                    >
-                                        <span>{domain}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* STANDARDIZED CARD GRID */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {SUGGESTED_SCIENCE_MODULES.filter(mod => {
-                                const matchesGrade = mod.gradeTier === selectedGrade;
-                                const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
-                                return matchesGrade && matchesDomain;
-                            }).map((mod, i) => (
-                                <div 
-                                    key={i} 
-                                    className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-cyan-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
-                                >
-                                    <div>
-                                        <div className="flex items-center justify-between gap-2 mb-3">
-                                            <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider truncate max-w-[170px]">
-                                                {mod.domain}
-                                            </span>
-                                            <span className={cn(
-                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider shrink-0",
-                                                mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                                mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                                "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                            )}>
-                                                {mod.difficulty}
-                                            </span>
-                                        </div>
-                                        <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
-                                            {mod.title}
-                                        </h4>
-                                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
-                                            {mod.description}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
-                                        <span className="text-[11px] font-medium text-slate-500">
-                                            {mod.meta}
-                                        </span>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => {
-                                                setLab({
-                                                    id: `suggested-sci-${i}`,
-                                                    title: mod.title,
-                                                    background: mod.background,
-                                                    hypothesisPrompt: mod.hypothesisPrompt,
-                                                    hypothesisOptions: mod.hypothesisOptions,
-                                                    steps: [
-                                                        { stepNumber: 1, action: mod.sampleInstruction }
-                                                    ],
-                                                    conclusion: mod.conclusion,
-                                                    explanation: mod.explanation
-                                                });
-                                                setStage('hypothesis');
-                                            }}
-                                            className="h-8 px-3.5 bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white border border-cyan-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
-                                        >
-                                            <span>Launch Lab</span>
-                                            <ChevronRight className="w-3.5 h-3.5" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+            ) : (
+                /* FULL-WIDTH CURRICULUM RESEARCH MODULES & CATALOG */
+                <div className="space-y-6">
+                    {/* Section Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+                        <div>
+                            <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-cyan-400" />
+                                Curriculum Labs & Recommended Modules • {activeGrade}
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                                Select a research module to explore hypotheses, virtual experiments, and findings.
+                            </p>
                         </div>
                     </div>
-                )}
-            </div>
+
+                    {/* SUBJECT DOMAIN PILL BAR */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
+                        {SCIENCE_DOMAINS.map((domain) => {
+                            const isActive = selectedDomain === domain;
+                            return (
+                                <button
+                                    key={domain}
+                                    type="button"
+                                    onClick={() => setSelectedDomain(domain)}
+                                    className={cn(
+                                        "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                        isActive
+                                            ? "bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-600/30"
+                                            : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                    )}
+                                >
+                                    <span>{domain}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* FULL-WIDTH 3-COLUMN MODULE CARDS GRID */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {SUGGESTED_SCIENCE_MODULES.filter(mod => {
+                            const matchesGrade = mod.gradeTier === activeGrade;
+                            const matchesDomain = selectedDomain === 'ALL DOMAINS' || mod.domain === selectedDomain;
+                            return matchesGrade && matchesDomain;
+                        }).map((mod, i) => (
+                            <div 
+                                key={i} 
+                                className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 hover:border-cyan-500/40 hover:bg-slate-850/80 transition-all flex flex-col justify-between group h-full shadow-lg"
+                            >
+                                <div>
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider truncate max-w-[170px]">
+                                            {mod.domain}
+                                        </span>
+                                        <span className={cn(
+                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider shrink-0",
+                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                        )}>
+                                            {mod.difficulty}
+                                        </span>
+                                    </div>
+                                    <h4 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
+                                        {mod.title}
+                                    </h4>
+                                    <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
+                                        {mod.description}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                    <span className="text-[11px] font-medium text-slate-500">
+                                        {mod.meta}
+                                    </span>
+                                    <Button
+                                        size="sm"
+                                        onClick={() => {
+                                            setLab({
+                                                id: `suggested-sci-${i}`,
+                                                title: mod.title,
+                                                background: mod.background,
+                                                hypothesisPrompt: mod.hypothesisPrompt,
+                                                hypothesisOptions: mod.hypothesisOptions,
+                                                steps: [
+                                                    { stepNumber: 1, action: mod.sampleInstruction }
+                                                ],
+                                                conclusion: mod.conclusion,
+                                                explanation: mod.explanation
+                                            });
+                                            setStage('hypothesis');
+                                        }}
+                                        className="h-8 px-3.5 bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white border border-cyan-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                        <span>Launch Lab</span>
+                                        <ChevronRight className="w-3.5 h-3.5" />
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* EXPANDABLE SYLLABUS CATALOG ARCHIVE ACCORDION */}
+                    <div className="pt-6 border-t border-slate-800/80">
+                        <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="catalog" className="border border-slate-800/80 rounded-2xl bg-slate-900/40 px-4">
+                                <AccordionTrigger className="hover:no-underline py-4 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200">
+                                    <div className="flex items-center gap-2">
+                                        <FolderOpen className="w-4 h-4 text-cyan-400" />
+                                        <span>Browse Full Syllabus Catalog & Repository ({Object.keys(folderStructure).length} Strands)</span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="pb-4 pt-2">
+                                    <ScrollArea className="max-h-[380px] rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                                        <div className="space-y-2">
+                                            {isLoading ? <Skeleton className="h-32 w-full" /> : Object.keys(folderStructure).length === 0 ? (
+                                                <div className="text-center py-12 text-slate-500">
+                                                    <FolderOpen className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                                                    <p className="text-xs font-medium">No archived labs in this category yet.</p>
+                                                </div>
+                                            ) : (
+                                                Object.entries(folderStructure).map(([cat, subs]) => (
+                                                    <Accordion key={cat} type="single" collapsible className="w-full">
+                                                        <AccordionItem value={cat} className="border-none">
+                                                            <AccordionTrigger className="hover:no-underline p-3 bg-slate-900/60 hover:bg-slate-850 border border-slate-800 rounded-xl mb-1 group flex items-center justify-between text-slate-300 hover:text-white transition-all text-xs font-bold">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Folder className="w-3.5 h-3.5 text-cyan-400" />
+                                                                    <span className="uppercase tracking-wider">{cat}</span>
+                                                                </div>
+                                                            </AccordionTrigger>
+                                                            <AccordionContent className="pt-1 pl-3 space-y-1">
+                                                                {Object.entries(subs as any).map(([subTitle, items]: [string, any]) => (
+                                                                    <Accordion key={subTitle} type="single" collapsible>
+                                                                        <AccordionItem value={subTitle} className="border-none">
+                                                                            <AccordionTrigger className="text-xs font-semibold text-slate-400 py-2 hover:text-cyan-300 pl-2 flex items-center justify-between">
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <Folder className="w-3.5 h-3.5 text-slate-500" />
+                                                                                    <span>{subTitle} ({items.length})</span>
+                                                                                </div>
+                                                                            </AccordionTrigger>
+                                                                            <AccordionContent className="space-y-1 pl-3">
+                                                                                {items.map((item: any) => (
+                                                                                    <button
+                                                                                        key={item.id}
+                                                                                        onClick={() => { setLab(item); setStage('hypothesis'); }}
+                                                                                        className={`w-full text-left p-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-all ${
+                                                                                            lab?.id === item.id 
+                                                                                                ? 'bg-cyan-600 text-white' 
+                                                                                                : 'hover:bg-slate-800 text-slate-300 hover:text-white'
+                                                                                        }`}
+                                                                                    >
+                                                                                        <FileText className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                                                                                        <span className="truncate">{item.title}</span>
+                                                                                    </button>
+                                                                                ))}
+                                                                            </AccordionContent>
+                                                                        </AccordionItem>
+                                                                    </Accordion>
+                                                                ))}
+                                                            </AccordionContent>
+                                                        </AccordionItem>
+                                                    </Accordion>
+                                                ))
+                                            )}
+                                        </div>
+                                    </ScrollArea>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -1947,16 +1898,17 @@ const QUICK_TOPICS_BY_SUBJECT: Record<'math' | 'english' | 'science', string[]> 
 function AdminConsole({ 
     onContentAdded, 
     activeGrade = 'Senior Secondary (SHS)',
-    onGradeChange
+    activeSubject,
+    onSubjectChange
 }: { 
     onContentAdded: () => void; 
-    activeGrade?: string;
-    onGradeChange?: (g: SecondaryGradeTier) => void;
+    activeGrade?: SecondaryGradeTier;
+    activeSubject: 'math' | 'english' | 'science';
+    onSubjectChange: (s: 'math' | 'english' | 'science') => void;
 }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
-    const [subject, setSubject] = useState<'math' | 'english' | 'science'>('math');
     const [loading, setLoading] = useState(false);
 
     // AI Form State
@@ -1988,12 +1940,6 @@ function AdminConsole({
         setManualData((prev: any) => ({ ...prev, gradeLevel: activeGrade }));
     }, [activeGrade]);
 
-    const handleGradeSelect = (grade: string) => {
-        if (onGradeChange && (grade === 'Senior Secondary (SHS)' || grade === 'Junior Secondary (JHS)')) {
-            onGradeChange(grade);
-        }
-    };
-
     const handleAiGenerate = async () => {
         if (!topic.trim()) return;
         setLoading(true);
@@ -2006,12 +1952,12 @@ function AdminConsole({
         };
 
         let res;
-        if (subject === 'math') res = await generateSeniorMath(context);
-        else if (subject === 'english') res = await generateSeniorEnglish(context);
+        if (activeSubject === 'math') res = await generateSeniorMath(context);
+        else if (activeSubject === 'english') res = await generateSeniorEnglish(context);
         else res = await generateSeniorLab(context);
 
         if (res.success && res.data) {
-            await addDoc(collection(firestore!, subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs'), {
+            await addDoc(collection(firestore!, activeSubject === 'math' ? 'senior_math' : activeSubject === 'english' ? 'senior_stories' : 'senior_labs'), {
                 ...res.data,
                 gradeLevel: activeGrade, 
                 createdAt: serverTimestamp()
@@ -2030,7 +1976,7 @@ function AdminConsole({
         }
         setLoading(true);
         try {
-            const colName = subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs';
+            const colName = activeSubject === 'math' ? 'senior_math' : activeSubject === 'english' ? 'senior_stories' : 'senior_labs';
             await addDoc(collection(firestore!, colName), {
                 ...manualData,
                 gradeLevel: manualData.gradeLevel || activeGrade,
@@ -2048,7 +1994,7 @@ function AdminConsole({
     return (
         <Card className="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl text-white p-5 mb-8 shadow-xl relative overflow-hidden">
             {/* Header Strip */}
-            <div className="flex flex-wrap justify-between items-center gap-3 mb-5 pb-4 border-b border-slate-800/80">
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-4 pb-4 border-b border-slate-800/80">
                 <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
                         <PenTool className="w-4 h-4" />
@@ -2094,6 +2040,59 @@ function AdminConsole({
                     </Button>
                 </div>
             </div>
+
+            {/* SUBJECT PRESET TABS & LOCKED TIER BADGE */}
+            <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 bg-slate-950/60 rounded-xl border border-slate-800/80 mb-5">
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">Active Lab:</span>
+                    <button
+                        type="button"
+                        onClick={() => onSubjectChange('math')}
+                        className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer border",
+                            activeSubject === 'math'
+                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                : "bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                        )}
+                    >
+                        <SigmaIcon className="w-3.5 h-3.5" />
+                        <span>Advanced Math Lab</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onSubjectChange('english')}
+                        className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer border",
+                            activeSubject === 'english'
+                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                : "bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                        )}
+                    >
+                        <LanguagesIcon className="w-3.5 h-3.5" />
+                        <span>English Mastery</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onSubjectChange('science')}
+                        className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer border",
+                            activeSubject === 'science'
+                                ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                : "bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                        )}
+                    >
+                        <AtomIcon className="w-3.5 h-3.5" />
+                        <span>Discovery Lab</span>
+                    </button>
+                </div>
+
+                {/* Subtle locked tier badge inheriting the page-level active tier */}
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-xs font-medium text-slate-300">
+                    <Lock className="w-3.5 h-3.5 text-indigo-400" />
+                    <span className="text-slate-400 text-[10px] uppercase font-bold">Tier:</span>
+                    <span className="font-bold text-indigo-300">{activeGrade}</span>
+                </div>
+            </div>
             
             {creationMode === 'ai' ? (
                 <div className="space-y-4 animate-in fade-in">
@@ -2104,36 +2103,17 @@ function AdminConsole({
                                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                                 1. Input Controls
                             </span>
-                            <span className="text-[11px] text-slate-400">Configure subject parameters and topic</span>
+                            <span className="text-[11px] text-slate-400">Configure parameters for {activeSubject === 'math' ? 'Mathematics' : activeSubject === 'english' ? 'English Literature' : 'Scientific Research'}</span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            {/* Subject Selector */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {/* Inherited Tier (Locked Badge) */}
                             <div className="space-y-1.5">
-                                <Label className="text-[10px] uppercase font-bold text-slate-400">Academic Subject</Label>
-                                <Select value={subject} onValueChange={setSubject as any}>
-                                    <SelectTrigger className="capitalize h-9 bg-slate-900 border-slate-800 text-xs font-semibold text-slate-200 rounded-lg">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
-                                        <SelectItem value="math">Mathematics Lab</SelectItem>
-                                        <SelectItem value="english">English Mastery</SelectItem>
-                                        <SelectItem value="science">Discovery Lab</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Target Grade Tier */}
-                            <div className="space-y-1.5">
-                                <Label className="text-[10px] uppercase font-bold text-slate-400">Target Level</Label>
-                                <Select value={activeGrade} onValueChange={handleGradeSelect}>
-                                    <SelectTrigger className="h-9 bg-slate-900 border-slate-800 text-xs font-semibold text-slate-200 rounded-lg">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
-                                        {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
+                                <Label className="text-[10px] uppercase font-bold text-slate-400">Target Academic Tier</Label>
+                                <div className="h-9 px-3 bg-slate-900 border border-slate-800 rounded-lg flex items-center gap-2 text-xs font-semibold text-indigo-300">
+                                    <Lock className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span>{activeGrade}</span>
+                                </div>
                             </div>
 
                             {/* Quick Topics Dropdown */}
@@ -2144,7 +2124,7 @@ function AdminConsole({
                                         <span className="truncate">Select suggested topic...</span>
                                     </SelectTrigger>
                                     <SelectContent className="bg-slate-900 border-slate-800 text-slate-200 max-h-56">
-                                        {QUICK_TOPICS_BY_SUBJECT[subject].map((item) => (
+                                        {QUICK_TOPICS_BY_SUBJECT[activeSubject].map((item) => (
                                             <SelectItem key={item} value={item} className="text-xs">
                                                 {item}
                                             </SelectItem>
@@ -2163,7 +2143,13 @@ function AdminConsole({
                                     value={topic} 
                                     onChange={e => setTopic(e.target.value)} 
                                     onKeyDown={e => { if (e.key === 'Enter' && !loading && topic.trim()) handleAiGenerate(); }}
-                                    placeholder="Enter academic topic... (e.g. Simultaneous Equations, Photosynthesis Reactions, Shakespearean Dramatic Irony)" 
+                                    placeholder={
+                                        activeSubject === 'math' 
+                                            ? "Enter math topic... (e.g. Quadratic Roots, Trigonometric Identities)"
+                                            : activeSubject === 'english'
+                                            ? "Enter literary topic... (e.g. Narrative Conflict, Rhetorical Devices)"
+                                            : "Enter science topic... (e.g. Chemical Equilibrium, Photosynthesis)"
+                                    } 
                                     className="h-9 bg-transparent border-0 text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 shadow-none" 
                                 />
                             </div>
@@ -2197,50 +2183,33 @@ function AdminConsole({
                                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                                 1. Module Specifications
                             </span>
-                            <span className="text-[11px] text-slate-400">Manual taxonomy and lesson data</span>
+                            <span className="text-[11px] text-slate-400">Manual taxonomy and lesson data for {activeSubject}</span>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div className="space-y-1.5">
-                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Academic Subject</Label>
-                                <Select value={subject} onValueChange={setSubject as any}>
-                                    <SelectTrigger className="capitalize h-9 bg-slate-900 border-slate-800 text-xs font-semibold text-slate-200 rounded-lg">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
-                                        <SelectItem value="math">Mathematics Lab</SelectItem>
-                                        <SelectItem value="english">English Mastery</SelectItem>
-                                        <SelectItem value="science">Discovery Lab</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Target Tier (Locked)</Label>
+                                <div className="h-9 px-3 bg-slate-900 border border-slate-800 rounded-lg flex items-center gap-2 text-xs font-semibold text-indigo-300">
+                                    <Lock className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span>{activeGrade}</span>
+                                </div>
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Category (Main Folder)</Label>
-                                <Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                                <Input placeholder={activeSubject === 'math' ? 'e.g. Algebra' : activeSubject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Sub-Topic (Sub Folder)</Label>
-                                <Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
+                                <Input placeholder={activeSubject === 'math' ? 'e.g. Differentiation' : activeSubject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Target Student Category</Label>
-                                <Select value={manualData.gradeLevel} onValueChange={(v) => { setManualData({...manualData, gradeLevel: v}); handleGradeSelect(v); }}>
-                                    <SelectTrigger className="h-9 bg-slate-900 border-slate-800 text-white font-bold rounded-lg text-xs">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-1.5">
-                                <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Module Title</Label>
-                                <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg text-xs font-bold focus:border-indigo-500 focus:ring-0" />
-                            </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Module Title</Label>
+                            <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-9 rounded-lg text-xs font-bold focus:border-indigo-500 focus:ring-0" />
                         </div>
 
-                        {subject === 'math' && (
+                        {activeSubject === 'math' && (
                             <div className="grid md:grid-cols-2 gap-4 pt-2">
                                 <div className="space-y-2">
                                     <Label className="text-slate-400 text-[10px] font-bold uppercase">Formula & Instructions</Label>
@@ -2257,7 +2226,7 @@ function AdminConsole({
                             </div>
                         )}
 
-                        {subject === 'english' && (
+                        {activeSubject === 'english' && (
                             <div className="space-y-3 pt-2">
                                 <Label className="text-slate-400 text-[10px] font-bold uppercase">Literary Passage Content</Label>
                                 <Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-28 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
@@ -2273,7 +2242,7 @@ function AdminConsole({
                             </div>
                         )}
 
-                        {subject === 'science' && (
+                        {activeSubject === 'science' && (
                             <div className="grid md:grid-cols-2 gap-3 pt-2">
                                 <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-24 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
                                 <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-900 border-slate-800 text-white h-24 rounded-lg focus:border-indigo-500 focus:ring-0 text-xs" />
@@ -2313,6 +2282,7 @@ export default function SeniorAcademyPage() {
     const { schoolId } = useCurrentSchool();
 
     const [activeGradeTier, setActiveGradeTier] = useState<SecondaryGradeTier>('Senior Secondary (SHS)');
+    const [activeSubject, setActiveSubject] = useState<'math' | 'english' | 'science'>('math');
 
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolData } = useDoc<any>(schoolRef);
@@ -2391,58 +2361,65 @@ export default function SeniorAcademyPage() {
                     <AdminConsole 
                         onContentAdded={handleContentUpdate} 
                         activeGrade={activeGradeTier} 
-                        onGradeChange={setActiveGradeTier} 
+                        activeSubject={activeSubject}
+                        onSubjectChange={setActiveSubject}
                     />
                 </div>
             )}
 
+            {/* SUBJECT NAVIGATION FOR STUDENTS (when canEdit is false) */}
+            {!canEdit && (
+                <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-6 w-fit">
+                    <button
+                        type="button"
+                        onClick={() => setActiveSubject('math')}
+                        className={cn(
+                            "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                            activeSubject === 'math'
+                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                        )}
+                    >
+                        <SigmaIcon className="w-4 h-4" />
+                        <span>Advanced Math Lab</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveSubject('english')}
+                        className={cn(
+                            "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                            activeSubject === 'english'
+                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                        )}
+                    >
+                        <LanguagesIcon className="w-4 h-4" />
+                        <span>English Mastery</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveSubject('science')}
+                        className={cn(
+                            "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                            activeSubject === 'science'
+                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                                : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                        )}
+                    >
+                        <AtomIcon className="w-4 h-4" />
+                        <span>Discovery Lab</span>
+                    </button>
+                </div>
+            )}
+
+            {/* DIRECT FULL-WIDTH ACTIVE LAB RENDERING */}
             <div className="space-y-8">
-                <Tabs defaultValue="math" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 h-12 bg-slate-950/80 p-1 rounded-xl border border-slate-800/80 mb-6">
-                        <TabsTrigger 
-                            value="math" 
-                            className={cn(
-                              "h-full rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200",
-                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-850",
-                              "data-[state=active]:bg-indigo-600/20 data-[state=active]:text-indigo-300 data-[state=active]:border-indigo-500/50 data-[state=active]:shadow-sm data-[state=active]:shadow-indigo-950/50"
-                            )}
-                        >
-                            <SigmaIcon className="w-4 h-4"/> Advanced Math Lab
-                        </TabsTrigger>
-                        <TabsTrigger 
-                            value="english" 
-                            className={cn(
-                              "h-full rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200",
-                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-850",
-                              "data-[state=active]:bg-indigo-600/20 data-[state=active]:text-indigo-300 data-[state=active]:border-indigo-500/50 data-[state=active]:shadow-sm data-[state=active]:shadow-indigo-950/50"
-                            )}
-                        >
-                            <LanguagesIcon className="w-4 h-4"/> English Mastery
-                        </TabsTrigger>
-                        <TabsTrigger 
-                            value="science" 
-                            className={cn(
-                              "h-full rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200",
-                              "bg-slate-900/60 text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:bg-slate-850",
-                              "data-[state=active]:bg-indigo-600/20 data-[state=active]:text-indigo-300 data-[state=active]:border-indigo-500/50 data-[state=active]:shadow-sm data-[state=active]:shadow-indigo-950/50"
-                            )}
-                        >
-                            <AtomIcon className="w-4 h-4"/> Discovery Lab
-                        </TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="math">
-                        <MathLab canEdit={canEdit} activeGrade={activeGradeTier} onGradeChange={setActiveGradeTier} />
-                    </TabsContent>
-                    <TabsContent value="english">
-                        <EnglishMastery canEdit={canEdit} activeGrade={activeGradeTier} onGradeChange={setActiveGradeTier} />
-                    </TabsContent>
-                    <TabsContent value="science">
-                        <DiscoveryLab canEdit={canEdit} activeGrade={activeGradeTier} onGradeChange={setActiveGradeTier} />
-                    </TabsContent>
-                </Tabs>
+                {activeSubject === 'math' && <MathLab canEdit={canEdit} activeGrade={activeGradeTier} />}
+                {activeSubject === 'english' && <EnglishMastery canEdit={canEdit} activeGrade={activeGradeTier} />}
+                {activeSubject === 'science' && <DiscoveryLab canEdit={canEdit} activeGrade={activeGradeTier} />}
             </div>
-             <style jsx global>{`
+
+            <style jsx global>{`
                 .math-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
                 .katex-display { margin: 0 !important; }
             `}</style>

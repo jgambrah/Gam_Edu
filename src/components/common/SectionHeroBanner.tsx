@@ -184,7 +184,7 @@ export function SectionHeroBanner({
 
         {/* Hero Body: Icon, Eyebrow, Title, Subtitle, Badges */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-start sm:items-center gap-3.5 max-w-3xl min-w-0">
+          <div className="flex items-start sm:items-center gap-3.5 max-w-3xl min-w-0 flex-1">
             {/* Category / Module Icon */}
             {IconOrElement && (
               <div className="p-2.5 sm:p-3 rounded-2xl bg-white/[0.06] border border-white/10 text-amber-400 backdrop-blur-md shadow-inner shrink-0 hidden xs:flex items-center justify-center">
@@ -198,7 +198,7 @@ export function SectionHeroBanner({
               </div>
             )}
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               {/* Eyebrow Tag & Optional Badge */}
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 {eyebrow && (
@@ -233,7 +233,7 @@ export function SectionHeroBanner({
 
               {/* Subtitle / Description */}
               {subtitle && (
-                <p className="text-xs sm:text-sm text-slate-400 max-w-2xl truncate mt-0.5 font-normal">
+                <p className="text-xs sm:text-sm text-slate-300 sm:text-slate-400 max-w-2xl leading-relaxed mt-1 font-normal">
                   {subtitle}
                 </p>
               )}
