@@ -137,7 +137,7 @@ export function SectionHeroBanner({
       </div>
 
       {/* Main Content Area */}
-      <div className="relative z-10 py-5 px-6 space-y-3.5">
+      <div className="relative z-10 py-3.5 sm:py-4 px-5 sm:px-6 space-y-2.5 sm:space-y-3">
         {/* Top Bar: Breadcrumbs & Right Action Controls (only when breadcrumbs are provided) */}
         {breadcrumbs && breadcrumbs.length > 0 && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-white/[0.08]">
@@ -183,7 +183,7 @@ export function SectionHeroBanner({
         )}
 
         {/* Hero Body: Icon, Eyebrow, Title, Subtitle, Badges */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5">
           <div className="flex items-start sm:items-center gap-3.5 max-w-3xl min-w-0 flex-1">
             {/* Category / Module Icon */}
             {IconOrElement && (
