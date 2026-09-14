@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   CheckCircle2,
   XCircle,
@@ -12,18 +12,25 @@ import {
   BookOpen,
   Award,
   HelpCircle,
-  Clock
+  Clock,
+  Eye,
+  EyeOff,
+  FileText,
+  GraduationCap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import {
   CurriculumQuestionSet,
-  CurriculumQuestion
+  CurriculumQuestion,
+  StructuredQuestionPart
 } from '@/lib/global-curriculum-types';
 import { recordQuizAttempt } from '@/lib/services/curriculumService';
+import { MathRenderer } from './MathRenderer';
 
 interface QuestionRunnerProps {
   questionSet: CurriculumQuestionSet | null;
@@ -49,9 +56,17 @@ export function QuestionRunner({
   onBack
 }: QuestionRunnerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // MCQ State
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
   const [showHint, setShowHint] = useState(false);
+
+  // Structured Essay State (per sub-question part)
+  const [partAnswers, setPartAnswers] = useState<Record<string, string>>({});
+  const [revealedParts, setRevealedParts] = useState<Record<string, boolean>>({});
+  const [showPartHints, setShowPartHints] = useState<Record<string, boolean>>({});
+
   const [answersLog, setAnswersLog] = useState<
     { questionId: string; selected: string; correct: string; isCorrect: boolean; points: number }[]
   >([]);
@@ -113,8 +128,16 @@ export function QuestionRunner({
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
+  // Detect whether this question is a Structured Essay with sub-parts
+  const isStructuredEssay =
+    currentQuestion.format === 'structured_essay' ||
+    (Array.isArray(currentQuestion.parts) && currentQuestion.parts.length > 0);
+
+  const parts: StructuredQuestionPart[] = currentQuestion.parts || [];
+
   const isCurrentCorrect = selectedOption === currentQuestion.correctAnswer;
 
+  // Handler for MCQ Verification
   const handleVerify = () => {
     if (!selectedOption) return;
     setIsVerified(true);
@@ -133,19 +156,42 @@ export function QuestionRunner({
       {
         questionId: currentQuestion.id,
         selected: selectedOption,
-        correct: currentQuestion.correctAnswer,
+        correct: currentQuestion.correctAnswer || '',
         isCorrect,
         points: isCorrect ? currentQuestion.points : 0
       }
     ]);
   };
 
+  // Toggle reveal for a specific sub-part
+  const togglePartSolution = (partKey: string) => {
+    setRevealedParts((prev) => ({
+      ...prev,
+      [partKey]: !prev[partKey]
+    }));
+  };
+
+  // Toggle hint for a specific sub-part
+  const togglePartHint = (partKey: string) => {
+    setShowPartHints((prev) => ({
+      ...prev,
+      [partKey]: !prev[partKey]
+    }));
+  };
+
+  // Reveal all solutions for the current structured essay question
+  const revealAllPartSolutions = () => {
+    const next: Record<string, boolean> = {};
+    parts.forEach((_, idx) => {
+      next[`${currentQuestion.id}_p${idx}`] = true;
+    });
+    setRevealedParts((prev) => ({ ...prev, ...next }));
+  };
+
   const handleNext = async () => {
     if (isLastQuestion) {
       // Calculate final score
-      const finalAnswers = [
-        ...answersLog
-      ];
+      const finalAnswers = [...answersLog];
       const totalScore = finalAnswers.reduce((acc, curr) => acc + curr.points, 0);
       const maxScore = questions.reduce((acc, curr) => acc + curr.points, 0);
       const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
@@ -200,6 +246,9 @@ export function QuestionRunner({
     setSelectedOption(null);
     setIsVerified(false);
     setShowHint(false);
+    setPartAnswers({});
+    setRevealedParts({});
+    setShowPartHints({});
     setAnswersLog([]);
     setIsComplete(false);
     setRecordSuccess(false);
@@ -320,6 +369,15 @@ export function QuestionRunner({
               <Badge variant="outline" className="border-slate-700 text-slate-300 text-xs">
                 {gradeTier}
               </Badge>
+              {isStructuredEssay ? (
+                <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]">
+                  Paper 2 Structured Theory
+                </Badge>
+              ) : (
+                <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[10px]">
+                  Objective Test (Paper 1)
+                </Badge>
+              )}
               {questionSet.variantType === 'past_paper_variant' && (
                 <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
                   WAEC / BECE Variant
@@ -329,7 +387,7 @@ export function QuestionRunner({
 
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-indigo-400">
-                +{currentQuestion.points} Points
+                +{currentQuestion.totalMarks || currentQuestion.points} Marks
               </span>
             </div>
           </div>
@@ -344,143 +402,335 @@ export function QuestionRunner({
         </div>
 
         <CardContent className="p-6 sm:p-10 space-y-6">
-          {/* Prompt */}
+          {/* Question Title & Header Prompt */}
           <div className="space-y-3">
-            <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">
-              TOPIC CHALLENGE • {currentQuestion.id.toUpperCase()}
-            </span>
-            <h3 className="text-lg sm:text-xl font-bold text-white leading-relaxed">
-              {currentQuestion.prompt}
-            </h3>
-          </div>
-
-          {/* Multiple Choice Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            {currentQuestion.options.map((option, idx) => {
-              const isSelected = selectedOption === option;
-              const isCorrectOption = option === currentQuestion.correctAnswer;
-
-              let cardStyle =
-                'bg-slate-950/70 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-850';
-
-              if (isSelected && !isVerified) {
-                cardStyle = 'bg-indigo-950/60 border-indigo-500 text-white shadow-lg shadow-indigo-500/10';
-              } else if (isVerified) {
-                if (isCorrectOption) {
-                  cardStyle = 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold shadow-md shadow-emerald-500/20';
-                } else if (isSelected && !isCorrectOption) {
-                  cardStyle = 'bg-rose-950/70 border-rose-500 text-rose-300 shadow-md shadow-rose-500/20';
-                } else {
-                  cardStyle = 'bg-slate-950/40 border-slate-800/60 text-slate-500 opacity-60';
-                }
-              }
-
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  disabled={isVerified}
-                  onClick={() => setSelectedOption(option)}
-                  className={cn(
-                    'p-4 rounded-2xl border text-left flex items-center justify-between transition-all duration-200 cursor-pointer disabled:cursor-default',
-                    cardStyle
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={cn(
-                        'w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold font-mono transition-colors',
-                        isSelected
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-slate-800 text-slate-400'
-                      )}
-                    >
-                      {String.fromCharCode(65 + idx)}
-                    </span>
-                    <span className="text-sm font-medium">{option}</span>
-                  </div>
-
-                  {isVerified && isCorrectOption && (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  )}
-                  {isVerified && isSelected && !isCorrectOption && (
-                    <XCircle className="w-5 h-5 text-rose-400" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Hint Accordion/Trigger */}
-          {!isVerified && currentQuestion.hint && (
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => setShowHint((prev) => !prev)}
-                className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <Lightbulb className="w-3.5 h-3.5" />
-                <span>{showHint ? 'Hide Pedagogical Hint' : 'Need a hint?'}</span>
-              </button>
-              {showHint && (
-                <div className="mt-2.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
-                  💡 <strong>Hint:</strong> {currentQuestion.hint}
-                </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">
+                {isStructuredEssay
+                  ? `THEORY SECTION • ${currentQuestion.id.toUpperCase()}`
+                  : `OBJECTIVE CHALLENGE • ${currentQuestion.id.toUpperCase()}`}
+              </span>
+              {currentQuestion.totalMarks && (
+                <Badge variant="secondary" className="bg-slate-800 text-indigo-300 text-xs font-semibold">
+                  [{currentQuestion.totalMarks} Total Marks]
+                </Badge>
               )}
             </div>
-          )}
 
-          {/* Worked Solution (In-Memory, Zero Network Reads) */}
-          {isVerified && (
-            <div className="space-y-3 pt-3 border-t border-slate-800 animate-in fade-in duration-300">
-              <div
-                className={cn(
-                  'p-4 rounded-2xl border flex items-start gap-3',
-                  isCurrentCorrect
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                    : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                )}
-              >
-                {isCurrentCorrect ? (
-                  <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0 text-emerald-400" />
-                ) : (
-                  <XCircle className="w-5 h-5 mt-0.5 flex-shrink-0 text-rose-400" />
-                )}
-                <div className="space-y-1">
-                  <h4 className="font-bold text-sm">
-                    {isCurrentCorrect ? 'Correct Derivation!' : 'Correction Required'}
-                  </h4>
-                  <p className="text-xs leading-relaxed opacity-90">
-                    {isCurrentCorrect
-                      ? `Excellent! You solved this question correctly and earned +${currentQuestion.points} points.`
-                      : `The expected correct answer is: "${currentQuestion.correctAnswer}". Review the derivation below.`}
-                  </p>
-                </div>
-              </div>
+            {currentQuestion.title && (
+              <h3 className="text-lg sm:text-xl font-black text-white">
+                {currentQuestion.title}
+              </h3>
+            )}
 
-              {/* Step-by-Step Worked Solution */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">
-                  STEP-BY-STEP WORKED DERIVATION
-                </span>
-                <p className="text-xs text-slate-300 font-mono leading-relaxed whitespace-pre-wrap">
-                  {currentQuestion.workedSolution}
-                </p>
+            <div className="text-sm sm:text-base text-slate-200 leading-relaxed">
+              <MathRenderer content={currentQuestion.prompt} />
+            </div>
+          </div>
+
+          {/* ============================================================ */}
+          {/* 1. STRUCTURED ESSAY MODE (Paper 2)                          */}
+          {/* ============================================================ */}
+          {isStructuredEssay ? (
+            <div className="space-y-6 pt-2">
+              {parts.map((part, pIdx) => {
+                const partKey = `${currentQuestion.id}_p${pIdx}`;
+                const isRevealed = !!revealedParts[partKey];
+                const isHintShown = !!showPartHints[partKey];
+                const currentVal = partAnswers[partKey] || '';
+
+                return (
+                  <div
+                    key={pIdx}
+                    className="p-5 sm:p-6 rounded-3xl bg-slate-950/70 border border-slate-800 space-y-4 shadow-lg hover:border-slate-700 transition-colors"
+                  >
+                    {/* Sub-question Header */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-mono font-black text-sm flex items-center justify-center">
+                          {part.partLabel}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-300">
+                          Sub-Question Part {part.partLabel}
+                        </span>
+                      </div>
+                      <Badge className="bg-indigo-950 text-indigo-300 border-indigo-700/50 text-xs px-2.5 py-0.5 font-bold">
+                        [{part.marks} Marks]
+                      </Badge>
+                    </div>
+
+                    {/* Sub-question Prompt with LaTeX */}
+                    <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 text-sm text-slate-100 leading-relaxed">
+                      <MathRenderer content={part.prompt} />
+                    </div>
+
+                    {/* Student Working / Answer Draft Area */}
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                        <span>Your Derivation / Working Notes (Draft):</span>
+                      </label>
+                      <Textarea
+                        value={currentVal}
+                        onChange={(e) =>
+                          setPartAnswers((prev) => ({
+                            ...prev,
+                            [partKey]: e.target.value
+                          }))
+                        }
+                        placeholder="Write out your intermediate steps, formula, or final answer here..."
+                        className="bg-slate-900 border-slate-800 text-slate-200 placeholder:text-slate-600 rounded-2xl min-h-[70px] text-xs font-mono focus:border-indigo-500"
+                      />
+                    </div>
+
+                    {/* Hint & Solution Toggles */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/60">
+                      {part.hint ? (
+                        <button
+                          type="button"
+                          onClick={() => togglePartHint(partKey)}
+                          className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Lightbulb className="w-3.5 h-3.5" />
+                          <span>{isHintShown ? 'Hide Pedagogical Hint' : 'Need a hint for this part?'}</span>
+                        </button>
+                      ) : <div />}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => togglePartSolution(partKey)}
+                        className={cn(
+                          'text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5',
+                          isRevealed
+                            ? 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-950/60'
+                            : 'border-slate-700 bg-slate-850 text-slate-300 hover:bg-slate-800 hover:text-white'
+                        )}
+                      >
+                        {isRevealed ? (
+                          <>
+                            <EyeOff className="w-3.5 h-3.5" />
+                            <span>Hide Solution & Rubric</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                            <span>Reveal Solution & Rubric</span>
+                          </>
+                        )}
+                      </Button>
+                    </div>
+
+                    {/* Part Hint Box */}
+                    {isHintShown && part.hint && (
+                      <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
+                        💡 <strong>Hint {part.partLabel}:</strong> <MathRenderer content={part.hint} />
+                      </div>
+                    )}
+
+                    {/* Step-by-Step Marking Scheme & Derivation Box */}
+                    {isRevealed && (
+                      <div className="space-y-3 pt-3 border-t border-slate-800 animate-in fade-in duration-200">
+                        {/* Model Answer Pill */}
+                        <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5">
+                          <CheckCircle2 className="w-4 h-4 mt-0.5 text-emerald-400 flex-shrink-0" />
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider">
+                              OFFICIAL TARGET VALUE / MODEL ANSWER:
+                            </span>
+                            <div className="text-xs font-bold text-white">
+                              <MathRenderer content={part.modelAnswer} />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Worked Marking Derivation */}
+                        <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">
+                              STEP-BY-STEP MARKING SCHEME & RUBRIC • [{part.marks} MARKS]
+                            </span>
+                          </div>
+                          <div className="text-xs text-slate-200 leading-relaxed">
+                            <MathRenderer content={part.workedSolution} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* Reveal All Helper */}
+              <div className="flex justify-end pt-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={revealAllPartSolutions}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/30 cursor-pointer flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Reveal All Marking Rubrics for this Question
+                </Button>
               </div>
             </div>
+          ) : (
+            /* ============================================================ */
+            /* 2. STANDARD MULTIPLE CHOICE MODE (Paper 1)                   */
+            /* ============================================================ */
+            <>
+              {/* Multiple Choice Options */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                {currentQuestion.options &&
+                  currentQuestion.options.map((option, idx) => {
+                    const isSelected = selectedOption === option;
+                    const isCorrectOption = option === currentQuestion.correctAnswer;
+
+                    let cardStyle =
+                      'bg-slate-950/70 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-850';
+
+                    if (isSelected && !isVerified) {
+                      cardStyle = 'bg-indigo-950/60 border-indigo-500 text-white shadow-lg shadow-indigo-500/10';
+                    } else if (isVerified) {
+                      if (isCorrectOption) {
+                        cardStyle = 'bg-emerald-950/70 border-emerald-500 text-emerald-300 font-bold shadow-md shadow-emerald-500/20';
+                      } else if (isSelected && !isCorrectOption) {
+                        cardStyle = 'bg-rose-950/70 border-rose-500 text-rose-300 shadow-md shadow-rose-500/20';
+                      } else {
+                        cardStyle = 'bg-slate-950/40 border-slate-800/60 text-slate-500 opacity-60';
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        disabled={isVerified}
+                        onClick={() => setSelectedOption(option)}
+                        className={cn(
+                          'p-4 rounded-2xl border text-left flex items-center justify-between transition-all duration-200 cursor-pointer disabled:cursor-default',
+                          cardStyle
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={cn(
+                              'w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold font-mono transition-colors',
+                              isSelected
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-slate-800 text-slate-400'
+                            )}
+                          >
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <div className="text-sm font-medium">
+                            <MathRenderer content={option} />
+                          </div>
+                        </div>
+
+                        {isVerified && isCorrectOption && (
+                          <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                        )}
+                        {isVerified && isSelected && !isCorrectOption && (
+                          <XCircle className="w-5 h-5 text-rose-400 flex-shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
+              </div>
+
+              {/* Hint Accordion/Trigger */}
+              {!isVerified && currentQuestion.hint && (
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowHint((prev) => !prev)}
+                    className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Lightbulb className="w-3.5 h-3.5" />
+                    <span>{showHint ? 'Hide Pedagogical Hint' : 'Need a hint?'}</span>
+                  </button>
+                  {showHint && (
+                    <div className="mt-2.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
+                      💡 <strong>Hint:</strong> <MathRenderer content={currentQuestion.hint} />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Worked Solution */}
+              {isVerified && (
+                <div className="space-y-3 pt-3 border-t border-slate-800 animate-in fade-in duration-300">
+                  <div
+                    className={cn(
+                      'p-4 rounded-2xl border flex items-start gap-3',
+                      isCurrentCorrect
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                        : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                    )}
+                  >
+                    {isCurrentCorrect ? (
+                      <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0 text-emerald-400" />
+                    ) : (
+                      <XCircle className="w-5 h-5 mt-0.5 flex-shrink-0 text-rose-400" />
+                    )}
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-sm">
+                        {isCurrentCorrect ? 'Correct Derivation!' : 'Correction Required'}
+                      </h4>
+                      <div className="text-xs leading-relaxed opacity-90">
+                        {isCurrentCorrect
+                          ? `Excellent! You solved this question correctly and earned +${currentQuestion.points} points.`
+                          : (
+                            <div>
+                              <span>The expected correct answer is: </span>
+                              <strong className="text-white">
+                                <MathRenderer content={currentQuestion.correctAnswer || ''} />
+                              </strong>
+                              <span>. Review the derivation below.</span>
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step-by-Step Worked Solution */}
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                    <span className="text-[10px] font-mono text-indigo-400 font-bold uppercase tracking-wider block">
+                      STEP-BY-STEP WORKED DERIVATION
+                    </span>
+                    <div className="text-xs text-slate-300 leading-relaxed">
+                      <MathRenderer content={currentQuestion.workedSolution} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Actions Bar */}
           <div className="flex items-center justify-between pt-4 border-t border-slate-800/80">
             <span className="text-xs text-slate-500">
-              {isVerified
+              {isStructuredEssay
+                ? `Structured Theory Question ${currentIndex + 1} of ${totalQuestions}`
+                : isVerified
                 ? isLastQuestion
                   ? 'Final question completed'
                   : 'Ready for next question'
                 : 'Select an option to verify'}
             </span>
 
-            {!isVerified ? (
+            {isStructuredEssay ? (
+              <Button
+                onClick={handleNext}
+                className="h-11 px-8 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <span>{isLastQuestion ? 'Complete Theory Exam' : 'Next Theory Question'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            ) : !isVerified ? (
               <Button
                 onClick={handleVerify}
                 disabled={!selectedOption}

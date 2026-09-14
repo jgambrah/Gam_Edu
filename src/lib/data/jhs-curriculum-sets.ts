@@ -395,17 +395,47 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
   questions: [
     {
       id: "q01",
-      prompt: "Answer all parts of this question:\n(a) Evaluate (0.048 × 1.05) / 0.00012, leaving your final answer in standard form.\n(b) An amount of GH¢ 5,400.00 is shared between Esi and Kwesi. If Esi receives 4/9 of the total amount:\n   (i) How much does Kwesi receive?\n   (ii) What percentage of Esi's share did Kwesi receive?\n(c) Three angles meet at a point O on a plane: (3x - 10)°, (2x + 40)°, and (x + 30)°. Calculate the value of x.",
-      options: [
-        "(a) 4.2 × 10² | (b)(i) GH¢ 3,000.00, (ii) 125% | (c) x = 50°",
-        "(a) 4.2 × 10³ | (b)(i) GH¢ 2,400.00, (ii) 80% | (c) x = 45°",
-        "(a) 4.2 × 10² | (b)(i) GH¢ 3,200.00, (ii) 120% | (c) x = 60°",
-        "(a) 4.2 × 10⁴ | (b)(i) GH¢ 3,000.00, (ii) 115% | (c) x = 50°"
-      ],
-      correctAnswer: "(a) 4.2 × 10² | (b)(i) GH¢ 3,000.00, (ii) 125% | (c) x = 50°",
-      hint: "For (a), multiply numerator and denominator by 100,000 to convert to whole numbers. For (b), find Esi's share first, then subtract from the total. For (c), the sum of angles around a point is 360°.",
-      workedSolution: "(a) [(48/1000) × (105/100)] ÷ (12/100000) = (48 × 105 × 100000) / (1000 × 100 × 12) = (48 × 105) / 12 = 4 × 105 = 420 = 4.2 × 10².\n(b)(i) Esi's share = (4/9) × 5400 = 4 × 600 = GH¢ 2,400.00. Kwesi's share = 5400 - 2400 = GH¢ 3,000.00.\n(b)(ii) Percentage = (Kwesi's share / Esi's share) × 100% = (3000 / 2400) × 100% = (5/4) × 100% = 125%.\n(c) Sum of angles around a point = 360°: (3x - 10) + (2x + 40) + (x + 30) = 360 => 6x + 60 = 360 => 6x = 300 => x = 50°.",
-      points: 15
+      title: "Question 1: Computation, Proportional Sharing & Angle Geometry",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question:\n(a) Evaluate $\\frac{0.048 \\times 1.05}{0.00012}$, leaving your final answer in standard form.\n(b) An amount of GH¢ 5,400.00 was shared between Esi and Kwesi. If Esi received $\\frac{4}{9}$ of the total amount, find Kwesi's share and what percentage of Esi's share Kwesi received.\n(c) Three angles meet at a common vertex point $O$ on a plane: $(3x - 10)^\\circ$, $(2x + 40)^\\circ$, and $(x + 30)^\\circ$. Calculate the value of $x$.",
+      hint: "Review decimal simplification using powers of 10, fractional sharing of quantities, and the sum of angles meeting at a point.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "Evaluate $$\\frac{0.048 \\times 1.05}{0.00012}$$, leaving your final answer in standard form.",
+          hint: "Convert decimals to whole numbers by multiplying numerator and denominator by $10^5$, or convert each decimal into a common fraction before simplifying.",
+          modelAnswer: "$4.2 \\times 10^2$",
+          workedSolution: "**Method 1: Whole Number Conversion**\n$$\\frac{0.048 \\times 1.05}{0.00012} = \\frac{0.0504}{0.00012}$$\nMultiply both numerator and denominator by $100,000$ to clear the decimals:\n$$= \\frac{0.0504 \\times 100,000}{0.00012 \\times 100,000} = \\frac{5,040}{12}$$\n$$= 420$$\nExpressing in standard form ($A \\times 10^n$ where $1 \\le A < 10$):\n$$420 = 4.2 \\times 10^2$$\n\n*(Award full marks for showing whole number conversion, intermediate simplification of 420, and the correct standard form exponent).*"
+        },
+        {
+          partLabel: "(b)(i)",
+          marks: 4,
+          prompt: "An amount of GH¢ 5,400.00 was shared between Esi and Kwesi. If Esi received $\\frac{4}{9}$ of the total amount, how much did Kwesi receive?",
+          hint: "Kwesi's fraction of the total is $1 - \\frac{4}{9} = \\frac{5}{9}$, or compute Esi's share in cedis first and subtract it from GH¢ 5,400.00.",
+          modelAnswer: "GH¢ 3,000.00",
+          workedSolution: "**Step 1: Compute Esi's share**\n$$\\text{Esi's share} = \\frac{4}{9} \\times \\text{GH¢ } 5,400.00 = 4 \\times \\text{GH¢ } 600.00 = \\text{GH¢ } 2,400.00$$\n\n**Step 2: Calculate Kwesi's share**\n$$\\text{Kwesi's share} = \\text{GH¢ } 5,400.00 - \\text{GH¢ } 2,400.00 = \\text{GH¢ } 3,000.00$$\n\n*(Alternatively: Kwesi's fraction = $1 - \\frac{4}{9} = \\frac{5}{9}$. Then $\\frac{5}{9} \\times 5,400 = 5 \\times 600 = \\text{GH¢ } 3,000.00$)*."
+        },
+        {
+          partLabel: "(b)(ii)",
+          marks: 3,
+          prompt: "What percentage of Esi's share did Kwesi receive?",
+          hint: "Express Kwesi's share as a fraction of Esi's share, then multiply by $100\\%$.",
+          modelAnswer: "125%",
+          workedSolution: "$$\\text{Percentage} = \\left(\\frac{\\text{Kwesi's share}}{\\text{Esi's share}}\\right) \\times 100\\%$$\n$$= \\left(\\frac{3,000}{2,400}\\right) \\times 100\\% = \\left(\\frac{5}{4}\\right) \\times 100\\% = 125\\%$$\nKwesi received $125\\%$ of Esi's share."
+        },
+        {
+          partLabel: "(c)",
+          marks: 3,
+          prompt: "Three angles meet at a common vertex point $O$ on a plane: $(3x - 10)^\\circ$, $(2x + 40)^\\circ$, and $(x + 30)^\\circ$. Calculate the value of $x$.",
+          hint: "The sum of all adjacent angles meeting at a point in a complete revolution is equal to $360^\\circ$.",
+          modelAnswer: "x = 50°",
+          workedSolution: "Sum of angles at a point = $360^\\circ$:\n$$(3x - 10)^\\circ + (2x + 40)^\\circ + (x + 30)^\\circ = 360^\\circ$$\nCombine like terms:\n$$(3x + 2x + x) + (-10 + 40 + 30) = 360$$\n$$6x + 60 = 360$$\n$$6x = 360 - 60$$\n$$6x = 300$$\n$$x = \\frac{300}{6} = 50^\\circ$$\nTherefore, $x = 50$."
+        }
+      ]
     },
     {
       id: "q02",

@@ -42,14 +42,27 @@ export const CURRICULUM_LEVEL_METADATA: Record<
 
 export type QuestionSetVariantType = 'standard' | 'past_paper_variant';
 
+export interface StructuredQuestionPart {
+  partLabel: string;
+  marks: number;
+  prompt: string;
+  hint?: string;
+  modelAnswer: string;
+  workedSolution: string;
+}
+
 export interface CurriculumQuestion {
   id: string;
+  title?: string;
+  format?: 'multiple_choice' | 'structured_essay';
+  totalMarks?: number;
   prompt: string;
-  options: string[];
-  correctAnswer: string;
+  options?: string[];
+  correctAnswer?: string;
   hint: string;
   workedSolution: string;
   points: number;
+  parts?: StructuredQuestionPart[];
 }
 
 export interface CurriculumQuestionSet {

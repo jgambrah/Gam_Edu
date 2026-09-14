@@ -84,12 +84,12 @@ export async function fetchTopicQuestionSetsFromFirestore(
   subjectId: string,
   topicId: string
 ): Promise<CurriculumQuestionSet[]> {
-  try {
-    const subjectAliases = subjectId === 'mathematics' ? ['mathematics', 'math'] : (subjectId === 'math' ? ['math', 'mathematics'] : [subjectId]);
-    const topicAliases = topicId.includes('-')
-      ? [topicId, topicId.replace(/-/g, '_')]
-      : (topicId.includes('_') ? [topicId, topicId.replace(/_/g, '-')] : [topicId]);
+  const subjectAliases = subjectId === 'mathematics' ? ['mathematics', 'math'] : (subjectId === 'math' ? ['math', 'mathematics'] : [subjectId]);
+  const topicAliases = topicId.includes('-')
+    ? [topicId, topicId.replace(/-/g, '_')]
+    : (topicId.includes('_') ? [topicId, topicId.replace(/_/g, '-')] : [topicId]);
 
+  try {
     // Try primary path first
     for (const sId of subjectAliases) {
       for (const tId of topicAliases) {
