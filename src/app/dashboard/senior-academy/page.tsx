@@ -1162,57 +1162,6 @@ function EnglishMastery({
     const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
     const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
     const [isLoadingSet, setIsLoadingSet] = useState(false);
-    const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
-    const [isRefreshing, setIsRefreshing] = useState(false);
-
-    // Dynamic scanning of seeded question sets across topics for JHS/SHS
-    const refreshCurriculumSets = useCallback(async (manual = false) => {
-        setIsRefreshing(true);
-        const levelId = mapGradeTierToLevelId(activeGrade);
-        if (manual) {
-            invalidateCurriculumCache(levelId, 'math');
-        }
-
-        try {
-            const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers'];
-            const scanned: SuggestedModuleCard[] = [];
-            for (const tId of topicsToScan) {
-                const sets = await getTopicQuestionSets(levelId, 'math', tId);
-                console.log("[senior-academy] Fetched sets for topic", tId, ":", sets);
-                if (sets && sets.length > 0) {
-                    sets.forEach((s) => {
-                        scanned.push({
-                            title: s.title,
-                            domain: s.format === 'structured_essay' || s.title.toLowerCase().includes('paper 2') || s.title.toLowerCase().includes('structured') ? 'ALGEBRA' : 'ARITHMETIC & NUMERACY',
-                            gradeTier: activeGrade,
-                            meta: `${s.totalQuestions || s.questions?.length || 40} Questions • 60 mins • ${s.variantType === 'past_paper_variant' ? 'Past Paper Variant' : 'Mastery Series'}`,
-                            description: s.topic || s.title,
-                            difficulty: 'Advanced',
-                            topicId: tId,
-                            setId: s.id,
-                            kind: 'exam_series',
-                            format: s.format || (s.questions?.[0]?.options && s.questions[0].options.length > 0 ? 'objective' : 'structured_essay'),
-                            questionCount: s.totalQuestions || s.questions?.length || 0,
-                            examTag: `${s.totalQuestions || s.questions?.length || 0} Questions • Live Stepper`,
-                            subject: 'Mathematics'
-                        });
-                    });
-                }
-            }
-            setDynamicSets(scanned);
-            if (manual) {
-                toast({ title: 'Curriculum Cache Refreshed! ⚡', description: 'Live Firestore resources & practice sets re-synchronized.' });
-            }
-        } catch (err) {
-            console.warn('[senior-academy] Error scanning dynamic sets:', err);
-        } finally {
-            setIsRefreshing(false);
-        }
-    }, [activeGrade, toast]);
-
-    useEffect(() => {
-        refreshCurriculumSets(false);
-    }, [refreshCurriculumSets]);
 
     const isJunior = isJuniorLevel(activeGrade);
     const isPrimary = (activeGrade as string) === 'Early Childhood' || (activeGrade as string) === 'Lower Primary' || (activeGrade as string) === 'Upper Primary';
@@ -1602,6 +1551,57 @@ function MathLab({
     const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
     const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
     const [isLoadingSet, setIsLoadingSet] = useState(false);
+    const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    // Dynamic scanning of seeded question sets across topics for JHS/SHS
+    const refreshCurriculumSets = useCallback(async (manual = false) => {
+        setIsRefreshing(true);
+        const levelId = mapGradeTierToLevelId(activeGrade);
+        if (manual) {
+            invalidateCurriculumCache(levelId, 'math');
+        }
+
+        try {
+            const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers'];
+            const scanned: SuggestedModuleCard[] = [];
+            for (const tId of topicsToScan) {
+                const sets = await getTopicQuestionSets(levelId, 'math', tId);
+                console.log("[senior-academy] Fetched sets for topic", tId, ":", sets);
+                if (sets && sets.length > 0) {
+                    sets.forEach((s) => {
+                        scanned.push({
+                            title: s.title,
+                            domain: s.format === 'structured_essay' || s.title.toLowerCase().includes('paper 2') || s.title.toLowerCase().includes('structured') ? 'ALGEBRA' : 'ARITHMETIC & NUMERACY',
+                            gradeTier: activeGrade,
+                            meta: `${s.totalQuestions || s.questions?.length || 40} Questions • 60 mins • ${s.variantType === 'past_paper_variant' ? 'Past Paper Variant' : 'Mastery Series'}`,
+                            description: s.topic || s.title,
+                            difficulty: 'Advanced',
+                            topicId: tId,
+                            setId: s.id,
+                            kind: 'exam_series',
+                            format: s.format || (s.questions?.[0]?.options && s.questions[0].options.length > 0 ? 'objective' : 'structured_essay'),
+                            questionCount: s.totalQuestions || s.questions?.length || 0,
+                            examTag: `${s.totalQuestions || s.questions?.length || 0} Questions • Live Stepper`,
+                            subject: 'Mathematics'
+                        });
+                    });
+                }
+            }
+            setDynamicSets(scanned);
+            if (manual) {
+                toast({ title: 'Curriculum Cache Refreshed! ⚡', description: 'Live Firestore resources & practice sets re-synchronized.' });
+            }
+        } catch (err) {
+            console.warn('[senior-academy] Error scanning dynamic sets:', err);
+        } finally {
+            setIsRefreshing(false);
+        }
+    }, [activeGrade, toast]);
+
+    useEffect(() => {
+        refreshCurriculumSets(false);
+    }, [refreshCurriculumSets]);
 
     const isJunior = isJuniorLevel(activeGrade);
     const theme = isJunior ? juniorStyles : null;
@@ -1920,6 +1920,17 @@ function MathLab({
                             </p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => refreshCurriculumSets(true)}
+                                disabled={isRefreshing}
+                                className="h-7 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer"
+                                title="Bust cache and re-query Firestore question sets"
+                            >
+                                <RotateCcw className={cn("w-3.5 h-3.5 text-indigo-400", isRefreshing && "animate-spin")} />
+                                <span>{isRefreshing ? "Refreshing..." : "Refresh Resources"}</span>
+                            </Button>
                             <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
                                 {filteredModules.length} {viewMode === 'exam_series' ? 'Exam Papers' : 'Topical Labs'}
                             </span>
