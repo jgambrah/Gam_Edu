@@ -14,6 +14,7 @@ import * as dotenv from 'dotenv';
 import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Firestore } from 'firebase-admin/firestore';
 import type { CurriculumQuestionSet } from '../src/lib/global-curriculum-types';
+import { SET_JHS_MASTERY_SERIES_03 } from '../src/lib/data/jhs-curriculum-sets';
 
 dotenv.config();
 
@@ -948,6 +949,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_02
   );
   results.push(result5);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 6: JHS Math -> Core Curriculum Series (Set 3 Objective in core_curriculum_mastery)
+  console.log('▶ Ingesting Set 6: Junior Core Math Objective Mastery Series (Set 3)...');
+  const result6 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_03
+  );
+  results.push(result6);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

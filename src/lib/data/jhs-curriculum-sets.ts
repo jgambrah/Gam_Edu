@@ -509,3 +509,378 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
     }
   ]
 };
+
+export const SET_JHS_MASTERY_SERIES_03: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-03",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 3)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "Which of the following represents the set of prime factors of $18$?",
+      options: ["{2, 3}", "{1, 2, 3}", "{2, 3, 6, 9}", "{1, 2, 3, 6, 9, 18}"],
+      correctAnswer: "{2, 3}",
+      hint: "Prime factors are factors of 18 that are prime numbers.",
+      workedSolution: "Factors of 18 are 1, 2, 3, 6, 9, 18. Among these, the only prime numbers are 2 and 3. Hence, the set is {2, 3}.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "Expand and simplify: $$4x(2x - 3y)$$.",
+      options: ["$$8x^2 - 12xy$$", "$$8x - 12xy$$", "$$8x^2 - 12y$$", "$$6x^2 - 7xy$$"],
+      correctAnswer: "$$8x^2 - 12xy$$",
+      hint: "Distribute $4x$ across each term inside the parentheses.",
+      workedSolution: "$$4x(2x) - 4x(3y) = 8x^2 - 12xy$$.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Express $6$ as a percentage of $5$.",
+      options: ["120%", "83.3%", "30%", "20%"],
+      correctAnswer: "120%",
+      hint: "Divide 6 by 5 and multiply by 100%.",
+      workedSolution: "$$\\frac{6}{5} \\times 100\\% = 6 \\times 20\\% = 120\\%$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Express $1,800$ as a product of prime factors in index notation.",
+      options: ["$$2^3 \\times 3^2 \\times 5^2$$", "$$2^2 \\times 3^3 \\times 5^2$$", "$$2^3 \\times 3 \\times 5^3$$", "$$2^4 \\times 3^2 \\times 5$$"],
+      correctAnswer: "$$2^3 \\times 3^2 \\times 5^2$$",
+      hint: "Divide repeatedly by prime factors starting from 2.",
+      workedSolution: "$$1800 = 18 \\times 100 = (2 \\times 3^2) \\times (2^2 \\times 5^2) = 2^3 \\times 3^2 \\times 5^2$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "The ratio of notebooks to pens in a carton is $4 : 3$. If there are $48$ notebooks, how many pens are in the carton?",
+      options: ["36", "32", "64", "16"],
+      correctAnswer: "36",
+      hint: "Find the value of 1 ratio unit: 48 ÷ 4.",
+      workedSolution: "4 units = 48 => 1 unit = 12. Number of pens = 3 × 12 = 36.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Express $0.375$ as a fraction in its lowest terms.",
+      options: ["$$\\frac{3}{8}$$", "$$\\frac{3}{5}$$", "$$\\frac{7}{16}$$", "$$\\frac{5}{12}$$"],
+      correctAnswer: "$$\\frac{3}{8}$$",
+      hint: "Write as 375/1000 and divide numerator and denominator by 125.",
+      workedSolution: "$$\\frac{375}{1000} = \\frac{375 \\div 125}{1000 \\div 125} = \\frac{3}{8}$$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "Convert $$333_{\\text{five}}$$ to a numeral in base ten.",
+      options: ["93", "88", "111", "75"],
+      correctAnswer: "93",
+      hint: "Expand using place values: $3(5^2) + 3(5^1) + 3(5^0)$.",
+      workedSolution: "$$3(25) + 3(5) + 3(1) = 75 + 15 + 3 = 93$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "Given sets $X = \\{12, 14, 16\\}$ and $Y = \\{11, 13, 15\\}$, find $X \\cap Y$.",
+      options: ["$$\\emptyset$$ (empty set)", "{12, 14}", "{11, 12, 13, 14, 15, 16}", "{0}"],
+      correctAnswer: "$$\\emptyset$$ (empty set)",
+      hint: "Look for common elements in both sets.",
+      workedSolution: "Set X contains even numbers and set Y contains odd numbers. There are no common elements: $$X \\cap Y = \\emptyset$$.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Simplify: $$5^8 \\div 5^2$$.",
+      options: ["$$5^6$$", "$$5^4$$", "$$5^{10}$$", "$$5^{16}$$"],
+      correctAnswer: "$$5^6$$",
+      hint: "Apply the quotient rule of indices: $$a^m \\div a^n = a^{m-n}$$.",
+      workedSolution: "$$5^8 \\div 5^2 = 5^{8-2} = 5^6$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "A pair of shoes bought for GH¢ 40.00 was sold for GH¢ 52.00. Calculate the percentage profit.",
+      options: ["30%", "25%", "35%", "12%"],
+      correctAnswer: "30%",
+      hint: "Profit = Selling Price - Cost Price. Profit % = (Profit / Cost Price) × 100%.",
+      workedSolution: "Profit = 52.00 - 40.00 = GH¢ 12.00. Percentage profit = (12 / 40) × 100% = 30%.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Factorize completely: $$a^2 + ka - pa - kp$$.",
+      options: ["$$(a + k)(a - p)$$", "$$(a - k)(a - p)$$", "$$(a + k)(p - a)$$", "$$(a - k)(a + p)$$"],
+      correctAnswer: "$$(a + k)(a - p)$$",
+      hint: "Group terms in pairs: $$a(a + k) - p(a + k)$$.",
+      workedSolution: "$$a(a + k) - p(a + k) = (a + k)(a - p)$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Simplify: $$-18 - (-5) + (-7)$$.",
+      options: ["-20", "-30", "-16", "-6"],
+      correctAnswer: "-20",
+      hint: "Subtracting a negative becomes addition: -18 + 5 - 7.",
+      workedSolution: "$$-18 + 5 - 7 = -13 - 7 = -20$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Find the Highest Common Factor (HCF) of $$2^4 \\times 3^3$$ and $$2^2 \\times 3^5$$.",
+      options: ["$$2^2 \\times 3^3$$", "$$2^4 \\times 3^5$$", "$$2^2 \\times 3^5$$", "$$2^6 \\times 3^8$$"],
+      correctAnswer: "$$2^2 \\times 3^3$$",
+      hint: "Take the lowest power of each common prime factor.",
+      workedSolution: "For 2: lowest power is $$2^2$$. For 3: lowest power is $$3^3$$. HCF = $$2^2 \\times 3^3$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "State the rule for the linear mapping: $$x \\to y$$, where inputs $$1, 2, 3, 4$$ produce outputs $$12, 24, 36, 48$$.",
+      options: ["$$x \\to 12x$$", "$$x \\to x + 11$$", "$$x \\to 6x + 6$$", "$$x \\to 12/x$$"],
+      correctAnswer: "$$x \\to 12x$$",
+      hint: "Notice that each y is obtained by multiplying x by 12.",
+      workedSolution: "For x=1: 12(1)=12; x=2: 12(2)=24; x=3: 12(3)=36. The mapping rule is $$x \\to 12x$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "Solve the inequality: $$x - \\frac{1}{4} \\ge \\frac{3}{4} - x$$.",
+      options: ["$$x \\ge \\frac{1}{2}$$", "$$x \\le \\frac{1}{2}$$", "$$x \\ge 1$$", "$$x \\le 1$$"],
+      correctAnswer: "$$x \\ge \\frac{1}{2}$$",
+      hint: "Multiply through by 4 to clear fractions, then group like terms.",
+      workedSolution: "$$4(x - 1/4) \\ge 4(3/4 - x) \\implies 4x - 1 \\ge 3 - 4x \\implies 8x \\ge 4 \\implies x \\ge 4/8 = 1/2$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "The perimeter of a square garden is $36\\text{ m}$. What is its area?",
+      options: ["$$81\\text{ m}^2$$", "$$72\\text{ m}^2$$", "$$144\\text{ m}^2$$", "$$18\\text{ m}^2$$"],
+      correctAnswer: "$$81\\text{ m}^2$$",
+      hint: "Find the side length first: $s = \\text{Perimeter} \\div 4$.",
+      workedSolution: "Side length $$s = 36 / 4 = 9\\text{ m}$$. Area $$= s^2 = 9^2 = 81\\text{ m}^2$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "Simplify: $$\\frac{1}{4}\\left(\\frac{1}{2} - \\frac{1}{4}\\right) - \\frac{1}{4}\\left(\\frac{1}{4} - \\frac{1}{2}\\right)$$.",
+      options: ["$$\\frac{1}{8}$$", "$$\\frac{1}{16}$$", "$$0$$", "$$-\\frac{1}{8}$$"],
+      correctAnswer: "$$\\frac{1}{8}$$",
+      hint: "Notice that $$\\frac{1}{4} - \\frac{1}{2} = -(\\frac{1}{2} - \\frac{1}{4})$$.",
+      workedSolution: "$$\\frac{1}{2} - \\frac{1}{4} = \\frac{1}{4}$$. Then $$\\frac{1}{4}(1/4) - \\frac{1}{4}(-1/4) = \\frac{1}{16} + \\frac{1}{16} = \\frac{2}{16} = \\frac{1}{8}$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "Make $k$ the subject of the relation: $$\\theta = 90 - \\frac{180}{k}$$.",
+      options: ["$$k = \\frac{180}{90 - \\theta}$$", "$$k = \\frac{180}{90 + \\theta}$$", "$$k = \\frac{90 - \\theta}{180}$$", "$$k = 180(90 - \\theta)$$"],
+      correctAnswer: "$$k = \\frac{180}{90 - \\theta}$$",
+      hint: "Rearrange to isolate $$\\frac{180}{k} = 90 - \\theta$$, then invert.",
+      workedSolution: "$$\\frac{180}{k} = 90 - \\theta \\implies k = \\frac{180}{90 - \\theta}$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "If $$M = \\frac{w}{3} + \\frac{k^2}{6w}$$, calculate $M$ when $w = 4$ and $k = 6$.",
+      options: ["$$2\\frac{5}{6}$$", "$$2\\frac{1}{3}$$", "$$3\\frac{1}{2}$$", "$$4\\frac{1}{6}$$"],
+      correctAnswer: "$$2\\frac{5}{6}$$",
+      hint: "Substitute $w=4$ and $k=6$ directly into the expression.",
+      workedSolution: "$$M = \\frac{4}{3} + \\frac{6^2}{6(4)} = \\frac{4}{3} + \\frac{36}{24} = \\frac{4}{3} + \\frac{3}{2} = \\frac{8 + 9}{6} = \\frac{17}{6} = 2\\frac{5}{6}$$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "Six copies of an encyclopedia cost GH¢ 24.00. How much will 9 copies cost at the same rate?",
+      options: ["GH¢ 36.00", "GH¢ 32.00", "GH¢ 40.00", "GH¢ 28.00"],
+      correctAnswer: "GH¢ 36.00",
+      hint: "Find the unit price first: 24 ÷ 6.",
+      workedSolution: "Cost of 1 book = 24.00 ÷ 6 = GH¢ 4.00. Cost of 9 books = 9 × 4.00 = GH¢ 36.00.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "Solve for $y$ in the equation: $$\\frac{1}{4}(3 + y) = \\frac{1}{3}(y - 2)$$.",
+      options: ["17", "11", "9", "-17"],
+      correctAnswer: "17",
+      hint: "Cross-multiply or multiply through by 12.",
+      workedSolution: "$$3(3 + y) = 4(y - 2) \\implies 9 + 3y = 4y - 8 \\implies 9 + 8 = 4y - 3y \\implies y = 17$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "Find the gradient (slope) of the straight line connecting $A(2, 3)$ and $B(5, 12)$.",
+      options: ["3", "-3", "1/3", "4"],
+      correctAnswer: "3",
+      hint: "Gradient $$m = \\frac{y_2 - y_1}{x_2 - x_1}$$.",
+      workedSolution: "$$m = \\frac{12 - 3}{5 - 2} = \\frac{9}{3} = 3$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "A delivery vehicle drives at an average speed of $80\\text{ km/h}$. What distance does it travel in $3\\frac{1}{2}$ hours?",
+      options: ["280 km", "240 km", "320 km", "260 km"],
+      correctAnswer: "280 km",
+      hint: "Distance = Speed × Time.",
+      workedSolution: "$$\\text{Distance} = 80 \\times 3.5 = 280\\text{ km}$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "Two parallel lines are cut by a transversal. If an interior angle on one side is $132^\\circ$, calculate the acute interior angle on the same side.",
+      options: ["$$48^\\circ$$", "$$42^\\circ$$", "$$52^\\circ$$", "$$132^\\circ$$"],
+      correctAnswer: "$$48^\\circ$$",
+      hint: "Consecutive co-interior angles add up to 180°.",
+      workedSolution: "$$180^\\circ - 132^\\circ = 48^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 7 \\\\ 3m \\end{pmatrix}$$ and $$v = \\begin{pmatrix} 3m - 2 \\\\ 9 \\end{pmatrix}$$. If $u = v$, find the value of $m$.",
+      options: ["3", "2", "4", "5"],
+      correctAnswer: "3",
+      hint: "Equate corresponding components: $3m - 2 = 7$ and $3m = 9$.",
+      workedSolution: "$$3m = 9 \\implies m = 3$$. Also $$3(3) - 2 = 7$$, which holds true.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Calculate the total volume of a cube whose side length is $4\\text{ cm}$.",
+      options: ["$$64\\text{ cm}^3$$", "$$16\\text{ cm}^3$$", "$$96\\text{ cm}^3$$", "$$48\\text{ cm}^3$$"],
+      correctAnswer: "$$64\\text{ cm}^3$$",
+      hint: "Volume of a cube = $$s^3$$.",
+      workedSolution: "$$4\\text{ cm} \\times 4\\text{ cm} \\times 4\\text{ cm} = 64\\text{ cm}^3$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Two straight lines intersect at point $O$. If one acute vertically opposite angle is $72^\\circ$, find the adjacent obtuse angle on the straight line.",
+      options: ["$$108^\\circ$$", "$$118^\\circ$$", "$$72^\\circ$$", "$$98^\\circ$$"],
+      correctAnswer: "$$108^\\circ$$",
+      hint: "Angles on a straight line sum to 180°.",
+      workedSolution: "$$180^\\circ - 72^\\circ = 108^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "Kofi and Ama shared a sum of money in the ratio $4 : 3$. If Kofi's share is GH¢ 24.00, how much money did they share altogether?",
+      options: ["GH¢ 42.00", "GH¢ 36.00", "GH¢ 18.00", "GH¢ 56.00"],
+      correctAnswer: "GH¢ 42.00",
+      hint: "Find 1 unit: 24 ÷ 4 = 6. Total units = 4 + 3 = 7.",
+      workedSolution: "4 units = 24 => 1 unit = GH¢ 6.00. Total shared = (4 + 3) × 6 = 7 × 6 = GH¢ 42.00.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "Calculate the area of a trapezium with parallel sides of length $11\\text{ cm}$ and $17\\text{ cm}$, and perpendicular height $14\\text{ cm}$.",
+      options: ["$$196\\text{ cm}^2$$", "$$392\\text{ cm}^2$$", "$$154\\text{ cm}^2$$", "$$238\\text{ cm}^2$$"],
+      correctAnswer: "$$196\\text{ cm}^2$$",
+      hint: "Area = $$\\frac{1}{2}(a + b)h$$.",
+      workedSolution: "$$\\text{Area} = \\frac{1}{2}(11 + 17) \\times 14 = \\frac{1}{2}(28) \\times 14 = 14 \\times 14 = 196\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "Given vectors $$p = \\begin{pmatrix} 3 \\\\ -4 \\end{pmatrix}$$ and $$q = \\begin{pmatrix} -1 \\\\ 3 \\end{pmatrix}$$, evaluate $$3p - 2q$$.",
+      options: ["$$\\begin{pmatrix} 11 \\\\ -18 \\end{pmatrix}$$", "$$\\begin{pmatrix} 7 \\\\ -6 \\end{pmatrix}$$", "$$\\begin{pmatrix} 11 \\\\ -6 \\end{pmatrix}$$", "$$\\begin{pmatrix} 7 \\\\ -18 \\end{pmatrix}$$"],
+      correctAnswer: "$$\\begin{pmatrix} 11 \\\\ -18 \\end{pmatrix}$$",
+      hint: "Multiply components by scalars before subtracting.",
+      workedSolution: "$$3\\begin{pmatrix} 3 \\\\ -4 \\end{pmatrix} - 2\\begin{pmatrix} -1 \\\\ 3 \\end{pmatrix} = \\begin{pmatrix} 9 \\\\ -12 \\end{pmatrix} - \\begin{pmatrix} -2 \\\\ 6 \\end{pmatrix} = \\begin{pmatrix} 9 - (-2) \\\\ -12 - 6 \\end{pmatrix} = \\begin{pmatrix} 11 \\\\ -18 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "A crate contains $14$ red apples and $21$ green apples. If one apple is picked at random, what is the probability that it is red?",
+      options: ["$$\\frac{2}{5}$$", "$$\\frac{3}{5}$$", "$$\\frac{2}{3}$$", "$$\\frac{1}{7}$$"],
+      correctAnswer: "$$\\frac{2}{5}$$",
+      hint: "Total apples = 14 + 21 = 35. Probability = 14/35.",
+      workedSolution: "$$\\text{P(Red)} = \\frac{14}{14 + 21} = \\frac{14}{35} = \\frac{2}{5}$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "The ages of students in a study group are distributed as: Age 12 (4 students), Age 13 (8 students), Age 14 (5 students), Age 15 (3 students). How many students are in the group?",
+      options: ["20", "25", "18", "15"],
+      correctAnswer: "20",
+      hint: "Sum all student frequencies.",
+      workedSolution: "$$4 + 8 + 5 + 3 = 20\\text{ students}$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "From the age distribution in Question 32, identify the modal age.",
+      options: ["13 years", "12 years", "14 years", "8 years"],
+      correctAnswer: "13 years",
+      hint: "The mode is the age with the highest frequency.",
+      workedSolution: "Age 13 occurs 8 times, which is the highest frequency. The modal age is 13 years.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "From the age distribution in Question 32, what is the probability that a randomly chosen student is 14 years old?",
+      options: ["$$\\frac{1}{4}$$", "$$\\frac{1}{5}$$", "$$\\frac{2}{5}$$", "$$\\frac{3}{20}$$"],
+      correctAnswer: "$$\\frac{1}{4}$$",
+      hint: "Frequency of age 14 divided by total students: 5 / 20.",
+      workedSolution: "$$\\text{P(14 years)} = \\frac{5}{20} = \\frac{1}{4}$$.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "A spool of wire is $21.6\\text{ m}$ long. How many pieces of length $0.48\\text{ m}$ can be cut from it?",
+      options: ["45", "4.5", "450", "42"],
+      correctAnswer: "45",
+      hint: "Divide 21.6 by 0.48.",
+      workedSolution: "$$\\frac{21.6}{0.48} = \\frac{2160}{48} = 45\\text{ pieces}$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "An electric oven was sold for GH¢ 360.00 at a loss of 10%. Calculate its original cost price.",
+      options: ["GH¢ 400.00", "GH¢ 396.00", "GH¢ 420.00", "GH¢ 380.00"],
+      correctAnswer: "GH¢ 400.00",
+      hint: "Selling price represents 90% of cost price: CP = SP ÷ 0.90.",
+      workedSolution: "$$\\text{CP} = \\frac{360.00}{1.00 - 0.10} = \\frac{360}{0.9} = \\text{GH¢ } 400.00$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "A geometric net made of 1 central square base and 4 surrounding triangular faces forms which solid figure?",
+      options: ["Square pyramid", "Triangular prism", "Tetrahedron", "Cuboid"],
+      correctAnswer: "Square pyramid",
+      hint: "When folded up, the 4 triangles meet at a single apex above the square base.",
+      workedSolution: "A square base attached to four triangular faces folds into a right square pyramid.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "What is the place value of the digit $8$ in the numeral $948,251$?",
+      options: ["Eight thousand", "Eighty thousand", "Eight hundred", "Eight ten-thousands"],
+      correctAnswer: "Eight thousand",
+      hint: "Count place values from right: Units, Tens, Hundreds, Thousands.",
+      workedSolution: "In 948,251, 8 sits in the thousands column, representing 8,000 (Eight thousand).",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "Write $4,820$ in standard form.",
+      options: ["$$4.82 \\times 10^3$$", "$$4.82 \\times 10^2$$", "$$4.82 \\times 10^4$$", "$$48.2 \\times 10^2$$"],
+      correctAnswer: "$$4.82 \\times 10^3$$",
+      hint: "Move the decimal point 3 places to the left to get a number between 1 and 10.",
+      workedSolution: "$$4,820 = 4.82 \\times 10^3$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Correct $0.04862$ to three decimal places.",
+      options: ["0.049", "0.048", "0.05", "0.0486"],
+      correctAnswer: "0.049",
+      hint: "The third decimal place is 8, followed by 6. Round up.",
+      workedSolution: "The first 3 decimal digits are 0.048. Since the 4th digit is 6 (which is ≥ 5), 8 rounds up to 9: 0.049.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-14T12:00:00.000Z",
+  lastUpdated: "2026-09-14T12:00:00.000Z"
+};
