@@ -672,6 +672,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "2\\pi r = 44 \\implies r = 7\\text{ cm}, \\quad V = \\pi r^2 h = 2,156\\text{ cm}^3",
         sampleAnswer: "7 cm, 2,156 cm³"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 21)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 21 / 2002 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 21 / 2002 past paper adaptation) with balanced option randomization covering base number addition, fraction comparisons, sequence patterns, speed conversion, enlargements, and geometric perimeter & volume.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-21",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2002 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set S = {multiples of 5 less than 25}, find set S:",
+        sampleFormula: "S = \\{5, 10, 15, 20\\}",
+        sampleAnswer: "{5, 10, 15, 20}"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",

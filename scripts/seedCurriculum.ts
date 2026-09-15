@@ -5438,6 +5438,585 @@ export const SET_JHS_MASTERY_SERIES_20: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3v. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 21)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-21
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_21: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-21",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 21)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "If set $$S = \\{\\text{multiples of } 5 \\text{ less than } 25\\}$$, find set $$S$$.",
+      options: [
+        "{5, 10, 15, 20}",
+        "{5, 10, 15, 20, 25}",
+        "{1, 5, 10, 15, 20}",
+        "{5, 15, 20}"
+      ],
+      correctAnswer: "{5, 10, 15, 20}",
+      hint: "Multiples of 5 strictly under 25.",
+      workedSolution: "Multiples of 5 less than 25 are 5, 10, 15, and 20. 25 is excluded because of 'less than'.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "The addition $$231_x + 242_x = 1023_x$$ was carried out in base $x$. Find the base $x$.",
+      options: [
+        "five",
+        "six",
+        "seven",
+        "four"
+      ],
+      correctAnswer: "five",
+      hint: "Check the units digit addition: $1 + 2 = 3$. In the second place: $3 + 4 = 7 = 1(5) + 2$.",
+      workedSolution: "In the tens place: $3 + 4 = 7$. In base 5, $7 = 1 \\times 5 + 2$, giving a result of 2 with 1 carried over. Thus, the base $x = 5$.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "A delivery driver departed from a warehouse at 5:25 AM and arrived at his destination at 7:12 AM. How long did the journey take?",
+      options: [
+        "1 hour 47 minutes",
+        "1 hour 37 minutes",
+        "2 hours 13 minutes",
+        "1 hour 57 minutes"
+      ],
+      correctAnswer: "1 hour 47 minutes",
+      hint: "From 5:25 to 6:00 is 35 minutes. Add 1 hour 12 minutes.",
+      workedSolution: "Time elapsed = $35\\text{ min (to 6:00 AM)} + 1\\text{ h } 12\\text{ min} = 1\\text{ hour } 47\\text{ minutes}$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Express $3,682.4$ in standard form.",
+      options: [
+        "$$3.6824 \\times 10^2$$",
+        "$$3.6824 \\times 10^{-3}$$",
+        "$$3.6824 \\times 10^3$$",
+        "$$36.824 \\times 10^2$$"
+      ],
+      correctAnswer: "$$3.6824 \\times 10^3$$",
+      hint: "Move the decimal point 3 places to the left: $A \\times 10^n$ with $1 \\le A < 10$.",
+      workedSolution: "$$3,682.4 = 3.6824 \\times 10^3$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "Simplify: $$2\\frac{1}{2} + 1\\frac{1}{4} - 3\\frac{3}{8}$$.",
+      options: [
+        "$$\\frac{3}{8}$$",
+        "$$\\frac{1}{4}$$",
+        "$$\\frac{1}{8}$$",
+        "$$\\frac{5}{8}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{8}$$",
+      hint: "Use a common denominator of 8: $2\\frac{4}{8} + 1\\frac{2}{8} - 3\\frac{3}{8}$.",
+      workedSolution: "$$(2 + 1 - 3) + \\left(\\frac{4 + 2 - 3}{8}\\right) = 0 + \\frac{3}{8} = \\frac{3}{8}$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Find the next two numbers in the sequence: $$3, 6, 10, 15, 21, \\dots, \\dots$$.",
+      options: [
+        "27, 34",
+        "28, 36",
+        "26, 35",
+        "28, 35"
+      ],
+      correctAnswer: "28, 36",
+      hint: "Look at the differences between consecutive terms: +3, +4, +5, +6...",
+      workedSolution: "Add 7: $21 + 7 = 28$. Add 8: $28 + 8 = 36$. The next two numbers are 28 and 36.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "The sum of three numbers is $34,820$. Two of the numbers are $12,450$ and $11,350$. Find the third number.",
+      options: [
+        "11,020",
+        "10,020",
+        "11,120",
+        "10,920"
+      ],
+      correctAnswer: "11,020",
+      hint: "Subtract the sum of the two given numbers from the total sum.",
+      workedSolution: "$$12,450 + 11,350 = 23,800$$. Third number = $$34,820 - 23,800 = 11,020$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "$160$ books are to be packed into cartons. If each carton holds at most $14$ books, find the number of cartons that can be **completely** filled.",
+      options: [
+        "12",
+        "10",
+        "11",
+        "13"
+      ],
+      correctAnswer: "11",
+      hint: "Compute $160 \\div 14$ and take the whole number quotient.",
+      workedSolution: "$$160 \\div 14 = 11\\text{ R } 6$$. Exactly 11 cartons are completely filled.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Which of the following fractions is the greatest: $$\\frac{3}{5}, \\, \\frac{7}{10}, \\, \\frac{3}{4}, \\, \\frac{13}{20}$$?",
+      options: [
+        "$$\\frac{3}{4}$$",
+        "$$\\frac{7}{10}$$",
+        "$$\\frac{3}{5}$$",
+        "$$\\frac{13}{20}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{4}$$",
+      hint: "Express all with a common denominator of 20: 12/20, 14/20, 15/20, 13/20.",
+      workedSolution: "Comparing values over 20: $12/20, 14/20, 15/20, 13/20$. The largest is $15/20 = \\frac{3}{4}$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "Out of a development fund of $\\text{GH¢ } 750.00$, the sum of $\\text{GH¢ } 450.00$ was disbursed for school maintenance. What fraction of the total fund was disbursed?",
+      options: [
+        "$$\\frac{2}{5}$$",
+        "$$\\frac{3}{5}$$",
+        "$$\\frac{4}{5}$$",
+        "$$\\frac{7}{15}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{5}$$",
+      hint: "Simplify 450 / 750 by dividing both by 150.",
+      workedSolution: "$$\\frac{450}{750} = \\frac{45}{75} = \\frac{3}{5}$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Ama bought $6$ notebooks at $\\text{GH¢ } 2.50$ each and $4$ marker pens at $\\text{GH¢ } 3.50$ each. How much did she spend altogether?",
+      options: [
+        "GH¢ 27.00",
+        "GH¢ 31.00",
+        "GH¢ 29.00",
+        "GH¢ 32.00"
+      ],
+      correctAnswer: "GH¢ 29.00",
+      hint: "Total = (6 × 2.50) + (4 × 3.50).",
+      workedSolution: "$$6 \\times 2.50 = 15.00$$; $$4 \\times 3.50 = 14.00$$. Total spent = $$15.00 + 14.00 = \\text{GH¢ } 29.00$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "A wire transfer service charges a $4\\%$ transaction fee. If a customer transfers $\\text{GH¢ } 350.00$, what fee was paid?",
+      options: [
+        "GH¢ 12.00",
+        "GH¢ 14.00",
+        "GH¢ 16.00",
+        "GH¢ 17.50"
+      ],
+      correctAnswer: "GH¢ 14.00",
+      hint: "Calculate 4% of 350.",
+      workedSolution: "$$\\text{Fee} = \\frac{4}{100} \\times 350 = 4 \\times 3.5 = \\text{GH¢ } 14.00$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "If $6$ builders can construct a garden wall in $12\\text{ days}$, how many days will it take $9$ builders to build the same wall working at the same pace?",
+      options: [
+        "8 days",
+        "18 days",
+        "10 days",
+        "6 days"
+      ],
+      correctAnswer: "8 days",
+      hint: "Inverse proportion: Total builder-days = 6 × 12 = 72.",
+      workedSolution: "$$\\text{Days} = \\frac{6 \\times 12}{9} = \\frac{72}{9} = 8\\text{ days}$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "A linear relation is defined by the mapping $$x \\to x^2 - 3$$. Find the image of $4$ under this mapping.",
+      options: [
+        "16",
+        "11",
+        "13",
+        "5"
+      ],
+      correctAnswer: "13",
+      hint: "Calculate $4^2 - 3$.",
+      workedSolution: "$$4^2 - 3 = 16 - 3 = 13$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "A typist charges $\\text{GH¢ } 5.00$ for the first $4\\text{ pages}$ and $\\text{GH¢ } 1.20$ for each additional page. How much will it cost to type a $15\\text{ page}$ document?",
+      options: [
+        "GH¢ 17.20",
+        "GH¢ 18.20",
+        "GH¢ 19.20",
+        "GH¢ 16.80"
+      ],
+      correctAnswer: "GH¢ 18.20",
+      hint: "First 4 pages = 5.00; remaining 11 pages cost 11 × 1.20.",
+      workedSolution: "Remaining pages = $15 - 4 = 11$. Additional cost = $$11 \\times 1.20 = 13.20$$. Total = $$5.00 + 13.20 = \\text{GH¢ } 18.20$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "A cyclist covers a distance of $120\\text{ m}$ in $15\\text{ seconds}$. Express his speed in kilometres per hour ($\\text{km/h}$).",
+      options: [
+        "24 km/h",
+        "28.8 km/h",
+        "30 km/h",
+        "32 km/h"
+      ],
+      correctAnswer: "28.8 km/h",
+      hint: "Speed in m/s = 120 / 15 = 8 m/s. Multiply by 3.6 to convert to km/h.",
+      workedSolution: "$$\\text{Speed} = \\frac{120\\text{ m}}{15\\text{ s}} = 8\\text{ m/s}$$. In km/h: $$8 \\times \\frac{3600}{1000} = 8 \\times 3.6 = 28.8\\text{ km/h}$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "Kwame, Kofi, and Ama shared a sum of money in the ratio $2 : 3 : 5$ respectively. If Ama received $\\text{GH¢ } 60.00$, what was the total amount shared?",
+      options: [
+        "GH¢ 100.00",
+        "GH¢ 150.00",
+        "GH¢ 140.00",
+        "GH¢ 120.00"
+      ],
+      correctAnswer: "GH¢ 120.00",
+      hint: "5 ratio units = 60. Find 1 unit = 12. Total units = 2 + 3 + 5 = 10.",
+      workedSolution: "1 unit = $60 / 5 = 12$. Total shared = $$10 \\times 12 = \\text{GH¢ } 120.00$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "A student bought a laptop for $\\text{GH¢ } 720.00$ after receiving a $10\\%$ discount. What was the marked price of the laptop?",
+      options: [
+        "GH¢ 800.00",
+        "GH¢ 792.00",
+        "GH¢ 820.00",
+        "GH¢ 840.00"
+      ],
+      correctAnswer: "GH¢ 800.00",
+      hint: "The discounted price represents 90% of the marked price: $720 \\div 0.90$.",
+      workedSolution: "$$\\text{Marked price} = \\frac{720.00}{0.90} = \\text{GH¢ } 800.00$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "The population of a district was $60,000$ in 2010. By 2020, the population had increased by $25\\%$. Find the population in 2020.",
+      options: [
+        "72,000",
+        "75,000",
+        "80,000",
+        "70,000"
+      ],
+      correctAnswer: "75,000",
+      hint: "Population in 2020 = 125% of 60,000.",
+      workedSolution: "$$1.25 \\times 60,000 = 75,000$$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "If an operation is defined on real numbers by $$a * b = 3a - 2b$$, evaluate $$4 * 3$$.",
+      options: [
+        "6",
+        "7",
+        "5",
+        "8"
+      ],
+      correctAnswer: "6",
+      hint: "Substitute $a = 4$ and $b = 3$ into $3a - 2b$.",
+      workedSolution: "$$4 * 3 = 3(4) - 2(3) = 12 - 6 = 6$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "Make $x$ the subject of the relation: $$y = \\frac{x + 2}{x - 3}$$.",
+      options: [
+        "$$x = \\frac{3y + 2}{y - 1}$$",
+        "$$x = \\frac{3y - 2}{y - 1}$$",
+        "$$x = \\frac{y + 2}{y - 3}$$",
+        "$$x = \\frac{2y + 3}{y - 1}$$"
+      ],
+      correctAnswer: "$$x = \\frac{3y + 2}{y - 1}$$",
+      hint: "Multiply both sides by $(x - 3)$, expand, and group terms with $x$ on one side.",
+      workedSolution: "$$y(x - 3) = x + 2 \\implies xy - 3y = x + 2 \\implies xy - x = 3y + 2 \\implies x(y - 1) = 3y + 2 \\implies x = \\frac{3y + 2}{y - 1}$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "In a class of $50$ pupils, $40\\%$ study Spanish and $70\\%$ study French. If every pupil studies at least one of the two languages, what percentage of the class studies both languages?",
+      options: [
+        "15%",
+        "10%",
+        "20%",
+        "25%"
+      ],
+      correctAnswer: "10%",
+      hint: "Percentage of both = $(40\\% + 70\\%) - 100\\%$.",
+      workedSolution: "$$40\\% + 70\\% - 100\\% = 110\\% - 100\\% = 10\\%$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "From the class of $50$ pupils in Question 22, how many pupils study French altogether?",
+      options: [
+        "30",
+        "35",
+        "40",
+        "25"
+      ],
+      correctAnswer: "35",
+      hint: "70% of 50 pupils.",
+      workedSolution: "$$\\frac{70}{100} \\times 50 = 35\\text{ pupils}$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "The point $A(3, 4)$ is reflected in the $y$-axis. What are the coordinates of its image $A'$?",
+      options: [
+        "(-3, 4)",
+        "(3, -4)",
+        "(-3, -4)",
+        "(4, 3)"
+      ],
+      correctAnswer: "(-3, 4)",
+      hint: "Under reflection in the y-axis: $(x, y) \\to (-x, y)$.",
+      workedSolution: "$$(3, 4) \\to (-3, 4)$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "Expand and simplify: $$(3a + b)(a - 2b)$$.",
+      options: [
+        "$$3a^2 - 5ab - 2b^2$$",
+        "$$3a^2 + 5ab - 2b^2$$",
+        "$$3a^2 - 7ab - 2b^2$$",
+        "$$3a^2 - 2b^2$$"
+      ],
+      correctAnswer: "$$3a^2 - 5ab - 2b^2$$",
+      hint: "$$3a(a - 2b) + b(a - 2b)$$.",
+      workedSolution: "$$3a^2 - 6ab + ab - 2b^2 = 3a^2 - 5ab - 2b^2$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Given column vectors $$p = \\begin{pmatrix} 2 \\\\ -3 \\end{pmatrix}$$ and $$q = \\begin{pmatrix} 1 \\\\ 4 \\end{pmatrix}$$, evaluate $$3p + q$$.",
+      options: [
+        "$$\\begin{pmatrix} 7 \\\\ -5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 7 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 5 \\\\ -5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 7 \\\\ -9 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 7 \\\\ -5 \\end{pmatrix}$$",
+      hint: "$$3(2) + 1 = 7$$ and $$3(-3) + 4 = -9 + 4 = -5$$.",
+      workedSolution: "$$\\begin{pmatrix} 3(2) + 1 \\\\ 3(-3) + 4 \\end{pmatrix} = \\begin{pmatrix} 6 + 1 \\\\ -9 + 4 \\end{pmatrix} = \\begin{pmatrix} 7 \\\\ -5 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Solve for $y$ in the linear equation: $$\\frac{1}{2}y + \\frac{1}{4}y = 6$$.",
+      options: [
+        "6",
+        "8",
+        "10",
+        "12"
+      ],
+      correctAnswer: "8",
+      hint: "$$\\frac{1}{2}y + \\frac{1}{4}y = \\frac{3}{4}y = 6$$. Multiply by 4/3.",
+      workedSolution: "$$\\frac{3}{4}y = 6 \\implies y = 6 \\times \\frac{4}{3} = 8$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "In a geometric compass construction on a ray, arcs of equal radii with centre $O$ bisect an angle of $60^\\circ$. What angle is constructed?",
+      options: [
+        "$$30^\\circ$$",
+        "$$45^\\circ$$",
+        "$$15^\\circ$$",
+        "$$90^\\circ$$"
+      ],
+      correctAnswer: "$$30^\\circ$$",
+      hint: "Bisecting 60° gives half of 60°.",
+      workedSolution: "$$\\frac{60^\\circ}{2} = 30^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "Triangle $A'B'C'$ is an enlargement of triangle $ABC$. If side $|AB| = 3\\text{ cm}$ and corresponding side $|A'B'| = 7.5\\text{ cm}$, find the linear scale factor of enlargement.",
+      options: [
+        "2.0",
+        "2.5",
+        "3.0",
+        "1.5"
+      ],
+      correctAnswer: "2.5",
+      hint: "Scale factor = Length of Image ÷ Length of Object.",
+      workedSolution: "$$k = \\frac{7.5}{3} = 2.5$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "In a pie chart representing student hobbies, Reading is represented by an angle of $108^\\circ$. If $300$ students were surveyed in total, how many students chose Reading?",
+      options: [
+        "90",
+        "108",
+        "75",
+        "80"
+      ],
+      correctAnswer: "90",
+      hint: "Fraction of circle = 108 / 360 = 3 / 10.",
+      workedSolution: "$$\\text{Students} = \\frac{108^\\circ}{360^\\circ} \\times 300 = \\frac{3}{10} \\times 300 = 90\\text{ students}$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "From the pie chart in Question 30, what percentage of the students chose Reading ($108^\\circ$)?",
+      options: [
+        "25.0%",
+        "33.3%",
+        "30.0%",
+        "36.0%"
+      ],
+      correctAnswer: "30.0%",
+      hint: "$$\\frac{108}{360} \\times 100\\%$$.",
+      workedSolution: "$$\\frac{108}{360} \\times 100\\% = \\frac{3}{10} \\times 100\\% = 30.0\\%$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "In a right-angled triangle $PQR$ with right angle at $Q$, $\\angle QPR = 48^\\circ$ and $QR$ is extended to line $S$. Find the exterior angle $\\angle PRS$.",
+      options: [
+        "$$132^\\circ$$",
+        "$$138^\\circ$$",
+        "$$142^\\circ$$",
+        "$$148^\\circ$$"
+      ],
+      correctAnswer: "$$138^\\circ$$",
+      hint: "The exterior angle equals the sum of the two opposite interior angles: $90^\\circ + 48^\\circ$.",
+      workedSolution: "$$\\text{Exterior angle} = 90^\\circ + 48^\\circ = 138^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "There are $16$ boys and $24$ girls in a secondary class. A class prefect is chosen at random. What is the probability that the prefect is a girl?",
+      options: [
+        "$$\\frac{2}{5}$$",
+        "$$\\frac{3}{4}$$",
+        "$$\\frac{3}{5}$$",
+        "$$\\frac{1}{2}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{5}$$",
+      hint: "Total pupils = 16 + 24 = 40. Girls = 24. P(girl) = 24 / 40.",
+      workedSolution: "$$P(\\text{girl}) = \\frac{24}{40} = \\frac{3}{5}$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "The length of a rectangle is four times its width. If its perimeter is $40\\text{ cm}$, find the width of the rectangle.",
+      options: [
+        "4 cm",
+        "5 cm",
+        "8 cm",
+        "16 cm"
+      ],
+      correctAnswer: "4 cm",
+      hint: "$$2(4w + w) = 40 \\implies 10w = 40$$.",
+      workedSolution: "$$2(5w) = 40 \\implies 10w = 40 \\implies w = 4\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Each interior angle of a regular octagon ($8\\text{ sides}$) measures:",
+      options: [
+        "$$120^\\circ$$",
+        "$$140^\\circ$$",
+        "$$135^\\circ$$",
+        "$$108^\\circ$$"
+      ],
+      correctAnswer: "$$135^\\circ$$",
+      hint: "Exterior angle = $360^\\circ / 8 = 45^\\circ$. Interior angle = $180^\\circ - 45^\\circ$.",
+      workedSolution: "$$\\text{Exterior angle} = \\frac{360^\\circ}{8} = 45^\\circ$$. $$\\text{Interior angle} = 180^\\circ - 45^\\circ = 135^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "A square of side $5\\text{ cm}$ is enlarged by a linear scale factor of $3$. Calculate the area of the enlarged square.",
+      options: [
+        "$$75\\text{ cm}^2$$",
+        "$$225\\text{ cm}^2$$",
+        "$$150\\text{ cm}^2$$",
+        "$$45\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$225\\text{ cm}^2$$",
+      hint: "New side = $5 \\times 3 = 15\\text{ cm}$. Area = $15^2$, or Area of image = $k^2 \\times \\text{original area}$.",
+      workedSolution: "$$\\text{New side} = 15\\text{ cm}$$. Area = $$15^2 = 225\\text{ cm}^2$$ (or $3^2 \\times 25 = 9 \\times 25 = 225\\text{ cm}^2$).",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "A rectangular tank has length $4\\text{ m}$, width $3\\text{ m}$, and height $2\\text{ m}$. If the tank is filled with water to $3/4$ of its total capacity, calculate the volume of water in the tank.",
+      options: [
+        "$$24\\text{ m}^3$$",
+        "$$18\\text{ m}^3$$",
+        "$$12\\text{ m}^3$$",
+        "$$20\\text{ m}^3$$"
+      ],
+      correctAnswer: "$$18\\text{ m}^3$$",
+      hint: "Total capacity = $4 \\times 3 \\times 2 = 24\\text{ m}^3$. Multiply by 3/4.",
+      workedSolution: "$$\\text{Capacity} = 4 \\times 3 \\times 2 = 24\\text{ m}^3$$. $$\\text{Volume} = \\frac{3}{4} \\times 24 = 18\\text{ m}^3$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "Water costs $\\text{GH¢ } 5.00$ per cubic metre ($1\\text{ m}^3$). How much does it cost to completely fill a rectangular reservoir measuring $5\\text{ m}$ by $4\\text{ m}$ by $2\\text{ m}$?",
+      options: [
+        "GH¢ 200.00",
+        "GH¢ 180.00",
+        "GH¢ 160.00",
+        "GH¢ 240.00"
+      ],
+      correctAnswer: "GH¢ 200.00",
+      hint: "Volume = $5 \\times 4 \\times 2 = 40\\text{ m}^3$. Multiply by GH¢ 5.00.",
+      workedSolution: "$$\\text{Volume} = 40\\text{ m}^3$$. $$\\text{Cost} = 40 \\times 5.00 = \\text{GH¢ } 200.00$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "Express $25\\text{ m } 6\\text{ cm } 4\\text{ mm}$ entirely in millimetres.",
+      options: [
+        "25,604 mm",
+        "2,564 mm",
+        "25,064 mm",
+        "250,604 mm"
+      ],
+      correctAnswer: "25,064 mm",
+      hint: "$$1\\text{ m} = 1000\\text{ mm}$$, $$1\\text{ cm} = 10\\text{ mm}$$.",
+      workedSolution: "$$25\\text{ m} = 25,000\\text{ mm}$$; $$6\\text{ cm} = 60\\text{ mm}$$; $$4\\text{ mm} = 4\\text{ mm}$$. Sum = $$25,000 + 60 + 4 = 25,064\\text{ mm}$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "The circumference of a circular running track is $22\\text{ m}$. Calculate the diameter of the track, taking $\\pi = \\frac{22}{7}$.",
+      options: [
+        "3.5 m",
+        "7.0 m",
+        "14.0 m",
+        "11.0 m"
+      ],
+      correctAnswer: "7.0 m",
+      hint: "Circumference $C = \\pi d \\implies d = C / \\pi$.",
+      workedSolution: "$$d = \\frac{C}{\\pi} = \\frac{22}{\\frac{22}{7}} = 22 \\times \\frac{7}{22} = 7.0\\text{ m}$$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T17:00:00.000Z",
+  lastUpdated: "2026-09-15T17:00:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -5809,6 +6388,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_20
   );
   results.push(result23);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 24: JHS Math -> Core Curriculum Series (Set 21 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 24: Junior Core Math Objective Mastery Series (Set 21)...');
+  const result24 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_21
+  );
+  results.push(result24);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
