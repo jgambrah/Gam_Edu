@@ -6223,6 +6223,586 @@ export const SET_JHS_MASTERY_SERIES_22: CurriculumQuestionSet = {
   lastUpdated: "2026-09-15T17:30:00.000Z"
 };
 
+// ============================================================================
+// 3x. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 23)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-23
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_23: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-23",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 23)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "If set $$P = \\{2, 3, 5, 7, 11, 13\\}$$ and set $$Q = \\{1, 3, 5, 7, 9, 11, 13\\}$$, find the number of elements in $$P \\cap Q$$.",
+      options: [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      correctAnswer: "5",
+      hint: "Identify the common elements present in both set P and set Q, then count them.",
+      workedSolution: "Common elements are {3, 5, 7, 11, 13}. The total count is 5.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "Evaluate: $$4.5 \\times 0.06$$.",
+      options: [
+        "0.27",
+        "0.027",
+        "2.7",
+        "0.0027"
+      ],
+      correctAnswer: "0.27",
+      hint: "Multiply 45 by 6 to get 270, then count 3 decimal places from the right.",
+      workedSolution: "$$4.5 \\times 0.06 = 0.270 = 0.27$$.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Convert the base ten numeral $43_{\\text{ten}}$ to a base five numeral.",
+      options: [
+        "$$133_{\\text{five}}$$",
+        "$$233_{\\text{five}}$$",
+        "$$143_{\\text{five}}$$",
+        "$$123_{\\text{five}}$$"
+      ],
+      correctAnswer: "$$133_{\\text{five}}$$",
+      hint: "Divide repeatedly by 5: $43 = 1(25) + 3(5) + 3(1)$.",
+      workedSolution: "$$43 \\div 5 = 8\\text{ R } 3$$; $$8 \\div 5 = 1\\text{ R } 3$$; $$1 \\div 5 = 0\\text{ R } 1$$. Reading upwards: $$133_{\\text{five}}$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Find the Least Common Multiple (LCM) of $8, 12,$ and $18$.",
+      options: [
+        "36",
+        "48",
+        "72",
+        "144"
+      ],
+      correctAnswer: "72",
+      hint: "$$8 = 2^3$$, $$12 = 2^2 \\times 3$$, $$18 = 2 \\times 3^2$$. Multiply highest powers of all prime factors.",
+      workedSolution: "$$\\text{LCM} = 2^3 \\times 3^2 = 8 \\times 9 = 72$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "If $$\\frac{x - 3}{2} = 4$$, find the value of $x$.",
+      options: [
+        "11",
+        "8",
+        "5",
+        "14"
+      ],
+      correctAnswer: "11",
+      hint: "Multiply both sides by 2, then add 3.",
+      workedSolution: "$$x - 3 = 4 \\times 2 = 8 \\implies x = 8 + 3 = 11$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Simplify: $$6a^2 b \\times 2ab^3$$.",
+      options: [
+        "$$12a^2 b^3$$",
+        "$$12a^3 b^4$$",
+        "$$8a^3 b^4$$",
+        "$$12a^3 b^3$$"
+      ],
+      correctAnswer: "$$12a^3 b^4$$",
+      hint: "Multiply coefficients: $6 \\times 2 = 12$. Add powers for $a$ and $b$.",
+      workedSolution: "$$(6 \\times 2) \\times a^{2+1} \\times b^{1+3} = 12a^3 b^4$$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "Round $47,682$ to the nearest hundred.",
+      options: [
+        "47,600",
+        "47,700",
+        "48,000",
+        "47,680"
+      ],
+      correctAnswer: "47,700",
+      hint: "Look at the tens digit (8): since $8 \\ge 5$, round the hundreds digit up.",
+      workedSolution: "The tens digit is 8, so 6 in the hundreds place rounds up to 7: 47,700.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "What is the size of each interior angle of an equilateral triangle?",
+      options: [
+        "$$45^\\circ$$",
+        "$$90^\\circ$$",
+        "$$60^\\circ$$",
+        "$$120^\\circ$$"
+      ],
+      correctAnswer: "$$60^\\circ$$",
+      hint: "The interior angles of any triangle sum to 180°. Divide by 3.",
+      workedSolution: "$$180^\\circ \\div 3 = 60^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Express $$\\frac{5}{8}$$ as a percentage.",
+      options: [
+        "62.5%",
+        "58.0%",
+        "65.0%",
+        "60.0%"
+      ],
+      correctAnswer: "62.5%",
+      hint: "$$\\frac{5}{8} \\times 100\\% = \\frac{500}{8}\\%$$.",
+      workedSolution: "$$\\frac{500}{8}\\% = 62.5\\%$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "A student scored $18$ out of $25$ in a class quiz. What is her percentage score?",
+      options: [
+        "68%",
+        "72%",
+        "75%",
+        "70%"
+      ],
+      correctAnswer: "72%",
+      hint: "Multiply numerator and denominator by 4 to get a fraction over 100.",
+      workedSolution: "$$\\frac{18}{25} \\times 100\\% = 18 \\times 4\\% = 72\\%$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "A school bus covers $90\\text{ km}$ in $1\\frac{1}{2}\\text{ hours}$. Calculate its average speed in $\\text{km/h}$.",
+      options: [
+        "60 km/h",
+        "45 km/h",
+        "75 km/h",
+        "50 km/h"
+      ],
+      correctAnswer: "60 km/h",
+      hint: "Speed = Distance ÷ Time. $1\\frac{1}{2} = 1.5$ hours.",
+      workedSolution: "$$\\text{Speed} = \\frac{90}{1.5} = 60\\text{ km/h}$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Factorize completely: $$5ax - 10ay + 2bx - 4by$$.",
+      options: [
+        "$$(x - 2y)(5a - 2b)$$",
+        "$$(x + 2y)(5a + 2b)$$",
+        "$$(x - 2y)(5a + 2b)$$",
+        "$$(x - y)(5a + 4b)$$"
+      ],
+      correctAnswer: "$$(x - 2y)(5a + 2b)$$",
+      hint: "Factor out 5a from the first pair and 2b from the second pair.",
+      workedSolution: "$$5a(x - 2y) + 2b(x - 2y) = (x - 2y)(5a + 2b)$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Solve the inequality: $$4x - 5 \\le 2x + 7$$.",
+      options: [
+        "$$x \\le 6$$",
+        "$$x \\ge 6$$",
+        "$$x \\le 1$$",
+        "$$x \\ge 1$$"
+      ],
+      correctAnswer: "$$x \\le 6$$",
+      hint: "$$4x - 2x \\le 7 + 5$$.",
+      workedSolution: "$$2x \\le 12 \\implies x \\le 6$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "Calculate the simple interest on a principal of $\\text{GH¢ } 500.00$ at $8\\%\\text{ per annum}$ for $3\\text{ years}$.",
+      options: [
+        "GH¢ 80.00",
+        "GH¢ 120.00",
+        "GH¢ 150.00",
+        "GH¢ 100.00"
+      ],
+      correctAnswer: "GH¢ 120.00",
+      hint: "$$I = \\frac{P \\times R \\times T}{100}$$.",
+      workedSolution: "$$I = \\frac{500 \\times 8 \\times 3}{100} = 5 \\times 24 = \\text{GH¢ } 120.00$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "If $x : 15 = 4 : 5$, find the value of $x$.",
+      options: [
+        "10",
+        "8",
+        "12",
+        "16"
+      ],
+      correctAnswer: "12",
+      hint: "Cross-multiply: $5x = 15 \\times 4$.",
+      workedSolution: "$$5x = 60 \\implies x = 12$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "Find the circumference of a circle whose radius is $3.5\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      options: [
+        "22 cm",
+        "11 cm",
+        "44 cm",
+        "38.5 cm"
+      ],
+      correctAnswer: "22 cm",
+      hint: "Circumference = $2\\pi r$.",
+      workedSolution: "$$C = 2 \\times \\frac{22}{7} \\times 3.5 = 2 \\times 22 \\times 0.5 = 22\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "Evaluate: $$\\left(2\\frac{1}{2} \\times 1\\frac{1}{5}\\right) - \\frac{3}{4}$$.",
+      options: [
+        "$$2\\frac{1}{4}$$",
+        "$$2\\frac{1}{2}$$",
+        "$$3\\frac{1}{4}$$",
+        "$$1\\frac{3}{4}$$"
+      ],
+      correctAnswer: "$$2\\frac{1}{4}$$",
+      hint: "Convert to improper fractions: $\\frac{5}{2} \\times \\frac{6}{5} = 3$. Then subtract 3/4.",
+      workedSolution: "$$\\frac{5}{2} \\times \\frac{6}{5} = 3$$. Then $$3 - \\frac{3}{4} = 2\\frac{1}{4}$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "The scores obtained by seven students in a contest are: $$12, 15, 11, 18, 14, 15, 13$$. Find the median score.",
+      options: [
+        "13",
+        "14",
+        "15",
+        "13.5"
+      ],
+      correctAnswer: "14",
+      hint: "Arrange in ascending order: 11, 12, 13, 14, 15, 15, 18. Pick the 4th score.",
+      workedSolution: "Arranged: 11, 12, 13, **14**, 15, 15, 18. The middle number is 14.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "From Question 18, identify the modal score.",
+      options: [
+        "15",
+        "14",
+        "13",
+        "12"
+      ],
+      correctAnswer: "15",
+      hint: "The mode is the score that appears most frequently.",
+      workedSolution: "15 appears twice, while all other scores appear once. The mode is 15.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "In a bag containing $8$ blue balls and $12$ yellow balls, what is the probability of selecting a blue ball at random?",
+      options: [
+        "$$\\frac{3}{5}$$",
+        "$$\\frac{2}{3}$$",
+        "$$\\frac{2}{5}$$",
+        "$$\\frac{1}{2}$$"
+      ],
+      correctAnswer: "$$\\frac{2}{5}$$",
+      hint: "Total balls = 8 + 12 = 20. Favourable = 8.",
+      workedSolution: "$$P(\\text{blue}) = \\frac{8}{20} = \\frac{2}{5}$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "A pair of vertically opposite angles are represented by $(3x + 10)^\\circ$ and $(2x + 35)^\\circ$. Find the value of $x$.",
+      options: [
+        "25",
+        "20",
+        "30",
+        "15"
+      ],
+      correctAnswer: "25",
+      hint: "Vertically opposite angles are equal: $3x + 10 = 2x + 35$.",
+      workedSolution: "$$3x - 2x = 35 - 10 \\implies x = 25$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 4 \\\\ -1 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -2 \\\\ 3 \\end{pmatrix}$$, evaluate $$u - 2v$$.",
+      options: [
+        "$$\\begin{pmatrix} 8 \\\\ -7 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 0 \\\\ -7 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 8 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 0 \\\\ 5 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 8 \\\\ -7 \\end{pmatrix}$$",
+      hint: "$$4 - 2(-2) = 4 + 4 = 8$$ and $$-1 - 2(3) = -1 - 6 = -7$$.",
+      workedSolution: "$$\\begin{pmatrix} 4 - 2(-2) \\\\ -1 - 2(3) \\end{pmatrix} = \\begin{pmatrix} 8 \\\\ -7 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "Simplify: $$\\frac{3}{x} + \\frac{2}{y}$$.",
+      options: [
+        "$$\\frac{5}{xy}$$",
+        "$$\\frac{3y + 2x}{xy}$$",
+        "$$\\frac{3x + 2y}{xy}$$",
+        "$$\\frac{5}{x + y}$$"
+      ],
+      correctAnswer: "$$\\frac{3y + 2x}{xy}$$",
+      hint: "The common denominator is $xy$.",
+      workedSolution: "$$\\frac{3(y) + 2(x)}{xy} = \\frac{3y + 2x}{xy}$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "A rectangular field is $20\\text{ m}$ long and $15\\text{ m}$ wide. Calculate its perimeter.",
+      options: [
+        "35 m",
+        "300 m",
+        "70 m",
+        "60 m"
+      ],
+      correctAnswer: "70 m",
+      hint: "Perimeter = 2(length + width).",
+      workedSolution: "$$2(20 + 15) = 2(35) = 70\\text{ m}$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "Find the area of the rectangular field in Question 24.",
+      options: [
+        "$$300\\text{ m}^2$$",
+        "$$150\\text{ m}^2$$",
+        "$$70\\text{ m}^2$$",
+        "$$350\\text{ m}^2$$"
+      ],
+      correctAnswer: "$$300\\text{ m}^2$$",
+      hint: "Area = length × width.",
+      workedSolution: "$$20 \\times 15 = 300\\text{ m}^2$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "A trader bought an article for $\\text{GH¢ } 120.00$ and sold it at a loss of $15\\%$. Find the selling price.",
+      options: [
+        "GH¢ 102.00",
+        "GH¢ 100.00",
+        "GH¢ 105.00",
+        "GH¢ 98.00"
+      ],
+      correctAnswer: "GH¢ 102.00",
+      hint: "Loss = 15% of 120 = 18. Selling price = 120 - 18.",
+      workedSolution: "$$\\text{Loss} = 0.15 \\times 120 = 18$$. Selling price = $$120 - 18 = \\text{GH¢ } 102.00$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Find the Highest Common Factor (HCF) of $30, 45,$ and $75$.",
+      options: [
+        "5",
+        "15",
+        "25",
+        "10"
+      ],
+      correctAnswer: "15",
+      hint: "$$30 = 15 \\times 2$$, $$45 = 15 \\times 3$$, $$75 = 15 \\times 5$$.",
+      workedSolution: "The greatest integer dividing 30, 45, and 75 without a remainder is 15.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "Express $0.0052$ in standard form.",
+      options: [
+        "$$5.2 \\times 10^{-3}$$",
+        "$$5.2 \\times 10^3$$",
+        "$$5.2 \\times 10^{-2}$$",
+        "$$52 \\times 10^{-4}$$"
+      ],
+      correctAnswer: "$$5.2 \\times 10^{-3}$$",
+      hint: "Move the decimal point 3 places to the right: $5.2 \\times 10^{-3}$.",
+      workedSolution: "$$0.0052 = 5.2 \\times 10^{-3}$$.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "If $a = 3$ and $b = -2$, evaluate: $$a^2 - 2ab + b^2$$.",
+      options: [
+        "25",
+        "1",
+        "13",
+        "17"
+      ],
+      correctAnswer: "25",
+      hint: "Notice that $a^2 - 2ab + b^2 = (a - b)^2$.",
+      workedSolution: "$$(3 - (-2))^2 = (3 + 2)^2 = 5^2 = 25$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "How many lines of symmetry does a regular rectangle (non-square) have?",
+      options: [
+        "4",
+        "2",
+        "1",
+        "0"
+      ],
+      correctAnswer: "2",
+      hint: "A non-square rectangle has horizontal and vertical lines of symmetry through midpoints of opposite sides.",
+      workedSolution: "A rectangle has exactly 2 lines of symmetry (the diagonals are not lines of symmetry).",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "The three angles of a triangle are $x^\\circ, 2x^\\circ,$ and $3x^\\circ$. Find the value of $x$.",
+      options: [
+        "$$30^\\circ$$",
+        "$$25^\\circ$$",
+        "$$20^\\circ$$",
+        "$$35^\\circ$$"
+      ],
+      correctAnswer: "$$30^\\circ$$",
+      hint: "$$x + 2x + 3x = 180 \\implies 6x = 180$$.",
+      workedSolution: "$$6x = 180 \\implies x = 30^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "From Question 31, what is the largest angle of the triangle?",
+      options: [
+        "$$60^\\circ$$",
+        "$$90^\\circ$$",
+        "$$120^\\circ$$",
+        "$$75^\\circ$$"
+      ],
+      correctAnswer: "$$90^\\circ$$",
+      hint: "Largest angle = $3x^\\circ = 3(30^\\circ)$.",
+      workedSolution: "$$3 \\times 30^\\circ = 90^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "A solid cylinder has base diameter $14\\text{ cm}$ and height $10\\text{ cm}$. Find its curved surface area. (Take $\\pi = \\frac{22}{7}$).",
+      options: [
+        "$$440\\text{ cm}^2$$",
+        "$$220\\text{ cm}^2$$",
+        "$$154\\text{ cm}^2$$",
+        "$$594\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$440\\text{ cm}^2$$",
+      hint: "Curved surface area = $2\\pi r h = \\pi d h$.",
+      workedSolution: "$$\\text{CSA} = \\frac{22}{7} \\times 14 \\times 10 = 22 \\times 2 \\times 10 = 440\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "State the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4\\}$ produce outputs $y = \\{5, 8, 11, 14\\}$.",
+      options: [
+        "$$x \\to 3x + 2$$",
+        "$$x \\to 4x + 1$$",
+        "$$x \\to 3x - 2$$",
+        "$$x \\to 2x + 3$$"
+      ],
+      correctAnswer: "$$x \\to 3x + 2$$",
+      hint: "Common difference is 3. When $x = 1$, $y = 3(1) + 2 = 5$.",
+      workedSolution: "Common difference between outputs is 3 ($3x$). For $x = 1$, $3(1) + c = 5 \\implies c = 2$. Rule is $$x \\to 3x + 2$$.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Evaluate: $$\\sqrt{144} + \\sqrt{81} - \\sqrt{25}$$.",
+      options: [
+        "16",
+        "18",
+        "20",
+        "14"
+      ],
+      correctAnswer: "16",
+      hint: "Take the square root of each number: $12 + 9 - 5$.",
+      workedSolution: "$$12 + 9 - 5 = 21 - 5 = 16$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "In an examination, $85\\%$ of the candidates passed. If $45$ candidates failed, how many candidates wrote the examination in total?",
+      options: [
+        "300",
+        "350",
+        "250",
+        "400"
+      ],
+      correctAnswer: "300",
+      hint: "Failure percentage = $100\\% - 85\\% = 15\\%$. If $15\\% = 45$, find $100\\%$.",
+      workedSolution: "$$15\\% = 45 \\implies 1\\% = 3$$. Total candidates = $$100 \\times 3 = 300$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "In a right-angled triangle, the two perpendicular sides measure $6\\text{ cm}$ and $8\\text{ cm}$. Find the length of the hypotenuse.",
+      options: [
+        "12 cm",
+        "10 cm",
+        "14 cm",
+        "9 cm"
+      ],
+      correctAnswer: "10 cm",
+      hint: "$$c^2 = a^2 + b^2 = 6^2 + 8^2$$.",
+      workedSolution: "$$c^2 = 36 + 64 = 100 \\implies c = \\sqrt{100} = 10\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "Find the truth set of $$2x - 3 > 7$$ where $x$ is a real number.",
+      options: [
+        "$$\\{x : x > 5\\}$$",
+        "$$\\{x : x < 5\\}$$",
+        "$$\\{x : x > 2\\}$$",
+        "$$\\{x : x < 2\\}$$"
+      ],
+      correctAnswer: "$$\\{x : x > 5\\}$$",
+      hint: "$$2x > 7 + 3 = 10$$. Divide by 2.",
+      workedSolution: "$$2x > 10 \\implies x > 5$$. Truth set: $$\\{x : x > 5\\}$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "A car uses $5\\text{ litres}$ of petrol for every $60\\text{ km}$ travelled. How much petrol will it consume on a trip of $216\\text{ km}$?",
+      options: [
+        "16.5 litres",
+        "18.0 litres",
+        "17.2 litres",
+        "15.0 litres"
+      ],
+      correctAnswer: "18.0 litres",
+      hint: "Find fuel consumption per km: $5 / 60 = 1 / 12$ litre/km. Multiply by 216.",
+      workedSolution: "$$\\frac{216}{12} = 18\\text{ litres}$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Under a reflection in the $x$-axis, the image of point $P(x, y)$ is:",
+      options: [
+        "(-x, y)",
+        "(x, -y)",
+        "(-x, -y)",
+        "(y, x)"
+      ],
+      correctAnswer: "(x, -y)",
+      hint: "The x-coordinate remains unchanged while the y-coordinate changes sign.",
+      workedSolution: "Reflection in the $x$-axis maps $$(x, y) \\to (x, -y)$$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T18:00:00.000Z",
+  lastUpdated: "2026-09-15T18:00:00.000Z"
+};
+
+
 
 // ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
@@ -6620,6 +7200,19 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_22
   );
   results.push(result25);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 26: JHS Math -> Core Curriculum Series (Set 23 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 26: Junior Core Math Objective Mastery Series (Set 23)...');
+  const result26 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_23
+  );
+  results.push(result26);
+
 
 
   console.log('\n================================================================');

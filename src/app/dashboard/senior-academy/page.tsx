@@ -708,6 +708,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "L = \\sqrt{15^2 + 8^2} = 17\\text{ m}, \\quad \\tan \\theta = \\frac{8}{15}",
         sampleAnswer: "17 m, 8/15"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 23)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 23 / 2001 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 23 / 2001 past paper adaptation) with balanced option randomization covering set intersections, decimal multiplication, base five conversions, algebraic factorizations, and linear mappings.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-23",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2001 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set P = {2, 3, 5, 7, 11, 13} and set Q = {1, 3, 5, 7, 9, 11, 13}, find the number of elements in P ∩ Q:",
+        sampleFormula: "P \\cap Q = \\{3, 5, 7, 11, 13\\} \\implies n(P \\cap Q) = 5",
+        sampleAnswer: "5"
+    },
+
 
 
     {
