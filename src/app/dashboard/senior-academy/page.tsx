@@ -780,6 +780,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "\\text{TSA} = lw + 2(lh + wh) = 9,700\\text{ cm}^2, \\quad V = \\frac{84,000}{1,000} = 84\\text{ litres}",
         sampleAnswer: "9,700 cm², 84 litres"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 27)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 27 / 1999 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 27 / 1999 past paper adaptation) with balanced option randomization covering set operations, decimal division, LCM/indices, linear equations, percentages, geometry, and vector algebra.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-27",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1999 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set A = {factors of 18} and set B = {multiples of 3 less than 15}, find A ∩ B:",
+        sampleFormula: "A \\cap B = \\{3, 6, 9\\}",
+        sampleAnswer: "{3, 6, 9}"
+    },
 
 
 

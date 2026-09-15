@@ -7787,10 +7787,584 @@ export const SET_JHS_MASTERY_SERIES_26: CurriculumQuestionSet = {
   lastUpdated: "2026-09-15T19:30:00.000Z"
 };
 
-
-
-
-
+// ============================================================================
+// 4b. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 27)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-27
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_27: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-27",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 27)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "If set $$A = \\{x : x \\text{ is a factor of } 18\\}$$ and set $$B = \\{x : x \\text{ is a multiple of } 3 \\text{ less than } 15\\}$$, find $$A \\cap B$$.",
+      options: [
+        "{1, 2, 3, 6, 9, 18}",
+        "{3, 6, 9, 12}",
+        "{3, 6, 9}",
+        "{6, 9}"
+      ],
+      correctAnswer: "{3, 6, 9}",
+      hint: "List elements of both sets: A = {1, 2, 3, 6, 9, 18} and B = {3, 6, 9, 12}. Identify the common elements.",
+      workedSolution: "Factors of 18 are {1, 2, 3, 6, 9, 18}. Multiples of 3 strictly less than 15 are {3, 6, 9, 12}. Common elements are {3, 6, 9}.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "Evaluate: $$0.072 \\div 0.08$$.",
+      options: [
+        "0.09",
+        "9.0",
+        "0.9",
+        "0.009"
+      ],
+      correctAnswer: "0.9",
+      hint: "Multiply numerator and denominator by 1000: 72 / 80 = 9 / 10.",
+      workedSolution: "$$\\frac{0.072}{0.08} = \\frac{72}{80} = \\frac{9}{10} = 0.9$$.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Find the Least Common Multiple (LCM) of $12, 16,$ and $24$.",
+      options: [
+        "48",
+        "72",
+        "96",
+        "36"
+      ],
+      correctAnswer: "48",
+      hint: "$$12 = 2^2 \\times 3$$, $$16 = 2^4$$, $$24 = 2^3 \\times 3$$. Take the highest power of each prime factor.",
+      workedSolution: "$$\\text{LCM} = 2^4 \\times 3 = 16 \\times 3 = 48$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Express $480$ as a product of prime factors in index notation.",
+      options: [
+        "$$2^4 \\times 3 \\times 5$$",
+        "$$2^5 \\times 3 \\times 5$$",
+        "$$2^5 \\times 15$$",
+        "$$2^3 \\times 3^2 \\times 5$$"
+      ],
+      correctAnswer: "$$2^5 \\times 3 \\times 5$$",
+      hint: "$$480 = 32 \\times 15 = 2^5 \\times 3 \\times 5$$.",
+      workedSolution: "$$480 = 2 \\times 240 = 2^2 \\times 120 = 2^3 \\times 60 = 2^4 \\times 30 = 2^5 \\times 15 = 2^5 \\times 3 \\times 5$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "Solve for $y$ in the equation: $$3(y - 2) = 2(y + 4)$$.",
+      options: [
+        "12",
+        "10",
+        "16",
+        "14"
+      ],
+      correctAnswer: "14",
+      hint: "Expand both sides: $3y - 6 = 2y + 8$.",
+      workedSolution: "$$3y - 6 = 2y + 8 \\implies 3y - 2y = 8 + 6 \\implies y = 14$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Write $0.00405$ in standard form.",
+      options: [
+        "$$4.05 \\times 10^3$$",
+        "$$4.05 \\times 10^{-3}$$",
+        "$$4.05 \\times 10^{-4}$$",
+        "$$40.5 \\times 10^{-4}$$"
+      ],
+      correctAnswer: "$$4.05 \\times 10^{-3}$$",
+      hint: "Move the decimal point 3 places to the right to get 4.05.",
+      workedSolution: "$$0.00405 = 4.05 \\times 10^{-3}$$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "A trader bought a carton of canned milk for $\\text{GH¢ } 160.00$ and sold it at a loss of $10\\%$. What was the selling price?",
+      options: [
+        "GH¢ 150.00",
+        "GH¢ 140.00",
+        "GH¢ 148.00",
+        "GH¢ 144.00"
+      ],
+      correctAnswer: "GH¢ 144.00",
+      hint: "Loss = 10% of 160 = 16. Selling price = 160 - 16.",
+      workedSolution: "$$\\text{Loss} = 0.10 \\times 160 = 16$$. Selling price = $$160 - 16 = \\text{GH¢ } 144.00$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "Express the ratio of $45\\text{ minutes}$ to $2\\text{ hours}$ in simplest form.",
+      options: [
+        "1 : 4",
+        "3 : 8",
+        "9 : 20",
+        "3 : 4"
+      ],
+      correctAnswer: "3 : 8",
+      hint: "Convert 2 hours to minutes: $2 \\times 60 = 120\\text{ minutes}$. Ratio = 45 : 120.",
+      workedSolution: "$$\\frac{45}{120} = \\frac{45 \\div 15}{120 \\div 15} = \\frac{3}{8} = 3 : 8$$.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Evaluate: $$\\left(2\\frac{1}{3} - 1\\frac{1}{2}\\right) \\times \\frac{6}{5}$$.",
+      options: [
+        "$$\\frac{5}{6}$$",
+        "$$\\frac{4}{5}$$",
+        "1",
+        "$$1\\frac{1}{5}$$"
+      ],
+      correctAnswer: "1",
+      hint: "Calculate the difference in brackets using LCD 6: $\\frac{7}{3} - \\frac{3}{2} = \\frac{14 - 9}{6} = \\frac{5}{6}$.",
+      workedSolution: "$$\\frac{5}{6} \\times \\frac{6}{5} = 1$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "The test marks of nine candidates are: $$4, 7, 5, 8, 7, 6, 7, 9, 3$$. What is the modal mark?",
+      options: [
+        "7",
+        "6",
+        "8",
+        "5"
+      ],
+      correctAnswer: "7",
+      hint: "The mode is the mark occurring most frequently.",
+      workedSolution: "7 appears 3 times, which is more than any other mark. The mode is 7.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "From the test marks in Question 10 ($$3, 4, 5, 6, 7, 7, 7, 8, 9$$), find the median mark.",
+      options: [
+        "6",
+        "6.5",
+        "7.5",
+        "7"
+      ],
+      correctAnswer: "7",
+      hint: "With 9 ordered values, the median is the 5th value: $(9 + 1) / 2 = 5$.",
+      workedSolution: "The ordered values are 3, 4, 5, 6, **7**, 7, 7, 8, 9. The 5th value is 7.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Calculate the simple interest on $\\text{GH¢ } 360.00$ at $5\\%\\text{ per annum}$ for $4\\text{ years}$.",
+      options: [
+        "GH¢ 60.00",
+        "GH¢ 72.00",
+        "GH¢ 80.00",
+        "GH¢ 54.00"
+      ],
+      correctAnswer: "GH¢ 72.00",
+      hint: "$$I = \\frac{P \\times R \\times T}{100}$$.",
+      workedSolution: "$$I = \\frac{360 \\times 5 \\times 4}{100} = \\frac{360 \\times 20}{100} = \\frac{7200}{100} = \\text{GH¢ } 72.00$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "A cyclist covers a distance of $45\\text{ km}$ in $2\\frac{1}{2}\\text{ hours}$. Calculate his average speed.",
+      options: [
+        "20 km/h",
+        "16 km/h",
+        "18 km/h",
+        "22.5 km/h"
+      ],
+      correctAnswer: "18 km/h",
+      hint: "Speed = Distance ÷ Time: $45 \\div 2.5$.",
+      workedSolution: "$$\\text{Speed} = 45 \\div \\frac{5}{2} = 45 \\times \\frac{2}{5} = 9 \\times 2 = 18\\text{ km/h}$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "Convert the decimal number $38_{\\text{ten}}$ to a base five numeral.",
+      options: [
+        "$$123_{\\text{five}}$$",
+        "$$133_{\\text{five}}$$",
+        "$$213_{\\text{five}}$$",
+        "$$143_{\\text{five}}$$"
+      ],
+      correctAnswer: "$$123_{\\text{five}}$$",
+      hint: "Divide repeatedly by 5: $38 = 1(25) + 2(5) + 3(1)$.",
+      workedSolution: "$$38 \\div 5 = 7\\text{ R } 3$$; $$7 \\div 5 = 1\\text{ R } 2$$; $$1 \\div 5 = 0\\text{ R } 1$$. Reading upwards: $$123_{\\text{five}}$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "Simplify: $$5p - 2(3p - 4)$$.",
+      options: [
+        "$$-p - 8$$",
+        "$$11p + 8$$",
+        "$$-p + 4$$",
+        "$$-p + 8$$"
+      ],
+      correctAnswer: "$$-p + 8$$",
+      hint: "Expand: $5p - 6p + 8$. Note that $-2 \\times (-4) = +8$.",
+      workedSolution: "$$5p - 6p + 8 = -p + 8$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "In a school of $600$ students, $45\\%$ are boys. How many girls are in the school?",
+      options: [
+        "270",
+        "330",
+        "350",
+        "310"
+      ],
+      correctAnswer: "330",
+      hint: "Girls make up $100\\% - 45\\% = 55\\%$. Find 55% of 600.",
+      workedSolution: "$$55\\% \\times 600 = \\frac{55}{100} \\times 600 = 55 \\times 6 = 330\\text{ girls}$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "Factorize completely: $$xy + 3x - 2y - 6$$.",
+      options: [
+        "$$(y - 3)(x + 2)$$",
+        "$$(y + 3)(x + 2)$$",
+        "$$(y + 3)(x - 2)$$",
+        "$$(y - 3)(x - 2)$$"
+      ],
+      correctAnswer: "$$(y + 3)(x - 2)$$",
+      hint: "Group terms: $x(y + 3) - 2(y + 3)$.",
+      workedSolution: "$$x(y + 3) - 2(y + 3) = (y + 3)(x - 2)$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "Find the area of a circle with diameter $14\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      options: [
+        "$$154\\text{ cm}^2$$",
+        "$$44\\text{ cm}^2$$",
+        "$$88\\text{ cm}^2$$",
+        "$$616\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$154\\text{ cm}^2$$",
+      hint: "Radius = diameter / 2 = 7 cm. Area = $\\pi r^2$.",
+      workedSolution: "$$\\text{Area} = \\frac{22}{7} \\times 7 \\times 7 = 22 \\times 7 = 154\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 3 \\\\ -1 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -2 \\\\ 4 \\end{pmatrix}$$, evaluate $$u + 2v$$.",
+      options: [
+        "$$\\begin{pmatrix} -1 \\\\ 3 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 1 \\\\ 7 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 7 \\\\ 7 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -1 \\\\ 7 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} -1 \\\\ 7 \\end{pmatrix}$$",
+      hint: "$$3 + 2(-2) = 3 - 4 = -1$$ and $$-1 + 2(4) = -1 + 8 = 7$$.",
+      workedSolution: "$$\\begin{pmatrix} 3 + 2(-2) \\\\ -1 + 2(4) \\end{pmatrix} = \\begin{pmatrix} -1 \\\\ 7 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "Solve the linear inequality: $$3x - 2 > 7x - 14$$.",
+      options: [
+        "$$x < 3$$",
+        "$$x > 3$$",
+        "$$x < -3$$",
+        "$$x > -3$$"
+      ],
+      correctAnswer: "$$x < 3$$",
+      hint: "$$-2 + 14 > 7x - 3x \\implies 12 > 4x$$.",
+      workedSolution: "$$12 > 4x \\implies 3 > x$$, which means $$x < 3$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "The three angles of a triangle are in the ratio $2 : 3 : 5$. Find the size of the smallest angle.",
+      options: [
+        "$$45^\\circ$$",
+        "$$54^\\circ$$",
+        "$$36^\\circ$$",
+        "$$90^\\circ$$"
+      ],
+      correctAnswer: "$$36^\\circ$$",
+      hint: "Total parts = 2 + 3 + 5 = 10. Smallest angle = (2 / 10) × 180°.",
+      workedSolution: "$$\\text{Smallest angle} = \\frac{2}{10} \\times 180^\\circ = 2 \\times 18^\\circ = 36^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "A bag contains $7$ white marbles and $5$ black marbles. What is the probability of selecting a black marble at random?",
+      options: [
+        "$$\\frac{7}{12}$$",
+        "$$\\frac{5}{12}$$",
+        "$$\\frac{5}{7}$$",
+        "$$\\frac{1}{5}$$"
+      ],
+      correctAnswer: "$$\\frac{5}{12}$$",
+      hint: "Total marbles = 7 + 5 = 12. Favourable = 5.",
+      workedSolution: "$$P(\\text{black}) = \\frac{5}{7 + 5} = \\frac{5}{12}$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "Simplify: $$\\frac{3^5 \\times 2^4}{3^3 \\times 2^2}$$.",
+      options: [
+        "24",
+        "18",
+        "72",
+        "36"
+      ],
+      correctAnswer: "36",
+      hint: "Subtract indices: $3^{5-3} \\times 2^{4-2} = 3^2 \\times 2^2$.",
+      workedSolution: "$$3^2 \\times 2^2 = 9 \\times 4 = 36$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "In a right-angled triangle $ABC$, the hypotenuse $|AC| = 13\\text{ cm}$ and base $|BC| = 5\\text{ cm}$. Find the length of height $|AB|$.",
+      options: [
+        "12 cm",
+        "10 cm",
+        "8 cm",
+        "11 cm"
+      ],
+      correctAnswer: "12 cm",
+      hint: "$$|AB|^2 = |AC|^2 - |BC|^2 = 13^2 - 5^2$$.",
+      workedSolution: "$$|AB|^2 = 169 - 25 = 144 \\implies |AB| = \\sqrt{144} = 12\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "State the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4\\}$ produce outputs $y = \\{5, 9, 13, 17\\}$.",
+      options: [
+        "$$x \\to 4x - 1$$",
+        "$$x \\to 3x + 2$$",
+        "$$x \\to 4x + 1$$",
+        "$$x \\to 5x$$"
+      ],
+      correctAnswer: "$$x \\to 4x + 1$$",
+      hint: "Common difference is $9 - 5 = 4$. Check $4(1) + 1 = 5$.",
+      workedSolution: "Rate of change = 4. When $x = 1$, $4(1) + c = 5 \\implies c = 1$. The rule is $$x \\to 4x + 1$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "A storage tank has length $5\\text{ m}$, width $3\\text{ m}$, and height $2\\text{ m}$. What is its volume in cubic metres?",
+      options: [
+        "$$25\\text{ m}^3$$",
+        "$$30\\text{ m}^3$$",
+        "$$35\\text{ m}^3$$",
+        "$$20\\text{ m}^3$$"
+      ],
+      correctAnswer: "$$30\\text{ m}^3$$",
+      hint: "Volume = length × width × height.",
+      workedSolution: "$$5 \\times 3 \\times 2 = 30\\text{ m}^3$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "If $a = 4$ and $b = -3$, evaluate: $$\\frac{a^2 + b^2}{5}$$.",
+      options: [
+        "7",
+        "1",
+        "25",
+        "5"
+      ],
+      correctAnswer: "5",
+      hint: "$$a^2 = 4^2 = 16$$, $$b^2 = (-3)^2 = 9$$. Add and divide by 5.",
+      workedSolution: "$$\\frac{16 + 9}{5} = \\frac{25}{5} = 5$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "How many lines of symmetry does an equilateral triangle possess?",
+      options: [
+        "3",
+        "1",
+        "2",
+        "6"
+      ],
+      correctAnswer: "3",
+      hint: "Each line of symmetry passes through a vertex and perpendicularly bisects the opposite side.",
+      workedSolution: "An equilateral triangle has 3 lines of symmetry.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "An article marked at $\\text{GH¢ } 50.00$ was bought for $\\text{GH¢ } 42.50$. Calculate the percentage discount allowed.",
+      options: [
+        "12.5%",
+        "15%",
+        "10%",
+        "20%"
+      ],
+      correctAnswer: "15%",
+      hint: "Discount = 50.00 - 42.50 = 7.50. Discount % = (7.50 / 50.00) × 100%.",
+      workedSolution: "$$\\text{Discount \\%} = \\frac{7.50}{50.00} \\times 100\\% = 7.5 \\times 2 = 15\\%$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "Under a reflection in the $y$-axis, the image of point $A(4, -5)$ is:",
+      options: [
+        "(-4, 5)",
+        "(4, 5)",
+        "(-4, -5)",
+        "(-5, 4)"
+      ],
+      correctAnswer: "(-4, -5)",
+      hint: "Reflection in y-axis maps $(x, y) \\to (-x, y)$.",
+      workedSolution: "$$(4, -5) \\to (-4, -5)$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "Calculate the perimeter of a rectangle with length $16\\text{ cm}$ and breadth $9\\text{ cm}$.",
+      options: [
+        "25 cm",
+        "144 cm",
+        "45 cm",
+        "50 cm"
+      ],
+      correctAnswer: "50 cm",
+      hint: "Perimeter = 2(length + breadth).",
+      workedSolution: "$$2(16 + 9) = 2(25) = 50\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "In a pie chart, a sector of $72^\\circ$ represents $24$ students. How many students are represented by the entire pie chart?",
+      options: [
+        "120",
+        "100",
+        "144",
+        "96"
+      ],
+      correctAnswer: "120",
+      hint: "The full circle is 360°. Find $24 \\times (360 / 72)$.",
+      workedSolution: "$$\\frac{360^\\circ}{72^\\circ} \\times 24 = 5 \\times 24 = 120\\text{ students}$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "Find the value of $m$ if $2 : 7 = m : 35$.",
+      options: [
+        "12",
+        "10",
+        "8",
+        "14"
+      ],
+      correctAnswer: "10",
+      hint: "Cross-multiply: $7m = 2 \\times 35$.",
+      workedSolution: "$$7m = 70 \\implies m = 10$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "Make $r$ the subject of the formula: $$C = 2\\pi r$$.",
+      options: [
+        "$$r = \\frac{2\\pi}{C}$$",
+        "$$r = C - 2\\pi$$",
+        "$$r = \\frac{C}{2\\pi}$$",
+        "$$r = \\frac{C}{\\pi}$$"
+      ],
+      correctAnswer: "$$r = \\frac{C}{2\\pi}$$",
+      hint: "Divide both sides by $2\\pi$.",
+      workedSolution: "$$C = 2\\pi r \\implies r = \\frac{C}{2\\pi}$$.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Simplify: $$\\frac{4}{2x} + \\frac{1}{x}$$.",
+      options: [
+        "$$\\frac{5}{2x}$$",
+        "$$\\frac{2}{x}$$",
+        "$$\\frac{3}{2x}$$",
+        "$$\\frac{3}{x}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{x}$$",
+      hint: "$$\\frac{4}{2x} = \\frac{2}{x}$$. Then add $\\frac{2}{x} + \\frac{1}{x}$.",
+      workedSolution: "$$\\frac{2}{x} + \\frac{1}{x} = \\frac{3}{x}$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "What is the exterior angle of a regular pentagon ($5\\text{ sides}$)?",
+      options: [
+        "$$72^\\circ$$",
+        "$$60^\\circ$$",
+        "$$108^\\circ$$",
+        "$$45^\\circ$$"
+      ],
+      correctAnswer: "$$72^\\circ$$",
+      hint: "Sum of exterior angles is 360°. Divide by 5.",
+      workedSolution: "$$\\text{Exterior angle} = \\frac{360^\\circ}{5} = 72^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "The point $Q(-1, 3)$ is translated by vector $$\\begin{pmatrix} 4 \\\\ -5 \\end{pmatrix}$$ to $Q'$. Find the coordinates of $Q'$.",
+      options: [
+        "(3, 2)",
+        "(3, -2)",
+        "(-5, 8)",
+        "(3, -8)"
+      ],
+      correctAnswer: "(3, -2)",
+      hint: "$$(-1 + 4, 3 + (-5))$$.",
+      workedSolution: "$$Q' = (-1 + 4, 3 - 5) = (3, -2)$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "Evaluate: $$\\sqrt{64} \\times \\sqrt{25} - \\sqrt{100}$$.",
+      options: [
+        "20",
+        "40",
+        "30",
+        "10"
+      ],
+      correctAnswer: "30",
+      hint: "Take the square roots: $8 \\times 5 - 10$.",
+      workedSolution: "$$(8 \\times 5) - 10 = 40 - 10 = 30$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "What type of angle is an angle measuring $138^\\circ$?",
+      options: [
+        "Acute angle",
+        "Reflex angle",
+        "Right angle",
+        "Obtuse angle"
+      ],
+      correctAnswer: "Obtuse angle",
+      hint: "Angles between 90° and 180° are obtuse.",
+      workedSolution: "Since $90^\\circ < 138^\\circ < 180^\\circ$, it is an obtuse angle.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Calculate the magnitude of vector $$u = \\begin{pmatrix} 5 \\\\ 12 \\end{pmatrix}$$.",
+      options: [
+        "13 units",
+        "17 units",
+        "15 units",
+        "14 units"
+      ],
+      correctAnswer: "13 units",
+      hint: "$$|u| = \\sqrt{5^2 + 12^2}$$.",
+      workedSolution: "$$|u| = \\sqrt{25 + 144} = \\sqrt{169} = 13\\text{ units}$$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T20:00:00.000Z",
+  lastUpdated: "2026-09-15T20:00:00.000Z"
+};
 
 // ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
@@ -8236,6 +8810,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_26
   );
   results.push(result29);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 30: JHS Math -> Core Curriculum Series (Set 27 in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 30: Junior Core Math Objective Mastery Series (Set 27)...');
+  const result30 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_27
+  );
+  results.push(result30);
 
 
 
