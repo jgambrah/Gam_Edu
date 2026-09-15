@@ -5271,6 +5271,173 @@ export const SET_JHS_MASTERY_SERIES_19: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3u. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 20)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-20
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_20: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-20",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 20)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 5,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Set Number Partitions, Subsets & Venn Diagram Shading",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 360 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='190' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>ε = {1, 2, 3, ..., 20}</text><circle cx='135' cy='110' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='225' cy='110' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='95' y='45' font-size='12' font-weight='bold' fill='#2563eb'>P (Primes)</text><text x='205' y='45' font-size='12' font-weight='bold' fill='#059669'>Q (Odds &gt; 3)</text><text x='95' y='110' font-size='11' fill='#1e293b'>2, 3</text><text x='155' y='105' font-size='11' font-weight='bold' fill='#dc2626'>5, 7, 11,</text><text x='160' y='125' font-size='11' font-weight='bold' fill='#dc2626'>13, 17, 19</text><text x='245' y='110' font-size='11' fill='#1e293b'>9, 15</text><text x='25' y='175' font-size='10' fill='#64748b'>(P ∪ Q)′ = {1, 4, 6, 8, 10, 12, 14, 16, 18, 20}</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 4,
+          prompt: "Given the universal set $$\\varepsilon = \\{x : x \\text{ is an integer}, 1 \\le x \\le 20\\}$$, and subsets:\n$$P = \\{\\text{prime numbers}\\}$$\n$$Q = \\{\\text{odd numbers greater than } 3\\}$$\nList the elements of set $P$ and set $Q$.",
+          hint: "Prime numbers have exactly two factors (1 and itself). For Q, start from 5 and select odd numbers up to 19.",
+          modelAnswer: "P = {2, 3, 5, 7, 11, 13, 17, 19}, Q = {5, 7, 9, 11, 13, 15, 17, 19}",
+          workedSolution: "- Primes up to 20: $$P = \\{2, 3, 5, 7, 11, 13, 17, 19\\}$$\n- Odd numbers strictly greater than 3 up to 20: $$Q = \\{5, 7, 9, 11, 13, 15, 17, 19\\}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Find the members of the sets:\n(i) $$P \\cap Q$$\n(ii) $$P \\cup Q$$",
+          hint: "The intersection contains odd primes greater than 3. The union combines all elements without repeats.",
+          modelAnswer: "(i) {5, 7, 11, 13, 17, 19}, (ii) {2, 3, 5, 7, 9, 11, 13, 15, 17, 19}",
+          workedSolution: "**(i)** Common elements: $$P \\cap Q = \\{5, 7, 11, 13, 17, 19\\}$$\n\n**(ii)** Combined elements: $$P \\cup Q = \\{2, 3, 5, 7, 9, 11, 13, 15, 17, 19\\}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 6,
+          prompt: "From the Venn diagram above:\n(i) List the elements of the complement set $$(P \\cup Q)'$$.\n(ii) Identify all prime factors of $20$ within set $P$.",
+          hint: "(P ∪ Q)′ contains all numbers in universal set outside both circles. Find factors of 20 that are prime.",
+          modelAnswer: "(i) {1, 4, 6, 8, 10, 12, 14, 16, 18, 20}, (ii) {2, 5}",
+          workedSolution: "**(i)** Elements in $\\varepsilon$ not in $P \\cup Q$:\n$$(P \\cup Q)' = \\{1, 4, 6, 8, 10, 12, 14, 16, 18, 20\\}$$\n\n**(ii)** Factors of 20 are 1, 2, 4, 5, 10, 20. The prime factors are **{2, 5}**."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Linear Equation Evaluation, Decimal Standard Form & Inverse Sharing",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "Given the equation $$3n - 4m + 12 = 0$$, calculate:\n(i) The value of $m$ when $n = 4$.\n(ii) The value of $n$ when $m = 6$.",
+          hint: "Substitute the known value into the linear relation and solve for the remaining variable.",
+          modelAnswer: "(i) m = 6, (ii) n = 4",
+          workedSolution: "**(i)** When $n = 4$:\n$$3(4) - 4m + 12 = 0$$\n$$12 - 4m + 12 = 0$$\n$$24 = 4m \\implies m = \\frac{24}{4} = 6$$\n\n**(ii)** When $m = 6$:\n$$3n - 4(6) + 12 = 0$$\n$$3n - 24 + 12 = 0$$\n$$3n - 12 = 0 \\implies 3n = 12 \\implies n = \\frac{12}{3} = 4$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Evaluate and express your final answer in **standard form**:\n$$\\frac{0.064 \\times 0.5}{0.008 \\times 0.2}$$",
+          hint: "Convert to whole numbers by multiplying numerator and denominator by 10,000 or write in fractional form.",
+          modelAnswer: "2.0 × 10¹ (or 2.0 × 10)",
+          workedSolution: "$$\\frac{0.064 \\times 0.5}{0.008 \\times 0.2} = \\frac{0.032}{0.0016}$$\nMultiply numerator and denominator by $10,000$:\n$$= \\frac{320}{16} = 20$$\nIn standard form: $$20 = 2.0 \\times 10^1$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "A carton of notebooks was distributed among $6$ schools, with each school receiving $40\\text{ notebooks}$. If the exact same total number of notebooks had been shared equally among $15$ schools instead, how many notebooks would each school receive?",
+          hint: "Find the total quantity of notebooks: $6 \\times 40 = 240$. Divide this total by 15.",
+          modelAnswer: "16 notebooks",
+          workedSolution: "$$\\text{Total notebooks} = 6 \\times 40 = 240\\text{ notebooks}$$\n$$\\text{Share per school for 15 schools} = \\frac{240}{15} = 16\\text{ notebooks}$$\n*(Alternatively, by inverse proportion: $\\frac{6}{15} \\times 40 = \\frac{2}{5} \\times 40 = 16\\text{ notebooks}$)*."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Nursery Age Frequency Distribution, Mean & Bar Charting",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 340 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='310' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='140' y='188' font-size='11' font-weight='bold'>Age (years)</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='60' y='50' width='30' height='110' fill='#2563eb' stroke='#1d4ed8'/><rect x='110' y='80' width='30' height='80' fill='#93c5fd' stroke='#1d4ed8'/><rect x='160' y='120' width='30' height='40' fill='#93c5fd' stroke='#1d4ed8'/><rect x='210' y='100' width='30' height='60' fill='#93c5fd' stroke='#1d4ed8'/><rect x='260' y='65' width='30' height='95' fill='#93c5fd' stroke='#1d4ed8'/><text x='72' y='173' font-size='10'>1</text><text x='122' y='173' font-size='10'>2</text><text x='172' y='173' font-size='10'>3</text><text x='222' y='173' font-size='10'>4</text><text x='272' y='173' font-size='10'>5</text><text x='20' y='55' font-size='10'>7</text><text x='20' y='85' font-size='10'>5</text><text x='20' y='125' font-size='10'>2</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "The table below shows the distribution of ages of children enrolled in a preschool nursery:\n\n| Age in years ($x$) | 1 | 2 | 3 | 4 | 5 |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n| Number of Children ($f$) | 7 | 5 | 2 | 4 | 6 |\n\n(i) Identify the **modal age**.\n(ii) Calculate the total number of children ($N = \\sum f$).\n(iii) Calculate the **mean age** of the children.",
+          hint: "Mode has highest frequency. Mean = $\\sum fx / \\sum f$.",
+          modelAnswer: "(i) 1 year, (ii) 24 children, (iii) 2.96 years (or 71/24)",
+          workedSolution: "**(i) Modal age:**\nThe highest frequency is $7$ (corresponding to age 1). The **modal age is 1 year**.\n\n**(ii) Total number of children:**\n$$N = \\sum f = 7 + 5 + 2 + 4 + 6 = 24\\text{ children}$$\n\n**(iii) Mean age:**\n$$\\sum fx = (1 \\times 7) + (2 \\times 5) + (3 \\times 2) + (4 \\times 4) + (5 \\times 6)$$\n$$\\sum fx = 7 + 10 + 6 + 16 + 30 = 69$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{69}{24} = 2\\frac{21}{24} = 2.875\\text{ years}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "If a child is chosen at random from this preschool:\n(i) What is the probability that the child is $4\\text{ years old}$?\n(ii) What is the probability that the child is strictly older than $2\\text{ years}$?",
+          hint: "Probability = Frequency of age / Total children. 'Older than 2' means ages 3, 4, and 5.",
+          modelAnswer: "(i) 1/6, (ii) 1/2",
+          workedSolution: "**(i) Probability of age 4:**\n$$P(x = 4) = \\frac{f(4)}{\\sum f} = \\frac{4}{24} = \\frac{1}{6}$$\n\n**(ii) Probability older than 2 (ages 3, 4, 5):**\n$$\\text{Count} = f(3) + f(4) + f(5) = 2 + 4 + 6 = 12$$\n$$P(x > 2) = \\frac{12}{24} = \\frac{1}{2}$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Vector Linear Combinations, Inequalities & Sheet Metal Cylinder Volume",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 180' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='20' y='50' width='140' height='70' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='65' y='40' font-size='11' font-weight='bold'>L = 44 cm</text><text x='165' y='90' font-size='11' font-weight='bold'>b = 14 cm</text><path d='M175,85 C200,55 210,55 230,75' fill='none' stroke='#0284c7' stroke-width='2' stroke-dasharray='4'/><g transform='translate(235,30)'><ellipse cx='35' cy='20' rx='30' ry='10' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><line x1='5' y1='20' x2='5' y2='110' stroke='#1e40af' stroke-width='2'/><line x1='65' y1='20' x2='65' y2='110' stroke='#1e40af' stroke-width='2'/><ellipse cx='35' cy='110' rx='30' ry='10' fill='#dbeafe' stroke='#1e40af' stroke-width='2'/><text x='75' y='70' font-size='11' font-weight='bold'>h = 14 cm</text><text x='20' y='20' font-size='10' fill='#dc2626'>r = 7 cm</text></g></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "Given column vectors $$u = \\begin{pmatrix} 5 \\\\ 3 \\end{pmatrix}$$, $$v = \\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix}$$, and $$w = \\begin{pmatrix} 4 \\\\ -5 \\end{pmatrix}$$.\nCalculate: $$u + 2v + w$$.",
+          hint: "Multiply v by 2, then add corresponding x-components and y-components.",
+          modelAnswer: "(7, 2)ᵀ",
+          workedSolution: "$$u + 2v + w = \\begin{pmatrix} 5 \\\\ 3 \\end{pmatrix} + 2\\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix} + \\begin{pmatrix} 4 \\\\ -5 \\end{pmatrix}$$\n$$= \\begin{pmatrix} 5 + 2(-1) + 4 \\\\ 3 + 2(2) + (-5) \\end{pmatrix} = \\begin{pmatrix} 5 - 2 + 4 \\\\ 3 + 4 - 5 \\end{pmatrix} = \\begin{pmatrix} 7 \\\\ 2 \\end{pmatrix}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 4,
+          prompt: "Find the solution set of the linear inequality:\n$$\\frac{3}{4}x - 1 \\le \\frac{1}{2}$$\nwithin the domain $$\\{-2, -1, 0, 1, 2, 3\\}$$.",
+          hint: "Add 1 to both sides: $\\frac{3}{4}x \\le \\frac{3}{2}$. Multiply both sides by 4/3.",
+          modelAnswer: "{-2, -1, 0, 1, 2}",
+          workedSolution: "$$\\frac{3}{4}x \\le \\frac{1}{2} + 1$$\n$$\\frac{3}{4}x \\le \\frac{3}{2}$$\n$$x \\le \\frac{3}{2} \\times \\frac{4}{3} \\implies x \\le 2$$\nFiltering within the replacement domain $\\{-2, -1, 0, 1, 2, 3\\}$, all values $\\le 2$ satisfy the inequality:\n$$\\text{Solution set} = \\{-2, -1, 0, 1, 2\\}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 6,
+          prompt: "A rectangular sheet of metal of length $44\\text{ cm}$ and breadth $14\\text{ cm}$ is rolled into an open cylinder such that the breadth becomes the vertical height ($h = 14\\text{ cm}$) and the length forms the circumference of the circular base.\nTaking $\\pi = \\frac{22}{7}$, calculate:\n(i) The radius of the base of the cylinder.\n(ii) The internal volume of the cylinder formed.",
+          hint: "Circumference = $2\\pi r = 44\\text{ cm}$. Volume = $\\pi r^2 h$.",
+          modelAnswer: "(i) r = 7 cm, (ii) 2,156 cm³",
+          workedSolution: "**(i) Base Radius:**\n$$2\\pi r = 44$$\n$$2 \\times \\frac{22}{7} \\times r = 44$$\n$$\\frac{44}{7} r = 44 \\implies r = 44 \\times \\frac{7}{44} = 7\\text{ cm}$$\n\n**(ii) Volume of Cylinder:**\n$$V = \\pi r^2 h = \\frac{22}{7} \\times 7^2 \\times 14 = 22 \\times 7 \\times 14 = 154 \\times 14 = 2,156\\text{ cm}^3$$\nTherefore, the volume of the cylinder is **$2,156\\text{ cm}^3$**."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Geometric Isosceles Triangle Constructions & Rhombus Symmetry",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><polygon points='40,130 160,30 280,130 160,230' fill='#f8fafc' stroke='#1e293b' stroke-width='2'/><line x1='40' y1='130' x2='280' y2='130' stroke='#2563eb' stroke-width='1.5' stroke-dasharray='4'/><line x1='160' y1='30' x2='160' y2='230' stroke='#2563eb' stroke-width='1.5' stroke-dasharray='4'/><circle cx='160' cy='130' r='3.5' fill='#dc2626'/><rect x='160' y='115' width='12' height='12' fill='none' stroke='#334155' stroke-width='1.2'/><text x='25' y='135' font-size='12' font-weight='bold'>A</text><text x='160' y='20' font-size='12' font-weight='bold'>B</text><text x='285' y='135' font-size='12' font-weight='bold'>C</text><text x='160' y='245' font-size='12' font-weight='bold'>P</text><text x='165' y='145' font-size='11' font-weight='bold' fill='#dc2626'>D</text><text x='95' y='75' font-size='11'>8 cm</text><text x='225' y='75' font-size='11'>8 cm</text><text x='95' y='185' font-size='11'>8 cm</text><text x='225' y='185' font-size='11'>8 cm</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "In a geometric construction, triangle $ABC$ is isosceles with $|AB| = 8\\text{ cm}$, $|BC| = 8\\text{ cm}$, and base $|AC| = 6\\text{ cm}$. The angle bisector of $\\angle ABC$ is constructed and meets base $AC$ at point $D$.\n(i) What is the size of angle $\\angle ADB$?\n(ii) Calculate the altitude length $|BD|$ using Pythagoras' theorem.\n(iii) Calculate the area of triangle $ABC$.",
+          hint: "In an isosceles triangle, the angle bisector of the vertex angle is also the perpendicular bisector of the base: AD = 3 cm, angle ADB = 90°.",
+          modelAnswer: "(i) 90°, (ii) √55 ≈ 7.42 cm, (iii) 3√55 ≈ 22.25 cm²",
+          workedSolution: "**(i) Angle $\\angle ADB$:**\nThe bisector of the vertex angle of an isosceles triangle perpendicularly bisects the base. Therefore, $$\\angle ADB = 90^\\circ$$.\n\n**(ii) Length of altitude $|BD|$:**\n$$|AD| = \\frac{1}{2}|AC| = \\frac{6}{2} = 3\\text{ cm}$$\nIn right-angled triangle $ABD$:\n$$|BD|^2 = |AB|^2 - |AD|^2 = 8^2 - 3^2 = 64 - 9 = 55$$\n$$|BD| = \\sqrt{55} \\approx 7.42\\text{ cm}$$\n\n**(iii) Area of triangle $ABC$:**\n$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times \\sqrt{55} = 3\\sqrt{55} \\approx 22.25\\text{ cm}^2$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Line segment $BD$ is produced through $D$ to point $P$ such that $|DP| = |BD|$. Line segments $AP$ and $CP$ are joined to form quadrilateral $ABCP$.\n(i) Measure or state the length of side $|AP|$.\n(ii) What specific type of quadrilateral is $ABCP$, and what are its lines of symmetry?",
+          hint: "The diagonals AC and BP bisect each other at 90°. All 4 sides are equal to 8 cm.",
+          modelAnswer: "(i) 8 cm, (ii) Rhombus, 2 lines of symmetry",
+          workedSolution: "**(i)** By symmetry across line $AC$, triangle $APC$ is congruent to triangle $ABC$. Thus, $$|AP| = |AB| = 8\\text{ cm}$$.\n\n**(ii)** Since all four sides are equal ($|AB| = |BC| = |CP| = |AP| = 8\\text{ cm}$) and its diagonals intersect perpendicularly, the quadrilateral $ABCP$ is a **Rhombus**.\nA rhombus has exactly **$2$ lines of symmetry** along its diagonals ($AC$ and $BP$)."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T16:30:00.000Z",
+  lastUpdated: "2026-09-15T16:30:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -5630,6 +5797,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_19
   );
   results.push(result22);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 23: JHS Math -> Core Curriculum Series (Set 20 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 23: Junior Core Math Structured Problem-Solving Series (Set 20)...');
+  const result23 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_20
+  );
+  results.push(result23);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

@@ -654,6 +654,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "S = \\{x : x \\text{ is a multiple of } 4 \\text{ less than } 24\\}",
         sampleAnswer: "The set of multiples of 4 less than 24"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 20)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "5 Multi-Part Problems • 60 mins • Structured Theory (Set 20 / 2003 Variant)",
+        description: "Standardized 5-question structured theory examination variant (Set 20 / 2003 past paper adaptation) with embedded SVG diagrams covering Venn diagram partitions, standard form division, inverse sharing, nursery age frequency statistics, sheet-metal cylinder volumes, and isosceles/rhombus constructions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-20",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 5,
+        examTag: "5 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "A rectangular sheet of metal (44 cm × 14 cm) is rolled into a cylinder of height 14 cm. Calculate base radius r and volume V:",
+        sampleFormula: "2\\pi r = 44 \\implies r = 7\\text{ cm}, \\quad V = \\pi r^2 h = 2,156\\text{ cm}^3",
+        sampleAnswer: "7 cm, 2,156 cm³"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
