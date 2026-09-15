@@ -162,7 +162,19 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
 }
 
 // --- SUB-COMPONENT: Edit Record Dialog ---
-function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+function EditRecordDialog({ 
+    record, 
+    activeAcademicYear,
+    open, 
+    setOpen, 
+    onUpdate 
+}: { 
+    record: FinancialRecord, 
+    activeAcademicYear?: string,
+    open: boolean, 
+    setOpen: (open: boolean) => void, 
+    onUpdate: () => void 
+}) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -175,8 +187,8 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
             description: record.description,
             billedAmount: record.billedAmount,
             dueDate: record.dueDate?.toDate ? record.dueDate.toDate() : new Date(record.dueDate),
-            academicYear: record.academicYear,
-            term: record.term
+            academicYear: record.academicYear || activeAcademicYear || undefined,
+            term: record.term || undefined
         }
     });
 
@@ -187,11 +199,32 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
             const recordRef = doc(firestore, 'financialRecords', record.id);
             const isFullyPaid = (values.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0)) <= 0.01;
             
-            await updateDoc(recordRef, {
-                ...values,
+            // Retain academicYear and term, prioritizing existing record or active academic year
+            const resolvedAcademicYear = values.academicYear || record.academicYear || activeAcademicYear;
+            const resolvedTerm = values.term || record.term;
+
+            const rawPayload: Record<string, any> = {
+                type: values.type,
+                description: values.description,
+                billedAmount: values.billedAmount,
                 dueDate: Timestamp.fromDate(values.dueDate),
-                status: isFullyPaid ? 'Paid' : 'Unpaid'
-            });
+                status: isFullyPaid ? 'Paid' : 'Unpaid',
+                updatedAt: serverTimestamp(),
+            };
+
+            if (resolvedAcademicYear) {
+                rawPayload.academicYear = resolvedAcademicYear;
+            }
+            if (resolvedTerm) {
+                rawPayload.term = resolvedTerm;
+            }
+
+            // Sanitize payload to strip any undefined values before calling updateDoc
+            const sanitizedPayload = Object.fromEntries(
+                Object.entries(rawPayload).filter(([_, v]) => v !== undefined)
+            );
+            
+            await updateDoc(recordRef, sanitizedPayload);
             
             toast({ title: 'Bill Updated' });
             onUpdate();
@@ -6683,7 +6716,13 @@ export default function AccountsPage() {
             <ReversalRequestDialog record={dialogState.record} activeTill={activeTill} open={true} setOpen={() => setDialogState({type:'reversal', record: null})} onUpdate={() => { handleRecordUpdate(dialogState.record?.studentId); refetchPendingReversals(); }} />
         )}
         {editingRecord && (
-            <EditRecordDialog record={editingRecord} open={true} setOpen={() => setEditingRecord(null)} onUpdate={() => handleRecordUpdate(editingRecord?.studentId)} />
+            <EditRecordDialog 
+                record={editingRecord} 
+                activeAcademicYear={effectiveAcademicYear || activeAcademicYear}
+                open={true} 
+                setOpen={() => setEditingRecord(null)} 
+                onUpdate={() => handleRecordUpdate(editingRecord?.studentId)} 
+            />
         )}
         {selectedSponsorIdForStudents && (
             <Dialog open={true} onOpenChange={(open) => !open && setSelectedSponsorIdForStudents(null)}>
