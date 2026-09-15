@@ -6802,6 +6802,205 @@ export const SET_JHS_MASTERY_SERIES_23: CurriculumQuestionSet = {
   lastUpdated: "2026-09-15T18:00:00.000Z"
 };
 
+// ============================================================================
+// 3y. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 24)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-24
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_24: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-24",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 24)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Dual-Subject Examination Venn Sets & Fractional Operations",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 360 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='180' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U = 45</text><circle cx='135' cy='105' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='225' cy='105' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='100' y='45' font-size='12' font-weight='bold' fill='#2563eb'>Science (S: 28)</text><text x='215' y='45' font-size='12' font-weight='bold' fill='#059669'>Math (M: 25)</text><text x='95' y='110' font-size='12' fill='#1e293b'>28 - x</text><text x='175' y='110' font-size='13' font-weight='bold' fill='#dc2626'>x</text><text x='235' y='110' font-size='12' fill='#1e293b'>25 - x</text><text x='25' y='165' font-size='11' fill='#64748b'>Neither = 4</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "In a class of $45$ students, $28$ passed Integrated Science, $25$ passed Mathematics, and $4$ failed both subjects.\nUsing the Venn diagram provided above:\n(i) Formulate an algebraic equation connecting the subsets.\n(ii) Calculate the number of students who passed **both** subjects.\n(iii) Calculate the number of students who passed Integrated Science **only**.",
+          hint: "The sum of all parts in the Venn diagram equals 45: $(28 - x) + x + (25 - x) + 4 = 45$.",
+          modelAnswer: "(i) 57 - x = 45, (ii) 12 students, (iii) 16 students",
+          workedSolution: "**(i) Algebraic Equation:**\n$$(28 - x) + x + (25 - x) + 4 = 45$$\n$$57 - x = 45$$\n\n**(ii) Students passing both subjects ($x$):**\n$$x = 57 - 45 = 12\\text{ students}$$\n\n**(iii) Students passing Science only:**\n$$\\text{Science only} = 28 - x = 28 - 12 = 16\\text{ students}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Simplify the mixed fractional expression:\n$$4\\frac{1}{2} - 2\\frac{2}{3} + 1\\frac{3}{4}$$",
+          hint: "Group whole numbers and fractions using a common denominator of 12.",
+          modelAnswer: "3 7/12",
+          workedSolution: "**Method: Combining whole numbers and fractional parts**\n$$= (4 - 2 + 1) + \\left(\\frac{1}{2} - \\frac{2}{3} + \\frac{3}{4}\\right)$$\n$$= 3 + \\left(\\frac{6 - 8 + 9}{12}\\right)$$\n$$= 3 + \\frac{7}{12} = 3\\frac{7}{12}$$\n*(Or as improper fraction: $\\frac{43}{12}$)*."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Solve for $p$ in the equation:\n$$\\frac{3p - 1}{4} - \\frac{p - 2}{3} = 2$$",
+          hint: "Multiply through by 12 (the LCM of 4 and 3) to clear fractions.",
+          modelAnswer: "p = 3.8 (or 19/5)",
+          workedSolution: "Multiply both sides by $12$:\n$$12\\left(\\frac{3p - 1}{4}\\right) - 12\\left(\\frac{p - 2}{3}\\right) = 12(2)$$\n$$3(3p - 1) - 4(p - 2) = 24$$\n$$9p - 3 - 4p + 8 = 24$$\n$$5p + 5 = 24$$\n$$5p = 24 - 5 = 19 \\implies p = \\frac{19}{5} = 3\\frac{4}{5} = 3.8$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Linear Simultaneous Relations & Coordinate Graphing",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='290' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><line x1='50' y1='200' x2='270' y2='40' stroke='#2563eb' stroke-width='2'/><line x1='50' y1='40' x2='270' y2='200' stroke='#dc2626' stroke-width='2'/><circle cx='160' cy='120' r='5' fill='#059669'/><text x='170' y='115' font-size='12' font-weight='bold' fill='#059669'>(0, 1)</text><text x='250' y='55' font-size='11' fill='#2563eb'>y₁ = 2x + 1</text><text x='250' y='185' font-size='11' fill='#dc2626'>y₂ = 1 - x</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Copy and complete the table of values for the relations $$y_1 = 2x + 1$$ and $$y_2 = 1 - x$$:\n\n| $x$ | -2 | -1 | 0 | 1 | 2 | 3 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y_1 = 2x + 1$ | -3 | **?** | 1 | **?** | 5 | **?** |\n| $y_2 = 1 - x$ | **?** | 2 | **?** | 0 | **?** | -2 |",
+          hint: "Substitute each missing x value into $y_1 = 2x + 1$ and $y_2 = 1 - x$.",
+          modelAnswer: "y₁: [-3, -1, 1, 3, 5, 7]; y₂: [3, 2, 1, 0, -1, -2]",
+          workedSolution: "For $y_1 = 2x + 1$:\n- $x = -1 \\implies 2(-1) + 1 = -1$\n- $x = 1 \\implies 2(1) + 1 = 3$\n- $x = 3 \\implies 2(3) + 1 = 7$\n\nFor $y_2 = 1 - x$:\n- $x = -2 \\implies 1 - (-2) = 3$\n- $x = 0 \\implies 1 - 0 = 1$\n- $x = 2 \\implies 1 - 2 = -1$"
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "From the simultaneous graph above, determine:\n(i) The coordinates of the point of intersection of lines $y_1$ and $y_2$.\n(ii) The gradient of the line $y_1 = 2x + 1$.",
+          hint: "Set $2x + 1 = 1 - x$ to find $x$, then calculate $y$. Gradient is the coefficient of $x$ in $y = mx + c$.",
+          modelAnswer: "(i) (0, 1), (ii) Gradient = 2",
+          workedSolution: "**(i) Point of intersection:**\n$$2x + 1 = 1 - x$$\n$$2x + x = 1 - 1$$\n$$3x = 0 \\implies x = 0$$\nWhen $x = 0$, $y = 2(0) + 1 = 1$.\nThe coordinates are **$(0, 1)$**.\n\n**(ii) Gradient:**\nComparing $y_1 = 2x + 1$ with $y = mx + c$, the gradient is **$m = 2$**."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Find the truth set of the inequality: $$2x + 1 > 1 - x$$.",
+          hint: "Collect all x terms on the left-hand side.",
+          modelAnswer: "{x : x > 0}",
+          workedSolution: "$$2x + 1 > 1 - x$$\n$$2x + x > 1 - 1$$\n$$3x > 0 \\implies x > 0$$\nTruth set: **$$\\{x : x > 0, \\, x \\in \\mathbb{R}\\}$$**."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Commercial Profit Margins, Compound Reductions & Daily Wage Rates",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "A store owner bought $50$ pairs of shoes for $\\text{GH¢ } 1,500.00$. She sold $30$ pairs at $\\text{GH¢ } 40.00$ per pair and the remaining $20$ pairs at $\\text{GH¢ } 35.00$ per pair.\nCalculate:\n(i) Her total sales revenue.\n(ii) Her total profit.\n(iii) Her overall percentage profit on cost.",
+          hint: "Total revenue = (30 × 40) + (20 × 35). Profit = Revenue - Cost Price.",
+          modelAnswer: "(i) GH¢ 1,900.00, (ii) GH¢ 400.00, (iii) 26.67%",
+          workedSolution: "**(i) Total sales revenue:**\n$$\\text{Revenue} = (30 \\times 40.00) + (20 \\times 35.00) = 1,200.00 + 700.00 = \\text{GH¢ } 1,900.00$$\n\n**(ii) Total profit:**\n$$\\text{Profit} = 1,900.00 - 1,500.00 = \\text{GH¢ } 400.00$$\n\n**(iii) Percentage profit:**\n$$\\text{Percentage profit} = \\left(\\frac{400.00}{1,500.00}\\right) \\times 100\\% = \\frac{400}{15}\\% = 26\\frac{2}{3}\\% \\approx 26.67\\%$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "A technician earns $\\text{GH¢ } 360.00$ for working $6\\text{ days}$.\n(i) What is his daily wage rate?\n(ii) How much will he earn for working $14\\text{ days}$ at the same rate?",
+          hint: "Daily wage = Total wage ÷ 6. Multiply daily wage by 14.",
+          modelAnswer: "(i) GH¢ 60.00, (ii) GH¢ 840.00",
+          workedSolution: "**(i) Daily rate:**\n$$\\text{Daily rate} = \\frac{\\text{GH¢ } 360.00}{6} = \\text{GH¢ } 60.00\\text{ per day}$$\n\n**(ii) Earnings for 14 days:**\n$$\\text{Earnings} = 14 \\times \\text{GH¢ } 60.00 = \\text{GH¢ } 840.00$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "An article with a list price of $\\text{GH¢ } 240.00$ is discounted by $12\\frac{1}{2}\\%$. Find the cash sale price of the article.",
+          hint: "Note that $12\\frac{1}{2}\\% = \\frac{1}{8}$.",
+          modelAnswer: "GH¢ 210.00",
+          workedSolution: "$$\\text{Discount} = \\frac{12.5}{100} \\times 240.00 = \\frac{1}{8} \\times 240.00 = \\text{GH¢ } 30.00$$\n$$\\text{Cash price} = 240.00 - 30.00 = \\text{GH¢ } 210.00$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Vector Operations, Magnitude in Surds & Linear Transformations",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "Given column vectors $$u = \\begin{pmatrix} 3 \\\\ -4 \\end{pmatrix}$$ and $$w = \\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix}$$, calculate the vector:\n$$v = 2u - 3w$$",
+          hint: "Multiply u by 2 and w by 3, then subtract component-wise.",
+          modelAnswer: "(9, -14)ᵀ",
+          workedSolution: "$$v = 2\\begin{pmatrix} 3 \\\\ -4 \\end{pmatrix} - 3\\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix}$$\n$$= \\begin{pmatrix} 6 \\\\ -8 \\end{pmatrix} - \\begin{pmatrix} -3 \\\\ 6 \\end{pmatrix}$$\n$$= \\begin{pmatrix} 6 - (-3) \\\\ -8 - 6 \\end{pmatrix} = \\begin{pmatrix} 9 \\\\ -14 \\end{pmatrix}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Calculate the magnitude $|u|$ of the vector $$u = \\begin{pmatrix} 3 \\\\ -4 \\end{pmatrix}$$.",
+          hint: "Magnitude $|u| = \\sqrt{x^2 + y^2}$.",
+          modelAnswer: "5 units",
+          workedSolution: "$$|u| = \\sqrt{3^2 + (-4)^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5\\text{ units}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Point $P(5, -2)$ is mapped to point $P'(1, 4)$ under a translation vector $T$.\n(i) Determine the translation vector $T$.\n(ii) Find the image of the origin $(0, 0)$ under the same translation $T$.",
+          hint: "Translation vector $T = P' - P$.",
+          modelAnswer: "(i) (-4, 6)ᵀ, (ii) (-4, 6)",
+          workedSolution: "**(i) Translation vector $T$:**\n$$T = \\begin{pmatrix} 1 - 5 \\\\ 4 - (-2) \\end{pmatrix} = \\begin{pmatrix} -4 \\\\ 6 \\end{pmatrix}$$\n\n**(ii) Image of $(0, 0)$:**\n$$(0 - 4, 0 + 6) = (-4, 6)$$."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Geometric Compass Triangle Construction & Inscribed Measurements",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "In a geometric compass and ruler construction:\n1. Construct line segment $|AB| = 8\\text{ cm}$.\n2. At vertex $A$, construct angle $\\angle CAB = 60^\\circ$.\n3. With centre $B$ and radius $7\\text{ cm}$, draw an arc to intersect line $AC$ at vertex $C$.\n(i) State the length of side $|BC|$.\n(ii) If the perpendicular line dropped from vertex $C$ to segment $AB$ meets $AB$ at $D$, calculate the perpendicular height $|CD|$ using the sine ratio ($|AC| \\sin 60^\\circ$), given $|AC| = 5.2\\text{ cm}$ and $\\sin 60^\\circ = \\frac{\\sqrt{3}}{2} \\approx 0.866$.",
+          hint: "Height $h = |AC| \\sin 60^\\circ = 5.2 \\times 0.866$.",
+          modelAnswer: "(i) 7 cm, (ii) 4.5 cm",
+          workedSolution: "**(i)** By direct construction construction radius, $$|BC| = 7\\text{ cm}$$.\n\n**(ii) Perpendicular height $|CD|$:**\n$$|CD| = |AC| \\times \\sin 60^\\circ = 5.2\\text{ cm} \\times 0.866 \\approx 4.50\\text{ cm}$$\nTherefore, the height is **$4.5\\text{ cm}$**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Calculate the total area of triangle $ABC$ using the base $|AB| = 8\\text{ cm}$ and the calculated height $|CD| = 4.5\\text{ cm}$.",
+          hint: "Area = 1/2 × base × height.",
+          modelAnswer: "18 cm²",
+          workedSolution: "$$\\text{Area} = \\frac{1}{2} \\times |AB| \\times |CD| = \\frac{1}{2} \\times 8\\text{ cm} \\times 4.5\\text{ cm} = 4 \\times 4.5 = 18\\text{ cm}^2$$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Classroom Test Distribution, Central Tendency & Probability",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Marks Scored</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='55' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='100' y='90' width='25' height='70' fill='#93c5fd' stroke='#1d4ed8'/><rect x='145' y='35' width='25' height='125' fill='#2563eb' stroke='#1d4ed8'/><rect x='190' y='75' width='25' height='85' fill='#93c5fd' stroke='#1d4ed8'/><rect x='235' y='110' width='25' height='50' fill='#93c5fd' stroke='#1d4ed8'/><rect x='280' y='140' width='25' height='20' fill='#93c5fd' stroke='#1d4ed8'/><text x='65' y='173' font-size='10'>5</text><text x='110' y='173' font-size='10'>6</text><text x='155' y='173' font-size='10'>7</text><text x='200' y='173' font-size='10'>8</text><text x='245' y='173' font-size='10'>9</text><text x='288' y='173' font-size='10'>10</text><text x='20' y='40' font-size='10'>7</text><text x='20' y='80' font-size='10'>5</text><text x='20' y='130' font-size='10'>2</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "The bar chart above displays the marks scored by $20$ students in a mental mathematics test:\n\n| Mark ($x$) | 5 | 6 | 7 | 8 | 9 | 10 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 4 | 7 | 5 | 1 | 1 |\n\n(i) Determine the **modal mark**.\n(ii) Calculate the total number of students ($N = \\sum f$).\n(iii) Calculate the **mean mark** of the class.",
+          hint: "Mode is the mark with highest frequency. Mean = $\\sum fx / \\sum f$.",
+          modelAnswer: "(i) 7 marks, (ii) 20 students, (iii) 7.1 marks",
+          workedSolution: "**(i) Modal mark:**\nThe highest frequency is $7$ (corresponding to $7\\text{ marks}$). The **modal mark is 7**.\n\n**(ii) Total students:**\n$$N = \\sum f = 2 + 4 + 7 + 5 + 1 + 1 = 20\\text{ students}$$\n\n**(iii) Mean mark:**\n$$\\sum fx = (5 \\times 2) + (6 \\times 4) + (7 \\times 7) + (8 \\times 5) + (9 \\times 1) + (10 \\times 1)$$\n$$\\sum fx = 10 + 24 + 49 + 40 + 9 + 10 = 142$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{142}{20} = 7.1\\text{ marks}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "If a student is chosen at random from this group:\n(i) What is the probability that the student scored at least $8\\text{ marks}$?\n(ii) What percentage of students scored less than $7\\text{ marks}$?",
+          hint: "'At least 8' means marks 8, 9, 10. 'Less than 7' means marks 5 and 6.",
+          modelAnswer: "(i) 7/20, (ii) 30%",
+          workedSolution: "**(i) Probability of scoring at least 8 (marks 8, 9, 10):**\n$$\\text{Count} = f(8) + f(9) + f(10) = 5 + 1 + 1 = 7\\text{ students}$$\n$$P(x \\ge 8) = \\frac{7}{20}$$\n\n**(ii) Percentage scoring less than 7 (marks 5 and 6):**\n$$\\text{Count} = f(5) + f(6) = 2 + 4 = 6\\text{ students}$$\n$$\\text{Percentage} = \\left(\\frac{6}{20}\\right) \\times 100\\% = 6 \\times 5 = 30\\%$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T18:30:00.000Z",
+  lastUpdated: "2026-09-15T18:30:00.000Z"
+};
+
+
 
 
 // ============================================================================
@@ -7212,6 +7411,19 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_23
   );
   results.push(result26);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 27: JHS Math -> Core Curriculum Series (Set 24 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 27: Junior Core Math Structured Problem-Solving Series (Set 24)...');
+  const result27 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_24
+  );
+  results.push(result27);
+
 
 
 

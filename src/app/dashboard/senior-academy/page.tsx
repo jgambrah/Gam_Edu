@@ -726,6 +726,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "P \\cap Q = \\{3, 5, 7, 11, 13\\} \\implies n(P \\cap Q) = 5",
         sampleAnswer: "5"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 24)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 24 / 2001 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 24 / 2001 past paper adaptation) with embedded SVG diagrams covering dual-subject examination Venn sets, linear simultaneous relations, commercial sales profit & daily wage rates, vector operations & translations, triangle constructions, and discrete frequency distributions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-24",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "From the simultaneous relation graph for y₁ = 2x + 1 and y₂ = 1 - x, determine the point of intersection and gradient:",
+        sampleFormula: "2x + 1 = 1 - x \\implies x = 0, y = 1, \\quad m = 2",
+        sampleAnswer: "(0, 1), 2"
+    },
+
 
 
 
