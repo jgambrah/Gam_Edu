@@ -7000,6 +7000,586 @@ export const SET_JHS_MASTERY_SERIES_24: CurriculumQuestionSet = {
   lastUpdated: "2026-09-15T18:30:00.000Z"
 };
 
+// ============================================================================
+// 3z. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 25)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-25
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_25: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-25",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 25)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "Given sets $$P = \\{2, 3, 5, 7\\}$$ and $$Q = \\{1, 3, 5, 7, 9\\}$$, find $$P \\cap Q$$.",
+      options: [
+        "{3, 5, 7}",
+        "{1, 2, 3, 5, 7, 9}",
+        "{2, 3, 5, 7}",
+        "{3, 5}"
+      ],
+      correctAnswer: "{3, 5, 7}",
+      hint: "Identify the common elements present in both sets.",
+      workedSolution: "The common members are 3, 5, and 7. Thus, $$P \\cap Q = \\{3, 5, 7\\}$$.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "Evaluate: $$0.015 \\times 0.04$$.",
+      options: [
+        "0.006",
+        "0.06",
+        "0.0006",
+        "0.00006"
+      ],
+      correctAnswer: "0.0006",
+      hint: "$$15 \\times 4 = 60$$. Count $3 + 2 = 5$ decimal places from the right.",
+      workedSolution: "$$0.015 \\times 0.04 = 0.00060 = 0.0006$$.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Express $240$ as a product of its prime factors in index notation.",
+      options: [
+        "$$2^3 \\times 3 \\times 5$$",
+        "$$2^4 \\times 3 \\times 5$$",
+        "$$2^4 \\times 15$$",
+        "$$2^2 \\times 3^2 \\times 5$$"
+      ],
+      correctAnswer: "$$2^4 \\times 3 \\times 5$$",
+      hint: "Divide repeatedly by 2: $240 = 16 \\times 15 = 2^4 \\times 3 \\times 5$.",
+      workedSolution: "$$240 = 2 \\times 120 = 2^2 \\times 60 = 2^3 \\times 30 = 2^4 \\times 15 = 2^4 \\times 3 \\times 5$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Convert the base five numeral $$412_{\\text{five}}$$ to a base ten numeral.",
+      options: [
+        "102",
+        "107",
+        "112",
+        "97"
+      ],
+      correctAnswer: "107",
+      hint: "$$4(5^2) + 1(5^1) + 2(5^0)$$.",
+      workedSolution: "$$4(25) + 1(5) + 2(1) = 100 + 5 + 2 = 107$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "Solve for $x$ in the equation: $$5x - 7 = 2x + 8$$.",
+      options: [
+        "3",
+        "5",
+        "4",
+        "6"
+      ],
+      correctAnswer: "5",
+      hint: "Group the terms with $x$ on one side and constants on the other: $5x - 2x = 8 + 7$.",
+      workedSolution: "$$3x = 15 \\implies x = 5$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Simplify: $$\\frac{3}{5} - \\frac{1}{4} + \\frac{1}{2}$$.",
+      options: [
+        "$$\\frac{17}{20}$$",
+        "$$\\frac{13}{20}$$",
+        "$$\\frac{3}{4}$$",
+        "$$\\frac{7}{10}$$"
+      ],
+      correctAnswer: "$$\\frac{17}{20}$$",
+      hint: "Use a common denominator of 20: $\\frac{12 - 5 + 10}{20}$.",
+      workedSolution: "$$\\frac{12 - 5 + 10}{20} = \\frac{17}{20}$$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "Find the Highest Common Factor (HCF) of $36$ and $48$.",
+      options: [
+        "6",
+        "18",
+        "24",
+        "12"
+      ],
+      correctAnswer: "12",
+      hint: "Find the largest number that divides both 36 and 48 without remainder.",
+      workedSolution: "$$36 = 12 \\times 3$$ and $$48 = 12 \\times 4$$. The HCF is 12.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "An agent receives a commission of $8\\%$ on all goods sold. How much commission does she receive on total sales of $\\text{GH¢ } 750.00$?",
+      options: [
+        "GH¢ 56.00",
+        "GH¢ 60.00",
+        "GH¢ 64.00",
+        "GH¢ 72.00"
+      ],
+      correctAnswer: "GH¢ 60.00",
+      hint: "Calculate $\\frac{8}{100} \\times 750$.",
+      workedSolution: "$$\\text{Commission} = \\frac{8}{100} \\times 750 = 8 \\times 7.5 = \\text{GH¢ } 60.00$$.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "The test scores of eight students are: $$6, 8, 4, 9, 7, 5, 8, 9$$. Determine the median score.",
+      options: [
+        "7.0",
+        "7.5",
+        "8.0",
+        "6.5"
+      ],
+      correctAnswer: "7.5",
+      hint: "Arrange in ascending order: 4, 5, 6, 7, 8, 8, 9, 9. Average the 4th and 5th values.",
+      workedSolution: "Ordered scores: 4, 5, 6, **7, 8**, 8, 9, 9. Median = $$\\frac{7 + 8}{2} = 7.5$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "If $3$ oranges cost $\\text{GH¢ } 1.20$, what is the cost of $8$ oranges at the same rate?",
+      options: [
+        "GH¢ 3.20",
+        "GH¢ 2.80",
+        "GH¢ 3.60",
+        "GH¢ 3.00"
+      ],
+      correctAnswer: "GH¢ 3.20",
+      hint: "Find the cost of 1 orange: $1.20 \\div 3 = 0.40$. Then multiply by 8.",
+      workedSolution: "$$\\text{Cost of 1 orange} = \\text{GH¢ } 0.40$$. Total for 8 = $$8 \\times 0.40 = \\text{GH¢ } 3.20$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Write $0.000345$ in standard form.",
+      options: [
+        "$$3.45 \\times 10^{-4}$$",
+        "$$3.45 \\times 10^{-3}$$",
+        "$$3.45 \\times 10^4$$",
+        "$$34.5 \\times 10^{-5}$$"
+      ],
+      correctAnswer: "$$3.45 \\times 10^{-4}$$",
+      hint: "Shift the decimal point 4 places to the right to obtain $3.45$.",
+      workedSolution: "$$0.000345 = 3.45 \\times 10^{-4}$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Find the circumference of a circular plate of diameter $28\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      options: [
+        "44 cm",
+        "176 cm",
+        "88 cm",
+        "616 cm"
+      ],
+      correctAnswer: "88 cm",
+      hint: "Circumference = $\\pi d$.",
+      workedSolution: "$$C = \\frac{22}{7} \\times 28 = 22 \\times 4 = 88\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Simplify: $$4(2x - 3) - 3(x - 5)$$.",
+      options: [
+        "$$5x - 27$$",
+        "$$5x + 3$$",
+        "$$5x - 3$$",
+        "$$5x + 27$$"
+      ],
+      correctAnswer: "$$5x + 3$$",
+      hint: "Expand the terms: $8x - 12 - 3x + 15$. Remember $-3 \\times (-5) = +15$.",
+      workedSolution: "$$(8x - 3x) + (-12 + 15) = 5x + 3$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "A pair of angles are supplementary. If one angle measures $72^\\circ$, what is the measure of the other angle?",
+      options: [
+        "$$108^\\circ$$",
+        "$$18^\\circ$$",
+        "$$98^\\circ$$",
+        "$$118^\\circ$$"
+      ],
+      correctAnswer: "$$108^\\circ$$",
+      hint: "Supplementary angles add up to $180^\\circ$.",
+      workedSolution: "$$180^\\circ - 72^\\circ = 108^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "Express $75\\text{ cm}$ as a percentage of $2.5\\text{ m}$.",
+      options: [
+        "30%",
+        "25%",
+        "33.3%",
+        "20%"
+      ],
+      correctAnswer: "30%",
+      hint: "Convert $2.5\\text{ m}$ to centimetres: $2.5 \\times 100 = 250\\text{ cm}$.",
+      workedSolution: "$$\\frac{75}{250} \\times 100\\% = \\frac{75}{2.5}\\% = 30\\%$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "In an isosceles triangle, the vertex angle is $50^\\circ$. What is the measure of each base angle?",
+      options: [
+        "$$65^\\circ$$",
+        "$$60^\\circ$$",
+        "$$70^\\circ$$",
+        "$$55^\\circ$$"
+      ],
+      correctAnswer: "$$65^\\circ$$",
+      hint: "The two base angles are equal. Divide $(180^\\circ - 50^\\circ)$ by 2.",
+      workedSolution: "$$\\frac{180^\\circ - 50^\\circ}{2} = \\frac{130^\\circ}{2} = 65^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "Evaluate: $$\\frac{2^5 \\times 3^4}{2^3 \\times 3^2}$$.",
+      options: [
+        "18",
+        "36",
+        "24",
+        "12"
+      ],
+      correctAnswer: "36",
+      hint: "Subtract indices: $2^{5-3} \\times 3^{4-2} = 2^2 \\times 3^2$.",
+      workedSolution: "$$2^2 \\times 3^2 = 4 \\times 9 = 36$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "A trader bought a carton of biscuits for $\\text{GH¢ } 80.00$ and sold it for $\\text{GH¢ } 100.00$. Calculate the percentage profit.",
+      options: [
+        "20%",
+        "25%",
+        "15%",
+        "30%"
+      ],
+      correctAnswer: "25%",
+      hint: "Profit = 100 - 80 = 20. Profit % = (20 / 80) × 100%.",
+      workedSolution: "$$\\text{Profit \\%} = \\frac{20}{80} \\times 100\\% = \\frac{1}{4} \\times 100\\% = 25\\%$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 2 \\\\ -3 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} 4 \\\\ 1 \\end{pmatrix}$$, calculate $$2u + v$$.",
+      options: [
+        "$$\\begin{pmatrix} 8 \\\\ -5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 6 \\\\ -2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 8 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 8 \\\\ -1 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 8 \\\\ -5 \\end{pmatrix}$$",
+      hint: "$$2(2) + 4 = 8$$ and $$2(-3) + 1 = -6 + 1 = -5$$.",
+      workedSolution: "$$\\begin{pmatrix} 2(2) + 4 \\\\ 2(-3) + 1 \\end{pmatrix} = \\begin{pmatrix} 8 \\\\ -5 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "The ratio of boys to girls in a school choir is $3 : 4$. If there are $28$ girls, how many boys are in the choir?",
+      options: [
+        "18",
+        "24",
+        "21",
+        "20"
+      ],
+      correctAnswer: "21",
+      hint: "4 units = 28. Find 1 unit = 7. Multiply by 3.",
+      workedSolution: "1 unit = $28 \\div 4 = 7$. Number of boys = $$3 \\times 7 = 21$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "Which of the following numbers is prime?",
+      options: [
+        "39",
+        "49",
+        "51",
+        "41"
+      ],
+      correctAnswer: "41",
+      hint: "$$39 = 3 \\times 13$$, $$49 = 7^2$$, $$51 = 3 \\times 17$$.",
+      workedSolution: "41 has only two distinct factors, 1 and 41, making it prime.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "A train travels at an average speed of $80\\text{ km/h}$. How far does it travel in $2\\text{ hours } 15\\text{ minutes}$?",
+      options: [
+        "180 km",
+        "160 km",
+        "200 km",
+        "190 km"
+      ],
+      correctAnswer: "180 km",
+      hint: "Convert 15 minutes to hours: $15/60 = 0.25\\text{ h}$. Time = $2.25\\text{ h}$. Distance = Speed × Time.",
+      workedSolution: "$$\\text{Distance} = 80 \\times 2.25 = 180\\text{ km}$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "Find the truth set of the inequality: $$3x - 4 < 11$$, where $x$ is an integer.",
+      options: [
+        "$$\\{x : x < 5\\}$$",
+        "$$\\{x : x > 5\\}$$",
+        "$$\\{x : x \\le 5\\}$$",
+        "$$\\{x : x < 15\\}$$"
+      ],
+      correctAnswer: "$$\\{x : x < 5\\}$$",
+      hint: "$$3x < 11 + 4 = 15$$. Divide by 3.",
+      workedSolution: "$$3x < 15 \\implies x < 5$$. Truth set: $$\\{x : x < 5\\}$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "A box contains $5$ red balls, $3$ blue balls, and $2$ yellow balls. What is the probability of selecting a blue ball at random?",
+      options: [
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{3}{10}$$",
+        "$$\\frac{1}{5}$$",
+        "$$\\frac{3}{7}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{10}$$",
+      hint: "Total balls = 5 + 3 + 2 = 10. Blue balls = 3.",
+      workedSolution: "$$P(\\text{blue}) = \\frac{3}{10}$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "Find the area of a right-angled triangle with base $12\\text{ cm}$ and perpendicular height $5\\text{ cm}$.",
+      options: [
+        "$$60\\text{ cm}^2$$",
+        "$$25\\text{ cm}^2$$",
+        "$$30\\text{ cm}^2$$",
+        "$$35\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$30\\text{ cm}^2$$",
+      hint: "Area = $\\frac{1}{2} \\times \\text{base} \\times \\text{height}$.",
+      workedSolution: "$$\\text{Area} = \\frac{1}{2} \\times 12 \\times 5 = 6 \\times 5 = 30\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Make $h$ the subject of the formula: $$V = \\pi r^2 h$$.",
+      options: [
+        "$$h = \\frac{\\pi r^2}{V}$$",
+        "$$h = \\frac{V}{\\pi r^2}$$",
+        "$$h = V - \\pi r^2$$",
+        "$$h = \\sqrt{\\frac{V}{\\pi r}}$$"
+      ],
+      correctAnswer: "$$h = \\frac{V}{\\pi r^2}$$",
+      hint: "Divide both sides of the equation by $\\pi r^2$.",
+      workedSolution: "$$V = \\pi r^2 h \\implies h = \\frac{V}{\\pi r^2}$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Expand and simplify: $$(x - 4)(x + 6)$$.",
+      options: [
+        "$$x^2 + 2x - 24$$",
+        "$$x^2 - 2x - 24$$",
+        "$$x^2 + 10x - 24$$",
+        "$$x^2 - 24$$"
+      ],
+      correctAnswer: "$$x^2 + 2x - 24$$",
+      hint: "$$x(x + 6) - 4(x + 6) = x^2 + 6x - 4x - 24$$.",
+      workedSolution: "$$x^2 + 2x - 24$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "A clock shows 3:00. What is the angle between the hour hand and the minute hand?",
+      options: [
+        "$$60^\\circ$$",
+        "$$45^\\circ$$",
+        "$$90^\\circ$$",
+        "$$120^\\circ$$"
+      ],
+      correctAnswer: "$$90^\\circ$$",
+      hint: "The minute hand is at 12 and the hour hand is at 3. Each hour represents $360^\\circ / 12 = 30^\\circ$.",
+      workedSolution: "$$3 \\times 30^\\circ = 90^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "Calculate the simple interest on $\\text{GH¢ } 1,200.00$ at $5\\%\\text{ per annum}$ for $4\\text{ years}$.",
+      options: [
+        "GH¢ 240.00",
+        "GH¢ 200.00",
+        "GH¢ 280.00",
+        "GH¢ 300.00"
+      ],
+      correctAnswer: "GH¢ 240.00",
+      hint: "$$I = \\frac{P \\times R \\times T}{100}$$.",
+      workedSolution: "$$I = \\frac{1200 \\times 5 \\times 4}{100} = 12 \\times 20 = \\text{GH¢ } 240.00$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "How many faces does a regular triangular prism have?",
+      options: [
+        "4",
+        "6",
+        "5",
+        "7"
+      ],
+      correctAnswer: "5",
+      hint: "A triangular prism has 2 triangular bases and 3 rectangular sides.",
+      workedSolution: "$$2 + 3 = 5\\text{ faces}$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "A shirt costing $\\text{GH¢ } 45.00$ was sold at a $10\\%$ discount. Find the sale price.",
+      options: [
+        "GH¢ 40.50",
+        "GH¢ 39.50",
+        "GH¢ 41.00",
+        "GH¢ 40.00"
+      ],
+      correctAnswer: "GH¢ 40.50",
+      hint: "Discount = $10\\%$ of 45 = 4.50. Sale price = 45 - 4.50.",
+      workedSolution: "$$45.00 - 4.50 = \\text{GH¢ } 40.50$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "The point $P(2, -3)$ is translated by vector $$\\begin{pmatrix} -3 \\\\ 5 \\end{pmatrix}$$ to $P'$. Find the coordinates of $P'$.",
+      options: [
+        "(-1, 2)",
+        "(-1, -8)",
+        "(5, 2)",
+        "(5, -8)"
+      ],
+      correctAnswer: "(-1, 2)",
+      hint: "$$(x', y') = (2 + (-3), -3 + 5)$$.",
+      workedSolution: "$$(2 - 3, -3 + 5) = (-1, 2)$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "A quadrilateral with only one pair of opposite sides parallel is called a:",
+      "options": [
+        "Parallelogram",
+        "Trapezium",
+        "Rhombus",
+        "Kite"
+      ],
+      "correctAnswer": "Trapezium",
+      "hint": "Recall the geometric definition of a trapezium.",
+      "workedSolution": "A trapezium is defined as a quadrilateral having exactly one pair of parallel sides.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "If $a = -2$ and $b = 3$, evaluate: $$3a^2 - 2b$$.",
+      "options": [
+        "6",
+        "-18",
+        "18",
+        "-6"
+      ],
+      "correctAnswer": "6",
+      "hint": "$$(-2)^2 = 4$$. Multiply by 3, then subtract $2(3)$.",
+      "workedSolution": "$$3(-2)^2 - 2(3) = 3(4) - 6 = 12 - 6 = 6$$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "Express $0.32$ as a common fraction in its lowest terms.",
+      "options": [
+        "$$\\frac{16}{25}$$",
+        "$$\\frac{8}{25}$$",
+        "$$\\frac{4}{25}$$",
+        "$$\\frac{3}{10}$$"
+      ],
+      "correctAnswer": "$$\\frac{8}{25}$$",
+      "hint": "Divide 32 and 100 by their highest common factor, 4.",
+      "workedSolution": "$$\\frac{32}{100} = \\frac{32 \\div 4}{100 \\div 4} = \\frac{8}{25}$$.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "The three angles of a triangle are in the ratio $1 : 2 : 3$. Find the largest angle.",
+      "options": [
+        "$$60^\\circ$$",
+        "$$75^\\circ$$",
+        "$$90^\\circ$$",
+        "$$100^\\circ$$"
+      ],
+      "correctAnswer": "$$90^\\circ$$",
+      "hint": "Total parts = 1 + 2 + 3 = 6. Largest angle = (3 / 6) × 180°.",
+      "workedSolution": "$$\\frac{3}{6} \\times 180^\\circ = \\frac{1}{2} \\times 180^\\circ = 90^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "A water tank measuring $2\\text{ m} \\times 1.5\\text{ m} \\times 1\\text{ m}$ is full of water. What is its capacity in cubic metres?",
+      "options": [
+        "$$3.0\\text{ m}^3$$",
+        "$$4.5\\text{ m}^3$$",
+        "$$2.5\\text{ m}^3$$",
+        "$$3.5\\text{ m}^3$$"
+      ],
+      "correctAnswer": "$$3.0\\text{ m}^3$$",
+      "hint": "Volume = length × width × height.",
+      "workedSolution": "$$2 \\times 1.5 \\times 1 = 3.0\\text{ m}^3$$.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "Determine the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4\\}$ yield outputs $y = \\{3, 7, 11, 15\\}$.",
+      "options": [
+        "$$x \\to 4x - 1$$",
+        "$$x \\to 4x + 1$$",
+        "$$x \\to 3x + 1$$",
+        "$$x \\to 2x + 1$$"
+      ],
+      "correctAnswer": "$$x \\to 4x - 1$$",
+      "hint": "The common difference between outputs is 4. When $x = 1$, $y = 4(1) - 1 = 3$.",
+      "workedSolution": "Rate of increase = 4 ($4x$). For $x = 1$, $4(1) + c = 3 \\implies c = -1$. The rule is $$x \\to 4x - 1$$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "If $6$ workers take $4\\text{ days}$ to complete a task, how many workers are needed to complete the same task in $3\\text{ days}$?",
+      "options": [
+        "7 workers",
+        "9 workers",
+        "8 workers",
+        "10 workers"
+      ],
+      "correctAnswer": "8 workers",
+      "hint": "Total work = $6 \\times 4 = 24\\text{ worker-days}$. Divide by 3 days.",
+      "workedSolution": "$$\\text{Workers} = \\frac{24}{3} = 8\\text{ workers}$$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "In a regular hexagon, how many lines of symmetry can be drawn?",
+      "options": [
+        "4",
+        "5",
+        "8",
+        "6"
+      ],
+      "correctAnswer": "6",
+      "hint": "A regular polygon with $n$ sides has $n$ lines of symmetry.",
+      "workedSolution": "A regular hexagon has 6 sides and exactly 6 lines of symmetry.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-15T19:00:00.000Z",
+  "lastUpdated": "2026-09-15T19:00:00.000Z"
+}
+
+
 
 
 
@@ -7423,6 +8003,19 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_24
   );
   results.push(result27);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 28: JHS Math -> Core Curriculum Series (Set 25 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 28: Junior Core Math Objective Mastery Series (Set 25)...');
+  const result28 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_25
+  );
+  results.push(result28);
+
 
 
 

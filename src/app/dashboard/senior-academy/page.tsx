@@ -744,6 +744,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "2x + 1 = 1 - x \\implies x = 0, y = 1, \\quad m = 2",
         sampleAnswer: "(0, 1), 2"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 25)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 25 / 2000 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 25 / 2000 past paper adaptation) with balanced option randomization covering set intersections, decimal multiplication, prime factor index notation, base five conversions, algebraic equations, and geometric symmetries.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-25",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2000 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Given sets P = {2, 3, 5, 7} and Q = {1, 3, 5, 7, 9}, find P ∩ Q:",
+        sampleFormula: "P \\cap Q = \\{3, 5, 7\\}",
+        sampleAnswer: "{3, 5, 7}"
+    },
+
 
 
 
