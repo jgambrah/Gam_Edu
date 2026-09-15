@@ -1572,6 +1572,585 @@ export const SET_JHS_MASTERY_SERIES_10: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3l. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 11)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-11
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_11: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-11",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 11)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "List the members of the set $$S = \\{x : x \\text{ is an odd factor of } 42\\}$$.",
+      options: [
+        "{1, 3, 7, 21}",
+        "{3, 7, 21}",
+        "{1, 2, 3, 7, 21}",
+        "{1, 3, 7, 14, 21}"
+      ],
+      correctAnswer: "{1, 3, 7, 21}",
+      hint: "Find all factors of 42 first, then select only the odd numbers.",
+      workedSolution: "Factors of 42 are 1, 2, 3, 6, 7, 14, 21, 42. Filtering for odd factors gives {1, 3, 7, 21}.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "If sets $$A = \\{a, c, e, g\\}$$ and $$B = \\{b, d, f, h\\}$$, find $$A \\cup B$$.",
+      options: [
+        "$$\\emptyset$$",
+        "{a, b, c, d, e, f, g, h}",
+        "{a, c, e, g}",
+        "{b, d, f, h}"
+      ],
+      correctAnswer: "{a, b, c, d, e, f, g, h}",
+      hint: "The union includes all distinct elements present in either set.",
+      workedSolution: "Combine all elements from both sets: {a, b, c, d, e, f, g, h}.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "A solid geometric figure has a circular base tapering smoothly to a single vertex (apex). What is this solid called?",
+      options: [
+        "Cylinder",
+        "Sphere",
+        "Cone",
+        "Pyramid"
+      ],
+      correctAnswer: "Cone",
+      hint: "Think of the shape of an ice-cream cone or traffic cone.",
+      workedSolution: "A 3D solid with a circular base meeting at a single point apex is a cone.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Express $$\\frac{7}{16}$$ as a terminating decimal fraction.",
+      options: [
+        "0.4375",
+        "0.4125",
+        "0.4500",
+        "0.4625"
+      ],
+      correctAnswer: "0.4375",
+      hint: "Divide 7.0000 by 16.",
+      workedSolution: "$$7 \\div 16 = 0.4375$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "If $$y = \\frac{12}{2 - x} + 5$$, calculate the value of $y$ when $x = 5$.",
+      options: [
+        "9",
+        "1",
+        "-1",
+        "4"
+      ],
+      correctAnswer: "1",
+      hint: "Denominator becomes $2 - 5 = -3$.",
+      workedSolution: "$$y = \\frac{12}{2 - 5} + 5 = \\frac{12}{-3} + 5 = -4 + 5 = 1$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "The test marks of eleven candidates are: $$4, 6, 3, 8, 10, 9, 3, 11, 3, 8, 5$$. What is the modal mark?",
+      options: [
+        "8",
+        "6",
+        "3",
+        "5"
+      ],
+      correctAnswer: "3",
+      hint: "The mode is the mark that occurs most frequently.",
+      workedSolution: "Mark 3 appears 3 times, which is more frequent than any other mark. The mode is 3.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "From the test marks in Question 6 ($$3, 3, 3, 4, 5, 6, 8, 8, 9, 10, 11$$), find the median mark.",
+      options: [
+        "5",
+        "6",
+        "8",
+        "7"
+      ],
+      correctAnswer: "6",
+      hint: "With 11 ordered values, the median is the 6th value: $(11 + 1) / 2 = 6$.",
+      workedSolution: "Arranged in ascending order: 3, 3, 3, 4, 5, **6**, 8, 8, 9, 10, 11. The middle (6th) number is 6.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "In a school house distribution represented by a pie chart, Red House is $140^\\circ$, Blue House is $80^\\circ$, and Yellow House is $90^\\circ$. What is the sector angle for Green House?",
+      options: [
+        "$$50^\\circ$$",
+        "$$60^\\circ$$",
+        "$$45^\\circ$$",
+        "$$55^\\circ$$"
+      ],
+      correctAnswer: "$$50^\\circ$$",
+      hint: "The sum of all sector angles in a pie chart equals $360^\\circ$.",
+      workedSolution: "$$360^\\circ - (140^\\circ + 80^\\circ + 90^\\circ) = 360^\\circ - 310^\\circ = 50^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "If there are $720$ students in the school from Question 8, how many more students are in Yellow House ($90^\\circ$) than in Blue House ($80^\\circ$)?",
+      options: [
+        "10",
+        "30",
+        "20",
+        "40"
+      ],
+      correctAnswer: "20",
+      hint: "Angle difference = $90^\\circ - 80^\\circ = 10^\\circ$. Number of students = $(10 / 360) \\times 720$.",
+      workedSolution: "Difference in angle = $10^\\circ$. Number of students = $$\\frac{10^\\circ}{360^\\circ} \\times 720 = 10 \\times 2 = 20\\text{ students}$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "Express $338$ as a product of prime factors in index notation.",
+      options: [
+        "$$2 \\times 13^2$$",
+        "$$2^2 \\times 13$$",
+        "$$2 \\times 7 \\times 13$$",
+        "$$2^2 \\times 13^2$$"
+      ],
+      correctAnswer: "$$2 \\times 13^2$$",
+      hint: "$338 \\div 2 = 169 = 13^2$.",
+      workedSolution: "$$338 = 2 \\times 169 = 2 \\times 13^2$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Convert the binary numeral $$111001_{\\text{two}}$$ to a numeral in base ten.",
+      options: [
+        "55",
+        "57",
+        "49",
+        "61"
+      ],
+      correctAnswer: "57",
+      hint: "$$1(2^5) + 1(2^4) + 1(2^3) + 0(2^2) + 0(2^1) + 1(2^0)$$.",
+      workedSolution: "$$32 + 16 + 8 + 0 + 0 + 1 = 57$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "A fair six-sided die is rolled once. What is the probability of rolling a number greater than $4$?",
+      options: [
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{2}{3}$$",
+        "$$\\frac{1}{3}$$",
+        "$$\\frac{1}{6}$$"
+      ],
+      correctAnswer: "$$\\frac{1}{3}$$",
+      hint: "Favourable outcomes are {5, 6}, which is 2 outcomes out of 6.",
+      workedSolution: "$$\\text{P}(> 4) = \\frac{2}{6} = \\frac{1}{3}$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Arrange the fractions in descending order: $$\\frac{3}{4}, \\, \\frac{5}{7}, \\, \\frac{2}{3}$$.",
+      options: [
+        "$$\\frac{3}{4}, \\, \\frac{5}{7}, \\, \\frac{2}{3}$$",
+        "$$\\frac{5}{7}, \\, \\frac{3}{4}, \\, \\frac{2}{3}$$",
+        "$$\\frac{2}{3}, \\, \\frac{5}{7}, \\, \\frac{3}{4}$$",
+        "$$\\frac{3}{4}, \\, \\frac{2}{3}, \\, \\frac{5}{7}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{4}, \\, \\frac{5}{7}, \\, \\frac{2}{3}$$",
+      hint: "Compare decimal values: $3/4 = 0.750, 5/7 \\approx 0.714, 2/3 \\approx 0.667$.",
+      workedSolution: "$$0.750 > 0.714 > 0.667 \\implies \\frac{3}{4} > \\frac{5}{7} > \\frac{2}{3}$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "Solve the linear inequality: $$4x + 5 \\le 7x - 7$$.",
+      options: [
+        "$$x \\le 4$$",
+        "$$x \\ge 4$$",
+        "$$x \\ge -4$$",
+        "$$x \\le -4$$"
+      ],
+      correctAnswer: "$$x \\ge 4$$",
+      hint: "$$5 + 7 \\le 7x - 4x \\implies 12 \\le 3x$$.",
+      workedSolution: "$$12 \\le 3x \\implies 4 \\le x$$, which means $$x \\ge 4$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "If $$9x - 2(3x - 5) = 16$$, find the value of $x$.",
+      options: [
+        "2",
+        "-2",
+        "6",
+        "-6"
+      ],
+      correctAnswer: "2",
+      hint: "Expand: $9x - 6x + 10 = 16$.",
+      workedSolution: "$$3x + 10 = 16 \\implies 3x = 6 \\implies x = 2$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "Two parallel lines are crossed by a transversal line. If an exterior alternate angle is $115^\\circ$, what is the size of its supplementary interior angle on the straight line?",
+      options: [
+        "$$75^\\circ$$",
+        "$$65^\\circ$$",
+        "$$115^\\circ$$",
+        "$$55^\\circ$$"
+      ],
+      correctAnswer: "$$65^\\circ$$",
+      hint: "Angles on a straight line add up to $180^\\circ$.",
+      workedSolution: "$$180^\\circ - 115^\\circ = 65^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "When a transversal intersects two parallel lines, alternate interior angles are always:",
+      options: [
+        "Supplementary",
+        "Complementary",
+        "Add up to 360°",
+        "Equal"
+      ],
+      correctAnswer: "Equal",
+      hint: "Remember the 'Z-angle' geometric rule.",
+      workedSolution: "Alternate interior angles formed across parallel lines are equal in magnitude.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "Factorize completely: $$\\frac{1}{3}kx^2 + \\frac{1}{6}kx$$.",
+      options: [
+        "$$\\frac{1}{6}kx(2x + 1)$$",
+        "$$\\frac{1}{3}kx(x + 2)$$",
+        "$$\\frac{1}{6}kx(x + 2)$$",
+        "$$\\frac{1}{3}k(x^2 + 2x)$$"
+      ],
+      correctAnswer: "$$\\frac{1}{6}kx(2x + 1)$$",
+      hint: "Factor out $\\frac{1}{6}kx$. Note that $\\frac{1}{3} = \\frac{2}{6}$.",
+      workedSolution: "$$\\frac{2}{6}kx^2 + \\frac{1}{6}kx = \\frac{1}{6}kx(2x + 1)$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "Kofi and Ama shared a sum of money in the ratio $4 : 5$ respectively. If Ama received $\\text{GH¢ } 150.00$, how much was shared in total?",
+      options: [
+        "GH¢ 270.00",
+        "GH¢ 300.00",
+        "GH¢ 240.00",
+        "GH¢ 120.00"
+      ],
+      correctAnswer: "GH¢ 270.00",
+      hint: "5 units = 150. Find 1 unit = 30. Total units = 4 + 5 = 9.",
+      workedSolution: "1 unit = $150 / 5 = \\text{GH¢ } 30.00$. Total shared = $9 \\times 30 = \\text{GH¢ } 270.00$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "Simplify: $$5(6a + 3) - 2(9a + 4)$$.",
+      options: [
+        "$$12a + 7$$",
+        "$$12a - 7$$",
+        "$$48a + 23$$",
+        "$$12a + 23$$"
+      ],
+      correctAnswer: "$$12a + 7$$",
+      hint: "Expand: $30a + 15 - 18a - 8$.",
+      workedSolution: "$$(30a - 18a) + (15 - 8) = 12a + 7$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "A trader invested $\\text{GH¢ } 600.00$ at a simple interest rate of $12\\%$ per annum for $3\\text{ years}$. Calculate the total amount at the end of the investment period.",
+      options: [
+        "GH¢ 216.00",
+        "GH¢ 720.00",
+        "GH¢ 816.00",
+        "GH¢ 850.00"
+      ],
+      correctAnswer: "GH¢ 816.00",
+      hint: "Interest = (600 × 12 × 3) / 100 = 216. Total Amount = Principal + Interest.",
+      workedSolution: "$$I = \\frac{600 \\times 12 \\times 3}{100} = 216$$. Total Amount = $600 + 216 = \\text{GH¢ } 816.00$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "Make $k$ the subject of the relation: $$T = \\frac{4k + 1}{k}$$.",
+      options: [
+        "$$k = \\frac{1}{T - 4}$$",
+        "$$k = \\frac{1}{T + 4}$$",
+        "$$k = T - 4$$",
+        "$$k = \\frac{4}{T - 1}$$"
+      ],
+      correctAnswer: "$$k = \\frac{1}{T - 4}$$",
+      hint: "$Tk = 4k + 1 \\implies Tk - 4k = 1$.",
+      workedSolution: "$$Tk - 4k = 1 \\implies k(T - 4) = 1 \\implies k = \\frac{1}{T - 4}$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "Simplify $$400 \\times 0.02 \\times 245$$, leaving your answer in standard form.",
+      options: [
+        "$$1.96 \\times 10^3$$",
+        "$$1.96 \\times 10^2$$",
+        "$$19.6 \\times 10^2$$",
+        "$$1.96 \\times 10^4$$"
+      ],
+      correctAnswer: "$$1.96 \\times 10^3$$",
+      hint: "$400 \\times 0.02 = 8$. Then $8 \\times 245 = 1,960$.",
+      workedSolution: "$$8 \\times 245 = 1,960 = 1.96 \\times 10^3$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "What percentage of $8$ is $0.4$?",
+      options: [
+        "2.0%",
+        "5.0%",
+        "20.0%",
+        "0.5%"
+      ],
+      correctAnswer: "5.0%",
+      hint: "$$\\frac{0.4}{8} \\times 100\\%$$.",
+      workedSolution: "$$\\frac{0.4}{8} \\times 100\\% = \\frac{40}{8}\\% = 5.0\\%$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "A right trapezium has parallel sides of lengths $14\\text{ cm}$ and $20\\text{ cm}$ and a perpendicular height of $8\\text{ cm}$. Find its area.",
+      options: [
+        "$$136\\text{ cm}^2$$",
+        "$$272\\text{ cm}^2$$",
+        "$$160\\text{ cm}^2$$",
+        "$$120\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$136\\text{ cm}^2$$",
+      hint: "Area = $\\frac{1}{2}(a + b)h$.",
+      workedSolution: "$$\\text{Area} = \\frac{1}{2}(14 + 20) \\times 8 = \\frac{1}{2}(34) \\times 8 = 17 \\times 8 = 136\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Which geometric construction constructs a point $P$ that is strictly equidistant from two given points $A$ and $B$?",
+      options: [
+        "The angle bisector of angle AOB",
+        "A line parallel to AB",
+        "The perpendicular bisector of line segment AB",
+        "A tangent to the circle at A"
+      ],
+      correctAnswer: "The perpendicular bisector of line segment AB",
+      hint: "Any point on the perpendicular bisector of AB is equidistant from endpoints A and B.",
+      workedSolution: "The perpendicular bisector of a line segment AB represents the locus of points equidistant from A and B.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "If $x : 36 = 5 : 20$, find the value of $x$.",
+      options: [
+        "7",
+        "9",
+        "8",
+        "12"
+      ],
+      correctAnswer: "9",
+      hint: "$$20x = 36 \\times 5 = 180$$.",
+      workedSolution: "$$20x = 180 \\implies x = \\frac{180}{20} = 9$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "In circle geometry, what name is given to the region enclosed between a chord and its corresponding arc?",
+      options: [
+        "Sector",
+        "Quadrant",
+        "Segment",
+        "Tangent"
+      ],
+      correctAnswer: "Segment",
+      hint: "A sector is bounded by two radii; a segment is bounded by a chord.",
+      workedSolution: "The area enclosed between a chord and an arc of a circle is defined as a segment.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "An amount of $\\text{GH¢ } 7,200.00$ is shared among three siblings in the ratio of their ages: $8\\text{ years}, 6\\text{ years},$ and $4\\text{ years}$. Find the share of the youngest sibling.",
+      options: [
+        "GH¢ 1,600.00",
+        "GH¢ 2,400.00",
+        "GH¢ 3,200.00",
+        "GH¢ 1,200.00"
+      ],
+      correctAnswer: "GH¢ 1,600.00",
+      hint: "Total ratio units = 8 + 6 + 4 = 18. Youngest share = (4 / 18) × 7,200.",
+      workedSolution: "$$\\text{Youngest share} = \\frac{4}{18} \\times 7,200 = 4 \\times 400 = \\text{GH¢ } 1,600.00$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "Find the Least Common Multiple (LCM) of $6, 8,$ and $12$.",
+      options: [
+        "48",
+        "36",
+        "24",
+        "18"
+      ],
+      correctAnswer: "24",
+      hint: "Find the smallest number that 6, 8, and 12 divide into evenly.",
+      workedSolution: "Multiples of 12: 12, 24, 36... 24 is divisible by 6, 8, and 12. LCM = 24.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "Expand and simplify the difference of two squares: $$(x + 3y)(x - 3y)$$.",
+      options: [
+        "$$x^2 - 6xy - 9y^2$$",
+        "$$x^2 - 9y^2$$",
+        "$$x^2 + 9y^2$$",
+        "$$x^2 - 3y^2$$"
+      ],
+      correctAnswer: "$$x^2 - 9y^2$$",
+      hint: "$$(a + b)(a - b) = a^2 - b^2$$.",
+      workedSolution: "$$x^2 - (3y)^2 = x^2 - 9y^2$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "If a technician is paid $\\text{GH¢ } 270.00$ for working $4\\frac{1}{2}\\text{ days}$, how much will he earn for working $1\\text{ day}$ at the same daily rate?",
+      options: [
+        "GH¢ 55.00",
+        "GH¢ 60.00",
+        "GH¢ 65.00",
+        "GH¢ 70.00"
+      ],
+      correctAnswer: "GH¢ 60.00",
+      hint: "$$270 \\div 4.5 = 270 \\times \\frac{2}{9}$$.",
+      workedSolution: "$$270 \\div \\frac{9}{2} = 270 \\times \\frac{2}{9} = 30 \\times 2 = \\text{GH¢ } 60.00$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "Express $0.84$ as a common fraction in its lowest terms.",
+      options: [
+        "$$\\frac{21}{25}$$",
+        "$$\\frac{42}{50}$$",
+        "$$\\frac{17}{20}$$",
+        "$$\\frac{19}{25}$$"
+      ],
+      correctAnswer: "$$\\frac{21}{25}$$",
+      hint: "Divide 84 and 100 by 4.",
+      workedSolution: "$$\\frac{84}{100} = \\frac{84 \\div 4}{100 \\div 4} = \\frac{21}{25}$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "List all integers that satisfy the compound inequality: $$15 < y \\le 20$$.",
+      options: [
+        "{15, 16, 17, 18, 19, 20}",
+        "{16, 17, 18, 19}",
+        "{16, 17, 18, 19, 20}",
+        "{15, 16, 17, 18, 19}"
+      ],
+      correctAnswer: "{16, 17, 18, 19, 20}",
+      hint: "15 is excluded ($>$), but 20 is included ($\\le$).",
+      workedSolution: "Integers strictly greater than 15 and up to 20: {16, 17, 18, 19, 20}.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Simplify: $$\\frac{3^7 \\times 2^5}{3^4 \\times 2^2}$$.",
+      options: [
+        "$$3^3 \\times 2^3$$",
+        "$$3^{11} \\times 2^7$$",
+        "$$3^3 \\times 2^7$$",
+        "$$3^4 \\times 2^3$$"
+      ],
+      correctAnswer: "$$3^3 \\times 2^3$$",
+      hint: "Subtract indices for base 3 and base 2 separately.",
+      workedSolution: "$$3^{7-4} \\times 2^{5-2} = 3^3 \\times 2^3$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "A vector pointing South-East with magnitude $6\\text{ cm}$ has a three-figure bearing of:",
+      "options": [
+        "045°",
+        "225°",
+        "315°",
+        "135°"
+      ],
+      correctAnswer: "135°",
+      hint: "South-East is halfway between East (090°) and South (180°): $90 + 45$.",
+      workedSolution: "$$090^\\circ + 045^\\circ = 135^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "Solve for $y$ in the equation: $$5 + 4y = 2 - 8y$$.",
+      "options": [
+        "$$\\frac{1}{4}$$",
+        "$$-\\frac{1}{4}$$",
+        "$$-\\frac{7}{12}$$",
+        "$$\\frac{7}{12}$$"
+      ],
+      correctAnswer: "$$-\\frac{1}{4}$$",
+      hint: "$$4y + 8y = 2 - 5$$.",
+      workedSolution: "$$12y = -3 \\implies y = -\\frac{3}{12} = -\\frac{1}{4}$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "Convert $43_{\\text{ten}}$ to a base two (binary) numeral.",
+      "options": [
+        "$$101011_{\\text{two}}$$",
+        "$$101101_{\\text{two}}$$",
+        "$$110101_{\\text{two}}$$",
+        "$$100111_{\\text{two}}$$"
+      ],
+      correctAnswer: "$$101011_{\\text{two}}$$",
+      hint: "$$43 = 32 + 8 + 2 + 1 = 2^5 + 2^3 + 2^1 + 2^0$$.",
+      workedSolution: "$$43 = 32(1) + 16(0) + 8(1) + 4(0) + 2(1) + 1(1) = 101011_{\\text{two}}$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "The length of a rectangular field is $8\\text{ metres}$ longer than its width. If the perimeter is $160\\text{ metres}$, find the width of the field.",
+      "options": [
+        "36 m",
+        "44 m",
+        "40 m",
+        "32 m"
+      ],
+      correctAnswer: "36 m",
+      hint: "$$2(w + 8 + w) = 160 \\implies 2(2w + 8) = 160$$.",
+      workedSolution: "$$4w + 16 = 160 \\implies 4w = 144 \\implies w = 36\\text{ m}$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 5 \\\\ 2 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -1 \\\\ 4 \\end{pmatrix}$$, evaluate $$u - 2v$$.",
+      "options": [
+        "$$\\begin{pmatrix} 3 \\\\ -6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 7 \\\\ 10 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 7 \\\\ -6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 3 \\\\ 10 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 7 \\\\ -6 \\end{pmatrix}$$",
+      hint: "$$5 - 2(-1) = 5 + 2 = 7$$ and $$2 - 2(4) = 2 - 8 = -6$$.",
+      workedSolution: "$$\\begin{pmatrix} 5 - 2(-1) \\\\ 2 - 2(4) \\end{pmatrix} = \\begin{pmatrix} 5 + 2 \\\\ 2 - 8 \\end{pmatrix} = \\begin{pmatrix} 7 \\\\ -6 \\end{pmatrix}$$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T12:00:00.000Z",
+  lastUpdated: "2026-09-15T12:00:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -1823,6 +2402,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_10
   );
   results.push(result13);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 14: JHS Math -> Core Curriculum Series (Set 11 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 14: Junior Core Math Objective Mastery Series (Set 11)...');
+  const result14 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_11
+  );
+  results.push(result14);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
