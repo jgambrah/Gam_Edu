@@ -4692,6 +4692,585 @@ export const SET_JHS_MASTERY_SERIES_18 = {
 };
 
 // ============================================================================
+// 3t. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 19)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-19
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_19: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-19",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 19)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "Which of the following descriptions best defines the set $$S = \\{4, 8, 12, 16, 20\\}$$?",
+      options: [
+        "The set of even numbers less than 24",
+        "The set of multiples of 4 less than 24",
+        "The set of multiples of 4",
+        "The set of composite numbers up to 20"
+      ],
+      correctAnswer: "The set of multiples of 4 less than 24",
+      hint: "Notice that each element is a multiple of 4 up to 20.",
+      workedSolution: "Multiples of 4 strictly less than 24 are 4, 8, 12, 16, and 20. Therefore, this set contains multiples of 4 less than 24.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "If $$A = \\{1, 3, 5, 7, 9, 11\\}$$ and $$B = \\{2, 3, 7, 11, 13\\}$$, find $$A \\cap B$$.",
+      options: [
+        "{3, 7, 11}",
+        "{1, 3, 7, 11}",
+        "{3, 7}",
+        "{1, 2, 3, 5, 7, 9, 11, 13}"
+      ],
+      correctAnswer: "{3, 7, 11}",
+      hint: "Find the elements that are present in both sets.",
+      workedSolution: "The common members in both $A$ and $B$ are 3, 7, and 11. Hence, $$A \\cap B = \\{3, 7, 11\\}$$.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "On an integer number line, three points are marked at intervals of $6$ units: $$-18, \\, p, \\, 6$$. Find the value of $p$ located at the midpoint.",
+      options: [
+        "-12",
+        "0",
+        "-6",
+        "-8"
+      ],
+      correctAnswer: "-6",
+      hint: "Find the average: $\\frac{-18 + 6}{2}$.",
+      workedSolution: "$$p = \\frac{-18 + 6}{2} = \\frac{-12}{2} = -6$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Find the number situated exactly in the middle of $6.4$ and $7.2$ on a number line.",
+      options: [
+        "6.8",
+        "6.7",
+        "6.9",
+        "6.75"
+      ],
+      correctAnswer: "6.8",
+      hint: "Add the two numbers and divide by 2.",
+      workedSolution: "$$\\text{Midpoint} = \\frac{6.4 + 7.2}{2} = \\frac{13.6}{2} = 6.8$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "Calculate the Least Common Multiple (LCM) of $15$ and $25$.",
+      options: [
+        "150",
+        "50",
+        "100",
+        "75"
+      ],
+      correctAnswer: "75",
+      hint: "$$15 = 3 \\times 5$$, $$25 = 5^2$$. Multiply the highest powers of each prime factor.",
+      workedSolution: "$$\\text{LCM} = 3 \\times 5^2 = 3 \\times 25 = 75$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Express $108$ as a product of prime factors in index notation.",
+      options: [
+        "$$2^2 \\times 3^3$$",
+        "$$2^3 \\times 3^2$$",
+        "$$2^2 \\times 3^2$$",
+        "$$4 \\times 27$$"
+      ],
+      correctAnswer: "$$2^2 \\times 3^3$$",
+      hint: "$$108 = 4 \\times 27$$. Express 4 and 27 as prime powers.",
+      workedSolution: "$$108 = 2 \\times 54 = 2^2 \\times 27 = 2^2 \\times 3^3$$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "If $$4k - 3(k + 5) = 8$$, find the value of $k$.",
+      options: [
+        "-23",
+        "23",
+        "13",
+        "-7"
+      ],
+      correctAnswer: "23",
+      hint: "Expand the brackets: $4k - 3k - 15 = 8$.",
+      workedSolution: "$$4k - 3k - 15 = 8 \\implies k - 15 = 8 \\implies k = 8 + 15 = 23$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "What is the place value of the digit $7$ in the numeral $675,400$?",
+      options: [
+        "7 thousands",
+        "7 hundreds",
+        "7 ten thousands",
+        "7 hundred thousands"
+      ],
+      correctAnswer: "7 ten thousands",
+      hint: "Count place values from right: Units, Tens, Hundreds, Thousands, Ten-thousands.",
+      workedSolution: "In 675,400, 7 sits in the ten-thousands column, representing 70,000 (7 ten-thousands).",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Evaluate the product of $19$ and $112$.",
+      options: [
+        "2,128",
+        "2,028",
+        "2,148",
+        "1,928"
+      ],
+      correctAnswer: "2,128",
+      hint: "$$19 \\times 112 = (20 - 1) \\times 112$$.",
+      workedSolution: "$$20 \\times 112 - 112 = 2,240 - 112 = 2,128$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "A farmer owes $\\text{GH¢ } 650.00$ at a credit union. If he makes a deposit of $\\text{GH¢ } 250.00$, how much does he still owe?",
+      options: [
+        "GH¢ 900.00",
+        "GH¢ 400.00",
+        "GH¢ 500.00",
+        "GH¢ 350.00"
+      ],
+      correctAnswer: "GH¢ 400.00",
+      hint: "Subtract the repayment from the initial debt.",
+      workedSolution: "$$650.00 - 250.00 = \\text{GH¢ } 400.00$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Evaluate: $$\\frac{43}{100} \\times \\frac{9}{10}$$.",
+      options: [
+        "3.87",
+        "0.0387",
+        "0.387",
+        "38.7"
+      ],
+      correctAnswer: "0.387",
+      hint: "Multiply numerators: $43 \\times 9 = 387$. Denominator is 1000.",
+      workedSolution: "$$\\frac{387}{1000} = 0.387$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Express $1.75$ as a mixed fraction in its lowest terms.",
+      options: [
+        "$$1\\frac{1}{4}$$",
+        "$$1\\frac{3}{5}$$",
+        "$$1\\frac{7}{10}$$",
+        "$$1\\frac{3}{4}$$"
+      ],
+      correctAnswer: "$$1\\frac{3}{4}$$",
+      hint: "$$0.75 = 75/100 = 3/4$$.",
+      workedSolution: "$$1.75 = 1 + \\frac{75}{100} = 1\\frac{3}{4}$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "There are $320$ crayons in $8$ equal packets. How many crayons are contained in $15$ similar packets?",
+      options: [
+        "600",
+        "560",
+        "640",
+        "480"
+      ],
+      correctAnswer: "600",
+      hint: "Find crayons per packet: $320 \\div 8 = 40$. Multiply by 15.",
+      workedSolution: "Crayons per packet = $$320 / 8 = 40$$. Total in 15 packets = $$15 \\times 40 = 600$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "A truck drives at an average speed of $55\\text{ km/h}$. What distance does it cover in $6\\text{ hours}$?",
+      options: [
+        "300 km",
+        "360 km",
+        "330 km",
+        "350 km"
+      ],
+      correctAnswer: "330 km",
+      hint: "Distance = Speed × Time.",
+      workedSolution: "$$\\text{Distance} = 55 \\times 6 = 330\\text{ km}$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "Calculate the simple interest on $\\text{GH¢ } 240.00$ for $3\\text{ years}$ at $10\\%\\text{ per annum}$.",
+      options: [
+        "GH¢ 72.00",
+        "GH¢ 24.00",
+        "GH¢ 48.00",
+        "GH¢ 84.00"
+      ],
+      correctAnswer: "GH¢ 72.00",
+      hint: "$$I = \\frac{P \\times R \\times T}{100}$$.",
+      workedSolution: "$$I = \\frac{240 \\times 10 \\times 3}{100} = 24 \\times 3 = \\text{GH¢ } 72.00$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "Express $$\\frac{3}{5}$$ as a percentage.",
+      options: [
+        "30%",
+        "75%",
+        "50%",
+        "60%"
+      ],
+      correctAnswer: "60%",
+      hint: "Multiply the fraction by 100%.",
+      workedSolution: "$$\\frac{3}{5} \\times 100\\% = 3 \\times 20\\% = 60\\%$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "A sales agent receives a $15\\%$ commission on all sales. If her commission in one week was $\\text{GH¢ } 60.00$, what was her total sales figure for that week?",
+      options: [
+        "GH¢ 400.00",
+        "GH¢ 450.00",
+        "GH¢ 360.00",
+        "GH¢ 500.00"
+      ],
+      correctAnswer: "GH¢ 400.00",
+      hint: "Sales = Commission ÷ 0.15.",
+      workedSolution: "$$\\text{Sales} = \\frac{60.00}{0.15} = \\frac{6,000}{15} = \\text{GH¢ } 400.00$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "Write $92,000$ in standard form.",
+      options: [
+        "$$9.2 \\times 10^3$$",
+        "$$9.2 \\times 10^4$$",
+        "$$9.2 \\times 10^{-4}$$",
+        "$$92 \\times 10^3$$"
+      ],
+      correctAnswer: "$$9.2 \\times 10^4$$",
+      hint: "Move the decimal point 4 places to the left.",
+      workedSolution: "$$92,000 = 9.2 \\times 10^4$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "The test scores of ten students in a quiz are: $$3, 4, 6, 3, 4, 5, 3, 4, 6, 4$$. What is the modal mark?",
+      options: [
+        "3",
+        "5",
+        "4",
+        "6"
+      ],
+      correctAnswer: "4",
+      hint: "Count the occurrences: 3 appears 3 times, 4 appears 4 times.",
+      workedSolution: "The score 4 occurs four times (highest frequency). The modal mark is 4.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "From the test scores in Question 19 ($$3, 3, 3, 4, 4, 4, 4, 5, 6, 6$$), calculate the mean mark.",
+      options: [
+        "4.2",
+        "4.0",
+        "4.5",
+        "3.8"
+      ],
+      correctAnswer: "4.2",
+      hint: "Sum all scores and divide by 10.",
+      workedSolution: "$$\\text{Sum} = (3 \\times 3) + (4 \\times 4) + 5 + (6 \\times 2) = 9 + 16 + 5 + 12 = 42$$.\n$$\\text{Mean} = \\frac{42}{10} = 4.2$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "A jar contains $14$ red and $6$ blue marbles. If a marble is selected at random, what is the probability that it is red?",
+      options: [
+        "$$\\frac{3}{10}$$",
+        "$$\\frac{7}{10}$$",
+        "$$\\frac{2}{3}$$",
+        "$$\\frac{1}{2}$$"
+      ],
+      correctAnswer: "$$\\frac{7}{10}$$",
+      hint: "Total marbles = 14 + 6 = 20. Favourable = 14.",
+      workedSolution: "$$P(\\text{red}) = \\frac{14}{20} = \\frac{7}{10}$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "If $$y = \\frac{1}{4}(x - 3)$$, express $x$ in terms of $y$.",
+      options: [
+        "$$x = 4y - 3$$",
+        "$$x = \\frac{y + 3}{4}$$",
+        "$$x = 4y + 3$$",
+        "$$x = \\frac{y}{4} + 3$$"
+      ],
+      correctAnswer: "$$x = 4y + 3$$",
+      hint: "Multiply both sides by 4, then add 3.",
+      workedSolution: "$$4y = x - 3 \\implies x = 4y + 3$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "Simplify: $$5m^3 \\times 3m^2 n^3$$.",
+      options: [
+        "$$15m^5 n^3$$",
+        "$$15m^6 n^3$$",
+        "$$8m^5 n^3$$",
+        "$$15m^5$$"
+      ],
+      correctAnswer: "$$15m^5 n^3$$",
+      hint: "$$5 \\times 3 = 15$$; add powers of $m$: $3 + 2 = 5$.",
+      workedSolution: "$$(5 \\times 3) \\times m^{3+2} \\times n^3 = 15m^5 n^3$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "Convert the decimal number $21_{\\text{ten}}$ to a base two (binary) numeral.",
+      options: [
+        "$$10011_{\\text{two}}$$",
+        "$$11001_{\\text{two}}$$",
+        "$$10101_{\\text{two}}$$",
+        "$$10111_{\\text{two}}$$"
+      ],
+      correctAnswer: "$$10101_{\\text{two}}$$",
+      hint: "$$21 = 16 + 4 + 1 = 2^4 + 2^2 + 2^0$$.",
+      workedSolution: "$$21 = 1(16) + 0(8) + 1(4) + 0(2) + 1(1) = 10101_{\\text{two}}$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "Which of the following mathematical statements is TRUE?",
+      options: [
+        "$$9 + 5 < 12$$",
+        "$$6 + 5 < 12$$",
+        "$$7 + 6 < 12$$",
+        "$$8 + 4 < 12$$"
+      ],
+      correctAnswer: "$$6 + 5 < 12$$",
+      hint: "Check the sums: 9+5=14, 6+5=11, 7+6=13, 8+4=12.",
+      workedSolution: "$$6 + 5 = 11$$, and $11 < 12$ is true. All other options are greater than or equal to 12.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Find the set of all integers within the open interval: $$-3 < x < 2$$.",
+      options: [
+        "{-3, -2, -1, 0, 1}",
+        "{-2, -1, 0, 1, 2}",
+        "{-2, -1, 1}",
+        "{-2, -1, 0, 1}"
+      ],
+      correctAnswer: "{-2, -1, 0, 1}",
+      hint: "The endpoints -3 and 2 are excluded because the inequality is strict.",
+      workedSolution: "Integers strictly between -3 and 2 are -2, -1, 0, 1.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "State the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4, 5\\}$ produce outputs $y = \\{-3, -1, 1, 3, 5\\}$.",
+      options: [
+        "$$x \\to 2x - 5$$",
+        "$$x \\to 2x - 3$$",
+        "$$x \\to x - 4$$",
+        "$$x \\to 2(x - 2)$$"
+      ],
+      correctAnswer: "$$x \\to 2x - 5$$",
+      hint: "Common difference between outputs is 2. When $x = 1$, $y = 2(1) - 5 = -3$.",
+      workedSolution: "Slope is 2 ($2x$). When $x = 1$, $2(1) + c = -3 \\implies c = -5$. Rule is $$x \\to 2x - 5$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "Under the mapping $$x \\to 2x - 5$$, find the output $y$ when input $x = 6$.",
+      options: [
+        "6",
+        "7",
+        "8",
+        "5"
+      ],
+      correctAnswer: "7",
+      hint: "Substitute $x = 6$ into $2x - 5$.",
+      workedSolution: "$$2(6) - 5 = 12 - 5 = 7$$.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "Which of the following geometric nets folds to create a pyramid with a square base?",
+      options: [
+        "A rectangle with 2 opposite circular faces",
+        "Two congruent triangles joined by 3 rectangles",
+        "A square surrounded by 4 isosceles triangles",
+        "Six identical square faces joined in a cross shape"
+      ],
+      correctAnswer: "A square surrounded by 4 isosceles triangles",
+      hint: "A central polygon base with triangular flaps folding to an apex defines a pyramid net.",
+      workedSolution: "A square base attached to 4 surrounding triangular faces is the net of a square pyramid.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "A rectangular water container has dimensions $3\\text{ m} \\times 4\\text{ m} \\times 5\\text{ m}$ and is full to the brim. If $40\\text{ m}^3$ of water is drained, how much water remains?",
+      options: [
+        "$$60\\text{ m}^3$$",
+        "$$20\\text{ m}^3$$",
+        "$$15\\text{ m}^3$$",
+        "$$25\\text{ m}^3$$"
+      ],
+      correctAnswer: "$$20\\text{ m}^3$$",
+      hint: "Total capacity = $3 \\times 4 \\times 5 = 60\\text{ m}^3$. Subtract 40.",
+      workedSolution: "Capacity = $$3 \\times 4 \\times 5 = 60\\text{ m}^3$$. Water remaining = $$60 - 40 = 20\\text{ m}^3$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "In a right-angled triangle $ABC$ with $\\angle ABC = 90^\\circ$, hypotenuse $|AC| = 17\\text{ cm}$ and base $|BC| = 8\\text{ cm}$. Calculate the length of side $|AB|$.",
+      options: [
+        "15 cm",
+        "12 cm",
+        "9 cm",
+        "13 cm"
+      ],
+      correctAnswer: "15 cm",
+      hint: "$$|AB|^2 = |AC|^2 - |BC|^2 = 17^2 - 8^2$$.",
+      workedSolution: "$$|AB|^2 = 289 - 64 = 225 \\implies |AB| = \\sqrt{225} = 15\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "How many lines of symmetry does a regular equilateral triangle have?",
+      options: [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      correctAnswer: "3",
+      hint: "Each line passes through a vertex and perpendicularly bisects the opposite side.",
+      workedSolution: "An equilateral triangle has 3 lines of symmetry.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "The measure of an obtuse angle lies strictly between:",
+      options: [
+        "0° and 90°",
+        "180° and 360°",
+        "90° and 270°",
+        "90° and 180°"
+      ],
+      correctAnswer: "90° and 180°",
+      hint: "An obtuse angle is greater than a right angle but less than a straight line.",
+      workedSolution: "By standard definition, an obtuse angle has a magnitude between $90^\\circ$ and $180^\\circ$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "Two parallel lines are intersected by a transversal line. Two angles situated on the same relative side of the transversal and at the same level relative to the parallel lines are called:",
+      options: [
+        "Corresponding angles",
+        "Alternate angles",
+        "Vertically opposite angles",
+        "Co-interior angles"
+      ],
+      correctAnswer: "Corresponding angles",
+      hint: "These form an 'F-shape' in geometry and are equal in measure.",
+      workedSolution: "Angles in matching corner positions relative to the transversal and parallel lines are corresponding angles.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Given vectors $$u = \\begin{pmatrix} 3 \\\\ 1 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -2 \\\\ 4 \\end{pmatrix}$$, evaluate $$2u + v$$.",
+      options: [
+        "$$\\begin{pmatrix} 4 \\\\ 6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 1 \\\\ 6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 4 \\\\ 2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -1 \\\\ 6 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 4 \\\\ 6 \\end{pmatrix}$$",
+      hint: "$$2(3) + (-2) = 4$$ and $$2(1) + 4 = 6$$.",
+      workedSolution: "$$2\\begin{pmatrix} 3 \\\\ 1 \\end{pmatrix} + \\begin{pmatrix} -2 \\\\ 4 \\end{pmatrix} = \\begin{pmatrix} 6 - 2 \\\\ 2 + 4 \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ 6 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "In an isosceles triangle with base angles equal to $68^\\circ$ each, what is the size of the vertex angle?",
+      options: [
+        "$$56^\\circ$$",
+        "$$44^\\circ$$",
+        "$$68^\\circ$$",
+        "$$34^\\circ$$"
+      ],
+      correctAnswer: "$$44^\\circ$$",
+      hint: "Sum of angles in a triangle is $180^\\circ$: $180 - 2(68)$.",
+      workedSolution: "$$\\text{Vertex angle} = 180^\\circ - (68^\\circ + 68^\\circ) = 180^\\circ - 136^\\circ = 44^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "The dimensions of a cuboid are $3\\text{ cm}$, $x\\text{ cm}$, and $6\\text{ cm}$. Which expression represents its volume?",
+      options: [
+        "$$(9 + x)\\text{ cm}^3$$",
+        "$$18x\\text{ cm}^3$$",
+        "$$9x\\text{ cm}^3$$",
+        "$$(18 + x)\\text{ cm}^3$$"
+      ],
+      correctAnswer: "$$18x\\text{ cm}^3$$",
+      hint: "Volume = length × width × height.",
+      workedSolution: "$$V = 3 \\times x \\times 6 = 18x\\text{ cm}^3$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "Simplify: $$6(2m + 1) - 4(m - 2)$$.",
+      options: [
+        "$$8m + 14$$",
+        "$$8m - 2$$",
+        "$$8m + 2$$",
+        "$$16m + 14$$"
+      ],
+      correctAnswer: "$$8m + 14$$",
+      hint: "Expand: $12m + 6 - 4m + 8$. Note that $-4(-2) = +8$.",
+      workedSolution: "$$(12m - 4m) + (6 + 8) = 8m + 14$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "Evaluate: $$\\left(\\frac{3}{4} - \\frac{1}{2}\\right) \\div \\frac{1}{8}$$.",
+      options: [
+        "1",
+        "4",
+        "2",
+        "$$\\frac{1}{16}$$"
+      ],
+      correctAnswer: "2",
+      hint: "$$\\frac{3}{4} - \\frac{1}{2} = \\frac{1}{4}$$. Then multiply by 8.",
+      workedSolution: "$$\\frac{1}{4} \\div \\frac{1}{8} = \\frac{1}{4} \\times 8 = 2$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "The locus of points equidistant from two fixed points $A$ and $B$ in a plane is:",
+      options: [
+        "The angle bisector of angle PAB",
+        "A circle with AB as diameter",
+        "A line parallel to AB",
+        "The perpendicular bisector of line segment AB"
+      ],
+      correctAnswer: "The perpendicular bisector of line segment AB",
+      hint: "A point at equal distance from both endpoints lies on their perpendicular mediator line.",
+      workedSolution: "By locus definitions in geometry, the set of all points equidistant from two fixed points $A$ and $B$ is the perpendicular bisector of segment $AB$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T16:00:00.000Z",
+  lastUpdated: "2026-09-15T16:00:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -5039,6 +5618,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_18
   );
   results.push(result21);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 22: JHS Math -> Core Curriculum Series (Set 19 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 22: Junior Core Math Objective Mastery Series (Set 19)...');
+  const result22 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_19
+  );
+  results.push(result22);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

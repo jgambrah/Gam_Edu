@@ -636,6 +636,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "\\text{TSA} = 2(lw + lh + wh) = 16,600\\text{ cm}^2, \\quad d = \\frac{84,000}{2,800} = 30\\text{ cm}",
         sampleAnswer: "16,600 cm², 30 cm"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 19)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 19 / 2003 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 19 / 2003 past paper adaptation) with balanced option randomization covering set descriptions, integer midpoints, prime factor products, commission and profit, right-angled triangles, and geometric loci.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-19",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2003 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Which of the following descriptions best defines the set S = {4, 8, 12, 16, 20}?",
+        sampleFormula: "S = \\{x : x \\text{ is a multiple of } 4 \\text{ less than } 24\\}",
+        sampleAnswer: "The set of multiples of 4 less than 24"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
