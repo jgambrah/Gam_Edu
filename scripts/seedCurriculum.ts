@@ -801,6 +801,586 @@ export const SET_JHS_MASTERY_SERIES_02: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3j. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 9)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-09
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_09: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-09",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 9)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  format: "multiple_choice",
+  questions: [
+    {
+      id: "q01",
+      prompt: "Given the universal set $$U = \\{1, 2, 3, \\dots, 20\\}$$, and subsets $$A = \\{4, 5, 6, 7, 8, 9\\}$$ and $$B = \\{3, 5, 7, 11\\}$$, find $$A \\cap B$$.",
+      options: [
+        "{5, 7, 11}",
+        "{5, 7}",
+        "{4, 6, 8, 9}",
+        "{3, 4, 5, 6, 7, 8, 9, 11}"
+      ],
+      correctAnswer: "{5, 7}",
+      hint: "Identify the elements that belong to both set A and set B.",
+      workedSolution: "The common elements present in both set A and set B are 5 and 7. Thus, $$A \\cap B = \\{5, 7\\}$$.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "List the members of the set $$\\{x : 3 \\le x \\le 7, x \\text{ is an integer}\\}$$.",
+      options: [
+        "{3, 4, 5, 6}",
+        "{4, 5, 6}",
+        "{3, 4, 5, 6, 7}",
+        "{3, 7}"
+      ],
+      correctAnswer: "{3, 4, 5, 6, 7}",
+      hint: "Both 3 and 7 are inclusive because of the $\\le$ inequality signs.",
+      workedSolution: "The integers from 3 up to and including 7 are 3, 4, 5, 6, 7.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Round $7,842,650$ to the nearest hundred.",
+      options: [
+        "7,842,600",
+        "7,842,000",
+        "7,843,000",
+        "7,842,700"
+      ],
+      correctAnswer: "7,842,700",
+      hint: "Look at the tens digit (5): round the hundreds digit up.",
+      workedSolution: "The tens digit is 5, so the hundreds digit (6) rounds up to 7, giving $7,842,700$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Express $150$ as a product of its prime factors in index notation.",
+      options: [
+        "$$2 \\times 3 \\times 5^2$$",
+        "$$2^2 \\times 3 \\times 5$$",
+        "$$2 \\times 3^2 \\times 5$$",
+        "$$2^2 \\times 5^2$$"
+      ],
+      correctAnswer: "$$2 \\times 3 \\times 5^2$$",
+      hint: "Divide by prime numbers: $150 = 2 \\times 75 = 2 \\times 3 \\times 25$.",
+      workedSolution: "$$150 = 2 \\times 75 = 2 \\times 3 \\times 5^2$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "Evaluate: $$5(9 - 3) + 4(2 - 7)$$.",
+      options: [
+        "10",
+        "-10",
+        "50",
+        "-50"
+      ],
+      correctAnswer: "10",
+      hint: "Parentheses first: $9 - 3 = 6$ and $2 - 7 = -5$.",
+      workedSolution: "$$5(6) + 4(-5) = 30 - 20 = 10$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Arrange the following values in descending order of magnitude: $$0.35, \\, \\frac{1}{2}, \\, 30\\%, \\, \\frac{2}{5}$$.",
+      options: [
+        "$$\\frac{1}{2}, \\, \\frac{2}{5}, \\, 0.35, \\, 30\\%$$",
+        "$$0.35, \\, \\frac{2}{5}, \\, \\frac{1}{2}, \\, 30\\%$$",
+        "$$\\frac{1}{2}, \\, 0.35, \\, \\frac{2}{5}, \\, 30\\%$$",
+        "$$30\\%, \\, 0.35, \\, \\frac{2}{5}, \\, \\frac{1}{2}$$"
+      ],
+      correctAnswer: "$$\\frac{1}{2}, \\, \\frac{2}{5}, \\, 0.35, \\, 30\\%$$",
+      hint: "Convert all to decimals: $1/2 = 0.50, 2/5 = 0.40, 0.35, 30\\% = 0.30$.",
+      workedSolution: "Comparing decimals: $0.50 > 0.40 > 0.35 > 0.30 \\implies \\frac{1}{2} > \\frac{2}{5} > 0.35 > 30\\%$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "The ratio $6 : 15$ is equivalent to $y : 20$. Find the value of $y$.",
+      options: [
+        "10",
+        "12",
+        "8",
+        "5"
+      ],
+      correctAnswer: "8",
+      hint: "Cross-multiply: $15y = 6 \\times 20$.",
+      workedSolution: "$$15y = 120 \\implies y = \\frac{120}{15} = 8$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "Express $0.65$ as a common fraction in its lowest terms.",
+      options: [
+        "$$\\frac{65}{10}$$",
+        "$$\\frac{13}{20}$$",
+        "$$\\frac{13}{25}$$",
+        "$$\\frac{7}{10}$$"
+      ],
+      correctAnswer: "$$\\frac{13}{20}$$",
+      hint: "Divide numerator and denominator by 5.",
+      workedSolution: "$$\\frac{65}{100} = \\frac{65 \\div 5}{100 \\div 5} = \\frac{13}{20}$$.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Which 3D solid can be formed by folding a net consisting of one square base surrounded by four triangular faces?",
+      options: [
+        "Triangular prism",
+        "Cuboid",
+        "Tetrahedron",
+        "Square pyramid"
+      ],
+      correctAnswer: "Square pyramid",
+      hint: "A flat square with 4 triangles attached folds into a pyramid with a square base.",
+      workedSolution: "A square base attached to four triangular faces folds into a square-based pyramid.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "Simplify: $$7x + 8y^2 - 3x + 2y^2$$.",
+      options: [
+        "$$4x + 6y^2$$",
+        "$$4x + 10y^2$$",
+        "$$10x + 10y^2$$",
+        "$$4x + 10y^4$$"
+      ],
+      correctAnswer: "$$4x + 10y^2$$",
+      hint: "Combine like terms: $(7x - 3x) + (8y^2 + 2y^2)$.",
+      workedSolution: "$$(7x - 3x) + (8y^2 + 2y^2) = 4x + 10y^2$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Ama bought a textbook for GH¢ 12.00 and sold it to Kofi at a profit of $25\\%$. How much did Kofi pay for the book?",
+      options: [
+        "GH¢ 15.00",
+        "GH¢ 14.40",
+        "GH¢ 16.00",
+        "GH¢ 14.00"
+      ],
+      correctAnswer: "GH¢ 15.00",
+      hint: "Selling Price = 125% of Cost Price.",
+      workedSolution: "$$\\text{SP} = 1.25 \\times 12.00 = \\text{GH¢ } 15.00$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Simplify: $$3^8 \\div 3^2$$.",
+      options: [
+        "$$3^4$$",
+        "$$3^{10}$$",
+        "$$3^6$$",
+        "$$3^{16}$$"
+      ],
+      correctAnswer: "$$3^6$$",
+      hint: "Quotient rule of indices: subtract powers ($8 - 2$).",
+      workedSolution: "$$3^8 \\div 3^2 = 3^{8-2} = 3^6$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Find the image of $-4$ under the linear mapping $$x \\to 3(x + 5)$$.",
+      options: [
+        "-3",
+        "3",
+        "27",
+        "-27"
+      ],
+      correctAnswer: "3",
+      hint: "Substitute $x = -4$ into $3(x + 5)$.",
+      workedSolution: "$$3(-4 + 5) = 3(1) = 3$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "A municipal park is $140\\text{ m}$ long and $60\\text{ m}$ wide. Calculate the total perimeter of the park.",
+      options: [
+        "200 m",
+        "8,400 m",
+        "400 m",
+        "280 m"
+      ],
+      correctAnswer: "400 m",
+      hint: "Perimeter = 2(length + width).",
+      workedSolution: "$$2(140 + 60) = 2(200) = 400\\text{ m}$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "A storage tank has a total capacity of $350\\text{ litres}$. How much water is in the tank when it is $4/5$ full?",
+      options: [
+        "280 litres",
+        "270 litres",
+        "70 litres",
+        "300 litres"
+      ],
+      correctAnswer: "280 litres",
+      hint: "Calculate $\\frac{4}{5} \\times 350$.",
+      workedSolution: "$$\\frac{4}{5} \\times 350 = 4 \\times 70 = 280\\text{ litres}$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "A farmer has $8a$ cows and $6b$ sheep. If he sells $5a$ cows and $2b$ sheep, how many animals does he have left?",
+      options: [
+        "$$3a - 4b$$",
+        "$$13a + 8b$$",
+        "$$3a + 4b$$",
+        "$$3a + 8b$$"
+      ],
+      correctAnswer: "$$3a + 4b$$",
+      hint: "Subtract cows and sheep separately: $(8a - 5a) + (6b - 2b)$.",
+      workedSolution: "$$(8a - 5a) + (6b - 2b) = 3a + 4b$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "The rainfall records (in mm) for three consecutive months are $185\\text{ mm}$, $310\\text{ mm}$, and $245\\text{ mm}$. What is the total rainfall recorded over these months?",
+      options: [
+        "740 mm",
+        "730 mm",
+        "750 mm",
+        "720 mm"
+      ],
+      correctAnswer: "740 mm",
+      hint: "Add the three rainfall measurements directly.",
+      workedSolution: "$$185 + 310 + 245 = 740\\text{ mm}$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "If a rainfall of $740\\text{ mm}$ fell over a period of $4\\text{ months}$, find the mean monthly rainfall.",
+      options: [
+        "180 mm",
+        "185 mm",
+        "190 mm",
+        "175 mm"
+      ],
+      correctAnswer: "185 mm",
+      hint: "Divide total rainfall by 4 months.",
+      workedSolution: "$$740 \\div 4 = 185\\text{ mm}$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "A shopkeeper buys $10$ erasers for GH¢ 5.00 and sells each eraser for $60\\text{ Pesewas}$ (GH¢ 0.60). Calculate his percentage profit.",
+      options: [
+        "10%",
+        "15%",
+        "20%",
+        "25%"
+      ],
+      correctAnswer: "20%",
+      hint: "Total SP = 10 × 0.60 = GH¢ 6.00. Profit = 6.00 - 5.00 = GH¢ 1.00.",
+      workedSolution: "$$\\text{Total SP} = 10 \\times 0.60 = 6.00$$. $$\\text{Profit} = 6.00 - 5.00 = 1.00$$. $$\\text{Profit \\%} = (1.00 / 5.00) \\times 100\\% = 20\\%$$.",
+      points: 1
+    },
+    {
+      "id": "q20",
+      prompt: "Calculate the angle through which the minute hand of a clock turns between 2:10 PM and 2:30 PM.",
+      options: [
+        "$$60^\\circ$$",
+        "$$120^\\circ$$",
+        "$$90^\\circ$$",
+        "$$150^\\circ$$"
+      ],
+      correctAnswer: "$$120^\\circ$$",
+      hint: "Each minute corresponds to $360^\\circ / 60 = 6^\\circ$. The elapsed time is 20 minutes.",
+      workedSolution: "Elapsed time = $20\\text{ minutes}$. Angle = $20 \\times 6^\\circ = 120^\\circ$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "If $$E = \\{\\text{prime numbers between } 10 \\text{ and } 20\\}$$ and $$F = \\{\\text{odd numbers between } 10 \\text{ and } 20\\}$$, find $$E \\cap F$$.",
+      options: [
+        "{11, 13, 17, 19}",
+        "{11, 13, 15, 17, 19}",
+        "{13, 17}",
+        "{11, 19}"
+      ],
+      correctAnswer: "{11, 13, 17, 19}",
+      hint: "All prime numbers between 10 and 20 are odd.",
+      workedSolution: "$$E = \\{11, 13, 17, 19\\}$$ and $$F = \\{11, 13, 15, 17, 19\\}$$. The intersection is $\\{11, 13, 17, 19\\}$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "Convert $25_{\\text{ten}}$ to a base two (binary) numeral.",
+      options: [
+        "$$11001_{\\text{two}}$$",
+        "$$10011_{\\text{two}}$$",
+        "$$11011_{\\text{two}}$$",
+        "$$10101_{\\text{two}}$$"
+      ],
+      correctAnswer: "$$11001_{\\text{two}}$$",
+      hint: "Divide repeatedly by 2: $25 = 16 + 8 + 1 = 2^4 + 2^3 + 2^0$.",
+      workedSolution: "$$25 = 16 + 8 + 0 + 0 + 1 = 11001_{\\text{two}}$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "What fraction of a complete revolution is an angle of $108^\\circ$?",
+      options: [
+        "$$\\frac{1}{4}$$",
+        "$$\\frac{2}{5}$$",
+        "$$\\frac{3}{10}$$",
+        "$$\\frac{3}{5}$$"
+      ],
+      correctAnswer: "$$\\frac{3}{10}$$",
+      hint: "Divide 108 by 360 and simplify.",
+      workedSolution: "$$\\frac{108}{360} = \\frac{108 \\div 36}{360 \\div 36} = \\frac{3}{10}$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "Express the ratio of $4\\text{ days}$ to $2\\text{ weeks}$ in its simplest form.",
+      options: [
+        "2 : 7",
+        "1 : 2",
+        "4 : 7",
+        "2 : 1"
+      ],
+      correctAnswer: "2 : 7",
+      hint: "Convert weeks to days: 2 weeks = 14 days.",
+      workedSolution: "$$4\\text{ days} : 14\\text{ days} = \\frac{4}{14} = \\frac{2}{7} = 2 : 7$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "A letter is selected at random from the word **\"MATHEMATICS\"**. What is the probability that the letter chosen is a vowel?",
+      options: [
+        "$$\\frac{7}{11}$$",
+        "$$\\frac{4}{11}$$",
+        "$$\\frac{3}{11}$$",
+        "$$\\frac{5}{11}$$"
+      ],
+      correctAnswer: "$$\\frac{4}{11}$$",
+      hint: "Total letters = 11. Count vowels: A, E, A, I (4 vowels).",
+      workedSolution: "Vowels present: A, E, A, I (4 vowels). Total letters = 11. Probability = $$\\frac{4}{11}$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "A symmetrical kite has adjacent sides measuring $14\\text{ cm}$ and $20\\text{ cm}$. Find the perimeter of the kite.",
+      options: [
+        "34 cm",
+        "72 cm",
+        "68 cm",
+        "64 cm"
+      ],
+      correctAnswer: "68 cm",
+      hint: "A kite has two pairs of equal adjacent sides: $2(14 + 20)$.",
+      workedSolution: "$$\\text{Perimeter} = 2(14 + 20) = 2(34) = 68\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Which inequality is represented on a number line by open circles at $2$ and $6$ joined by a solid line segment?",
+      options: [
+        "$$2 \\le x \\le 6$$",
+        "$$2 < x < 6$$",
+        "$$2 < x \\le 6$$",
+        "$$2 \\le x < 6$$"
+      ],
+      correctAnswer: "$$2 < x < 6$$",
+      hint: "Open circles at both ends signify strict inequalities without equality.",
+      workedSolution: "Open endpoints at 2 and 6 indicate strict inequalities: $$2 < x < 6$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "How many lines of symmetry does a regular hexagon have?",
+      options: [
+        "3",
+        "4",
+        "8",
+        "6"
+      ],
+      correctAnswer: "6",
+      hint: "A regular polygon with n sides has n lines of symmetry.",
+      workedSolution: "A regular hexagon has 6 sides and exactly 6 lines of symmetry.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "Given vectors $$p = \\begin{pmatrix} 3 \\\\ 2 \\end{pmatrix}$$ and $$q = \\begin{pmatrix} 1 \\\\ -4 \\end{pmatrix}$$, evaluate $$3p - 2q$$.",
+      options: [
+        "$$\\begin{pmatrix} 7 \\\\ 14 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 7 \\\\ -2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 11 \\\\ 14 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 7 \\\\ 10 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 7 \\\\ 14 \\end{pmatrix}$$",
+      hint: "$$3(2) - 2(-4) = 6 + 8 = 14$$.",
+      workedSolution: "$$3\\begin{pmatrix} 3 \\\\ 2 \\end{pmatrix} - 2\\begin{pmatrix} 1 \\\\ -4 \\end{pmatrix} = \\begin{pmatrix} 9 - 2 \\\\ 6 - (-8) \\end{pmatrix} = \\begin{pmatrix} 7 \\\\ 14 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "Which of the following plane figures is NOT a quadrilateral?",
+      options: [
+        "Rhombus",
+        "Pentagon",
+        "Trapezium",
+        "Parallelogram"
+      ],
+      correctAnswer: "Pentagon",
+      hint: "A quadrilateral must have exactly 4 sides.",
+      workedSolution: "A pentagon has 5 sides; therefore, it is not a quadrilateral.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "The interior angles of a triangle are $2x^\\circ$, $3x^\\circ$, and $4x^\\circ$. Find the value of $x$.",
+      options: [
+        "$$15^\\circ$$",
+        "$$20^\\circ$$",
+        "$$25^\\circ$$",
+        "$$30^\\circ$$"
+      ],
+      correctAnswer: "$$20^\\circ$$",
+      hint: "The interior angles of a triangle sum to $180^\\circ$.",
+      workedSolution: "$$2x + 3x + 4x = 180 \\implies 9x = 180 \\implies x = 20^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "From Question 31, what is the size of the largest interior angle?",
+      options: [
+        "$$60^\\circ$$",
+        "$$40^\\circ$$",
+        "$$80^\\circ$$",
+        "$$100^\\circ$$"
+      ],
+      correctAnswer: "$$80^\\circ$$",
+      hint: "The largest angle is $4x^\\circ$.",
+      workedSolution: "$$4 \\times 20^\\circ = 80^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "Solve for $m$ in the proportional relation: $$\\frac{m}{6} = \\frac{15}{10}$$.",
+      options: [
+        "9",
+        "8",
+        "12",
+        "6"
+      ],
+      correctAnswer: "9",
+      hint: "Cross-multiply or simplify $15/10 = 1.5$.",
+      workedSolution: "$$10m = 6 \\times 15 = 90 \\implies m = 9$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "Expand and simplify: $$(x + 3)(x + 5)$$.",
+      options: [
+        "$$x^2 + 8x + 15$$",
+        "$$x^2 + 15x + 8$$",
+        "$$x^2 + 2x + 15$$",
+        "$$2x + 8$$"
+      ],
+      correctAnswer: "$$x^2 + 8x + 15$$",
+      hint: "$$x(x + 5) + 3(x + 5)$$.",
+      workedSolution: "$$x^2 + 5x + 3x + 15 = x^2 + 8x + 15$$.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Calculate $15\\%$ of $\\text{GH¢ } 120.00$.",
+      options: [
+        "GH¢ 12.00",
+        "GH¢ 16.00",
+        "GH¢ 18.00",
+        "GH¢ 24.00"
+      ],
+      correctAnswer: "GH¢ 18.00",
+      hint: "$$0.15 \\times 120$$.",
+      workedSolution: "$$\\frac{15}{100} \\times 120 = \\frac{1800}{100} = \\text{GH¢ } 18.00$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "Write $48.3$ in standard form.",
+      options: [
+        "$$4.83 \\times 10^2$$",
+        "$$4.83 \\times 10^1$$",
+        "$$4.83 \\times 10^{-1}$$",
+        "$$48.3 \\times 10^0$$"
+      ],
+      correctAnswer: "$$4.83 \\times 10^1$$",
+      hint: "Move the decimal point 1 place to the left.",
+      workedSolution: "$$48.3 = 4.83 \\times 10^1$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "Simplify: $$\\frac{40}{-4(2)}$$.",
+      options: [
+        "-5",
+        "5",
+        "-10",
+        "10"
+      ],
+      correctAnswer: "-5",
+      hint: "Denominator = $-4 \\times 2 = -8$.",
+      workedSolution: "$$\\frac{40}{-8} = -5$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "Find the Highest Common Factor (HCF) of $24$ and $36$.",
+      options: [
+        "6",
+        "18",
+        "4",
+        "12"
+      ],
+      correctAnswer: "12",
+      hint: "$24 = 12 \\times 2$ and $36 = 12 \\times 3$.",
+      workedSolution: "The common factors are 1, 2, 3, 4, 6, 12. The greatest is 12.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "The difference between two positive numbers is $145$. If the smaller number is $85$, what is the larger number?",
+      options: [
+        "220",
+        "230",
+        "60",
+        "240"
+      ],
+      correctAnswer: "230",
+      hint: "$$\\text{Larger} = \\text{Smaller} + \\text{Difference}$$.",
+      workedSolution: "$$85 + 145 = 230$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Given vectors $$r = \\begin{pmatrix} 4 \\\\ 3 \\end{pmatrix}$$ and $$t = \\begin{pmatrix} -4 \\\\ 2 \\end{pmatrix}$$, evaluate $$r + t$$.",
+      options: [
+        "$$\\begin{pmatrix} 8 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 0 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -8 \\\\ 5 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 0 \\\\ 5 \\end{pmatrix}$$",
+      hint: "Add the components: $4 + (-4) = 0$ and $3 + 2 = 5$.",
+      workedSolution: "$$\\begin{pmatrix} 4 + (-4) \\\\ 3 + 2 \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 5 \\end{pmatrix}$$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T10:45:00.000Z",
+  lastUpdated: "2026-09-15T10:45:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -1028,6 +1608,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_08
   );
   results.push(result11);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 12: JHS Math -> Core Curriculum Series (Set 9 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 12: Junior Core Math Objective Mastery Series (Set 9)...');
+  const result12 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_09
+  );
+  results.push(result12);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
