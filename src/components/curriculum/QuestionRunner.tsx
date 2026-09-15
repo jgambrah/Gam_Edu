@@ -727,7 +727,7 @@ export function QuestionRunner({
                       STEP-BY-STEP WORKED DERIVATION
                     </span>
                     <div className="text-xs text-slate-300 leading-relaxed">
-                      <MathRenderer content={currentQuestion.workedSolution} />
+                      <MathRenderer content={currentQuestion.workedSolution || ''} />
                     </div>
                   </div>
                 </div>

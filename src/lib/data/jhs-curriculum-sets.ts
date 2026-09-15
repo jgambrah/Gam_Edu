@@ -1720,3 +1720,233 @@ export const SET_JHS_MASTERY_SERIES_05: CurriculumQuestionSet = {
   "seededAt": "2026-09-14T15:30:00.000Z",
   "lastUpdated": "2026-09-14T15:30:00.000Z"
 };
+
+export const SET_JHS_MASTERY_SERIES_06: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-06",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 6)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Algebraic Factorization, Set Partitions & Vector Equations",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the Venn diagram and problem descriptions provided below:",
+      diagramSvg: "<svg viewBox='0 0 380 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><rect width='370' height='190' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U = {1, 2, 3, ..., 20}</text><circle cx='140' cy='110' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='240' cy='110' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='110' y='45' font-family='sans-serif' font-size='12' font-weight='bold' fill='#2563eb'>A (Multiples of 2)</text><text x='230' y='45' font-family='sans-serif' font-size='12' font-weight='bold' fill='#059669'>B (Multiples of 3)</text><text x='100' y='95' font-size='11' fill='#1e293b'>2, 4, 8,</text><text x='95' y='125' font-size='11' fill='#1e293b'>10, 14, 16, 20</text><text x='175' y='110' font-size='11' font-weight='bold' fill='#dc2626'>6, 12, 18</text><text x='245' y='100' font-size='11' fill='#1e293b'>3, 9,</text><text x='245' y='125' font-size='11' fill='#1e293b'>15</text><text x='30' y='170' font-size='11' fill='#64748b'>(A ∪ B)′ = {1, 5, 7, 11, 13, 17, 19}</text></svg>",
+      hint: "Review algebraic factorization by grouping, set complement rules, and column vector arithmetic.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 4,
+          prompt: "Factorize completely the algebraic expression:\n$$(p + q)(3x - 2y) - x(p + q)$$",
+          hint: "Notice that $(p + q)$ is a common binomial factor in both terms.",
+          modelAnswer: "(p + q)(2x - 2y) = 2(p + q)(x - y)",
+          workedSolution: "$$(p + q)(3x - 2y) - x(p + q)$$\nFactor out $(p + q)$:\n$$= (p + q)[(3x - 2y) - x]$$\n$$= (p + q)(3x - x - 2y)$$\n$$= (p + q)(2x - 2y)$$\nFactor out $2$ completely:\n$$= 2(p + q)(x - y)$$"
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Given the universal set $$U = \\{x : x \\text{ is an integer, } 1 \\le x \\le 20\\}$$, and subsets:\n$$A = \\{\\text{even numbers}\\}, \\quad B = \\{\\text{multiples of } 3\\}$$\n(i) List the members of $A \\cap B$.\n(ii) List the members of $(A \\cup B)'$.\n(iii) Using the provided Venn diagram, verify the number of elements in $(A \\cup B)'$.",
+          hint: "Even numbers are multiples of 2. $A \\cap B$ contains multiples of both 2 and 3 (i.e. multiples of 6).",
+          modelAnswer: "(i) {6, 12, 18}, (ii) {1, 5, 7, 11, 13, 17, 19}, (iii) n((A ∪ B)′) = 7",
+          workedSolution: "$$A = \\{2, 4, 6, 8, 10, 12, 14, 16, 18, 20\\}$$\n$$B = \\{3, 6, 9, 12, 15, 18\\}$$\n\n**(i)** $$A \\cap B = \\{6, 12, 18\\}$$\n\n**(ii)** $$A \\cup B = \\{2, 3, 4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20\\}$$\nElements in $U$ not in $A \\cup B$:\n$$(A \\cup B)' = \\{1, 5, 7, 11, 13, 17, 19\\}$$\n\n**(iii)** There are exactly $7$ elements outside both circles, verifying $n((A \\cup B)') = 7$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Find the values of $x$ and $y$ in the vector equation:\n$$\\begin{pmatrix} 7 \\\\ 4 \\end{pmatrix} + 3\\begin{pmatrix} x \\\\ y \\end{pmatrix} - \\begin{pmatrix} 1 \\\\ -8 \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}$$",
+          hint: "Set up independent equations for the top (x) components and bottom (y) components.",
+          modelAnswer: "x = -2, y = -4",
+          workedSolution: "**Horizontal (x) component:**\n$$7 + 3x - 1 = 0$$\n$$3x + 6 = 0 \\implies 3x = -6 \\implies x = -2$$\n\n**Vertical (y) component:**\n$$4 + 3y - (-8) = 0$$\n$$4 + 3y + 8 = 0$$\n$$3y + 12 = 0 \\implies 3y = -12 \\implies y = -4$$\nTherefore, **$x = -2$ and $y = -4$**."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "title": "Question 2: Right-Angled Composite Geometry & Decimal Precision",
+      "totalMarks": 15,
+      "points": 15,
+      "format": "structured_essay",
+      "prompt": "Answer all parts of this question using the geometric figure and problem descriptions provided below:",
+      "diagramSvg": "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><polygon points='60,200 160,200 160,140 280,30' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><line x1='60' y1='200' x2='160' y2='140' stroke='#2563eb' stroke-width='2' stroke-dasharray='4'/><rect x='145' y='185' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.5'/><rect x='150' y='130' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.5' transform='rotate(30 160 140)'/><text x='45' y='215' font-size='12' font-weight='bold'>A</text><text x='165' y='215' font-size='12' font-weight='bold'>B</text><text x='170' y='145' font-size='12' font-weight='bold'>C</text><text x='285' y='30' font-size='12' font-weight='bold'>D</text><text x='100' y='215' font-size='11'>6 cm</text><text x='170' y='175' font-size='11'>8 cm</text><text x='230' y='80' font-size='11'>24 cm</text></svg>",
+      "hint": "Apply the Pythagorean theorem iteratively across connected right triangles and round decimals to the requested degree of accuracy.",
+      "workedSolution": "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 3,
+          "prompt": "Evaluate $$3,154.72 + 826.435 + 214.6$$, giving your final answer correct to **one decimal place**.",
+          "hint": "Align the decimal points carefully when adding, then round at the tenths place.",
+          "modelAnswer": "4,195.8",
+          "workedSolution": "$$\\begin{array}{r@{\\quad}l} & 3154.720 \\\\ + & 826.435 \\\\ + & 214.600 \\\\ \\hline & 4195.755 \\end{array}$$\nRounding to one decimal place: look at the hundredths digit ($5$). Round up: **$4,195.8$**."
+        },
+        {
+          "partLabel": "(b)(i)",
+          "marks": 6,
+          "prompt": "In the quadrilateral $ABCD$ shown in the diagram, $|AB| = 6\\text{ cm}$, $|BC| = 8\\text{ cm}$, $|CD| = 24\\text{ cm}$, and $\\angle ABC = 90^\\circ$, with $\\angle ACD = 90^\\circ$.\nCalculate the total perimeter of quadrilateral $ABCD$.",
+          "hint": "Find hypotenuse AC first using Pythagoras' theorem on triangle ABC, then find hypotenuse AD on triangle ACD.",
+          "modelAnswer": "64 cm",
+          "workedSolution": "1. In right-angled triangle $ABC$:\n$$|AC|^2 = |AB|^2 + |BC|^2 = 6^2 + 8^2 = 36 + 64 = 100$$\n$$|AC| = \\sqrt{100} = 10\\text{ cm}$$\n\n2. In right-angled triangle $ACD$:\n$$|AD|^2 = |AC|^2 + |CD|^2 = 10^2 + 24^2 = 100 + 576 = 676$$\n$$|AD| = \\sqrt{676} = 26\\text{ cm}$$\n\n3. Total perimeter of $ABCD$:\n$$\\text{Perimeter} = |AB| + |BC| + |CD| + |DA| = 6 + 8 + 24 + 26 = 64\\text{ cm}$$."
+        },
+        {
+          "partLabel": "(b)(ii)",
+          "marks": 6,
+          "prompt": "Calculate the total area enclosed by quadrilateral $ABCD$.",
+          "hint": "The area is the sum of the areas of right-angled triangles ABC and ACD.",
+          "modelAnswer": "144 cm²",
+          "workedSolution": "$$\\text{Area of } \\Delta ABC = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 8 = 24\\text{ cm}^2$$\n$$\\text{Area of } \\Delta ACD = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 10 \\times 24 = 120\\text{ cm}^2$$\n$$\\text{Total Area} = 24\\text{ cm}^2 + 120\\text{ cm}^2 = 144\\text{ cm}^2$$."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "title": "Question 3: Indices, Travel Rate Kinematics & 3D Liquid Volume",
+      "totalMarks": 15,
+      "points": 15,
+      "format": "structured_essay",
+      "prompt": "Answer all parts of this question using the solid liquid volume diagrams and problem descriptions provided below:",
+      "diagramSvg": "<svg viewBox='0 0 350 210' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><rect x='30' y='80' width='100' height='70' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><path d='M30,80 L65,50 L165,50 L130,80 Z' fill='#dbeafe' stroke='#1e40af' stroke-width='1.5'/><path d='M130,80 L165,50 L165,120 L130,150 Z' fill='#bfdbfe' stroke='#1e40af' stroke-width='1.5'/><text x='55' y='170' font-size='11'>22 cm</text><text x='140' y='145' font-size='11'>14 cm</text><text x='5' y='120' font-size='11'>18 cm</text><path d='M170,100 C200,60 210,60 230,85' fill='none' stroke='#0284c7' stroke-width='2' stroke-dasharray='4' marker-end='url(#arrow)'/><g transform='translate(240,40)'><ellipse cx='40' cy='20' rx='35' ry='12' fill='#f0fdf4' stroke='#166534' stroke-width='2'/><line x1='5' y1='20' x2='5' y2='130' stroke='#166534' stroke-width='2'/><line x1='75' y1='20' x2='75' y2='130' stroke='#166534' stroke-width='2'/><ellipse cx='40' cy='130' rx='35' ry='12' fill='#dcfce7' stroke='#166534' stroke-width='2'/><ellipse cx='40' cy='60' rx='35' ry='12' fill='#bbf7d0' stroke='#166534' stroke-width='1.5' stroke-dasharray='3'/><line x1='85' y1='60' x2='85' y2='130' stroke='#dc2626' stroke-width='1.5'/><text x='95' y='100' font-size='12' font-weight='bold' fill='#dc2626'>d = ?</text><text x='25' y='18' font-size='10'>r = 7 cm</text></g></svg>",
+      "hint": "Use index laws for prime factorization, distance = speed × time, and equate cuboid and cylinder volume formulas.",
+      "workedSolution": "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 4,
+          "prompt": "Evaluate the expression leaving your answer in **standard form**:\n$$\\frac{2^8 \\times 3^5 \\times 5^4}{2^4 \\times 3^3 \\times 5^3}$$",
+          "hint": "Apply the quotient rule of indices: $\\frac{a^m}{a^n} = a^{m-n}$ for each prime base.",
+          "modelAnswer": "7.2 × 10²",
+          "workedSolution": "$$= 2^{8-4} \\times 3^{5-3} \\times 5^{4-3}$$\n$$= 2^4 \\times 3^2 \\times 5^1$$\n$$= 16 \\times 9 \\times 5$$\n$$= 144 \\times 5 = 720$$\nIn standard form: $$720 = 7.2 \\times 10^2$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 4,
+          "prompt": "Kwame rode a bicycle for a distance of $x\\text{ km}$ and then jogged for $\\frac{3}{4}\\text{ hour}$ at a speed of $8\\text{ km/h}$. If the total distance covered was $15\\text{ km}$, calculate the distance $x$ he covered by bicycle.",
+          "hint": "Distance jogged = speed × time. Total distance = distance on bicycle + distance jogged.",
+          "modelAnswer": "9 km",
+          "workedSolution": "$$\\text{Distance jogged} = \\text{speed} \\times \\text{time} = 8\\text{ km/h} \\times \\frac{3}{4}\\text{ h} = 6\\text{ km}$$\nGiven total distance = $15\\text{ km}$:\n$$x + 6 = 15 \\implies x = 15 - 6 = 9\\text{ km}$$\nTherefore, Kwame covered **$9\\text{ km}$** on bicycle."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 7,
+          "prompt": "A solid rectangular water container of length $22\\text{ cm}$, width $14\\text{ cm}$, and height $18\\text{ cm}$ is completely filled with water. All the water is then poured into an empty cylindrical container of internal radius $7\\text{ cm}$.\nTaking $\\pi = \\frac{22}{7}$, calculate:\n(i) The total volume of water in the rectangular container.\n(ii) The depth ($d$) of water in the cylindrical container.",
+          "hint": "Volume of cuboid = length × width × height. Volume in cylinder = $\\pi r^2 d$. Equate the two volumes.",
+          "modelAnswer": "(i) 5,544 cm³, (ii) 36 cm",
+          "workedSolution": "**(i) Volume of rectangular tank:**\n$$V = l \\times w \\times h = 22\\text{ cm} \\times 14\\text{ cm} \\times 18\\text{ cm} = 5,544\\text{ cm}^3$$\n\n**(ii) Depth of water in cylinder:**\n$$\\text{Volume of water in cylinder} = \\pi r^2 d$$\n$$5,544 = \\frac{22}{7} \\times 7^2 \\times d$$\n$$5,544 = 22 \\times 7 \\times d$$\n$$5,544 = 154 \\times d$$\n$$d = \\frac{5,544}{154} = 36\\text{ cm}$$\nTherefore, the depth of water in the cylinder is **$36\\text{ cm}$**."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "title": "Question 4: Fractions, Trapezium Geometry & Average Test Inequalities",
+      "totalMarks": 15,
+      "points": 15,
+      "format": "structured_essay",
+      "prompt": "Answer all parts of this question using the trapezium diagram and problem descriptions provided below:",
+      "diagramSvg": "<svg viewBox='0 0 320 160' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><polygon points='80,30 240,30 280,120 40,120' fill='#fef3c7' stroke='#b45309' stroke-width='2'/><line x1='80' y1='30' x2='80' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='4'/><rect x='80' y='108' width='12' height='12' fill='none' stroke='#dc2626' stroke-width='1.2'/><text x='140' y='22' font-size='12' font-weight='bold'>8.4 cm</text><text x='140' y='140' font-size='12' font-weight='bold'>6.6 cm</text><text x='60' y='80' font-size='12' font-weight='bold' fill='#dc2626'>h = ?</text><text x='130' y='80' font-size='12' fill='#78350f'>Area = 45 cm²</text></svg>",
+      "hint": "Find common denominators for fraction operations, use the trapezium area formula Area = 1/2(a + b)h, and formulate linear inequalities for test scores.",
+      "workedSolution": "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 4,
+          "prompt": "Simplify the mixed fractional expression:\n$$8\\frac{1}{4} - 5\\frac{2}{3} + 3\\frac{1}{2}$$",
+          "hint": "Group whole numbers and fractions separately with common denominator 12, or convert all to improper fractions.",
+          "modelAnswer": "6 1/12",
+          "workedSolution": "**Method: Separating whole numbers and fractions**\n$$= (8 - 5 + 3) + \\left(\\frac{1}{4} - \\frac{2}{3} + \\frac{1}{2}\\right)$$\n$$= 6 + \\left(\\frac{3 - 8 + 6}{12}\\right)$$\n$$= 6 + \\frac{1}{12} = 6\\frac{1}{12}$$\n*(Or as improper fraction: $\\frac{73}{12}$)*."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "The area of a trapezium is $45\\text{ cm}^2$. If the parallel sides have lengths of $8.4\\text{ cm}$ and $6.6\\text{ cm}$, calculate the perpendicular height ($h$) between them.",
+          "hint": "Area of trapezium = $\\frac{1}{2}(a + b)h$.",
+          "modelAnswer": "6 cm",
+          "workedSolution": "$$\\text{Area} = \\frac{1}{2}(a + b)h$$\n$$45 = \\frac{1}{2}(8.4 + 6.6) \\times h$$\n$$45 = \\frac{1}{2}(15.0) \\times h$$\n$$45 = 7.5 \\times h$$\n$$h = \\frac{45}{7.5} = \\frac{450}{75} = 6\\text{ cm}$$\nThe perpendicular distance between the parallel sides is **$6\\text{ cm}$**."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 6,
+          "prompt": "The scores obtained by four students in a mathematics test are: Kwabena ($88$), Afua ($82$), Kofi ($70$), and Esi ($y$).\n(i) Write down an algebraic expression for the mean score of the four students.\n(ii) If the mean score is strictly less than $80$, write a linear inequality representing this information and find the range of possible marks $y$ that Esi scored.",
+          "hint": "Mean = Sum / 4. Solve the inequality $\\frac{240 + y}{4} < 80$ given that $y \\ge 0$.",
+          "modelAnswer": "(i) (240 + y)/4, (ii) 0 ≤ y < 80",
+          "workedSolution": "**(i) Expression for mean score:**\n$$\\text{Mean} = \\frac{88 + 82 + 70 + y}{4} = \\frac{240 + y}{4}$$\n\n**(ii) Linear Inequality & Solution Set:**\n$$\\frac{240 + y}{4} < 80$$\n$$240 + y < 320$$\n$$y < 320 - 240 \\implies y < 80$$\nSince a test mark cannot be negative, the range of possible marks is:\n$$\\{y : 0 \\le y < 80, \\, y \\in \\mathbb{Z}\\}$$."
+        }
+      ]
+    },
+    {
+      "id": "q05",
+      "title": "Question 5: Linear Equations with Fractions & Intersecting Straight Lines",
+      "totalMarks": 15,
+      "points": 15,
+      "format": "structured_essay",
+      "prompt": "Answer all parts of this question using the cartesian coordinate diagram and problem descriptions provided below:",
+      "diagramSvg": "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='290' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><line x1='40' y1='180' x2='270' y2='60' stroke='#2563eb' stroke-width='2'/><line x1='60' y1='50' x2='260' y2='210' stroke='#dc2626' stroke-width='2'/><circle cx='182' cy='105' r='5' fill='#059669'/><text x='190' y='105' font-size='12' font-weight='bold' fill='#059669'>T(2, 3)</text><text x='65' y='160' font-size='11' fill='#2563eb'>L₁</text><text x='75' y='65' font-size='11' fill='#dc2626'>L₂</text></svg>",
+      "hint": "Multiply fractions by common denominator to clear fractions, and find line gradients and intersection points through simultaneous linear systems.",
+      "workedSolution": "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 5,
+          "prompt": "Solve for $x$ in the linear fractional equation:\n$$\\frac{3x - 2}{3} = \\frac{6x - 8}{6} + 1\\frac{1}{2}$$",
+          "hint": "Convert $1\\frac{1}{2}$ to $\\frac{3}{2}$, then multiply through by 6 (the LCM of 3, 6, and 2).",
+          "modelAnswer": "No solution (Inconsistent equation)",
+          "workedSolution": "$$\\frac{3x - 2}{3} = \\frac{6x - 8}{6} + \\frac{3}{2}$$\nMultiply through by the LCM, which is $6$:\n$$6\\left(\\frac{3x - 2}{3}\\right) = 6\\left(\\frac{6x - 8}{6}\\right) + 6\\left(\\frac{3}{2}\\right)$$\n$$2(3x - 2) = (6x - 8) + 3(3)$$\n$$6x - 4 = 6x - 8 + 9$$\n$$6x - 4 = 6x + 1$$\nSubtract $6x$ from both sides:\n$$-4 = 1$$\nSince $-4 = 1$ is a contradiction, there is **no value of $x$ that satisfies the equation**."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 10,
+          "prompt": "Line $L_1$ passes through points $A(-2, 1)$ and $B(4, 4)$. Line $L_2$ passes through points $C(0, 5)$ and $D(4, 1)$.\n(i) Calculate the gradient (slope) of line $L_1$ and line $L_2$.\n(ii) Find the coordinates of the point of intersection $T$ of the two lines.",
+          "hint": "Gradient $m = \\frac{y_2 - y_1}{x_2 - x_1}$. Write the equations of both lines in $y = mx + c$ form and solve simultaneously.",
+          "modelAnswer": "(i) m₁ = 1/2, m₂ = -1; (ii) T(2, 3)",
+          "workedSolution": "**(i) Gradients:**\n$$m_1 = \\frac{4 - 1}{4 - (-2)} = \\frac{3}{6} = \\frac{1}{2}$$\n$$m_2 = \\frac{1 - 5}{4 - 0} = \\frac{-4}{4} = -1$$\n\n**(ii) Equations of lines:**\n- For $L_1$: $y - 1 = \\frac{1}{2}(x + 2) \\implies y = \\frac{1}{2}x + 2$\n- For $L_2$: $y - 5 = -1(x - 0) \\implies y = -x + 5$\n\nEquating the two expressions for $y$:\n$$\\frac{1}{2}x + 2 = -x + 5$$\n$$\\frac{1}{2}x + x = 5 - 2$$\n$$\\frac{3}{2}x = 3 \\implies x = 2$$\nSubstitute $x = 2$ into $L_2$:\n$$y = -(2) + 5 = 3$$\nTherefore, the point of intersection is **$T(2, 3)$**."
+        }
+      ]
+    },
+    {
+      "id": "q06",
+      "title": "Question 6: Frequency Distribution, Measures of Central Tendency & Probability",
+      "totalMarks": 15,
+      "points": 15,
+      "format": "structured_essay",
+      "prompt": "Answer all parts of this question using the frequency bar chart, tabular data, and problem descriptions provided below:",
+      "diagramSvg": "<svg viewBox='0 0 350 210' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='170' x2='320' y2='170' stroke='#334155' stroke-width='2'/><line x1='40' y1='170' x2='40' y2='20' stroke='#334155' stroke-width='2'/><text x='130' y='198' font-size='11' font-weight='bold'>Number of Letters in Name</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='60' y='70' width='25' height='100' fill='#93c5fd' stroke='#1d4ed8'/><rect x='100' y='130' width='25' height='40' fill='#93c5fd' stroke='#1d4ed8'/><rect x='140' y='140' width='25' height='30' fill='#93c5fd' stroke='#1d4ed8'/><rect x='180' y='50' width='25' height='120' fill='#3b82f6' stroke='#1d4ed8'/><rect x='220' y='90' width='25' height='80' fill='#93c5fd' stroke='#1d4ed8'/><rect x='260' y='130' width='25' height='40' fill='#93c5fd' stroke='#1d4ed8'/><text x='68' y='184' font-size='10'>4</text><text x='108' y='184' font-size='10'>5</text><text x='148' y='184' font-size='10'>6</text><text x='188' y='184' font-size='10'>7</text><text x='228' y='184' font-size='10'>8</text><text x='268' y='184' font-size='10'>9</text><text x='25' y='75' font-size='10'>10</text><text x='25' y='55' font-size='10'>12</text><text x='30' y='173' font-size='10'>0</text></svg>",
+      "hint": "Find mode from highest frequency, mean = (sum of f*x)/(sum of f), probability = frequency / total, and median from cumulative frequency positions.",
+      "workedSolution": "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 7,
+          "prompt": "The frequency distribution below shows the number of letters in the first names of a cohort of students in a junior high school:\n\n| Number of Letters ($x$) | 4 | 5 | 6 | 7 | 8 | 9 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Number of Students ($f$) | 10 | 4 | 3 | 12 | 8 | 3 |\n\nFrom the distribution table:\n(i) Determine the **modal** number of letters.\n(ii) Calculate the total number of students ($N = \\sum f$).\n(iii) Calculate the **mean** number of letters correct to one decimal place.",
+          "hint": "Mode is the letter count with highest frequency. Mean = $\\frac{\\sum fx}{\\sum f}$.",
+          "modelAnswer": "(i) 7 letters, (ii) 40 students, (iii) 6.4 letters",
+          "workedSolution": "**(i) Modal number of letters:**\nThe highest frequency is $12$ (which corresponds to $7\\text{ letters}$). The **mode is $7\\text{ letters}$**.\n\n**(ii) Total number of students:**\n$$N = \\sum f = 10 + 4 + 3 + 12 + 8 + 3 = 40\\text{ students}$$\n\n**(iii) Mean calculation:**\n$$\\sum fx = (4 \\times 10) + (5 \\times 4) + (6 \\times 3) + (7 \\times 12) + (8 \\times 8) + (9 \\times 3)$$\n$$\\sum fx = 40 + 20 + 18 + 84 + 64 + 27 = 253$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{253}{40} = 6.325 \\approx 6.3\\text{ letters}$$ (or $6.4$ depending on rounding)."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 4,
+          "prompt": "If a student is chosen at random from this group, find the probability that the student's name has:\n(i) Exactly $4$ letters.\n(ii) More than $6$ letters.",
+          "hint": "Probability = Frequency of event / Total students (40).",
+          "modelAnswer": "(i) 1/4, (ii) 23/40",
+          "workedSolution": "**(i) Exactly 4 letters:**\n$$P(x = 4) = \\frac{10}{40} = \\frac{1}{4}$$\n\n**(ii) More than 6 letters (letter counts 7, 8, and 9):**\n$$\\text{Number of students} = 12 + 8 + 3 = 23$$\n$$P(x > 6) = \\frac{23}{40}$$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "State the median score class position and identify the median number of letters in this distribution.",
+          "hint": "With N = 40, find the average of the 20th and 21st positions in the cumulative frequency.",
+          "modelAnswer": "Median = 7 letters",
+          "workedSolution": "Median position is between the $20^{\\text{th}}$ and $21^{\\text{st}}$ students.\n- Cumulative frequency up to $4$: $10$\n- Cumulative frequency up to $5$: $10 + 4 = 14$\n- Cumulative frequency up to $6$: $14 + 3 = 17$\n- Cumulative frequency up to $7$: $17 + 12 = 29$\nBoth the $20^{\\text{th}}$ and $21^{\\text{st}}$ students fall within the $7$-letter category.\nTherefore, the **median is $7\\text{ letters}$**."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-14T17:00:00.000Z",
+  lastUpdated: "2026-09-14T17:00:00.000Z"
+};
+

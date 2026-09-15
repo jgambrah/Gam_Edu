@@ -76,7 +76,10 @@ export interface CurriculumQuestionSet {
   variantType: QuestionSetVariantType;
   totalQuestions: number;
   version: number;
+  format?: 'multiple_choice' | 'structured_essay';
   questions: CurriculumQuestion[];
+  seededAt?: string;
+  lastUpdated?: string;
 }
 
 /**

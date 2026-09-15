@@ -16,7 +16,9 @@ import { getFirestore, FieldValue, Firestore } from 'firebase-admin/firestore';
 import type { CurriculumQuestionSet } from '../src/lib/global-curriculum-types';
 import {
   SET_JHS_MASTERY_SERIES_03,
-  SET_JHS_MASTERY_SERIES_04
+  SET_JHS_MASTERY_SERIES_04,
+  SET_JHS_MASTERY_SERIES_05,
+  SET_JHS_MASTERY_SERIES_06
 } from '../src/lib/data/jhs-curriculum-sets';
 
 dotenv.config();
@@ -988,6 +990,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_04
   );
   results.push(result7);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 9: JHS Math -> Core Curriculum Series (Set 6 Structured in core_curriculum_mastery)
+  console.log('▶ Ingesting Set 9: Junior Core Math Structured Problem-Solving Series (Set 6)...');
+  const result9 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_06
+  );
+  results.push(result9);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

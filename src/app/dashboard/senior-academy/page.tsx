@@ -151,9 +151,9 @@ interface SuggestedModuleCard {
     meta: string;
     description: string;
     difficulty: 'Foundation' | 'Intermediate' | 'Advanced';
-    sampleInstruction: string;
+    sampleInstruction?: string;
     sampleFormula?: string;
-    sampleAnswer: string;
+    sampleAnswer?: string;
     content?: string;
     background?: string;
     hypothesisPrompt?: string;
@@ -163,7 +163,7 @@ interface SuggestedModuleCard {
     topicId?: string;
     setId?: string;
     kind?: 'topical' | 'exam_series';
-    format?: 'objective' | 'structured_essay' | 'standard';
+    format?: 'objective' | 'structured_essay' | 'standard' | 'multiple_choice';
     questionCount?: number;
     examTag?: string;
     subject?: 'Mathematics' | 'English' | 'Integrated Science' | 'Computing';
@@ -401,6 +401,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleInstruction: "Which of the following collections represents a well-defined set in mathematics?",
         sampleFormula: "\\{Kwame, Ama, Kofi, Abena\\}",
         sampleAnswer: "{Kwame, Ama, Kofi, Abena}"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 6)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 6)",
+        description: "Standardized 6-question structured theory examination variant (Set 6) featuring embedded SVG diagrams for Venn partitions, right-angled composite geometry, cuboid-to-cylinder liquid volumes, trapeziums, intersecting straight lines, and frequency distributions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-06",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "Factorize completely: (p + q)(3x - 2y) - x(p + q)",
+        sampleFormula: "(p + q)(3x - 2y) - x(p + q) = 2(p + q)(x - y)",
+        sampleAnswer: "2(p + q)(x - y)"
     },
 
     {

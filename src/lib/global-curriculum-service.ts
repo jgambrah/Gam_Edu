@@ -19,6 +19,7 @@ import {
   SET_JHS_MASTERY_SERIES_03,
   SET_JHS_MASTERY_SERIES_04,
   SET_JHS_MASTERY_SERIES_05,
+  SET_JHS_MASTERY_SERIES_06,
   SET_JHS_MOCK_2012_MATH
 } from './data/jhs-curriculum-sets';
 
@@ -355,6 +356,16 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'mathematics',
       topicId: 'core_curriculum_mastery',
       questionSet: SET_JHS_MASTERY_SERIES_05
+    },
+    {
+      subjectId: 'math',
+      topicId: 'core_curriculum_mastery',
+      questionSet: SET_JHS_MASTERY_SERIES_06
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'core_curriculum_mastery',
+      questionSet: SET_JHS_MASTERY_SERIES_06
     },
     {
       subjectId: 'math',
