@@ -456,6 +456,60 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "\\frac{1,400 \\times 1,350}{700} = 2.7 \\times 10^3",
         sampleAnswer: "2.7 × 10³"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 9)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 9 / 2008 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 9 / 2008 past paper adaptation) with balanced option randomization covering prime factors, binary numeral conversions, linear inequalities, vectors, and plane geometry.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-09",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2008 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set P = {multiples of 3 less than 15} and Q = {even numbers less than 12}, find P ∩ Q:",
+        sampleFormula: "P \\cap Q = \\{6\\}",
+        sampleAnswer: "{6}"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 10)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 10 / 2008 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 10 / 2008 past paper adaptation) with embedded SVG diagrams covering set operations, composite garden geometry, pie chart sector proportions, simultaneous graphs, and circumcircles.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-10",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "Calculate the total land area of agricultural station AEBCD composed of rectangle ABCD and roof triangle AEB:",
+        sampleFormula: "\\text{Total Area} = 4,800\\text{ m}^2 + 960\\text{ m}^2 = 5,760\\text{ m}^2",
+        sampleAnswer: "5,760 m²"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 11)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 11 / 2007 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 11 / 2007 past paper adaptation) with balanced option randomization covering odd factors, union of sets, terminating decimals, angles, bearings, and column vectors.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-11",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2007 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "List the members of the set S = {x : x is an odd factor of 42}:",
+        sampleFormula: "S = \\{1, 3, 7, 21\\}",
+        sampleAnswer: "{1, 3, 7, 21}"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
@@ -1631,9 +1685,7 @@ function MathLab({
     const refreshCurriculumSets = useCallback(async (manual = false) => {
         setIsRefreshing(true);
         const levelId = mapGradeTierToLevelId(activeGrade);
-        if (manual) {
-            invalidateCurriculumCache(levelId, 'math');
-        }
+        invalidateCurriculumCache(levelId, 'math');
 
         try {
             const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers'];
