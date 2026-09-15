@@ -564,6 +564,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "|YZ| = \\sqrt{13^2 - 12^2} = 5\\text{ cm}, \\quad \\text{Area} = 30\\text{ cm}^2",
         sampleAnswer: "5 cm, 30 cm²"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 15)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 15 / 2005 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 15 / 2005 past paper adaptation) with balanced option randomization covering Venn set elements, decimal arithmetic, factors, exponents, linear mappings, circle area, and vector operations.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-15",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2005 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "In a Venn diagram, Q only has 4 elements and P ∩ Q has 2 elements. Find n(Q):",
+        sampleFormula: "n(Q) = 4 + 2 = 6",
+        sampleAnswer: "6"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",

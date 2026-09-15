@@ -3121,6 +3121,581 @@ export const SET_JHS_MASTERY_SERIES_14 = {
   lastUpdated: "2026-09-15T13:30:00.000Z"
 };
 
+export const SET_JHS_MASTERY_SERIES_15 = {
+  id: "jhs-math-mastery-series-15",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 15)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "In a Venn diagram, set $P$ and set $Q$ intersect. The region representing only $Q$ contains $4$ elements, and the intersection $P \\cap Q$ contains $2$ elements. How many members are in set $Q$?",
+      options: [
+        "2",
+        "6",
+        "4",
+        "8"
+      ],
+      correctAnswer: "6",
+      hint: "The total number of members in Q is the sum of members in Q only and the intersection.",
+      workedSolution: "$$n(Q) = n(Q \\text{ only}) + n(P \\cap Q) = 4 + 2 = 6$$.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "Which of the following numbers is NOT a factor of $28$?",
+      options: [
+        "4",
+        "6",
+        "7",
+        "14"
+      ],
+      correctAnswer: "6",
+      hint: "Check which number leaves a non-zero remainder when 28 is divided by it.",
+      workedSolution: "$$28 \\div 6 = 4\\text{ R } 4$$. 6 does not divide 28 evenly, so it is not a factor.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Multiply $0.025$ by $0.4$.",
+      options: [
+        "0.001",
+        "0.1",
+        "0.01",
+        "0.0001"
+      ],
+      correctAnswer: "0.01",
+      hint: "Multiply whole numbers: $25 \\times 4 = 100$. Then place the decimal point $3 + 1 = 4$ positions from the right.",
+      workedSolution: "$$0.025 \\times 0.4 = 0.0100 = 0.01$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Given sets $X = \\{m, n, p\\}$ and $Y = \\{k, l, m, p\\}$, find $X \\cap Y$.",
+      options: [
+        "{m, p}",
+        "{m}",
+        "{k, l, m, n, p}",
+        "{p}"
+      ],
+      correctAnswer: "{m, p}",
+      hint: "Find the elements common to both sets.",
+      workedSolution: "Both $m$ and $p$ are present in both sets. Thus, $$X \\cap Y = \\{m, p\\}$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "If $x = 81$ and $y = 3^2$, find the value of $x / y$.",
+      options: [
+        "27",
+        "3",
+        "9",
+        "1"
+      ],
+      correctAnswer: "9",
+      hint: "Calculate $y = 3^2 = 9$, then divide 81 by 9.",
+      workedSolution: "$$y = 3^2 = 9$$. Then $$\\frac{x}{y} = \\frac{81}{9} = 9$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Arrange the following numbers from highest to lowest: $$\\frac{3}{4}, \\, -5, \\, 0$$.",
+      options: [
+        "$$-5, \\, 0, \\, \\frac{3}{4}$$",
+        "$$\\frac{3}{4}, \\, 0, \\, -5$$",
+        "$$0, \\, \\frac{3}{4}, \\, -5$$",
+        "$$-5, \\, \\frac{3}{4}, \\, 0$$"
+      ],
+      correctAnswer: "$$\\frac{3}{4}, \\, 0, \\, -5$$",
+      hint: "Positive numbers are greater than zero, and zero is greater than negative numbers.",
+      workedSolution: "$$\\frac{3}{4} > 0 > -5$$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "Simplify: $$2^3 \\times 5^2 \\times 2^2 \\times 5^3$$.",
+      options: [
+        "$$2^6 \\times 5^6$$",
+        "$$2^5 \\times 5^6$$",
+        "$$2^5 \\times 5^5$$",
+        "$$2^6 \\times 5^5$$"
+      ],
+      correctAnswer: "$$2^5 \\times 5^5$$",
+      hint: "Add exponents for matching bases: $2^{3+2} \\times 5^{2+3}$.",
+      workedSolution: "$$2^{3+2} \\times 5^{2+3} = 2^5 \\times 5^5$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "In an examination, $30\\%$ of the candidates failed. If $210$ candidates passed, how many candidates failed?",
+      options: [
+        "90",
+        "70",
+        "63",
+        "100"
+      ],
+      correctAnswer: "90",
+      hint: "Passing percentage = $100\\% - 30\\% = 70\\%$. If $70\\% = 210$, find $30\\%$.",
+      workedSolution: "$$70\\% = 210 \\implies 1\\% = \\frac{210}{70} = 3$$. Candidates who failed = $$30 \\times 3 = 90$$.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Evaluate: $$\\frac{1}{4}[(6 - 2) - (3 - 11)]$$.",
+      options: [
+        "-1",
+        "1",
+        "3",
+        "-3"
+      ],
+      correctAnswer: "3",
+      hint: "$6 - 2 = 4$ and $3 - 11 = -8$. Subtracting $-8$ gives $+8$.",
+      workedSolution: "$$\\frac{1}{4}[4 - (-8)] = \\frac{1}{4}[4 + 8] = \\frac{1}{4}(12) = 3$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "If $8k + 5 = 29$, find the value of $k$.",
+      options: [
+        "4",
+        "3",
+        "2",
+        "5"
+      ],
+      correctAnswer: "3",
+      hint: "Subtract 5 from 29, then divide by 8.",
+      workedSolution: "$$8k = 29 - 5 = 24 \\implies k = \\frac{24}{8} = 3$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Find the next term in the sequence: $$\\{2, 5, 11, 23, 47, \\dots\\}$$.",
+      options: [
+        "95",
+        "91",
+        "94",
+        "89"
+      ],
+      correctAnswer: "95",
+      hint: "Each term is multiplied by 2 and then increased by 1: $2n + 1$.",
+      workedSolution: "$$47 \\times 2 + 1 = 94 + 1 = 95$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Calculate the mean of the numbers: $$14, 18, 22, \\text{ and } 26$$.",
+      options: [
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      correctAnswer: "20",
+      hint: "Add all 4 numbers and divide by 4.",
+      workedSolution: "$$\\frac{14 + 18 + 22 + 26}{4} = \\frac{80}{4} = 20$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Simplify: $$4x^2 \\times 3xy \\times 2yz$$.",
+      options: [
+        "$$24x^3 y^2 z$$",
+        "$$12x^2 y^2 z$$",
+        "$$24x^2 y^2 z$$",
+        "$$9x^3 y^2 z$$"
+      ],
+      correctAnswer: "$$24x^3 y^2 z$$",
+      hint: "Multiply the numerical coefficients: $4 \\times 3 \\times 2 = 24$. Then combine identical variable powers.",
+      workedSolution: "$$(4 \\times 3 \\times 2) \\times (x^2 \\cdot x) \\times (y \\cdot y) \\times z = 24x^3 y^2 z$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "Expand: $$4(3m + 2n)$$.",
+      options: [
+        "$$12m + 2n$$",
+        "$$7m + 6n$$",
+        "$$12m + 8n$$",
+        "$$12m + 6n$$"
+      ],
+      correctAnswer: "$$12m + 8n$$",
+      hint: "Distribute 4 across both terms inside the parentheses.",
+      workedSolution: "$$4(3m) + 4(2n) = 12m + 8n$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "Find the area of a circle whose diameter is $14\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      options: [
+        "$$44\\text{ cm}^2$$",
+        "$$154\\text{ cm}^2$$",
+        "$$88\\text{ cm}^2$$",
+        "$$616\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$154\\text{ cm}^2$$",
+      hint: "Radius = diameter / 2 = 7 cm. Area = $\\pi r^2$.",
+      workedSolution: "$$\\text{Radius } r = 7\\text{ cm}$$. $$\\text{Area} = \\frac{22}{7} \\times 7^2 = 22 \\times 7 = 154\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "In sharing $85$ pens, Kwame kept $25$ for himself and shared the remainder equally between Ama and Kofi. How many pens did Ama receive?",
+      options: [
+        "20",
+        "30",
+        "35",
+        "40"
+      ],
+      correctAnswer: "30",
+      hint: "Subtract 25 from 85, then divide by 2.",
+      workedSolution: "Remainder = $85 - 25 = 60\\text{ pens}$. Ama receives $$60 \\div 2 = 30\\text{ pens}$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "If $$h = \\frac{a^2 + 2b}{c}$$, find $h$ when $a = 4, b = 5,$ and $c = 2$.",
+      options: [
+        "11",
+        "13",
+        "15",
+        "18"
+      ],
+      correctAnswer: "13",
+      hint: "Numerator = $4^2 + 2(5) = 16 + 10 = 26$. Divide by 2.",
+      workedSolution: "$$h = \\frac{16 + 10}{2} = \\frac{26}{2} = 13$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "A trader bought a portable speaker for $\\text{GH¢ } 50.00$ and sold it for $\\text{GH¢ } 62.50$. Calculate the percentage profit.",
+      options: [
+        "20%",
+        "25%",
+        "12.5%",
+        "15%"
+      ],
+      correctAnswer: "25%",
+      hint: "Profit = 62.50 - 50.00 = 12.50. Profit % = (12.50 / 50.00) × 100%.",
+      workedSolution: "$$\\text{Profit \\%} = \\left(\\frac{12.50}{50.00}\\right) \\times 100\\% = \\frac{1}{4} \\times 100\\% = 25\\%$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "State the rule for the linear mapping where inputs $x = \\{0, 1, 2, 3\\}$ produce outputs $y = \\{7, 10, 13, 16\\}$.",
+      options: [
+        "$$y = 3x + 7$$",
+        "$$y = 4x + 7$$",
+        "$$y = 7x + 3$$",
+        "$$y = 2x + 7$$"
+      ],
+      correctAnswer: "$$y = 3x + 7$$",
+      hint: "Common difference is $10 - 7 = 3$. Check for $x = 0$: $y = 7$.",
+      workedSolution: "Rate of increase = 3. When $x = 0$, $y = 7$. Thus, $$y = 3x + 7$$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "Calculate the volume of a rectangular carton of length $10\\text{ m}$, width $8\\text{ m}$, and height $4\\text{ m}$.",
+      options: [
+        "$$240\\text{ m}^3$$",
+        "$$320\\text{ m}^3$$",
+        "$$160\\text{ m}^3$$",
+        "$$360\\text{ m}^3$$"
+      ],
+      correctAnswer: "$$320\\text{ m}^3$$",
+      hint: "Volume = length × width × height.",
+      workedSolution: "$$10 \\times 8 \\times 4 = 320\\text{ m}^3$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "A bowl contains $6$ green and $12$ yellow counters. What is the probability of picking a green counter at random?",
+      options: [
+        "$$\\frac{1}{3}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{2}{3}$$",
+        "$$\\frac{1}{4}$$"
+      ],
+      correctAnswer: "$$\\frac{1}{3}$$",
+      hint: "Total counters = 6 + 12 = 18. Favourable outcomes = 6.",
+      workedSolution: "$$P(\\text{green}) = \\frac{6}{6 + 12} = \\frac{6}{18} = \\frac{1}{3}$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "Two straight lines intersect at right angles with a transversal line cutting through them. If an acute angle in the first quadrant is $42^\\circ$, find its complementary angle to $90^\\circ$.",
+      options: [
+        "$$48^\\circ$$",
+        "$$52^\\circ$$",
+        "$$138^\\circ$$",
+        "$$38^\\circ$$"
+      ],
+      correctAnswer: "$$48^\\circ$$",
+      hint: "Complementary angles sum to $90^\\circ$.",
+      workedSolution: "$$90^\\circ - 42^\\circ = 48^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "An equilateral triangle has sides of length $12\\text{ cm}$. A square has the same perimeter as the equilateral triangle. What is the area of the square?",
+      options: [
+        "$$36\\text{ cm}^2$$",
+        "$$81\\text{ cm}^2$$",
+        "$$144\\text{ cm}^2$$",
+        "$$72\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$81\\text{ cm}^2$$",
+      hint: "Perimeter of triangle = $3 \\times 12 = 36\\text{ cm}$. Side of square = $36 / 4 = 9\\text{ cm}$.",
+      workedSolution: "Perimeter = $3 \\times 12 = 36\\text{ cm}$. Side of square $$s = 36 / 4 = 9\\text{ cm}$$. Area of square $$= s^2 = 9^2 = 81\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "A student deposited $\\text{GH¢ } 400.00$ in a savings account for $2\\text{ years}$ at an interest rate of $8\\%$ per annum. Calculate the simple interest earned.",
+      options: [
+        "GH¢ 32.00",
+        "GH¢ 48.00",
+        "GH¢ 64.00",
+        "GH¢ 80.00"
+      ],
+      correctAnswer: "GH¢ 64.00",
+      hint: "$$I = \\frac{P \\times R \\times T}{100}$$.",
+      workedSolution: "$$I = \\frac{400 \\times 8 \\times 2}{100} = 4 \\times 16 = \\text{GH¢ } 64.00$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "Make $T$ the subject of the formula: $$h = \\frac{g T^2}{2}$$.",
+      options: [
+        "$$T = \\sqrt{\\frac{2h}{g}}$$",
+        "$$T = \\frac{2h}{g}$$",
+        "$$T = \\sqrt{\\frac{h}{2g}}$$",
+        "$$T = \\frac{\\sqrt{2h}}{g}$$"
+      ],
+      correctAnswer: "$$T = \\sqrt{\\frac{2h}{g}}$$",
+      hint: "Multiply both sides by 2, divide by g, then take the square root.",
+      workedSolution: "$$2h = gT^2 \\implies T^2 = \\frac{2h}{g} \\implies T = \\sqrt{\\frac{2h}{g}}$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Evaluate: $$\\frac{0.72 \\times 0.6}{8}$$.",
+      options: [
+        "0.054",
+        "0.54",
+        "0.0054",
+        "5.4"
+      ],
+      correctAnswer: "0.054",
+      hint: "$$0.72 \\div 8 = 0.09$$. Then multiply $0.09 \\times 0.6$.",
+      workedSolution: "$$\\frac{0.72}{8} \\times 0.6 = 0.09 \\times 0.6 = 0.054$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Kofi and Ama share an amount of $\\text{GH¢ } 900.00$ in the ratio $4 : 5$ respectively. What is Ama's share?",
+      options: [
+        "GH¢ 400.00",
+        "GH¢ 450.00",
+        "GH¢ 500.00",
+        "GH¢ 550.00"
+      ],
+      correctAnswer: "GH¢ 500.00",
+      hint: "Total units = 4 + 5 = 9. Ama receives (5 / 9) × 900.",
+      workedSolution: "$$\\text{Ama's share} = \\frac{5}{9} \\times 900 = 5 \\times 100 = \\text{GH¢ } 500.00$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "How many flat triangular faces does a right square pyramid have?",
+      options: [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      correctAnswer: "4",
+      hint: "A square pyramid has 1 square base and 4 sloped triangular faces.",
+      workedSolution: "A square pyramid consists of 1 base face and 4 lateral triangular faces.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "The perimeter of a rectangle is $28\\text{ cm}$. If its width is $5\\text{ cm}$, find the area of the rectangle.",
+      options: [
+        "$$45\\text{ cm}^2$$",
+        "$$40\\text{ cm}^2$$",
+        "$$50\\text{ cm}^2$$",
+        "$$35\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$45\\text{ cm}^2$$",
+      hint: "$2(\\text{length} + 5) = 28 \\implies \\text{length} = 9\\text{ cm}$. Area = length × width.",
+      workedSolution: "$$\\text{Length} = \\frac{28}{2} - 5 = 14 - 5 = 9\\text{ cm}$$. $$\\text{Area} = 9 \\times 5 = 45\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "Factorize completely: $$6xy^2 - 18yx^2$$.",
+      options: [
+        "$$6xy(y - 3x)$$",
+        "$$6xy(y + 3x)$$",
+        "$$3xy(2y - 6x)$$",
+        "$$6x(y^2 - 3yx)$$"
+      ],
+      correctAnswer: "$$6xy(y - 3x)$$",
+      hint: "The highest common factor of both terms is $6xy$.",
+      workedSolution: "$$6xy(y - 3x)$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "Solve for $x$ in the equation: $$\\frac{3}{4}(x + 2) = \\frac{1}{2}(x - 4)$$.",
+      options: [
+        "-14",
+        "-10",
+        "-7",
+        "14"
+      ],
+      correctAnswer: "-14",
+      hint: "Multiply both sides by 4 to clear fractions: $3(x + 2) = 2(x - 4)$.",
+      workedSolution: "$$3x + 6 = 2x - 8 \\implies 3x - 2x = -8 - 6 \\implies x = -14$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "A vendor had $120$ apples and sold $90$ of them. What percentage of the apples is left?",
+      options: [
+        "30%",
+        "25%",
+        "20%",
+        "33.3%"
+      ],
+      correctAnswer: "25%",
+      hint: "Apples left = 120 - 90 = 30. Find (30 / 120) × 100%.",
+      workedSolution: "$$\\text{Apples left} = 120 - 90 = 30$$. Percentage left = $$\\frac{30}{120} \\times 100\\% = \\frac{1}{4} \\times 100\\% = 25\\%$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "Find the median of the following set of marks: $$3, 5, 11, 4, 8, 14$$.",
+      options: [
+        "6",
+        "6.5",
+        "7",
+        "8"
+      ],
+      correctAnswer: "6.5",
+      hint: "Arrange in order: 3, 4, 5, 8, 11, 14. Average the 3rd and 4th values.",
+      workedSolution: "Ordered set: 3, 4, **5, 8**, 11, 14. Median = $$\\frac{5 + 8}{2} = \\frac{13}{2} = 6.5$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "In a cohort of $30$ pupils, $14$ offer Computing, $18$ offer French, and $5$ offer both subjects. How many pupils offer French only?",
+      options: [
+        "9",
+        "13",
+        "14",
+        "5"
+      ],
+      correctAnswer: "13",
+      hint: "French only = Total French - Both subjects.",
+      workedSolution: "$$\\text{French only} = 18 - 5 = 13\\text{ pupils}$$.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "From Question 34, how many pupils offer neither of the two subjects?",
+      options: [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      correctAnswer: "3",
+      hint: "Union = Computing only (9) + Both (5) + French only (13) = 27. Neither = 30 - 27.",
+      workedSolution: "$$n(C \\cup F) = (14 - 5) + 5 + (18 - 5) = 9 + 5 + 13 = 27$$. Neither = $$30 - 27 = 3$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "Calculate $96.4 \\div 0.2$, expressing the answer in standard form.",
+      options: [
+        "$$4.82 \\times 10^2$$",
+        "$$4.82 \\times 10^1$$",
+        "$$4.82 \\times 10^3$$",
+        "$$48.2 \\times 10^1$$"
+      ],
+      correctAnswer: "$$4.82 \\times 10^2$$",
+      hint: "$$96.4 \\div 0.2 = 964 \\div 2 = 482$$.",
+      workedSolution: "$$482 = 4.82 \\times 10^2$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "The catalog price of a washing machine costing $\\text{GH¢ } 550.00$ was increased by $10\\%$. Find its new price.",
+      options: [
+        "GH¢ 595.00",
+        "GH¢ 605.00",
+        "GH¢ 600.00",
+        "GH¢ 610.00"
+      ],
+      correctAnswer: "GH¢ 605.00",
+      hint: "New Price = 110% of GH¢ 550.00.",
+      workedSolution: "$$1.10 \\times 550.00 = 550 + 55 = \\text{GH¢ } 605.00$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "What is the total number of all possible outcomes when two fair coins are tossed simultaneously?",
+      options: [
+        "2",
+        "4",
+        "6",
+        "8"
+      ],
+      correctAnswer: "4",
+      hint: "Outcomes are (H, H), (H, T), (T, H), (T, T).",
+      workedSolution: "$$2 \\times 2 = 4\\text{ outcomes}$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "In an exterior triangle configuration, the exterior angle at vertex $R$ is $115^\\circ$ and an opposite interior angle is $45^\\circ$. What is the other opposite interior angle?",
+      options: [
+        "$$70^\\circ$$",
+        "$$65^\\circ$$",
+        "$$75^\\circ$$",
+        "$$80^\\circ$$"
+      ],
+      correctAnswer: "$$70^\\circ$$",
+      hint: "Exterior angle = sum of the two opposite interior angles: $45^\\circ + x = 115^\\circ$.",
+      workedSolution: "$$x = 115^\\circ - 45^\\circ = 70^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 2 \\\\ -3 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -1 \\\\ 4 \\end{pmatrix}$$, evaluate $$2u + v$$.",
+      "options": [
+        "$$\\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 3 \\\\ 2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 5 \\\\ -2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$$",
+      hint: "$$2(2) + (-1) = 3$$ and $$2(-3) + 4 = -6 + 4 = -2$$.",
+      workedSolution: "$$\\begin{pmatrix} 4 + (-1) \\\\ -6 + 4 \\end{pmatrix} = \\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T14:00:00.000Z",
+  lastUpdated: "2026-09-15T14:00:00.000Z"
+};
+
 // ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
@@ -3421,6 +3996,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_14
   );
   results.push(result17);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 18: JHS Math -> Core Curriculum Series (Set 15 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 18: Junior Core Math Objective Mastery Series (Set 15)...');
+  const result18 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_15
+  );
+  results.push(result18);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
