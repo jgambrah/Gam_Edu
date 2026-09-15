@@ -420,6 +420,42 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "(p + q)(3x - 2y) - x(p + q) = 2(p + q)(x - y)",
         sampleAnswer: "2(p + q)(x - y)"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 7)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 7 / 2009 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 7 / 2009 past paper adaptation) with balanced option randomization covering sets, standard form, angles, linear equations, vectors, probability, and percentages.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-07",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2009 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Given the sets P = {2, 4, 6, 8, 10} and Q = {4, 8, 12, 16}, find P ∪ Q:",
+        sampleFormula: "P \\cup Q = \\{2, 4, 6, 8, 10, 12, 16\\}",
+        sampleAnswer: "{2, 4, 6, 8, 10, 12, 16}"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 8)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 8 / 2009 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 8 / 2009 past paper adaptation) with embedded SVG diagrams covering standard form, composite land area, pie chart sector angles, frequency distribution statistics, coordinate plane transformations, column vectors, angle bisector theorem, and currency proportionality.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-08",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "Simplify and express in standard form: (1,400 × 1,350) / 700",
+        sampleFormula: "\\frac{1,400 \\times 1,350}{700} = 2.7 \\times 10^3",
+        sampleAnswer: "2.7 × 10³"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",

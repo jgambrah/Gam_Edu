@@ -18,7 +18,9 @@ import {
   SET_JHS_MASTERY_SERIES_03,
   SET_JHS_MASTERY_SERIES_04,
   SET_JHS_MASTERY_SERIES_05,
-  SET_JHS_MASTERY_SERIES_06
+  SET_JHS_MASTERY_SERIES_06,
+  SET_JHS_MASTERY_SERIES_07,
+  SET_JHS_MASTERY_SERIES_08
 } from '../src/lib/data/jhs-curriculum-sets';
 
 dotenv.config();
@@ -1002,6 +1004,30 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_06
   );
   results.push(result9);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 10: JHS Math -> Core Curriculum Series (Set 7 Objective in core_curriculum_mastery)
+  console.log('▶ Ingesting Set 10: Junior Core Math Objective Mastery Series (Set 7)...');
+  const result10 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_07
+  );
+  results.push(result10);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 11: JHS Math -> Core Curriculum Series (Set 8 Structured in core_curriculum_mastery)
+  console.log('▶ Ingesting Set 11: Junior Core Math Structured Problem-Solving Series (Set 8)...');
+  const result11 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_08
+  );
+  results.push(result11);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

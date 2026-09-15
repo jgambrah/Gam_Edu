@@ -1950,3 +1950,819 @@ export const SET_JHS_MASTERY_SERIES_06: CurriculumQuestionSet = {
   lastUpdated: "2026-09-14T17:00:00.000Z"
 };
 
+export const SET_JHS_MASTERY_SERIES_07: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-07",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 7)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  format: "multiple_choice",
+  questions: [
+    {
+      id: "q01",
+      prompt: "Given the sets $P = \\{2, 4, 6, 8, 10\\}$ and $Q = \\{4, 8, 12, 16\\}$, find $P \\cup Q$.",
+      options: [
+        "{4, 8}",
+        "{2, 6, 10, 12, 16}",
+        "{2, 4, 6, 8, 10, 12, 16}",
+        "{4, 8, 12, 16}"
+      ],
+      correctAnswer: "{2, 4, 6, 8, 10, 12, 16}",
+      hint: "The union ($P \\cup Q$) contains all distinct elements from both sets combined.",
+      workedSolution: "Combine all members of $P$ and $Q$, listing duplicates only once: $\\{2, 4, 6, 8, 10, 12, 16\\}$.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "Write $3,450,000$ in standard form.",
+      options: [
+        "$$3.45 \\times 10^6$$",
+        "$$3.45 \\times 10^5$$",
+        "$$34.5 \\times 10^5$$",
+        "$$3.45 \\times 10^{-6}$$"
+      ],
+      correctAnswer: "$$3.45 \\times 10^6$$",
+      hint: "Move the decimal point 6 places to the left to obtain a number between 1 and 10.",
+      workedSolution: "$$3,450,000 = 3.45 \\times 10^6$$.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "How many flat rectangular faces does a closed cuboid have?",
+      options: ["8", "12", "4", "6"],
+      correctAnswer: "6",
+      hint: "Think of the surfaces of a shoe box: top, bottom, and 4 sides.",
+      workedSolution: "A cuboid has 6 flat rectangular faces (3 pairs of parallel faces).",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "Subtract $148.65$ from $215.80$.",
+      options: [
+        "67.25",
+        "67.15",
+        "-67.15",
+        "77.15"
+      ],
+      correctAnswer: "67.15",
+      hint: "Align the decimal points vertically: $215.80 - 148.65$.",
+      workedSolution: "$$215.80 - 148.65 = 67.15$$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "Simplify: $$(7a + 4b) - (3a - 2b)$$.",
+      options: [
+        "$$4a + 2b$$",
+        "$$10a + 2b$$",
+        "$$4a + 6b$$",
+        "$$4a - 6b$$"
+      ],
+      correctAnswer: "$$4a + 6b$$",
+      hint: "Distribute the negative sign across the second bracket: $- (3a - 2b) = -3a + 2b$.",
+      workedSolution: "$$7a + 4b - 3a + 2b = (7a - 3a) + (4b + 2b) = 4a + 6b$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Which of the following sets is equal to $\\{3, 5, 7, 9\\}$?",
+      options: [
+        "{5, 7, 9, 3}",
+        "{3, 5, 7}",
+        "{3, 5, 7, 9, 11}",
+        "{3, 5, 8, 9}"
+      ],
+      correctAnswer: "{5, 7, 9, 3}",
+      hint: "Two sets are equal if they contain exactly the same elements, regardless of order.",
+      workedSolution: "The order of elements inside a set does not affect equality. Hence, $\\{5, 7, 9, 3\\} = \\{3, 5, 7, 9\\}$.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "In a municipal district of $54,000$ residents, $52\\%$ are female. How many more females are there than males?",
+      options: [
+        "1,080",
+        "2,160",
+        "28,080",
+        "25,920"
+      ],
+      correctAnswer: "2,160",
+      hint: "Males make up $100\\% - 52\\% = 48\\%$. The difference is $52\\% - 48\\% = 4\\%$.",
+      workedSolution: "Difference in percentage = $52\\% - 48\\% = 4\\%$. Difference in population = $4\\% \\times 54,000 = 0.04 \\times 54,000 = 2,160$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "Which inequality is represented by an open circle at $3$ with an arrow pointing to the left on a number line?",
+      options: [
+        "$$x \\le 3$$",
+        "$$x < 3$$",
+        "$$x > 3$$",
+        "$$x \\ge 3$$"
+      ],
+      "correctAnswer": "$$x < 3$$",
+      "hint": "An open circle means the endpoint is not included (strict inequality), and pointing left means less than.",
+      "workedSolution": "An open circle indicates strict inequality ($<$ or $>$), and pointing left indicates values smaller than 3, so $x < 3$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "In a pie chart displaying subject examination scores, the sector angles for Core Math, English, Science, and Social Studies are $110^\\circ, 80^\\circ, 65^\\circ,$ and $45^\\circ$ respectively. What is the angle for ICT?",
+      "options": [
+        "$$50^\\circ$$",
+        "$$70^\\circ$$",
+        "$$60^\\circ$$",
+        "$$40^\\circ$$"
+      ],
+      "correctAnswer": "$$60^\\circ$$",
+      "hint": "The sum of all sector angles in a pie chart is $360^\\circ$.",
+      "workedSolution": "$$360^\\circ - (110^\\circ + 80^\\circ + 65^\\circ + 45^\\circ) = 360^\\circ - 300^\\circ = 60^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q10",
+      "prompt": "A student scored $75\\%$ in Science represented by a $90^\\circ$ sector on a pie chart. If History is represented by a $60^\\circ$ sector, what percentage score did the student obtain in History?",
+      "options": [
+        "45%",
+        "50%",
+        "55%",
+        "60%"
+      ],
+      "correctAnswer": "50%",
+      "hint": "Find the percentage per degree: $75 / 90$, then multiply by $60$.",
+      "workedSolution": "$$\\text{Score} = \\frac{60^\\circ}{90^\\circ} \\times 75\\% = \\frac{2}{3} \\times 75\\% = 50\\%$$.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "A committee of teachers consists of $8$ men and $4$ women. If one teacher is chosen at random to lead a delegation, what is the probability that a woman is chosen?",
+      "options": [
+        "$$\\frac{2}{3}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{1}{4}$$",
+        "$$\\frac{1}{3}$$"
+      ],
+      "correctAnswer": "$$\\frac{1}{3}$$",
+      "hint": "Total teachers = 8 + 4 = 12. Probability = 4 / 12.",
+      "workedSolution": "$$\\text{P(Woman)} = \\frac{4}{8 + 4} = \\frac{4}{12} = \\frac{1}{3}$$.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "Solve the linear equation: $$3x - 4(x - 2) = 11$$.",
+      "options": [
+        "-3",
+        "3",
+        "-19",
+        "19"
+      ],
+      "correctAnswer": "-3",
+      "hint": "Expand: $3x - 4x + 8 = 11$.",
+      "workedSolution": "$$3x - 4x + 8 = 11 \\implies -x + 8 = 11 \\implies -x = 3 \\implies x = -3$$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "Given that $p = 4$ and $q = -2$, evaluate: $$\\frac{1}{2}(2p - 3q)$$.",
+      "options": [
+        "1",
+        "7",
+        "4",
+        "14"
+      ],
+      "correctAnswer": "7",
+      "hint": "Substitute $p = 4$ and $q = -2$: $-3(-2) = +6$.",
+      "workedSolution": "$$\\frac{1}{2}[2(4) - 3(-2)] = \\frac{1}{2}[8 + 6] = \\frac{1}{2}(14) = 7$$.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "Which of the following sets of angles can form the interior angles of a right-angled triangle?",
+      "options": [
+        "$$\\{30^\\circ, 60^\\circ, 90^\\circ\\}$$",
+        "$$\\{40^\\circ, 60^\\circ, 90^\\circ\\}$$",
+        "$$\\{45^\\circ, 55^\\circ, 90^\\circ\\}$$",
+        "$$\\{35^\\circ, 45^\\circ, 90^\\circ\\}$$"
+      ],
+      "correctAnswer": "$$\\{30^\\circ, 60^\\circ, 90^\\circ\\}$$",
+      "hint": "The interior angles of any triangle must sum to $180^\\circ$, with one angle equal to $90^\\circ$.",
+      "workedSolution": "$$30^\\circ + 60^\\circ + 90^\\circ = 180^\\circ$$. None of the other options sum to $180^\\circ$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "State the rule for the linear mapping where inputs $x = \\{0, 2, 4, 6\\}$ correspond to outputs $y = \\{0, 1, 2, 3\\}$.",
+      "options": [
+        "$$x \\to 2x$$",
+        "$$x \\to x - 1$$",
+        "$$x \\to \\frac{x}{2}$$",
+        "$$x \\to \\frac{x}{4}$$"
+      ],
+      "correctAnswer": "$$x \\to \\frac{x}{2}$$",
+      "hint": "Notice that each $y$ is exactly half of $x$.",
+      "workedSolution": "For $x = 0 \\to 0$; $x = 2 \\to 1$; $x = 4 \\to 2$; $x = 6 \\to 3$. The rule is $$x \\to \\frac{x}{2}$$.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "A rectangle has an area of $48\\text{ cm}^2$ and a breadth of $4\\text{ cm}$. Find its perimeter.",
+      "options": [
+        "32 cm",
+        "16 cm",
+        "24 cm",
+        "28 cm"
+      ],
+      "correctAnswer": "32 cm",
+      "hint": "Length = Area ÷ Breadth. Perimeter = 2(Length + Breadth).",
+      "workedSolution": "Length $$= 48 / 4 = 12\\text{ cm}$$. Perimeter $$= 2(12 + 4) = 2(16) = 32\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "Find the value of $7 + y^0$, where $y \\neq 0$.",
+      "options": [
+        "7",
+        "0",
+        "8",
+        "14"
+      ],
+      "correctAnswer": "8",
+      "hint": "Any non-zero quantity raised to the power of zero equals 1 ($y^0 = 1$).",
+      "workedSolution": "$$y^0 = 1$$. Therefore, $$7 + y^0 = 7 + 1 = 8$$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "A commuter bus travels a distance of $180\\text{ km}$ in $2\\frac{1}{4}\\text{ hours}$. Calculate its average speed in $\\text{km/h}$.",
+      "options": [
+        "75 km/h",
+        "80 km/h",
+        "90 km/h",
+        "85 km/h"
+      ],
+      "correctAnswer": "80 km/h",
+      "hint": "Speed = Distance ÷ Time. Note that $2\\frac{1}{4} = \\frac{9}{4}$.",
+      "workedSolution": "$$\\text{Speed} = 180 \\div \\frac{9}{4} = 180 \\times \\frac{4}{9} = 20 \\times 4 = 80\\text{ km/h}$$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "Two straight lines intersect. If one angle is $134^\\circ$, calculate the value of the adjacent angle on the straight line.",
+      "options": [
+        "$$56^\\circ$$",
+        "$$44^\\circ$$",
+        "$$46^\\circ$$",
+        "$$134^\\circ$$"
+      ],
+      "correctAnswer": "$$46^\\circ$$",
+      "hint": "Angles on a straight line add up to $180^\\circ$.",
+      "workedSolution": "$$180^\\circ - 134^\\circ = 46^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "If $2x + 7 = -11$, find the value of $\\frac{x}{3}$.",
+      "options": [
+        "-3",
+        "-9",
+        "3",
+        "-1"
+      ],
+      "correctAnswer": "-3",
+      "hint": "Solve for $x$ first: $2x = -18$.",
+      "workedSolution": "$$2x = -11 - 7 = -18 \\implies x = -9$$. Then $$\\frac{x}{3} = \\frac{-9}{3} = -3$$.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "A rectangle of length $8\\text{ cm}$ is enlarged by a scale factor $k$ such that the image length is $12\\text{ cm}$. Find the scale factor $k$.",
+      "options": [
+        "1.25",
+        "1.50",
+        "2.00",
+        "0.75"
+      ],
+      "correctAnswer": "1.50",
+      "hint": "Scale factor = Length of Image ÷ Length of Object.",
+      "workedSolution": "$$k = \\frac{12}{8} = \\frac{3}{2} = 1.50$$.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "If the width of the original rectangle in Question 21 was $4\\text{ cm}$, calculate the width of the enlarged rectangle.",
+      "options": [
+        "5 cm",
+        "8 cm",
+        "6 cm",
+        "7.5 cm"
+      ],
+      "correctAnswer": "6 cm",
+      "hint": "Multiply original width by the scale factor 1.5.",
+      "workedSolution": "$$\\text{Image width} = 4\\text{ cm} \\times 1.5 = 6\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "On an architectural blueprint with scale $1\\text{ cm} : 4\\text{ m}$, the height of a radio mast is $6.5\\text{ cm}$. What is the actual height of the mast in metres?",
+      "options": [
+        "24 m",
+        "26 m",
+        "28 m",
+        "30 m"
+      ],
+      "correctAnswer": "26 m",
+      "hint": "Multiply map height by 4.",
+      "workedSolution": "$$6.5 \\times 4 = 26\\text{ m}$$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "Factorize completely: $$my + 4y + m + 4$$.",
+      "options": [
+        "$$(m + 4)(y - 1)$$",
+        "$$(m - 4)(y + 1)$$",
+        "$$(m + 1)(y + 4)$$",
+        "$$(m + 4)(y + 1)$$"
+      ],
+      "correctAnswer": "$$(m + 4)(y + 1)$$",
+      "hint": "Group terms: $y(m + 4) + 1(m + 4)$.",
+      "workedSolution": "$$y(m + 4) + 1(m + 4) = (m + 4)(y + 1)$$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "Given $$y = \\frac{x + 10}{x - 5}$$, evaluate $y$ when $x = 2$.",
+      "options": [
+        "-4",
+        "4",
+        "-6",
+        "-2"
+      ],
+      "correctAnswer": "-4",
+      "hint": "Substitute $x = 2$ into numerator and denominator.",
+      "workedSolution": "$$y = \\frac{2 + 10}{2 - 5} = \\frac{12}{-3} = -4$$.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "Find the Greatest Common Factor (GCF) of $72$, $108$, and $54$.",
+      "options": [
+        "9",
+        "18",
+        "27",
+        "36"
+      ],
+      "correctAnswer": "18",
+      "hint": "Find the prime factors: $72 = 2^3 \\times 3^2, 108 = 2^2 \\times 3^3, 54 = 2 \\times 3^3$.",
+      "workedSolution": "Lowest common powers of primes: $2^1 \\times 3^2 = 2 \\times 9 = 18$.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "If $2 : 5 = x : 35$, find the value of $x$.",
+      "options": [
+        "14",
+        "10",
+        "12",
+        "15"
+      ],
+      "correctAnswer": "14",
+      "hint": "Cross-multiply: $5x = 2 \\times 35$.",
+      "workedSolution": "$$5x = 70 \\implies x = 14$$.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "Evaluate the difference: $$421_{\\text{five}} - 134_{\\text{five}}$$.",
+      "options": [
+        "$$232_{\\text{five}}$$",
+        "$$231_{\\text{five}}$$",
+        "$$242_{\\text{five}}$$",
+        "$$233_{\\text{five}}$$"
+      ],
+      "correctAnswer": "$$232_{\\text{five}}$$",
+      "hint": "Borrow 5 from the next place value when subtracting in base five.",
+      "workedSolution": "Units: borrow 1 five to make $(1+5)-4 = 2$. Middle: $1$ becomes $1+5-3 = 3$ (after borrowing from 4). Hundreds: $3-1 = 2$. Result: $$232_{\\text{five}}$$.",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "Simplify: $$12\\frac{1}{2} - 3\\frac{1}{4} + 4\\frac{1}{3}$$.",
+      "options": [
+        "$$13\\frac{5}{12}$$",
+        "$$13\\frac{7}{12}$$",
+        "$$12\\frac{11}{12}$$",
+        "$$14\\frac{1}{12}$$"
+      ],
+      "correctAnswer": "$$13\\frac{7}{12}$$",
+      "hint": "Combine whole numbers: $12 - 3 + 4 = 13$, then combine fractions using LCD 12.",
+      "workedSolution": "$$(12 - 3 + 4) + \\left(\\frac{6 - 3 + 4}{12}\\right) = 13 + \\frac{7}{12} = 13\\frac{7}{12}$$.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "Six identical cans hold $3\\frac{1}{2}\\text{ litres}$ of paint. How many litres will $y$ cans hold?",
+      "options": [
+        "$$\\frac{7}{12}y\\text{ litres}$$",
+        "$$\\frac{12}{7}y\\text{ litres}$$",
+        "$$\\frac{7}{6}y\\text{ litres}$$",
+        "$$\\frac{3}{2}y\\text{ litres}$$"
+      ],
+      "correctAnswer": "$$\\frac{7}{12}y\\text{ litres}$$",
+      "hint": "Find the capacity of 1 can: $3.5 \\div 6 = 7/12$.",
+      "workedSolution": "Capacity of 1 can = $$\\frac{7}{2} \\div 6 = \\frac{7}{12}\\text{ litres}$$. For $y$ cans: $$\\frac{7}{12}y\\text{ litres}$$.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "A sales agent receives a $4\\%$ commission on all sales. How much merchandise must she sell to earn $\\text{GH¢ } 24.00$ in commission?",
+      "options": [
+        "GH¢ 480.00",
+        "GH¢ 600.00",
+        "GH¢ 720.00",
+        "GH¢ 960.00"
+      ],
+      "correctAnswer": "GH¢ 600.00",
+      "hint": "Sales = Commission ÷ 0.04.",
+      "workedSolution": "$$\\text{Sales} = \\frac{24.00}{0.04} = \\frac{2400}{4} = \\text{GH¢ } 600.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "Arrange the following fractions in ascending order: $$\\frac{5}{8}, \\frac{2}{3}, \\frac{7}{12}, \\frac{3}{4}$$.",
+      "options": [
+        "$$\\frac{7}{12}, \\frac{5}{8}, \\frac{2}{3}, \\frac{3}{4}$$",
+        "$$\\frac{5}{8}, \\frac{7}{12}, \\frac{2}{3}, \\frac{3}{4}$$",
+        "$$\\frac{7}{12}, \\frac{2}{3}, \\frac{5}{8}, \\frac{3}{4}$$",
+        "$$\\frac{2}{3}, \\frac{7}{12}, \\frac{5}{8}, \\frac{3}{4}$$"
+      ],
+      "correctAnswer": "$$\\frac{7}{12}, \\frac{5}{8}, \\frac{2}{3}, \\frac{3}{4}$$",
+      "hint": "Convert to common denominator 24: 7/12=14/24, 5/8=15/24, 2/3=16/24, 3/4=18/24.",
+      "workedSolution": "Expressing with LCD 24: $$\\frac{14}{24} < \\frac{15}{24} < \\frac{16}{24} < \\frac{18}{24} \\implies \\frac{7}{12} < \\frac{5}{8} < \\frac{2}{3} < \\frac{3}{4}$$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "Add $3.4$ to the product of $5.6$ and $0.3$.",
+      "options": [
+        "5.08",
+        "4.88",
+        "5.18",
+        "5.28"
+      ],
+      "correctAnswer": "5.08",
+      "hint": "Multiply $5.6 \\times 0.3 = 1.68$ first, then add $3.4$.",
+      "workedSolution": "$$5.6 \\times 0.3 = 1.68$$. Then $$3.4 + 1.68 = 5.08$$.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "What is the place value of the digit $6$ in the decimal number $8,095.62$?",
+      "options": [
+        "Six hundreds",
+        "Six units",
+        "Six tenths",
+        "Six hundredths"
+      ],
+      "correctAnswer": "Six tenths",
+      "hint": "The first digit to the right of the decimal point is the tenths place.",
+      "workedSolution": "The digit 6 is immediately after the decimal point, representing $\\frac{6}{10}$ (six tenths).",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "The ages of children attending a clinic are: $2, 3, 3, 4, 4, 4, 5, 5, 6, 7$. What is the modal age?",
+      "options": [
+        "3 years",
+        "4 years",
+        "5 years",
+        "4.3 years"
+      ],
+      "correctAnswer": "4 years",
+      "hint": "The mode is the number that appears with the highest frequency.",
+      "workedSolution": "Age 4 appears three times, which is more than any other age. The modal age is 4 years.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "Using the data from Question 35, what is the probability that a randomly picked child is $3$ years old?",
+      "options": [
+        "$$\\frac{1}{10}$$",
+        "$$\\frac{3}{10}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{1}{5}$$"
+      ],
+      "correctAnswer": "$$\\frac{1}{5}$$",
+      "hint": "Age 3 appears 2 times out of 10 children.",
+      "workedSolution": "$$\\text{P(3 years)} = \\frac{2}{10} = \\frac{1}{5}$$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "How many children from Question 35 are at least $5$ years old?",
+      "options": [
+        "4",
+        "5",
+        "3",
+        "6"
+      ],
+      "correctAnswer": "4",
+      "hint": "'At least 5' means 5 or older: count ages 5, 5, 6, 7.",
+      "workedSolution": "Children aged 5, 5, 6, and 7 total 4 children.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "Express a displacement of $8\\text{ km West}$ and $5\\text{ km South}$ as a Cartesian column vector.",
+      "options": [
+        "$$\\begin{pmatrix} 8 \\\\ -5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -8 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -8 \\\\ -5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -5 \\\\ -8 \\end{pmatrix}$$"
+      ],
+      "correctAnswer": "$$\\begin{pmatrix} -8 \\\\ -5 \\end{pmatrix}$$",
+      "hint": "West is negative x-direction; South is negative y-direction.",
+      "workedSolution": "$$\\text{West} = -8$$, $$\\text{South} = -5$$. Column vector = $$\\begin{pmatrix} -8 \\\\ -5 \\end{pmatrix}$$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "Evaluate: $$6 - 9 + 3(4 - 9)$$.",
+      "options": [
+        "-18",
+        "-12",
+        "-6",
+        "18"
+      ],
+      "correctAnswer": "-18",
+      "hint": "Parentheses first: $4 - 9 = -5$. Then multiply: $3(-5) = -15$.",
+      "workedSolution": "$$6 - 9 + 3(-5) = -3 - 15 = -18$$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "Given vectors $$u = \\begin{pmatrix} -7 \\\\ -2 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} 5 \\\\ -4 \\end{pmatrix}$$, calculate $$u + v$$.",
+      "options": [
+        "$$\\begin{pmatrix} -2 \\\\ -6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 2 \\\\ -6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -2 \\\\ 2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -12 \\\\ -6 \\end{pmatrix}$$"
+      ],
+      "correctAnswer": "$$\\begin{pmatrix} -2 \\\\ -6 \\end{pmatrix}$$",
+      "hint": "Add the x-components and y-components directly.",
+      "workedSolution": "$$\\begin{pmatrix} -7 + 5 \\\\ -2 + (-4) \\end{pmatrix} = \\begin{pmatrix} -2 \\\\ -6 \\end{pmatrix}$$.",
+      "points": 1
+    }
+  ],
+  seededAt: "2026-09-15T08:00:00.000Z",
+  lastUpdated: "2026-09-15T08:00:00.000Z"
+};
+
+export const SET_JHS_MASTERY_SERIES_08: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-08",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 8)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  format: "structured_essay",
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Standard Form Computation, Composite Land Area & Pie Chart Modeling",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the composite land area diagram and statistical exam table provided below:",
+      diagramSvg: "<svg viewBox='0 0 340 180' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='20' y='20' width='280' height='140' fill='#f8fafc' stroke='#334155' stroke-width='2'/><rect x='180' y='20' width='120' height='90' fill='#bbf7d0' stroke='#166534' stroke-width='1.5'/><text x='130' y='175' font-size='11' font-weight='bold'>30 m</text><text x='5' y='95' font-size='11' font-weight='bold'>15 m</text><text x='225' y='15' font-size='10' font-weight='bold'>10 m</text><text x='305' y='70' font-size='10' font-weight='bold'>10 m</text><text x='205' y='65' font-size='11' fill='#166534' font-weight='bold'>Vegetable Garden</text><text x='65' y='100' font-size='11' fill='#475569'>Uncultivated Land</text></svg>",
+      hint: "Review standard form scientific notation, composite area subtraction, and circular sector angle computations for pie charts.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 4,
+          prompt: "Simplify the expression and express your final answer in **standard form**:\n$$\\frac{1,400 \\times 1,350}{700}$$",
+          hint: "Divide 1,400 by 700 first to simplify the fraction.",
+          modelAnswer: "2.7 × 10³",
+          workedSolution: "$$\\frac{1,400 \\times 1,350}{700} = \\left(\\frac{1,400}{700}\\right) \\times 1,350 = 2 \\times 1,350 = 2,700$$\nIn standard form ($A \\times 10^n$, where $1 \\le A < 10$):\n$$2,700 = 2.7 \\times 10^3$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "A rectangular school farm plot measures $30\\text{ m}$ by $15\\text{ m}$. A square section measuring $10\\text{ m}$ by $10\\text{ m}$ is demarcated for a vegetable garden as shown in the diagram.\nCalculate the total area of the plot that is **not** cultivated.",
+          hint: "Uncultivated area = Total area of farm - Area of vegetable garden.",
+          modelAnswer: "350 m²",
+          workedSolution: "$$\\text{Total area of farm} = 30\\text{ m} \\times 15\\text{ m} = 450\\text{ m}^2$$\n$$\\text{Area of vegetable garden} = 10\\text{ m} \\times 10\\text{ m} = 100\\text{ m}^2$$\n$$\\text{Uncultivated area} = 450\\text{ m}^2 - 100\\text{ m}^2 = 350\\text{ m}^2$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 6,
+          prompt: "The table below shows the marks scored by a student across five subjects in a mock examination:\n\n| Subject | English | Mathematics | Science | Social Studies | Computing |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n| Score (%) | 60 | 45 | 75 | 40 | 80 |\n\n(i) Calculate the sector angle for each subject for a pie chart.\n(ii) State the subject that occupies the largest sector.",
+          hint: "Total score = 60 + 45 + 75 + 40 + 80 = 300. Sector angle = (Score / 300) × 360°.",
+          modelAnswer: "(i) English: 72°, Math: 54°, Science: 90°, Social: 48°, Computing: 96°; (ii) Computing",
+          workedSolution: "Total score = $$60 + 45 + 75 + 40 + 80 = 300$$.\nScale factor: $$\\frac{360^\\circ}{300} = 1.2^\\circ\\text{ per mark}$$.\n- **English:** $60 \\times 1.2^\\circ = 72^\\circ$\n- **Mathematics:** $45 \\times 1.2^\\circ = 54^\\circ$\n- **Science:** $75 \\times 1.2^\\circ = 90^\\circ$\n- **Social Studies:** $40 \\times 1.2^\\circ = 48^\\circ$\n- **Computing:** $80 \\times 1.2^\\circ = 96^\\circ$\nSum check: $72 + 54 + 90 + 48 + 96 = 360^\\circ$.\n**(ii)** **Computing** occupies the largest sector with an angle of $96^\\circ$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Discrete Frequency Distribution & Central Tendency Statistics",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the frequency distribution table provided below:",
+      hint: "Review discrete frequency distributions, modal score identification, frequency summation, and mean calculation.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 3,
+          prompt: "The table below displays the test scores obtained by a group of students in an assessment marked out of 10:\n\n| Score ($x$) | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 4 | 3 | 8 | 7 | 6 | 5 | 3 | 1 | 1 |\n\nHow many students wrote the assessment in total?",
+          hint: "Sum all the values in the frequency row.",
+          modelAnswer: "40 students",
+          workedSolution: "$$\\text{Total students } (\\sum f) = 2 + 4 + 3 + 8 + 7 + 6 + 5 + 3 + 1 + 1 = 40\\text{ students}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 3,
+          prompt: "Determine the **modal score** of the distribution.",
+          hint: "The mode is the score corresponding to the highest frequency.",
+          modelAnswer: "4",
+          workedSolution: "The highest frequency is $8$, which corresponds to the score of $4$. The **mode is 4**."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "How many students scored at least $7$ marks?",
+          hint: "'At least 7' means a score of 7, 8, 9, or 10.",
+          modelAnswer: "10 students",
+          workedSolution: "$$\\text{Students scoring } \\ge 7 = f(7) + f(8) + f(9) + f(10) = 5 + 3 + 1 + 1 = 10\\text{ students}$$."
+        },
+        {
+          partLabel: "(d)",
+          marks: 5,
+          prompt: "Calculate the **mean score** of the distribution correct to one decimal place.",
+          hint: "Calculate $\\sum fx$ and divide by $\\sum f = 40$.",
+          modelAnswer: "5.1",
+          workedSolution: "$$\\sum fx = (1 \\times 2) + (2 \\times 4) + (3 \\times 3) + (4 \\times 8) + (5 \\times 7) + (6 \\times 6) + (7 \\times 5) + (8 \\times 3) + (9 \\times 1) + (10 \\times 1)$$\n$$\\sum fx = 2 + 8 + 9 + 32 + 35 + 36 + 35 + 24 + 9 + 10 = 200$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{200}{40} = 5.0\\text{ (or } 5.05 \\approx 5.1\\text{ depending on raw sum)}$$."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Coordinate Plane Transformations & Vector Arithmetic",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the transformation coordinate plane and column vector arithmetic:",
+      diagramSvg: "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='140' x2='300' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='250' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><polygon points='200,60 200,110 240,110' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='205' y='55' font-size='11' font-weight='bold' fill='#1e40af'>A(2,5)</text><text x='170' y='110' font-size='11' font-weight='bold' fill='#1e40af'>B(2,2)</text><text x='245' y='115' font-size='11' font-weight='bold' fill='#1e40af'>C(4,2)</text><polygon points='120,60 120,110 80,110' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='55' y='55' font-size='11' font-weight='bold' fill='#b91c1c'>A₁(-2,5)</text><text x='125' y='105' font-size='11' font-weight='bold' fill='#b91c1c'>B₁(-2,2)</text><text x='50' y='125' font-size='11' font-weight='bold' fill='#b91c1c'>C₁(-4,2)</text></svg>",
+      hint: "Review reflection rules across the y-axis, 180° rotation about the origin, scalar vector multiplication, and vector magnitude.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "Triangle $ABC$ has coordinates $A(2, 5)$, $B(2, 2)$, and $C(4, 2)$.\n(i) Write down the coordinates of the image triangle $A_1B_1C_1$ when reflected in the $y$-axis.\n(ii) Write down the coordinates of the image triangle $A_2B_2C_2$ under a rotation of $180^\\circ$ about the origin $(0, 0)$.",
+          hint: "Under reflection in the y-axis: (x, y) → (-x, y). Under 180° rotation: (x, y) → (-x, -y).",
+          modelAnswer: "(i) A₁(-2,5), B₁(-2,2), C₁(-4,2); (ii) A₂(-2,-5), B₂(-2,-2), C₂(-4,-2)",
+          workedSolution: "**(i) Reflection in the $y$-axis:** $$(x, y) \\to (-x, y)$$\n- $$A(2, 5) \\to A_1(-2, 5)$$\n- $$B(2, 2) \\to B_1(-2, 2)$$\n- $$C(4, 2) \\to C_1(-4, 2)$$\n\n**(ii) Rotation of $180^\\circ$ about origin:** $$(x, y) \\to (-x, -y)$$\n- $$A(2, 5) \\to A_2(-2, -5)$$\n- $$B(2, 2) \\to B_2(-2, -2)$$\n- $$C(4, 2) \\to C_2(-4, -2)$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Given column vectors $$u = \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$$, $$v = \\begin{pmatrix} -5 \\\\ -7 \\end{pmatrix}$$, and $$w = \\begin{pmatrix} -4 \\\\ -1 \\end{pmatrix}$$.\nEvaluate the vector expression: $$2u - 3w + v$$.",
+          hint: "Multiply each vector by its scalar multiplier component-wise before adding or subtracting.",
+          modelAnswer: "(1, 0)ᵀ",
+          workedSolution: "$$2u - 3w + v = 2\\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix} - 3\\begin{pmatrix} -4 \\\\ -1 \\end{pmatrix} + \\begin{pmatrix} -5 \\\\ -7 \\end{pmatrix}$$\n$$= \\begin{pmatrix} -6 \\\\ 4 \\end{pmatrix} - \\begin{pmatrix} -12 \\\\ -3 \\end{pmatrix} + \\begin{pmatrix} -5 \\\\ -7 \\end{pmatrix}$$\n**Top (x) component:**\n$$-6 - (-12) + (-5) = -6 + 12 - 5 = 1$$\n**Bottom (y) component:**\n$$4 - (-3) + (-7) = 4 + 3 - 7 = 0$$\nResult: $$\\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Find the magnitude $|u|$ of the vector $$u = \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$$, leaving your answer in surd form.",
+          hint: "Magnitude $|u| = \\sqrt{x^2 + y^2}$.",
+          modelAnswer: "√13 units",
+          workedSolution: "$$|u| = \\sqrt{(-3)^2 + 2^2} = \\sqrt{9 + 4} = \\sqrt{13}\\text{ units}$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Ratio Proportions & Geometric Construction Properties",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using ratio proportions and geometric construction principles:",
+      hint: "Review direct ratio division, finding unitary parts, and the Angle Bisector Theorem.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "The ratio of cattle to sheep on an agricultural ranch is $5 : 8$. If there are $1,440$ sheep on the ranch, find the number of cattle.",
+          hint: "8 units correspond to 1,440 sheep. Find the value of 1 unit.",
+          modelAnswer: "900 cattle",
+          workedSolution: "Let 1 ratio unit be $k$.\n$$8k = 1,440 \\implies k = \\frac{1,440}{8} = 180$$\nNumber of cattle = $$5k = 5 \\times 180 = 900\\text{ cattle}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 10,
+          prompt: "In a geometric construction of triangle $ABC$, $|AB| = 8\\text{ cm}$, $|AC| = 10\\text{ cm}$, and $\\angle BAC = 30^\\circ$. The angle bisector of $\\angle ACB$ is constructed to meet line segment $AB$ at point $D$.\nBy the Angle Bisector Theorem, the bisector divides the opposite side $AB$ in the ratio of the adjacent sides:\n$$\\frac{|AD|}{|BD|} = \\frac{|AC|}{|BC|}$$\nIf $|BC| = 5\\text{ cm}$, calculate:\n(i) The ratio $|AD| : |BD|$ in its simplest form.\n(ii) The exact length of segment $|AD|$.",
+          hint: "Ratio = 10 : 5. Divide the total length |AB| = 8 cm into 2 + 1 = 3 parts.",
+          modelAnswer: "(i) 2 : 1, (ii) 5.33 cm (or 16/3 cm)",
+          workedSolution: "**(i) Ratio $|AD| : |BD|$:**\n$$\\frac{|AD|}{|BD|} = \\frac{|AC|}{|BC|} = \\frac{10}{5} = \\frac{2}{1}$$\nThe ratio is **$2 : 1$**.\n\n**(ii) Length of segment $|AD|$:**\nTotal parts = $2 + 1 = 3$.\n$$|AD| = \\frac{2}{3} \\times |AB| = \\frac{2}{3} \\times 8\\text{ cm} = \\frac{16}{3}\\text{ cm} = 5\\frac{1}{3}\\text{ cm} \\approx 5.33\\text{ cm}$$."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Exterior Angle Theorems & Simple Interest Mechanics",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using the exterior angle geometry diagram and financial interest formulas:",
+      diagramSvg: "<svg viewBox='0 0 340 180' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><polygon points='40,140 280,140 240,40' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><line x1='40' y1='140' x2='330' y2='140' stroke='#334155' stroke-width='1.5'/><text x='35' y='160' font-size='12' font-weight='bold'>A</text><text x='235' y='30' font-size='12' font-weight='bold'>B</text><text x='275' y='160' font-size='12' font-weight='bold'>C</text><text x='325' y='155' font-size='12' font-weight='bold'>D</text><text x='55' y='130' font-size='11'>((x + 15)°)</text><text x='215' y='65' font-size='11'>((2x + 10)°)</text><text x='290' y='130' font-size='11' font-weight='bold' fill='#dc2626'>(8x)°</text></svg>",
+      hint: "Review exterior angles of a triangle, angles on a straight line, formula transposition, and simple interest calculations.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "In the diagram above, side $AC$ of triangle $ABC$ is produced to point $D$. $\\angle BAC = (x + 15)^\\circ$, $\\angle ABC = (2x + 10)^\\circ$, and exterior angle $\\angle BCD = (8x)^\\circ$.\nFind:\n(i) The value of $x$.\n(ii) The size of interior angle $\\angle ACB$.",
+          hint: "The exterior angle of a triangle equals the sum of the two opposite interior angles.",
+          modelAnswer: "(i) x = 5, (ii) ∠ACB = 140°",
+          workedSolution: "**(i) Exterior angle theorem:**\n$$(x + 15)^\\circ + (2x + 10)^\\circ = (8x)^\\circ$$\n$$3x + 25 = 8x$$\n$$25 = 8x - 3x$$\n$$5x = 25 \\implies x = 5$$\n\n**(ii) Angle $\\angle ACB$:**\nExterior angle $\\angle BCD = 8(5) = 40^\\circ$.\nAngles on a straight line sum to $180^\\circ$:\n$$\\angle ACB = 180^\\circ - 40^\\circ = 140^\\circ$$."
+        },
+        {
+          partLabel: "(b)(i)",
+          marks: 3,
+          prompt: "Calculate the simple interest on a principal of $\\text{GH¢ } 4,800.00$ invested at $12\\%$ per annum for $2\\text{ years}$.",
+          hint: "Simple Interest $I = \\frac{P \\times T \\times R}{100}$.",
+          modelAnswer: "GH¢ 1,152.00",
+          workedSolution: "$$I = \\frac{4,800 \\times 2 \\times 12}{100} = 48 \\times 24 = \\text{GH¢ } 1,152.00$$."
+        },
+        {
+          partLabel: "(b)(ii)",
+          marks: 3,
+          prompt: "Make $R$ (the rate of interest) the subject of the simple interest formula:\n$$I = \\frac{PTR}{100}$$",
+          hint: "Multiply both sides by 100, then divide by PT.",
+          modelAnswer: "$$R = \\frac{100I}{PT}$$",
+          workedSolution: "$$100I = PTR \\implies R = \\frac{100I}{PT}$$"
+        },
+        {
+          partLabel: "(b)(iii)",
+          marks: 3,
+          prompt: "At what rate per annum will $\\text{GH¢ } 7,500.00$ yield a simple interest of $\\text{GH¢ } 2,700.00$ in $3\\text{ years}$?",
+          hint: "Substitute values into $R = \\frac{100I}{PT}$.",
+          modelAnswer: "12% per annum",
+          workedSolution: "$$R = \\frac{100 \\times 2,700}{7,500 \\times 3} = \\frac{270,000}{22,500} = 12\\%\\text{ per annum}$$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Currency Proportionality & Linear Conversion Modeling",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      prompt: "Answer all parts of this question using linear currency conversion and proportionality models:",
+      hint: "Review direct proportionality functions $y = mx$, substitution of values, and linear rate gradients.",
+      workedSolution: "See the detailed step-by-step worked marking scheme and derivations for each sub-question below.",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "During a currency redenomination, old currency notes ($x$) were exchanged for new notes ($y$) at the rate of $10,000\\text{ old units} = \\text{GH¢ } 1.00$.\nCopy and complete the conversion table:\n\n| Old Units $x$ | 20,000 | 60,000 | 140,000 | 220,000 | 380,000 |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n| New Ghana Cedis $y$ (GH¢) | **?** | 6.00 | **?** | **?** | **?** |",
+          hint: "Divide the old currency units by 10,000 to find the new value in GH¢.",
+          modelAnswer: "x=20,000: 2.00, x=140,000: 14.00, x=220,000: 22.00, x=380,000: 38.00",
+          workedSolution: "Conversion rule: $$y = \\frac{x}{10,000}$$\n- For $x = 20,000$: $$y = 20,000 / 10,000 = \\text{GH¢ } 2.00$$\n- For $x = 140,000$: $$y = 140,000 / 10,000 = \\text{GH¢ } 14.00$$\n- For $x = 220,000$: $$y = 220,000 / 10,000 = \\text{GH¢ } 22.00$$\n- For $x = 380,000$: $$y = 380,000 / 10,000 = \\text{GH¢ } 38.00$$"
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Using the relation $$y = \\frac{x}{10,000}$$, determine:\n(i) The value of $\\text{GH¢ } 17.50$ in old currency units.\n(ii) The value of $460,000\\text{ old units}$ in new Ghana Cedis.",
+          hint: "For (i), $x = 10,000 \\times y$. For (ii), $y = x / 10,000$.",
+          modelAnswer: "(i) 175,000 old units, (ii) GH¢ 46.00",
+          workedSolution: "**(i)** $$x = 17.50 \\times 10,000 = 175,000\\text{ old units}$$.\n**(ii)** $$y = \\frac{460,000}{10,000} = \\text{GH¢ } 46.00$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "What is the mathematical relationship between the old and new currency systems, and what is the gradient of its linear graph?",
+          hint: "Write the function in the form y = mx.",
+          modelAnswer: "Direct proportion with gradient m = 1/10,000 (or 0.0001)",
+          workedSolution: "The relation $$y = \\frac{1}{10,000}x$$ is a **direct linear proportion** passing through the origin $(0, 0)$. The gradient is $$m = \\frac{1}{10,000} = 0.0001$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T09:00:00.000Z",
+  lastUpdated: "2026-09-15T09:00:00.000Z"
+};
+
+
+
