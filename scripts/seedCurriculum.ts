@@ -4489,6 +4489,208 @@ export const SET_JHS_MASTERY_SERIES_17 = {
   lastUpdated: "2026-09-15T15:00:00.000Z"
 };
 
+export const SET_JHS_MASTERY_SERIES_18 = {
+  id: "jhs-math-mastery-series-18",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 18)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Algebraic Factorization, Rational Transposition & Scalar Vector Combinations",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "(i) Factorize completely the algebraic expression:\n$$3xy - 12x + 4y - 16$$\n(ii) Evaluate the expression obtained in (i) when $x = 4$ and $y = 8$.",
+          hint: "Group terms in pairs: $3x(y - 4) + 4(y - 4)$. Then substitute $x = 4$ and $y = 8$.",
+          modelAnswer: "(i) (y - 4)(3x + 4), (ii) 64",
+          workedSolution: "**(i) Factorization:**\n$$3xy - 12x + 4y - 16 = 3x(y - 4) + 4(y - 4) = (y - 4)(3x + 4)$$\n\n**(ii) Evaluation:**\nSubstitute $x = 4$ and $y = 8$:\n$$(8 - 4)[3(4) + 4] = (4)[12 + 4] = 4 \\times 16 = 64$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Make $y$ the subject of the rational formula:\n$$\\frac{1}{m} = \\frac{1}{x} + \\frac{1}{y}$$",
+          hint: "Isolate $\\frac{1}{y} = \\frac{1}{m} - \\frac{1}{x}$, find a common denominator, then invert.",
+          modelAnswer: "$$y = \\frac{mx}{x - m}$$",
+          workedSolution: "$$\\frac{1}{y} = \\frac{1}{m} - \\frac{1}{x}$$\nCombine the right-hand side using the common denominator $mx$:\n$$\\frac{1}{y} = \\frac{x - m}{mx}$$\nInverting both sides:\n$$y = \\frac{mx}{x - m}$$"
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Given column vectors $$u = \\begin{pmatrix} -4 \\\\ 7 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} 6 \\\\ 8 \\end{pmatrix}$$, calculate the vector:\n$$4\\left(u + \\frac{1}{2}v\\right)$$",
+          hint: "Find $\\frac{1}{2}v$ first, add it to $u$, then multiply the resulting vector by 4.",
+          modelAnswer: "(-4, 44)ᵀ",
+          workedSolution: "$$\\frac{1}{2}v = \\frac{1}{2}\\begin{pmatrix} 6 \\\\ 8 \\end{pmatrix} = \\begin{pmatrix} 3 \\\\ 4 \\end{pmatrix}$$\n$$u + \\frac{1}{2}v = \\begin{pmatrix} -4 \\\\ 7 \\end{pmatrix} + \\begin{pmatrix} 3 \\\\ 4 \\end{pmatrix} = \\begin{pmatrix} -4 + 3 \\\\ 7 + 4 \\end{pmatrix} = \\begin{pmatrix} -1 \\\\ 11 \\end{pmatrix}$$\n$$4\\left(u + \\frac{1}{2}v\\right) = 4\\begin{pmatrix} -1 \\\\ 11 \\end{pmatrix} = \\begin{pmatrix} -4 \\\\ 44 \\end{pmatrix}$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Partnership Profit Sharing, Commercial Lending & Base Numeration",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 10,
+          prompt: "Kwame and Ama shared a total annual business profit of $\\text{GH¢ } 2,100.00$ in the ratio $4 : 3$ respectively.\n(i) Calculate how much profit each partner received.\n(ii) Kwame invested his share of the profit into a fixed mutual fund at a simple interest rate of $15\\%\\text{ per annum}$ for $2\\text{ years}$. Find the simple interest earned on his investment.\n(iii) What was the total value of Kwame's investment at the end of the $2\\text{ years}$?",
+          hint: "Total ratio units = 4 + 3 = 7. Kwame's share = (4/7) × 2,100. Simple Interest = (P × R × T) / 100.",
+          modelAnswer: "(i) Kwame: GH¢ 1,200.00, Ama: GH¢ 900.00; (ii) GH¢ 360.00; (iii) GH¢ 1,560.00",
+          workedSolution: "**(i) Profit Distribution:**\nTotal units = $4 + 3 = 7$.\n- **Kwame's share:** $$\\frac{4}{7} \\times \\text{GH¢ } 2,100.00 = 4 \\times 300 = \\text{GH¢ } 1,200.00$$\n- **Ama's share:** $$\\frac{3}{7} \\times \\text{GH¢ } 2,100.00 = 3 \\times 300 = \\text{GH¢ } 900.00$$\n\n**(ii) Simple Interest on Kwame's share:**\n$$P = \\text{GH¢ } 1,200.00, \\quad R = 15\\%, \\quad T = 2\\text{ years}$$\n$$I = \\frac{1,200 \\times 15 \\times 2}{100} = 12 \\times 30 = \\text{GH¢ } 360.00$$\n\n**(iii) Total value of investment:**\n$$\\text{Total} = P + I = 1,200.00 + 360.00 = \\text{GH¢ } 1,560.00$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Convert the base five numeral $$324_{\\text{five}}$$ to a numeral in base ten.",
+          hint: "Expand using place values: $3(5^2) + 2(5^1) + 4(5^0)$.",
+          modelAnswer: "89",
+          workedSolution: "$$324_{\\text{five}} = 3(5^2) + 2(5^1) + 4(5^0)$$\n$$= 3(25) + 2(5) + 4(1)$$\n$$= 75 + 10 + 4 = 89_{\\text{ten}}$$\nTherefore, $$324_{\\text{five}} = 89$$."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Surface Area, Volume & Liquid Depth in a Rectangular Tank",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><rect x='40' y='70' width='160' height='110' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><path d='M40,70 L90,30 L250,30 L200,70 Z' fill='#dbeafe' stroke='#1e40af' stroke-width='1.5'/><path d='M200,70 L250,30 L250,140 L200,180 Z' fill='#bfdbfe' stroke='#1e40af' stroke-width='1.5'/><text x='110' y='200' font-size='12' font-weight='bold'>l = 70 cm</text><text x='235' y='165' font-size='12' font-weight='bold'>w = 40 cm</text><text x='10' y='130' font-size='12' font-weight='bold'>h = 50 cm</text><line x1='40' y1='120' x2='200' y2='120' stroke='#0284c7' stroke-width='1.5' stroke-dasharray='4'/><line x1='200' y1='120' x2='250' y2='80' stroke='#0284c7' stroke-width='1.5' stroke-dasharray='4'/><text x='100' y='150' font-size='12' fill='#0369a1' font-weight='bold'>Water Volume = 84,000 cm³</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "A closed rectangular water tank has a length of $70\\text{ cm}$, width of $40\\text{ cm}$, and height of $50\\text{ cm}$ as illustrated in the diagram above.\nCalculate the **total surface area** of the tank when completely closed.",
+          hint: "Total Surface Area = $2(lw + lh + wh)$.",
+          modelAnswer: "16,600 cm²",
+          workedSolution: "$$\\text{TSA} = 2(lw + lh + wh)$$\n$$= 2[(70 \\times 40) + (70 \\times 50) + (40 \\times 50)]$$\n$$= 2[2,800 + 3,500 + 2,000]$$\n$$= 2[8,300] = 16,600\\text{ cm}^2$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 4,
+          prompt: "Calculate the **maximum internal volume** (capacity) of the tank in cubic centimetres.",
+          hint: "Volume = length × width × height.",
+          modelAnswer: "140,000 cm³",
+          workedSolution: "$$V = l \\times w \\times h = 70\\text{ cm} \\times 40\\text{ cm} \\times 50\\text{ cm} = 140,000\\text{ cm}^3$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 6,
+          prompt: "If $84,000\\text{ cm}^3$ of water is poured into the empty tank, calculate the depth ($d$) of the water in the tank.",
+          hint: "Volume of water = Base area × depth = $(l \\times w) \\times d$.",
+          modelAnswer: "30 cm",
+          workedSolution: "$$\\text{Base Area} = 70\\text{ cm} \\times 40\\text{ cm} = 2,800\\text{ cm}^2$$\n$$\\text{Volume of water} = \\text{Base Area} \\times d$$\n$$84,000 = 2,800 \\times d$$\n$$d = \\frac{84,000}{2,800} = \\frac{840}{28} = 30\\text{ cm}$$\nTherefore, the depth of water in the tank is **$30\\text{ cm}$**."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Fuel Consumption Rates, Inequalities & Production Expansion",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 4,
+          prompt: "A haulage truck uses fuel at an average rate of $48\\text{ km}$ for every $6\\text{ litres}$ of diesel.\nCalculate how many litres of diesel are required for a journey of $152\\text{ km}$.",
+          hint: "Find the fuel consumption rate in km per litre: $48 \\div 6 = 8\\text{ km/litre}$. Then divide 152 km by 8.",
+          modelAnswer: "19 litres",
+          workedSolution: "$$\\text{Fuel economy} = \\frac{48\\text{ km}}{6\\text{ litres}} = 8\\text{ km per litre}$$\n$$\\text{Fuel required} = \\frac{152\\text{ km}}{8\\text{ km/litre}} = 19\\text{ litres}$$\n*(Alternatively, by proportion: $\\frac{6}{48} \\times 152 = \\frac{1}{8} \\times 152 = 19\\text{ litres}$)*."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Solve for $x$ in the inequality:\n$$\\frac{3}{4}(2x + 6) \\le 12$$\nExpress your solution set and represent it on a number line.",
+          hint: "Multiply both sides by 4/3 or multiply by 4 first.",
+          modelAnswer: "{x : x ≤ 5}",
+          workedSolution: "$$\\frac{3}{4}(2x + 6) \\le 12$$\nMultiply both sides by $4$:\n$$3(2x + 6) \\le 48$$\n$$6x + 18 \\le 48$$\n$$6x \\le 48 - 18$$\n$$6x \\le 30$$\n$$x \\le 5$$\nTruth set: **$$\\{x : x \\le 5, \\, x \\in \\mathbb{R}\\}$$**."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "A manufacturing plant increased its monthly output of cement by $25\\%$ and produced $60,000\\text{ tonnes}$. How many tonnes of cement was the plant producing before the increase?",
+          hint: "New production represents 125% of original production: $1.25 \\times \\text{Original} = 60,000$.",
+          modelAnswer: "48,000 tonnes",
+          workedSolution: "Let $P$ be the original production.\n$$125\\% \\times P = 60,000$$\n$$1.25 P = 60,000$$\n$$P = \\frac{60,000}{1.25} = \\frac{60,000 \\times 4}{5} = 12,000 \\times 4 = 48,000\\text{ tonnes}$$\nTherefore, the factory was producing **$48,000\\text{ tonnes}$** before the increase."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Vector Translations, Geometric Quadrilaterals & Vector Displacement",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 340 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='310' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='310' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><line x1='180' y1='180' x2='240' y2='40' stroke='#2563eb' stroke-width='2.5'/><line x1='80' y1='180' x2='140' y2='40' stroke='#dc2626' stroke-width='2.5'/><line x1='180' y1='180' x2='80' y2='180' stroke='#059669' stroke-width='1.5' stroke-dasharray='4'/><line x1='240' y1='40' x2='140' y2='40' stroke='#059669' stroke-width='1.5' stroke-dasharray='4'/><circle cx='180' cy='180' r='4' fill='#2563eb'/><circle cx='240' cy='40' r='4' fill='#2563eb'/><circle cx='80' cy='180' r='4' fill='#dc2626'/><circle cx='140' cy='40' r='4' fill='#dc2626'/><text x='185' y='195' font-size='11' font-weight='bold'>P(1, -2)</text><text x='245' y='45' font-size='11' font-weight='bold'>Q(4, 5)</text><text x='20' y='195' font-size='11' font-weight='bold' fill='#dc2626'>P'(-4, -2)</text><text x='80' y='45' font-size='11' font-weight='bold' fill='#dc2626'>Q'(-1, 5)</text><text x='140' y='210' font-size='11' fill='#059669' font-weight='bold'>T = (-5, 0)ᵀ</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Points $P(1, -2)$ and $Q(4, 5)$ lie on a Cartesian plane. Segment $PQ$ is translated by vector $$T = \\begin{pmatrix} -5 \\\\ 0 \\end{pmatrix}$$ to produce image segment $P'Q'$.\n(i) Find the coordinates of image vertices $P'$ and $Q'$.\n(ii) What is the length of horizontal shift between $P$ and $P'$?",
+          hint: "Under translation by (a, b)ᵀ: (x, y) → (x + a, y + b).",
+          modelAnswer: "(i) P'(-4, -2), Q'(-1, 5); (ii) 5 units to the left",
+          workedSolution: "**(i) Coordinates:**\n$$(x, y) \\to (x - 5, y + 0)$$\n- $$P(1, -2) \\to P'(1 - 5, -2 + 0) = P'(-4, -2)$$\n- $$Q(4, 5) \\to Q'(4 - 5, 5 + 0) = Q'(-1, 5)$$\n\n**(ii) Horizontal shift:**\n$$|1 - (-4)| = 5\\text{ units to the left}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Calculate the displacement vectors $$\\vec{PQ}$$ and $$\\vec{P'Q'}$$.",
+          hint: "Displacement vector $\\vec{AB} = B - A$.",
+          modelAnswer: "Both are (3, 7)ᵀ",
+          workedSolution: "$$\\vec{PQ} = \\begin{pmatrix} 4 - 1 \\\\ 5 - (-2) \\end{pmatrix} = \\begin{pmatrix} 3 \\\\ 7 \\end{pmatrix}$$\n$$\\vec{P'Q'} = \\begin{pmatrix} -1 - (-4) \\\\ 5 - (-2) \\end{pmatrix} = \\begin{pmatrix} 3 \\\\ 7 \\end{pmatrix}$$\nBoth segments have identical vector direction and magnitude."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "When the vertices are joined in order to form the quadrilateral $PQQ'P'$, state the geometrical name of the figure formed and justify your answer.",
+          hint: "Opposite sides are parallel and equal in length.",
+          modelAnswer: "Parallelogram",
+          workedSolution: "Since $\\vec{PQ} = \\vec{P'Q'}$, the opposite sides $PQ$ and $P'Q'$ are parallel and equal in length. Similarly, $PP'$ and $QQ'$ are parallel horizontal segments of length 5. Therefore, the quadrilateral $PQQ'P'$ is a **Parallelogram**."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Mean Age Calculations, Distribution Statistics & Bar Charting",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Age (years)</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='60' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='105' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='150' y='90' width='25' height='70' fill='#93c5fd' stroke='#1d4ed8'/><rect x='195' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='240' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='285' y='55' width='25' height='105' fill='#2563eb' stroke='#1d4ed8'/><text x='68' y='173' font-size='10'>6</text><text x='113' y='173' font-size='10'>7</text><text x='158' y='173' font-size='10'>8</text><text x='203' y='173' font-size='10'>9</text><text x='245' y='173' font-size='10'>10</text><text x='290' y='173' font-size='10'>11</text><text x='20' y='60' font-size='10'>3</text><text x='20' y='95' font-size='10'>2</text><text x='20' y='130' font-size='10'>1</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "The ages (in years) of nine members of a junior youth club are:\n$$8, \\, 11, \\, 8, \\, 10, \\, 6, \\, 7, \\, 3x, \\, 11, \\, 11$$\nIf the mean age of the nine members is $9\\text{ years}$, calculate the value of $x$.",
+          hint: "Mean = Sum of ages / 9 = 9. Find the total sum first.",
+          modelAnswer: "x = 3",
+          workedSolution: "$$\\text{Sum of ages} = 8 + 11 + 8 + 10 + 6 + 7 + 3x + 11 + 11 = 72 + 3x$$\n$$\\text{Mean} = \\frac{72 + 3x}{9} = 9$$\n$$72 + 3x = 9 \\times 9 = 81$$\n$$3x = 81 - 72 = 9$$\n$$x = \\frac{9}{3} = 3$$\n*(Since $x = 3$, the age $3x = 3(3) = 9\\text{ years}$)*."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Using the complete list of ages ($$6, 7, 8, 8, 9, 10, 11, 11, 11$$) and the bar chart above, determine:\n(i) The **modal age**.\n(ii) The **median age**.",
+          hint: "Mode is the most frequent age. Median is the 5th number in the sorted list of 9 ages.",
+          modelAnswer: "(i) 11 years, (ii) 9 years",
+          workedSolution: "Sorted list of 9 ages: 6, 7, 8, 8, **9**, 10, 11, 11, 11.\n\n**(i) Modal age:**\nAge 11 appears 3 times (highest frequency). The **modal age is 11 years**.\n\n**(ii) Median age:**\nPosition = $$\\frac{9 + 1}{2} = 5^{\\text{th}}\\text{ term}$$.\nThe $5^{\\text{th}}$ age in the ordered list is **$9\\text{ years}$**."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "If a member is chosen at random from the group, what is the probability that the member is:\n(i) Exactly $8\\text{ years old}$?\n(ii) At least $10\\text{ years old}$?",
+          hint: "Count occurrences of 8 (two members). 'At least 10' means 10 or 11 (four members).",
+          modelAnswer: "(i) 2/9, (ii) 4/9",
+          workedSolution: "**(i) Exactly 8 years:**\n$$P(\\text{age } 8) = \\frac{2}{9}$$\n\n**(ii) At least 10 years (ages 10 and 11):**\n$$\\text{Count} = 1 + 3 = 4$$\n$$P(\\text{age } \\ge 10) = \\frac{4}{9}$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T15:30:00.000Z",
+  lastUpdated: "2026-09-15T15:30:00.000Z"
+};
+
 // ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
@@ -4825,6 +5027,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_17
   );
   results.push(result20);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 21: JHS Math -> Core Curriculum Series (Set 18 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 21: Junior Core Math Structured Problem-Solving Series (Set 18)...');
+  const result21 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_18
+  );
+  results.push(result21);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

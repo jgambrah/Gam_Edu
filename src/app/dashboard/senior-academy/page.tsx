@@ -618,6 +618,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "P \\cup Q = \\{1, 3, 5, 6, 7, 9\\} \\implies n(P \\cup Q) = 6",
         sampleAnswer: "6"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 18)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 18 / 2004 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 18 / 2004 past paper adaptation) with embedded SVG diagrams covering algebraic factorization, rational formula inversion, 3D closed liquid tanks, linear inequalities, vector parallelogram translations, and discrete bar chart statistics.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-18",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "A closed rectangular tank (70 cm × 40 cm × 50 cm) has 84,000 cm³ of water poured in. Calculate total surface area and depth d:",
+        sampleFormula: "\\text{TSA} = 2(lw + lh + wh) = 16,600\\text{ cm}^2, \\quad d = \\frac{84,000}{2,800} = 30\\text{ cm}",
+        sampleAnswer: "16,600 cm², 30 cm"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
