@@ -600,6 +600,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "|AC| = \\sqrt{6^2 + 8^2} = 10\\text{ cm}, \\quad \\text{Area} = 96\\text{ cm}^2",
         sampleAnswer: "10 cm, 96 cm²"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 17)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 17 / 2004 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 17 / 2004 past paper adaptation) with balanced option randomization covering set unions, cuboid geometry, decimal division, angles of revolution, prime sequences, and linear inequalities.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-17",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2004 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set P = {1, 3, 5, 7, 9} and set Q = {3, 6, 9}, find n(P ∪ Q):",
+        sampleFormula: "P \\cup Q = \\{1, 3, 5, 6, 7, 9\\} \\implies n(P \\cup Q) = 6",
+        sampleAnswer: "6"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",

@@ -3914,6 +3914,581 @@ export const SET_JHS_MASTERY_SERIES_16 = {
   lastUpdated: "2026-09-15T14:30:00.000Z"
 };
 
+export const SET_JHS_MASTERY_SERIES_17 = {
+  id: "jhs-math-mastery-series-17",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 17)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "If set $$P = \\{1, 3, 5, 7, 9\\}$$ and set $$Q = \\{3, 6, 9\\}$$, find the number of members in $$P \\cup Q$$.",
+      options: [
+        "8",
+        "6",
+        "5",
+        "2"
+      ],
+      correctAnswer: "6",
+      hint: "List all distinct elements of the union first, then count them.",
+      workedSolution: "$$P \\cup Q = \\{1, 3, 5, 6, 7, 9\\}$$. The number of elements is 6.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "How many flat faces does a rectangular cuboid have?",
+      options: [
+        "4",
+        "8",
+        "6",
+        "12"
+      ],
+      correctAnswer: "6",
+      hint: "Think of a standard closed box: top, bottom, and four sides.",
+      workedSolution: "A cuboid has exactly 6 rectangular faces.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Evaluate: $$\\frac{0.048}{0.03}$$.",
+      options: [
+        "0.16",
+        "1.6",
+        "16.0",
+        "0.016"
+      ],
+      correctAnswer: "1.6",
+      hint: "Multiply both numerator and denominator by 1000 to convert to whole numbers: 48 / 30.",
+      workedSolution: "$$\\frac{0.048}{0.03} = \\frac{48}{30} = \\frac{8}{5} = 1.6$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "The angle formed by one-half of a complete revolution is equivalent to:",
+      options: [
+        "One right angle",
+        "Three right angles",
+        "Four right angles",
+        "Two right angles"
+      ],
+      correctAnswer: "Two right angles",
+      hint: "One complete revolution is 360° (four right angles). Half a revolution is 180°.",
+      workedSolution: "$$\\frac{1}{2} \\times 360^\\circ = 180^\\circ = 2 \\times 90^\\circ$$ (two right angles).",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "If set $$S = \\{1, 2, 3, 4, 5, 6\\}$$, which of the following statements best describes set $$S$$?",
+      options: [
+        "Set of counting numbers less than 7",
+        "Set of whole numbers up to 7",
+        "Set of counting numbers greater than 6",
+        "Set of integers less than 6"
+      ],
+      correctAnswer: "Set of counting numbers less than 7",
+      hint: "Counting numbers start from 1. The members are positive integers strictly under 7.",
+      workedSolution: "The set contains all positive natural counting numbers from 1 to 6, which are counting numbers less than 7.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Which of the following numbers is the next prime number greater than $31$?",
+      options: [
+        "33",
+        "35",
+        "37",
+        "39"
+      ],
+      correctAnswer: "37",
+      hint: "Check odd numbers above 31: 33 is divisible by 3, 35 by 5, but 37 has no divisors other than 1 and itself.",
+      workedSolution: "33 is composite ($3 \\times 11$), 35 is composite ($5 \\times 7$). 37 has only factors 1 and 37, so it is the next prime number.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "Simplify: $$-42 - (-18) + (-20)$$.",
+      options: [
+        "-44",
+        "-40",
+        "-80",
+        "-4"
+      ],
+      correctAnswer: "-44",
+      hint: "Subtracting a negative becomes addition: $-42 + 18 - 20$.",
+      workedSolution: "$$-42 + 18 - 20 = -24 - 20 = -44$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "Write $64,890$ correct to the nearest thousand.",
+      options: [
+        "64,000",
+        "64,900",
+        "65,000",
+        "70,000"
+      ],
+      correctAnswer: "65,000",
+      hint: "Look at the hundreds digit (8): since 8 ≥ 5, round the thousands digit up.",
+      workedSolution: "The hundreds digit is 8, so the thousands digit 4 rounds up to 5, giving 65,000.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Simplify: $$\\frac{2^7 \\times 3^6}{3^4 \\times 2^5}$$.",
+      options: [
+        "$$2^2 \\times 3^2$$",
+        "$$2^3 \\times 3^2$$",
+        "$$2^2 \\times 3^4$$",
+        "$$2^{12} \\times 3^{10}$$"
+      ],
+      correctAnswer: "$$2^2 \\times 3^2$$",
+      hint: "Subtract indices for each matching base: $2^{7-5} \\times 3^{6-4}$.",
+      workedSolution: "$$2^{7-5} \\times 3^{6-4} = 2^2 \\times 3^2$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "Which inequality is represented on a number line by an open circle at $-3$ and a closed circle at $4$ connected by a solid segment?",
+      options: [
+        "$$-3 \\le x < 4$$",
+        "$$-3 < x < 4$$",
+        "$$-3 \\le x \\le 4$$",
+        "$$-3 < x \\le 4$$"
+      ],
+      correctAnswer: "$$-3 < x \\le 4$$",
+      hint: "An open circle at -3 means $> -3$, while a closed circle at 4 means $\\le 4$.",
+      workedSolution: "Open circle means strict inequality ($<$), and filled circle includes the value ($\\le$): $$-3 < x \\le 4$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "Factorize completely: $$6ab - 18a + 8b - 24$$.",
+      options: [
+        "$$(b - 3)(6a + 8)$$",
+        "$$2(b - 3)(3a + 4)$$",
+        "$$(b + 3)(6a - 8)$$",
+        "$$2(b + 3)(3a - 4)$$"
+      ],
+      correctAnswer: "$$2(b - 3)(3a + 4)$$",
+      hint: "Factor out 6a from the first pair and 8 from the second pair, then factor out 2 completely.",
+      workedSolution: "$$6a(b - 3) + 8(b - 3) = (b - 3)(6a + 8) = 2(b - 3)(3a + 4)$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "What is the image of $4$ under the mapping $$x \\to 3x + 7$$?",
+      options: [
+        "19",
+        "12",
+        "21",
+        "15"
+      ],
+      correctAnswer: "19",
+      hint: "Substitute $x = 4$ into the expression $3x + 7$.",
+      workedSolution: "$$3(4) + 7 = 12 + 7 = 19$$.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Simplify: $$5p^3 q^2 \\times 3pq^4$$.",
+      options: [
+        "$$15p^3 q^6$$",
+        "$$15p^4 q^6$$",
+        "$$8p^4 q^6$$",
+        "$$15p^4 q^8$$"
+      ],
+      correctAnswer: "$$15p^4 q^6$$",
+      hint: "Multiply coefficients: $5 \\times 3 = 15$. Add powers for $p$ and $q$.",
+      workedSolution: "$$(5 \\times 3) \\times p^{3+1} \\times q^{2+4} = 15p^4 q^6$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "Find the solution set of $$3x + 2 < 8$$ in the domain $$\\{-1, 0, 1, 2, 3\\}$$.",
+      options: [
+        "{-1, 0, 1}",
+        "{0, 1, 2}",
+        "{-1, 1}",
+        "{-1, 0, 1, 2}"
+      ],
+      correctAnswer: "{-1, 0, 1}",
+      hint: "$$3x < 6 \\implies x < 2$$. Pick values in the domain strictly less than 2.",
+      workedSolution: "$$3x < 8 - 2 \\implies 3x < 6 \\implies x < 2$$. In the domain, the numbers strictly less than 2 are -1, 0, and 1.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "Find the Highest Common Factor (HCF) of $36, 54,$ and $90$.",
+      options: [
+        "9",
+        "6",
+        "18",
+        "27"
+      ],
+      correctAnswer: "18",
+      hint: "Check prime factors: $36 = 2^2 \\times 3^2$, $54 = 2 \\times 3^3$, $90 = 2 \\times 3^2 \\times 5$.",
+      workedSolution: "Common prime factors with lowest powers: $2^1 \\times 3^2 = 2 \\times 9 = 18$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "If $$M = \\{\\text{prime numbers between } 10 \\text{ and } 20\\}$$ and $$N = \\{11, 13, 17, 19\\}$$, which of the following statements is true?",
+      options: [
+        "M ⊂ N but M ≠ N",
+        "M ∩ N = ∅",
+        "N ⊂ M but N ≠ M",
+        "M = N"
+      ],
+      correctAnswer: "M = N",
+      hint: "List the prime numbers between 10 and 20 and compare with set N.",
+      workedSolution: "The primes between 10 and 20 are 11, 13, 17, and 19. Both sets contain the exact same elements, so $M = N$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "State the rule for the linear mapping where inputs $x = \\{0, 1, 2, 3, 4\\}$ produce outputs $y = \\{-2, 1, 4, 7, 10\\}$.",
+      options: [
+        "$$y = 3x - 2$$",
+        "$$y = 3x + 2$$",
+        "$$y = 2x - 2$$",
+        "$$y = x - 2$$"
+      ],
+      correctAnswer: "$$y = 3x - 2$$",
+      hint: "The common difference between consecutive outputs is $1 - (-2) = 3$.",
+      workedSolution: "Slope is 3. When $x = 0$, $y = -2$. Therefore, the rule is $$y = 3x - 2$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 3 \\\\ 5 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -2 \\\\ 4 \\end{pmatrix}$$, evaluate $$2u - v$$.",
+      "options": [
+        "$$\\begin{pmatrix} 4 \\\\ 6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 8 \\\\ 6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 8 \\\\ 14 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 4 \\\\ 14 \\end{pmatrix}$$"
+      ],
+      correctAnswer: "$$\\begin{pmatrix} 8 \\\\ 6 \\end{pmatrix}$$",
+      hint: "$$2(3) - (-2) = 6 + 2 = 8$$ and $$2(5) - 4 = 10 - 4 = 6$$.",
+      workedSolution: "$$2\\begin{pmatrix} 3 \\\\ 5 \\end{pmatrix} - \\begin{pmatrix} -2 \\\\ 4 \\end{pmatrix} = \\begin{pmatrix} 6 - (-2) \\\\ 10 - 4 \\end{pmatrix} = \\begin{pmatrix} 8 \\\\ 6 \\end{pmatrix}$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "The sum of the interior angles of a regular polygon with $n$ sides is $(n - 2) \\times 180^\\circ$. What is the interior angle of a regular pentagon ($n = 5$)?",
+      options: [
+        "$$72^\\circ$$",
+        "$$90^\\circ$$",
+        "$$108^\\circ$$",
+        "$$120^\\circ$$"
+      ],
+      correctAnswer: "$$108^\\circ$$",
+      hint: "Total angle sum = $(5 - 2) \\times 180^\\circ = 540^\\circ$. Divide by 5.",
+      workedSolution: "$$\\text{Each interior angle} = \\frac{(5 - 2) \\times 180^\\circ}{5} = \\frac{540^\\circ}{5} = 108^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "An article costing $\\text{GH¢ } 80.00$ had its price increased by $15\\%$. What is the new selling price?",
+      options: [
+        "GH¢ 92.00",
+        "GH¢ 90.00",
+        "GH¢ 95.00",
+        "GH¢ 88.00"
+      ],
+      correctAnswer: "GH¢ 92.00",
+      hint: "Increase = 15% of 80 = 12. New price = 80 + 12.",
+      workedSolution: "$$15\\% \\times 80 = \\frac{15}{100} \\times 80 = 12$$. New price = $$80 + 12 = \\text{GH¢ } 92.00$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "Solve for $x$ in the equation: $$18 - 3x = 6$$.",
+      options: [
+        "-4",
+        "6",
+        "4",
+        "-6"
+      ],
+      correctAnswer: "4",
+      hint: "$$18 - 6 = 3x \\implies 12 = 3x$$.",
+      workedSolution: "$$3x = 18 - 6 = 12 \\implies x = \\frac{12}{3} = 4$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "The population of a city was $4,000,000$ in 1990 and grew to $14,000,000$ in 2020. Calculate the percentage increase in population.",
+      options: [
+        "250%",
+        "240%",
+        "350%",
+        "25%"
+      ],
+      correctAnswer: "250%",
+      hint: "Increase = 14,000,000 - 4,000,000 = 10,000,000. Percentage = (Increase / Original) × 100%.",
+      workedSolution: "$$\\text{Percentage increase} = \\frac{10,000,000}{4,000,000} \\times 100\\% = \\frac{10}{4} \\times 100\\% = 250\\%$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "The three angles of a triangle are in the ratio $4 : 3 : 2$. Find the size of the smallest angle.",
+      options: [
+        "$$60^\\circ$$",
+        "$$80^\\circ$$",
+        "$$40^\\circ$$",
+        "$$20^\\circ$$"
+      ],
+      correctAnswer: "$$40^\\circ$$",
+      hint: "Total ratio parts = 4 + 3 + 2 = 9. Smallest angle = (2 / 9) × 180°.",
+      workedSolution: "$$\\text{Smallest angle} = \\frac{2}{9} \\times 180^\\circ = 2 \\times 20^\\circ = 40^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "Find the Least Common Multiple (LCM) of $6, 8,$ and $15$.",
+      options: [
+        "60",
+        "120",
+        "90",
+        "180"
+      ],
+      correctAnswer: "120",
+      hint: "$$6 = 2 \\times 3, \\, 8 = 2^3, \\, 15 = 3 \\times 5$$. Take the highest power of each prime.",
+      workedSolution: "$$\\text{LCM} = 2^3 \\times 3 \\times 5 = 8 \\times 15 = 120$$.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "Convert the base five numeral $$213_{\\text{five}}$$ to a base ten numeral.",
+      options: [
+        "58",
+        "53",
+        "68",
+        "43"
+      ],
+      correctAnswer: "58",
+      hint: "$$2(5^2) + 1(5^1) + 3(5^0)$$.",
+      workedSolution: "$$2(25) + 1(5) + 3(1) = 50 + 5 + 3 = 58$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Calculate the area of a circle with radius $14\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      options: [
+        "$$88\\text{ cm}^2$$",
+        "$$308\\text{ cm}^2$$",
+        "$$616\\text{ cm}^2$$",
+        "$$154\\text{ cm}^2$$"
+      ],
+      correctAnswer: "$$616\\text{ cm}^2$$",
+      hint: "Area = $\\pi r^2 = \\frac{22}{7} \\times 14 \\times 14$.",
+      workedSolution: "$$\\text{Area} = \\frac{22}{7} \\times 14 \\times 14 = 22 \\times 2 \\times 14 = 44 \\times 14 = 616\\text{ cm}^2$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Simplify: $$\\frac{2}{3} - \\frac{1}{2} + \\frac{5}{6}$$.",
+      options: [
+        "1",
+        "$$\\frac{1}{6}$$",
+        "$$\\frac{2}{3}$$",
+        "$$\\frac{5}{6}$$"
+      ],
+      correctAnswer: "1",
+      hint: "Use common denominator 6: $\\frac{4 - 3 + 5}{6}$.",
+      workedSolution: "$$\\frac{4 - 3 + 5}{6} = \\frac{6}{6} = 1$$.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "Solve for $x$ in the inequality: $$2x - \\frac{1}{3}x > 10$$.",
+      options: [
+        "$$x > 6$$",
+        "$$x < 6$$",
+        "$$x > 5$$",
+        "$$x < 5$$"
+      ],
+      correctAnswer: "$$x > 6$$",
+      hint: "$$2x - \\frac{1}{3}x = \\frac{5}{3}x$$. Multiply both sides by 3/5.",
+      workedSolution: "$$\\frac{5}{3}x > 10 \\implies x > 10 \\times \\frac{3}{5} \\implies x > 6$$.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "Which of the following index expressions is equivalent to $$3^3 \\times 6^2$$?",
+      options: [
+        "$$2^2 \\times 3^5$$",
+        "$$2^3 \\times 3^5$$",
+        "$$2^2 \\times 3^6$$",
+        "$$6^5$$"
+      ],
+      correctAnswer: "$$2^2 \\times 3^5$$",
+      hint: "Break 6 into prime factors: $6^2 = (2 \\times 3)^2 = 2^2 \\times 3^2$.",
+      workedSolution: "$$3^3 \\times (2^2 \\times 3^2) = 2^2 \\times 3^{3+2} = 2^2 \\times 3^5$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "A rectangular water cistern has length $6\\text{ cm}$, width $4\\text{ cm}$, and holds $72\\text{ cm}^3$ of water. Find the depth of water in the cistern.",
+      options: [
+        "4 cm",
+        "2 cm",
+        "5 cm",
+        "3 cm"
+      ],
+      correctAnswer: "3 cm",
+      hint: "Volume = length × width × depth.",
+      workedSolution: "$$6 \\times 4 \\times d = 72 \\implies 24d = 72 \\implies d = \\frac{72}{24} = 3\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "The daily temperatures (in °C) recorded in seven cities are: $$-2, 4, 0, -5, -2, 3, 6$$. What is the modal temperature?",
+      options: [
+        "0°C",
+        "-2°C",
+        "4°C",
+        "-5°C"
+      ],
+      correctAnswer: "-2°C",
+      hint: "The mode is the temperature that occurs most frequently.",
+      workedSolution: "-2°C appears twice, while all other temperatures appear once. The mode is -2°C.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "The ratio of the ages of two brothers is $5 : 3$. The elder brother is $6\\text{ years}$ older than the younger brother. How old is the younger brother?",
+      options: [
+        "15 years",
+        "12 years",
+        "9 years",
+        "18 years"
+      ],
+      correctAnswer: "9 years",
+      hint: "Difference in ratio units = $5 - 3 = 2$ units = 6 years. Find 1 unit = 3 years.",
+      workedSolution: "2 units = 6 years => 1 unit = 3 years. Younger brother's age = $$3 \\times 3 = 9\\text{ years}$$.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "If $$y^2 + 7 = 43$$, find the positive value of $y$.",
+      options: [
+        "7",
+        "5",
+        "8",
+        "6"
+      ],
+      correctAnswer: "6",
+      hint: "$$y^2 = 43 - 7 = 36$$.",
+      workedSolution: "$$y^2 = 36 \\implies y = \\sqrt{36} = 6$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "An angle whose measure is strictly greater than $90^\\circ$ but less than $180^\\circ$ is classified as:",
+      options: [
+        "An acute angle",
+        "A reflex angle",
+        "An obtuse angle",
+        "A right angle"
+      ],
+      correctAnswer: "An obtuse angle",
+      hint: "Acute is < 90°; obtuse is between 90° and 180°; reflex is > 180°.",
+      workedSolution: "By definition, an angle between 90° and 180° is an obtuse angle.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Arrange the mixed numbers in ascending order: $$3\\frac{1}{4}, \\, 3\\frac{1}{2}, \\, 3\\frac{1}{3}$$.",
+      options: [
+        "$$3\\frac{1}{4}, \\, 3\\frac{1}{3}, \\, 3\\frac{1}{2}$$",
+        "$$3\\frac{1}{3}, \\, 3\\frac{1}{4}, \\, 3\\frac{1}{2}$$",
+        "$$3\\frac{1}{2}, \\, 3\\frac{1}{3}, \\, 3\\frac{1}{4}$$",
+        "$$3\\frac{1}{4}, \\, 3\\frac{1}{2}, \\, 3\\frac{1}{3}$$"
+      ],
+      correctAnswer: "$$3\\frac{1}{4}, \\, 3\\frac{1}{3}, \\, 3\\frac{1}{2}$$",
+      hint: "Compare the fractional parts: $1/4 = 0.25, 1/3 \\approx 0.333, 1/2 = 0.50$.",
+      workedSolution: "$$0.25 < 0.333 < 0.50 \\implies 3\\frac{1}{4} < 3\\frac{1}{3} < 3\\frac{1}{2}$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "An electronic appliance was sold for $\\text{GH¢ } 72.00$ after a discount of $10\\%$ was deducted from the original price. What was the original price?",
+      options: [
+        "GH¢ 79.20",
+        "GH¢ 80.00",
+        "GH¢ 82.00",
+        "GH¢ 85.00"
+      ],
+      correctAnswer: "GH¢ 80.00",
+      hint: "The discounted price represents 90% of the original price: $72.00 \\div 0.90$.",
+      workedSolution: "$$\\text{Original price} = \\frac{72.00}{0.90} = \\frac{720}{9} = \\text{GH¢ } 80.00$$.",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "The test scores of eight students in a quiz are: $$5, 8, 9, 9, 6, 4, 9, 5$$. What is the median score?",
+      options: [
+        "6.5",
+        "7.0",
+        "6.0",
+        "7.5"
+      ],
+      correctAnswer: "7.0",
+      hint: "Arrange in ascending order: 4, 5, 5, 6, 8, 9, 9, 9. Average the 4th and 5th values.",
+      workedSolution: "Ordered scores: 4, 5, 5, **6, 8**, 9, 9, 9. Median = $$\\frac{6 + 8}{2} = 7.0$$.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "From the eight quiz scores in Question 37 ($$4, 5, 5, 6, 8, 9, 9, 9$$), what is the probability that a randomly picked student scored exactly $5$ marks?",
+      options: [
+        "$$\\frac{1}{8}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{3}{8}$$",
+        "$$\\frac{1}{4}$$"
+      ],
+      correctAnswer: "$$\\frac{1}{4}$$",
+      hint: "Score 5 appears 2 times out of 8 total scores.",
+      workedSolution: "$$P(5) = \\frac{2}{8} = \\frac{1}{4}$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "Given that $$y = c + kx^2$$, find $y$ when $c = 3, k = 2,$ and $x = 3$.",
+      options: [
+        "21",
+        "39",
+        "15",
+        "33"
+      ],
+      correctAnswer: "21",
+      hint: "Square $x$ first: $3^2 = 9$. Then $kx^2 = 2(9) = 18$.",
+      workedSolution: "$$y = 3 + 2(3^2) = 3 + 2(9) = 3 + 18 = 21$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Which set of side lengths forms a right-angled triangle?",
+      options: [
+        "4 cm, 5 cm, 7 cm",
+        "6 cm, 8 cm, 10 cm",
+        "5 cm, 10 cm, 12 cm",
+        "3 cm, 6 cm, 8 cm"
+      ],
+      correctAnswer: "6 cm, 8 cm, 10 cm",
+      hint: "Check if $a^2 + b^2 = c^2$: $6^2 + 8^2 = 36 + 64 = 100 = 10^2$.",
+      workedSolution: "$$6^2 + 8^2 = 36 + 64 = 100 = 10^2$$. By the converse of Pythagoras' theorem, this is a right-angled triangle.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T15:00:00.000Z",
+  lastUpdated: "2026-09-15T15:00:00.000Z"
+};
+
 // ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
@@ -4238,6 +4813,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_16
   );
   results.push(result19);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 20: JHS Math -> Core Curriculum Series (Set 17 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 20: Junior Core Math Objective Mastery Series (Set 17)...');
+  const result20 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_17
+  );
+  results.push(result20);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
