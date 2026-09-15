@@ -798,6 +798,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "A \\cap B = \\{3, 6, 9\\}",
         sampleAnswer: "{3, 6, 9}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 28)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 28 / 1999 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 28 / 1999 past paper adaptation) with embedded SVG diagrams covering cliff elevation survey trigonometry, simultaneous graphing intersections, Cartesian reflection & vector translation planes, and discrete test mark frequency bar charts.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-28",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "From an observation post P on horizontal ground 24 m from a 10 m cliff QR, find the distance PR and tan θ:",
+        sampleFormula: "|PR|^2 = 24^2 + 10^2 = 676 \\implies |PR| = 26\\text{ m}, \\quad \\tan \\theta = \\frac{5}{12}",
+        sampleAnswer: "26 m, 5/12"
+    },
 
 
 

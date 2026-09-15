@@ -8367,6 +8367,213 @@ export const SET_JHS_MASTERY_SERIES_27: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 4c. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 28)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-28
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_28: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-28",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 28)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Set Number Partitions, Transposition & Linear Equations",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Given the universal set $$\\varepsilon = \\{x : x \\text{ is an integer, } 1 \\le x \\le 20\\}$$, and subsets:\n$$P = \\{\\text{multiples of } 3\\}$$\n$$Q = \\{\\text{factors of } 18\\}$$\n(i) List the elements of set $P$ and set $Q$.\n(ii) Find $P \\cap Q$.\n(iii) Find $(P \\cup Q)'$.",
+          hint: "List numbers between 1 and 20 divisible by 3 for P, and numbers between 1 and 20 that divide 18 for Q.",
+          modelAnswer: "(i) P={3,6,9,12,15,18}, Q={1,2,3,6,9,18}; (ii) {3,6,9,18}; (iii) {4,5,7,8,10,11,13,14,16,17,19,20}",
+          workedSolution: "**(i) Sets:**\n- $$P = \\{3, 6, 9, 12, 15, 18\\}$$\n- $$Q = \\{1, 2, 3, 6, 9, 18\\}$$\n\n**(ii) Intersection ($P \\cap Q$):**\n$$P \\cap Q = \\{3, 6, 9, 18\\}$$\n\n**(iii) Complement of Union ($(P \\cup Q)'$):**\n$$P \\cup Q = \\{1, 2, 3, 6, 9, 12, 15, 18\\}$$\nElements in $\\varepsilon$ outside $P \\cup Q$:\n$$(P \\cup Q)' = \\{4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20\\}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Make $k$ the subject of the relation:\n$$v^2 = u^2 + 2ks$$",
+          hint: "Subtract $u^2$ from both sides, then divide by $2s$.",
+          modelAnswer: "$$k = \\frac{v^2 - u^2}{2s}$$",
+          workedSolution: "$$v^2 - u^2 = 2ks$$\nDivide both sides by $2s$:\n$$k = \\frac{v^2 - u^2}{2s}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Solve for $x$ in the equation:\n$$\\frac{3x - 2}{4} = \\frac{x + 4}{2}$$",
+          hint: "Multiply both sides by 4 to clear denominators.",
+          modelAnswer: "x = 10",
+          workedSolution: "$$3x - 2 = 2(x + 4)$$\n$$3x - 2 = 2x + 8$$\n$$3x - 2x = 8 + 2 \\implies x = 10$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Proportional Sharing, Simple Interest & Base Five Arithmetic",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Kofi, Ama, and Kwabena shared an amount of $\\text{GH¢ } 1,440.00$ in the ratio $3 : 4 : 5$ respectively.\n(i) Calculate the share received by each person.\n(ii) What percentage of the total amount did Kwabena receive?",
+          hint: "Total ratio parts = 3 + 4 + 5 = 12. Find 1 part = 1440 / 12.",
+          modelAnswer: "(i) Kofi: GH¢ 360.00, Ama: GH¢ 480.00, Kwabena: GH¢ 600.00; (ii) 41.67%",
+          workedSolution: "**(i) Shares:**\nTotal parts = $3 + 4 + 5 = 12$.\nValue of 1 part = $$\\frac{\\text{GH¢ } 1,440.00}{12} = \\text{GH¢ } 120.00$$\n- **Kofi:** $$3 \\times 120 = \\text{GH¢ } 360.00$$\n- **Ama:** $$4 \\times 120 = \\text{GH¢ } 480.00$$\n- **Kwabena:** $$5 \\times 120 = \\text{GH¢ } 600.00$$\n\n**(ii) Kwabena's percentage:**\n$$\\text{Percentage} = \\left(\\frac{5}{12}\\right) \\times 100\\% = \\frac{500}{12}\\% = 41\\frac{2}{3}\\% \\approx 41.67\\%$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Ama invested her share of $\\text{GH¢ } 480.00$ at a simple interest rate of $12\\frac{1}{2}\\%\\text{ per annum}$ for $2\\text{ years}$. Calculate the total amount she had at the end of the $2\\text{ years}$.",
+          hint: "Simple Interest $I = \\frac{P \\times R \\times T}{100}$. Note that $12.5\\% = \\frac{1}{8}$.",
+          modelAnswer: "GH¢ 600.00",
+          workedSolution: "$$I = \\frac{480 \\times 12.5 \\times 2}{100} = \\frac{480 \\times 25}{100} = \\frac{480}{4} = \\text{GH¢ } 120.00$$\n$$\\text{Total Amount} = P + I = 480.00 + 120.00 = \\text{GH¢ } 600.00$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Evaluate the addition in base five:\n$$342_{\\text{five}} + 234_{\\text{five}}$$",
+          hint: "Remember that $5$ in base five is written as $10_{\\text{five}}$.",
+          modelAnswer: "1131_five",
+          workedSolution: "- Units: $2 + 4 = 6 = 1(5) + 1 \\to 1$, carry 1.\n- 5s column: $4 + 3 + 1 = 8 = 1(5) + 3 \\to 3$, carry 1.\n- 25s column: $3 + 2 + 1 = 6 = 1(5) + 1 \\to 1$, carry 1.\nResult: **$$1131_{\\text{five}}$$**."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Right-Angled Elevation Surveying & Pythagoras' Theorem",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 340 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><polygon points='50,180 250,180 250,50' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><rect x='235' y='165' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.5'/><line x1='50' y1='180' x2='250' y2='50' stroke='#2563eb' stroke-width='2.5'/><text x='35' y='195' font-size='12' font-weight='bold'>P</text><text x='260' y='195' font-size='12' font-weight='bold'>Q</text><text x='260' y='45' font-size='12' font-weight='bold'>R</text><text x='130' y='200' font-size='12' font-weight='bold'>Base = 24 m</text><text x='265' y='120' font-size='12' font-weight='bold' fill='#dc2626'>h = 10 m</text><text x='125' y='105' font-size='12' font-weight='bold' fill='#2563eb'>d = ?</text><path d='M75,180 A25,25 0 0,0 72,168' fill='none' stroke='#059669' stroke-width='1.5'/><text x='85' y='172' font-size='11' font-weight='bold' fill='#059669'>θ</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "In the surveying diagram above, $QR$ represents a vertical cliff of height $10\\text{ m}$ and $P$ is an observation post on horizontal ground $24\\text{ m}$ from the foot of the cliff $Q$.\n(i) Calculate the straight-line distance $d = |PR|$ from the observation post to the top of the cliff.\n(ii) State $\\tan \\theta$ as a common fraction in its lowest terms.",
+          hint: "Apply Pythagoras' theorem: $|PR|^2 = |PQ|^2 + |QR|^2$. $\\tan \\theta = \\text{opposite} / \\text{adjacent}$.",
+          modelAnswer: "(i) 26 m, (ii) 5/12",
+          workedSolution: "**(i) Distance $|PR|$:**\n$$|PR|^2 = |PQ|^2 + |QR|^2 = 24^2 + 10^2 = 576 + 100 = 676$$\n$$|PR| = \\sqrt{676} = 26\\text{ m}$$\n\n**(ii) $\\tan \\theta$:**\n$$\\tan \\theta = \\frac{|QR|}{|PQ|} = \\frac{10}{24} = \\frac{5}{12}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Calculate the area of the vertical triangular face formed by $\\Delta PQR$.",
+          hint: "Area = 1/2 × base × height.",
+          modelAnswer: "120 m²",
+          workedSolution: "$$\\text{Area} = \\frac{1}{2} \\times |PQ| \\times |QR| = \\frac{1}{2} \\times 24 \\times 10 = 12 \\times 10 = 120\\text{ m}^2$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Find $\\cos \\theta$ and $\\sin \\theta$ as common fractions in simplest form.",
+          hint: "$\\cos \\theta = \\text{adjacent} / \\text{hypotenuse}$, $\\sin \\theta = \\text{opposite} / \\text{hypotenuse}$.",
+          modelAnswer: "cos θ = 12/13, sin θ = 5/13",
+          workedSolution: "$$\\cos \\theta = \\frac{24}{26} = \\frac{12}{13}$$\n$$\\sin \\theta = \\frac{10}{26} = \\frac{5}{13}$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Linear Functional Relations & Simultaneous Coordinates",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='290' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><line x1='60' y1='210' x2='260' y2='50' stroke='#2563eb' stroke-width='2'/><line x1='60' y1='50' x2='260' y2='210' stroke='#dc2626' stroke-width='2'/><circle cx='180' cy='115' r='5' fill='#059669'/><text x='190' y='110' font-size='12' font-weight='bold' fill='#059669'>(1, 2)</text><text x='250' y='45' font-size='11' fill='#2563eb'>y₁ = x + 1</text><text x='250' y='215' font-size='11' fill='#dc2626'>y₂ = 3 - x</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Copy and complete the table of values for the straight-line relations $$y_1 = x + 1$$ and $$y_2 = 3 - x$$:\n\n| $x$ | -2 | -1 | 0 | 1 | 2 | 3 | 4 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y_1 = x + 1$ | -1 | **?** | 1 | **?** | 3 | **?** | 5 |\n| $y_2 = 3 - x$ | 5 | **?** | 3 | **?** | 1 | **?** | -1 |",
+          hint: "Substitute each missing x value into both equations.",
+          modelAnswer: "y₁: [-1, 0, 1, 2, 3, 4, 5]; y₂: [5, 4, 3, 2, 1, 0, -1]",
+          workedSolution: "For $y_1 = x + 1$:\n- $x = -1 \\implies y = -1 + 1 = 0$\n- $x = 1 \\implies y = 1 + 1 = 2$\n- $x = 3 \\implies y = 3 + 1 = 4$\n\nFor $y_2 = 3 - x$:\n- $x = -1 \\implies y = 3 - (-1) = 4$\n- $x = 1 \\implies y = 3 - 1 = 2$\n- $x = 3 \\implies y = 3 - 3 = 0$"
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "From the simultaneous graph above, determine:\n(i) The coordinates of the point where the two lines intersect.\n(ii) The gradient of the line $y_2 = 3 - x$.",
+          hint: "Set $x + 1 = 3 - x$. Gradient of $y = -x + 3$ is the coefficient of $x$.",
+          modelAnswer: "(i) (1, 2), (ii) Gradient = -1",
+          workedSolution: "**(i) Point of intersection:**\n$$x + 1 = 3 - x \\implies 2x = 2 \\implies x = 1$$\nWhen $x = 1$, $y = 1 + 1 = 2$. Intersection = **$(1, 2)$**.\n\n**(ii) Gradient:**\n$y_2 = -x + 3 \\implies m = -1$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Find the truth set of the inequality: $$x + 1 \\ge 3 - x$$.",
+          hint: "Add x to both sides, then subtract 1.",
+          modelAnswer: "{x : x ≥ 1}",
+          workedSolution: "$$x + x \\ge 3 - 1$$\n$$2x \\ge 2 \\implies x \\ge 1$$\nTruth set: **$$\\{x : x \\ge 1, \\, x \\in \\mathbb{R}\\}$$**."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Cartesian Vector Translations, Reflections & Lengths",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='140' x2='300' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='250' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><polygon points='190,100 250,100 190,40' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='175' y='115' font-size='10' font-weight='bold'>A(1,2)</text><text x='255' y='115' font-size='10' font-weight='bold'>B(4,2)</text><text x='175' y='35' font-size='10' font-weight='bold'>C(1,5)</text><polygon points='190,180 250,180 190,240' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='175' y='175' font-size='10' font-weight='bold' fill='#dc2626'>A₁</text><text x='255' y='175' font-size='10' font-weight='bold' fill='#dc2626'>B₁</text><text x='175' y='250' font-size='10' font-weight='bold' fill='#dc2626'>C₁</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Triangle $ABC$ has vertices $A(1, 2)$, $B(4, 2)$, and $C(1, 5)$.\n(i) Write down the coordinates of image vertices $A_1, B_1,$ and $C_1$ under a reflection in the $x$-axis.\n(ii) Write down the coordinates of image vertices $A_2, B_2,$ and $C_2$ under a reflection in the $y$-axis.",
+          hint: "Reflection in x-axis: (x, y) → (x, -y). Reflection in y-axis: (x, y) → (-x, y).",
+          modelAnswer: "(i) A₁(1, -2), B₁(4, -2), C₁(1, -5); (ii) A₂(-1, 2), B₂(-4, 2), C₂(-1, 5)",
+          workedSolution: "**(i) Reflection in $x$-axis:** $$(x, y) \\to (x, -y)$$\n- $$A(1, 2) \\to A_1(1, -2)$$\n- $$B(4, 2) \\to B_1(4, -2)$$\n- $$C(1, 5) \\to C_1(1, -5)$$\n\n**(ii) Reflection in $y$-axis:** $$(x, y) \\to (-x, y)$$\n- $$A(1, 2) \\to A_2(-1, 2)$$\n- $$B(4, 2) \\to B_2(-4, 2)$$\n- $$C(1, 5) \\to C_2(-1, 5)$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Triangle $ABC$ is translated by vector $$T = \\begin{pmatrix} -3 \\\\ 1 \\end{pmatrix}$$ to triangle $A_3B_3C_3$.\nDetermine the coordinates of $A_3, B_3,$ and $C_3$.",
+          hint: "Add the vector components to each vertex: (x - 3, y + 1).",
+          modelAnswer: "A₃(-2, 3), B₃(1, 3), C₃(-2, 6)",
+          workedSolution: "$$(x, y) \\to (x - 3, y + 1)$$\n- $$A(1, 2) \\to A_3(1 - 3, 2 + 1) = A_3(-2, 3)$$\n- $$B(4, 2) \\to B_3(4 - 3, 2 + 1) = B_3(1, 3)$$\n- $$C(1, 5) \\to C_3(1 - 3, 5 + 1) = C_3(-2, 6)$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Calculate the area of triangle $ABC$.",
+          hint: "Triangle ABC is right-angled at A with base AB = 3 and height AC = 3.",
+          modelAnswer: "4.5 square units",
+          workedSolution: "Base $$AB = 4 - 1 = 3\\text{ units}$$.\nHeight $$AC = 5 - 2 = 3\\text{ units}$$.\n$$\\text{Area} = \\frac{1}{2} \\times 3 \\times 3 = \\frac{9}{2} = 4.5\\text{ square units}$$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Classroom Test Mark Distribution, Mean & Probability",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Marks Scored</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='55' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='100' y='90' width='25' height='70' fill='#93c5fd' stroke='#1d4ed8'/><rect x='145' y='35' width='25' height='125' fill='#2563eb' stroke='#1d4ed8'/><rect x='190' y='75' width='25' height='85' fill='#93c5fd' stroke='#1d4ed8'/><rect x='235' y='110' width='25' height='50' fill='#93c5fd' stroke='#1d4ed8'/><rect x='280' y='140' width='25' height='20' fill='#93c5fd' stroke='#1d4ed8'/><text x='65' y='173' font-size='10'>1</text><text x='110' y='173' font-size='10'>2</text><text x='155' y='173' font-size='10'>3</text><text x='200' y='173' font-size='10'>4</text><text x='245' y='173' font-size='10'>5</text><text x='288' y='173' font-size='10'>6</text><text x='20' y='40' font-size='10'>7</text><text x='20' y='80' font-size='10'>5</text><text x='20' y='130' font-size='10'>2</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "The test scores of $20$ pupils in a mathematics quiz are recorded in the frequency distribution table below:\n\n| Mark ($x$) | 1 | 2 | 3 | 4 | 5 | 6 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 4 | 7 | 4 | 2 | 1 |\n\n(i) State the **modal mark**.\n(ii) Calculate the total number of pupils ($N = \\sum f$).\n(iii) Calculate the **mean mark** of the class.",
+          hint: "Mode is the mark with highest frequency. Mean = $\\sum fx / \\sum f$.",
+          modelAnswer: "(i) 3 marks, (ii) 20 pupils, (iii) 3.15 marks",
+          workedSolution: "**(i) Modal mark:**\nThe highest frequency is $7$, corresponding to **$3\\text{ marks}$**.\n\n**(ii) Total pupils:**\n$$N = \\sum f = 2 + 4 + 7 + 4 + 2 + 1 = 20\\text{ pupils}$$\n\n**(iii) Mean mark:**\n$$\\sum fx = (1 \\times 2) + (2 \\times 4) + (3 \\times 7) + (4 \\times 4) + (5 \\times 2) + (6 \\times 1)$$\n$$\\sum fx = 2 + 8 + 21 + 16 + 10 + 6 = 63$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{63}{20} = 3.15\\text{ marks}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "If a pupil is chosen at random from this group:\n(i) Find the probability that the pupil scored strictly more than $3$.\n(ii) What percentage of the pupils scored at least $2$?",
+          hint: "Scores > 3 are 4, 5, and 6. At least 2 means scores 2, 3, 4, 5, 6.",
+          modelAnswer: "(i) 7/20, (ii) 90%",
+          workedSolution: "**(i) Probability of scoring > 3 (marks 4, 5, 6):**\n$$\\text{Count} = f(4) + f(5) + f(6) = 4 + 2 + 1 = 7$$\n$$P(x > 3) = \\frac{7}{20}$$\n\n**(ii) Percentage scoring at least 2 (marks 2, 3, 4, 5, 6):**\n$$\\text{Count} = 20 - f(1) = 20 - 2 = 18$$\n$$\\text{Percentage} = \\left(\\frac{18}{20}\\right) \\times 100\\% = 18 \\times 5 = 90\\%$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T20:30:00.000Z",
+  lastUpdated: "2026-09-15T20:30:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -8822,6 +9029,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_27
   );
   results.push(result30);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 31: JHS Math -> Core Curriculum Series (Set 28 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 31: Junior Core Math Structured Problem-Solving Series (Set 28)...');
+  const result31 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_28
+  );
+  results.push(result31);
 
 
 
