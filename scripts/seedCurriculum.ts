@@ -7575,9 +7575,218 @@ export const SET_JHS_MASTERY_SERIES_25: CurriculumQuestionSet = {
       "points": 1
     }
   ],
-  "seededAt": "2026-09-15T19:00:00.000Z",
-  "lastUpdated": "2026-09-15T19:00:00.000Z"
-}
+  seededAt: "2026-09-15T19:00:00.000Z",
+  lastUpdated: "2026-09-15T19:00:00.000Z"
+};
+
+// ============================================================================
+// 4a. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 26)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-26
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_26: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-26",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 26)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Crop Harvest Sector Modeling & Fractional Reductions",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 300 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><circle cx='150' cy='120' r='90' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M150,120 L150,30 A90,90 0 0,1 236,148 Z' fill='#bfdbfe' stroke='#1e3a8a'/><path d='M150,120 L236,148 A90,90 0 0,1 122,206 Z' fill='#bbf7d0' stroke='#14532d'/><path d='M150,120 L122,206 A90,90 0 0,1 64,92 Z' fill='#fed7aa' stroke='#7c2d12'/><path d='M150,120 L64,92 A90,90 0 0,1 150,30 Z' fill='#fef08a' stroke='#713f12'/><text x='170' y='85' font-size='10' font-weight='bold'>Maize: 108°</text><text x='160' y='170' font-size='10' font-weight='bold'>Rice: 72°</text><text x='75' y='160' font-size='10' font-weight='bold'>Millet: 90°</text><text x='85' y='75' font-size='10' font-weight='bold'>Sorghum: 90°</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "The total harvest of grain from a cooperative farm was $720\\text{ bags}$. The distribution of bags harvested is shown in the table below:\n\n| Crop | Maize | Rice | Millet | Sorghum |\n| :--- | :---: | :---: | :---: | :---: |\n| Bags | 216 | 144 | 180 | 180 |\n\n(i) Calculate the sector angle for each crop on the pie chart above.\n(ii) What percentage of the total harvest was Rice?",
+          hint: "Scale factor = $360^\\circ / 720 = 0.5^\\circ\\text{ per bag}$. Multiply each crop's count by 0.5°.",
+          modelAnswer: "(i) Maize: 108°, Rice: 72°, Millet: 90°, Sorghum: 90°; (ii) 20%",
+          workedSolution: "Scale factor: $$\\frac{360^\\circ}{720} = 0.5^\\circ\\text{ per bag}$$.\n- **Maize:** $$216 \\times 0.5^\\circ = 108^\\circ$$\n- **Rice:** $$144 \\times 0.5^\\circ = 72^\\circ$$\n- **Millet:** $$180 \\times 0.5^\\circ = 90^\\circ$$\n- **Sorghum:** $$180 \\times 0.5^\\circ = 90^\\circ$$\nSum check: $108 + 72 + 90 + 90 = 360^\\circ$.\n\n**(ii) Percentage of Rice:**\n$$\\text{Percentage} = \\left(\\frac{144}{720}\\right) \\times 100\\% = \\left(\\frac{1}{5}\\right) \\times 100\\% = 20\\%$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Evaluate and simplify completely:\n$$\\left(3\\frac{1}{3} - 1\\frac{1}{2}\\right) \\div 1\\frac{3}{8}$$",
+          hint: "Work inside the brackets first using LCD 6, then multiply by the reciprocal of the divisor.",
+          modelAnswer: "1 1/3 (or 4/3)",
+          workedSolution: "**Inside brackets:**\n$$3\\frac{1}{3} - 1\\frac{1}{2} = \\frac{10}{3} - \\frac{3}{2} = \\frac{20 - 9}{6} = \\frac{11}{6}$$\n\n**Divisor:**\n$$1\\frac{3}{8} = \\frac{11}{8}$$\n\n**Division:**\n$$\\frac{11}{6} \\div \\frac{11}{8} = \\frac{11}{6} \\times \\frac{8}{11} = \\frac{8}{6} = \\frac{4}{3} = 1\\frac{1}{3}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Solve for $m$ in the linear relation:\n$$\\frac{m + 3}{4} - \\frac{2m - 1}{6} = \\frac{1}{2}$$",
+          hint: "Multiply through by 12 (the LCM of 4, 6, and 2) to eliminate fractions.",
+          modelAnswer: "m = 5",
+          workedSolution: "Multiply through by $12$:\n$$12\\left(\\frac{m + 3}{4}\\right) - 12\\left(\\frac{2m - 1}{6}\\right) = 12\\left(\\frac{1}{2}\\right)$$\n$$3(m + 3) - 2(2m - 1) = 6$$\n$$3m + 9 - 4m + 2 = 6$$\n$$-m + 11 = 6$$\n$$-m = 6 - 11 = -5 \\implies m = 5$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Linear Functional Graphing & Cartesian Coordinates",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='290' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><line x1='60' y1='210' x2='260' y2='30' stroke='#2563eb' stroke-width='2.5'/><circle cx='80' cy='190' r='4' fill='#dc2626'/><circle cx='120' cy='155' r='4' fill='#dc2626'/><circle cx='160' cy='120' r='4' fill='#dc2626'/><circle cx='200' cy='85' r='4' fill='#dc2626'/><circle cx='240' cy='50' r='4' fill='#dc2626'/><text x='170' y='115' font-size='11' font-weight='bold' fill='#dc2626'>(0, 2)</text><text x='215' y='55' font-size='11' font-weight='bold' fill='#2563eb'>y = 2 - 3x</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "A linear relation connects $x$ and $y$ such that:\n$$y = 2 - 3x$$\nCopy and complete the table of values below:\n\n| $x$ | -2 | -1 | 0 | 1 | 2 | 3 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y = 2 - 3x$ | **?** | 5 | **?** | -1 | **?** | **?** |",
+          hint: "Substitute each missing x value into y = 2 - 3x.",
+          modelAnswer: "x=-2: 8, x=0: 2, x=2: -4, x=3: -7",
+          workedSolution: "- For $x = -2$: $$y = 2 - 3(-2) = 2 + 6 = 8$$\n- For $x = 0$: $$y = 2 - 3(0) = 2$$\n- For $x = 2$: $$y = 2 - 3(2) = 2 - 6 = -4$$\n- For $x = 3$: $$y = 2 - 3(3) = 2 - 9 = -7$$\nThe sequence of outputs is **8, 5, 2, -1, -4, -7**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "From the linear relation and its Cartesian line above, determine:\n(i) The value of $y$ when $x = 1.5$.\n(ii) The value of $x$ when $y = 11$.",
+          hint: "Substitute given values directly into $y = 2 - 3x$.",
+          modelAnswer: "(i) y = -2.5, (ii) x = -3",
+          workedSolution: "**(i)** When $x = 1.5$:\n$$y = 2 - 3(1.5) = 2 - 4.5 = -2.5$$\n\n**(ii)** When $y = 11$:\n$$11 = 2 - 3x$$\n$$3x = 2 - 11 = -9 \\implies x = -3$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "State the **gradient** and the **coordinates of the $y$-intercept** of the line $$y = 2 - 3x$$.",
+          hint: "Compare with $y = mx + c$, noting the coefficient of $x$ is negative.",
+          modelAnswer: "Gradient = -3, y-intercept = (0, 2)",
+          workedSolution: "In $y = mx + c$ format:\n$$y = -3x + 2$$\n- The gradient is **$m = -3$**.\n- The $y$-intercept occurs at $x = 0$, giving **$(0, 2)$**."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Open Rectangular Container Surface Area & Liquid Volume",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><rect x='30' y='70' width='170' height='110' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><path d='M30,70 L80,30 L250,30 L200,70 Z' fill='#f8fafc' stroke='#1e40af' stroke-width='1.5'/><path d='M200,70 L250,30 L250,140 L200,180 Z' fill='#bfdbfe' stroke='#1e40af' stroke-width='1.5'/><text x='100' y='200' font-size='12' font-weight='bold'>l = 60 cm</text><text x='235' y='165' font-size='12' font-weight='bold'>w = 35 cm</text><text x='5' y='130' font-size='12' font-weight='bold'>h = 40 cm</text><text x='95' y='55' font-size='11' fill='#dc2626' font-weight='bold'>OPEN TOP</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "An open rectangular storage bin made of sheet metal has an internal length of $60\\text{ cm}$, width of $35\\text{ cm}$, and height of $40\\text{ cm}$ as shown in the diagram above.\nCalculate the **total surface area** of the sheet metal used to construct the open bin (having no lid).",
+          hint: "Because the bin is open at the top, count 1 base and 4 vertical walls: $\\text{Area} = lw + 2(lh + wh)$.",
+          modelAnswer: "9,700 cm²",
+          workedSolution: "$$\\text{Base area} = l \\times w = 60 \\times 35 = 2,100\\text{ cm}^2$$\n$$\\text{Area of 4 walls} = 2(lh + wh) = 2[(60 \\times 40) + (35 \\times 40)]$$\n$$= 2[2,400 + 1,400] = 2[3,800] = 7,600\\text{ cm}^2$$\n$$\\text{Total Surface Area} = 2,100 + 7,600 = 9,700\\text{ cm}^2$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Calculate the **total capacity** of the storage bin in litres, given that $1,000\\text{ cm}^3 = 1\\text{ litre}$.",
+          hint: "Find volume in cm³ ($l \\times w \\times h$) and divide by 1,000.",
+          modelAnswer: "84 litres",
+          workedSolution: "$$V = l \\times w \\times h = 60\\text{ cm} \\times 35\\text{ cm} \\times 40\\text{ cm} = 84,000\\text{ cm}^3$$\n$$\\text{Capacity in litres} = \\frac{84,000}{1,000} = 84\\text{ litres}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "If $63\\text{ litres}$ of water is poured into the bin, calculate the depth ($d$) of the water.",
+          hint: "$63\\text{ litres} = 63,000\\text{ cm}^3$. Volume = Base area × depth.",
+          modelAnswer: "30 cm",
+          workedSolution: "$$\\text{Volume of water} = 63 \\times 1,000 = 63,000\\text{ cm}^3$$\n$$\\text{Base area} = 60 \\times 35 = 2,100\\text{ cm}^2$$\n$$d = \\frac{63,000}{2,100} = 30\\text{ cm}$$\nTherefore, the water depth is **$30\\text{ cm}$**."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Trapezoidal Farmland Boundary Geometry & Surveying Measurements",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><polygon points='40,150 270,150 210,40 40,40' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><line x1='210' y1='40' x2='210' y2='150' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='4'/><rect x='195' y='135' width='15' height='15' fill='none' stroke='#dc2626' stroke-width='1.2'/><rect x='40' y='40' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.2'/><rect x='40' y='135' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.2'/><text x='25' y='45' font-size='12' font-weight='bold'>A</text><text x='215' y='35' font-size='12' font-weight='bold'>B</text><text x='280' y='155' font-size='12' font-weight='bold'>C</text><text x='25' y='160' font-size='12' font-weight='bold'>D</text><text x='120' y='30' font-size='11' font-weight='bold'>17 m</text><text x='140' y='170' font-size='11' font-weight='bold'>25 m</text><text x='10' y='100' font-size='11' font-weight='bold'>15 m</text><text x='215' y='100' font-size='11' fill='#dc2626'>h = 15 m</text><text x='250' y='90' font-size='11' font-weight='bold' fill='#2563eb'>c = ?</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "The diagram above shows a right trapezium farmland $ABCD$, where $AB \\parallel DC$, $\\angle ADC = 90^\\circ$, $|AB| = 17\\text{ m}$, $|DC| = 25\\text{ m}$, and $|AD| = 15\\text{ m}$.\nA perpendicular line dropped from $B$ to $DC$ meets $DC$ at point $E$.\n(i) Find the length of line segment $|EC|$.\n(ii) Calculate the length of slant boundary $|BC|$ using Pythagoras' theorem.",
+          hint: "|EC| = |DC| - |AB| = 25 - 17. In right-angled triangle BEC, hypotenuse $BC^2 = |BE|^2 + |EC|^2$.",
+          modelAnswer: "(i) 8 m, (ii) 17 m",
+          workedSolution: "**(i) Segment $|EC|$:**\n$$|EC| = |DC| - |AB| = 25 - 17 = 8\\text{ m}$$\n\n**(ii) Slant side $|BC|$:**\nNotice that $|BE| = |AD| = 15\\text{ m}$.\nIn right-angled triangle $BEC$:\n$$|BC|^2 = |BE|^2 + |EC|^2 = 15^2 + 8^2 = 225 + 64 = 289$$\n$$|BC| = \\sqrt{289} = 17\\text{ m}$$\nTherefore, the length of slant boundary $|BC|$ is **$17\\text{ m}$**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Calculate the total land area enclosed by trapezium $ABCD$.",
+          hint: "Area = $\\frac{1}{2}(a + b)h$, where $a = 17$, $b = 25$, and $h = 15$.",
+          modelAnswer: "315 m²",
+          workedSolution: "$$\\text{Area} = \\frac{1}{2}(|AB| + |DC|) \\times |AD|$$\n$$= \\frac{1}{2}(17 + 25) \\times 15 = \\frac{1}{2}(42) \\times 15 = 21 \\times 15 = 315\\text{ m}^2$$\n*(Or: Rectangle $ABED$ area = $17 \\times 15 = 255\\text{ m}^2$, Triangle $BEC$ area = $\\frac{1}{2} \\times 8 \\times 15 = 60\\text{ m}^2$. Total = $255 + 60 = 315\\text{ m}^2$)*."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Calculate the total perimeter of the farmland boundary $ABCD$.",
+          hint: "Perimeter = |AB| + |BC| + |CD| + |DA|.",
+          modelAnswer: "74 m",
+          workedSolution: "$$\\text{Perimeter} = 17 + 17 + 25 + 15 = 74\\text{ m}$$."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Cartesian Vector Translations & Coordinate Reflections",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='140' x2='300' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='250' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><polygon points='190,110 250,110 250,60' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='180' y='125' font-size='10' font-weight='bold'>P(1,1)</text><text x='255' y='125' font-size='10' font-weight='bold'>Q(4,1)</text><text x='255' y='55' font-size='10' font-weight='bold'>R(4,4)</text><polygon points='190,170 250,170 250,220' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='180' y='165' font-size='10' font-weight='bold' fill='#dc2626'>P₁</text><text x='255' y='165' font-size='10' font-weight='bold' fill='#dc2626'>Q₁</text><text x='255' y='235' font-size='10' font-weight='bold' fill='#dc2626'>R₁</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Triangle $PQR$ has vertices $P(1, 1)$, $Q(4, 1)$, and $R(4, 4)$ on the Cartesian plane shown above.\n(i) Write down the coordinates of the image vertices $P_1, Q_1,$ and $R_1$ under a reflection in the $x$-axis.\n(ii) Write down the coordinates of the image vertices $P_2, Q_2,$ and $R_2$ under a reflection in the $y$-axis.",
+          hint: "Reflection in x-axis: (x, y) → (x, -y). Reflection in y-axis: (x, y) → (-x, y).",
+          modelAnswer: "(i) P₁(1, -1), Q₁(4, -1), R₁(4, -4); (ii) P₂(-1, 1), Q₂(-4, 1), R₂(-4, 4)",
+          workedSolution: "**(i) Reflection in $x$-axis:** $$(x, y) \\to (x, -y)$$\n- $$P(1, 1) \\to P_1(1, -1)$$\n- $$Q(4, 1) \\to Q_1(4, -1)$$\n- $$R(4, 4) \\to R_1(4, -4)$$\n\n**(ii) Reflection in $y$-axis:** $$(x, y) \\to (-x, y)$$\n- $$P(1, 1) \\to P_2(-1, 1)$$\n- $$Q(4, 1) \\to Q_2(-4, 1)$$\n- $$R(4, 4) \\to R_2(-4, 4)$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Triangle $PQR$ is translated by vector $$T = \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$$ to produce triangle $P_3Q_3R_3$.\nDetermine the coordinates of vertices $P_3, Q_3,$ and $R_3$.",
+          hint: "Add the components of T to each point: (x - 3, y + 2).",
+          modelAnswer: "P₃(-2, 3), Q₃(1, 3), R₃(1, 6)",
+          workedSolution: "$$(x, y) \\to (x - 3, y + 2)$$\n- $$P(1, 1) \\to P_3(1 - 3, 1 + 2) = P_3(-2, 3)$$\n- $$Q(4, 1) \\to Q_3(4 - 3, 1 + 2) = Q_3(1, 3)$$\n- $$R(4, 4) \\to R_3(4 - 3, 4 + 2) = R_3(1, 6)$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Calculate the area of triangle $PQR$.",
+          hint: "Triangle PQR is a right-angled triangle with perpendicular sides PQ and QR.",
+          modelAnswer: "4.5 square units",
+          workedSolution: "Base $$PQ = 4 - 1 = 3\\text{ units}$$.\nHeight $$QR = 4 - 1 = 3\\text{ units}$$.\n$$\\text{Area} = \\frac{1}{2} \\times 3 \\times 3 = \\frac{9}{2} = 4.5\\text{ square units}$$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Class Test Score Distribution & Compound Probability",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "The test scores of $30$ pupils in an assessment are recorded in the frequency distribution below:\n\n| Score ($x$) | 1 | 2 | 3 | 4 | 5 | 6 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 3 | 5 | 9 | 7 | 4 | 2 |\n\n(i) State the **modal score**.\n(ii) Calculate the total number of pupils ($N = \\sum f$).\n(iii) Calculate the **mean score** of the class.",
+          hint: "Mode has highest frequency. Mean = $\\sum fx / \\sum f$.",
+          modelAnswer: "(i) 3, (ii) 30 pupils, (iii) 3.33 (or 3 1/3)",
+          workedSolution: "**(i) Modal score:**\nThe highest frequency is $9$, corresponding to score **3**.\n\n**(ii) Total number of pupils:**\n$$N = \\sum f = 3 + 5 + 9 + 7 + 4 + 2 = 30\\text{ pupils}$$\n\n**(iii) Mean score:**\n$$\\sum fx = (1 \\times 3) + (2 \\times 5) + (3 \\times 9) + (4 \\times 7) + (5 \\times 4) + (6 \\times 2)$$\n$$\\sum fx = 3 + 10 + 27 + 28 + 20 + 12 = 100$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{100}{30} = 3\\frac{1}{3} \\approx 3.33$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "If a pupil is chosen at random from this group:\n(i) Find the probability that the pupil scored strictly more than $4$.\n(ii) What percentage of the pupils scored at least $3$?",
+          hint: "Strictly more than 4 means scores 5 and 6. At least 3 means scores 3, 4, 5, 6.",
+          modelAnswer: "(i) 1/5, (ii) 73.33%",
+          workedSolution: "**(i) Probability of scoring > 4 (scores 5 and 6):**\n$$\\text{Number of pupils} = f(5) + f(6) = 4 + 2 = 6$$\n$$P(x > 4) = \\frac{6}{30} = \\frac{1}{5}$$\n\n**(ii) Percentage scoring at least 3 (scores 3, 4, 5, 6):**\n$$\\text{Number of pupils} = 9 + 7 + 4 + 2 = 22$$\n$$\\text{Percentage} = \\left(\\frac{22}{30}\\right) \\times 100\\% = \\frac{220}{3}\\% = 73\\frac{1}{3}\\% \\approx 73.33\\%$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T19:30:00.000Z",
+  lastUpdated: "2026-09-15T19:30:00.000Z"
+};
+
 
 
 
@@ -8015,6 +8224,19 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_25
   );
   results.push(result28);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 29: JHS Math -> Core Curriculum Series (Set 26 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 29: Junior Core Math Structured Problem-Solving Series (Set 26)...');
+  const result29 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_26
+  );
+  results.push(result29);
+
 
 
 

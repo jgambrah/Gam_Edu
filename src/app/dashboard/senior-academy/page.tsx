@@ -762,6 +762,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "P \\cap Q = \\{3, 5, 7\\}",
         sampleAnswer: "{3, 5, 7}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 26)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 26 / 2000 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 26 / 2000 past paper adaptation) with embedded SVG diagrams covering crop harvest sector pie charts, linear functional coordinate graphing, open rectangular storage bin surface areas & liquid capacity, trapezoidal farmland boundary surveying, and Cartesian reflection planes.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-26",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "An open rectangular storage bin (60 cm × 35 cm × 40 cm) has no lid. Calculate the total surface area and capacity in litres:",
+        sampleFormula: "\\text{TSA} = lw + 2(lh + wh) = 9,700\\text{ cm}^2, \\quad V = \\frac{84,000}{1,000} = 84\\text{ litres}",
+        sampleAnswer: "9,700 cm², 84 litres"
+    },
 
 
 
