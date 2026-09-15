@@ -582,6 +582,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "n(Q) = 4 + 2 = 6",
         sampleAnswer: "6"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 16)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 16 / 2005 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 16 / 2005 past paper adaptation) with embedded SVG diagrams covering proportional purchasing, circle radii, linear supplementary relations, sports Venn diagrams, geometric rhombus/kite diagonals, and discrete frequency distributions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-16",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "In rhombus ACBD with base AB = 12 cm and perpendicular diagonals bisecting at P (CP = PD = 8 cm), calculate side |AC| and total area:",
+        sampleFormula: "|AC| = \\sqrt{6^2 + 8^2} = 10\\text{ cm}, \\quad \\text{Area} = 96\\text{ cm}^2",
+        sampleAnswer: "10 cm, 96 cm²"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",

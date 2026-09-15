@@ -3696,6 +3696,224 @@ export const SET_JHS_MASTERY_SERIES_15 = {
   lastUpdated: "2026-09-15T14:00:00.000Z"
 };
 
+export const SET_JHS_MASTERY_SERIES_16 = {
+  id: "jhs-math-mastery-series-16",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 16)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Proportional Purchasing, Circle Radii, Fraction Division & Rational Equations",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 4,
+          prompt: "A student has enough money to purchase $18$ pencils costing $\\text{GH¢ } 0.60$ each. How many erasers costing $\\text{GH¢ } 0.40$ each can he buy with the exact same amount of money?",
+          hint: "Find the total amount of money first: $18 \\times 0.60$. Then divide by the unit cost of an eraser.",
+          modelAnswer: "27 erasers",
+          workedSolution: "$$\\text{Total money available} = 18 \\times \\text{GH¢ } 0.60 = \\text{GH¢ } 10.80$$\n$$\\text{Number of erasers} = \\frac{\\text{GH¢ } 10.80}{\\text{GH¢ } 0.40} = \\frac{108}{4} = 27\\text{ erasers}$$\n*(Alternatively, by inverse proportion: $\\frac{18 \\times 0.60}{0.40} = 18 \\times 1.5 = 27$)*."
+        },
+        {
+          partLabel: "(b)",
+          marks: 4,
+          prompt: "A circular wire ring has a circumference of $88\\text{ cm}$. Calculate its radius, taking $\\pi = \\frac{22}{7}$.",
+          hint: "Circumference $C = 2\\pi r$. Rearrange to solve for $r = \\frac{C}{2\\pi}$.",
+          modelAnswer: "14 cm",
+          workedSolution: "$$C = 2\\pi r$$\n$$88 = 2 \\times \\frac{22}{7} \\times r$$\n$$88 = \\frac{44}{7} \\times r$$\n$$r = 88 \\times \\frac{7}{44} = 2 \\times 7 = 14\\text{ cm}$$\nTherefore, the radius of the circle is **$14\\text{ cm}$**."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Evaluate and simplify completely:\n$$\\left(3\\frac{1}{2} - 1\\frac{3}{4}\\right) \\div 2\\frac{5}{8}$$",
+          hint: "Subtract inside the parentheses first, then multiply by the reciprocal of the divisor.",
+          modelAnswer: "2/3",
+          workedSolution: "**Inside the brackets:**\n$$3\\frac{1}{2} - 1\\frac{3}{4} = \\frac{7}{2} - \\frac{7}{4} = \\frac{14 - 7}{4} = \\frac{7}{4}$$\n**Divisor:**\n$$2\\frac{5}{8} = \\frac{21}{8}$$\n**Division:**\n$$\\frac{7}{4} \\div \\frac{21}{8} = \\frac{7}{4} \\times \\frac{8}{21} = \\frac{1}{1} \\times \\frac{2}{3} = \\frac{2}{3}$$."
+        },
+        {
+          partLabel: "(d)",
+          marks: 3,
+          prompt: "Solve for $n$ in the equation:\n$$\\frac{4(n + 5)}{n} = 1$$",
+          hint: "Multiply both sides by $n$ to clear the fraction, then group like terms.",
+          modelAnswer: "n = -20/3 (or -6 2/3)",
+          workedSolution: "$$\\frac{4(n + 5)}{n} = 1$$\n$$4(n + 5) = n$$\n$$4n + 20 = n$$\n$$4n - n = -20$$\n$$3n = -20 \\implies n = -\\frac{20}{3} = -6\\frac{2}{3}$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Linear Intercept Graphing & Cartesian Interpolation",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='210' x2='290' y2='210' stroke='#64748b' stroke-width='1.5'/><line x1='50' y1='20' x2='50' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='205' font-size='12'>x</text><text x='55' y='30' font-size='12'>y</text><line x1='50' y1='50' x2='250' y2='210' stroke='#2563eb' stroke-width='2.5'/><circle cx='50' cy='50' r='4' fill='#dc2626'/><circle cx='100' cy='90' r='4' fill='#dc2626'/><circle cx='150' cy='130' r='4' fill='#dc2626'/><circle cx='200' cy='170' r='4' fill='#dc2626'/><circle cx='250' cy='210' r='4' fill='#dc2626'/><text x='40' y='55' font-size='11' text-anchor='end'>180</text><text x='40' y='135' font-size='11' text-anchor='end'>90</text><text x='40' y='215' font-size='11' text-anchor='end'>0</text><text x='150' y='225' font-size='11'>90</text><text x='250' y='225' font-size='11'>180</text><text x='160' y='90' font-size='11' font-weight='bold' fill='#2563eb'>x + y = 180</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "A linear relation connecting two supplementary quantities is given by:\n$$x + y = 180$$\nCopy and complete the table of values:\n\n| $x$ | 0 | 30 | 60 | 90 | 120 | 150 | 180 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y$ | 180 | **?** | **?** | 90 | **?** | **?** | 0 |",
+          hint: "For each value of x, $y = 180 - x$.",
+          modelAnswer: "x=30: 150, x=60: 120, x=120: 60, x=150: 30",
+          workedSolution: "- For $x = 30$: $$y = 180 - 30 = 150$$\n- For $x = 60$: $$y = 180 - 60 = 120$$\n- For $x = 120$: $$y = 180 - 120 = 60$$\n- For $x = 150$: $$y = 180 - 150 = 30$$\nThe completed table values for $y$ are **180, 150, 120, 90, 60, 30, 0**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Using the relation $$x + y = 180$$ and the linear graph shown above, find:\n(i) The value of $y$ when $x = 75$.\n(ii) The value of $x$ when $y = 45$.",
+          hint: "Substitute the given values directly into $y = 180 - x$ and $x = 180 - y$.",
+          modelAnswer: "(i) y = 105, (ii) x = 135",
+          workedSolution: "**(i)** When $x = 75$:\n$$y = 180 - 75 = 105$$\n\n**(ii)** When $y = 45$:\n$$x = 180 - 45 = 135$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Determine the gradient (slope) of the straight line $$x + y = 180$$.",
+          hint: "Rewrite the equation in the standard form $y = mx + c$.",
+          modelAnswer: "m = -1",
+          workedSolution: "Rewriting in slope-intercept form:\n$$y = -x + 180$$\nComparing with $y = mx + c$, the gradient is **$m = -1$**."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Sports Club Venn Modeling, Factorization by Grouping & Binomial Expansion",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 360 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='180' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U = 40</text><circle cx='135' cy='105' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='225' cy='105' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='105' y='45' font-size='12' font-weight='bold' fill='#2563eb'>Hockey (H: 26)</text><text x='215' y='45' font-size='12' font-weight='bold' fill='#059669'>Volleyball (V: 20)</text><text x='95' y='110' font-size='12' fill='#1e293b'>26 - x</text><text x='175' y='110' font-size='13' font-weight='bold' fill='#dc2626'>x</text><text x='235' y='110' font-size='12' fill='#1e293b'>20 - x</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "There are $40$ students in an athletics academy. $26$ of them play Hockey and $20$ play Volleyball. Each student plays at least one of the two sports.\nUsing the Venn diagram above:\n(i) Calculate the number of students who play **both** sports.\n(ii) How many students play Volleyball **only**?",
+          hint: "Total students = (26 - x) + x + (20 - x) = 40.",
+          modelAnswer: "(i) 6 students, (ii) 14 students",
+          workedSolution: "**(i) Both sports:**\n$$(26 - x) + x + (20 - x) = 40$$\n$$46 - x = 40 \\implies x = 46 - 40 = 6$$\nTherefore, **$6$ students play both sports**.\n\n**(ii) Volleyball only:**\n$$\\text{Volleyball only} = 20 - x = 20 - 6 = 14\\text{ students}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Factorize completely the algebraic expression:\n$$ab + 4a + 5b + 20$$",
+          hint: "Group terms in pairs: $a(b + 4) + 5(b + 4)$.",
+          modelAnswer: "(b + 4)(a + 5)",
+          workedSolution: "$$ab + 4a + 5b + 20 = a(b + 4) + 5(b + 4) = (b + 4)(a + 5)$$"
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Expand and simplify the product of binomials:\n$$(4 + x)(6 - 3x)$$",
+          hint: "Multiply out: $4(6 - 3x) + x(6 - 3x)$.",
+          modelAnswer: "24 - 6x - 3x²",
+          workedSolution: "$$(4 + x)(6 - 3x) = 4(6) + 4(-3x) + x(6) + x(-3x)$$\n$$= 24 - 12x + 6x - 3x^2$$\n$$= 24 - 6x - 3x^2$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Bank Loan Simple Interest & Commercial Markups",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)(i)",
+          marks: 4,
+          prompt: "An entrepreneur secured a business loan of $\\text{GH¢ } 3,000.00$ from a commercial bank at a simple interest rate of $12\\%\\text{ per annum}$ for $3\\text{ years}$.\nCalculate the total simple interest paid over the $3\\text{ years}$.",
+          hint: "Simple Interest $I = \\frac{P \\times R \\times T}{100}$.",
+          modelAnswer: "GH¢ 1,080.00",
+          workedSolution: "$$I = \\frac{3,000 \\times 12 \\times 3}{100} = 30 \\times 36 = \\text{GH¢ } 1,080.00$$."
+        },
+        {
+          partLabel: "(a)(ii)",
+          marks: 3,
+          prompt: "Find the total amount the entrepreneur repaid to the bank at the end of the $3\\text{ years}$.",
+          hint: "Total amount = Principal + Simple Interest.",
+          modelAnswer: "GH¢ 4,080.00",
+          workedSolution: "$$\\text{Total Repayment} = P + I = 3,000.00 + 1,080.00 = \\text{GH¢ } 4,080.00$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 8,
+          prompt: "A merchant bought an industrial refrigerator for $\\text{GH¢ } 3,000.00$ and sold it at a profit of $35\\%$.\nCalculate:\n(i) The total profit made on the sale.\n(ii) The selling price of the refrigerator.",
+          hint: "Profit = 35% of Cost Price. Selling Price = Cost Price + Profit.",
+          modelAnswer: "(i) GH¢ 1,050.00, (ii) GH¢ 4,050.00",
+          workedSolution: "**(i) Total profit:**\n$$\\text{Profit} = \\frac{35}{100} \\times \\text{GH¢ } 3,000.00 = 35 \\times 30 = \\text{GH¢ } 1,050.00$$\n\n**(ii) Selling price:**\n$$\\text{Selling Price} = 3,000.00 + 1,050.00 = \\text{GH¢ } 4,050.00$$\n*(Or directly: $1.35 \\times 3,000 = \\text{GH¢ } 4,050.00$)*."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Geometric Triangle Altitudes & Kite Polygon Symmetry",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><polygon points='40,140 160,20 280,140 160,240' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><line x1='40' y1='140' x2='280' y2='140' stroke='#64748b' stroke-width='1.5' stroke-dasharray='4'/><line x1='160' y1='20' x2='160' y2='240' stroke='#64748b' stroke-width='1.5' stroke-dasharray='4'/><circle cx='160' cy='140' r='3' fill='#dc2626'/><rect x='160' y='125' width='12' height='12' fill='none' stroke='#334155' stroke-width='1.2'/><text x='25' y='145' font-size='12' font-weight='bold'>A</text><text x='160' y='15' font-size='12' font-weight='bold'>C</text><text x='285' y='145' font-size='12' font-weight='bold'>B</text><text x='160' y='255' font-size='12' font-weight='bold'>D</text><text x='165' y='155' font-size='11' font-weight='bold' fill='#dc2626'>P</text><text x='145' y='80' font-size='11'>8 cm</text><text x='145' y='190' font-size='11'>8 cm</text><text x='95' y='135' font-size='11'>6 cm</text><text x='210' y='135' font-size='11'>6 cm</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "In the geometric construction shown above, triangle $ABC$ has base $|AB| = 12\\text{ cm}$. A perpendicular line is dropped from vertex $C$ to meet $AB$ at point $P$, such that $|AP| = |PB| = 6\\text{ cm}$ and altitude $|CP| = 8\\text{ cm}$.\n(i) Calculate the length of side $|AC|$ using Pythagoras' theorem.\n(ii) Calculate the area of triangle $ABC$.",
+          hint: "In right-angled triangle APC: $|AC|^2 = |AP|^2 + |CP|^2 = 6^2 + 8^2$. Area = 1/2 × base × height.",
+          modelAnswer: "(i) 10 cm, (ii) 48 cm²",
+          workedSolution: "**(i) Side length $|AC|$:**\n$$|AC|^2 = |AP|^2 + |CP|^2 = 6^2 + 8^2 = 36 + 64 = 100$$\n$$|AC| = \\sqrt{100} = 10\\text{ cm}$$\n\n**(ii) Area of triangle $ABC$:**\n$$\\text{Area} = \\frac{1}{2} \\times |AB| \\times |CP| = \\frac{1}{2} \\times 12\\text{ cm} \\times 8\\text{ cm} = 6 \\times 8 = 48\\text{ cm}^2$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "The perpendicular line $CP$ is produced through $P$ to point $D$ such that $|PD| = |CP| = 8\\text{ cm}$. Line segments $AD$ and $BD$ are joined to form quadrilateral $ACBD$.\n(i) What type of quadrilateral is $ACBD$?\n(ii) Calculate the total area of quadrilateral $ACBD$.",
+          hint: "The diagonals AB and CD bisect each other at right angles with equal adjacent pairs. Area of kite/rhombus = 1/2 × d₁ × d₂.",
+          modelAnswer: "(i) Rhombus (or symmetrical Kite), (ii) 96 cm²",
+          workedSolution: "**(i) Quadrilateral Type:**\nSince diagonals $AB$ and $CD$ bisect each other perpendicularly, and all four sides are equal ($|AC| = |BC| = |AD| = |BD| = 10\\text{ cm}$), the figure $ACBD$ is a **Rhombus**.\n\n**(ii) Total Area:**\n$$\\text{Total Area} = 2 \\times \\text{Area of } \\Delta ABC = 2 \\times 48 = 96\\text{ cm}^2$$\n*(Alternatively: $\\frac{1}{2} \\times d_1 \\times d_2 = \\frac{1}{2} \\times 12 \\times 16 = 6 \\times 16 = 96\\text{ cm}^2$)*."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Raw Data Frequency Modeling & Probabilities",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "The test scores of $20$ students in an ICT quiz are recorded as follows:\n$$5, 7, 9, 3, 9, 7, 9, 9, 9, 10, 9, 8, 9, 7, 10, 3, 3, 7, 7, 7$$\nConstruct a frequency distribution table for this dataset.",
+          hint: "Group the raw values into unique scores: 3, 5, 7, 8, 9, 10 and tally their occurrences.",
+          modelAnswer: "Scores: 3 (f=3), 5 (f=1), 7 (f=5), 8 (f=1), 9 (f=8), 10 (f=2). Total f = 20",
+          workedSolution: "**Frequency Distribution Table:**\n\n| Mark ($x$) | Tally | Frequency ($f$) | $fx$ |\n| :---: | :---: | :---: | :---: |\n| 3 | /// | 3 | 9 |\n| 5 | / | 1 | 5 |\n| 7 | //// | 5 | 35 |\n| 8 | / | 1 | 8 |\n| 9 | //// /// | 8 | 72 |\n| 10 | // | 2 | 20 |\n| **Total** | | **$\\sum f = 20$** | **$\\sum fx = 149$** |"
+        },
+        {
+          partLabel: "(b)",
+          marks: 3,
+          prompt: "From the frequency table, identify the **modal mark**.",
+          hint: "The mode is the mark with the highest frequency.",
+          modelAnswer: "9 marks",
+          workedSolution: "The mark $9$ has the highest frequency ($8$). The **mode is 9 marks**."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Calculate the **mean mark** of the distribution.",
+          hint: "Mean = $\\frac{\\sum fx}{\\sum f}$.",
+          modelAnswer: "7.45 marks",
+          workedSolution: "$$\\sum fx = 9 + 5 + 35 + 8 + 72 + 20 = 149$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{149}{20} = 7.45\\text{ marks}$$."
+        },
+        {
+          partLabel: "(d)",
+          marks: 3,
+          prompt: "Find:\n(i) How many students scored strictly more than $7\\text{ marks}$?\n(ii) The probability that a student chosen at random scored exactly $3\\text{ marks}$.",
+          hint: "Scores > 7 are 8, 9, 10. For probability of 3 marks, divide frequency of 3 by 20.",
+          modelAnswer: "(i) 11 students, (ii) 3/20",
+          workedSolution: "**(i) Students scoring $> 7$:**\n$$\\text{Count} = f(8) + f(9) + f(10) = 1 + 8 + 2 = 11\\text{ students}$$\n\n**(ii) Probability of scoring 3:**\n$$P(x = 3) = \\frac{f(3)}{\\sum f} = \\frac{3}{20}$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T14:30:00.000Z",
+  lastUpdated: "2026-09-15T14:30:00.000Z"
+};
+
 // ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
@@ -4008,6 +4226,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_15
   );
   results.push(result18);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 19: JHS Math -> Core Curriculum Series (Set 16 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 19: Junior Core Math Structured Problem-Solving Series (Set 16)...');
+  const result19 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_16
+  );
+  results.push(result19);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
