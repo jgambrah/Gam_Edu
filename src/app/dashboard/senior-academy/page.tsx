@@ -528,6 +528,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "154h = 1,232 \\implies h = 8\\text{ cm}",
         sampleAnswer: "8 cm"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 13)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 13 / 2006 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 13 / 2006 past paper adaptation) with balanced option randomization covering set intersections, integer intervals, algebraic fractions, circle circumferences, prime factors, and bearings.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-13",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 2006 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set A = {2, 4, 6, 8, 10, 12, 14} and set B = {2, 3, 5, 7, 11, 13}, find A ∩ B:",
+        sampleFormula: "A \\cap B = \\{2\\}",
+        sampleAnswer: "{2}"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",

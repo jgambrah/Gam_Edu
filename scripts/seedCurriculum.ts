@@ -2349,6 +2349,585 @@ export const SET_JHS_MASTERY_SERIES_12: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3n. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 13)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-13
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_13: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-13",
+  title: "Junior Core Mathematics • Objective Mastery Series (Set 13)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Comprehensive Objective Exam Series",
+  variantType: "standard",
+  totalQuestions: 40,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      prompt: "If set $$A = \\{2, 4, 6, 8, 10, 12, 14\\}$$ and set $$B = \\{2, 3, 5, 7, 11, 13\\}$$, find $$A \\cap B$$.",
+      options: [
+        "{2}",
+        "{2, 4, 6}",
+        "$$\\emptyset$$",
+        "{2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14}"
+      ],
+      correctAnswer: "{2}",
+      hint: "Find the element common to both sets.",
+      workedSolution: "The only element shared by both set A and set B is 2. Hence, $$A \\cap B = \\{2\\}$$.",
+      points: 1
+    },
+    {
+      id: "q02",
+      prompt: "If $x$ is an integer, list the members of the set: $$\\{x : 3 \\le x < 9\\}$$.",
+      options: [
+        "{4, 5, 6, 7, 8}",
+        "{3, 4, 5, 6, 7, 8, 9}",
+        "{3, 4, 5, 6, 7, 8}",
+        "{4, 5, 6, 7, 8, 9}"
+      ],
+      correctAnswer: "{3, 4, 5, 6, 7, 8}",
+      hint: "3 is included because of $\\le$, but 9 is excluded because of $<$.",
+      workedSolution: "The integers starting from 3 up to (but not including) 9 are 3, 4, 5, 6, 7, 8.",
+      points: 1
+    },
+    {
+      id: "q03",
+      prompt: "Simplify: $$\\frac{5}{2x} - \\frac{3}{4x}$$.",
+      options: [
+        "$$\\frac{2}{2x}$$",
+        "$$\\frac{7}{4x}$$",
+        "$$\\frac{1}{2x}$$",
+        "$$\\frac{7}{2x}$$"
+      ],
+      correctAnswer: "$$\\frac{7}{4x}$$",
+      hint: "The LCM of denominators $2x$ and $4x$ is $4x$.",
+      workedSolution: "$$\\frac{5(2) - 3(1)}{4x} = \\frac{10 - 3}{4x} = \\frac{7}{4x}$$.",
+      points: 1
+    },
+    {
+      id: "q04",
+      prompt: "The number of girls in a school is $180$. If the ratio of boys to girls is $4 : 5$, find the total number of students in the school.",
+      options: [
+        "324",
+        "144",
+        "360",
+        "400"
+      ],
+      correctAnswer: "324",
+      hint: "5 units = 180. Find 1 unit = 36. Total units = 4 + 5 = 9.",
+      workedSolution: "1 unit = $180 / 5 = 36$. Total students = $(4 + 5) \\times 36 = 9 \\times 36 = 324$.",
+      points: 1
+    },
+    {
+      id: "q05",
+      prompt: "Calculate the circumference of a circle of radius $7\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      options: [
+        "22 cm",
+        "154 cm",
+        "88 cm",
+        "44 cm"
+      ],
+      correctAnswer: "44 cm",
+      hint: "Circumference = $2\\pi r$.",
+      workedSolution: "$$C = 2 \\times \\frac{22}{7} \\times 7 = 44\\text{ cm}$$.",
+      points: 1
+    },
+    {
+      id: "q06",
+      prompt: "Which of the following is the set of prime factors of $24$?",
+      options: [
+        "{2, 3}",
+        "{1, 2, 3}",
+        "{2, 3, 4, 6}",
+        "{2, 3, 4, 6, 8, 12, 24}"
+      ],
+      correctAnswer: "{2, 3}",
+      hint: "Prime factors are factors that are also prime numbers.",
+      workedSolution: "Factors of 24 are 1, 2, 3, 4, 6, 8, 12, 24. The only prime numbers among them are 2 and 3.",
+      points: 1
+    },
+    {
+      id: "q07",
+      prompt: "The base of an isosceles triangle is $9\\text{ cm}$ long. If each of the two equal legs is $y\\text{ cm}$ long, write an expression for its perimeter.",
+      options: [
+        "$$2y + 9$$",
+        "$$y + 18$$",
+        "$$2y - 9$$",
+        "$$y + 9$$"
+      ],
+      correctAnswer: "$$2y + 9$$",
+      hint: "Perimeter = sum of all three sides: $y + y + 9$.",
+      workedSolution: "$$\\text{Perimeter} = y + y + 9 = 2y + 9$$.",
+      points: 1
+    },
+    {
+      id: "q08",
+      prompt: "Correct $0.004728$ to three significant figures.",
+      options: [
+        "0.00472",
+        "0.00473",
+        "0.005",
+        "0.0047"
+      ],
+      correctAnswer: "0.00473",
+      hint: "Leading zeros are not significant. Count three digits starting from 4: 4, 7, 2, followed by 8.",
+      workedSolution: "The first 3 significant digits are 4, 7, and 2. Because the next digit is 8 ($\\ge 5$), round 2 up to 3: 0.00473.",
+      points: 1
+    },
+    {
+      id: "q09",
+      prompt: "Find the value of $b - 2ab$ when $a = -3$ and $b = 4$.",
+      options: [
+        "-20",
+        "28",
+        "-28",
+        "20"
+      ],
+      correctAnswer: "28",
+      hint: "Substitute values: $4 - 2(-3)(4)$. Note that $-2(-3) = +6$.",
+      workedSolution: "$$4 - 2(-3)(4) = 4 - (-24) = 4 + 24 = 28$$.",
+      points: 1
+    },
+    {
+      id: "q10",
+      prompt: "A trader sold mangoes at $4$ for $\\text{GH¢ } 1.00$. If her total sales amounted to $\\text{GH¢ } 60.00$, how many mangoes did she sell?",
+      options: [
+        "180",
+        "240",
+        "150",
+        "300"
+      ],
+      correctAnswer: "240",
+      hint: "Multiply total cedis by 4 mangoes per cedi.",
+      workedSolution: "$$60 \\times 4 = 240\\text{ mangoes}$$.",
+      points: 1
+    },
+    {
+      id: "q11",
+      prompt: "A speed boat travels at a constant speed of $75\\text{ km/h}$. How long will it take to travel a distance of $300\\text{ km}$?",
+      options: [
+        "3 hours",
+        "3.5 hours",
+        "4 hours",
+        "5 hours"
+      ],
+      correctAnswer: "4 hours",
+      hint: "Time = Distance ÷ Speed.",
+      workedSolution: "$$\\text{Time} = \\frac{300}{75} = 4\\text{ hours}$$.",
+      points: 1
+    },
+    {
+      id: "q12",
+      prompt: "Which of the following geometric figures has four equal sides with opposite sides parallel, but angles not necessarily $90^\\circ$?",
+      options: [
+        "Trapezium",
+        "Rectangle",
+        "Rhombus",
+        "Kite"
+      ],
+      correctAnswer: "Rhombus",
+      hint: "A rhombus is an equilateral parallelogram.",
+      workedSolution: "A rhombus has all four sides equal in length with opposite sides parallel.",
+      points: 1
+    },
+    {
+      id: "q13",
+      prompt: "Three partners share a business bonus of $\\text{GH¢ } 720.00$ in the ratio $2 : 3 : 5$. What is the largest share?",
+      options: [
+        "GH¢ 360.00",
+        "GH¢ 216.00",
+        "GH¢ 144.00",
+        "GH¢ 400.00"
+      ],
+      correctAnswer: "GH¢ 360.00",
+      hint: "Total parts = 2 + 3 + 5 = 10. Largest share = (5 / 10) × 720.",
+      workedSolution: "$$\\text{Largest share} = \\frac{5}{10} \\times 720 = \\frac{1}{2} \\times 720 = \\text{GH¢ } 360.00$$.",
+      points: 1
+    },
+    {
+      id: "q14",
+      prompt: "Find the next term in the geometric sequence: $$4, 12, 36, 108, \\dots$$.",
+      options: [
+        "216",
+        "324",
+        "144",
+        "432"
+      ],
+      correctAnswer: "324",
+      hint: "Notice that each term is multiplied by 3.",
+      workedSolution: "$$108 \\times 3 = 324$$.",
+      points: 1
+    },
+    {
+      id: "q15",
+      prompt: "Express $450$ as a product of prime factors in index form.",
+      options: [
+        "$$2 \\times 3^2 \\times 5^2$$",
+        "$$2^2 \\times 3 \\times 5^2$$",
+        "$$2 \\times 3 \\times 5^3$$",
+        "$$2^2 \\times 3^2 \\times 5$$"
+      ],
+      correctAnswer: "$$2 \\times 3^2 \\times 5^2$$",
+      hint: "$$450 = 2 \\times 225 = 2 \\times 9 \\times 25$$.",
+      workedSolution: "$$450 = 2 \\times 3^2 \\times 5^2$$.",
+      points: 1
+    },
+    {
+      id: "q16",
+      prompt: "Express $845$ in standard form.",
+      options: [
+        "$$84.5 \\times 10^1$$",
+        "$$8.45 \\times 10^{-2}$$",
+        "$$0.845 \\times 10^3$$",
+        "$$8.45 \\times 10^2$$"
+      ],
+      correctAnswer: "$$8.45 \\times 10^2$$",
+      hint: "Move the decimal point 2 places to the left.",
+      workedSolution: "$$845 = 8.45 \\times 10^2$$.",
+      points: 1
+    },
+    {
+      id: "q17",
+      prompt: "Which inequality is represented on a number line by an open circle at $-3$ and a closed circle at $2$ joined by a solid line segment?",
+      options: [
+        "$$-3 < p \\le 2$$",
+        "$$-3 \\le p < 2$$",
+        "$$-3 < p < 2$$",
+        "$$-3 \\le p \\le 2$$"
+      ],
+      correctAnswer: "$$-3 < p \\le 2$$",
+      hint: "Open circle at -3 means $> -3$; closed circle at 2 means $\\le 2$.",
+      workedSolution: "Open circle excludes -3 ($<$), while closed circle includes 2 ($\\le$): $$-3 < p \\le 2$$.",
+      points: 1
+    },
+    {
+      id: "q18",
+      prompt: "Solve the linear equation: $$\\frac{x + 4}{4} + 1 = 5$$.",
+      options: [
+        "16",
+        "12",
+        "20",
+        "8"
+      ],
+      correctAnswer: "12",
+      hint: "$$\\frac{x + 4}{4} = 4 \\implies x + 4 = 16$$.",
+      workedSolution: "$$\\frac{x + 4}{4} = 5 - 1 = 4 \\implies x + 4 = 16 \\implies x = 12$$.",
+      points: 1
+    },
+    {
+      id: "q19",
+      prompt: "Arrange the fractions $$\\frac{4}{5}, \\, \\frac{2}{3}, \\, \\frac{5}{6}$$ in ascending order of magnitude.",
+      options: [
+        "$$\\frac{2}{3}, \\, \\frac{4}{5}, \\, \\frac{5}{6}$$",
+        "$$\\frac{4}{5}, \\, \\frac{2}{3}, \\, \\frac{5}{6}$$",
+        "$$\\frac{2}{3}, \\, \\frac{5}{6}, \\, \\frac{4}{5}$$",
+        "$$\\frac{5}{6}, \\, \\frac{4}{5}, \\, \\frac{2}{3}$$"
+      ],
+      correctAnswer: "$$\\frac{2}{3}, \\, \\frac{4}{5}, \\, \\frac{5}{6}$$",
+      hint: "Use common denominator 30: 2/3 = 20/30, 4/5 = 24/30, 5/6 = 25/30.",
+      workedSolution: "$$\\frac{20}{30} < \\frac{24}{30} < \\frac{25}{30} \\implies \\frac{2}{3} < \\frac{4}{5} < \\frac{5}{6}$$.",
+      points: 1
+    },
+    {
+      id: "q20",
+      prompt: "Convert $74_{\\text{ten}}$ to a base five numeral.",
+      options: [
+        "$$244_{\\text{five}}$$",
+        "$$241_{\\text{five}}$$",
+        "$$304_{\\text{five}}$$",
+        "$$144_{\\text{five}}$$"
+      ],
+      correctAnswer: "$$244_{\\text{five}}$$",
+      hint: "Divide repeatedly by 5: $74 = 2(25) + 4(5) + 4(1)$.",
+      workedSolution: "$$74 \\div 5 = 14\\text{ R } 4$$; $$14 \\div 5 = 2\\text{ R } 4$$; $$2 \\div 5 = 0\\text{ R } 2$$. Reading bottom up: $$244_{\\text{five}}$$.",
+      points: 1
+    },
+    {
+      id: "q21",
+      prompt: "A bag contains $7$ red marbles and $5$ green marbles. What is the probability of picking a green marble at random?",
+      options: [
+        "$$\\frac{7}{12}$$",
+        "$$\\frac{1}{5}$$",
+        "$$\\frac{5}{12}$$",
+        "$$\\frac{5}{7}$$"
+      ],
+      correctAnswer: "$$\\frac{5}{12}$$",
+      hint: "Total marbles = 7 + 5 = 12. Favourable = 5.",
+      workedSolution: "$$P(\\text{green}) = \\frac{5}{7 + 5} = \\frac{5}{12}$$.",
+      points: 1
+    },
+    {
+      id: "q22",
+      prompt: "Evaluate: $$\\frac{2^4 \\times 3^3 \\times 2}{2^3 \\times 3^2}$$.",
+      options: [
+        "12",
+        "6",
+        "18",
+        "24"
+      ],
+      correctAnswer: "12",
+      hint: "Numerator base 2 is $2^{4+1} = 2^5$. Divide powers.",
+      workedSolution: "$$\\frac{2^5 \\times 3^3}{2^3 \\times 3^2} = 2^{5-3} \\times 3^{3-2} = 2^2 \\times 3^1 = 4 \\times 3 = 12$$.",
+      points: 1
+    },
+    {
+      id: "q23",
+      prompt: "The table below shows the distribution of ages in a school choir:\n\n| Age (years) | 12 | 13 | 14 | 15 |\n| :--- | :---: | :---: | :---: | :---: |\n| Frequency | 6 | 12 | 8 | 10 |\n\nHow many members are in the choir?",
+      "options": [
+        "30",
+        "36",
+        "38",
+        "40"
+      ],
+      "correctAnswer": "36",
+      "hint": "Sum all frequency values: 6 + 12 + 8 + 10.",
+      "workedSolution": "$$6 + 12 + 8 + 10 = 36\\text{ members}$$.",
+      points: 1
+    },
+    {
+      id: "q24",
+      prompt: "From the choir age distribution in Question 23, determine the modal age.",
+      "options": [
+        "12 years",
+        "13 years",
+        "14 years",
+        "15 years"
+      ],
+      "correctAnswer": "13 years",
+      "hint": "The mode is the age with the highest frequency.",
+      "workedSolution": "Age 13 has the highest frequency ($12$). The modal age is 13 years.",
+      points: 1
+    },
+    {
+      id: "q25",
+      prompt: "In an entrance examination, $162$ out of $180$ candidates passed. What percentage of the candidates failed?",
+      "options": [
+        "10%",
+        "12%",
+        "15%",
+        "18%"
+      ],
+      "correctAnswer": "10%",
+      "hint": "Failed candidates = 180 - 162 = 18. Divide by 180 and multiply by 100%.",
+      "workedSolution": "$$\\text{Failed} = 180 - 162 = 18$$. Percentage failed = $$\\frac{18}{180} \\times 100\\% = 10\\%$$.",
+      points: 1
+    },
+    {
+      id: "q26",
+      prompt: "Expand and simplify: $$(5 - x)(5 + y)$$.",
+      "options": [
+        "$$25 + 5y - 5x - xy$$",
+        "$$25 - 5x + 5y + xy$$",
+        "$$25 - 5x - xy$$",
+        "$$25 + 5y - xy$$"
+      ],
+      "correctAnswer": "$$25 + 5y - 5x - xy$$",
+      "hint": "Multiply out: $5(5 + y) - x(5 + y)$.",
+      "workedSolution": "$$25 + 5y - 5x - xy$$.",
+      points: 1
+    },
+    {
+      id: "q27",
+      prompt: "Find the Highest Common Factor (HCF) of $24, 36,$ and $48$.",
+      "options": [
+        "6",
+        "8",
+        "12",
+        "24"
+      ],
+      "correctAnswer": "12",
+      "hint": "The largest number that divides 24, 36, and 48 completely.",
+      "workedSolution": "24 = 12 × 2, 36 = 12 × 3, 48 = 12 × 4. The HCF is 12.",
+      points: 1
+    },
+    {
+      id: "q28",
+      prompt: "If $$F = \\frac{9}{5}C + 32$$, calculate $F$ when $C = 35$.",
+      "options": [
+        "95",
+        "63",
+        "104",
+        "85"
+      ],
+      "correctAnswer": "95",
+      "hint": "$$\\frac{9}{5}(35) = 9 \\times 7 = 63$$. Add 32.",
+      "workedSolution": "$$F = 9(7) + 32 = 63 + 32 = 95$$.",
+      points: 1
+    },
+    {
+      id: "q29",
+      prompt: "Evaluate: $$\\frac{3}{4}(32 - 16) - 5$$.",
+      "options": [
+        "7",
+        "12",
+        "9",
+        "4"
+      ],
+      "correctAnswer": "7",
+      "hint": "Evaluate inside parentheses first: $32 - 16 = 16$.",
+      "workedSolution": "$$\\frac{3}{4}(16) - 5 = 3(4) - 5 = 12 - 5 = 7$$.",
+      points: 1
+    },
+    {
+      id: "q30",
+      prompt: "Three angles lie on a straight line: $x^\\circ$, $108^\\circ$, and $3x^\\circ$. Find the value of $x$.",
+      "options": [
+        "24",
+        "18",
+        "36",
+        "20"
+      ],
+      "correctAnswer": "18",
+      "hint": "Angles on a straight line add up to $180^\\circ$.",
+      "workedSolution": "$$x + 108 + 3x = 180 \\implies 4x + 108 = 180 \\implies 4x = 72 \\implies x = 18$$.",
+      points: 1
+    },
+    {
+      id: "q31",
+      prompt: "Factorize completely: $$18ab - 9ac + 4rb - 2rc$$.",
+      "options": [
+        "$$(2b + c)(9a + 2r)$$",
+        "$$(2b - c)(9a - 2r)$$",
+        "$$(2b + c)(9a - 2r)$$",
+        "$$(2b - c)(9a + 2r)$$"
+      ],
+      "correctAnswer": "$$(2b - c)(9a + 2r)$$",
+      "hint": "Group in pairs: $9a(2b - c) + 2r(2b - c)$.",
+      "workedSolution": "$$9a(2b - c) + 2r(2b - c) = (2b - c)(9a + 2r)$$.",
+      points: 1
+    },
+    {
+      id: "q32",
+      prompt: "Find the sum of $142.6$, $0.345$, and $62.08$, correcting your answer to one decimal place.",
+      "options": [
+        "205.0",
+        "204.9",
+        "205.1",
+        "204.8"
+      ],
+      "correctAnswer": "205.0",
+      "hint": "Sum = 205.025. Look at the hundredths place to round.",
+      "workedSolution": "$$142.6 + 0.345 + 62.08 = 205.025$$. Rounded to 1 d.p., it is 205.0.",
+      points: 1
+    },
+    {
+      id: "q33",
+      prompt: "Simplify: $$8m^4 \\times m^2 \\div 2m^3$$.",
+      "options": [
+        "$$4m^3$$",
+        "$$4m^2$$",
+        "$$4m^5$$",
+        "$$6m^3$$"
+      ],
+      "correctAnswer": "$$4m^3$$",
+      "hint": "$$\\frac{8m^{4+2}}{2m^3} = 4m^{6-3}$$.",
+      "workedSolution": "$$\\frac{8m^6}{2m^3} = 4m^{6-3} = 4m^3$$.",
+      points: 1
+    },
+    {
+      id: "q34",
+      prompt: "An investor saved $\\text{GH¢ } 800.00$ at a simple interest rate of $15\\%$ per annum for $2\\text{ years}$. Calculate the interest earned.",
+      "options": [
+        "GH¢ 120.00",
+        "GH¢ 240.00",
+        "GH¢ 200.00",
+        "GH¢ 180.00"
+      ],
+      "correctAnswer": "GH¢ 240.00",
+      "hint": "$$I = \\frac{P \\times R \\times T}{100}$$.",
+      "workedSolution": "$$I = \\frac{800 \\times 15 \\times 2}{100} = 8 \\times 30 = \\text{GH¢ } 240.00$$.",
+      points: 1
+    },
+    {
+      id: "q35",
+      prompt: "Determine the rule for the mapping where inputs $$n = \\{1, 2, 3, 4\\}$$ produce outputs $$\\{12, 23, 34, 45\\}$$.",
+      "options": [
+        "$$n \\to 12n$$",
+        "$$n \\to 11n + 1$$",
+        "$$n \\to 10n + 2$$",
+        "$$n \\to 11n - 1$$"
+      ],
+      "correctAnswer": "$$n \\to 11n + 1$$",
+      "hint": "Common difference is $23 - 12 = 11$. Check $11(1) + 1 = 12$.",
+      "workedSolution": "Slope = 11. When $n = 1$, output is $11(1) + 1 = 12$. The rule is $$n \\to 11n + 1$$.",
+      points: 1
+    },
+    {
+      id: "q36",
+      prompt: "What is the place value of the digit $7$ in the number $543.78$?",
+      "options": [
+        "7 tens",
+        "7 units",
+        "7 hundredths",
+        "7 tenths"
+      ],
+      "correctAnswer": "7 tenths",
+      "hint": "The first digit to the right of the decimal point is tenths.",
+      "workedSolution": "The digit 7 is in the first decimal position, representing $\\frac{7}{10}$ (7 tenths).",
+      points: 1
+    },
+    {
+      id: "q37",
+      prompt: "The test marks obtained by seven students are: $$12, 17, 9, 20, 14, 11, 15$$. Find the median mark.",
+      "options": [
+        "12",
+        "14",
+        "15",
+        "13"
+      ],
+      "correctAnswer": "14",
+      "hint": "Order the 7 marks: 9, 11, 12, 14, 15, 17, 20. Find the 4th value.",
+      "workedSolution": "Arranging in ascending order: 9, 11, 12, **14**, 15, 17, 20. The middle score is 14.",
+      points: 1
+    },
+    {
+      id: "q38",
+      prompt: "The point $P(4, 5)$ is translated by the vector $$\\begin{pmatrix} 2 \\\\ -3 \\end{pmatrix}$$ to a new position $P'$. Find the coordinates of $P'$.",
+      "options": [
+        "(6, 2)",
+        "(2, 8)",
+        "(6, -2)",
+        "(2, 2)"
+      ],
+      "correctAnswer": "(6, 2)",
+      "hint": "Add coordinates: $(4 + 2, 5 + (-3))$.",
+      "workedSolution": "$$P' = (4 + 2, 5 - 3) = (6, 2)$$.",
+      points: 1
+    },
+    {
+      id: "q39",
+      prompt: "In a right-angled triangle $ABC$ with right angle at $B$, the acute angle $\\angle BAC = 58^\\circ$. What is the angle of elevation of $A$ from $C$?",
+      "options": [
+        "$$58^\\circ$$",
+        "$$90^\\circ$$",
+        "$$32^\\circ$$",
+        "$$122^\\circ$$"
+      ],
+      "correctAnswer": "$$32^\\circ$$",
+      "hint": "The angle of elevation of A from C is the interior angle at C: $90^\\circ - 58^\\circ$.",
+      "workedSolution": "$$\\angle BCA = 90^\\circ - 58^\\circ = 32^\\circ$$.",
+      points: 1
+    },
+    {
+      id: "q40",
+      prompt: "Given column vectors $$u = \\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -1 \\\\ 4 \\end{pmatrix}$$, evaluate $$u + 2v$$.",
+      "options": [
+        "$$\\begin{pmatrix} 1 \\\\ 6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 1 \\\\ 2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 5 \\\\ 6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 2 \\\\ 2 \\end{pmatrix}$$"
+      ],
+      "correctAnswer": "$$\\begin{pmatrix} 1 \\\\ 6 \\end{pmatrix}$$",
+      "hint": "$$3 + 2(-1) = 1$$ and $$-2 + 2(4) = 6$$.",
+      "workedSolution": "$$\\begin{pmatrix} 3 + 2(-1) \\\\ -2 + 2(4) \\end{pmatrix} = \\begin{pmatrix} 3 - 2 \\\\ -2 + 8 \\end{pmatrix} = \\begin{pmatrix} 1 \\\\ 6 \\end{pmatrix}$$.",
+      points: 1
+    }
+  ],
+  seededAt: "2026-09-15T13:00:00.000Z",
+  lastUpdated: "2026-09-15T13:00:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -2624,6 +3203,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_12
   );
   results.push(result15);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 16: JHS Math -> Core Curriculum Series (Set 13 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 16: Junior Core Math Objective Mastery Series (Set 13)...');
+  const result16 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_13
+  );
+  results.push(result16);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
