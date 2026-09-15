@@ -2151,6 +2151,204 @@ export const SET_JHS_MASTERY_SERIES_11: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3m. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 12)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-12
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_12: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-12",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 12)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  format: "structured_essay",
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Set Complements, Parallel Line Transversals & Dice Probabilities",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='60' x2='310' y2='60' stroke='#1e293b' stroke-width='2'/><line x1='30' y1='150' x2='310' y2='150' stroke='#1e293b' stroke-width='2'/><line x1='70' y1='150' x2='170' y2='60' stroke='#2563eb' stroke-width='2'/><line x1='170' y1='60' x2='260' y2='150' stroke='#2563eb' stroke-width='2'/><text x='15' y='65' font-size='12' font-weight='bold'>L₁</text><text x='15' y='155' font-size='12' font-weight='bold'>L₂</text><text x='170' y='50' font-size='12' font-weight='bold'>B</text><text x='65' y='165' font-size='12' font-weight='bold'>E</text><text x='260' y='165' font-size='12' font-weight='bold'>F</text><text x='110' y='55' font-size='11' font-weight='bold' fill='#dc2626'>85°</text><text x='165' y='80' font-size='12' font-weight='bold' fill='#2563eb'>x°</text><text x='270' y='145' font-size='11' font-weight='bold' fill='#059669'>120°</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "In a class of $42$ students, $20$ offer French and $26$ offer Twi. $6$ students do not offer either of the two languages.\nCalculate the number of students who offer:\n(i) Both French and Twi.\n(ii) French only.",
+          hint: "Let $b$ be the number offering both languages. Then $(20 - b) + b + (26 - b) + 6 = 42$.",
+          modelAnswer: "(i) 10 students, (ii) 10 students",
+          workedSolution: "Let $U$ be the universal set ($n(U) = 42$), $F$ be French, and $T$ be Twi.\nLet $b$ be the number offering both subjects ($n(F \\cap T) = b$).\nStudents offering at least one language: $$42 - 6 = 36$$\n$$(20 - b) + b + (26 - b) = 36$$\n$$46 - b = 36 \\implies b = 46 - 36 = 10$$\n\n**(i)** **$10$ students offer both languages**.\n**(ii)** Students offering French only = $$20 - b = 20 - 10 = 10\\text{ students}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "In the transversal diagram above, line $L_1$ is parallel to line $L_2$. The obtuse exterior angle at vertex $F$ is $120^\\circ$ and the adjacent angle at vertex $B$ on the upper line is $85^\\circ$.\nFind:\n(i) The interior angle $\\angle BFE$.\n(ii) The value of angle $x^\\circ$.",
+          hint: "Interior angle BFE and the 120° angle lie on a straight line. Alternate interior angles across parallel lines are equal.",
+          modelAnswer: "(i) 60°, (ii) 35°",
+          workedSolution: "**(i)** Angles on a straight line add up to $180^\\circ$:\n$$\\angle BFE = 180^\\circ - 120^\\circ = 60^\\circ$$\n\n**(ii)** Since $L_1 \\parallel L_2$, the alternate interior angle to $\\angle BFE$ is the total angle at vertex $B$ formed with the lower transversal, or:\nExterior angle across line $L_1$: the three angles along the straight line at vertex $B$ sum to $180^\\circ$:\n$$85^\\circ + x^\\circ + \\text{angle } CBF = 180^\\circ$$\nNotice that $\\angle CBF = \\angle BFE = 60^\\circ$ (alternate interior angles).\n$$85^\\circ + x^\\circ + 60^\\circ = 180^\\circ$$\n$$x^\\circ + 145^\\circ = 180^\\circ \\implies x = 180 - 145 = 35^\\circ$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "A fair six-sided die is rolled once.\n(i) Write down the sample space $S$ of all possible outcomes.\n(ii) Find the probability of obtaining a multiple of $3$.\n(iii) Find the probability of obtaining a prime number.",
+          hint: "Sample space has 6 outcomes {1, 2, 3, 4, 5, 6}. Prime numbers on a die are {2, 3, 5}.",
+          modelAnswer: "(i) {1, 2, 3, 4, 5, 6}, (ii) 1/3, (iii) 1/2",
+          workedSolution: "**(i)** Sample space $$S = \\{1, 2, 3, 4, 5, 6\\}$$.\n\n**(ii)** Multiples of 3 are $\\{3, 6\\}$ (2 outcomes):\n$$P(\\text{multiple of } 3) = \\frac{2}{6} = \\frac{1}{3}$$\n\n**(iii)** Prime numbers are $\\{2, 3, 5\\}$ (3 outcomes):\n$$P(\\text{prime}) = \\frac{3}{6} = \\frac{1}{2}$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: 3D Liquid Displacement & Commercial Percentage Discount",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><rect x='25' y='60' width='90' height='100' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><path d='M25,60 L55,30 L145,30 L115,60 Z' fill='#dbeafe' stroke='#1e40af' stroke-width='1.5'/><path d='M115,60 L145,30 L145,130 L115,160 Z' fill='#bfdbfe' stroke='#1e40af' stroke-width='1.5'/><text x='45' y='175' font-size='11'>8 cm</text><text x='125' y='155' font-size='11'>7 cm</text><text x='5' y='115' font-size='11'>22 cm</text><path d='M155,90 C185,55 195,55 215,75' fill='none' stroke='#0284c7' stroke-width='2' stroke-dasharray='4'/><g transform='translate(225,30)'><ellipse cx='45' cy='20' rx='40' ry='12' fill='#f0fdf4' stroke='#166534' stroke-width='2'/><line x1='5' y1='20' x2='5' y2='140' stroke='#166534' stroke-width='2'/><line x1='85' y1='20' x2='85' y2='140' stroke='#166534' stroke-width='2'/><ellipse cx='45' cy='140' rx='40' ry='12' fill='#dcfce7' stroke='#166534' stroke-width='2'/><ellipse cx='45' cy='85' rx='40' ry='12' fill='#bbf7d0' stroke='#166534' stroke-width='1.5' stroke-dasharray='3'/><line x1='95' y1='85' x2='95' y2='140' stroke='#dc2626' stroke-width='1.5'/><text x='102' y='115' font-size='12' font-weight='bold' fill='#dc2626'>h = ?</text><text x='25' y='18' font-size='10'>d = 14 cm</text></g></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "A metal water container in the form of a cuboid has a rectangular base of length $8\\text{ cm}$, width $7\\text{ cm}$, and height $22\\text{ cm}$. It is completely filled with water.\nAll the water is poured into an empty upright cylindrical container of internal diameter $14\\text{ cm}$.\nTaking $\\pi = \\frac{22}{7}$, calculate the height ($h$) of water in the cylindrical container.",
+          hint: "Radius of cylinder = diameter / 2 = 7 cm. Volume of cuboid = length × width × height. Volume in cylinder = $\\pi r^2 h$.",
+          modelAnswer: "8 cm",
+          workedSolution: "1. Volume of cuboid container:\n$$V = l \\times w \\times h = 8\\text{ cm} \\times 7\\text{ cm} \\times 22\\text{ cm} = 1,232\\text{ cm}^3$$\n\n2. Cylinder dimensions:\n$$\\text{Radius } r = \\frac{14}{2} = 7\\text{ cm}$$\n$$\\text{Volume in cylinder} = \\pi r^2 h = \\frac{22}{7} \\times 7^2 \\times h = 154h$$\n\n3. Equating volumes:\n$$154h = 1,232 \\implies h = \\frac{1,232}{154} = 8\\text{ cm}$$\nTherefore, the height of water in the cylinder is **$8\\text{ cm}$**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "A wholesale building distributor offers a $15\\%$ discount on all bulk orders. If the list catalog price of a consignment of cement is $\\text{GH¢ } 6,000.00$, calculate:\n(i) The discount allowed on the consignment.\n(ii) The actual amount the contractor paid.",
+          hint: "Discount = 15% of 6,000. Amount paid = List price - Discount.",
+          modelAnswer: "(i) GH¢ 900.00, (ii) GH¢ 5,100.00",
+          workedSolution: "**(i) Discount allowed:**\n$$\\text{Discount} = \\frac{15}{100} \\times \\text{GH¢ } 6,000.00 = 15 \\times 60 = \\text{GH¢ } 900.00$$\n\n**(ii) Amount paid:**\n$$\\text{Amount paid} = 6,000.00 - 900.00 = \\text{GH¢ } 5,100.00$$\n*(Or directly: $85\\% \\times 6,000 = 0.85 \\times 6,000 = \\text{GH¢ } 5,100.00$)*."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Find the truth set of the inequality and illustrate it on a number line:\n$$\\frac{x - 2}{2} \\le 1 + \\frac{2x}{3}$$",
+          hint: "Multiply through by 6 (the LCM of 2 and 3) to clear fractions.",
+          modelAnswer: "{x : x ≥ -12}",
+          workedSolution: "Multiply both sides by $6$:\n$$6\\left(\\frac{x - 2}{2}\\right) \\le 6(1) + 6\\left(\\frac{2x}{3}\\right)$$\n$$3(x - 2) \\le 6 + 2(2x)$$\n$$3x - 6 \\le 6 + 4x$$\n$$3x - 4x \\le 6 + 6$$\n$$-x \\le 12 \\implies x \\ge -12$$\nTruth set: **$$\\{x : x \\ge -12, \\, x \\in \\mathbb{R}\\}$$**."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Right-Angled Compass Construction & Incircle Geometry",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 8,
+          prompt: "In a geometric construction, triangle $PQR$ has side $|PQ| = 10\\text{ cm}$, $\\angle QPR = 90^\\circ$, and $\\angle PQR = 30^\\circ$.\n(i) Calculate the theoretical length of hypotenuse $|QR|$ using basic trigonometry (where $\\cos 30^\\circ = \\frac{\\sqrt{3}}{2} \\approx 0.866$).\n(ii) Calculate the length of opposite side $|PR|$ using $\\tan 30^\\circ = \\frac{1}{\\sqrt{3}} \\approx 0.577$.",
+          hint: "In right-angled triangle PQR at P: adjacent to 30° is PQ = 10 cm, opposite is PR, hypotenuse is QR.",
+          modelAnswer: "(i) QR ≈ 11.55 cm, (ii) PR ≈ 5.77 cm",
+          workedSolution: "**(i) Hypotenuse $|QR|$:**\n$$\\cos 30^\\circ = \\frac{|PQ|}{|QR|} = \\frac{10}{|QR|}$$\n$$|QR| = \\frac{10}{\\cos 30^\\circ} = \\frac{10}{0.866} \\approx 11.55\\text{ cm}$$\n\n**(ii) Side $|PR|$:**\n$$\\tan 30^\\circ = \\frac{|PR|}{|PQ|} = \\frac{|PR|}{10}$$\n$$|PR| = 10 \\times \\tan 30^\\circ = 10 \\times 0.5774 \\approx 5.77\\text{ cm}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 7,
+          prompt: "The angle bisector of $\\angle QRP$ is constructed to intersect line segment $PQ$ at point $M$. A circle with centre $M$ and radius $|MP|$ is drawn to touch side $QR$ tangentially.\nIf $|MP|$ is measured as $3.3\\text{ cm}$, calculate:\n(i) The area of the inscribed circle. (Take $\\pi = 3.142$).\n(ii) The area of triangle $PQR$.",
+          hint: "Area of circle = $\\pi r^2$. Area of right-angled triangle = $\\frac{1}{2} \\times \\text{base} \\times \\text{height}$.",
+          modelAnswer: "(i) 34.22 cm², (ii) 28.85 cm²",
+          workedSolution: "**(i) Circle Area:**\n$$\\text{Area} = \\pi r^2 = 3.142 \\times (3.3)^2 = 3.142 \\times 10.89 \\approx 34.22\\text{ cm}^2$$\n\n**(ii) Triangle Area:**\n$$\\text{Area} = \\frac{1}{2} \\times |PQ| \\times |PR| = \\frac{1}{2} \\times 10 \\times 5.77 = 5 \\times 5.77 = 28.85\\text{ cm}^2$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Test Mark Frequency Distribution & Passing Percentages",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Marks Scored</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='50' y='100' width='20' height='60' fill='#93c5fd' stroke='#1d4ed8'/><rect x='80' y='120' width='20' height='40' fill='#93c5fd' stroke='#1d4ed8'/><rect x='110' y='140' width='20' height='20' fill='#93c5fd' stroke='#1d4ed8'/><rect x='140' y='80' width='20' height='80' fill='#93c5fd' stroke='#1d4ed8'/><rect x='170' y='60' width='20' height='100' fill='#2563eb' stroke='#1d4ed8'/><rect x='200' y='80' width='20' height='80' fill='#93c5fd' stroke='#1d4ed8'/><rect x='230' y='140' width='20' height='20' fill='#93c5fd' stroke='#1d4ed8'/><rect x='260' y='120' width='20' height='40' fill='#93c5fd' stroke='#1d4ed8'/><rect x='290' y='100' width='20' height='60' fill='#93c5fd' stroke='#1d4ed8'/><text x='55' y='173' font-size='9'>2</text><text x='85' y='173' font-size='9'>3</text><text x='115' y='173' font-size='9'>4</text><text x='145' y='173' font-size='9'>5</text><text x='175' y='173' font-size='9'>6</text><text x='205' y='173' font-size='9'>7</text><text x='235' y='173' font-size='9'>8</text><text x='265' y='173' font-size='9'>9</text><text x='293' y='173' font-size='9'>10</text><text x='20' y='65' font-size='10'>5</text><text x='20' y='105' font-size='10'>3</text><text x='20' y='145' font-size='10'>1</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "The bar chart above shows the distribution of marks scored by $25$ students in a mathematics classroom test:\n\n| Mark ($x$) | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 3 | 2 | 1 | 4 | 5 | 4 | 1 | 2 | 3 |\n\n(i) Determine the **modal mark** of the class.\n(ii) Calculate the **mean mark** of the distribution.\n(iii) What is the **median mark**?",
+          hint: "Mode is the mark with highest frequency (5). Mean = $\\sum fx / \\sum f$. Median is the 13th score.",
+          modelAnswer: "(i) 6 marks, (ii) 6.0 marks, (iii) 6 marks",
+          workedSolution: "**(i) Modal mark:**\nThe highest frequency is $5$, corresponding to **$6\\text{ marks}$**.\n\n**(ii) Mean mark:**\n$$\\sum fx = (2 \\times 3) + (3 \\times 2) + (4 \\times 1) + (5 \\times 4) + (6 \\times 5) + (7 \\times 4) + (8 \\times 1) + (9 \\times 2) + (10 \\times 3)$$\n$$\\sum fx = 6 + 6 + 4 + 20 + 30 + 28 + 8 + 18 + 30 = 150$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{150}{25} = 6.0\\text{ marks}$$\n\n**(iii) Median mark:**\nPosition = $$\\frac{25 + 1}{2} = 13^{\\text{th}}\\text{ student}$$.\nCumulative frequencies: up to 2: 3; up to 3: 5; up to 4: 6; up to 5: 10; up to 6: 15.\nThe $13^{\\text{th}}$ student scored **$6\\text{ marks}$**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "If the passing grade is set strictly at $5\\text{ marks}$ or above:\n(i) How many students failed the test?\n(ii) What percentage of the class passed the test?",
+          hint: "Students who failed scored less than 5 (scores 2, 3, 4).",
+          modelAnswer: "(i) 6 students failed, (ii) 76% passed",
+          workedSolution: "**(i) Number who failed (marks 2, 3, 4):**\n$$\\text{Failed} = f(2) + f(3) + f(4) = 3 + 2 + 1 = 6\\text{ students}$$\n\n**(ii) Percentage who passed (marks } \\ge 5):$$\n$$\\text{Passed} = 25 - 6 = 19\\text{ students}$$\n$$\\text{Passing Percentage} = \\left(\\frac{19}{25}\\right) \\times 100\\% = 19 \\times 4 = 76\\%$$."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Tiered Utility Tariff Billing, Scientific Notation & Vector Products",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "An electricity utility company charges customers based on a tiered tariff system: $\\text{GH¢ } 0.80\\text{ per unit}$ for the first $120\\text{ units}$, and $\\text{GH¢ } 1.20\\text{ per unit}$ for every additional unit used above $120$.\nIf a household consumed $185\\text{ units}$ in a month, calculate their total monthly bill.",
+          hint: "Split units into two blocks: first 120 units and remaining 65 units.",
+          modelAnswer: "GH¢ 174.00",
+          workedSolution: "Total consumption = $185\\text{ units}$.\n- Cost for first $120\\text{ units}$: $$120 \\times \\text{GH¢ } 0.80 = \\text{GH¢ } 96.00$$\n- Remaining units above $120$: $$185 - 120 = 65\\text{ units}$$\n- Cost for extra $65\\text{ units}$: $$65 \\times \\text{GH¢ } 1.20 = \\text{GH¢ } 78.00$$\n$$\\text{Total Bill} = 96.00 + 78.00 = \\text{GH¢ } 174.00$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 4,
+          prompt: "Express $5\\text{ hours}$ in seconds, leaving your final answer in **standard form**.",
+          hint: "1 hour = 60 minutes = 3,600 seconds.",
+          modelAnswer: "1.8 × 10⁴ seconds",
+          workedSolution: "$$5\\text{ hours} = 5 \\times 60 \\times 60\\text{ seconds} = 5 \\times 3,600 = 18,000\\text{ seconds}$$\nIn standard form: $$18,000 = 1.8 \\times 10^4\\text{ seconds}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Given column vectors $$p = \\begin{pmatrix} -5 \\\\ 4 \\end{pmatrix}$$ and $$r = \\begin{pmatrix} 3 \\\\ -6 \\end{pmatrix}$$, find vector $$q$$ if $$q = 2p - r$$.",
+          hint: "Multiply p by 2, then subtract r component-wise.",
+          modelAnswer: "(-13, 14)ᵀ",
+          workedSolution: "$$q = 2\\begin{pmatrix} -5 \\\\ 4 \\end{pmatrix} - \\begin{pmatrix} 3 \\\\ -6 \\end{pmatrix} = \\begin{pmatrix} -10 \\\\ 8 \\end{pmatrix} - \\begin{pmatrix} 3 \\\\ -6 \\end{pmatrix}$$\n$$= \\begin{pmatrix} -10 - 3 \\\\ 8 - (-6) \\end{pmatrix} = \\begin{pmatrix} -13 \\\\ 14 \\end{pmatrix}$$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Cartesian Rotation, Reflection Transformations & Linear Algebra",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 280' width='100%' height='260' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='150' x2='300' y2='150' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='270' stroke='#64748b' stroke-width='1.5'/><text x='290' y='145' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><polygon points='190,120 250,120 220,60' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='170' y='125' font-size='10' font-weight='bold'>A(2,2)</text><text x='255' y='125' font-size='10' font-weight='bold'>B(6,2)</text><text x='215' y='55' font-size='10' font-weight='bold'>C(4,6)</text><polygon points='130,120 70,120 100,60' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='130' y='130' font-size='10' font-weight='bold' fill='#dc2626'>A₂(-2,2)</text><text x='45' y='130' font-size='10' font-weight='bold' fill='#dc2626'>B₂(-6,2)</text><text x='85' y='55' font-size='10' font-weight='bold' fill='#dc2626'>C₂(-4,6)</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "Triangle $ABC$ has vertices $A(2, 2)$, $B(6, 2)$, and $C(4, 6)$.\n(i) Write down the coordinates of image triangle $A_1B_1C_1$ under a clockwise rotation of $90^\\circ$ about the origin $(0, 0)$.\n(ii) Write down the coordinates of image triangle $A_2B_2C_2$ under a reflection in the $y$-axis.\n(iii) Calculate the area of triangle $ABC$.",
+          hint: "Under 90° clockwise rotation: (x, y) → (y, -x). Under reflection in y-axis: (x, y) → (-x, y).",
+          modelAnswer: "(i) A₁(2,-2), B₁(2,-6), C₁(6,-4); (ii) A₂(-2,2), B₂(-6,2), C₂(-4,6); (iii) 8 sq units",
+          workedSolution: "**(i) 90° Clockwise Rotation:** $$(x, y) \\to (y, -x)$$\n- $$A(2, 2) \\to A_1(2, -2)$$\n- $$B(6, 2) \\to B_1(2, -6)$$\n- $$C(4, 6) \\to C_1(6, -4)$$\n\n**(ii) Reflection in $y$-axis:** $$(x, y) \\to (-x, y)$$\n- $$A(2, 2) \\to A_2(-2, 2)$$\n- $$B(6, 2) \\to B_2(-6, 2)$$\n- $$C(4, 6) \\to C_2(-4, 6)$$\n\n**(iii) Area of Triangle $ABC$:**\n$$\\text{Base } AB = 6 - 2 = 4\\text{ units}$$\n$$\\text{Height} = 6 - 2 = 4\\text{ units}$$\n$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 4 \\times 4 = 8\\text{ square units}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "When $15$ is added to a certain integer and the sum is multiplied by $3$, the result is equal to $75$. Find the number.",
+          hint: "Set up the algebraic equation: $3(15 + n) = 75$.",
+          modelAnswer: "n = 10",
+          workedSolution: "Let the unknown number be $n$.\n$$3(15 + n) = 75$$\nDivide both sides by $3$:\n$$15 + n = \\frac{75}{3} = 25$$\n$$n = 25 - 15 = 10$$\nTherefore, the number is **$10$**."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T12:30:00.000Z",
+  lastUpdated: "2026-09-15T12:30:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -2414,6 +2612,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_11
   );
   results.push(result14);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 15: JHS Math -> Core Curriculum Series (Set 12 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 15: Junior Core Math Structured Problem-Solving Series (Set 12)...');
+  const result15 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_12
+  );
+  results.push(result15);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

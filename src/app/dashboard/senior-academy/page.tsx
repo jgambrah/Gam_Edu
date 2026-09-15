@@ -510,6 +510,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "S = \\{1, 3, 7, 21\\}",
         sampleAnswer: "{1, 3, 7, 21}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 12)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 12 / 2007 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 12 / 2007 past paper adaptation) with embedded SVG diagrams covering set complements, parallel line transversals, 3D liquid cuboid-to-cylinder transfer, test mark distributions, and Cartesian transformations.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-12",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "Calculate the height h of water when a full cuboid container (8 cm × 7 cm × 22 cm) is poured into a cylinder of diameter 14 cm:",
+        sampleFormula: "154h = 1,232 \\implies h = 8\\text{ cm}",
+        sampleAnswer: "8 cm"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
