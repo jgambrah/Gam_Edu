@@ -6017,6 +6017,214 @@ export const SET_JHS_MASTERY_SERIES_21: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3w. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 22)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-22
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_22: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-22",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 22)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Venn Diagram Set Modeling, Fraction Algebra & Linear Equations",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 360 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='180' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U = 60</text><circle cx='135' cy='105' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='225' cy='105' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='105' y='45' font-size='12' font-weight='bold' fill='#2563eb'>Science (S: 35)</text><text x='215' y='45' font-size='12' font-weight='bold' fill='#059669'>Math (M: 40)</text><text x='95' y='110' font-size='12' fill='#1e293b'>35 - x</text><text x='175' y='110' font-size='13' font-weight='bold' fill='#dc2626'>x</text><text x='235' y='110' font-size='12' fill='#1e293b'>40 - x</text><text x='25' y='165' font-size='11' fill='#64748b'>Neither = 5</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "In a cohort of $60$ candidates, $35$ passed Integrated Science, $40$ passed Mathematics, and $5$ failed both subjects.\nUsing the Venn diagram provided above:\n(i) Illustrate the information with an algebraic equation.\n(ii) Find the number of candidates who passed **both** subjects.\n(iii) Calculate the number of candidates who passed Mathematics **only**.",
+          hint: "Sum of all disjoint subsets and those outside both circles equals 60: $(35 - x) + x + (40 - x) + 5 = 60$.",
+          modelAnswer: "(i) 80 - x = 60, (ii) 20 candidates, (iii) 20 candidates",
+          workedSolution: "**(i) Algebraic Equation:**\n$$(35 - x) + x + (40 - x) + 5 = 60$$\n$$80 - x = 60$$\n\n**(ii) Candidates who passed both subjects ($x$):**\n$$x = 80 - 60 = 20\\text{ candidates}$$\n\n**(iii) Candidates who passed Mathematics only:**\n$$\\text{Math only} = 40 - x = 40 - 20 = 20\\text{ candidates}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Simplify the fractional expression:\n$$3\\frac{1}{3} - 1\\frac{3}{4} + 2\\frac{1}{6}$$",
+          hint: "Find the LCM of 3, 4, and 6, which is 12.",
+          modelAnswer: "3 3/4",
+          workedSolution: "**Method: Combining whole numbers and fractions**\n$$= (3 - 1 + 2) + \\left(\\frac{1}{3} - \\frac{3}{4} + \\frac{1}{6}\\right)$$\n$$= 4 + \\left(\\frac{4 - 9 + 2}{12}\\right)$$\n$$= 4 + \\left(\\frac{-3}{12}\\right) = 4 - \\frac{1}{4} = 3\\frac{3}{4}$$\n*(Or as improper fraction: $\\frac{15}{4}$)*."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Solve for $y$ in the equation:\n$$\\frac{2y - 5}{3} - \\frac{y - 2}{2} = 1$$",
+          hint: "Multiply through by 6 (the LCM of 3 and 2) to eliminate the denominators.",
+          modelAnswer: "y = 10",
+          workedSolution: "Multiply through by $6$:\n$$6\\left(\\frac{2y - 5}{3}\\right) - 6\\left(\\frac{y - 2}{2}\\right) = 6(1)$$\n$$2(2y - 5) - 3(y - 2) = 6$$\n$$4y - 10 - 3y + 6 = 6$$\n$$y - 4 = 6 \\implies y = 6 + 4 = 10$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Commercial Percentage Markup, Discount Pricing & Currency Proportion",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "An electronics distributor bought an air conditioner for $\\text{GH¢ } 800.00$ and marked it to make a profit of $30\\%$ on the cost price.\n(i) Calculate the marked price of the air conditioner.\n(ii) If a customer is given a discount of $10\\%$ on the marked price during a seasonal clearance, calculate the actual cash price paid.",
+          hint: "Marked price = 130% of GH¢ 800.00. Cash price = 90% of the marked price.",
+          modelAnswer: "(i) GH¢ 1,040.00, (ii) GH¢ 936.00",
+          workedSolution: "**(i) Marked Price:**\n$$\\text{Marked Price} = 130\\% \\times 800.00 = 1.30 \\times 800 = \\text{GH¢ } 1,040.00$$\n\n**(ii) Cash Price after 10% Discount:**\n$$\\text{Discount} = 10\\% \\times 1,040.00 = \\text{GH¢ } 104.00$$\n$$\\text{Cash Price} = 1,040.00 - 104.00 = \\text{GH¢ } 936.00$$\n*(Or directly: $0.90 \\times 1,040 = \\text{GH¢ } 936.00$)*."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Calculate the actual overall percentage profit the distributor made on the original cost price after the discount.",
+          hint: "Profit = Cash Price - Cost Price. Profit % = (Profit / Cost Price) × 100%.",
+          modelAnswer: "17%",
+          workedSolution: "$$\\text{Actual Profit} = 936.00 - 800.00 = \\text{GH¢ } 136.00$$\n$$\\text{Overall Profit \\%} = \\left(\\frac{136.00}{800.00}\\right) \\times 100\\% = \\frac{136}{8}\\% = 17\\%$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "If $\\text{US\\$ } 1.00$ was equivalent to $\\text{GH¢ } 8.50$, calculate the cost of the air conditioner ($\\text{GH¢ } 800.00$) in US Dollars, giving your answer correct to two decimal places.",
+          hint: "Divide the amount in Ghana Cedis by 8.50.",
+          modelAnswer: "US$ 94.12",
+          workedSolution: "$$\\text{Amount in US\\$} = \\frac{800.00}{8.50} = \\frac{8,000}{85} \\approx 94.1176 \\dots$$\nCorrect to two decimal places: **US$ 94.12**."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Right-Angled Shadow Geometry, Pythagoras & Angle Trigonometry",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 340 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><polygon points='50,180 250,180 250,40' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><rect x='235' y='165' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.5'/><line x1='50' y1='180' x2='250' y2='40' stroke='#2563eb' stroke-width='2.5'/><text x='35' y='195' font-size='12' font-weight='bold'>A</text><text x='260' y='195' font-size='12' font-weight='bold'>B</text><text x='260' y='35' font-size='12' font-weight='bold'>T</text><text x='130' y='200' font-size='12' font-weight='bold'>Shadow = 15 m</text><text x='265' y='115' font-size='12' font-weight='bold' fill='#dc2626'>Tower = 8 m</text><text x='120' y='100' font-size='12' font-weight='bold' fill='#2563eb'>L = ?</text><path d='M75,180 A25,25 0 0,0 70,165' fill='none' stroke='#059669' stroke-width='1.5'/><text x='85' y='170' font-size='11' font-weight='bold' fill='#059669'>θ</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "A vertical telecommunications tower $BT$ of height $8\\text{ m}$ casts a horizontal shadow $AB$ of length $15\\text{ m}$ along level ground, as shown in the diagram above.\nCalculate the straight-line distance $L$ from the tip of the tower ($T$) to the far end of the shadow ($A$).",
+          hint: "Apply Pythagoras' theorem in right-angled triangle ABT: $L^2 = |AB|^2 + |BT|^2$.",
+          modelAnswer: "17 m",
+          workedSolution: "$$L^2 = |AB|^2 + |BT|^2$$\n$$L^2 = 15^2 + 8^2 = 225 + 64 = 289$$\n$$L = \\sqrt{289} = 17\\text{ m}$$\nTherefore, the straight-line distance is **$17\\text{ m}$**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Using the dimensions from (a):\n(i) State $\\tan \\theta$ as a common fraction.\n(ii) State $\\cos \\theta$ as a common fraction.",
+          hint: "$\\tan \\theta = \\text{Opposite} / \\text{Adjacent}$ and $\\cos \\theta = \\text{Adjacent} / \\text{Hypotenuse}$.",
+          modelAnswer: "(i) 8/15, (ii) 15/17",
+          workedSolution: "**(i)** $$\\tan \\theta = \\frac{|BT|}{|AB|} = \\frac{8}{15}$$\n\n**(ii)** $$\\cos \\theta = \\frac{|AB|}{L} = \\frac{15}{17}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Calculate the area of the vertical triangular space enclosed between the tower, its shadow, and the line of sight $AT$.",
+          hint: "Area = 1/2 × base × height.",
+          modelAnswer: "60 m²",
+          workedSolution: "$$\\text{Area} = \\frac{1}{2} \\times |AB| \\times |BT| = \\frac{1}{2} \\times 15 \\times 8 = 15 \\times 4 = 60\\text{ m}^2$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Cartesian Reflection, Vector Translations & Line Segment Lengths",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='140' x2='300' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='250' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><polygon points='200,90 250,90 200,40' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='195' y='105' font-size='10' font-weight='bold'>A(2,2)</text><text x='255' y='105' font-size='10' font-weight='bold'>B(6,2)</text><text x='195' y='35' font-size='10' font-weight='bold'>C(2,6)</text><polygon points='200,190 250,190 200,240' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='195' y='185' font-size='10' font-weight='bold' fill='#dc2626'>A₁</text><text x='255' y='185' font-size='10' font-weight='bold' fill='#dc2626'>B₁</text><text x='195' y='250' font-size='10' font-weight='bold' fill='#dc2626'>C₁</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Triangle $ABC$ has vertices $A(2, 2)$, $B(6, 2)$, and $C(2, 6)$.\n(i) Write down the coordinates of image triangle $A_1B_1C_1$ under a reflection in the $x$-axis.\n(ii) Write down the coordinates of image triangle $A_2B_2C_2$ under a reflection in the $y$-axis.",
+          hint: "Under reflection in the x-axis: (x, y) → (x, -y). Under reflection in the y-axis: (x, y) → (-x, y).",
+          modelAnswer: "(i) A₁(2,-2), B₁(6,-2), C₁(2,-6); (ii) A₂(-2,2), B₂(-6,2), C₂(-2,6)",
+          workedSolution: "**(i) Reflection in $x$-axis:** $$(x, y) \\to (x, -y)$$\n- $$A(2, 2) \\to A_1(2, -2)$$\n- $$B(6, 2) \\to B_1(6, -2)$$\n- $$C(2, 6) \\to C_1(2, -6)$$\n\n**(ii) Reflection in $y$-axis:** $$(x, y) \\to (-x, y)$$\n- $$A(2, 2) \\to A_2(-2, 2)$$\n- $$B(6, 2) \\to B_2(-6, 2)$$\n- $$C(2, 6) \\to C_2(-2, 6)$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Triangle $ABC$ is translated by vector $$T = \\begin{pmatrix} -4 \\\\ 3 \\end{pmatrix}$$ to produce image $A_3B_3C_3$.\nDetermine the coordinates of vertices $A_3$, $B_3$, and $C_3$.",
+          hint: "Under translation by vector (a, b)ᵀ: (x, y) → (x + a, y + b).",
+          modelAnswer: "A₃(-2, 5), B₃(2, 5), C₃(-2, 9)",
+          workedSolution: "$$(x, y) \\to (x - 4, y + 3)$$\n- $$A(2, 2) \\to A_3(2 - 4, 2 + 3) = A_3(-2, 5)$$\n- $$B(6, 2) \\to B_3(6 - 4, 2 + 3) = B_3(2, 5)$$\n- $$C(2, 6) \\to C_3(2 - 4, 6 + 3) = C_3(-2, 9)$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Calculate the area of triangle $ABC$.",
+          hint: "Triangle ABC is right-angled at vertex A. Area = 1/2 × base × height.",
+          modelAnswer: "8 square units",
+          workedSolution: "Base $$AB = 6 - 2 = 4\\text{ units}$$.\nHeight $$AC = 6 - 2 = 4\\text{ units}$$.\n$$\\text{Area} = \\frac{1}{2} \\times 4 \\times 4 = 8\\text{ square units}$$."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Discrete Frequency Statistics, Mean Calculation & Bar Charting",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Marks Scored</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='55' y='120' width='25' height='40' fill='#93c5fd' stroke='#1d4ed8'/><rect x='100' y='80' width='25' height='80' fill='#93c5fd' stroke='#1d4ed8'/><rect x='145' y='40' width='25' height='120' fill='#2563eb' stroke='#1d4ed8'/><rect x='190' y='60' width='25' height='100' fill='#93c5fd' stroke='#1d4ed8'/><rect x='235' y='100' width='25' height='60' fill='#93c5fd' stroke='#1d4ed8'/><rect x='280' y='140' width='25' height='20' fill='#93c5fd' stroke='#1d4ed8'/><text x='65' y='173' font-size='10'>1</text><text x='110' y='173' font-size='10'>2</text><text x='155' y='173' font-size='10'>3</text><text x='200' y='173' font-size='10'>4</text><text x='245' y='173' font-size='10'>5</text><text x='290' y='173' font-size='10'>6</text><text x='20' y='45' font-size='10'>6</text><text x='20' y='65' font-size='10'>5</text><text x='20' y='85' font-size='10'>4</text><text x='20' y='125' font-size='10'>2</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "The bar chart above shows the marks scored by a group of $20$ students in an assessment:\n\n| Mark ($x$) | 1 | 2 | 3 | 4 | 5 | 6 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 4 | 6 | 5 | 2 | 1 |\n\n(i) State the **modal mark**.\n(ii) Calculate the total number of students ($N = \\sum f$).\n(iii) Calculate the **mean mark** of the distribution.",
+          hint: "Mode is the mark with highest frequency. Mean = $\\sum fx / \\sum f$.",
+          modelAnswer: "(i) 3 marks, (ii) 20 students, (iii) 3.2 marks",
+          workedSolution: "**(i) Modal mark:**\nThe highest frequency is $6$ (which corresponds to $3\\text{ marks}$). The **modal mark is 3**.\n\n**(ii) Total students:**\n$$N = \\sum f = 2 + 4 + 6 + 5 + 2 + 1 = 20\\text{ students}$$\n\n**(iii) Mean mark:**\n$$\\sum fx = (1 \\times 2) + (2 \\times 4) + (3 \\times 6) + (4 \\times 5) + (5 \\times 2) + (6 \\times 1)$$\n$$\\sum fx = 2 + 8 + 18 + 20 + 10 + 6 = 64$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{64}{20} = 3.2\\text{ marks}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "If a student is chosen at random from this class:\n(i) What is the probability that the student scored at least $4\\text{ marks}$?\n(ii) What percentage of students scored less than $3\\text{ marks}$?",
+          hint: "'At least 4' means marks 4, 5, or 6. 'Less than 3' means marks 1 and 2.",
+          modelAnswer: "(i) 2/5, (ii) 30%",
+          workedSolution: "**(i) Probability of scoring at least 4 (marks 4, 5, 6):**\n$$\\text{Count} = f(4) + f(5) + f(6) = 5 + 2 + 1 = 8\\text{ students}$$\n$$P(x \\ge 4) = \\frac{8}{20} = \\frac{2}{5}$$\n\n**(ii) Percentage scoring less than 3 (marks 1 and 2):**\n$$\\text{Count} = f(1) + f(2) = 2 + 4 = 6\\text{ students}$$\n$$\\text{Percentage} = \\left(\\frac{6}{20}\\right) \\times 100\\% = 6 \\times 5 = 30\\%$$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Direct Linear Modeling, Tabular Relations & Surd Magnitudes",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "A linear relation connects variables $x$ and $y$ such that:\n$$y = 2x - 3$$\nCopy and complete the table of values:\n\n| $x$ | -2 | -1 | 0 | 1 | 2 | 3 | 4 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y$ | **?** | -5 | **?** | -1 | **?** | 3 | **?** |",
+          hint: "Substitute each missing x value into y = 2x - 3.",
+          modelAnswer: "x=-2: -7, x=0: -3, x=2: 1, x=4: 5",
+          workedSolution: "- For $x = -2$: $$y = 2(-2) - 3 = -4 - 3 = -7$$\n- For $x = 0$: $$y = 2(0) - 3 = -3$$\n- For $x = 2$: $$y = 2(2) - 3 = 4 - 3 = 1$$\n- For $x = 4$: $$y = 2(4) - 3 = 8 - 3 = 5$$\nThe complete sequence of $y$ values is **-7, -5, -3, -1, 1, 3, 5**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Using the relation $$y = 2x - 3$$:\n(i) Find the value of $y$ when $x = 2.5$.\n(ii) Find the value of $x$ when $y = 11$.",
+          hint: "Substitute the given values into the equation.",
+          modelAnswer: "(i) y = 2, (ii) x = 7",
+          workedSolution: "**(i)** When $x = 2.5$:\n$$y = 2(2.5) - 3 = 5 - 3 = 2$$\n\n**(ii)** When $y = 11$:\n$$11 = 2x - 3 \\implies 2x = 14 \\implies x = 7$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Given column vector $$v = \\begin{pmatrix} 6 \\\\ -8 \\end{pmatrix}$$, calculate the magnitude $|v|$ of the vector.",
+          hint: "Magnitude $|v| = \\sqrt{x^2 + y^2}$.",
+          modelAnswer: "10 units",
+          workedSolution: "$$|v| = \\sqrt{6^2 + (-8)^2} = \\sqrt{36 + 64} = \\sqrt{100} = 10\\text{ units}$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T17:30:00.000Z",
+  lastUpdated: "2026-09-15T17:30:00.000Z"
+};
+
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -6400,6 +6608,19 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_21
   );
   results.push(result24);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 25: JHS Math -> Core Curriculum Series (Set 22 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 25: Junior Core Math Structured Problem-Solving Series (Set 22)...');
+  const result25 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_22
+  );
+  results.push(result25);
+
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

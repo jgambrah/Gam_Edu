@@ -690,6 +690,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "S = \\{5, 10, 15, 20\\}",
         sampleAnswer: "{5, 10, 15, 20}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 22)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 22 / 2002 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 22 / 2002 past paper adaptation) with embedded SVG diagrams covering Venn diagram set modeling, right-angled shadow trigonometry, Cartesian reflections & translations, discrete frequency distributions, and linear relation tables.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-22",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "A vertical tower BT (height 8 m) casts a horizontal shadow AB of length 15 m. Calculate straight-line distance L and tan θ:",
+        sampleFormula: "L = \\sqrt{15^2 + 8^2} = 17\\text{ m}, \\quad \\tan \\theta = \\frac{8}{15}",
+        sampleAnswer: "17 m, 8/15"
+    },
+
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
