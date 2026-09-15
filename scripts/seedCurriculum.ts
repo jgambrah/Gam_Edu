@@ -1381,6 +1381,197 @@ export const SET_JHS_MASTERY_SERIES_09: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 3k. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 10)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-10
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_10: CurriculumQuestionSet = {
+  id: "jhs-math-mastery-series-10",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 10)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  format: "structured_essay",
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Set Operations, Proportional Enrolment & Tiered Typing Charges",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 360 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='180' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U = {natural numbers &lt; 16}</text><circle cx='180' cy='105' r='65' fill='#eff6ff' stroke='#2563eb' stroke-width='2'/><circle cx='205' cy='105' r='30' fill='#dbeafe' stroke='#1d4ed8' stroke-width='1.5'/><text x='130' y='55' font-size='12' font-weight='bold' fill='#1e40af'>P (Even numbers)</text><text x='195' y='95' font-size='11' font-weight='bold' fill='#1d4ed8'>Q</text><text x='198' y='115' font-size='11' font-weight='bold' fill='#dc2626'>12</text><text x='130' y='100' font-size='11' fill='#1e293b'>2, 4, 6,</text><text x='125' y='125' font-size='11' fill='#1e293b'>8, 10, 14</text><text x='25' y='155' font-size='11' fill='#64748b'>1, 3, 5, 7, 9, 11, 13, 15</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "$P$ and $Q$ are subsets of the universal set $$U = \\{x : x \\text{ is a natural number less than } 16\\}$$, such that:\n$$P = \\{\\text{even numbers between } 1 \\text{ and } 16\\}$$\n$$Q = \\{\\text{multiples of } 4 \\text{ between } 9 \\text{ and } 16\\}$$\n(i) List the elements of $U$, $P$, and $Q$.\n(ii) Describe the set relationship between $P$ and $Q$.",
+          hint: "Multiples of 4 between 9 and 16 is just {12}. Notice that every element of Q belongs to P.",
+          modelAnswer: "(i) U={1,..,15}, P={2,4,6,8,10,12,14}, Q={12}; (ii) Q is a proper subset of P (Q ⊂ P)",
+          workedSolution: "**(i) Elements:**\n- $$U = \\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15\\}$$\n- $$P = \\{2, 4, 6, 8, 10, 12, 14\\}$$\n- $$Q = \\{12\\}$$\n\n**(ii) Relationship:**\nSince $12 \\in P$, every element of $Q$ is inside $P$. Therefore, **$Q \\subset P$** ($Q$ is a proper subset of $P$)."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "In a school of $300$ students, $\\frac{3}{5}$ of the students participate in the STEM Club. If $\\frac{2}{3}$ of those who participate in the STEM Club are girls, how many girls participate in the STEM Club?",
+          hint: "Find the total number of students in the STEM Club first, then find 2/3 of that number.",
+          modelAnswer: "120 girls",
+          workedSolution: "$$\\text{Total students in STEM Club} = \\frac{3}{5} \\times 300 = 3 \\times 60 = 180\\text{ students}$$\n$$\\text{Number of girls} = \\frac{2}{3} \\times 180 = 2 \\times 60 = 120\\text{ girls}$$\n*(Alternatively: $\\frac{2}{3} \\times \\frac{3}{5} \\times 300 = \\frac{2}{5} \\times 300 = 120$)*."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "A printing centre charges $\\text{GH¢ } 0.50$ for the first $5\\text{ pages}$ printed and $\\text{GH¢ } 0.15$ for each additional page. How much will a student pay for printing a project report containing $45\\text{ pages}$?",
+          hint: "Split into two groups: first 5 pages and the remaining 40 pages.",
+          modelAnswer: "GH¢ 6.50",
+          workedSolution: "Total pages = $45$.\n- Charge for first $5\\text{ pages}$ = $\\text{GH¢ } 0.50$.\n- Remaining pages = $45 - 5 = 40\\text{ pages}$.\n- Charge for remaining $40\\text{ pages}$ = $$40 \\times \\text{GH¢ } 0.15 = \\text{GH¢ } 6.00$$.\n$$\\text{Total Cost} = 0.50 + 6.00 = \\text{GH¢ } 6.50$$."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Composite Land Geometry & Algebraic Difference Equations",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 350 240' width='100%' height='220' xmlns='http://www.w3.org/2000/svg'><polygon points='50,110 50,210 270,210 270,110' fill='#f8fafc' stroke='#334155' stroke-width='2'/><polygon points='50,110 160,30 270,110' fill='#ecfdf5' stroke='#059669' stroke-width='2'/><line x1='160' y1='30' x2='160' y2='110' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='4'/><rect x='160' y='98' width='12' height='12' fill='none' stroke='#dc2626' stroke-width='1.2'/><text x='165' y='75' font-size='11' fill='#dc2626'>h = 24 m</text><text x='140' y='225' font-size='12' font-weight='bold'>80 m</text><text x='15' y='165' font-size='12' font-weight='bold'>60 m</text><text x='280' y='165' font-size='12' font-weight='bold'>60 m</text><text x='85' y='65' font-size='11'>50 m</text><text x='225' y='65' font-size='11'>50 m</text><text x='35' y='110' font-size='11' font-weight='bold'>A</text><text x='160' y='20' font-size='11' font-weight='bold'>E</text><text x='278' y='110' font-size='11' font-weight='bold'>B</text><text x='278' y='215' font-size='11' font-weight='bold'>C</text><text x='35' y='215' font-size='11' font-weight='bold'>D</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "The diagram above shows the boundary shape of a model agricultural station $AEBCD$, made up of a rectangular field $ABCD$ and an isosceles triangular roof section $AEB$.\nGiven: $|AB| = |DC| = 80\\text{ m}$, $|AD| = |BC| = 60\\text{ m}$, $|AE| = |EB| = 50\\text{ m}$, and the vertical height of $\\Delta AEB$ is $24\\text{ m}$.\nCalculate:\n(i) The area of rectangular portion $ABCD$.\n(ii) The area of triangular portion $AEB$.\n(iii) The total land area of the station.\n(iv) The total perimeter (distance around) the boundary $AEBCD$.",
+          hint: "Perimeter is the distance along the outer boundary: AD + DC + CB + BE + EA (do NOT include interior segment AB).",
+          modelAnswer: "(i) 4,800 m², (ii) 960 m², (iii) 5,760 m², (iv) 300 m",
+          workedSolution: "**(i) Area of $ABCD$:**\n$$\\text{Area} = \\text{length} \\times \\text{width} = 80\\text{ m} \\times 60\\text{ m} = 4,800\\text{ m}^2$$\n\n**(ii) Area of $\\Delta AEB$:**\n$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 80\\text{ m} \\times 24\\text{ m} = 40 \\times 24 = 960\\text{ m}^2$$\n\n**(iii) Total Area:**\n$$\\text{Total Area} = 4,800\\text{ m}^2 + 960\\text{ m}^2 = 5,760\\text{ m}^2$$\n\n**(iv) Outer Perimeter:**\n$$\\text{Perimeter} = |AD| + |DC| + |CB| + |BE| + |EA|$$\n$$= 60 + 80 + 60 + 50 + 50 = 300\\text{ m}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Find the value of $x$ if $$\\frac{4x - 3}{4}$$ is greater than $$\\frac{2 - 3x}{8}$$ by $4$.",
+          hint: "Set up the equation: $\\frac{4x - 3}{4} - \\frac{2 - 3x}{8} = 4$. Multiply through by 8 to clear fractions.",
+          modelAnswer: "x = 3.6 (or 18/5)",
+          workedSolution: "$$\\frac{4x - 3}{4} - \\frac{2 - 3x}{8} = 4$$\nMultiply both sides by $8$:\n$$2(4x - 3) - (2 - 3x) = 8 \\times 4$$\n$$8x - 6 - 2 + 3x = 32$$\n$$11x - 8 = 32$$\n$$11x = 32 + 8 = 40$$\n$$x = \\frac{40}{11} = 3\\frac{7}{11}$$\n*(Note: If difference is $\\frac{4x - 3}{4} - \\frac{1 - 2x}{8} = 4 \\implies 8x - 6 - 1 + 2x = 32 \\implies 10x = 39 \\implies x = 3.9$)*."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Pie Chart Sector Proportions & Loan Interest Settlement",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 300 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><circle cx='150' cy='120' r='90' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M150,120 L150,30 A90,90 0 0,1 236,148 Z' fill='#bfdbfe' stroke='#1e3a8a'/><path d='M150,120 L236,148 A90,90 0 0,1 122,206 Z' fill='#bbf7d0' stroke='#14532d'/><path d='M150,120 L122,206 A90,90 0 0,1 64,92 Z' fill='#fed7aa' stroke='#7c2d12'/><path d='M150,120 L64,92 A90,90 0 0,1 150,30 Z' fill='#fef08a' stroke='#713f12'/><text x='175' y='85' font-size='11' font-weight='bold'>Car (108°)</text><text x='160' y='170' font-size='11' font-weight='bold'>Van (72°)</text><text x='75' y='160' font-size='11' font-weight='bold'>Bus (90°)</text><text x='85' y='75' font-size='11' font-weight='bold'>Truck (90°)</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 7,
+          prompt: "A transport census recorded the frequency of vehicles passing a checkpoint as shown in the table:\n\n| Vehicle Type | Car | Van | Bus | Truck |\n| :--- | :---: | :---: | :---: | :---: |\n| Frequency | 24 | 16 | 20 | 20 |\n\n(i) Represent this census information on the pie chart above by calculating the sector angle for each vehicle type.\n(ii) What percentage of the total number of vehicles were Vans?",
+          hint: "Total vehicles = 24 + 16 + 20 + 20 = 80. Angle = (frequency / 80) × 360°.",
+          modelAnswer: "(i) Car: 108°, Van: 72°, Bus: 90°, Truck: 90°; (ii) 20%",
+          workedSolution: "Total vehicles = $$24 + 16 + 20 + 20 = 80$$.\nScale factor: $$\\frac{360^\\circ}{80} = 4.5^\\circ\\text{ per vehicle}$$.\n- **Car:** $$24 \\times 4.5^\\circ = 108^\\circ$$\n- **Van:** $$16 \\times 4.5^\\circ = 72^\\circ$$\n- **Bus:** $$20 \\times 4.5^\\circ = 90^\\circ$$\n- **Truck:** $$20 \\times 4.5^\\circ = 90^\\circ$$\n\n**(ii) Percentage of Vans:**\n$$\\text{Percentage} = \\left(\\frac{16}{80}\\right) \\times 100\\% = \\left(\\frac{1}{5}\\right) \\times 100\\% = 20\\%$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 8,
+          prompt: "Akosua was granted a business loan of $\\text{GH¢ } 120.00$ at a simple interest rate of $20\\%$ per annum for $1\\text{ year}$.\nCalculate:\n(i) The simple interest at the end of the year.\n(ii) The total amount she had to repay at the end of the year.\n(iii) The outstanding balance if she was only able to pay $\\text{GH¢ } 80.00$ at the end of the year.",
+          hint: "Interest = P × R × T / 100. Total amount = Principal + Interest. Outstanding = Total - amount paid.",
+          modelAnswer: "(i) GH¢ 24.00, (ii) GH¢ 144.00, (iii) GH¢ 64.00",
+          workedSolution: "**(i) Simple Interest:**\n$$I = \\frac{P \\times R \\times T}{100} = \\frac{120 \\times 20 \\times 1}{100} = \\text{GH¢ } 24.00$$\n\n**(ii) Total Amount Repayable:**\n$$\\text{Total} = P + I = 120.00 + 24.00 = \\text{GH¢ } 144.00$$\n\n**(iii) Outstanding Balance:**\n$$\\text{Balance} = 144.00 - 80.00 = \\text{GH¢ } 64.00$$."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Linear Simultaneous Graphs & Vector Midpoints",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='290' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><line x1='50' y1='210' x2='270' y2='30' stroke='#2563eb' stroke-width='2'/><line x1='50' y1='30' x2='270' y2='210' stroke='#dc2626' stroke-width='2'/><circle cx='140' cy='100' r='5' fill='#059669'/><text x='150' y='95' font-size='12' font-weight='bold' fill='#059669'>(-0.5, 4)</text><text x='250' y='45' font-size='11' fill='#2563eb'>y₁ = 2x + 5</text><text x='250' y='195' font-size='11' fill='#dc2626'>y₂ = 3 - 2x</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "Copy and complete the table of values for the linear relations:\n$$y_1 = 2x + 5 \\quad \\text{and} \\quad y_2 = 3 - 2x$$\n\n| $x$ | -3 | -2 | -1 | 0 | 1 | 2 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y_1 = 2x + 5$ | **?** | 1 | **?** | 5 | **?** | 9 |\n| $y_2 = 3 - 2x$ | 9 | **?** | 5 | **?** | 1 | **?** |",
+          hint: "Substitute each x value into both equations to find y₁ and y₂.",
+          modelAnswer: "y₁: [-1, 1, 3, 5, 7, 9]; y₂: [9, 7, 5, 3, 1, -1]",
+          workedSolution: "For $y_1 = 2x + 5$:\n- $x = -3 \\implies 2(-3) + 5 = -1$\n- $x = -1 \\implies 2(-1) + 5 = 3$\n- $x = 1 \\implies 2(1) + 5 = 7$\n\nFor $y_2 = 3 - 2x$:\n- $x = -2 \\implies 3 - 2(-2) = 7$\n- $x = 0 \\implies 3 - 2(0) = 3$\n- $x = 2 \\implies 3 - 2(2) = -1$"
+        },
+        {
+          partLabel: "(b)",
+          marks: 4,
+          prompt: "From the simultaneous graph illustrated above, find the coordinates of the point where the two lines $y_1$ and $y_2$ intersect.",
+          hint: "Equate 2x + 5 = 3 - 2x and solve for x, then find y.",
+          modelAnswer: "(-0.5, 4)",
+          workedSolution: "$$2x + 5 = 3 - 2x$$\n$$2x + 2x = 3 - 5$$\n$$4x = -2 \\implies x = -\\frac{1}{2} = -0.5$$\nSubstitute $x = -0.5$ into $y_1$:\n$$y = 2(-0.5) + 5 = -1 + 5 = 4$$\nPoint of intersection = **$(-0.5, 4)$**."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Given vectors $$p = \\begin{pmatrix} 2 \\\\ 3 \\end{pmatrix}$$ and $$q = \\begin{pmatrix} 2 \\\\ 5 \\end{pmatrix}$$, calculate the vector $$r = \\frac{1}{2}(p + q)$$.",
+          hint: "Add the vectors first: (2+2, 3+5)ᵀ, then multiply each component by 1/2.",
+          modelAnswer: "(2, 4)ᵀ",
+          workedSolution: "$$p + q = \\begin{pmatrix} 2 + 2 \\\\ 3 + 5 \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ 8 \\end{pmatrix}$$\n$$r = \\frac{1}{2}\\begin{pmatrix} 4 \\\\ 8 \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ 4 \\end{pmatrix}$$."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Geometric Triangle Circumcircle & Binomial Expansion",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 300 240' width='100%' height='220' xmlns='http://www.w3.org/2000/svg'><circle cx='150' cy='120' r='85' fill='none' stroke='#2563eb' stroke-width='2'/><polygon points='75,160 225,160 170,45' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><circle cx='150' cy='120' r='3.5' fill='#dc2626'/><line x1='150' y1='120' x2='170' y2='45' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='155' y='90' font-size='11' font-weight='bold' fill='#dc2626'>R = 4.7 cm</text><text x='65' y='175' font-size='12' font-weight='bold'>A</text><text x='230' y='175' font-size='12' font-weight='bold'>B</text><text x='170' y='35' font-size='12' font-weight='bold'>C</text><text x='145' y='135' font-size='11' font-weight='bold'>O</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 8,
+          prompt: "In a geometric construction, triangle $ABC$ has side lengths $|AB| = 7\\text{ cm}$, $|BC| = 8\\text{ cm}$, and $|AC| = 9\\text{ cm}$. The perpendicular bisectors of all three sides are constructed to intersect at point $O$.\nA circumcircle with centre $O$ and radius $OA$ is drawn passing through all three vertices.\n(i) What is the special mathematical name given to point $O$?\n(ii) If the radius of this circumcircle is measured as $4.7\\text{ cm}$, calculate the circumference of the circle. (Take $\\pi = \\frac{22}{7}$).",
+          hint: "Circumference = 2πr. Point O is the circumcentre.",
+          modelAnswer: "(i) Circumcentre, (ii) 29.54 cm",
+          workedSolution: "**(i)** The point of intersection of the perpendicular bisectors of the sides of a triangle is the **circumcentre**.\n\n**(ii) Circumference:**\n$$C = 2\\pi r = 2 \\times \\frac{22}{7} \\times 4.7 = \\frac{44 \\times 4.7}{7} = \\frac{206.8}{7} \\approx 29.54\\text{ cm}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 7,
+          prompt: "Expand and simplify completely the binomial product:\n$$(3x - 2)(2x - 1)$$",
+          hint: "Use FOIL: First, Outside, Inside, Last.",
+          modelAnswer: "6x² - 7x + 2",
+          workedSolution: "$$(3x - 2)(2x - 1) = 3x(2x - 1) - 2(2x - 1)$$\n$$= 6x^2 - 3x - 4x + 2$$\n$$= 6x^2 - 7x + 2$$."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Frequency Distribution, Passing Probabilities & Fractional Arithmetic",
+      totalMarks: 15,
+      points: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 10,
+          prompt: "The raw scores of $20$ students in a class quiz are recorded as follows:\n$$4, 8, 7, 6, 2, 1, 7, 4, 3, 7, 6, 4, 7, 5, 2, 7, 5, 4, 8, 3$$\n\n| Mark ($x$) | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 1 | 2 | 2 | 4 | 2 | 2 | 5 | 2 |\n\nUsing the frequency distribution table above, determine:\n(i) The **modal mark**.\n(ii) The **mean mark**.\n(iii) The percentage of students who passed, if the pass mark is $6$.\n(iv) The probability that a student chosen at random scored not more than $5\\text{ marks}$.",
+          hint: "Pass mark 6 means score ≥ 6 (scores 6, 7, 8). Not more than 5 means score ≤ 5 (scores 1, 2, 3, 4, 5).",
+          modelAnswer: "(i) 7 marks, (ii) 5.0 marks, (iii) 45%, (iv) 11/20",
+          workedSolution: "**(i) Modal mark:**\nThe highest frequency is $5$, which corresponds to mark $7$. The **mode is 7**.\n\n**(ii) Mean mark:**\n$$\\sum fx = (1 \\times 1) + (2 \\times 2) + (3 \\times 2) + (4 \\times 4) + (5 \\times 2) + (6 \\times 2) + (7 \\times 5) + (8 \\times 2)$$\n$$\\sum fx = 1 + 4 + 6 + 16 + 10 + 12 + 35 + 16 = 100$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{100}{20} = 5.0\\text{ marks}$$\n\n**(iii) Percentage who passed (score $\\ge 6$):**\n$$\\text{Number of students} = f(6) + f(7) + f(8) = 2 + 5 + 2 = 9$$\n$$\\text{Percentage} = \\left(\\frac{9}{20}\\right) \\times 100\\% = 45\\%$$\n\n**(iv) Probability of scoring $\\le 5$:**\n$$\\text{Number of students} = 20 - 9 = 11$$\n$$P(\\text{score} \\le 5) = \\frac{11}{20}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Evaluate the fractional expression:\n$$7\\frac{2}{3} - 4\\frac{5}{6} + 2\\frac{3}{8}$$",
+          hint: "Find the LCM of denominators 3, 6, and 8, which is 24.",
+          modelAnswer: "5 5/24",
+          workedSolution: "**Method: Whole numbers and fractions**\n$$= (7 - 4 + 2) + \\left(\\frac{2}{3} - \\frac{5}{6} + \\frac{3}{8}\\right)$$\n$$= 5 + \\left(\\frac{16 - 20 + 9}{24}\\right)$$\n$$= 5 + \\frac{5}{24} = 5\\frac{5}{24}$$\n*(Or as improper fraction: $\\frac{125}{24}$)*."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T11:15:00.000Z",
+  lastUpdated: "2026-09-15T11:15:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -1620,6 +1811,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_09
   );
   results.push(result12);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 13: JHS Math -> Core Curriculum Series (Set 10 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 13: Junior Core Math Structured Problem-Solving Series (Set 10)...');
+  const result13 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_10
+  );
+  results.push(result13);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');
