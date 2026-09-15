@@ -2200,12 +2200,21 @@ function StudentLedgerDetail({
     }, [student, schoolId, firestore]);
     
     const effectiveRecords = useMemo(() => {
-        if (!studentArchiveRecords) return records || [];
+        const sKeys = new Set([student.id, student.uid, student.studentId, (student as any).admissionNo, (student as any).admissionNumber].filter(Boolean));
+        const isStudentRecord = (r: FinancialRecord) => {
+            if (!r) return false;
+            return sKeys.has(r.studentId) || 
+                   sKeys.has((r as any).studentUid) || 
+                   sKeys.has((r as any).uid) || 
+                   sKeys.has((r as any).admissionNumber) || 
+                   sKeys.has((r as any).admissionNo);
+        };
+
         const map = new Map<string, FinancialRecord>();
-        (records || []).forEach(r => map.set(r.id, r));
-        studentArchiveRecords.forEach(r => map.set(r.id, r));
+        (records || []).filter(isStudentRecord).forEach(r => map.set(r.id, r));
+        (studentArchiveRecords || []).filter(isStudentRecord).forEach(r => map.set(r.id, r));
         return Array.from(map.values());
-    }, [records, studentArchiveRecords]);
+    }, [student, records, studentArchiveRecords]);
 
     const filteredRecords = useMemo(() => {
         if (!effectiveRecords) return [];
@@ -6190,7 +6199,7 @@ export default function AccountsPage() {
                                                         {isExpanded ? (
                                                             <StudentLedgerDetail 
                                                                 student={student} 
-                                                                records={records} 
+                                                                records={sRecords} 
                                                                 cachedRecords={cachedStudentRecords[sKey] || cachedStudentRecords[student.id || ''] || cachedStudentRecords[student.uid || '']}
                                                                 globalDateRange={globalDateRange}
                                                                 onLoadingChange={(loading) => {
