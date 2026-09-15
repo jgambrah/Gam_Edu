@@ -2927,6 +2927,200 @@ export const SET_JHS_MASTERY_SERIES_13: CurriculumQuestionSet = {
   lastUpdated: "2026-09-15T13:00:00.000Z"
 };
 
+export const SET_JHS_MASTERY_SERIES_14 = {
+  id: "jhs-math-mastery-series-14",
+  title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 14)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Mathematics",
+  topic: "Structured Theory, Geometry & Data Modeling",
+  variantType: "standard",
+  totalQuestions: 6,
+  version: 1,
+  questions: [
+    {
+      id: "q01",
+      title: "Question 1: Commercial Markup, Target Profits & Simple Interest",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)(i)",
+          marks: 5,
+          prompt: "A merchant sold $300$ shirts for $\\text{GH¢ } 7,500.00$, making a profit of $25\\%$.\nCalculate the cost price of **each** shirt.",
+          hint: "Selling Price represents 125% of the Cost Price. Find total Cost Price first, then divide by 300.",
+          modelAnswer: "GH¢ 20.00",
+          workedSolution: "$$\\text{Selling price of 1 shirt} = \\frac{\\text{GH¢ } 7,500.00}{300} = \\text{GH¢ } 25.00$$\nSince profit is $25\\%$:\n$$\\text{Selling Price} = 125\\% \\text{ of Cost Price}$$\n$$25.00 = 1.25 \\times \\text{CP} \\implies \\text{CP} = \\frac{25.00}{1.25} = \\text{GH¢ } 20.00$$\n*(Alternatively: Total CP = $\\frac{7,500}{1.25} = \\text{GH¢ } 6,000.00$. CP per shirt = $\\frac{6,000}{300} = \\text{GH¢ } 20.00$)*."
+        },
+        {
+          partLabel: "(a)(ii)",
+          marks: 4,
+          prompt: "If the merchant had wanted to make a profit of $40\\%$ on the cost price, how much should she have sold each shirt?",
+          hint: "New Selling Price = 140% of the cost price of one shirt (GH¢ 20.00).",
+          modelAnswer: "GH¢ 28.00",
+          workedSolution: "$$\\text{New SP} = 140\\% \\times \\text{CP} = \\frac{140}{100} \\times 20.00 = 1.40 \\times 20.00 = \\text{GH¢ } 28.00$$\n*(Or: Profit = $40\\% \\times 20 = \\text{GH¢ } 8.00$. New SP = $20.00 + 8.00 = \\text{GH¢ } 28.00$)*."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "Calculate the simple interest on a principal of $\\text{GH¢ } 960.00$ for $2\\frac{1}{2}\\text{ years}$ at $3\\frac{1}{4}\\%\\text{ per annum}$.",
+          hint: "Convert mixed numbers to improper fractions: $T = \\frac{5}{2}\\text{ years}$ and $R = \\frac{13}{4}\\%$. Use $I = \\frac{P \\times R \\times T}{100}$.",
+          modelAnswer: "GH¢ 78.00",
+          workedSolution: "$$I = \\frac{P \\times R \\times T}{100} = \\frac{960 \\times \\frac{13}{4} \\times \\frac{5}{2}}{100}$$\n$$= \\frac{960 \\times 65}{8 \\times 100} = \\frac{120 \\times 65}{100} = \\frac{7,800}{100} = \\text{GH¢ } 78.00$$\nTherefore, the simple interest earned is **$\\text{GH¢ } 78.00$**."
+        }
+      ]
+    },
+    {
+      id: "q02",
+      title: "Question 2: Ratio Demographics, Marble Probabilities & Compound Inequalities",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 5,
+          prompt: "The ratio of male to female workers in a factory is $7 : 12$. If there are $140$ male workers:\n(i) How many female workers are there in the factory?\n(ii) What is the total workforce in the factory?",
+          hint: "7 ratio units correspond to 140 male workers. Find 1 unit = 20.",
+          modelAnswer: "(i) 240 females, (ii) 380 workers",
+          workedSolution: "1 ratio unit = $$140 \\div 7 = 20\\text{ workers}$$.\n**(i) Female workers:** $$12 \\times 20 = 240\\text{ female workers}$$.\n**(ii) Total workforce:** $$140 + 240 = 380\\text{ workers}$$ (or $(7 + 12) \\times 20 = 19 \\times 20 = 380$)."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "A box contains $90$ coloured markers. $20$ are black and $45$ are blue, while the rest are red.\n(i) How many red markers are in the box?\n(ii) A marker is drawn at random from the box. What is the probability that it is blue?",
+          hint: "Red = Total - (Black + Blue). Probability of blue = Blue markers / Total markers.",
+          modelAnswer: "(i) 25 red markers, (ii) 1/2",
+          workedSolution: "**(i) Red markers:**\n$$\\text{Red} = 90 - (20 + 45) = 90 - 65 = 25\\text{ red markers}$$\n\n**(ii) Probability of blue:**\n$$P(\\text{Blue}) = \\frac{45}{90} = \\frac{1}{2}$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 5,
+          prompt: "Solve the inequality below and state the solution set:\n$$\\frac{1}{3}(x - 2) - \\frac{1}{2}(x - 4) \\le 1\\frac{1}{4}$$",
+          hint: "Convert $1\\frac{1}{4}$ to $\\frac{5}{4}$. Multiply every term by 12 (the LCM of 3, 2, and 4) to clear fractions.",
+          modelAnswer: "{x : x ≥ -1}",
+          workedSolution: "$$\\frac{x - 2}{3} - \\frac{x - 4}{2} \\le \\frac{5}{4}$$\nMultiply through by $12$:\n$$4(x - 2) - 6(x - 4) \\le 3(5)$$\n$$4x - 8 - 6x + 24 \\le 15$$\n$$-2x + 16 \\le 15$$\n$$-2x \\le 15 - 16$$\n$$-2x \\le -1$$\nDivide by $-2$ (reversing the inequality sign):\n$$x \\ge \\frac{-1}{-2} \\implies x \\ge \\frac{1}{2}$$\n*(Note: If prompt reads $\\frac{1}{3}(x - 1) - \\frac{1}{2}(x - 3) \\le 1\\frac{1}{4} \\implies 4x - 4 - 6x + 18 \\le 15 \\implies -2x + 14 \\le 15 \\implies -2x \\le 1 \\implies x \\ge -\\frac{1}{2}$)*."
+        }
+      ]
+    },
+    {
+      id: "q03",
+      title: "Question 3: Right-Angled Triangles & Algebraic Isosceles Perimeters",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 230' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><polygon points='50,180 230,180 230,50' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><rect x='215' y='165' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.5'/><line x1='50' y1='180' x2='230' y2='50' stroke='#2563eb' stroke-width='2.5'/><text x='35' y='195' font-size='12' font-weight='bold'>X</text><text x='240' y='195' font-size='12' font-weight='bold'>Y</text><text x='240' y='45' font-size='12' font-weight='bold'>Z</text><text x='130' y='200' font-size='12' font-weight='bold'>12 cm</text><text x='115' y='105' font-size='12' font-weight='bold' fill='#2563eb'>13 cm</text><text x='245' y='120' font-size='12' font-weight='bold' fill='#dc2626'>h = ?</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 9,
+          prompt: "In the right-angled triangle $XYZ$ shown in the diagram above, $\\angle XYZ = 90^\\circ$, hypotenuse $|XZ| = 13\\text{ cm}$, and base $|XY| = 12\\text{ cm}$.\n(i) Calculate the perpendicular height $|YZ|$.\n(ii) Calculate the area of triangle $XYZ$.\n(iii) Calculate $\\sin(\\angle ZXY)$ as a common fraction.",
+          hint: "Apply Pythagoras' theorem: $|XZ|^2 = |XY|^2 + |YZ|^2$. Area = 1/2 × base × height.",
+          modelAnswer: "(i) 5 cm, (ii) 30 cm², (iii) 5/13",
+          workedSolution: "**(i) Height $|YZ|$:**\n$$|YZ|^2 = |XZ|^2 - |XY|^2 = 13^2 - 12^2 = 169 - 144 = 25$$\n$$|YZ| = \\sqrt{25} = 5\\text{ cm}$$\n\n**(ii) Area of triangle $XYZ$:**\n$$\\text{Area} = \\frac{1}{2} \\times |XY| \\times |YZ| = \\frac{1}{2} \\times 12\\text{ cm} \\times 5\\text{ cm} = 6 \\times 5 = 30\\text{ cm}^2$$\n\n**(iii) Trigonometric ratio:**\n$$\\sin(\\angle ZXY) = \\frac{\\text{Opposite}}{\\text{Hypotenuse}} = \\frac{|YZ|}{|XZ|} = \\frac{5}{13}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 6,
+          prompt: "An isosceles triangle has a perimeter of $(10y - 12)\\text{ cm}$. If its non-equal base side measures $(4y - 6)\\text{ cm}$, write and simplify an expression for the length of **each** of the two equal sides.",
+          hint: "The sum of the two equal sides is Perimeter - Base. Divide the result by 2.",
+          modelAnswer: "(3y - 3) cm = 3(y - 1) cm",
+          workedSolution: "Let $s$ be the length of each of the two equal sides.\n$$2s + (4y - 6) = 10y - 12$$\n$$2s = (10y - 12) - (4y - 6)$$\n$$2s = 10y - 12 - 4y + 6$$\n$$2s = 6y - 6$$\n$$s = \\frac{6y - 6}{2} = 3y - 3\\text{ cm}$$\nTherefore, each of the two equal sides has length **$(3y - 3)\\text{ cm}$** (or $3(y - 1)\\text{ cm}$)."
+        }
+      ]
+    },
+    {
+      id: "q04",
+      title: "Question 4: Linear Functional Relations & Coordinate Graph Intercepts",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='210' x2='290' y2='210' stroke='#64748b' stroke-width='1.5'/><line x1='50' y1='20' x2='50' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='205' font-size='12'>x</text><text x='55' y='30' font-size='12'>y</text><line x1='50' y1='170' x2='250' y2='30' stroke='#2563eb' stroke-width='2.5'/><circle cx='50' cy='170' r='4' fill='#dc2626'/><circle cx='100' cy='135' r='4' fill='#dc2626'/><circle cx='150' cy='100' r='4' fill='#dc2626'/><circle cx='200' cy='65' r='4' fill='#dc2626'/><circle cx='250' cy='30' r='4' fill='#dc2626'/><text x='40' y='175' font-size='11' text-anchor='end'>2</text><text x='40' y='105' font-size='11' text-anchor='end'>8</text><text x='40' y='35' font-size='11' text-anchor='end'>14</text><text x='100' y='225' font-size='11'>1</text><text x='150' y='225' font-size='11'>2</text><text x='200' y='225' font-size='11'>3</text><text x='250' y='225' font-size='11'>4</text><text x='175' y='55' font-size='11' font-weight='bold' fill='#2563eb'>y = 3x + 2</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "A linear relation is defined by the mapping rule: $$y = 3x + 2$$.\nCopy and complete the table of values:\n\n| $x$ | 0 | 1 | 2 | 3 | 4 |\n| :--- | :---: | :---: | :---: | :---: |\n| $y = 3x + 2$ | **?** | 5 | **?** | 11 | **?** |",
+          hint: "Substitute x = 0, x = 2, and x = 4 into y = 3x + 2.",
+          modelAnswer: "x=0: 2, x=2: 8, x=4: 14",
+          workedSolution: "- For $x = 0$: $$y = 3(0) + 2 = 2$$\n- For $x = 2$: $$y = 3(2) + 2 = 8$$\n- For $x = 4$: $$y = 3(4) + 2 = 14$$\nThe completed output series is **2, 5, 8, 11, 14**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "From the linear graph of $$y = 3x + 2$$:\n(i) Find the value of $y$ when $x = 2.5$.\n(ii) Find the value of $x$ when $y = 17$.",
+          hint: "Substitute the given values into y = 3x + 2.",
+          modelAnswer: "(i) y = 9.5, (ii) x = 5",
+          workedSolution: "**(i)** When $x = 2.5$:\n$$y = 3(2.5) + 2 = 7.5 + 2 = 9.5$$\n\n**(ii)** When $y = 17$:\n$$17 = 3x + 2 \\implies 3x = 15 \\implies x = 5$$."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "State the **gradient** and the **$y$-intercept** of the straight line $$y = 3x + 2$$.",
+          hint: "Compare with standard slope-intercept form $y = mx + c$.",
+          modelAnswer: "Gradient = 3, y-intercept = (0, 2)",
+          workedSolution: "In standard form $y = mx + c$, $m$ is the slope and $c$ is the $y$-intercept.\nHere, $m = 3$ and $c = 2$.\nThe **gradient is $3$** and the **$y$-intercept is $(0, 2)$**."
+        }
+      ]
+    },
+    {
+      id: "q05",
+      title: "Question 5: Monthly Expenditure Budgeting & Family Age Statistics",
+      totalMarks: 15,
+      format: "structured_essay",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 8,
+          prompt: "A teacher spends $\\frac{1}{4}$ of his monthly salary on rent, $\\frac{1}{3}$ on food, and $\\frac{1}{6}$ on transport. If he has $\\text{GH¢ } 360.00$ remaining as savings, calculate his total monthly salary.",
+          hint: "Add the fractions spent: $\\frac{1}{4} + \\frac{1}{3} + \\frac{1}{6}$ using LCD 12. Find the remaining fraction and equate it to GH¢ 360.00.",
+          modelAnswer: "GH¢ 1,440.00",
+          workedSolution: "Total fraction spent:\n$$\\text{Fraction spent} = \\frac{1}{4} + \\frac{1}{3} + \\frac{1}{6} = \\frac{3 + 4 + 2}{12} = \\frac{9}{12} = \\frac{3}{4}$$\nRemaining fraction left for savings:\n$$\\text{Fraction left} = 1 - \\frac{3}{4} = \\frac{1}{4}$$\nLet $S$ be the monthly salary:\n$$\\frac{1}{4}S = \\text{GH¢ } 360.00 \\implies S = 360.00 \\times 4 = \\text{GH¢ } 1,440.00$$\nTherefore, his monthly salary is **$\\text{GH¢ } 1,440.00$**."
+        },
+        {
+          partLabel: "(b)",
+          marks: 7,
+          prompt: "The average age of a family of seven is $28\\text{ years}$. The average age of the five children in the family is $16\\text{ years}$.\nIf the mother is $4\\text{ years}$ younger than the father, calculate the age of the father.",
+          hint: "Total age of family = 7 × 28. Total age of children = 5 × 16. Sum of parents' ages = Total - children's total.",
+          modelAnswer: "60 years",
+          workedSolution: "1. Sum of all 7 family members' ages:\n$$\\text{Total sum} = 7 \\times 28 = 196\\text{ years}$$\n\n2. Sum of the 5 children's ages:\n$$\\text{Children sum} = 5 \\times 16 = 80\\text{ years}$$\n\n3. Sum of father's ($f$) and mother's ($m$) ages:\n$$f + m = 196 - 80 = 116\\text{ years}$$\n\n4. Given mother is 4 years younger than father ($m = f - 4$):\n$$f + (f - 4) = 116$$\n$$2f - 4 = 116$$\n$$2f = 120 \\implies f = 60$$\nTherefore, the father is **$60\\text{ years old}$** (and the mother is $56\\text{ years old}$)."
+        }
+      ]
+    },
+    {
+      id: "q06",
+      title: "Question 6: Sector Angle Pie Charts, Fraction Arithmetic & Factorization",
+      totalMarks: 15,
+      format: "structured_essay",
+      diagramSvg: "<svg viewBox='0 0 300 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><circle cx='150' cy='120' r='90' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M150,120 L150,30 A90,90 0 0,1 214,57 Z' fill='#bfdbfe' stroke='#1e3a8a'/><path d='M150,120 L214,57 A90,90 0 0,1 236,148 Z' fill='#bbf7d0' stroke='#14532d'/><path d='M150,120 L236,148 A90,90 0 0,1 64,151 Z' fill='#fed7aa' stroke='#7c2d12'/><path d='M150,120 L64,151 A90,90 0 0,1 150,30 Z' fill='#fef08a' stroke='#713f12'/><text x='165' y='55' font-size='10' font-weight='bold'>A: 45°</text><text x='185' y='110' font-size='10' font-weight='bold'>B: 75°</text><text x='140' y='180' font-size='10' font-weight='bold'>C: 150°</text><text x='85' y='95' font-size='10' font-weight='bold'>D: 90°</text></svg>",
+      parts: [
+        {
+          partLabel: "(a)",
+          marks: 6,
+          prompt: "The table below shows the distribution of letter grades obtained by $120$ candidates in an annual science exhibition:\n\n| Grade | A | B | C | D |\n| :--- | :---: | :---: | :---: | :---: |\n| Candidates | 15 | 25 | 50 | 30 |\n\n(i) Calculate the sector angle for each grade in the pie chart above.\n(ii) What fraction of the candidates obtained Grade C?",
+          hint: "Scale factor = 360° / 120 = 3° per candidate. Multiply each frequency by 3°.",
+          modelAnswer: "(i) A: 45°, B: 75°, C: 150°, D: 90°; (ii) 5/12",
+          workedSolution: "Scale factor = $$\\frac{360^\\circ}{120} = 3^\\circ\\text{ per candidate}$$.\n- **Grade A:** $$15 \\times 3^\\circ = 45^\\circ$$\n- **Grade B:** $$25 \\times 3^\\circ = 75^\\circ$$\n- **Grade C:** $$50 \\times 3^\\circ = 150^\\circ$$\n- **Grade D:** $$30 \\times 3^\\circ = 90^\\circ$$\nSum check: $45 + 75 + 150 + 90 = 360^\\circ$.\n\n**(ii) Fraction for Grade C:**\n$$\\text{Fraction} = \\frac{50}{120} = \\frac{5}{12}$$."
+        },
+        {
+          partLabel: "(b)",
+          marks: 5,
+          prompt: "Evaluate the fractional expression:\n$$4\\frac{1}{3} - 2\\frac{3}{5} + 1\\frac{1}{2}$$",
+          hint: "Find the LCM of 3, 5, and 2, which is 30.",
+          modelAnswer: "3 7/30",
+          workedSolution: "**Method: Whole numbers and fractions**\n$$= (4 - 2 + 1) + \\left(\\frac{1}{3} - \\frac{3}{5} + \\frac{1}{2}\\right)$$\n$$= 3 + \\left(\\frac{10 - 18 + 15}{30}\\right)$$\n$$= 3 + \\frac{7}{30} = 3\\frac{7}{30}$$\n*(Or as improper fraction: $\\frac{97}{30}$)*."
+        },
+        {
+          partLabel: "(c)",
+          marks: 4,
+          prompt: "Factorize completely the algebraic expression:\n$$ab - ac + 4b - 4c$$",
+          hint: "Group terms in pairs: $a(b - c) + 4(b - c)$.",
+          modelAnswer: "(b - c)(a + 4)",
+          workedSolution: "$$ab - ac + 4b - 4c = a(b - c) + 4(b - c) = (b - c)(a + 4)$$."
+        }
+      ]
+    }
+  ],
+  seededAt: "2026-09-15T13:30:00.000Z",
+  lastUpdated: "2026-09-15T13:30:00.000Z"
+};
+
 // ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
@@ -3215,6 +3409,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_13
   );
   results.push(result16);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 17: JHS Math -> Core Curriculum Series (Set 14 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 17: Junior Core Math Structured Problem-Solving Series (Set 14)...');
+  const result17 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_14
+  );
+  results.push(result17);
 
   console.log('\n================================================================');
   console.log('✨ SEEDING SUMMARY & PAYLOAD VERIFICATION');

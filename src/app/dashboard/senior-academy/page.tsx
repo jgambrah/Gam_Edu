@@ -546,6 +546,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "A \\cap B = \\{2\\}",
         sampleAnswer: "{2}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 14)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 14 / 2006 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 14 / 2006 past paper adaptation) with embedded SVG diagrams covering commercial profit markup, ratio demographics, right-angled triangles with trigonometry, linear mapping graphs, family age averages, and grade distribution pie charts.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-14",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "In right-angled triangle XYZ with hypotenuse 13 cm and base 12 cm, calculate height |YZ| and area:",
+        sampleFormula: "|YZ| = \\sqrt{13^2 - 12^2} = 5\\text{ cm}, \\quad \\text{Area} = 30\\text{ cm}^2",
+        sampleAnswer: "5 cm, 30 cm²"
+    },
 
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
