@@ -464,27 +464,27 @@ service cloud.firestore {
     // =========================================================
 
     match /tills/{tillId} {
-      allow read, list: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == resource.data.schoolId);
-      allow create: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow update: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == resource.data.schoolId && getUserSchoolId() == request.resource.data.schoolId);
-      allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId);
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff());
+      allow delete: if isSuperAdmin() || isAdmin();
 
       match /transactions/{transactionId} {
-        allow read, list: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/tills/$(tillId)).data.schoolId == getUserSchoolId();
-        allow create: if isSuperAdmin() || 
-          request.resource.data.schoolId == getUserSchoolId();
-        allow update: if isSuperAdmin() || 
-          request.resource.data.schoolId == getUserSchoolId();
-        allow delete: if isSuperAdmin() || (isAdmin() && 
-          resource.data.schoolId == getUserSchoolId());
+        allow read, get, list: if isSignedIn();
+        allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff());
+        allow delete: if isSuperAdmin() || isAdmin();
+      }
+
+      match /{document=**} {
+        allow read, get, list: if isSignedIn();
+        allow write, create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff());
+        allow delete: if isSuperAdmin() || isAdmin();
       }
     }
 
     match /bank_transactions/{transactionId} {
-      allow read, list: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == resource.data.schoolId);
-      allow create: if isSuperAdmin() || (isFinanceStaff() && getUserSchoolId() == request.resource.data.schoolId);
-      allow update: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff());
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /financialRecords/{recordId} {
@@ -527,19 +527,15 @@ service cloud.firestore {
     }
 
     match /waiverRequests/{requestId} {
-      allow read: if isSignedIn() && (
-        isSuperAdmin() ||
-        (getUserSchoolId() == resource.data.schoolId && (isFinanceStaff() || isDirector()))
-      );
-      allow create: if isSignedIn() && (
-        isSuperAdmin() ||
-        ((isFinanceStaff() || isDirector()) && getUserSchoolId() == request.resource.data.schoolId)
-      );
-      allow update: if isSignedIn() && (
-        isSuperAdmin() ||
-        (isDirector() && getUserSchoolId() == resource.data.schoolId)
-      );
-      allow delete: if isSuperAdmin();
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff() || isDirector());
+      allow delete: if isSuperAdmin() || isAdmin();
+    }
+
+    match /waiver_requests/{requestId} {
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff() || isDirector());
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /paymentVouchers/{voucherId} {
