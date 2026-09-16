@@ -302,8 +302,7 @@ service cloud.firestore {
     }
 
     match /counters/{counterId} {
-      allow read: if isSignedIn();
-      allow write: if isAdmin() || isFinanceStaff();
+      allow read, write: if isSignedIn();
     }
 
     match /announcements_v2/{announcementId} {
