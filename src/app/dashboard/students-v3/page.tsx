@@ -1986,6 +1986,8 @@ export default function StudentsV3Page() {
             </div>
           </div>
         </div>
+      )}
+
       {/* ==================== GUARDIAN & FAMILY LINK MODAL ==================== */}
       <Dialog 
         open={!!viewingGuardianStudent} 
