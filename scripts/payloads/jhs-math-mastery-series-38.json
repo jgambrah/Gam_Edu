@@ -1,0 +1,153 @@
+{
+  "id": "jhs-math-mastery-series-38",
+  "title": "Junior Core Mathematics • Structured Problem-Solving Series (Set 38)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Structured Theory, Geometry & Data Modeling",
+  "variantType": "standard",
+  "totalQuestions": 5,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "title": "Question 1: Binomial Product Expansion, Inequality Modeling & Vector Linear Combinations",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 5,
+          "prompt": "Expand and simplify completely the algebraic product:\n$$(x - y)(3y - 2x)$$",
+          "hint": "Use the distributive law: multiply each term in the first binomial by every term in the second binomial.",
+          "modelAnswer": "5xy - 2x² - 3y²",
+          "workedSolution": "$$(x - y)(3y - 2x) = x(3y - 2x) - y(3y - 2x)$$\n$$= 3xy - 2x^2 - 3y^2 + 2xy$$\n$$= 5xy - 2x^2 - 3y^2$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Find the truth set of the inequality:\n$$3x - 8 \\le 4(2 - x)$$\nIllustrate your solution on a number line.",
+          "hint": "Expand the right-hand side first: $3x - 8 \\le 8 - 4x$. Collect all terms with x on one side.",
+          "modelAnswer": "{x : x ≤ 16/7}",
+          "workedSolution": "$$3x - 8 \\le 8 - 4x$$\n$$3x + 4x \\le 8 + 8$$\n$$7x \\le 16 \\implies x \\le \\frac{16}{7} = 2\\frac{2}{7}$$\nTruth set: **$$\\{x : x \\le 2\\frac{2}{7}, \\, x \\in \\mathbb{R}\\}$$**."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 5,
+          "prompt": "Given column vectors $$u = \\begin{pmatrix} -3 \\\\ 4 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} 6 \\\\ -2 \\end{pmatrix}$$, calculate the vector:\n$$\\frac{1}{2}\\left(u + \\frac{1}{2}v\\right)$$",
+          "hint": "Find $\\frac{1}{2}v$ first, add to $u$, then multiply the entire vector by $\\frac{1}{2}$.",
+          "modelAnswer": "(-1/2, 3/2)ᵀ",
+          "workedSolution": "$$\\frac{1}{2}v = \\frac{1}{2}\\begin{pmatrix} 6 \\\\ -2 \\end{pmatrix} = \\begin{pmatrix} 3 \\\\ -1 \\end{pmatrix}$$\n$$u + \\frac{1}{2}v = \\begin{pmatrix} -3 \\\\ 4 \\end{pmatrix} + \\begin{pmatrix} 3 \\\\ -1 \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 3 \\end{pmatrix}$$\n$$\\frac{1}{2}\\left(u + \\frac{1}{2}v\\right) = \\frac{1}{2}\\begin{pmatrix} 0 \\\\ 3 \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 1.5 \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ \\frac{3}{2} \\end{pmatrix}$$."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "title": "Question 2: Ladder Incline Trigonometry & Constant Formula Evaluation",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 320 230' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='190' x2='290' y2='190' stroke='#334155' stroke-width='2'/><line x1='240' y1='30' x2='240' y2='190' stroke='#334155' stroke-width='3'/><line x1='60' y1='190' x2='240' y2='50' stroke='#2563eb' stroke-width='3'/><rect x='222' y='172' width='18' height='18' fill='none' stroke='#334155' stroke-width='1.5'/><text x='130' y='210' font-size='12' font-weight='bold'>Ground = 12 m</text><text x='250' y='125' font-size='12' font-weight='bold' fill='#dc2626'>Wall = 16 m</text><text x='125' y='110' font-size='12' font-weight='bold' fill='#2563eb'>Ladder L = ?</text><path d='M240,80 A30,30 0 0,1 216,68' fill='none' stroke='#059669' stroke-width='2'/><text x='220' y='95' font-size='11' font-weight='bold' fill='#059669'>θ</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "A ladder leans against a vertical building wall as illustrated above. The top end of the ladder touches the wall at a height of $16\\text{ m}$ from the ground, while the foot of the ladder rests $12\\text{ m}$ away from the base of the wall.\n(i) Calculate the length of the ladder ($L$).\n(ii) Find the tangent of the angle ($\\theta$) that the ladder makes with the vertical wall in its simplest fractional form.",
+          "hint": "Apply Pythagoras' theorem: $L^2 = 12^2 + 16^2$. Note that the angle with the wall has opposite side = 12 m and adjacent side = 16 m.",
+          "modelAnswer": "(i) 20 m, (ii) tan θ = 3/4",
+          "workedSolution": "**(i) Ladder length ($L$):**\n$$L^2 = 12^2 + 16^2 = 144 + 256 = 400$$\n$$L = \\sqrt{400} = 20\\text{ m}$$\n\n**(ii) Tangent with the wall ($\\theta$):**\n$$\\tan \\theta = \\frac{\\text{Opposite}}{\\text{Adjacent}} = \\frac{12\\text{ m}}{16\\text{ m}} = \\frac{3}{4} = 0.75$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "Given that $\\pi = 3.14$ and $g = 30$, calculate the value of $F$ in the physics relation:\n$$F = \\frac{3}{4}\\pi g^2$$",
+          "hint": "Compute $g^2 = 30^2 = 900$ first, then multiply by $\\frac{3}{4} \\times 3.14$.",
+          "modelAnswer": "2,119.5",
+          "workedSolution": "$$g^2 = 30^2 = 900$$\n$$F = \\frac{3}{4} \\times 3.14 \\times 900$$\n$$= 3 \\times 3.14 \\times 225 = 9.42 \\times 225 = 2,119.5$$."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "title": "Question 3: Geometric Compass Triangle Construction & Circumcircle Modeling",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "Using a ruler and a pair of compasses only:\n(i) Construct triangle $PQR$ such that $|PQ| = 9\\text{ cm}$, $\\angle QPR = 45^\\circ$, and $\\angle PQR = 90^\\circ$.\n(ii) State or calculate the length of side $|QR|$.",
+          "hint": "Triangle PQR is a right-angled isosceles triangle because angles are 45°, 90°, and 45°.",
+          "modelAnswer": "|QR| = 9 cm",
+          "workedSolution": "**(i) Geometric construction:**\n- Draw line segment $|PQ| = 9\\text{ cm}$.\n- Construct a perpendicular ray at $Q$ ($90^\\circ$).\n- Construct a $45^\\circ$ angle at $P$ to meet the perpendicular ray from $Q$ at vertex $R$.\n\n**(ii) Side $|QR|$:**\nSince $\\angle QPR = 45^\\circ$ and $\\angle PQR = 90^\\circ$, the remaining angle $\\angle PRQ = 180^\\circ - (90^\\circ + 45^\\circ) = 45^\\circ$.\nSince triangle $PQR$ is isosceles, $$|QR| = |PQ| = 9\\text{ cm}$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "Calculate the length of the hypotenuse $|PR|$ and the total area of triangle $PQR$.",
+          "hint": "$|PR|^2 = 9^2 + 9^2$. Area = 1/2 × base × height.",
+          "modelAnswer": "|PR| = 9√2 ≈ 12.73 cm, Area = 40.5 cm²",
+          "workedSolution": "**Hypotenuse $|PR|$:**\n$$|PR|^2 = 9^2 + 9^2 = 81 + 81 = 162$$\n$$|PR| = \\sqrt{162} = 9\\sqrt{2} \\approx 12.73\\text{ cm}$$\n\n**Area:**\n$$\\text{Area} = \\frac{1}{2} \\times |PQ| \\times |QR| = \\frac{1}{2} \\times 9 \\times 9 = \\frac{81}{2} = 40.5\\text{ cm}^2$$."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "title": "Question 4: Cartesian Square Reflections, Scale Enlargement & Inversion Mapping",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='140' x2='300' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='250' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><rect x='180' y='50' width='50' height='50' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='235' y='45' font-size='10' font-weight='bold'>C(4,5)</text><text x='180' y='45' font-size='10' font-weight='bold'>D(1,5)</text><text x='235' y='115' font-size='10' font-weight='bold'>B(4,2)</text><text x='180' y='115' font-size='10' font-weight='bold'>A(1,2)</text><rect x='90' y='50' width='50' height='50' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='65' y='115' font-size='10' font-weight='bold' fill='#dc2626'>B₁</text><text x='125' y='115' font-size='10' font-weight='bold' fill='#dc2626'>A₁</text><rect x='90' y='180' width='50' height='50' fill='#dcfce7' stroke='#16a34a' stroke-width='2'/><text x='65' y='195' font-size='10' font-weight='bold' fill='#16a34a'>B₂</text><text x='125' y='195' font-size='10' font-weight='bold' fill='#16a34a'>A₂</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Square $ABCD$ has vertices $A(1, 2)$, $B(4, 2)$, $C(4, 5)$, and $D(1, 5)$ on the Cartesian plane shown above.\n(i) Write down the coordinates of image vertices $A_1, B_1, C_1,$ and $D_1$ under a reflection in the $y$-axis.\n(ii) Write down the coordinates of image vertices $A_2, B_2, C_2,$ and $D_2$ under an enlargement from the origin $(0, 0)$ with a scale factor of $k = -1$.",
+          "hint": "Reflection in y-axis: (x, y) → (-x, y). Enlargement with scale factor -1 from origin: (x, y) → (-x, -y).",
+          "modelAnswer": "(i) A₁(-1, 2), B₁(-4, 2), C₁(-4, 5), D₁(-1, 5); (ii) A₂(-1, -2), B₂(-4, -2), C₂(-4, -5), D₂(-1, -5)",
+          "workedSolution": "**(i) Reflection in $y$-axis:** $$(x, y) \\to (-x, y)$$\n- $$A(1, 2) \\to A_1(-1, 2)$$\n- $$B(4, 2) \\to B_1(-4, 2)$$\n- $$C(4, 5) \\to C_1(-4, 5)$$\n- $$D(1, 5) \\to D_1(-1, 5)$$\n\n**(ii) Enlargement by scale factor $k = -1$:** $$(x, y) \\to (-x, -y)$$\n- $$A(1, 2) \\to A_2(-1, -2)$$\n- $$B(4, 2) \\to B_2(-4, -2)$$\n- $$C(4, 5) \\to C_2(-4, -5)$$\n- $$D(1, 5) \\to D_2(-1, -5)$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "What single geometrical transformation maps square $A_2B_2C_2D_2$ onto square $A_1B_1C_1D_1$?",
+          "hint": "Compare the coordinates of corresponding points: (-x, -y) maps to (-x, y).",
+          "modelAnswer": "Reflection in the x-axis",
+          "workedSolution": "Notice that for each vertex:\n$$A_2(-1, -2) \\to A_1(-1, 2)$$\n$$B_2(-4, -2) \\to B_1(-4, 2)$$\nThe $x$-coordinate remains unchanged while the $y$-coordinate reverses sign ($y \\to -y$).\nTherefore, the transformation is a **reflection in the $x$-axis** (or the line $y = 0$)."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Calculate the area of square $ABCD$ in square units.",
+          "hint": "Side length = difference between consecutive vertices.",
+          "modelAnswer": "9 square units",
+          "workedSolution": "$$\\text{Side length } |AB| = 4 - 1 = 3\\text{ units}$$\n$$\\text{Area} = \\text{side}^2 = 3^2 = 9\\text{ square units}$$."
+        }
+      ]
+    },
+    {
+      "id": "q05",
+      "title": "Question 5: School Canteen Commercial Sales Distribution & Pie Charting",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 300 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><circle cx='150' cy='120' r='90' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M150,120 L150,30 A90,90 0 0,1 232,84 Z' fill='#bfdbfe' stroke='#1e3a8a'/><path d='M150,120 L232,84 A90,90 0 0,1 217,180 Z' fill='#bbf7d0' stroke='#14532d'/><path d='M150,120 L217,180 A90,90 0 0,1 122,206 Z' fill='#fed7aa' stroke='#7c2d12'/><path d='M150,120 L122,206 A90,90 0 0,1 64,92 Z' fill='#fef08a' stroke='#713f12'/><path d='M150,120 L64,92 A90,90 0 0,1 150,30 Z' fill='#e9d5ff' stroke='#581c87'/><text x='165' y='65' font-size='10' font-weight='bold'>Fanta: 65°</text><text x='195' y='140' font-size='10' font-weight='bold'>Pepsi: 105°</text><text x='140' y='180' font-size='10' font-weight='bold'>Mirinda: 70°</text><text x='75' y='160' font-size='10' font-weight='bold'>Cola: 85°</text><text x='95' y='75' font-size='10' font-weight='bold'>Sprite: 35°</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "The table below shows the distribution of bottles of soft drinks sold by a school canteen in one week:\n\n| Soft Drink | Fanta | Pepsi | Mirinda | Coca-Cola | Sprite |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n| Bottles Sold | 13 | 21 | 14 | 17 | 7 |\n\n(i) Find the total number of bottles sold.\n(ii) Calculate the sector angle for each brand on a pie chart.",
+          "hint": "Total bottles = 13 + 21 + 14 + 17 + 7 = 72. Sector angle = (Number / 72) × 360° = Number × 5°.",
+          "modelAnswer": "(i) 72 bottles; (ii) Fanta: 65°, Pepsi: 105°, Mirinda: 70°, Coca-Cola: 85°, Sprite: 35°",
+          "workedSolution": "**(i) Total bottles:**\n$$N = 13 + 21 + 14 + 17 + 7 = 72\\text{ bottles}$$\n\n**(ii) Sector Angles:**\nEach bottle represents $$\\frac{360^\\circ}{72} = 5^\\circ$$.\n- **Fanta:** $$13 \\times 5^\\circ = 65^\\circ$$\n- **Pepsi:** $$21 \\times 5^\\circ = 105^\\circ$$\n- **Mirinda:** $$14 \\times 5^\\circ = 70^\\circ$$\n- **Coca-Cola:** $$17 \\times 5^\\circ = 85^\\circ$$\n- **Sprite:** $$7 \\times 5^\\circ = 35^\\circ$$\nSum check: $$65^\\circ + 105^\\circ + 70^\\circ + 85^\\circ + 35^\\circ = 360^\\circ$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "(i) What percentage of the total sales was Coca-Cola, correct to one decimal place?\n(ii) If a bottle is picked at random from this sales batch, what is the probability that it was Pepsi?",
+          "hint": "Coca-Cola percentage = (17 / 72) × 100%. Pepsi probability = 21 / 72.",
+          "modelAnswer": "(i) 23.6%, (ii) 7/24",
+          "workedSolution": "**(i) Percentage of Coca-Cola:**\n$$\\text{Percentage} = \\left(\\frac{17}{72}\\right) \\times 100\\% = \\frac{1,700}{72}\\% \\approx 23.61\\%$$\nCorrect to one decimal place: **23.6%**.\n\n**(ii) Probability of Pepsi:**\n$$P(\\text{Pepsi}) = \\frac{21}{72} = \\frac{21 \\div 3}{72 \\div 3} = \\frac{7}{24}$$."
+        }
+      ]
+    }
+  ],
+  "seededAt": "2026-09-16T12:30:00.000Z",
+  "lastUpdated": "2026-09-16T12:30:00.000Z"
+}

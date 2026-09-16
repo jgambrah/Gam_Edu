@@ -1,0 +1,169 @@
+{
+  "id": "jhs-math-mastery-series-42",
+  "title": "Junior Core Mathematics • Structured Problem-Solving Series (Set 42)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Structured Theory, Geometry & Data Modeling",
+  "variantType": "standard",
+  "totalQuestions": 5,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "title": "Question 1: Linear Inequality, Rational Linear Equation, Factorization & Transposition",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 4,
+          "prompt": "Solve the inequality: $$7 - 3x > x + 3$$, where $x$ is a real number. Illustrate your solution on a number line.",
+          "hint": "Collect all terms with x on one side: $7 - 3 > x + 3x$. Remember to reverse the inequality sign if you divide by a negative number.",
+          "modelAnswer": "{x : x < 1}",
+          "workedSolution": "$$7 - 3x > x + 3$$\n$$7 - 3 > x + 3x$$\n$$4 > 4x$$\n$$1 > x \\implies x < 1$$\nTruth set: **$$\\{x : x < 1, \\, x \\in \\mathbb{R}\\}$$**."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 4,
+          "prompt": "Find the truth set of the rational equation:\n$$\\frac{2}{3}(2y - 1) - \\frac{1}{3}(y + 4) = 1$$",
+          "hint": "Multiply through by 3 (the common denominator) to eliminate fractions, then expand and solve for y.",
+          "modelAnswer": "{y : y = 3}",
+          "workedSolution": "Multiply through by $3$:\n$$2(2y - 1) - (y + 4) = 3$$\n$$4y - 2 - y - 4 = 3$$\n$$3y - 6 = 3$$\n$$3y = 3 + 6 = 9$$\n$$y = \\frac{9}{3} = 3$$\nTruth set: **$$\\{y : y = 3\\}$$**."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 3,
+          "prompt": "Factorize completely: $$ax + bx - ay - by$$.",
+          "hint": "Group terms pairwise: $x(a + b) - y(a + b)$.",
+          "modelAnswer": "(a + b)(x - y)",
+          "workedSolution": "$$ax + bx - ay - by = x(a + b) - y(a + b) = (a + b)(x - y)$$."
+        },
+        {
+          "partLabel": "(d)",
+          "marks": 4,
+          "prompt": "Make $t$ the subject of the relation: $$v = u - gt$$.",
+          "hint": "Isolate the term containing t: $gt = u - v$, then divide by g.",
+          "modelAnswer": "t = (u - v) / g",
+          "workedSolution": "$$v = u - gt$$\n$$gt = u - v$$\n$$t = \\frac{u - v}{g}$$."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "title": "Question 2: Commercial Property Revenue, Taxes & Percentage Expenses",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "A property owner leased out an apartment building for $\\text{GH¢ } 360,000.00$ per annum. During the year, she paid $15\\%$ of the gross rent as income tax and $20\\%$ of the gross rent as municipal property rates. She also spent $\\text{GH¢ } 18,000.00$ on building repairs and maintenance.\nCalculate the property owner's **total annual expenses**.",
+          "hint": "Find 15% of 360,000, 20% of 360,000, and add the repair expenses of 18,000.",
+          "modelAnswer": "GH¢ 144,000.00",
+          "workedSolution": "$$\\text{Income Tax} = 15\\% \\times 360,000.00 = 0.15 \\times 360,000 = \\text{GH¢ } 54,000.00$$\n$$\\text{Property Rates} = 20\\% \\times 360,000.00 = 0.20 \\times 360,000 = \\text{GH¢ } 72,000.00$$\n$$\\text{Repairs} = \\text{GH¢ } 18,000.00$$\n$$\\text{Total Expenses} = 54,000.00 + 72,000.00 + 18,000.00 = \\text{GH¢ } 144,000.00$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Calculate the net remainder of the rental income left after settling all total expenses.",
+          "hint": "Net remainder = Gross Rent - Total Expenses.",
+          "modelAnswer": "GH¢ 216,000.00",
+          "workedSolution": "$$\\text{Net Remainder} = 360,000.00 - 144,000.00 = \\text{GH¢ } 216,000.00$$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Calculate the percentage of the gross rent that was spent on repairs and maintenance.",
+          "hint": "Percentage = (Amount spent on repairs / Gross Rent) × 100%.",
+          "modelAnswer": "5%",
+          "workedSolution": "$$\\text{Percentage} = \\left(\\frac{18,000.00}{360,000.00}\\right) \\times 100\\% = \\left(\\frac{18}{360}\\right) \\times 100\\% = \\frac{1}{20} \\times 100\\% = 5\\%$$."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "title": "Question 3: Cartesian Coordinate Transformations, Dual-Axis Reflections & Geometry",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 320 260' width='100%' height='240' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='140' x2='300' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='250' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><polygon points='190,110 250,70 210,30' fill='#dbeafe' stroke='#2563eb' stroke-width='2'/><text x='180' y='125' font-size='10' font-weight='bold'>A(1,1)</text><text x='255' y='75' font-size='10' font-weight='bold'>B(4,3)</text><text x='215' y='25' font-size='10' font-weight='bold'>C(2,5)</text><polygon points='130,110 70,70 110,30' fill='#fee2e2' stroke='#dc2626' stroke-width='2'/><text x='125' y='125' font-size='10' font-weight='bold' fill='#dc2626'>A₁</text><text x='55' y='75' font-size='10' font-weight='bold' fill='#dc2626'>B₁</text><text x='95' y='25' font-size='10' font-weight='bold' fill='#dc2626'>C₁</text><polygon points='190,170 250,210 210,250' fill='#dcfce7' stroke='#16a34a' stroke-width='2'/><text x='180' y='165' font-size='10' font-weight='bold' fill='#16a34a'>A₂</text><text x='255' y='215' font-size='10' font-weight='bold' fill='#16a34a'>B₂</text><text x='215' y='255' font-size='10' font-weight='bold' fill='#16a34a'>C₂</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Triangle $ABC$ has vertices $A(1, 1)$, $B(4, 3)$, and $C(2, 5)$ on the Cartesian plane shown above.\nWrite down the coordinates of the image vertices $A_1, B_1,$ and $C_1$ under a reflection in the $y$-axis (the line $x = 0$).",
+          "hint": "Reflection in y-axis maps $(x, y) \\to (-x, y)$.",
+          "modelAnswer": "A₁(-1, 1), B₁(-4, 3), C₁(-2, 5)",
+          "workedSolution": "**Reflection in the $y$-axis:** $$(x, y) \\to (-x, y)$$\n- $$A(1, 1) \\to A_1(-1, 1)$$\n- $$B(4, 3) \\to B_1(-4, 3)$$\n- $$C(2, 5) \\to C_1(-2, 5)$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Write down the coordinates of the image vertices $A_2, B_2,$ and $C_2$ under a reflection of triangle $ABC$ in the $x$-axis (the line $y = 0$).",
+          "hint": "Reflection in x-axis maps $(x, y) \\to (x, -y)$.",
+          "modelAnswer": "A₂(1, -1), B₂(4, -3), C₂(2, -5)",
+          "workedSolution": "**Reflection in the $x$-axis:** $$(x, y) \\to (x, -y)$$\n- $$A(1, 1) \\to A_2(1, -1)$$\n- $$B(4, 3) \\to B_2(4, -3)$$\n- $$C(2, 5) \\to C_2(2, -5)$$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Determine the single transformation that maps triangle $A_1B_1C_1$ directly onto triangle $A_2B_2C_2$.",
+          "hint": "Compare points: (-x, y) maps to (x, -y). Both coordinates change signs.",
+          "modelAnswer": "Rotation of 180° about the origin (0, 0)",
+          "workedSolution": "Notice that for corresponding vertices:\n$$A_1(-1, 1) \\to A_2(1, -1)$$\n$$B_1(-4, 3) \\to B_2(4, -3)$$\n$$C_1(-2, 5) \\to C_2(2, -5)$$\nThis mapping conforms to $$(x, y) \\to (-x, -y)$$, which is a **rotation of $180^\\circ$ about the origin $(0, 0)$** (or a reflection in the origin)."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "title": "Question 4: Discrete Marks Frequency Distribution, Bar Charting & Probability",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='330' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Marks Scored</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='45' y='75' width='22' height='85' fill='#93c5fd' stroke='#1d4ed8'/><rect x='80' y='30' width='22' height='130' fill='#2563eb' stroke='#1d4ed8'/><rect x='115' y='40' width='22' height='120' fill='#93c5fd' stroke='#1d4ed8'/><rect x='150' y='65' width='22' height='95' fill='#93c5fd' stroke='#1d4ed8'/><rect x='185' y='110' width='22' height='50' fill='#93c5fd' stroke='#1d4ed8'/><rect x='220' y='85' width='22' height='75' fill='#93c5fd' stroke='#1d4ed8'/><rect x='255' y='140' width='22' height='20' fill='#93c5fd' stroke='#1d4ed8'/><rect x='290' y='130' width='22' height='30' fill='#93c5fd' stroke='#1d4ed8'/><text x='52' y='173' font-size='10'>2</text><text x='87' y='173' font-size='10'>3</text><text x='122' y='173' font-size='10'>4</text><text x='157' y='173' font-size='10'>5</text><text x='192' y='173' font-size='10'>6</text><text x='227' y='173' font-size='10'>7</text><text x='262' y='173' font-size='10'>8</text><text x='297' y='173' font-size='10'>9</text><text x='18' y='35' font-size='10'>14</text><text x='18' y='75' font-size='10'>9</text><text x='18' y='115' font-size='10'>5</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "The frequency distribution table below shows the marks obtained out of $10$ by a class of $64$ pupils in a mental mathematics test:\n\n| Mark ($x$) | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 9 | 14 | 13 | 10 | 5 | 8 | 2 | 3 |\n\n(i) State the **modal mark** of the distribution.\n(ii) Find the total number of pupils who scored more than $5\\text{ marks}$.\n(iii) Calculate the **mean mark** of the class, correct to two decimal places.",
+          "hint": "Mode is the mark with highest frequency. Mean = $\\sum fx / \\sum f$. Scores > 5 are 6, 7, 8, and 9.",
+          "modelAnswer": "(i) 3 marks, (ii) 18 pupils, (iii) 4.50 marks",
+          "workedSolution": "**(i) Modal mark:**\nThe highest frequency is $14$, which corresponds to mark **3**.\n\n**(ii) Pupils scoring > 5 marks:**\n$$\\text{Count} = f(6) + f(7) + f(8) + f(9) = 5 + 8 + 2 + 3 = 18\\text{ pupils}$$\n\n**(iii) Mean mark:**\n$$\\sum fx = (2 \\times 9) + (3 \\times 14) + (4 \\times 13) + (5 \\times 10) + (6 \\times 5) + (7 \\times 8) + (8 \\times 2) + (9 \\times 3)$$\n$$\\sum fx = 18 + 42 + 52 + 50 + 30 + 56 + 16 + 27 = 291$$\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{291}{64} \\approx 4.546875$$\nCorrect to two decimal places: **4.55 marks**."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "If a pupil is chosen at random from this class:\n(i) What is the probability that the pupil obtained exactly $7\\text{ marks}$?\n(ii) What is the probability that the pupil scored at most $3\\text{ marks}$?",
+          "hint": "P(7 marks) = f(7) / 64. 'At most 3 marks' means marks 2 and 3: [f(2) + f(3)] / 64.",
+          "modelAnswer": "(i) 1/8, (ii) 23/64",
+          "workedSolution": "**(i) Probability of obtaining 7 marks:**\n$$P(x = 7) = \\frac{f(7)}{64} = \\frac{8}{64} = \\frac{1}{8}$$\n\n**(ii) Probability of scoring at most 3 marks (marks 2 and 3):**\n$$\\text{Count} = f(2) + f(3) = 9 + 14 = 23$$\n$$P(x \\le 3) = \\frac{23}{64}$$."
+        }
+      ]
+    },
+    {
+      "id": "q05",
+      "title": "Question 5: Geometric Compass Trapezium Construction & Diagonal Measurement",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 340 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><polygon points='40,170 240,170 240,57 140,57' fill='#f8fafc' stroke='#1e293b' stroke-width='2'/><rect x='222' y='152' width='18' height='18' fill='none' stroke='#1e293b' stroke-width='1.5'/><rect x='222' y='57' width='18' height='18' fill='none' stroke='#1e293b' stroke-width='1.5'/><line x1='40' y1='170' x2='240' y2='57' stroke='#2563eb' stroke-width='2' stroke-dasharray='4'/><text x='25' y='180' font-size='12' font-weight='bold'>P</text><text x='250' y='180' font-size='12' font-weight='bold'>Q</text><text x='250' y='55' font-size='12' font-weight='bold'>R</text><text x='130' y='50' font-size='12' font-weight='bold'>S</text><text x='130' y='190' font-size='11'>|PQ| = 9 cm</text><text x='180' y='45' font-size='11'>SR || PQ</text><text x='70' y='125' font-size='11'>|PS| = 6.5 cm</text><text x='130' y='120' font-size='11' font-weight='bold' fill='#2563eb'>|PR| = ?</text><text x='65' y='165' font-size='10'>60°</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "In a geometric compass and ruler construction:\n1. Construct line segment $|PQ| = 9\\text{ cm}$.\n2. At $Q$, construct a perpendicular line to $PQ$.\n3. At $P$, construct angle $\\angle QPS = 60^\\circ$ such that $|PS| = 6.5\\text{ cm}$.\n4. Construct a line parallel to $PQ$ through $S$ to meet the perpendicular line from $Q$ at vertex $R$.\n(i) State the geometric name of the quadrilateral $PQRS$.\n(ii) Calculate the perpendicular height $|QR|$ using the sine ratio ($|QR| = |PS| \\sin 60^\\circ$, where $\\sin 60^\\circ = \\frac{\\sqrt{3}}{2} \\approx 0.866$).",
+          "hint": "A quadrilateral with one pair of opposite sides parallel and adjacent perpendicular angles is a right-angled trapezium. Height = 6.5 × 0.866.",
+          "modelAnswer": "(i) Right-angled trapezium, (ii) |QR| ≈ 5.63 cm",
+          "workedSolution": "**(i) Geometric classification:**\nSince $SR \\parallel PQ$ and $\\angle PQR = 90^\\circ$, quadrilateral $PQRS$ is a **right-angled trapezium**.\n\n**(ii) Perpendicular height $|QR|$:**\n$$|QR| = |PS| \\times \\sin 60^\\circ = 6.5 \\times 0.866 \\approx 5.629\\text{ cm}$$\nCorrect to two decimal places: **5.63 cm**."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "Calculate the diagonal length $|PR|$ using Pythagoras' theorem on right-angled triangle $PQR$, given base $|PQ| = 9\\text{ cm}$ and height $|QR| = 5.63\\text{ cm}$.",
+          "hint": "Apply Pythagoras' theorem: $|PR|^2 = |PQ|^2 + |QR|^2$.",
+          "modelAnswer": "|PR| ≈ 10.62 cm",
+          "workedSolution": "In right-angled $\\Delta PQR$:\n$$|PR|^2 = |PQ|^2 + |QR|^2$$\n$$|PR|^2 = 9^2 + 5.63^2 = 81 + 31.6969 = 112.6969$$\n$$|PR| = \\sqrt{112.6969} \\approx 10.6158\\text{ cm}$$\nTherefore, the length of diagonal $|PR|$ is **$10.62\\text{ cm}$** (or approximately $10.6\\text{ cm}$ by direct measurement)."
+        }
+      ]
+    }
+  ],
+  "seededAt": "2026-09-16T14:30:00.000Z",
+  "lastUpdated": "2026-09-16T14:30:00.000Z"
+}

@@ -1,0 +1,574 @@
+{
+  "id": "jhs-math-mastery-series-39",
+  "title": "Junior Core Mathematics • Objective Mastery Series (Set 39)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Comprehensive Objective Exam Series",
+  "variantType": "standard",
+  "totalQuestions": 40,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "prompt": "Expand and simplify completely: $$(3x + 2y)(2x + y)$$.",
+      "options": [
+        "$$6x^2 + 7xy + 2y^2$$",
+        "$$6x^2 + 5xy + 2y^2$$",
+        "$$6x^2 + 2y^2$$",
+        "$$5x^2 + 7xy + 3y^2$$"
+      ],
+      "correctAnswer": "$$6x^2 + 7xy + 2y^2$$",
+      "hint": "Multiply each term in the first bracket by each term in the second: $3x(2x + y) + 2y(2x + y)$.",
+      "workedSolution": "$$(3x + 2y)(2x + y) = 6x^2 + 3xy + 4xy + 2y^2 = 6x^2 + 7xy + 2y^2$$.",
+      "points": 1
+    },
+    {
+      "id": "q02",
+      "prompt": "Find the missing binary number $$x$$ in the subtraction: $$111010_{\\text{two}} - x = 10111_{\\text{two}}$$.",
+      "options": [
+        "$$101011_{\\text{two}}$$",
+        "$$110011_{\\text{two}}$$",
+        "$$100111_{\\text{two}}$$",
+        "$$100011_{\\text{two}}$$"
+      ],
+      "correctAnswer": "$$100011_{\\text{two}}$$",
+      "hint": "$$x = 111010_{\\text{two}} - 10111_{\\text{two}}$$. In base ten: $58 - 23 = 35$. Convert 35 back to base two.",
+      "workedSolution": "$$111010_{\\text{two}} = 58_{\\text{ten}}$$, $$10111_{\\text{two}} = 23_{\\text{ten}}$$. Difference = $$58 - 23 = 35_{\\text{ten}} = 32 + 2 + 1 = 100011_{\\text{two}}$$.",
+      "points": 1
+    },
+    {
+      "id": "q03",
+      "prompt": "If set $$S = \\{2, 4, 6, 8, 10, 12, 14, 16\\}$$, find the truth set of $$x - 4 \\ge 8$$.",
+      "options": [
+        "{14, 16}",
+        "{12, 14, 16}",
+        "{10, 12, 14, 16}",
+        "{16}"
+      ],
+      "correctAnswer": "{12, 14, 16}",
+      "hint": "$$x \\ge 8 + 4 = 12$$. Filter set S for values greater than or equal to 12.",
+      "workedSolution": "$$x \\ge 12$$. Within set S, elements that satisfy $x \\ge 12$ are {12, 14, 16}.",
+      "points": 1
+    },
+    {
+      "id": "q04",
+      "prompt": "Which of the following geometric plane shapes has the LEAST number of lines of symmetry?",
+      "options": [
+        "Equilateral triangle",
+        "Square",
+        "Isosceles triangle",
+        "Rectangle"
+      ],
+      "correctAnswer": "Isosceles triangle",
+      "hint": "Count lines of symmetry: Equilateral = 3, Square = 4, Rectangle = 2, Isosceles triangle = 1.",
+      "workedSolution": "An isosceles triangle has only 1 line of symmetry, which is less than a rectangle (2), an equilateral triangle (3), and a square (4).",
+      "points": 1
+    },
+    {
+      "id": "q05",
+      "prompt": "Calculate $4\\%$ of $\\text{GH¢ } 3,500.00$.",
+      "options": [
+        "GH¢ 120.00",
+        "GH¢ 175.00",
+        "GH¢ 70.00",
+        "GH¢ 140.00"
+      ],
+      "correctAnswer": "GH¢ 140.00",
+      "hint": "$$\\frac{4}{100} \\times 3,500$$.",
+      "workedSolution": "$$\\frac{4}{100} \\times 3,500 = 4 \\times 35 = \\text{GH¢ } 140.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q06",
+      "prompt": "Find the Highest Common Factor (HCF) of $24, 48,$ and $96$.",
+      "options": [
+        "12",
+        "24",
+        "48",
+        "8"
+      ],
+      "correctAnswer": "24",
+      "hint": "Notice that 24 divides 48 ($24 \\times 2$) and 96 ($24 \\times 4$) evenly.",
+      "workedSolution": "$$24 = 24 \\times 1$$, $$48 = 24 \\times 2$$, $$96 = 24 \\times 4$$. The highest common divisor is 24.",
+      "points": 1
+    },
+    {
+      "id": "q07",
+      "prompt": "Arrange the fractions $$\\frac{4}{5}, \\, \\frac{2}{3}, \\, \\frac{7}{10}$$ in ascending order.",
+      "options": [
+        "$$\\frac{2}{3}, \\, \\frac{7}{10}, \\, \\frac{4}{5}$$",
+        "$$\\frac{7}{10}, \\, \\frac{2}{3}, \\, \\frac{4}{5}$$",
+        "$$\\frac{4}{5}, \\, \\frac{7}{10}, \\, \\frac{2}{3}$$",
+        "$$\\frac{2}{3}, \\, \\frac{4}{5}, \\, \\frac{7}{10}$$"
+      ],
+      "correctAnswer": "$$\\frac{2}{3}, \\, \\frac{7}{10}, \\, \\frac{4}{5}$$",
+      "hint": "Express with common denominator 30: $2/3 = 20/30$, $7/10 = 21/30$, $4/5 = 24/30$.",
+      "workedSolution": "$$\\frac{20}{30} < \\frac{21}{30} < \\frac{24}{30} \\implies \\frac{2}{3}, \\, \\frac{7}{10}, \\, \\frac{4}{5}$$.",
+      "points": 1
+    },
+    {
+      "id": "q08",
+      "prompt": "Make $y$ the subject of the rational formula: $$\\frac{1}{k} = \\frac{1}{x} + \\frac{1}{y}$$.",
+      "options": [
+        "$$y = \\frac{kx}{k - x}$$",
+        "$$y = \\frac{x - k}{kx}$$",
+        "$$y = \\frac{kx}{x - k}$$",
+        "$$y = k - x$$"
+      ],
+      "correctAnswer": "$$y = \\frac{kx}{x - k}$$",
+      "hint": "$$\\frac{1}{y} = \\frac{1}{k} - \\frac{1}{x} = \\frac{x - k}{kx}$$. Invert both sides.",
+      "workedSolution": "$$\\frac{1}{y} = \\frac{x - k}{kx} \\implies y = \\frac{kx}{x - k}$$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "Three siblings are aged $8, 12,$ and $20\\text{ years}$. Find the ratio of their ages in its simplest form.",
+      "options": [
+        "4 : 6 : 10",
+        "2 : 3 : 5",
+        "1 : 2 : 4",
+        "2 : 4 : 5"
+      ],
+      "correctAnswer": "2 : 3 : 5",
+      "hint": "Divide each age by their highest common factor, 4.",
+      "workedSolution": "$$\\frac{8}{4} : \\frac{12}{4} : \\frac{20}{4} = 2 : 3 : 5$$.",
+      "points": 1
+    },
+    {
+      "id": "q10",
+      "prompt": "Eight students take $12\\text{ days}$ to complete an agricultural project. How many days would $16\\text{ students}$ take working at the exact same pace?",
+      "options": [
+        "6 days",
+        "8 days",
+        "4 days",
+        "10 days"
+      ],
+      "correctAnswer": "6 days",
+      "hint": "Total work = $8 \\times 12 = 96\\text{ student-days}$. Divide by 16 students.",
+      "workedSolution": "$$\\text{Days} = \\frac{8 \\times 12}{16} = \\frac{96}{16} = 6\\text{ days}$$.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "Which of the following fractional inequalities is TRUE?",
+      "options": [
+        "$$\\frac{3}{4} < \\frac{5}{8}$$",
+        "$$\\frac{2}{3} < \\frac{1}{2}$$",
+        "$$\\frac{4}{5} > \\frac{7}{10}$$",
+        "$$\\frac{5}{6} < \\frac{2}{3}$$"
+      ],
+      "correctAnswer": "$$\\frac{4}{5} > \\frac{7}{10}$$",
+      "hint": "Convert to common decimals: $4/5 = 0.8$ and $7/10 = 0.7$.",
+      "workedSolution": "$$\\frac{4}{5} = \\frac{8}{10}$$. Since $8/10 > 7/10$, the inequality $$\\frac{4}{5} > \\frac{7}{10}$$ is true.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "Find the rule of the mapping:\n$$1 \\to 4, \\quad 2 \\to 7, \\quad 3 \\to 10, \\quad x \\to ?$$",
+      "options": [
+        "$$3x - 1$$",
+        "$$4x$$",
+        "$$2x + 2$$",
+        "$$3x + 1$$"
+      ],
+      "correctAnswer": "$$3x + 1$$",
+      "hint": "Common difference is $7 - 4 = 3$. Output = $3x + c$. For $x = 1$, $3(1) + 1 = 4$.",
+      "workedSolution": "Gradient is 3. At $x = 1$, $y = 3(1) + 1 = 4$. The general rule is $$3x + 1$$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "A motor vehicle travels at a steady speed of $80\\text{ km/h}$. How far does it travel in $45\\text{ minutes}$?",
+      "options": [
+        "60 km",
+        "40 km",
+        "50 km",
+        "70 km"
+      ],
+      "correctAnswer": "60 km",
+      "hint": "Distance = Speed × Time. $45\\text{ minutes} = 45/60 = 3/4\\text{ hour}$.",
+      "workedSolution": "$$\\text{Distance} = 80 \\times \\frac{3}{4} = 20 \\times 3 = 60\\text{ km}$$.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "In an enlargement, the surface area of the object was multiplied by $81$ to obtain the area of the image. What is the linear scale factor of enlargement?",
+      "options": [
+        "18",
+        "9",
+        "27",
+        "3"
+      ],
+      "correctAnswer": "9",
+      "hint": "Area scale factor = $k^2 = 81$. Take the square root.",
+      "workedSolution": "$$k^2 = 81 \\implies k = \\sqrt{81} = 9$$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "Mr. Asare deposited $\\text{GH¢ } 4,000.00$ at a simple interest rate of $15\\%\\text{ per annum}$ for $3\\text{ years}$. Calculate the total interest earned.",
+      "options": [
+        "GH¢ 1,200.00",
+        "GH¢ 1,600.00",
+        "GH¢ 1,800.00",
+        "GH¢ 2,000.00"
+      ],
+      "correctAnswer": "GH¢ 1,800.00",
+      "hint": "$$I = \\frac{P \\times R \\times T}{100}$$.",
+      "workedSolution": "$$I = \\frac{4,000 \\times 15 \\times 3}{100} = 40 \\times 45 = \\text{GH¢ } 1,800.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "The table shows goals scored by a team:\n\n| Goals per match | 0 | 1 | 2 | 3 | 4 |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n| Frequency | 2 | 6 | 5 | 4 | 3 |\n\nHow many total goals did the team score in the season?",
+      "options": [
+        "36 goals",
+        "20 goals",
+        "30 goals",
+        "40 goals"
+      ],
+      "correctAnswer": "40 goals",
+      "hint": "Calculate $\\sum fx = (0 \\times 2) + (1 \\times 6) + (2 \\times 5) + (3 \\times 4) + (4 \\times 3)$.",
+      "workedSolution": "$$\\sum fx = 0 + 6 + 10 + 12 + 12 = 40\\text{ goals}$$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "From the goals distribution in Question 16, what was the mean number of goals per match?",
+      "options": [
+        "1.8 goals",
+        "2.0 goals",
+        "2.5 goals",
+        "1.5 goals"
+      ],
+      "correctAnswer": "2.0 goals",
+      "hint": "Mean = Total goals / Total matches. Total matches = $\\sum f = 2 + 6 + 5 + 4 + 3 = 20$.",
+      "workedSolution": "$$\\text{Mean} = \\frac{40}{20} = 2.0\\text{ goals}$$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "What was the total number of matches played by the team in Question 16?",
+      "options": [
+        "20 matches",
+        "18 matches",
+        "22 matches",
+        "15 matches"
+      ],
+      "correctAnswer": "20 matches",
+      "hint": "Sum all match frequencies: $2 + 6 + 5 + 4 + 3$.",
+      "workedSolution": "$$\\sum f = 2 + 6 + 5 + 4 + 3 = 20\\text{ matches}$$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "The probability of winning a prize in a raffle is $2/7$. What is the probability of NOT winning a prize?",
+      "options": [
+        "$$\\frac{2}{7}$$",
+        "$$\\frac{1}{7}$$",
+        "$$\\frac{3}{7}$$",
+        "$$\\frac{5}{7}$$"
+      ],
+      "correctAnswer": "$$\\frac{5}{7}$$",
+      "hint": "$$P(\\text{not winning}) = 1 - P(\\text{winning})$$.",
+      "workedSolution": "$$1 - \\frac{2}{7} = \\frac{5}{7}$$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "Given column vectors $$u = \\begin{pmatrix} 4 \\\\ -1 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -1 \\\\ 3 \\end{pmatrix}$$, calculate $$u + 2v$$.",
+      "options": [
+        "$$\\begin{pmatrix} 2 \\\\ 4 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 3 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 2 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 2 \\\\ -5 \\end{pmatrix}$$"
+      ],
+      "correctAnswer": "$$\\begin{pmatrix} 2 \\\\ 5 \\end{pmatrix}$$",
+      "hint": "$$4 + 2(-1) = 2$$ and $$-1 + 2(3) = 5$$.",
+      "workedSolution": "$$\\begin{pmatrix} 4 + 2(-1) \\\\ -1 + 2(3) \\end{pmatrix} = \\begin{pmatrix} 4 - 2 \\\\ -1 + 6 \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ 5 \\end{pmatrix}$$.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "What is the value in base ten of the digit $3$ in the base five numeral $$234_{\\text{five}}$$?",
+      "options": [
+        "15",
+        "30",
+        "3",
+        "75"
+      ],
+      "correctAnswer": "15",
+      "hint": "The digit 3 is in the 5s place ($5^1$). Value = $3 \\times 5$.",
+      "workedSolution": "$$3 \\times 5^1 = 3 \\times 5 = 15$$.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "Each interior angle of a regular polygon is $140^\\circ$. How many sides does this polygon have?",
+      "options": [
+        "8 sides",
+        "10 sides",
+        "9 sides",
+        "12 sides"
+      ],
+      "correctAnswer": "9 sides",
+      "hint": "Exterior angle = $180^\\circ - 140^\\circ = 40^\\circ$. Number of sides = $360^\\circ / 40^\\circ$.",
+      "workedSolution": "$$\\text{Exterior angle} = 180^\\circ - 140^\\circ = 40^\\circ$$. $$n = \\frac{360^\\circ}{40^\\circ} = 9\\text{ sides}$$.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "Simplify: $$\\left(4\\frac{1}{2} + 3\\right) \\div \\left(3\\frac{1}{4} - 2\\right)$$.",
+      "options": [
+        "5",
+        "7",
+        "8",
+        "6"
+      ],
+      "correctAnswer": "6",
+      "hint": "$$4\\frac{1}{2} + 3 = 7.5$$ and $$3\\frac{1}{4} - 2 = 1.25$$. Divide $7.5 / 1.25$.",
+      "workedSolution": "$$\\frac{15}{2} \\div \\frac{5}{4} = \\frac{15}{2} \\times \\frac{4}{5} = 3 \\times 2 = 6$$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "Find the truth set of the inequality: $$2x - 5 > 9 - 5x$$.",
+      "options": [
+        "$$\\{x : x < 2\\}$$",
+        "$$\\{x : x > 2\\}$$",
+        "$$\\{x : x > -2\\}$$",
+        "$$\\{x : x > 4\\}$$"
+      ],
+      "correctAnswer": "$$\\{x : x > 2\\}$$",
+      "hint": "$$2x + 5x > 9 + 5 \\implies 7x > 14$$.",
+      "workedSolution": "$$7x > 14 \\implies x > 2$$. Truth set: $$\\{x : x > 2, \\, x \\in \\mathbb{R}\\}$$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "In a rhombus with adjacent angles, one interior angle is $70^\\circ$. Find the size of the obtuse interior angle.",
+      "options": [
+        "$$110^\\circ$$",
+        "$$120^\\circ$$",
+        "$$130^\\circ$$",
+        "$$140^\\circ$$"
+      ],
+      "correctAnswer": "$$110^\\circ$$",
+      "hint": "Adjacent angles in a rhombus are supplementary ($180^\\circ$).",
+      "workedSolution": "$$180^\\circ - 70^\\circ = 110^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "Four times a certain number is six more than the number. Find the number.",
+      "options": [
+        "3",
+        "4",
+        "2",
+        "1"
+      ],
+      "correctAnswer": "2",
+      "hint": "$$4x = x + 6 \\implies 3x = 6$$.",
+      "workedSolution": "$$4x - x = 6 \\implies 3x = 6 \\implies x = 2$$.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "A merchant buys $300$ exercise books at $\\text{GH¢ } 1.50$ each. What is the total cost of the books?",
+      "options": [
+        "GH¢ 400.00",
+        "GH¢ 450.00",
+        "GH¢ 500.00",
+        "GH¢ 350.00"
+      ],
+      "correctAnswer": "GH¢ 450.00",
+      "hint": "Multiply 300 by 1.50.",
+      "workedSolution": "$$300 \\times 1.50 = \\text{GH¢ } 450.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "A salesperson earns a $5\\%$ commission on all sales. If she sells goods worth $\\text{GH¢ } 4,800.00$, calculate her commission.",
+      "options": [
+        "GH¢ 200.00",
+        "GH¢ 280.00",
+        "GH¢ 180.00",
+        "GH¢ 240.00"
+      ],
+      "correctAnswer": "GH¢ 240.00",
+      "hint": "Commission = $\\frac{5}{100} \\times 4,800$.",
+      "workedSolution": "$$0.05 \\times 4,800 = 5 \\times 48 = \\text{GH¢ } 240.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "If $$\\frac{15}{25}$$ is equivalent to $$\\frac{x + 2}{10}$$, find the value of $x$.",
+      "options": [
+        "6",
+        "3",
+        "4",
+        "5"
+      ],
+      "correctAnswer": "4",
+      "hint": "$$\\frac{15}{25} = \\frac{3}{5}$$. Set $$\\frac{3}{5} = \\frac{x + 2}{10}$$.",
+      "workedSolution": "$$\\frac{x + 2}{10} = \\frac{3}{5} \\implies x + 2 = \\frac{30}{5} = 6 \\implies x = 6 - 2 = 4$$.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "Write $48.962\\text{ km}$ correct to three significant figures.",
+      "options": [
+        "49.0 km",
+        "48.9 km",
+        "49.00 km",
+        "48.96 km"
+      ],
+      "correctAnswer": "49.0 km",
+      "hint": "The 4th figure is 6 ($\\ge 5$), so 48.9 rounds up to 49.0.",
+      "workedSolution": "Rounding to 3 significant figures: 48.962 becomes 49.0 km.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "Find $x$ if $$\\frac{1}{x} + \\frac{1}{4} = 1$$.",
+      "options": [
+        "$$\\frac{3}{4}$$",
+        "$$\\frac{4}{3}$$",
+        "$$\\frac{1}{3}$$",
+        "$$\\frac{5}{4}$$"
+      ],
+      "correctAnswer": "$$\\frac{4}{3}$$",
+      "hint": "$$\\frac{1}{x} = 1 - \\frac{1}{4} = \\frac{3}{4}$$. Invert both sides.",
+      "workedSolution": "$$\\frac{1}{x} = \\frac{3}{4} \\implies x = \\frac{4}{3} = 1\\frac{1}{3}$$.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "The three-figure bearing of town $A$ from town $B$ is $065^\\circ$. What is the bearing of town $B$ from town $A$?",
+      "options": [
+        "$$115^\\circ$$",
+        "$$295^\\circ$$",
+        "$$205^\\circ$$",
+        "$$245^\\circ$$"
+      ],
+      "correctAnswer": "$$245^\\circ$$",
+      "hint": "Back-bearing = Forward bearing $+ 180^\\circ$ when $< 180^\\circ$.",
+      "workedSolution": "$$65^\\circ + 180^\\circ = 245^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "In a geometric compass construction, arcs of equal radius drawn from endpoints $A$ and $B$ intersecting above and below segment $AB$ are used for:",
+      "options": [
+        "Constructing the perpendicular bisector of segment AB",
+        "Bisecting an angle at A",
+        "Drawing a parallel line",
+        "Constructing an angle of 60°"
+      ],
+      "correctAnswer": "Constructing the perpendicular bisector of segment AB",
+      "hint": "Intersecting mediator arcs construct the perpendicular bisector.",
+      "workedSolution": "This standard construction produces the perpendicular bisector (mediator) of line segment AB.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "The dimensions of a rectangle are given in base two as length $$11_{\\text{two}}\\text{ cm}$$ and width $$10_{\\text{two}}\\text{ cm}$$. Find its perimeter in base two.",
+      "options": [
+        "$$1001_{\\text{two}}\\text{ cm}$$",
+        "$$1100_{\\text{two}}\\text{ cm}$$",
+        "$$1010_{\\text{two}}\\text{ cm}$$",
+        "$$1110_{\\text{two}}\\text{ cm}$$"
+      ],
+      "correctAnswer": "$$1010_{\\text{two}}\\text{ cm}$$",
+      "hint": "In base ten: length = 3 cm, width = 2 cm. Perimeter = 2(3 + 2) = 10 cm. Convert 10 to base two.",
+      "workedSolution": "$$10_{\\text{ten}} = 8 + 2 = 1010_{\\text{two}}\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "A circle has a total area of $180\\text{ cm}^2$. Calculate the area of a sector subtending an angle of $60^\\circ$ at the centre.",
+      "options": [
+        "$$20\\text{ cm}^2$$",
+        "$$30\\text{ cm}^2$$",
+        "$$36\\text{ cm}^2$$",
+        "$$45\\text{ cm}^2$$"
+      ],
+      "correctAnswer": "$$30\\text{ cm}^2$$",
+      "hint": "Sector area = $$\\frac{60}{360} \\times 180 = \\frac{1}{6} \\times 180$$.",
+      "workedSolution": "$$\\text{Area} = \\frac{1}{6} \\times 180 = 30\\text{ cm}^2$$.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "In a parallelogram $ABCD$, angle $\\angle ABC = 120^\\circ$. What is the measure of consecutive angle $\\angle BCD$?",
+      "options": [
+        "$$120^\\circ$$",
+        "$$30^\\circ$$",
+        "$$90^\\circ$$",
+        "$$60^\\circ$$"
+      ],
+      "correctAnswer": "$$60^\\circ$$",
+      "hint": "Adjacent angles of a parallelogram are supplementary ($180^\\circ$).",
+      "workedSolution": "$$\\angle BCD = 180^\\circ - 120^\\circ = 60^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "Two parallel lines are crossed by a transversal line. Two interior angles on alternate sides of the transversal are known as:",
+      "options": [
+        "Alternate angles",
+        "Corresponding angles",
+        "Vertically opposite angles",
+        "Co-interior angles"
+      ],
+      "correctAnswer": "Alternate angles",
+      "hint": "They form a 'Z' shape and are equal in measure.",
+      "workedSolution": "By definition, angles on opposite sides of the transversal between the parallel lines are alternate angles.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "A surveyor standing $20\\text{ m}$ away from the base of a vertical tower observes its top. If the tower is $20\\text{ m}$ tall, what is the angle of elevation of the top?",
+      "options": [
+        "$$30^\\circ$$",
+        "$$60^\\circ$$",
+        "$$45^\\circ$$",
+        "$$90^\\circ$$"
+      ],
+      "correctAnswer": "$$45^\\circ$$",
+      "hint": "$$\\tan \\theta = \\frac{\\text{Opposite}}{\\text{Adjacent}} = \\frac{20}{20} = 1$$.",
+      "workedSolution": "$$\\tan \\theta = 1 \\implies \\theta = 45^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "In an isosceles triangle $ABC$, $|AB| = |AC|$ and the vertex angle $\\angle BAC = 50^\\circ$. Calculate the size of base angle $\\angle ABC$.",
+      "options": [
+        "$$50^\\circ$$",
+        "$$70^\\circ$$",
+        "$$60^\\circ$$",
+        "$$65^\\circ$$"
+      ],
+      "correctAnswer": "$$65^\\circ$$",
+      "hint": "$$(180^\\circ - 50^\\circ) / 2$$.",
+      "workedSolution": "$$\\frac{180^\\circ - 50^\\circ}{2} = \\frac{130^\\circ}{2} = 65^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "Which of the following sets of measurements forms a right-angled triangle?",
+      "options": [
+        "4 cm, 6 cm, 8 cm",
+        "5 cm, 12 cm, 13 cm",
+        "6 cm, 9 cm, 12 cm",
+        "5 cm, 10 cm, 14 cm"
+      ],
+      "correctAnswer": "5 cm, 12 cm, 13 cm",
+      "hint": "Check Pythagoras' theorem: $5^2 + 12^2 = 25 + 144 = 169 = 13^2$.",
+      "workedSolution": "$$5^2 + 12^2 = 25 + 144 = 169 = 13^2$$. By the converse of Pythagoras' theorem, this is a right-angled triangle.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-16T13:00:00.000Z",
+  "lastUpdated": "2026-09-16T13:00:00.000Z"
+}

@@ -1,0 +1,574 @@
+{
+  "id": "jhs-math-mastery-series-37",
+  "title": "Junior Core Mathematics • Objective Mastery Series (Set 37)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Comprehensive Objective Exam Series",
+  "variantType": "standard",
+  "totalQuestions": 40,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "prompt": "Which of the following represents the complete set of factors of $18$?",
+      "options": [
+        "{2, 3, 6, 9, 18}",
+        "{1, 2, 3, 6, 18}",
+        "{1, 2, 3, 6, 9, 18}",
+        "{2, 3, 9, 18}"
+      ],
+      "correctAnswer": "{1, 2, 3, 6, 9, 18}",
+      "hint": "List all whole numbers that divide 18 without leaving a remainder.",
+      "workedSolution": "The factors of 18 are 1, 2, 3, 6, 9, and 18.",
+      "points": 1
+    },
+    {
+      "id": "q02",
+      "prompt": "Two disjoint sets $A$ and $B$ have no members in common. Which of the following statements correctly describes their relationship?",
+      "options": [
+        "$$A \\subset B$$",
+        "$$A \\cap B = \\emptyset$$",
+        "$$A \\cup B = \\emptyset$$",
+        "$$A = B$$"
+      ],
+      "correctAnswer": "$$A \\cap B = \\emptyset$$",
+      "hint": "Disjoint sets have an empty intersection.",
+      "workedSolution": "When two sets have no elements in common, their intersection is the empty set: $$A \\cap B = \\emptyset$$.",
+      "points": 1
+    },
+    {
+      "id": "q03",
+      "prompt": "Kofi is $36\\text{ years}$ old. Kwame is half as old as Kofi. Kwabena is $8\\text{ years}$ older than Kwame. How old is Kwabena?",
+      "options": [
+        "26 years",
+        "18 years",
+        "24 years",
+        "28 years"
+      ],
+      "correctAnswer": "26 years",
+      "hint": "Find Kwame's age first: $36 \\div 2 = 18$. Then add 8.",
+      "workedSolution": "$$\\text{Kwame's age} = \\frac{36}{2} = 18\\text{ years}$$. $$\\text{Kwabena's age} = 18 + 8 = 26\\text{ years}$$.",
+      "points": 1
+    },
+    {
+      "id": "q04",
+      "prompt": "How many lines of symmetry does a non-square rectangle have?",
+      "options": [
+        "4",
+        "1",
+        "0",
+        "2"
+      ],
+      "correctAnswer": "2",
+      "hint": "A non-square rectangle has horizontal and vertical axes of symmetry.",
+      "workedSolution": "A rectangle has exactly 2 lines of symmetry connecting the midpoints of opposite sides.",
+      "points": 1
+    },
+    {
+      "id": "q05",
+      "prompt": "Which of the following numbers is NOT a prime number?",
+      "options": [
+        "11",
+        "15",
+        "13",
+        "17"
+      ],
+      "correctAnswer": "15",
+      "hint": "Check for factors other than 1 and the number itself.",
+      "workedSolution": "$$15 = 3 \\times 5$$, so 15 is a composite number, not a prime number.",
+      "points": 1
+    },
+    {
+      "id": "q06",
+      "prompt": "If the domain of $x$ is $$\\{1, 2, 3, 4, 5\\}$$, find the truth set of $$3x + 2 < 11$$.",
+      "options": [
+        "{1, 2, 3}",
+        "{2, 3}",
+        "{1, 2}",
+        "{1}"
+      ],
+      "correctAnswer": "{1, 2}",
+      "hint": "$$3x < 11 - 2 \\implies 3x < 9 \\implies x < 3$$.",
+      "workedSolution": "$$3x < 9 \\implies x < 3$$. The values in the domain strictly less than 3 are 1 and 2.",
+      "points": 1
+    },
+    {
+      "id": "q07",
+      "prompt": "In how many years will a principal of $\\text{GH¢ } 6,000.00$ yield a simple interest of $\\text{GH¢ } 1,200.00$ at a rate of $4\\%\\text{ per annum}$?",
+      "options": [
+        "6 years",
+        "4 years",
+        "3 years",
+        "5 years"
+      ],
+      "correctAnswer": "5 years",
+      "hint": "$$T = \\frac{100 \\times I}{P \\times R}$$.",
+      "workedSolution": "$$T = \\frac{100 \\times 1,200}{6,000 \\times 4} = \\frac{120,000}{24,000} = 5\\text{ years}$$.",
+      "points": 1
+    },
+    {
+      "id": "q08",
+      "prompt": "Make $k$ the subject of the relation: $$h = p - \\frac{r}{k}$$.",
+      "options": [
+        "$$k = \\frac{r}{p - h}$$",
+        "$$k = \\frac{r}{h - p}$$",
+        "$$k = \\frac{p - h}{r}$$",
+        "$$k = p - hr$$"
+      ],
+      "correctAnswer": "$$k = \\frac{r}{p - h}$$",
+      "hint": "Isolate $\\frac{r}{k} = p - h$, then take the reciprocal.",
+      "workedSolution": "$$\\frac{r}{k} = p - h \\implies k = \\frac{r}{p - h}$$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "Which property of arithmetic operation is illustrated by the statement: $$x(y + z) = xy + xz$$?",
+      "options": [
+        "Commutative property",
+        "Associative property",
+        "Distributive property",
+        "Identity property"
+      ],
+      "correctAnswer": "Distributive property",
+      "hint": "Multiplication is distributed over addition.",
+      "workedSolution": "The equation illustrates the distributive property of multiplication over addition.",
+      "points": 1
+    },
+    {
+      "id": "q10",
+      "prompt": "Simplify: $$12^8 \\div 12^6$$.",
+      "options": [
+        "24",
+        "144",
+        "12",
+        "72"
+      ],
+      "correctAnswer": "144",
+      "hint": "Subtract indices: $12^{8-6} = 12^2$.",
+      "workedSolution": "$$12^{8-6} = 12^2 = 144$$.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "If $$\\frac{1}{y} = 2\\frac{1}{2}$$, find the value of $y$.",
+      "options": [
+        "$$\\frac{5}{2}$$",
+        "$$\\frac{1}{5}$$",
+        "$$\\frac{3}{5}$$",
+        "$$\\frac{2}{5}$$"
+      ],
+      "correctAnswer": "$$\\frac{2}{5}$$",
+      "hint": "$$2\\frac{1}{2} = \\frac{5}{2}$$. Invert to find y.",
+      "workedSolution": "$$\\frac{1}{y} = \\frac{5}{2} \\implies y = \\frac{2}{5}$$.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "Calculate the size of each exterior angle of a regular pentagon ($5\\text{ sides}$).",
+      "options": [
+        "$$108^\\circ$$",
+        "$$60^\\circ$$",
+        "$$72^\\circ$$",
+        "$$90^\\circ$$"
+      ],
+      "correctAnswer": "$$72^\\circ$$",
+      "hint": "Sum of exterior angles is $360^\\circ$. Divide by 5.",
+      "workedSolution": "$$\\text{Exterior angle} = \\frac{360^\\circ}{5} = 72^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "Factorize completely: $$x^2 - 7x + 12$$.",
+      "options": [
+        "$$(x - 3)(x - 4)$$",
+        "$$(x + 3)(x + 4)$$",
+        "$$(x - 2)(x - 6)$$",
+        "$$(x + 2)(x - 6)$$"
+      ],
+      "correctAnswer": "$$(x - 3)(x - 4)$$",
+      "hint": "Find two numbers whose sum is -7 and whose product is +12.",
+      "workedSolution": "$$-3 \\times -4 = 12$$ and $$-3 + (-4) = -7$$. Thus, $$x^2 - 7x + 12 = (x - 3)(x - 4)$$.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "Kofi, Ama, and Kwaku shared a profit of $\\text{GH¢ } 720.00$ in the ratio $1 : 5 : 3$ respectively. How much did Ama receive?",
+      "options": [
+        "GH¢ 360.00",
+        "GH¢ 400.00",
+        "GH¢ 240.00",
+        "GH¢ 80.00"
+      ],
+      "correctAnswer": "GH¢ 400.00",
+      "hint": "Total parts = 1 + 5 + 3 = 9. Ama's share = (5 / 9) × 720.",
+      "workedSolution": "$$\\text{Ama's share} = \\frac{5}{9} \\times 720 = 5 \\times 80 = \\text{GH¢ } 400.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "Use the difference of two squares identity, $$a^2 - b^2 = (a + b)(a - b)$$, to evaluate $$78^2 - 22^2$$.",
+      "options": [
+        "5,200",
+        "6,000",
+        "4,800",
+        "5,600"
+      ],
+      "correctAnswer": "5,600",
+      "hint": "$$(78 + 22)(78 - 22) = 100 \\times 56$$.",
+      "workedSolution": "$$(78 + 22)(78 - 22) = 100 \\times 56 = 5,600$$.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "What is the probability of obtaining an even number when a fair six-sided die is thrown once?",
+      "options": [
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{1}{3}$$",
+        "$$\\frac{2}{3}$$",
+        "$$\\frac{1}{6}$$"
+      ],
+      "correctAnswer": "$$\\frac{1}{2}$$",
+      "hint": "Even numbers on a die are {2, 4, 6}. Total outcomes = 6.",
+      "workedSolution": "$$P(\\text{even}) = \\frac{3}{6} = \\frac{1}{2}$$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "The test scores of eight students in a contest are: $$10, 14, 18, 12, 18, 9, 11, 18$$. What is the probability that a student picked at random scored $18$?",
+      "options": [
+        "$$\\frac{1}{4}$$",
+        "$$\\frac{3}{8}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{1}{8}$$"
+      ],
+      "correctAnswer": "$$\\frac{3}{8}$$",
+      "hint": "Score 18 occurs 3 times out of 8 total scores.",
+      "workedSolution": "$$P(18) = \\frac{3}{8}$$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "Express $18$ as a percentage of $72$.",
+      "options": [
+        "20%",
+        "30%",
+        "25%",
+        "33.3%"
+      ],
+      "correctAnswer": "25%",
+      "hint": "$$\\frac{18}{72} = \\frac{1}{4}$$. Convert to percentage.",
+      "workedSolution": "$$\\frac{18}{72} \\times 100\\% = \\frac{1}{4} \\times 100\\% = 25\\%$$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "Find the value of $k$ given that $$k = (2^7 \\div 2^4) \\times 8$$.",
+      "options": [
+        "$$2^5$$",
+        "$$2^7$$",
+        "$$2^4$$",
+        "$$2^6$$"
+      ],
+      "correctAnswer": "$$2^6$$",
+      "hint": "$$2^{7-4} = 2^3$$. Note that $8 = 2^3$.",
+      "workedSolution": "$$2^{7-4} \\times 2^3 = 2^3 \\times 2^3 = 2^{3+3} = 2^6$$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "Express $0.005128$ in standard form.",
+      "options": [
+        "$$5.128 \\times 10^{-4}$$",
+        "$$5.128 \\times 10^{-3}$$",
+        "$$5.128 \\times 10^3$$",
+        "$$51.28 \\times 10^{-4}$$"
+      ],
+      "correctAnswer": "$$5.128 \\times 10^{-3}$$",
+      "hint": "Move the decimal point 3 places to the right to obtain 5.128.",
+      "workedSolution": "$$0.005128 = 5.128 \\times 10^{-3}$$.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "Given that $x = 3$ and $y = 4$, evaluate: $$(2x + y)(x - 2y)$$.",
+      "options": [
+        "-50",
+        "50",
+        "-40",
+        "40"
+      ],
+      "correctAnswer": "-50",
+      "hint": "$$2(3) + 4 = 10$$ and $$3 - 2(4) = -5$$.",
+      "workedSolution": "$$[2(3) + 4][3 - 2(4)] = [6 + 4][3 - 8] = 10 \\times (-5) = -50$$.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "Which inequality is represented on a number line by a closed circle at $-2$ and an open circle at $3$ connected by a solid segment?",
+      "options": [
+        "$$-2 < x \\le 3$$",
+        "$$-2 \\le x \\le 3$$",
+        "$$-2 \\le x < 3$$",
+        "$$-2 < x < 3$$"
+      ],
+      "correctAnswer": "$$-2 \\le x < 3$$",
+      "hint": "Closed circle includes the point ($\\le$), open circle excludes it ($<$).",
+      "workedSolution": "Closed at -2 means $x \\ge -2$; open at 3 means $x < 3$. Combining gives $$-2 \\le x < 3$$.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "A sector of a circle of radius $14\\text{ cm}$ subtends an angle of $90^\\circ$ at the centre. Find the perimeter of the sector. (Take $\\pi = \\frac{22}{7}$).",
+      "options": [
+        "22 cm",
+        "36 cm",
+        "44 cm",
+        "50 cm"
+      ],
+      "correctAnswer": "50 cm",
+      "hint": "Perimeter of sector = $\\text{Arc length} + 2r = \\frac{90}{360}(2\\pi r) + 2(14)$.",
+      "workedSolution": "$$\\text{Arc length} = \\frac{1}{4} \\times 2 \\times \\frac{22}{7} \\times 14 = 22\\text{ cm}$$. $$\\text{Perimeter} = 22 + 14 + 14 = 50\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "In an isosceles triangle $ABC$, $|AB| = |BC| = 10\\text{ cm}$ and base $|AC| = 16\\text{ cm}$. A perpendicular line from $B$ meets $AC$ at $D$. Find the altitude $|BD|$.",
+      "options": [
+        "8 cm",
+        "6 cm",
+        "7 cm",
+        "5 cm"
+      ],
+      "correctAnswer": "6 cm",
+      "hint": "$$|AD| = 16 / 2 = 8\\text{ cm}$$. In right-angled $\\Delta ABD$: $|BD|^2 = 10^2 - 8^2$.",
+      "workedSolution": "$$|BD|^2 = 10^2 - 8^2 = 100 - 64 = 36 \\implies |BD| = \\sqrt{36} = 6\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "Write $\\text{GH¢ } 48,760.00$ correct to the nearest thousand Ghana Cedis.",
+      "options": [
+        "GH¢ 48,000.00",
+        "GH¢ 48,800.00",
+        "GH¢ 49,000.00",
+        "GH¢ 50,000.00"
+      ],
+      "correctAnswer": "GH¢ 49,000.00",
+      "hint": "The hundreds digit is 7, which is $\\ge 5$, so round up the thousands place.",
+      "workedSolution": "Rounding 48,760 to the nearest thousand gives 49,000.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "Solve for $x$ in the equation: $$3x + 4 = 5x - 8$$.",
+      "options": [
+        "6",
+        "4",
+        "-6",
+        "-4"
+      ],
+      "correctAnswer": "6",
+      "hint": "$$4 + 8 = 5x - 3x \\implies 12 = 2x$$.",
+      "workedSolution": "$$2x = 12 \\implies x = 6$$.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "Evaluate: $$\\left(\\frac{3}{4} - \\frac{1}{3}\\right) \\div \\frac{5}{12}$$.",
+      "options": [
+        "2",
+        "1",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{5}{12}$$"
+      ],
+      "correctAnswer": "1",
+      "hint": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$.",
+      "workedSolution": "$$\\frac{5}{12} \\div \\frac{5}{12} = 1$$.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "A hiker walks on a bearing of $045^\\circ$. What is his back-bearing (bearing of the starting point from the destination)?",
+      "options": [
+        "$$135^\\circ$$",
+        "$$315^\\circ$$",
+        "$$180^\\circ$$",
+        "$$225^\\circ$$"
+      ],
+      "correctAnswer": "$$225^\\circ$$",
+      "hint": "When bearing $< 180^\\circ$, add $180^\\circ$: $045^\\circ + 180^\\circ$.",
+      "workedSolution": "$$45^\\circ + 180^\\circ = 225^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "In an enlargement with centre at the origin, point $A(2, 3)$ is mapped to $A'(-4, -6)$. What is the scale factor of the enlargement?",
+      "options": [
+        "-2",
+        "2",
+        "-1/2",
+        "1/2"
+      ],
+      "correctAnswer": "-2",
+      "hint": "Scale factor $k = \\frac{x'}{x} = \\frac{-4}{2}$.",
+      "workedSolution": "$$k = \\frac{-4}{2} = -2$$.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "If $$23_x = 13_{\\text{ten}}$$, find the base $x$.",
+      "options": [
+        "four",
+        "six",
+        "five",
+        "seven"
+      ],
+      "correctAnswer": "five",
+      "hint": "$$2x + 3 = 13 \\implies 2x = 10$$.",
+      "workedSolution": "$$2x + 3 = 13 \\implies 2x = 10 \\implies x = 5$$.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "How many vertices does a rectangular cuboid have?",
+      "options": [
+        "6",
+        "8",
+        "12",
+        "4"
+      ],
+      "correctAnswer": "8",
+      "hint": "A cuboid has 6 faces, 12 edges, and 8 corner vertices.",
+      "workedSolution": "A cuboid has exactly 8 vertices.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "Factorize completely: $$px - 3py + qx - 3qy$$.",
+      "options": [
+        "$$(x - 3y)(p + q)$$",
+        "$$(x + 3y)(p - q)$$",
+        "$$(x - 3y)(p - q)$$",
+        "$$(x + 3y)(p + q)$$"
+      ],
+      "correctAnswer": "$$(x - 3y)(p + q)$$",
+      "hint": "Group terms: $p(x - 3y) + q(x - 3y)$.",
+      "workedSolution": "$$p(x - 3y) + q(x - 3y) = (x - 3y)(p + q)$$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "Four masons can build a boundary wall in $6\\text{ hours}$. How long would it take $12\\text{ masons}$ working at the same rate to build the wall?",
+      "options": [
+        "3 hours",
+        "4 hours",
+        "1.5 hours",
+        "2 hours"
+      ],
+      "correctAnswer": "2 hours",
+      "hint": "Total work = $4 \\times 6 = 24\\text{ mason-hours}$. Divide by 12.",
+      "workedSolution": "$$\\text{Hours} = \\frac{24}{12} = 2\\text{ hours}$$.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "In an equilateral triangle, each interior angle has a measure of:",
+      "options": [
+        "$$45^\\circ$$",
+        "$$90^\\circ$$",
+        "$$60^\\circ$$",
+        "$$120^\\circ$$"
+      ],
+      "correctAnswer": "$$60^\\circ$$",
+      "hint": "Sum of angles in a triangle is $180^\\circ$. Divide by 3.",
+      "workedSolution": "$$180^\\circ \\div 3 = 60^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "How many faces does a standard cube have?",
+      "options": [
+        "6",
+        "8",
+        "12",
+        "4"
+      ],
+      "correctAnswer": "6",
+      "hint": "Think of a standard playing die.",
+      "workedSolution": "A cube has exactly 6 square faces.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "State the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4\\}$ produce outputs $y = \\{4, 7, 10, 13\\}$.",
+      "options": [
+        "$$x \\to 3x - 1$$",
+        "$$x \\to 4x$$",
+        "$$x \\to 2x + 2$$",
+        "$$x \\to 3x + 1$$"
+      ],
+      "correctAnswer": "$$x \\to 3x + 1$$",
+      "hint": "Common difference between outputs is 3. When $x = 1$, $3(1) + 1 = 4$.",
+      "workedSolution": "Slope is 3. For $x = 1$, $3(1) + c = 4 \\implies c = 1$. The rule is $$x \\to 3x + 1$$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "In a right-angled triangle, one acute angle measures $38^\\circ$. What is the size of the other acute angle?",
+      "options": [
+        "$$62^\\circ$$",
+        "$$52^\\circ$$",
+        "$$42^\\circ$$",
+        "$$142^\\circ$$"
+      ],
+      "correctAnswer": "$$52^\\circ$$",
+      "hint": "The two acute angles in a right-angled triangle add up to $90^\\circ$.",
+      "workedSolution": "$$90^\\circ - 38^\\circ = 52^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "A trapezium has parallel sides of length $11\\text{ cm}$ and $9\\text{ cm}$. If its area is $70\\text{ cm}^2$, find its perpendicular height $h$.",
+      "options": [
+        "7 cm",
+        "14 cm",
+        "5 cm",
+        "8 cm"
+      ],
+      "correctAnswer": "7 cm",
+      "hint": "$$\\text{Area} = \\frac{1}{2}(a + b)h \\implies 70 = \\frac{1}{2}(11 + 9)h = 10h$$.",
+      "workedSolution": "$$70 = 10h \\implies h = 7\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "The mean of the numbers $5, 7, 8,$ and $x$ is $8$. Find the value of $x$.",
+      "options": [
+        "10",
+        "14",
+        "12",
+        "16"
+      ],
+      "correctAnswer": "12",
+      "hint": "Total sum = $4 \\times 8 = 32$. Subtract 5 + 7 + 8.",
+      "workedSolution": "$$5 + 7 + 8 + x = 32 \\implies 20 + x = 32 \\implies x = 12$$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "A discrete distribution is given by the table below:\n\n| Value | 2 | 4 | 6 | 8 |\n| :--- | :---: | :---: | :---: | :---: |\n| Frequency | 8 | 12 | 15 | 5 |\n\nWhat is the probability of selecting the value $6$?",
+      "options": [
+        "$$\\frac{1}{4}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{1}{8}$$",
+        "$$\\frac{3}{8}$$"
+      ],
+      "correctAnswer": "$$\\frac{3}{8}$$",
+      "hint": "Total frequency = $8 + 12 + 15 + 5 = 40$. Probability = 15 / 40.",
+      "workedSolution": "$$P(6) = \\frac{15}{40} = \\frac{3}{8}$$.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-16T12:00:00.000Z",
+  "lastUpdated": "2026-09-16T12:00:00.000Z"
+}

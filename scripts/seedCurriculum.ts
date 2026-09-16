@@ -26,6 +26,7 @@ import {
 dotenv.config();
 
 import * as fs from 'fs';
+import * as path from 'path';
 
 // Check if credentials exist
 const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'gamedu-69888475-f5783';
@@ -13782,7 +13783,13 @@ export const SET_JHS_MASTERY_SERIES_41: CurriculumQuestionSet = {
 };
 
 // ============================================================================
-// 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
+// 4p. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 42)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-42
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_42: CurriculumQuestionSet = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'payloads', 'jhs-math-mastery-series-42.json'), 'utf-8')
+);
+
 // ============================================================================
 export interface SeedResult {
   path: string;
@@ -14405,6 +14412,28 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_41
   );
   results.push(result44);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 45: JHS Math -> Core Curriculum Series (Set 42 Structured in core_curriculum_mastery)
+  console.log('▶ Ingesting Set 45: Junior Core Math Structured Problem-Solving Series (Set 42)...');
+  const result45 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_42
+  );
+  results.push(result45);
+
+  // Synchronize Topic Manifest
+  if (db && !isDryRun) {
+    const topicRef = db.doc('global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery');
+    await topicRef.set({
+      questionSetIds: FieldValue.arrayUnion('jhs-math-mastery-series-42'),
+      lastUpdated: FieldValue.serverTimestamp(),
+    }, { merge: true });
+    console.log('✅ Topic manifest synchronized with jhs-math-mastery-series-42.');
+  }
 
 
 
