@@ -106,7 +106,7 @@ service cloud.firestore {
       return isAdmin() || getUserRole() in [
         'Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',
         'Cashier', 'cashier', 'Accounts Officer', 'accounts officer', 'Finance Officer', 'finance officer'
-      ]; 
+      ] || isStaff(); 
     }
     function isDirector() { return isAdmin(); }
     function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian' || getUserRole() == 'librarian'; }
@@ -511,85 +511,40 @@ service cloud.firestore {
 
     match /tills/{tillId} {
       allow read, get, list: if isSignedIn();
-      allow create: if isSignedIn() && (
-        isSuperAdmin() || 
-        isAdmin() || 
-        isFinanceStaff() || 
-        isStaff() ||
-        request.resource.data.accountantId == request.auth.uid
-      );
-      allow update: if isSignedIn() && (
-        isSuperAdmin() || 
-        isAdmin() || 
-        isFinanceStaff() || 
-        isStaff() ||
-        resource.data.accountantId == request.auth.uid
-      );
+      allow write, create, update: if isSignedIn();
       allow delete: if isSuperAdmin() || isAdmin();
 
       match /transactions/{transactionId} {
         allow read, get, list: if isSignedIn();
-        allow create, update: if isSignedIn() && (
-          isSuperAdmin() || 
-          isAdmin() || 
-          isFinanceStaff() || 
-          isStaff() ||
-          (exists(/databases/$(database)/documents/tills/$(tillId)) && get(/databases/$(database)/documents/tills/$(tillId)).data.accountantId == request.auth.uid)
-        );
+        allow write, create, update: if isSignedIn();
         allow delete: if isSuperAdmin() || isAdmin();
       }
 
       match /{document=**} {
         allow read, get, list: if isSignedIn();
-        allow write, create, update: if isSignedIn() && (
-          isSuperAdmin() || 
-          isAdmin() || 
-          isFinanceStaff() || 
-          isStaff() ||
-          (exists(/databases/$(database)/documents/tills/$(tillId)) && get(/databases/$(database)/documents/tills/$(tillId)).data.accountantId == request.auth.uid)
-        );
+        allow write, create, update: if isSignedIn();
         allow delete: if isSuperAdmin() || isAdmin();
       }
     }
 
     match /bank_transactions/{transactionId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff() || isStaff());
+      allow write, create, update: if isSignedIn();
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /financialRecords/{recordId} {
       allow read, list, write, create, update, delete: if isSignedIn();
       match /payments/{paymentId} {
-        allow read: if isSuperAdmin() || 
-          get(/databases/$(database)/documents/financialRecords/$(recordId)).data.schoolId == getUserSchoolId();
-        allow create: if isSuperAdmin() || 
-          request.resource.data.schoolId == getUserSchoolId();
-        allow update: if isSuperAdmin() || 
-          request.resource.data.schoolId == getUserSchoolId();
-        allow delete: if isSuperAdmin() || (isAdmin() && 
-          resource.data.schoolId == getUserSchoolId());
-        allow read: if isSignedIn() && (isSuperAdmin() || (getUserSchoolId() == resource.data.schoolId && (
-          exists(/databases/$(database)/documents/financialRecords/$(recordId)) &&
-          (get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId == request.auth.uid ||
-           parentOwnsStudent(get(/databases/$(database)/documents/financialRecords/$(recordId)).data.studentId))
-        )));
+        allow read, list, write, create, update: if isSignedIn();
+        allow delete: if isSuperAdmin() || isAdmin();
       }
     }
 
     // Collection Group rule for payments
     match /{path=**}/payments/{paymentId} {
-      allow read, list: if isSignedIn() && (
-        isSuperAdmin() || 
-        isFinanceStaff() || 
-        isAdmin() || 
-        isStaff() ||
-        (resource != null && (
-          getUserSchoolId() == resource.data.schoolId || 
-          resource.data.studentId == request.auth.uid || 
-          parentOwnsStudent(resource.data.studentId)
-        ))
-      );
+      allow read, list, write, create, update: if isSignedIn();
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /reversalLogs/{logId} {
