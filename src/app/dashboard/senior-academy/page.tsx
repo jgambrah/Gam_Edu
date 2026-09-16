@@ -906,6 +906,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "P \\cap Q = \\{3, 5\\}",
         sampleAnswer: "{3, 5}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 34)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 34 / 1996 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 34 / 1996 past paper adaptation) with embedded SVG diagrams covering French/Music Venn modeling, partnership dividend ratio sharing & simple interest, street lighting pole shadow Pythagoras, simultaneous linear intersection graphs, rectangular reservoir water capacity, and discrete science test mark bar charts.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-34",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "In a class of 40 students, 25 study French, 22 study Music, and 3 study neither subject. Find the number of students who study both:",
+        sampleFormula: "(25 - x) + x + (22 - x) + 3 = 40 \\implies 50 - x = 40 \\implies x = 10",
+        sampleAnswer: "10 students"
+    },
+
 
 
 
