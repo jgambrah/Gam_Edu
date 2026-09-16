@@ -996,17 +996,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "L^2 = 12^2 + 16^2 = 144 + 256 = 400 \\implies L = 20\\text{ m}",
         sampleAnswer: "20 m"
     },
-
-
-
-
-
-
-
-
-
-
-
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 39)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 39 / 1993 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 39 / 1993 past paper adaptation) with balanced option randomization covering binomial expansion, binary subtraction, inequalities on finite sets, lines of symmetry, HCF/LCM, rational formula subject change, simple interest, goals distribution tables, and Pythagorean triples.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-39",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1993 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Expand and simplify completely: (3x + 2y)(2x + y)",
+        sampleFormula: "(3x + 2y)(2x + y) = 6x^2 + 7xy + 2y^2",
+        sampleAnswer: "6x^2 + 7xy + 2y^2"
+    },
     {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
