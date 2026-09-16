@@ -888,6 +888,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "(30 - x) + x + (26 - x) + 4 = 48 \\implies 60 - x = 48 \\implies x = 12",
         sampleAnswer: "12 students"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 33)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 33 / 1996 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 33 / 1996 past paper adaptation) with balanced option randomization covering prime factor intersections, decimal operations, LCM & index notation, base five conversions, percentage profit, circle circumference, and vector operations.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-33",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1996 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set P = {x : x is a prime factor of 30} and set Q = {x : x is an odd number, 1 ≤ x ≤ 9}, find P ∩ Q:",
+        sampleFormula: "P \\cap Q = \\{3, 5\\}",
+        sampleAnswer: "{3, 5}"
+    },
+
 
 
 

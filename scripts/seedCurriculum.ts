@@ -10147,6 +10147,585 @@ export const SET_JHS_MASTERY_SERIES_32: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 4h. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 33)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-33
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_33: CurriculumQuestionSet = {
+  "id": "jhs-math-mastery-series-33",
+  "title": "Junior Core Mathematics • Objective Mastery Series (Set 33)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Comprehensive Objective Exam Series",
+  "variantType": "standard",
+  "totalQuestions": 40,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "prompt": "If set $P = \\{x : x \\text{ is a prime factor of } 30\\}$ and set $Q = \\{x : x \\text{ is an odd number}, \\, 1 \\le x \\le 9\\}$, find $P \\cap Q$.",
+      "options": [
+        "{2, 3, 5}",
+        "{1, 3, 5}",
+        "{3, 5}",
+        "{3, 5, 7}"
+      ],
+      "correctAnswer": "{3, 5}",
+      "hint": "List both sets: prime factors of 30 are {2, 3, 5}; odd numbers up to 9 are {1, 3, 5, 7, 9}.",
+      "workedSolution": "$P = \\{2, 3, 5\\}$ and $Q = \\{1, 3, 5, 7, 9\\}$. The intersection is $P \\cap Q = \\{3, 5\\}$.",
+      "points": 1
+    },
+    {
+      "id": "q02",
+      "prompt": "Evaluate: $0.125 \\times 0.08$.",
+      "options": [
+        "0.01",
+        "0.001",
+        "0.1",
+        "0.0001"
+      ],
+      "correctAnswer": "0.01",
+      "hint": "$125 \\times 8 = 1000$. Count $3 + 2 = 5$ decimal places from the right.",
+      "workedSolution": "$0.125 \\times 0.08 = 0.01000 = 0.01$.",
+      "points": 1
+    },
+    {
+      "id": "q03",
+      "prompt": "Find the Least Common Multiple (LCM) of $9, 12,$ and $15$.",
+      "options": [
+        "90",
+        "60",
+        "360",
+        "180"
+      ],
+      "correctAnswer": "180",
+      "hint": "$9 = 3^2$, $12 = 2^2 \\times 3$, $15 = 3 \\times 5$. Multiply the highest powers of all prime factors.",
+      "workedSolution": "$\\text{LCM} = 2^2 \\times 3^2 \\times 5 = 4 \\times 9 \\times 5 = 180$.",
+      "points": 1
+    },
+    {
+      "id": "q04",
+      "prompt": "Express $720$ as a product of prime factors in index notation.",
+      "options": [
+        "$2^3 \\times 3^3 \\times 5$",
+        "$2^4 \\times 3^2 \\times 5$",
+        "$2^4 \\times 3 \\times 5^2$",
+        "$16 \\times 9 \\times 5$"
+      ],
+      "correctAnswer": "$2^4 \\times 3^2 \\times 5$",
+      "hint": "$720 = 72 \\times 10 = (8 \\times 9) \\times (2 \\times 5) = 2^4 \\times 3^2 \\times 5$.",
+      "workedSolution": "$720 = 2^4 \\times 3^2 \\times 5$.",
+      "points": 1
+    },
+    {
+      "id": "q05",
+      "prompt": "Convert the decimal number $47_{\\text{ten}}$ to a base five numeral.",
+      "options": [
+        "$132_{\\text{five}}$",
+        "$242_{\\text{five}}$",
+        "$141_{\\text{five}}$",
+        "$142_{\\text{five}}$"
+      ],
+      "correctAnswer": "$142_{\\text{five}}$",
+      "hint": "Divide repeatedly by 5: $47 = 1(25) + 4(5) + 2(1)$.",
+      "workedSolution": "$47 \\div 5 = 9\\text{ R } 2$; $9 \\div 5 = 1\\text{ R } 4$; $1 \\div 5 = 0\\text{ R } 1$. Reading remainders upwards: $142_{\\text{five}}$.",
+      "points": 1
+    },
+    {
+      "id": "q06",
+      "prompt": "Solve for $y$ in the equation: $6y - 7 = 3y + 8$.",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "correctAnswer": "5",
+      "hint": "Group terms in y: $6y - 3y = 8 + 7$.",
+      "workedSolution": "$3y = 15 \\implies y = 5$.",
+      "points": 1
+    },
+    {
+      "id": "q07",
+      "prompt": "Write $0.000518$ in standard form.",
+      "options": [
+        "$5.18 \\times 10^{-4}$",
+        "$5.18 \\times 10^{-3}$",
+        "$5.18 \\times 10^4$",
+        "$51.8 \\times 10^{-5}$"
+      ],
+      "correctAnswer": "$5.18 \\times 10^{-4}$",
+      "hint": "Shift the decimal point 4 places to the right to reach $5.18$.",
+      "workedSolution": "$0.000518 = 5.18 \\times 10^{-4}$.",
+      "points": 1
+    },
+    {
+      "id": "q08",
+      "prompt": "A retailer bought an item for $\\text{GH¢ } 120.00$ and sold it for $\\text{GH¢ } 150.00$. Calculate the percentage profit.",
+      "options": [
+        "20%",
+        "25%",
+        "30%",
+        "15%"
+      ],
+      "correctAnswer": "25%",
+      "hint": "Profit = 150 - 120 = 30. Profit % = (30 / 120) × 100%.",
+      "workedSolution": "$\\text{Profit \\%} = \\frac{30}{120} \\times 100\\% = \\frac{1}{4} \\times 100\\% = 25\\%$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "Simplify: $\\frac{5}{6} - \\frac{1}{4} + \\frac{2}{3}$.",
+      "options": [
+        "$1\\frac{1}{4}$",
+        "$1\\frac{1}{12}$",
+        "$\\frac{11}{12}$",
+        "$\\frac{7}{12}$"
+      ],
+      "correctAnswer": "$1\\frac{1}{4}$",
+      "hint": "Use common denominator 12: $\\frac{10 - 3 + 8}{12}$.",
+      "workedSolution": "$\\frac{10 - 3 + 8}{12} = \\frac{15}{12} = \\frac{5}{4} = 1\\frac{1}{4}$.",
+      "points": 1
+    },
+    {
+      "id": "q09_2",
+      "prompt": "Evaluate: $\\left(2\\frac{1}{2} \\div 1\\frac{1}{4}\\right) \\times \\frac{3}{4}$.",
+      "options": [
+        "$2\\frac{1}{2}$",
+        "$\\frac{3}{4}$",
+        "1",
+        "$1\\frac{1}{2}$"
+      ],
+      "correctAnswer": "$1\\frac{1}{2}$",
+      "hint": "$2\\frac{1}{2} \\div 1\\frac{1}{4} = \\frac{5}{2} \\times \\frac{4}{5} = 2$. Then multiply 2 by 3/4.",
+      "workedSolution": "$2 \\times \\frac{3}{4} = \\frac{6}{4} = \\frac{3}{2} = 1\\frac{1}{2}$.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "The test scores of eight students are: $7, 11, 14, 9, 11, 8, 13, 11$. What is the modal score?",
+      "options": [
+        "9",
+        "11",
+        "13",
+        "8"
+      ],
+      "correctAnswer": "11",
+      "hint": "The mode is the score that appears most frequently.",
+      "workedSolution": "Score 11 appears 3 times, which is more than any other score. The modal score is 11.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "From the test scores in Question 11 ($7, 8, 9, 11, 11, 11, 13, 14$), find the median score.",
+      "options": [
+        "10",
+        "10.5",
+        "11",
+        "11.5"
+      ],
+      "correctAnswer": "11",
+      "hint": "The two ordered middle values (4th and 5th terms) are 11 and 11.",
+      "workedSolution": "$\\text{Median} = \\frac{11 + 11}{2} = 11$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "Calculate the simple interest on $\\text{GH¢ } 540.00$ at $5\\%\\text{ per annum}$ for $3\\text{ years}$.",
+      "options": [
+        "GH¢ 81.00",
+        "GH¢ 75.00",
+        "GH¢ 90.00",
+        "GH¢ 84.00"
+      ],
+      "correctAnswer": "GH¢ 81.00",
+      "hint": "$I = \\frac{P \\times R \\times T}{100}$.",
+      "workedSolution": "$I = \\frac{540 \\times 5 \\times 3}{100} = \\frac{540 \\times 15}{100} = 5.4 \\times 15 = \\text{GH¢ } 81.00$.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "A train covers a distance of $210\\text{ km}$ in $3\\frac{1}{2}\\text{ hours}$. Calculate its average speed in $\\text{km/h}$.",
+      "options": [
+        "70 km/h",
+        "65 km/h",
+        "55 km/h",
+        "60 km/h"
+      ],
+      "correctAnswer": "60 km/h",
+      "hint": "Speed = Distance ÷ Time: $210 \\div 3.5$.",
+      "workedSolution": "$\\text{Speed} = 210 \\div \\frac{7}{2} = 210 \\times \\frac{2}{7} = 30 \\times 2 = 60\\text{ km/h}$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "Factorize completely: $4mx - 8my + nx - 2ny$.",
+      "options": [
+        "$(x + 2y)(4m - n)$",
+        "$(x - 2y)(4m + n)$",
+        "$(x - 2y)(4m - n)$",
+        "$(x + 2y)(4m + n)$"
+      ],
+      "correctAnswer": "$(x - 2y)(4m + n)$",
+      "hint": "Group terms: $4m(x - 2y) + n(x - 2y)$.",
+      "workedSolution": "$4m(x - 2y) + n(x - 2y) = (x - 2y)(4m + n)$.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "Find the circumference of a circle whose diameter is $21\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      "options": [
+        "44 cm",
+        "132 cm",
+        "66 cm",
+        "77 cm"
+      ],
+      "correctAnswer": "66 cm",
+      "hint": "Circumference = $\\pi d$.",
+      "workedSolution": "$C = \\frac{22}{7} \\times 21 = 22 \\times 3 = 66\\text{ cm}$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "Solve the linear inequality: $7x - 9 \\ge 3x + 7$.",
+      "options": [
+        "$x \\ge 4$",
+        "$x \\le 4$",
+        "$x \\ge 2$",
+        "$x \\le 2$"
+      ],
+      "correctAnswer": "$x \\ge 4$",
+      "hint": "$7x - 3x \\ge 7 + 9 \\implies 4x \\ge 16$.",
+      "workedSolution": "$4x \\ge 16 \\implies x \\ge 4$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "If $4 : 7 = x : 35$, find the value of $x$.",
+      "options": [
+        "18",
+        "24",
+        "20",
+        "28"
+      ],
+      "correctAnswer": "20",
+      "hint": "Cross-multiply: $7x = 4 \\times 35$.",
+      "workedSolution": "$7x = 140 \\implies x = 20$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "Simplify: $5a^2 b \\times 3ab^3$.",
+      "options": [
+        "$15a^2 b^3$",
+        "$8a^3 b^4$",
+        "$15a^3 b^3$",
+        "$15a^3 b^4$"
+      ],
+      "correctAnswer": "$15a^3 b^4$",
+      "hint": "Multiply coefficients: $5 \\times 3 = 15$. Add powers for $a$ and $b$.",
+      "workedSolution": "$(5 \\times 3) \\times a^{2+1} \\times b^{1+3} = 15a^3 b^4$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "A box contains $12$ blue pens and $8$ black pens. If a pen is chosen at random, what is the probability that it is blue?",
+      "options": [
+        "$\\frac{2}{5}$",
+        "$\\frac{3}{5}$",
+        "$\\frac{1}{2}$",
+        "$\\frac{4}{5}$"
+      ],
+      "correctAnswer": "$\\frac{3}{5}$",
+      "hint": "Total pens = 12 + 8 = 20. Probability = 12 / 20.",
+      "workedSolution": "$P(\\text{blue}) = \\frac{12}{20} = \\frac{3}{5}$.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "Find the Highest Common Factor (HCF) of $36, 54,$ and $72$.",
+      "options": [
+        "18",
+        "12",
+        "9",
+        "24"
+      ],
+      "correctAnswer": "18",
+      "hint": "Determine the highest number dividing 36, 54, and 72 without a remainder.",
+      "workedSolution": "$36 = 18 \\times 2$, $54 = 18 \\times 3$, $72 = 18 \\times 4$. The HCF is 18.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "The three angles of a triangle are in the ratio $3 : 4 : 5$. Find the size of the smallest angle.",
+      "options": [
+        "$60^\\circ$",
+        "$75^\\circ$",
+        "$30^\\circ$",
+        "$45^\\circ$"
+      ],
+      "correctAnswer": "$45^\\circ$",
+      "hint": "Total parts = 3 + 4 + 5 = 12. Smallest angle = (3 / 12) × 180°.",
+      "workedSolution": "$\\text{Smallest angle} = \\frac{3}{12} \\times 180^\\circ = \\frac{1}{4} \\times 180^\\circ = 45^\\circ$.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "Given column vectors $u = \\begin{pmatrix} 6 \\\\ -2 \\end{pmatrix}$ and $v = \\begin{pmatrix} -2 \\\\ 5 \\end{pmatrix}$, evaluate $u + 2v$.",
+      "options": [
+        "$\\begin{pmatrix} 4 \\\\ 3 \\end{pmatrix}$",
+        "$\\begin{pmatrix} 2 \\\\ 8 \\end{pmatrix}$",
+        "$\\begin{pmatrix} 2 \\\\ 3 \\end{pmatrix}$",
+        "$\\begin{pmatrix} -2 \\\\ 8 \\end{pmatrix}$"
+      ],
+      "correctAnswer": "$\\begin{pmatrix} 2 \\\\ 8 \\end{pmatrix}$",
+      "hint": "$6 + 2(-2) = 2$ and $-2 + 2(5) = 8$.",
+      "workedSolution": "$\\begin{pmatrix} 6 + 2(-2) \\\\ -2 + 2(5) \\end{pmatrix} = \\begin{pmatrix} 6 - 4 \\\\ -2 + 10 \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ 8 \\end{pmatrix}$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "In an academy of $500$ students, $62\\%$ are girls. How many boys are in the academy?",
+      "options": [
+        "310",
+        "180",
+        "190",
+        "200"
+      ],
+      "correctAnswer": "190",
+      "hint": "Boys make up $100\\% - 62\\% = 38\\%$. Calculate 38% of 500.",
+      "workedSolution": "$\\frac{38}{100} \\times 500 = 38 \\times 5 = 190\\text{ boys}$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "State the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4\\}$ produce outputs $y = \\{8, 14, 20, 26\\}$.",
+      "options": [
+        "$x \\to 6x + 2$",
+        "$x \\to 6x - 2$",
+        "$x \\to 5x + 3$",
+        "$x \\to 7x + 1$"
+      ],
+      "correctAnswer": "$x \\to 6x + 2$",
+      "hint": "Common difference is $14 - 8 = 6$. Check for $x = 1$: $6(1) + 2 = 8$.",
+      "workedSolution": "Rate of change is 6 ($6x$). When $x = 1$, $6(1) + c = 8 \\implies c = 2$. The rule is $x \\to 6x + 2$.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "In a right-angled triangle $ABC$, the hypotenuse $|AC| = 25\\text{ cm}$ and base $|BC| = 7\\text{ cm}$. Find height $|AB|$.",
+      "options": [
+        "20 cm",
+        "24 cm",
+        "22 cm",
+        "18 cm"
+      ],
+      "correctAnswer": "24 cm",
+      "hint": "$|AB|^2 = 25^2 - 7^2 = 625 - 49$.",
+      "workedSolution": "$|AB|^2 = 625 - 49 = 576 \\implies |AB| = \\sqrt{576} = 24\\text{ cm}$.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "Make $u$ the subject of the formula: $v = u + at$.",
+      "options": [
+        "$u = v + at$",
+        "$u = \\frac{v}{at}$",
+        "$u = \\frac{v - a}{t}$",
+        "$u = v - at$"
+      ],
+      "correctAnswer": "$u = v - at$",
+      "hint": "Subtract $at$ from both sides of the equation.",
+      "workedSolution": "$v = u + at \\implies u = v - at$.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "Expand and simplify: $(2x - 5)(x + 3)$.",
+      "options": [
+        "$2x^2 - x - 15$",
+        "$2x^2 + 11x - 15$",
+        "$2x^2 + x - 15$",
+        "$2x^2 - 15$"
+      ],
+      "correctAnswer": "$2x^2 + x - 15$",
+      "hint": "$2x(x + 3) - 5(x + 3) = 2x^2 + 6x - 5x - 15$.",
+      "workedSolution": "$2x^2 + x - 15$.",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "How many lines of symmetry does a regular rhombus have?",
+      "options": [
+        "4",
+        "2",
+        "1",
+        "0"
+      ],
+      "correctAnswer": "2",
+      "hint": "The lines of symmetry of a rhombus lie along its diagonals.",
+      "workedSolution": "A non-square rhombus has exactly 2 lines of symmetry along its diagonals.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "A solid rectangular brick has dimensions $10\\text{ cm} \\times 6\\text{ cm} \\times 4\\text{ cm}$. Find its total surface area.",
+      "options": [
+        "$248\\text{ cm}^2$",
+        "$124\\text{ cm}^2$",
+        "$240\\text{ cm}^2$",
+        "$180\\text{ cm}^2$"
+      ],
+      "correctAnswer": "$248\\text{ cm}^2$",
+      "hint": "Total Surface Area = $2(lw + lh + wh)$.",
+      "workedSolution": "$2[(10 \\times 6) + (10 \\times 4) + (6 \\times 4)] = 2[60 + 40 + 24] = 2[124] = 248\\text{ cm}^2$.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "Find the volume of the rectangular brick in Question 30.",
+      "options": [
+        "$248\\text{ cm}^3$",
+        "$120\\text{ cm}^3$",
+        "$240\\text{ cm}^3$",
+        "$160\\text{ cm}^3$"
+      ],
+      "correctAnswer": "$240\\text{ cm}^3$",
+      "hint": "Volume = length × width × height.",
+      "workedSolution": "$10 \\times 6 \\times 4 = 240\\text{ cm}^3$.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "Two complementary angles are in the ratio $2 : 3$. Find the smaller angle.",
+      "options": [
+        "$54^\\circ$",
+        "$30^\\circ$",
+        "$45^\\circ$",
+        "$36^\\circ$"
+      ],
+      "correctAnswer": "$36^\\circ$",
+      "hint": "Complementary angles sum to $90^\\circ$. Smaller angle = (2 / 5) × 90°.",
+      "workedSolution": "$\\frac{2}{5} \\times 90^\\circ = 2 \\times 18^\\circ = 36^\\circ$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "Under a reflection in the line $x = 0$ (the $y$-axis), the image of point $M(-4, 3)$ is:",
+      "options": [
+        "(4, 3)",
+        "(4, -3)",
+        "(-4, -3)",
+        "(3, -4)"
+      ],
+      "correctAnswer": "(4, 3)",
+      "hint": "Reflection in y-axis maps $(x, y) \\to (-x, y)$.",
+      "workedSolution": "$(-4, 3) \\to (-(-4), 3) = (4, 3)$.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "Evaluate: $\\frac{3^5 \\times 2^5}{6^3}$.",
+      "options": [
+        "18",
+        "36",
+        "72",
+        "24"
+      ],
+      "correctAnswer": "36",
+      "hint": "$3^5 \\times 2^5 = (3 \\times 2)^5 = 6^5$. Then divide $6^5 / 6^3 = 6^2$.",
+      "workedSolution": "$\\frac{6^5}{6^3} = 6^{5-3} = 6^2 = 36$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "In a pie chart, an angle of $60^\\circ$ represents $20\\text{ items}$. How many items does the whole pie chart represent?",
+      "options": [
+        "100 items",
+        "150 items",
+        "180 items",
+        "120 items"
+      ],
+      "correctAnswer": "120 items",
+      "hint": "The angle 60° is $\\frac{1}{6}$ of 360°. Multiply 20 by 6.",
+      "workedSolution": "$\\frac{360^\\circ}{60^\\circ} \\times 20 = 6 \\times 20 = 120\\text{ items}$.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "Simplify: $\\frac{7}{5x} - \\frac{2}{3x}$.",
+      "options": [
+        "$\\frac{5}{2x}$",
+        "$\\frac{1}{15x}$",
+        "$\\frac{11}{15x}$",
+        "$\\frac{11}{8x}$"
+      ],
+      "correctAnswer": "$\\frac{11}{15x}$",
+      "hint": "Common denominator is $15x$: $\\frac{21 - 10}{15x}$.",
+      "workedSolution": "$\\frac{7(3) - 2(5)}{15x} = \\frac{21 - 10}{15x} = \\frac{11}{15x}$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "If $6$ men can dig a trench in $5\\text{ days}$, how many days will it take $10$ men working at the same pace?",
+      "options": [
+        "4 days",
+        "3 days",
+        "2.5 days",
+        "3.5 days"
+      ],
+      "correctAnswer": "3 days",
+      "hint": "Total work = $6 \\times 5 = 30\\text{ man-days}$. Divide by 10 men.",
+      "workedSolution": "$\\text{Days} = \\frac{30}{10} = 3\\text{ days}$.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "If $x = -2$ and $y = 3$, evaluate: $2x^2 - 3y$.",
+      "options": [
+        "-1",
+        "1",
+        "17",
+        "-17"
+      ],
+      "correctAnswer": "-1",
+      "hint": "$2(-2)^2 - 3(3) = 2(4) - 9$.",
+      "workedSolution": "$8 - 9 = -1$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "Calculate the magnitude of vector $u = \\begin{pmatrix} -8 \\\\ 15 \\end{pmatrix}$.",
+      "options": [
+        "15 units",
+        "19 units",
+        "17 units",
+        "13 units"
+      ],
+      "correctAnswer": "17 units",
+      "hint": "$|u| = \\sqrt{(-8)^2 + 15^2} = \\sqrt{64 + 225}$.",
+      "workedSolution": "$|u| = \\sqrt{289} = 17\\text{ units}$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "Find the size of each exterior angle of a regular nonagon ($9\\text{ sides}$).",
+      "options": [
+        "$45^\\circ$",
+        "$36^\\circ$",
+        "$30^\\circ$",
+        "$40^\\circ$"
+      ],
+      "correctAnswer": "$40^\\circ$",
+      "hint": "Exterior angle = $360^\\circ / 9$.",
+      "workedSolution": "$\\frac{360^\\circ}{9} = 40^\\circ$.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-16T10:00:00.000Z",
+  "lastUpdated": "2026-09-16T10:00:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -10662,6 +11241,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_32
   );
   results.push(result35);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 36: JHS Math -> Core Curriculum Series (Set 33 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 36: Junior Core Math Objective Mastery Series (Set 33)...');
+  const result36 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_33
+  );
+  results.push(result36);
 
 
 
