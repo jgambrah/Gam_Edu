@@ -13,7 +13,7 @@ import {
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
   Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star,
-  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw
+  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -170,6 +170,7 @@ interface SuggestedModuleCard {
     questionCount?: number;
     examTag?: string;
     subject?: 'Mathematics' | 'English' | 'Integrated Science' | 'Computing';
+    status?: 'ready' | 'pending_content' | string;
 }
 
 const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
@@ -2267,7 +2268,8 @@ function MathLab({
                                 kind: 'topical',
                                 format: 'topical_lab',
                                 questionCount: t.questionCount || (isPending ? 0 : 27),
-                                subject: 'Mathematics'
+                                subject: 'Mathematics',
+                                status: t.status || 'ready'
                             });
                         });
                     }
@@ -2775,14 +2777,21 @@ function MathLab({
                                                     </span>
                                                 )}
 
-                                                <span className={cn(
-                                                    "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                                    mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                                    mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                                    "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                                )}>
-                                                    {mod.difficulty}
-                                                </span>
+                                                {mod.status === 'pending_content' ? (
+                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider bg-amber-500/15 text-amber-300 border-amber-500/30 flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" />
+                                                        <span>Content coming soon</span>
+                                                    </span>
+                                                ) : (
+                                                    <span className={cn(
+                                                        "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                        mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                        mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                                        "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                                    )}>
+                                                        {mod.difficulty}
+                                                    </span>
+                                                )}
                                             </div>
 
                                             {/* Exam Series Highlights / Automated Tags */}
@@ -2815,17 +2824,20 @@ function MathLab({
                                             <Button
                                                 size="sm"
                                                 onClick={() => handleLaunchModule(mod)}
+                                                disabled={mod.status === 'pending_content'}
                                                 className={cn(
-                                                    "h-8 px-3.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border",
-                                                    isExamCard
-                                                        ? (isPaper2 
-                                                            ? "bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border-amber-500/40" 
-                                                            : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40")
-                                                        : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40"
+                                                    "h-8 px-3.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border",
+                                                    mod.status === 'pending_content'
+                                                        ? "bg-slate-800/40 text-slate-500 border-slate-700/50 cursor-not-allowed opacity-75"
+                                                        : isExamCard
+                                                            ? (isPaper2 
+                                                                ? "bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border-amber-500/40 cursor-pointer" 
+                                                                : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40 cursor-pointer")
+                                                            : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40 cursor-pointer"
                                                 )}
                                             >
-                                                <span>{isExamCard ? "Launch Exam Paper" : "Launch Practice Lab"}</span>
-                                                <ChevronRight className="w-3.5 h-3.5" />
+                                                <span>{mod.status === 'pending_content' ? "Coming Soon" : isExamCard ? "Launch Exam Paper" : "Launch Practice Lab"}</span>
+                                                {mod.status !== 'pending_content' && <ChevronRight className="w-3.5 h-3.5" />}
                                             </Button>
                                         </div>
                                     </div>
