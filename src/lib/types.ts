@@ -514,6 +514,9 @@ export type Student = {
     chronicIllnesses?: string;
     allergies?: string;
     healthNotes?: string;
+    parentId?: string;
+    guardianName?: string;
+    guardianPhone?: string;
     medical?: {
         bloodGroup?: string;
         conditions?: string;

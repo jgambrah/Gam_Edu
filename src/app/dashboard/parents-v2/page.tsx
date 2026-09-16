@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { useAuth, useFirestore } from '@/firebase';
 import { collection, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
@@ -30,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck, KeyRound, Zap, RotateCcw, Sparkles, PackageCheck } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake, Filter, UserCheck, KeyRound, Zap, RotateCcw, Sparkles, PackageCheck, ExternalLink } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
@@ -209,6 +210,17 @@ export default function ParentsPage() {
     setHasLoadedParents(false);
     toast({ title: "Switched to On-Demand Mode", description: "Parent records unloaded from memory to eliminate reads." });
   }, [toast]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const searchParam = params.get('search');
+      if (searchParam) {
+        setSearchTerm(searchParam);
+        loadParentData();
+      }
+    }
+  }, [loadParentData]);
 
   useEffect(() => {
     if (isAddOpen) {
@@ -587,12 +599,37 @@ export default function ParentsPage() {
                       </TableCell>
                       <TableCell className="py-4 text-slate-600 text-sm font-medium">{p.email}</TableCell>
                       <TableCell className="py-4">
-                        <Badge variant="secondary" className="font-bold text-xs bg-slate-100 text-slate-700 border border-slate-200/50 rounded-md px-2 py-0.5">
-                          {p.studentIds?.filter((sid: string) => {
-                            const foundStudent = students.find(s => s.uid === sid);
-                            return foundStudent && foundStudent.enrollmentStatus !== 'Inactive';
-                          }).length || 0} Students
-                        </Badge>
+                        <div className="flex flex-col gap-1.5 items-start">
+                          <Badge variant="secondary" className="font-bold text-xs bg-slate-100 text-slate-700 border border-slate-200/50 rounded-md px-2 py-0.5">
+                            {p.studentIds?.filter((sid: string) => {
+                              const foundStudent = students.find(s => s.uid === sid || s.id === sid);
+                              return foundStudent && foundStudent.enrollmentStatus !== 'Inactive';
+                            }).length || 0} Students
+                          </Badge>
+                          {(() => {
+                            const activeWards = (p.studentIds || [])
+                              .map((sid: string) => students.find(s => s.uid === sid || s.id === sid))
+                              .filter((s): s is Student => !!s && s.enrollmentStatus !== 'Inactive');
+                            
+                            if (activeWards.length === 0) return null;
+                            return (
+                              <div className="flex flex-wrap gap-1 mt-0.5 max-w-[240px]">
+                                {activeWards.map(w => (
+                                  <Link
+                                    key={w.id || w.uid}
+                                    href={`/dashboard/students-v3?search=${encodeURIComponent(`${w.firstName} ${w.lastName}`.trim())}`}
+                                    target="_blank"
+                                    className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100/80 transition-colors"
+                                    title={`Trace ${w.firstName} ${w.lastName} in Student Directory`}
+                                  >
+                                    <span>{w.firstName} {w.lastName}</span>
+                                    <ExternalLink className="h-2.5 w-2.5 opacity-60" />
+                                  </Link>
+                                ))}
+                              </div>
+                            );
+                          })()}
+                        </div>
                       </TableCell>
                       <TableCell className="text-right py-4 px-6">
                         <div className="flex justify-end gap-1.5">

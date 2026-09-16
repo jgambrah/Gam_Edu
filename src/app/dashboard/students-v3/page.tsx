@@ -17,9 +17,12 @@ import {
   runTransaction,
   query, 
   where,
-  deleteField
+  deleteField,
+  arrayUnion,
+  arrayRemove
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Link from 'next/link';
 import { createNewUser } from '@/app/actions/create-user';
 import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
 import { useCurrentSchool } from '@/hooks/use-current-school'; 
@@ -37,7 +40,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer, Zap, Users, Sparkles, PackageCheck } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer, Zap, Users, Sparkles, PackageCheck, HeartHandshake, UserCheck, ExternalLink, Phone, Mail, MapPin, UserMinus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -59,6 +62,7 @@ export interface StudentDirectorySnapshotDoc {
   classes?: Class[];
   hostelAllocations?: any[];
   parentMap?: Record<string, any>;
+  parents?: any[];
 }
 
 
@@ -77,6 +81,7 @@ export default function StudentsV3Page() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [hostelAllocations, setHostelAllocations] = useState<any[]>([]);
   const [parentMap, setParentMap] = useState<Record<string, any>>({});
+  const [parentsList, setParentsList] = useState<any[]>([]);
   
   // On-Demand Student Loading State
   const [hasLoadedStudents, setHasLoadedStudents] = useState(false);
@@ -106,6 +111,14 @@ export default function StudentsV3Page() {
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<string>('Active');
+  const [guardianFilter, setGuardianFilter] = useState<'all' | 'linked' | 'unlinked'>('all');
+
+  // Guardian Cross-Linking Modal States
+  const [viewingGuardianStudent, setViewingGuardianStudent] = useState<Student | null>(null);
+  const [isLinkingGuardian, setIsLinkingGuardian] = useState(false);
+  const [selectedParentToLink, setSelectedParentToLink] = useState<string>('');
+  const [parentSearchQuery, setParentSearchQuery] = useState('');
+  const [selectedEnrollmentParentId, setSelectedEnrollmentParentId] = useState<string>('');
 
   // Print Dialog States
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
@@ -114,6 +127,13 @@ export default function StudentsV3Page() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const searchParam = params.get('search');
+      if (searchParam) {
+        setSearchTerm(searchParam);
+      }
+    }
   }, []);
 
   // Form State (Subscription Focused)
@@ -211,6 +231,8 @@ export default function StudentsV3Page() {
       const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() }));
       const pMap: Record<string, any> = {};
       parentList.forEach((p: any) => {
+          if (p.uid) pMap[`p_uid_${p.uid}`] = p;
+          if (p.id) pMap[`p_id_${p.id}`] = p;
           if (p.studentIds && Array.isArray(p.studentIds)) {
               p.studentIds.forEach((sid: string) => {
                   pMap[sid] = p;
@@ -218,6 +240,7 @@ export default function StudentsV3Page() {
           }
       });
       setParentMap(pMap);
+      setParentsList(parentList);
 
       const snapshotDocId = adminSchoolId;
       const snapshotPayload: StudentDirectorySnapshotDoc = {
@@ -228,7 +251,8 @@ export default function StudentsV3Page() {
         students: studentList,
         classes: classList,
         hostelAllocations: allocationList,
-        parentMap: pMap
+        parentMap: pMap,
+        parents: parentList
       };
 
       const snapRef = doc(firestore, 'student_directory_snapshots', snapshotDocId);
@@ -271,6 +295,17 @@ export default function StudentsV3Page() {
         }
         setHostelAllocations(data.hostelAllocations || []);
         setParentMap(data.parentMap || {});
+
+        // Extract parents list from snapshot or parentMap
+        if (data.parents && Array.isArray(data.parents) && data.parents.length > 0) {
+          setParentsList(data.parents);
+        } else if (data.parentMap) {
+          const uniqueParents = Array.from(
+            new Map(Object.values(data.parentMap).map((p: any) => [p.id || p.uid, p])).values()
+          );
+          setParentsList(uniqueParents);
+        }
+
         setActiveSnapshot(data);
         setHasLoadedStudents(true);
         setStatusMsg("Ready");
@@ -297,10 +332,214 @@ export default function StudentsV3Page() {
 
   const loadData = handleRecompileStudentSnapshot;
 
+  const ensureParentsLoaded = useCallback(async () => {
+    if (!firestore || !adminSchoolId) return;
+    if (parentsList.length > 0) return;
+    try {
+      const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
+      const parentSnap = await getDocs(parentQuery);
+      const pList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setParentsList(pList);
+    } catch (err) {
+      console.error("Error fetching parents list:", err);
+    }
+  }, [firestore, adminSchoolId, parentsList.length]);
+
+  // --- CROSS-LINKING UTILITIES ---
+  const getLinkedParent = useCallback((s?: Student | null) => {
+    if (!s) return null;
+    // 1. Direct student key in parentMap
+    if (s.uid && parentMap[s.uid]) return parentMap[s.uid];
+    if (s.id && parentMap[s.id]) return parentMap[s.id];
+    // 2. Direct parentId key in parentMap
+    if (s.parentId) {
+      if (parentMap[`p_uid_${s.parentId}`]) return parentMap[`p_uid_${s.parentId}`];
+      if (parentMap[`p_id_${s.parentId}`]) return parentMap[`p_id_${s.parentId}`];
+      if (parentMap[s.parentId]) return parentMap[s.parentId];
+      const match = parentsList.find(p => p.uid === s.parentId || p.id === s.parentId);
+      if (match) return match;
+      const matchInMap = Object.values(parentMap).find((p: any) => p && (p.uid === s.parentId || p.id === s.parentId));
+      if (matchInMap) return matchInMap;
+    }
+    // 3. Match from parentsList studentIds array
+    const matchByArray = parentsList.find(p => 
+      p.studentIds && Array.isArray(p.studentIds) && (p.studentIds.includes(s.uid) || p.studentIds.includes(s.id))
+    );
+    if (matchByArray) return matchByArray;
+    return null;
+  }, [parentMap, parentsList]);
+
+  const getWardsForParent = useCallback((p?: any) => {
+    if (!p) return [];
+    const parentUid = p.uid || p.id;
+    const parentId = p.id || p.uid;
+    return students.filter(s => {
+      if (s.parentId && (s.parentId === parentUid || s.parentId === parentId)) return true;
+      if (p.studentIds && Array.isArray(p.studentIds) && (p.studentIds.includes(s.uid) || p.studentIds.includes(s.id))) return true;
+      return false;
+    });
+  }, [students]);
+
+  const handleLinkGuardian = async (student: Student, parentObj: any) => {
+    if (!firestore || !adminSchoolId) return;
+    try {
+      setIsSubmitting(true);
+      const studentDocRef = doc(firestore, 'students', student.id);
+      const parentDocRef = doc(firestore, 'parents', parentObj.id);
+
+      // Unlink from old parent if different
+      const currentParent = getLinkedParent(student);
+      if (currentParent && currentParent.id !== parentObj.id) {
+        const oldParentRef = doc(firestore, 'parents', currentParent.id);
+        await updateDoc(oldParentRef, {
+          studentIds: arrayRemove(student.uid, student.id)
+        });
+      }
+
+      await updateDoc(studentDocRef, {
+        parentId: parentObj.uid || parentObj.id,
+        guardianName: `${parentObj.title ? parentObj.title + ' ' : ''}${parentObj.firstName || ''} ${parentObj.lastName || ''}`.trim(),
+        guardianPhone: parentObj.phone || null
+      });
+
+      await updateDoc(parentDocRef, {
+        studentIds: arrayUnion(student.uid || student.id)
+      });
+
+      // Update local state
+      const updatedStudents = students.map(s => {
+        if (s.id === student.id || s.uid === student.uid) {
+          return { ...s, parentId: parentObj.uid || parentObj.id };
+        }
+        return s;
+      });
+      setStudents(updatedStudents);
+
+      const updatedPMap = { ...parentMap };
+      if (student.uid) updatedPMap[student.uid] = parentObj;
+      if (student.id) updatedPMap[student.id] = parentObj;
+      if (parentObj.uid) updatedPMap[`p_uid_${parentObj.uid}`] = parentObj;
+      if (parentObj.id) updatedPMap[`p_id_${parentObj.id}`] = parentObj;
+      setParentMap(updatedPMap);
+
+      const sIdToAdd = student.uid || student.id;
+      const updatedParents = parentsList.map(p => {
+        if (p.id === parentObj.id || p.uid === parentObj.uid) {
+          const currentIds = Array.isArray(p.studentIds) ? p.studentIds : [];
+          return {
+            ...p,
+            studentIds: currentIds.includes(sIdToAdd) ? currentIds : [...currentIds, sIdToAdd]
+          };
+        }
+        return p;
+      });
+      setParentsList(updatedParents);
+
+      try {
+        await TimelineService.logEvent(firestore, {
+          studentId: student.uid || student.id,
+          title: "Guardian Linked",
+          description: `Linked to parent ${parentObj.title ? parentObj.title + ' ' : ''}${parentObj.firstName} ${parentObj.lastName}.`,
+          category: 'admission',
+          schoolId: adminSchoolId,
+          recordedBy: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || 'System'),
+          recordedById: user?.uid || 'system',
+          date: new Date()
+        });
+      } catch (err) {
+        console.warn("Timeline log error:", err);
+      }
+
+      toast({
+        title: "Parent Linked Successfully",
+        description: `${student.firstName} is now linked to ${parentObj.firstName} ${parentObj.lastName}.`
+      });
+
+      setViewingGuardianStudent(null);
+      setIsLinkingGuardian(false);
+    } catch (err: any) {
+      console.error("Error linking parent:", err);
+      toast({
+        variant: 'destructive',
+        title: "Failed to Link Parent",
+        description: err.message || "An unexpected error occurred."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUnlinkGuardian = async (student: Student) => {
+    if (!firestore || !adminSchoolId) return;
+    const currentParent = getLinkedParent(student);
+    if (!currentParent) return;
+
+    try {
+      setIsSubmitting(true);
+      const studentDocRef = doc(firestore, 'students', student.id);
+      const parentDocRef = doc(firestore, 'parents', currentParent.id);
+
+      await updateDoc(studentDocRef, {
+        parentId: deleteField(),
+        guardianName: deleteField(),
+        guardianPhone: deleteField()
+      });
+
+      await updateDoc(parentDocRef, {
+        studentIds: arrayRemove(student.uid, student.id)
+      });
+
+      // Update local state
+      const updatedStudents = students.map(s => {
+        if (s.id === student.id || s.uid === student.uid) {
+          const copy = { ...s };
+          delete copy.parentId;
+          return copy;
+        }
+        return s;
+      });
+      setStudents(updatedStudents);
+
+      const updatedPMap = { ...parentMap };
+      if (student.uid) delete updatedPMap[student.uid];
+      if (student.id) delete updatedPMap[student.id];
+      setParentMap(updatedPMap);
+
+      const updatedParents = parentsList.map(p => {
+        if (p.id === currentParent.id || p.uid === currentParent.uid) {
+          return {
+            ...p,
+            studentIds: (p.studentIds || []).filter((id: string) => id !== student.uid && id !== student.id)
+          };
+        }
+        return p;
+      });
+      setParentsList(updatedParents);
+
+      toast({
+        title: "Parent Unlinked",
+        description: `${student.firstName} is no longer linked to ${currentParent.firstName} ${currentParent.lastName}.`
+      });
+
+      setViewingGuardianStudent(null);
+    } catch (err: any) {
+      console.error("Error unlinking parent:", err);
+      toast({
+        variant: 'destructive',
+        title: "Failed to Unlink Parent",
+        description: err.message || "An unexpected error occurred."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const resetToOnDemand = useCallback(() => {
     setStudents([]);
     setHostelAllocations([]);
     setParentMap({});
+    setParentsList([]);
+    setSelectedEnrollmentParentId('');
     setActiveSnapshot(null);
     setHasLoadedStudents(false);
     toast({ title: "Switched to On-Demand Mode", description: "Student records unloaded from memory to prevent unnecessary reads." });
@@ -449,6 +688,10 @@ export default function StudentsV3Page() {
           const newStudentId = await generateNextStudentId(firestore!, adminSchoolId);
           const sponsorObj = sponsorsList?.find(sp => sp.id === selectedSponsorId);
           const finalSponsorName = isSponsored ? (sponsorObj?.name || null) : null;
+
+          const chosenParent = selectedEnrollmentParentId && selectedEnrollmentParentId !== 'none'
+            ? parentsList.find(p => p.id === selectedEnrollmentParentId || p.uid === selectedEnrollmentParentId)
+            : null;
           
           await setDoc(doc(firestore!, 'students', result.uid), {
               uid: result.uid,
@@ -461,6 +704,9 @@ export default function StudentsV3Page() {
               gender: selectedGender || null,
               dateOfBirth: (values.dateOfBirth as string) || null,
               address: (values.address as string) || null,
+              parentId: chosenParent ? (chosenParent.uid || chosenParent.id) : null,
+              guardianName: chosenParent ? `${chosenParent.title ? chosenParent.title + ' ' : ''}${chosenParent.firstName || ''} ${chosenParent.lastName || ''}`.trim() : null,
+              guardianPhone: chosenParent?.phone || null,
               usesBusService: usesBus,
               transportBillingModel: usesBus ? billingModel : null,
               canteenBillingMode: canteenBillingMode || 'Daily',
@@ -477,6 +723,31 @@ export default function StudentsV3Page() {
               allergies: (values.allergies as string) || null,
               healthNotes: (values.healthNotes as string) || null
           });
+
+          if (chosenParent) {
+              try {
+                  await updateDoc(doc(firestore!, 'parents', chosenParent.id), {
+                      studentIds: arrayUnion(result.uid)
+                  });
+              } catch (pErr) {
+                  console.warn("Failed to update parent studentIds array:", pErr);
+              }
+
+              try {
+                  await TimelineService.logEvent(firestore!, {
+                      studentId: result.uid,
+                      title: "Guardian Linked",
+                      description: `Linked to parent ${chosenParent.title ? chosenParent.title + ' ' : ''}${chosenParent.firstName} ${chosenParent.lastName} at admission.`,
+                      category: 'admission',
+                      schoolId: adminSchoolId,
+                      recordedBy: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || 'System'),
+                      recordedById: user?.uid || 'system',
+                      date: new Date()
+                  });
+              } catch (tErr) {
+                  console.warn("Failed to log guardian timeline event:", tErr);
+              }
+          }
 
           try {
               await TimelineService.logEvent(firestore!, {
@@ -507,6 +778,7 @@ export default function StudentsV3Page() {
 
           toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}.` });
           setIsAddOpen(false);
+          setSelectedEnrollmentParentId('');
           loadData(); 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -601,15 +873,26 @@ export default function StudentsV3Page() {
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
-        const term = searchTerm.toLowerCase().trim();
         const currentStatus = s.enrollmentStatus || 'Active';
         const matchesStatus = statusFilter === 'All' ? true : currentStatus === statusFilter;
         let matchesClass = classFilter === 'all' || s.classId === classFilter;
         if (classFilter === 'unassigned') matchesClass = !s.classId;
-        const matchesSearch = searchStudent(s, term);
-        return matchesStatus && matchesSearch && matchesClass;
+
+        const guardian = getLinkedParent(s);
+        if (guardianFilter === 'linked' && !guardian) return false;
+        if (guardianFilter === 'unlinked' && guardian) return false;
+
+        const term = searchTerm.toLowerCase().trim();
+        const matchesStudent = searchStudent(s, term);
+        const matchesGuardian = guardian ? (
+            `${guardian.firstName || ''} ${guardian.lastName || ''}`.toLowerCase().includes(term) ||
+            (guardian.phone || '').toLowerCase().includes(term) ||
+            (guardian.email || '').toLowerCase().includes(term)
+        ) : false;
+
+        return matchesStatus && matchesClass && (matchesStudent || matchesGuardian);
     });
-  }, [students, searchTerm, classFilter, statusFilter]);
+  }, [students, searchTerm, classFilter, statusFilter, guardianFilter, getLinkedParent]);
 
   const printedStudents = useMemo(() => {
     return students.filter(s => {
@@ -623,6 +906,17 @@ export default function StudentsV3Page() {
       return aName.localeCompare(bName);
     });
   }, [students, printClassId, printStatus]);
+
+  const filteredParentsForLinking = useMemo(() => {
+    if (!parentSearchQuery.trim()) return parentsList;
+    const term = parentSearchQuery.toLowerCase().trim();
+    return parentsList.filter(p => {
+      const name = `${p.title || ''} ${p.firstName || ''} ${p.lastName || ''}`.toLowerCase();
+      const phone = (p.phone || '').toLowerCase();
+      const email = (p.email || '').toLowerCase();
+      return name.includes(term) || phone.includes(term) || email.includes(term);
+    });
+  }, [parentsList, parentSearchQuery]);
 
   const overallLoading = isLoadingSchool || isLoading;
   const isAuthorized = role === 'Director' || role === 'Administrator' || role === 'Secretary' || role === 'Receptionist';
@@ -680,6 +974,12 @@ export default function StudentsV3Page() {
             { 
               label: 'Placement', 
               value: hasLoadedStudents ? `${students.filter(s => !s.classId).length} Needs Class` : 'On-Demand' 
+            },
+            { 
+              label: 'Family Links', 
+              value: hasLoadedStudents 
+                ? `${students.filter(s => !!getLinkedParent(s)).length} Linked` 
+                : 'On-Demand' 
             },
           ] : undefined
         }
@@ -842,6 +1142,20 @@ export default function StudentsV3Page() {
                             <SelectItem value="All">Show All</SelectItem>
                         </SelectContent>
                     </Select>
+
+                    <Select value={guardianFilter} onValueChange={(v: any) => {
+                        setGuardianFilter(v);
+                        if (!hasLoadedStudents && v !== 'all') {
+                          loadStudentData();
+                        }
+                    }}>
+                        <SelectTrigger className="w-full md:w-[160px] h-10 border-slate-200 rounded-xl"><SelectValue placeholder="Guardians" /></SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            <SelectItem value="all">All Guardians</SelectItem>
+                            <SelectItem value="linked">Linked to Parent</SelectItem>
+                            <SelectItem value="unlinked">Unlinked Only</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 
@@ -910,6 +1224,7 @@ export default function StudentsV3Page() {
                                 <TableHead className="font-bold text-slate-700 h-12">Enrollment Status</TableHead>
                                 <TableHead className="font-bold text-slate-700 h-12">Student ID</TableHead>
                                 <TableHead className="font-bold text-slate-700 h-12">Assigned Class</TableHead>
+                                <TableHead className="font-bold text-slate-700 h-12">Guardian / Parent</TableHead>
                                 <TableHead className="font-bold text-slate-700 h-12">Housing Details</TableHead>
                                 <TableHead className="font-bold text-slate-700 h-12">Subscribed Services</TableHead>
                                 <TableHead className="text-right font-bold text-slate-700 h-12 px-6">Actions</TableHead>
@@ -956,6 +1271,59 @@ export default function StudentsV3Page() {
                                                 )}
                                             </div>
                                         </TableCell>
+                                        <TableCell className="py-4">
+                                            {(() => {
+                                                const guardian = getLinkedParent(s);
+                                                if (guardian) {
+                                                    return (
+                                                        <div 
+                                                            onClick={() => {
+                                                                ensureParentsLoaded();
+                                                                setViewingGuardianStudent(s);
+                                                                setIsLinkingGuardian(false);
+                                                            }}
+                                                            className="group/guardian flex items-center gap-2 cursor-pointer p-1.5 -m-1.5 rounded-xl hover:bg-indigo-50/80 transition-all"
+                                                            title="Click to trace parent profile and view family siblings"
+                                                        >
+                                                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs border border-indigo-100 group-hover/guardian:bg-indigo-600 group-hover/guardian:text-white transition-colors">
+                                                                <HeartHandshake className="h-4 w-4" />
+                                                            </div>
+                                                            <div className="flex flex-col min-w-0 max-w-[150px]">
+                                                                <span className="font-bold text-xs text-slate-800 group-hover/guardian:text-indigo-700 truncate">
+                                                                    {guardian.title ? `${guardian.title} ` : ''}{guardian.firstName} {guardian.lastName}
+                                                                </span>
+                                                                {guardian.phone ? (
+                                                                    <span className="text-[10px] text-slate-500 font-mono flex items-center gap-1">
+                                                                        <Phone className="h-2.5 w-2.5 text-slate-400" /> {guardian.phone}
+                                                                    </span>
+                                                                ) : guardian.email ? (
+                                                                    <span className="text-[10px] text-slate-500 truncate">
+                                                                        {guardian.email}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-[10px] text-emerald-600 font-medium">Linked Guardian</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+                                                return (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            ensureParentsLoaded();
+                                                            setViewingGuardianStudent(s);
+                                                            setIsLinkingGuardian(true);
+                                                        }}
+                                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-dashed border-amber-300 bg-amber-50/40 hover:bg-amber-100/60 text-amber-700 text-xs font-semibold transition-colors cursor-pointer"
+                                                        title="Link this student to a parent"
+                                                    >
+                                                        <UserPlus className="h-3 w-3" />
+                                                        <span>Link Parent</span>
+                                                    </button>
+                                                );
+                                            })()}
+                                        </TableCell>
                                         <TableCell className="py-4 text-xs">
                                             {(() => {
                                                 const alloc = hostelAllocations.find(a => a.studentId === s.id);
@@ -991,6 +1359,19 @@ export default function StudentsV3Page() {
                                             <div className="flex justify-end gap-1.5">
                                                 {canManage && (
                                                     <>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="sm" 
+                                                            onClick={() => {
+                                                                ensureParentsLoaded();
+                                                                setViewingGuardianStudent(s);
+                                                                setIsLinkingGuardian(false);
+                                                            }} 
+                                                            title="Trace & Manage Guardian" 
+                                                            className="h-8.5 w-8.5 p-0 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg text-slate-400 hover:text-indigo-600"
+                                                        >
+                                                            <HeartHandshake className="h-4.5 w-4.5 text-indigo-500"/>
+                                                        </Button>
                                                         <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(s)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
                                                             <KeyRound className="h-4.5 w-4.5 text-amber-500"/>
                                                         </Button>
@@ -1014,9 +1395,23 @@ export default function StudentsV3Page() {
                                                     </>
                                                 )}
                                                 {isSecretary && (
-                                                    <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)} className="text-indigo-600 hover:bg-indigo-50">
-                                                        <Search className="h-4 w-4 mr-2" /> View Details
-                                                    </Button>
+                                                    <div className="flex items-center gap-1">
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="sm" 
+                                                            onClick={() => {
+                                                                ensureParentsLoaded();
+                                                                setViewingGuardianStudent(s);
+                                                                setIsLinkingGuardian(false);
+                                                            }} 
+                                                            className="text-indigo-600 hover:bg-indigo-50 rounded-lg h-8.5 px-2"
+                                                        >
+                                                            <HeartHandshake className="h-4 w-4 mr-1.5" /> Guardian
+                                                        </Button>
+                                                        <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)} className="text-indigo-600 hover:bg-indigo-50">
+                                                            <Search className="h-4 w-4 mr-2" /> View Details
+                                                        </Button>
+                                                    </div>
                                                 )}
                                             </div>
                                         </TableCell>
@@ -1079,6 +1474,35 @@ export default function StudentsV3Page() {
                     </div>
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
+                
+                <div className="space-y-2 p-3.5 rounded-xl bg-indigo-50/40 border border-indigo-100">
+                    <div className="flex items-center justify-between">
+                        <Label className="flex items-center gap-2 font-bold text-xs text-indigo-900 uppercase tracking-wider">
+                            <HeartHandshake className="h-4 w-4 text-indigo-600" /> Linked Guardian / Parent
+                        </Label>
+                        <span className="text-[10px] text-slate-400 font-medium">Optional</span>
+                    </div>
+                    <Select 
+                        value={selectedEnrollmentParentId} 
+                        onValueChange={setSelectedEnrollmentParentId}
+                        onOpenChange={(open) => { if (open) ensureParentsLoaded(); }}
+                    >
+                        <SelectTrigger className="bg-white border-indigo-200">
+                            <SelectValue placeholder="Assign a registered parent (optional)" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-56">
+                            <SelectItem value="none">-- No Parent Linked --</SelectItem>
+                            {parentsList.map(p => (
+                                <SelectItem key={p.id || p.uid} value={p.id || p.uid}>
+                                    {p.title ? `${p.title} ` : ''}{p.firstName} {p.lastName} {p.phone ? `(${p.phone})` : p.email ? `(${p.email})` : ''}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <p className="text-[11px] text-slate-500">
+                        Assigning a parent connects emergency contacts and cross-references them in the Parent Directory.
+                    </p>
+                </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -1335,6 +1759,63 @@ export default function StudentsV3Page() {
                                 return null;
                             })()}
                             
+                            {/* Linked Guardian Details (Cross-linked with Parents section) */}
+                            {(() => {
+                                const currentGuardian = getLinkedParent(editingStudent);
+                                return (
+                                    <div className="p-4 border rounded-2xl bg-slate-50/70 border-slate-200 space-y-2.5">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                                <HeartHandshake className="h-4 w-4 text-indigo-600" /> Linked Guardian / Parent
+                                            </h4>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    ensureParentsLoaded();
+                                                    setViewingGuardianStudent(editingStudent);
+                                                    if (!currentGuardian) setIsLinkingGuardian(true);
+                                                }}
+                                                className="h-7 text-xs font-bold rounded-lg border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                                            >
+                                                {currentGuardian ? 'Manage Guardian' : '+ Link Parent'}
+                                            </Button>
+                                        </div>
+                                        {currentGuardian ? (
+                                            <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700 font-bold text-sm border border-indigo-100">
+                                                        {currentGuardian.firstName?.charAt(0)}{currentGuardian.lastName?.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-xs text-slate-800">
+                                                            {currentGuardian.title ? `${currentGuardian.title} ` : ''}{currentGuardian.firstName} {currentGuardian.lastName}
+                                                        </div>
+                                                        <div className="text-[11px] text-slate-400 flex items-center gap-2">
+                                                            {currentGuardian.phone && <span>{currentGuardian.phone}</span>}
+                                                            {currentGuardian.email && <span>{currentGuardian.email}</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <Link
+                                                    href={`/dashboard/parents-v2?search=${encodeURIComponent(`${currentGuardian.firstName} ${currentGuardian.lastName}`.trim())}`}
+                                                    target="_blank"
+                                                    className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1"
+                                                >
+                                                    <span>Trace in Parent Directory</span>
+                                                    <ExternalLink className="h-3 w-3" />
+                                                </Link>
+                                            </div>
+                                        ) : (
+                                            <div className="text-xs text-slate-400 italic bg-white p-3 rounded-xl border border-dashed border-slate-200">
+                                                No guardian currently linked to this student.
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()}
+                            
                             {canEditBillingToggles ? (
                                 <div className="space-y-4 p-4 border rounded-xl bg-slate-50">
                                     <h4 className="font-bold text-sm text-slate-700">Services & Subscriptions</h4>
@@ -1505,7 +1986,420 @@ export default function StudentsV3Page() {
             </div>
           </div>
         </div>
-      )}
+      {/* ==================== GUARDIAN & FAMILY LINK MODAL ==================== */}
+      <Dialog 
+        open={!!viewingGuardianStudent} 
+        onOpenChange={(open) => {
+          if (!open) {
+            setViewingGuardianStudent(null);
+            setIsLinkingGuardian(false);
+            setSelectedParentToLink('');
+            setParentSearchQuery('');
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-[640px] max-h-[90vh] overflow-y-auto rounded-3xl p-6 shadow-2xl border border-slate-100">
+          {viewingGuardianStudent && (() => {
+            const currentParent = getLinkedParent(viewingGuardianStudent);
+            const parentWards = currentParent ? getWardsForParent(currentParent) : [];
+            const otherSiblings = parentWards.filter(w => w.id !== viewingGuardianStudent.id && w.uid !== viewingGuardianStudent.uid);
+
+            return (
+              <div className="space-y-5">
+                <DialogHeader className="border-b pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700 font-bold border border-indigo-200 shadow-sm">
+                        <HeartHandshake className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <DialogTitle className="text-xl font-black text-slate-900 tracking-tight">
+                          Family &amp; Guardian Trace
+                        </DialogTitle>
+                        <DialogDescription className="text-xs text-slate-500 font-medium">
+                          Cross-reference and trace parent relationships for this student
+                        </DialogDescription>
+                      </div>
+                    </div>
+                    {currentParent && !isLinkingGuardian && (
+                      <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[11px] px-2.5 py-1">
+                        <UserCheck className="h-3 w-3 mr-1" /> Guardian Linked
+                      </Badge>
+                    )}
+                  </div>
+                </DialogHeader>
+
+                {/* --- Student Identification Banner --- */}
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex items-center gap-3">
+                    <div className="relative h-12 w-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shadow-xs">
+                      {viewingGuardianStudent.photoURL ? (
+                        <img src={viewingGuardianStudent.photoURL} alt={viewingGuardianStudent.firstName} className="h-full w-full object-cover" />
+                      ) : (
+                        <GraduationCap className="h-6 w-6 text-slate-400" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-sm text-slate-900">
+                        {viewingGuardianStudent.firstName} {viewingGuardianStudent.lastName}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 font-mono mt-0.5">
+                        <span>ID: {formatStudentId(viewingGuardianStudent)}</span>
+                        <span>•</span>
+                        <span className="font-sans font-semibold text-slate-700">
+                          {classes.find(c => c.id === viewingGuardianStudent.classId)?.name || 'Unassigned'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs font-bold text-slate-600 border-slate-200">
+                    {viewingGuardianStudent.enrollmentStatus || 'Active'}
+                  </Badge>
+                </div>
+
+                {/* --- VIEW MODE (Guardian Linked) --- */}
+                {currentParent && !isLinkingGuardian ? (
+                  <div className="space-y-4">
+                    {/* Linked Parent Profile Card */}
+                    <div className="p-5 rounded-2xl border-2 border-indigo-100 bg-gradient-to-br from-indigo-50/40 via-white to-purple-50/30 space-y-4 shadow-sm">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-3.5">
+                          <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-indigo-600 text-white font-black text-lg shadow-md shadow-indigo-100">
+                            {currentParent.firstName?.charAt(0)}{currentParent.lastName?.charAt(0)}
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                              Registered Parent
+                            </span>
+                            <h3 className="text-lg font-black text-slate-900 mt-1">
+                              {currentParent.title ? `${currentParent.title} ` : ''}{currentParent.firstName} {currentParent.lastName}
+                            </h3>
+                          </div>
+                        </div>
+
+                        {/* TRACE IN PARENT DIRECTORY LINK */}
+                        <Link
+                          href={`/dashboard/parents-v2?search=${encodeURIComponent(`${currentParent.firstName} ${currentParent.lastName}`.trim())}`}
+                          target="_blank"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 transition-all hover:gap-2"
+                          title="Open this parent's profile directly in the Parent Management Section"
+                        >
+                          <span>Trace in Parent Section</span>
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </Link>
+                      </div>
+
+                      {/* Contact Credentials Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-2 border-t border-indigo-100/70">
+                        {currentParent.phone && (
+                          <a 
+                            href={`tel:${currentParent.phone}`}
+                            className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/80 hover:bg-white border border-slate-200/80 transition-all text-xs font-medium text-slate-700 hover:text-indigo-600 group"
+                          >
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                              <Phone className="h-3.5 w-3.5" />
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-slate-400 block font-bold uppercase">Phone Contact</span>
+                              <span className="font-mono font-bold text-slate-800">{currentParent.phone}</span>
+                            </div>
+                          </a>
+                        )}
+
+                        {currentParent.email && (
+                          <a 
+                            href={`mailto:${currentParent.email}`}
+                            className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/80 hover:bg-white border border-slate-200/80 transition-all text-xs font-medium text-slate-700 hover:text-indigo-600 group"
+                          >
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                              <Mail className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[10px] text-slate-400 block font-bold uppercase">Email Address</span>
+                              <span className="font-medium text-slate-800 truncate block">{currentParent.email}</span>
+                            </div>
+                          </a>
+                        )}
+
+                        {currentParent.address && (
+                          <div className="col-span-1 md:col-span-2 flex items-center gap-2.5 p-2.5 rounded-xl bg-white/80 border border-slate-200/80 text-xs">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+                              <MapPin className="h-3.5 w-3.5" />
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-slate-400 block font-bold uppercase">Residential Address</span>
+                              <span className="text-slate-800 font-medium">{currentParent.address}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Associated Wards / Siblings Network */}
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-indigo-600" />
+                          <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider">
+                            Associated Wards &amp; Siblings ({parentWards.length})
+                          </h4>
+                        </div>
+                        <span className="text-[11px] text-slate-400">
+                          {otherSiblings.length > 0 ? `${otherSiblings.length} other child linked` : 'Only child enrolled'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {parentWards.map((ward) => {
+                          const isCurrent = ward.id === viewingGuardianStudent.id || ward.uid === viewingGuardianStudent.uid;
+                          const wardClass = classes.find(c => c.id === ward.classId)?.name || 'Unassigned';
+                          return (
+                            <div 
+                              key={ward.id || ward.uid}
+                              onClick={() => {
+                                if (!isCurrent) {
+                                  setViewingGuardianStudent(ward);
+                                }
+                              }}
+                              className={cn(
+                                "flex items-center justify-between p-2.5 rounded-xl border transition-all",
+                                isCurrent 
+                                  ? "bg-indigo-50/80 border-indigo-200" 
+                                  : "bg-white hover:bg-slate-50 border-slate-200/80 cursor-pointer hover:border-indigo-200 shadow-xs"
+                              )}
+                              title={isCurrent ? "Currently viewing" : `Click to switch view to ${ward.firstName}`}
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className={cn(
+                                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-xs",
+                                  isCurrent ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700"
+                                )}>
+                                  {ward.firstName?.charAt(0)}{ward.lastName?.charAt(0)}
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="font-bold text-xs text-slate-800 truncate">
+                                    {ward.firstName} {ward.lastName}
+                                  </div>
+                                  <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                                    <span>{wardClass}</span>
+                                    <span>•</span>
+                                    <span className="font-mono">{formatStudentId(ward)}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              {isCurrent ? (
+                                <Badge className="bg-indigo-600 text-white text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5">
+                                  Current
+                                </Badge>
+                              ) : (
+                                <span className="text-[11px] text-indigo-600 font-bold hover:underline">
+                                  View &rarr;
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    {canManage && (
+                      <div className="flex items-center justify-between pt-2 border-t gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setIsLinkingGuardian(true);
+                            setSelectedParentToLink(currentParent.id || currentParent.uid);
+                          }}
+                          className="rounded-xl font-bold text-xs border-slate-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Change Guardian
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => handleUnlinkGuardian(viewingGuardianStudent)}
+                          disabled={isSubmitting}
+                          className="rounded-xl font-bold text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                        >
+                          <UserMinus className="h-3.5 w-3.5 mr-1.5" /> Unlink from Student
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* --- LINK / CHANGE GUARDIAN MODE --- */
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-900">
+                          {currentParent ? 'Select New Parent to Re-link' : 'Link Student to Registered Parent'}
+                        </h4>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Choose a parent profile from the directory to establish mutual tracking
+                        </p>
+                      </div>
+                      {currentParent && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsLinkingGuardian(false)}
+                          className="text-xs text-slate-500 hover:text-slate-800"
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Parent Search Input */}
+                    <div className="relative">
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        value={parentSearchQuery}
+                        onChange={(e) => setParentSearchQuery(e.target.value)}
+                        placeholder="Search parents by name, phone number, or email..."
+                        className="pl-9 h-10 rounded-xl border-slate-200 focus:ring-indigo-500 text-sm"
+                      />
+                      {parentSearchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setParentSearchQuery('')}
+                          className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 font-bold"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+
+                    {/* List of Parents to Choose */}
+                    <div className="max-h-60 overflow-y-auto space-y-1.5 p-2 rounded-2xl border bg-slate-50/50">
+                      {parentsList.length === 0 ? (
+                        <div className="py-8 text-center space-y-2">
+                          <p className="text-xs text-slate-500">Loading parents registry...</p>
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={ensureParentsLoaded}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold"
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1.5" /> Fetch Parents
+                          </Button>
+                        </div>
+                      ) : filteredParentsForLinking.length === 0 ? (
+                        <div className="py-8 text-center text-slate-400 text-xs">
+                          No parents matching &ldquo;{parentSearchQuery}&rdquo; found.
+                        </div>
+                      ) : (
+                        filteredParentsForLinking.map((p) => {
+                          const isSelected = selectedParentToLink === (p.id || p.uid);
+                          const isCurrentlyAssigned = currentParent && (currentParent.id === p.id || currentParent.uid === p.uid);
+                          const wardCount = Array.isArray(p.studentIds) ? p.studentIds.length : 0;
+
+                          return (
+                            <div
+                              key={p.id || p.uid}
+                              onClick={() => setSelectedParentToLink(p.id || p.uid)}
+                              className={cn(
+                                "flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer",
+                                isSelected
+                                  ? "bg-indigo-50 border-indigo-400 shadow-sm"
+                                  : "bg-white hover:bg-slate-50 border-slate-200/80 hover:border-indigo-200"
+                              )}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className={cn(
+                                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold text-xs transition-colors",
+                                  isSelected ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700"
+                                )}>
+                                  {p.firstName?.charAt(0)}{p.lastName?.charAt(0)}
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
+                                    <span>{p.title ? `${p.title} ` : ''}{p.firstName} {p.lastName}</span>
+                                    {isCurrentlyAssigned && (
+                                      <Badge variant="outline" className="text-[9px] bg-slate-100 text-slate-500 border-slate-200 font-bold uppercase">
+                                        Current
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                                    {p.phone && <span>{p.phone}</span>}
+                                    {p.email && <span>{p.email}</span>}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-600 font-semibold rounded-md">
+                                  {wardCount} {wardCount === 1 ? 'ward' : 'wards'}
+                                </Badge>
+                                <div className={cn(
+                                  "h-4 w-4 rounded-full border flex items-center justify-center transition-colors",
+                                  isSelected ? "border-indigo-600 bg-indigo-600 text-white" : "border-slate-300 bg-white"
+                                )}>
+                                  {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+
+                    {/* Link to Parent Management for New Parent Creation */}
+                    <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t px-1">
+                      <span>Don&apos;t see the guardian listed?</span>
+                      <Link 
+                        href="/dashboard/parents-v2"
+                        target="_blank"
+                        className="text-indigo-600 hover:text-indigo-800 font-bold inline-flex items-center gap-1"
+                      >
+                        <span>Add New Parent in Directory</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </Link>
+                    </div>
+
+                    {/* Dialog Footer Actions */}
+                    <DialogFooter className="gap-2 sm:gap-0 pt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          if (currentParent) {
+                            setIsLinkingGuardian(false);
+                          } else {
+                            setViewingGuardianStudent(null);
+                          }
+                        }}
+                        className="rounded-xl font-bold border-slate-200"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          const chosen = parentsList.find(p => p.id === selectedParentToLink || p.uid === selectedParentToLink);
+                          if (chosen) {
+                            handleLinkGuardian(viewingGuardianStudent, chosen);
+                          }
+                        }}
+                        disabled={!selectedParentToLink || isSubmitting}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md gap-2"
+                      >
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <HeartHandshake className="h-4 w-4" />}
+                        <span>Confirm &amp; Link Guardian</span>
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
 
       {/* ==================== PRINT CLASS ROSTER DIALOG ==================== */}
       <Dialog open={isPrintDialogOpen} onOpenChange={setIsPrintDialogOpen}>
@@ -1626,8 +2520,8 @@ export default function StudentsV3Page() {
             <tbody>
               {printedStudents.map((s, idx) => {
                 const studentClass = classes.find(c => c.id === s.classId)?.name || 'Unassigned';
-                const guardian = parentMap[s.uid] || parentMap[s.id];
-                const guardianName = guardian ? `${guardian.firstName || ''} ${guardian.lastName || ''}`.trim() : '—';
+                const guardian = getLinkedParent(s) || parentMap[s.uid] || parentMap[s.id];
+                const guardianName = guardian ? `${guardian.title ? guardian.title + ' ' : ''}${guardian.firstName || ''} ${guardian.lastName || ''}`.trim() : '—';
                 const guardianPhone = guardian ? guardian.phone || '—' : '—';
                 const rowBg = idx % 2 === 0 ? '#fff' : '#f8fafc';
                 return (
