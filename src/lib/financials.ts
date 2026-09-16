@@ -147,3 +147,84 @@ export function calculateAgingBuckets(
 
   return result;
 }
+
+/**
+ * Normalizes academic year string to standard YYYY-YYYY format
+ * e.g., "2025/2026" -> "2025-2026", "2025 - 2026" -> "2025-2026", "2026" -> "2026-2027"
+ */
+export function normalizeAcademicYear(yearStr?: string | null): string {
+  if (!yearStr) return '';
+  const cleaned = yearStr.trim();
+  const match = cleaned.match(/(\d{4})\s*[\/-]\s*(\d{4})/);
+  if (match) {
+    return `${match[1]}-${match[2]}`;
+  }
+  const singleMatch = cleaned.match(/^(\d{4})$/);
+  if (singleMatch) {
+    const yr = parseInt(singleMatch[1], 10);
+    return `${yr}-${yr + 1}`;
+  }
+  return cleaned.replace('/', '-');
+}
+
+/**
+ * Returns the starting calendar year of an academic year string
+ * e.g., "2025-2026" -> 2025, "2026/2027" -> 2026
+ */
+export function getAcademicYearStart(yearStr?: string | null): number | null {
+  if (!yearStr) return null;
+  const normalized = normalizeAcademicYear(yearStr);
+  const match = normalized.match(/^(\d{4})/);
+  if (match) {
+    return parseInt(match[1], 10);
+  }
+  return null;
+}
+
+/**
+ * Checks if yearA is strictly prior to yearB
+ * e.g. "2024-2025" is prior to "2025-2026" -> true
+ * "2025/2026" is prior to "2025-2026" -> false (same year)
+ * "2026-2027" is prior to "2025-2026" -> false (current/future year)
+ */
+export function isPriorAcademicYear(yearA?: string | null, yearB?: string | null): boolean {
+  const startA = getAcademicYearStart(yearA);
+  const startB = getAcademicYearStart(yearB);
+  if (startA !== null && startB !== null) {
+    return startA < startB;
+  }
+  return false;
+}
+
+/**
+ * Checks if two academic years represent the same academic year
+ * e.g. "2025/2026" and "2025-2026" -> true
+ */
+export function isSameAcademicYear(yearA?: string | null, yearB?: string | null): boolean {
+  if (!yearA || !yearB) return false;
+  const normA = normalizeAcademicYear(yearA);
+  const normB = normalizeAcademicYear(yearB);
+  if (normA && normB && normA === normB) return true;
+  const startA = getAcademicYearStart(yearA);
+  const startB = getAcademicYearStart(yearB);
+  if (startA !== null && startB !== null) {
+    return startA === startB;
+  }
+  return false;
+}
+
+/**
+ * Calculates standard default academic year based on current calendar date
+ * In Ghana and standard September-based systems, months August (7) through December (11)
+ * belong to the starting year of the new academic cycle.
+ * e.g., September 2026 -> "2026-2027", May 2026 -> "2025-2026"
+ */
+export function getDefaultAcademicYear(date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = date.getMonth(); // 0 = Jan, 7 = Aug, 8 = Sep
+  if (month >= 7) {
+    return `${year}-${year + 1}`;
+  } else {
+    return `${year - 1}-${year}`;
+  }
+}

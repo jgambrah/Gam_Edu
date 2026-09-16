@@ -53,6 +53,7 @@ import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
 import { StudentSearchInput } from '@/components/student-search';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
+import { normalizeAcademicYear, getAcademicYearStart, isPriorAcademicYear, isSameAcademicYear, getDefaultAcademicYear } from '@/lib/financials';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -667,7 +668,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded,
                     dueDate: Timestamp.fromDate(startOfDay(date)),
                     createdAt: serverTimestamp(),
                     schoolId: schoolId,
-                    academicYear: academicYear || '2025-2026',
+                    academicYear: normalizeAcademicYear(academicYear) || getDefaultAcademicYear(),
                     term: term || 'Term 1'
                 }, { merge: true });
                 
@@ -910,11 +911,11 @@ function FinancialRecordForm({ setOpen, students, classes, schoolId, onRecordAdd
           studentName: `${student.firstName} ${student.lastName}`, 
           classId: student.classId || '', 
           amountPaid: 0, 
-          status: 'Unpaid', 
+          status: isPast(endOfDay(values.dueDate || new Date())) ? 'Overdue' : 'Unpaid', 
           createdAt: serverTimestamp(), 
           dueDate: Timestamp.fromDate(values.dueDate || new Date()), 
           schoolId: schoolId,
-          academicYear: values.academicYear || academicYear || '2025-2026',
+          academicYear: normalizeAcademicYear(values.academicYear || academicYear) || getDefaultAcademicYear(),
           term: values.term || term || 'Term 1'
       };
       await addDoc(collection(firestore, 'financialRecords'), newRecord);
@@ -1075,6 +1076,9 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
+    const defaultYear = normalizeAcademicYear(academicYear) || getDefaultAcademicYear();
+    const defaultTermValue = term || 'Term 1';
+
     const form = useForm<z.infer<typeof bulkBillingSchema>>({ 
       resolver: zodResolver(bulkBillingSchema), 
       defaultValues: { 
@@ -1082,7 +1086,9 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
         type: 'Tuition Fee', 
         description: '', 
         billedAmount: 0, 
-        dueDate: new Date()
+        dueDate: new Date(),
+        academicYear: defaultYear,
+        term: defaultTermValue
       } 
     });
   
@@ -1106,6 +1112,10 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
 
       try {
         const batch = writeBatch(firestore);
+        const resolvedAcademicYear = normalizeAcademicYear(values.academicYear || academicYear) || getDefaultAcademicYear();
+        const resolvedTerm = values.term || term || 'Term 1';
+        const isPastDue = isPast(endOfDay(values.dueDate));
+
         targetStudents.forEach(student => {
             const newRecordRef = doc(collection(firestore, 'financialRecords'));
             batch.set(newRecordRef, { 
@@ -1113,12 +1123,13 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
                 studentId: student.uid, 
                 studentName: `${student.firstName} ${student.lastName}`, 
                 amountPaid: 0, 
-                status: isPast(values.dueDate) ? 'Overdue' : 'Unpaid', 
+                waiverAmount: 0,
+                status: isPastDue ? 'Overdue' : 'Unpaid', 
                 createdAt: serverTimestamp(), 
                 dueDate: Timestamp.fromDate(values.dueDate),
                 schoolId: schoolId,
-                academicYear: (values as any).academicYear || academicYear || '2025-2026',
-                term: (values as any).term || term || 'Term 1'
+                academicYear: resolvedAcademicYear,
+                term: resolvedTerm
             });
         });
         await batch.commit();
@@ -1209,6 +1220,41 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
             <div className="grid grid-cols-2 gap-4">
                 <FormField 
                     control={form.control} 
+                    name="academicYear" 
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Academic Year</FormLabel>
+                            <FormControl>
+                                <Input placeholder="e.g., 2026-2027" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField 
+                    control={form.control} 
+                    name="term" 
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Term</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || 'Term 1'}>
+                                <FormControl>
+                                    <SelectTrigger><SelectValue placeholder="Select term"/></SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="Term 1">Term 1</SelectItem>
+                                    <SelectItem value="Term 2">Term 2</SelectItem>
+                                    <SelectItem value="Term 3">Term 3</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <FormField 
+                    control={form.control} 
                     name="billedAmount" 
                     render={({ field }) => {
                       return (
@@ -1285,7 +1331,7 @@ function TermlyTransportForm({ setOpen, classes, students, schoolId, onRecordsAd
     const form = useForm<z.infer<typeof termlyTransportSchema>>({ 
       resolver: zodResolver(termlyTransportSchema), 
       defaultValues: { 
-        academicYear: defaultAcademicYear || '2025/2026',
+        academicYear: normalizeAcademicYear(defaultAcademicYear) || getDefaultAcademicYear(),
         term: defaultTerm || 'Term 1',
         targetType: 'all',
         targetId: '',
@@ -1370,10 +1416,10 @@ function TermlyTransportForm({ setOpen, classes, students, schoolId, onRecordsAd
             billedAmount: amount,
             amountPaid: 0,
             waiverAmount: 0,
-            status: 'Unpaid',
+            status: isPast(endOfDay(values.dueDate)) ? 'Overdue' : 'Unpaid',
             dueDate: Timestamp.fromDate(values.dueDate),
             createdAt: serverTimestamp(),
-            academicYear: values.academicYear,
+            academicYear: normalizeAcademicYear(values.academicYear),
             term: values.term,
             schoolId: schoolId,
           }, { merge: true });
@@ -1599,7 +1645,7 @@ function TermlyCanteenForm({ setOpen, classes, students, schoolId, onRecordsAdde
     const form = useForm<z.infer<typeof termlyCanteenSchema>>({ 
       resolver: zodResolver(termlyCanteenSchema), 
       defaultValues: { 
-        academicYear: defaultAcademicYear || '2025/2026',
+        academicYear: normalizeAcademicYear(defaultAcademicYear) || getDefaultAcademicYear(),
         term: defaultTerm || 'Term 1',
         targetType: 'all',
         targetId: '',
@@ -1676,10 +1722,10 @@ function TermlyCanteenForm({ setOpen, classes, students, schoolId, onRecordsAdde
             billedAmount: amount,
             amountPaid: 0,
             waiverAmount: 0,
-            status: 'Unpaid',
+            status: isPast(endOfDay(values.dueDate)) ? 'Overdue' : 'Unpaid',
             dueDate: Timestamp.fromDate(values.dueDate),
             createdAt: serverTimestamp(),
-            academicYear: values.academicYear,
+            academicYear: normalizeAcademicYear(values.academicYear),
             term: values.term,
             schoolId: schoolId,
           }, { merge: true });
@@ -2245,8 +2291,11 @@ function StudentLedgerDetail({
         activeRecords.forEach(r => {
             const isPastDebt = (
                 (r as any).isOpeningBalance === true ||
+                r.category === 'Arrears' ||
+                (r.title || '').toLowerCase().includes('arrears') ||
                 (r.type === 'Other' && (r.description || '').toLowerCase().includes('opening balance')) ||
-                (effectiveAcademicYear && r.academicYear && r.academicYear !== effectiveAcademicYear && (r.status === 'Unpaid' || r.status === 'Overdue'))
+                (r.type === 'Other' && (r.description || '').toLowerCase().includes('arrears')) ||
+                (effectiveAcademicYear && r.academicYear && isPriorAcademicYear(r.academicYear, effectiveAcademicYear) && (r.status === 'Unpaid' || r.status === 'Overdue'))
             );
 
             const billed = Number(r.billedAmount) || 0;
@@ -3576,44 +3625,63 @@ export default function AccountsPage() {
 
   // Active academic year detection & selection (supports multi-year auditing)
   const detectedActiveAcademicYear = useMemo(() => {
-    const raw = (
+    const fromSettings = (
       schoolSettings?.academicYear ||
       schoolSettings?.activeAcademicYear ||
       schoolProfile?.academicYear ||
       schoolProfile?.activeAcademicYear ||
-      '2025-2026'
-    ).toString().trim().replace('/', '-');
-    return raw;
+      ''
+    ).toString().trim();
+    return normalizeAcademicYear(fromSettings) || getDefaultAcademicYear();
   }, [schoolSettings, schoolProfile]);
 
   const activeAcademicYear = detectedActiveAcademicYear;
-  const [selectedAcademicYear, setSelectedAcademicYear] = useState<string>('');
+  const [selectedAcademicYear, setSelectedAcademicYearState] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('gam_accounts_academic_year');
+      if (saved) return normalizeAcademicYear(saved);
+    }
+    return '';
+  });
+
+  const setSelectedAcademicYear = useCallback((yr: string) => {
+    const normalized = normalizeAcademicYear(yr);
+    setSelectedAcademicYearState(normalized);
+    if (typeof window !== 'undefined') {
+      if (normalized) localStorage.setItem('gam_accounts_academic_year', normalized);
+      else localStorage.removeItem('gam_accounts_academic_year');
+    }
+  }, []);
 
   useEffect(() => {
     if (!selectedAcademicYear && activeAcademicYear) {
       setSelectedAcademicYear(activeAcademicYear);
     }
-  }, [activeAcademicYear, selectedAcademicYear]);
+  }, [activeAcademicYear, selectedAcademicYear, setSelectedAcademicYear]);
 
   const effectiveAcademicYear = selectedAcademicYear || activeAcademicYear;
 
-  // Generate recent 5 academic years for auditing
+  // Generate comprehensive academic years for selection & auditing
   const availableAcademicYears = useMemo(() => {
-    const match = effectiveAcademicYear.match(/^(\d{4})[-/](\d{4})$/);
-    const baseStart = match ? parseInt(match[1], 10) : new Date().getFullYear();
-    const years: string[] = [];
-    for (let i = 0; i < 5; i++) {
-      const s = baseStart - i;
-      const e = s + 1;
-      years.push(`${s}-${e}`);
+    const currentDefault = getDefaultAcademicYear();
+    const currentStart = getAcademicYearStart(currentDefault) || new Date().getFullYear();
+    const effStart = getAcademicYearStart(effectiveAcademicYear) || currentStart;
+    const actStart = getAcademicYearStart(activeAcademicYear) || currentStart;
+    const maxStart = Math.max(currentStart + 1, effStart, actStart);
+
+    const yearsSet = new Set<string>();
+    for (let s = maxStart; s >= maxStart - 5; s--) {
+      yearsSet.add(`${s}-${s + 1}`);
     }
-    if (!years.includes(effectiveAcademicYear)) {
-      years.unshift(effectiveAcademicYear);
-    }
-    if (!years.includes(activeAcademicYear) && activeAcademicYear) {
-      years.unshift(activeAcademicYear);
-    }
-    return Array.from(new Set(years));
+    if (effectiveAcademicYear) yearsSet.add(normalizeAcademicYear(effectiveAcademicYear));
+    if (activeAcademicYear) yearsSet.add(normalizeAcademicYear(activeAcademicYear));
+    if (currentDefault) yearsSet.add(normalizeAcademicYear(currentDefault));
+
+    return Array.from(yearsSet).sort((a, b) => {
+      const startA = getAcademicYearStart(a) || 0;
+      const startB = getAcademicYearStart(b) || 0;
+      return startB - startA;
+    });
   }, [effectiveAcademicYear, activeAcademicYear]);
 
   const [isRolloverModalOpen, setIsRolloverModalOpen] = useState<boolean>(false);
@@ -3637,8 +3705,11 @@ export default function AccountsPage() {
   const { data: unpaidRecords, isLoading: isLoadingUnpaidRecords, forceRefetch: refetchUnpaid } = useCollection<FinancialRecord>(unpaidDebtsQuery);
 
   const yearVariations = useMemo(() => {
-    const yr = effectiveAcademicYear;
-    return [yr, yr.replace('-', '/'), yr.replace('/', '-')].filter((v, i, a) => a.indexOf(v) === i);
+    const yr = normalizeAcademicYear(effectiveAcademicYear);
+    const withSlash = yr.replace('-', '/');
+    const withSpacesHyphen = yr.replace('-', ' - ');
+    const withSpacesSlash = yr.replace('-', ' / ');
+    return [yr, withSlash, withSpacesHyphen, withSpacesSlash, effectiveAcademicYear].filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
   }, [effectiveAcademicYear]);
 
   const yearRecordsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school') ? query(
@@ -4285,30 +4356,28 @@ export default function AccountsPage() {
       const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
       
       // 1. Outstanding Balance Brought Forward:
-      // Includes explicit Arrears/Opening records AND any unpaid debt from prior academic years
+      // Includes explicit Arrears/Opening records AND any unpaid debt strictly from prior academic years
+      const isPastDebtRecord = (r: FinancialRecord) => (
+        r.category === 'Arrears' || 
+        (r as any).isOpeningBalance === true || 
+        (r.title || '').toLowerCase().includes('arrears') ||
+        (r.type === 'Other' && (r.description || '').toLowerCase().includes('opening balance')) ||
+        (r.type === 'Other' && (r.description || '').toLowerCase().includes('arrears')) ||
+        (effectiveAcademicYear && r.academicYear && isPriorAcademicYear(r.academicYear, effectiveAcademicYear) && (Number(r.billedAmount || 0) - Number(r.amountPaid || 0) - Number(r.waiverAmount || 0)) > 0.001)
+      );
+
       const openingArrears = activeRecords
-        .filter(r => 
-          r.category === 'Arrears' || 
-          r.isOpeningBalance === true || 
-          (r.title || '').toLowerCase().includes('arrears') ||
-          (r.academicYear && r.academicYear !== effectiveAcademicYear && (Number(r.billedAmount || 0) - Number(r.amountPaid || 0) - Number(r.waiverAmount || 0)) > 0.001)
-        )
+        .filter(isPastDebtRecord)
         .reduce((sum, r) => sum + (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0), 0);
 
       // 2. Current Year Bills
       const currentTermBilled = activeRecords
-        .filter(r => 
-          !(r.category === 'Arrears' || r.isOpeningBalance === true || (r.title || '').toLowerCase().includes('arrears')) &&
-          (!r.academicYear || r.academicYear === effectiveAcademicYear)
-        )
+        .filter(r => !isPastDebtRecord(r) && (isSameAcademicYear(r.academicYear, effectiveAcademicYear) || !r.academicYear))
         .reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
 
       // 3. Current Year Paid
       const currentTermPaid = activeRecords
-        .filter(r => 
-          !(r.category === 'Arrears' || r.isOpeningBalance === true || (r.title || '').toLowerCase().includes('arrears')) &&
-          (!r.academicYear || r.academicYear === effectiveAcademicYear)
-        )
+        .filter(r => !isPastDebtRecord(r) && (isSameAcademicYear(r.academicYear, effectiveAcademicYear) || !r.academicYear))
         .reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
 
       return { 

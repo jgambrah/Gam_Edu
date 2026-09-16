@@ -653,6 +653,8 @@ export const bulkBillingSchema = z.object({
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
+  academicYear: z.string().optional(),
+  term: z.string().optional(),
 });
 
 export const recordPaymentSchema = z.object({

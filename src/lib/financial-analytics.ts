@@ -5,7 +5,7 @@
  */
 
 import { startOfDay } from 'date-fns';
-import { calculateCollectionRate } from './financials';
+import { calculateCollectionRate, isSameAcademicYear } from './financials';
 
 export interface PaymentItem {
   id?: string;
@@ -345,7 +345,7 @@ export function computeFinancialMetrics({
     if (allStudentIds.size > 0 && r.studentId && !allStudentIds.has(r.studentId) && students.length > 0) return false;
     if (campusId && !isCampusMatch(r.campusId, campusId)) return false;
     if (termId && r.termId && r.termId !== termId) return false;
-    if (academicYear && r.academicYear && r.academicYear !== academicYear) return false;
+    if (academicYear && r.academicYear && !isSameAcademicYear(r.academicYear, academicYear)) return false;
     return true;
   });
 
@@ -355,7 +355,7 @@ export function computeFinancialMetrics({
     if (allStudentIds.size > 0 && p.studentId && !allStudentIds.has(p.studentId) && students.length > 0) return false;
     if (campusId && !isCampusMatch(p.campusId, campusId)) return false;
     if (termId && p.termId && p.termId !== termId) return false;
-    if (academicYear && p.academicYear && p.academicYear !== academicYear) return false;
+    if (academicYear && p.academicYear && !isSameAcademicYear(p.academicYear, academicYear)) return false;
     return true;
   });
 
