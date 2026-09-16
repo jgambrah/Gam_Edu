@@ -22,6 +22,9 @@ import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 import { QuestionRunner } from '@/components/curriculum/QuestionRunner';
 import { getTopicQuestionSets, invalidateCurriculumCache } from '@/lib/services/curriculumService';
+import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
+import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
+import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
 import {
   Select,
@@ -163,7 +166,7 @@ interface SuggestedModuleCard {
     topicId?: string;
     setId?: string;
     kind?: 'topical' | 'exam_series';
-    format?: 'objective' | 'structured_essay' | 'standard' | 'multiple_choice';
+    format?: 'objective' | 'structured_essay' | 'standard' | 'multiple_choice' | 'topical_lab';
     questionCount?: number;
     examTag?: string;
     subject?: 'Mathematics' | 'English' | 'Integrated Science' | 'Computing';
@@ -2216,19 +2219,60 @@ function MathLab({
     const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
     const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
     const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
+    const [activeTopicalLab, setActiveTopicalLab] = useState<TopicalLabDocument | null>(null);
     const [isLoadingSet, setIsLoadingSet] = useState(false);
     const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Dynamic scanning of seeded question sets across topics for JHS/SHS
+    // Dynamic scanning of seeded question sets & topical labs across topics for JHS/SHS
     const refreshCurriculumSets = useCallback(async (manual = false) => {
         setIsRefreshing(true);
         const levelId = mapGradeTierToLevelId(activeGrade);
         invalidateCurriculumCache(levelId, 'math');
+        invalidateTopicalLabCache();
 
         try {
-            const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers'];
             const scanned: SuggestedModuleCard[] = [];
+
+            // 1. Dynamic Topical Practice Labs Manifest for JHS
+            if (levelId === 'jhs') {
+                try {
+                    const manifest = await getSubjectTopicsManifest('jhs', 'math');
+                    if (manifest && manifest.topics && manifest.topics.length > 0) {
+                        manifest.topics.forEach((t) => {
+                            let domain = 'ARITHMETIC & NUMERACY';
+                            const strandUpper = (t.strand || '').toUpperCase();
+                            if (strandUpper.includes('ALGEBRA') || strandUpper.includes('PATTERNS')) {
+                                domain = 'ALGEBRA';
+                            } else if (strandUpper.includes('GEOMETRY') || strandUpper.includes('MEASUREMENT')) {
+                                domain = 'GEOMETRY & TRIGONOMETRY';
+                            } else if (strandUpper.includes('DATA') || strandUpper.includes('STATISTICS') || strandUpper.includes('PROBABILITY')) {
+                                domain = 'STATISTICS & PROBABILITY';
+                            }
+
+                            scanned.push({
+                                title: t.title,
+                                domain,
+                                gradeTier: 'Junior Secondary (JHS)',
+                                meta: `${t.questionCount || 27} Practice Qs • JHS 1 - 3 • Concept Notes & Worked Examples`,
+                                description: t.description || `Master ${t.title} with tiered concept notes, worked examples, and graded practice pools.`,
+                                difficulty: 'Foundation',
+                                topicId: t.id,
+                                setId: t.id,
+                                kind: 'topical',
+                                format: 'topical_lab',
+                                questionCount: t.questionCount || 27,
+                                subject: 'Mathematics'
+                            });
+                        });
+                    }
+                } catch (manifestErr) {
+                    console.warn('[senior-academy] Error loading topical labs manifest:', manifestErr);
+                }
+            }
+
+            // 2. Exam Series scanning
+            const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers'];
             for (const tId of topicsToScan) {
                 const sets = await getTopicQuestionSets(levelId, 'math', tId);
                 console.log("[senior-academy] Fetched sets for topic", tId, ":", sets);
@@ -2371,6 +2415,27 @@ function MathLab({
 
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
+        setActiveQuestionSet(null);
+        setActiveTopicMeta(null);
+        setActiveTopicalLab(null);
+
+        // 1. Direct handling of Topical Practice Labs (costs strictly 1 Firestore read)
+        if (mod.kind === 'topical' || mod.format === 'topical_lab' || (mod.topicId && mod.topicId.startsWith('topic_'))) {
+            setIsLoadingSet(true);
+            try {
+                const topicDocId = mod.topicId.startsWith('topic_') ? mod.topicId : `topic_${mod.topicId}`;
+                const labDoc = await getTopicalLabDoc(topicDocId);
+                if (labDoc) {
+                    setActiveTopicalLab(labDoc);
+                    return;
+                }
+            } catch (err) {
+                console.warn('[senior-academy] Error loading topical lab document:', err);
+            } finally {
+                setIsLoadingSet(false);
+            }
+        }
+
         const levelId = mapGradeTierToLevelId(activeGrade);
         const subjectId = 'math';
         
@@ -2439,7 +2504,14 @@ function MathLab({
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-            {activeTopicMeta ? (
+            {activeTopicalLab ? (
+                <TopicalLabRunner
+                    topicDoc={activeTopicalLab}
+                    studentId={studentId}
+                    initialLevel="jhs1"
+                    onBack={() => setActiveTopicalLab(null)}
+                />
+            ) : activeTopicMeta ? (
                 isLoadingSet ? (
                     <div className="flex flex-col items-center justify-center p-16 space-y-4 bg-slate-900/60 rounded-3xl border border-slate-800 shadow-2xl">
                         <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />

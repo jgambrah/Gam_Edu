@@ -1,0 +1,426 @@
+{
+  "id": "topic_ratio_and_proportion",
+  "topicId": "ratio_and_proportion",
+  "title": "Ratio, Proportion & Rates",
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "badge": "Strand 1: Number & Numeration",
+  "description": "Master foundational direct comparison, multi-tier sharing, inverse proportions, and compound commercial rates.",
+  "totalPracticeQuestions": 27,
+  "version": 1,
+  "levels": {
+    "jhs1": {
+      "levelTitle": "JHS 1: Foundations of Ratio & Direct Comparison",
+      "summary": "Introduction to ratios, expressing quantities in common units, and equivalent ratio simplification.",
+      "notes": "### 1. Understanding Ratios\nA ratio is a mathematical comparison of two or more quantities of the same kind measured in the same units.\n\n$$\\text{Ratio } a : b = \\frac{a}{b}$$\n\n> **Key Rule 1:** Always convert all quantities to the exact same unit before expressing them as a ratio (e.g., hours to minutes, metres to centimetres). Ratios themselves have no units.\n\n### 2. Equivalent Ratios & Simplification\nLike fractions, a ratio can be simplified to its lowest terms by dividing all terms by their **Highest Common Factor (HCF)**:\n\n$$\\frac{a \\div k}{b \\div k} = \\frac{a}{b}$$\n\n### 3. Combining Two Ratios\nIf $a : b = m : n$ and $b : c = p : q$, make the common term $b$ equal by taking the LCM of $n$ and $p$.",
+      "workedExamples": [
+        {
+          "id": "we_jhs1_01",
+          "title": "Simplifying Ratios with Mixed Units",
+          "problem": "Express the ratio of $45\\text{ minutes}$ to $2\\text{ hours}$ in its simplest form.",
+          "steps": [
+            "Convert $2\\text{ hours}$ to minutes: $2 \\times 60 = 120\\text{ minutes}$.",
+            "Write as a direct ratio: $45 : 120$.",
+            "Find the Highest Common Factor (HCF) of 45 and 120, which is 15.",
+            "Divide both terms by 15: $\\frac{45}{15} : \\frac{120}{15} = 3 : 8$."
+          ],
+          "finalAnswer": "$$3 : 8$$"
+        },
+        {
+          "id": "we_jhs1_02",
+          "title": "Combining Two Two-Term Ratios",
+          "problem": "If $x : y = 3 : 4$ and $y : z = 6 : 7$, find the combined ratio $x : y : z$.",
+          "steps": [
+            "Identify the common variable: $y$. In the first ratio $y = 4$, in the second $y = 6$.",
+            "Find the LCM of 4 and 6, which is 12.",
+            "Multiply $x : y = (3 \\times 3) : (4 \\times 3) = 9 : 12$.",
+            "Multiply $y : z = (6 \\times 2) : (7 \\times 2) = 12 : 14$.",
+            "Combine the terms: $x : y : z = 9 : 12 : 14$."
+          ],
+          "finalAnswer": "$$9 : 12 : 14$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_r_j1_l01",
+            "difficulty": "low",
+            "prompt": "Simplify the ratio $24 : 36$ to its lowest terms.",
+            "options": ["2 : 3", "3 : 2", "4 : 6", "1 : 3"],
+            "correctAnswer": "2 : 3",
+            "hint": "Divide both numbers by their highest common factor, 12.",
+            "workedSolution": "$$\\frac{24 \\div 12}{36 \\div 12} = 2 : 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_r_j1_l02",
+            "difficulty": "low",
+            "prompt": "Express $15\\text{ cm}$ to $60\\text{ cm}$ as a simplified ratio.",
+            "options": ["1 : 4", "1 : 5", "3 : 12", "1 : 3"],
+            "correctAnswer": "1 : 4",
+            "hint": "Divide both numbers by 15.",
+            "workedSolution": "$$15 : 60 = \\frac{15}{15} : \\frac{60}{15} = 1 : 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_r_j1_l03",
+            "difficulty": "low",
+            "prompt": "Which of the following ratios is equivalent to $3 : 5$?",
+            "options": ["9 : 15", "6 : 12", "5 : 3", "9 : 20"],
+            "correctAnswer": "9 : 15",
+            "hint": "Multiply both terms of 3 : 5 by 3.",
+            "workedSolution": "$$3 \\times 3 = 9$$ and $$5 \\times 3 = 15$$, so $$3 : 5 = 9 : 15$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_r_j1_m01",
+            "difficulty": "medium",
+            "prompt": "Express $50\\text{ cm}$ to $2.5\\text{ m}$ as a ratio in simplest form.",
+            "options": ["1 : 5", "1 : 50", "5 : 1", "1 : 2"],
+            "correctAnswer": "1 : 5",
+            "hint": "Convert 2.5 m to cm: $2.5 \\times 100 = 250\\text{ cm}$. Then simplify $50 : 250$.",
+            "workedSolution": "$$50\\text{ cm} : 250\\text{ cm} = \\frac{50}{50} : \\frac{250}{50} = 1 : 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_r_j1_m02",
+            "difficulty": "medium",
+            "prompt": "Express the ratio of $300\\text{ g}$ to $1.2\\text{ kg}$ in lowest terms.",
+            "options": ["1 : 4", "1 : 40", "3 : 12", "1 : 3"],
+            "correctAnswer": "1 : 4",
+            "hint": "Convert 1.2 kg to grams: $1.2 \\times 1000 = 1200\\text{ g}$.",
+            "workedSolution": "$$300 : 1200 = \\frac{300}{300} : \\frac{1200}{300} = 1 : 4$$.",
+            "points": 2
+          },
+          {
+            "id": "q_r_j1_m03",
+            "difficulty": "medium",
+            "prompt": "In a class of $40$ students, there are $24$ girls and the rest are boys. What is the ratio of boys to girls?",
+            "options": ["2 : 3", "3 : 2", "3 : 5", "2 : 5"],
+            "correctAnswer": "2 : 3",
+            "hint": "Number of boys = 40 - 24 = 16. Then simplify 16 : 24.",
+            "workedSolution": "$$\\text{Boys} = 40 - 24 = 16$$.\n$$\\text{Ratio} = 16 : 24 = \\frac{16 \\div 8}{24 \\div 8} = 2 : 3$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_r_j1_h01",
+            "difficulty": "hard",
+            "prompt": "If $a : b = 2 : 3$ and $b : c = 4 : 5$, find the combined ratio $a : b : c$.",
+            "options": ["8 : 12 : 15", "2 : 4 : 5", "6 : 12 : 15", "8 : 10 : 15"],
+            "correctAnswer": "8 : 12 : 15",
+            "hint": "Make the common term 'b' equal by multiplying the first ratio by 4 and the second ratio by 3.",
+            "workedSolution": "$$a : b = (2 \\times 4) : (3 \\times 4) = 8 : 12$$.\n$$b : c = (4 \\times 3) : (5 \\times 3) = 12 : 15$$.\nTherefore, $$a : b : c = 8 : 12 : 15$$.",
+            "points": 3
+          },
+          {
+            "id": "q_r_j1_h02",
+            "difficulty": "hard",
+            "prompt": "The ratio of red, blue, and yellow beads in a container is $3 : 5 : 7$. If there are $35$ yellow beads, how many red beads are there?",
+            "options": ["15", "25", "21", "10"],
+            "correctAnswer": "15",
+            "hint": "1 ratio unit = 35 / 7 = 5 beads.",
+            "workedSolution": "$$\\text{Value of 1 ratio part} = \\frac{35}{7} = 5$$.\n$$\\text{Red beads} = 3 \\times 5 = 15$$.",
+            "points": 3
+          },
+          {
+            "id": "q_r_j1_h03",
+            "difficulty": "hard",
+            "prompt": "If $\\frac{x}{y} = \\frac{3}{4}$, evaluate the algebraic ratio $\\frac{2x + 3y}{3x + 2y}$.",
+            "options": ["18 / 17", "17 / 18", "7 / 6", "6 / 7"],
+            "correctAnswer": "18 / 17",
+            "hint": "Substitute x = 3k and y = 4k into the expression.",
+            "workedSolution": "Let $$x = 3$$ and $$y = 4$$:\n$$\\frac{2(3) + 3(4)}{3(3) + 2(4)} = \\frac{6 + 12}{9 + 8} = \\frac{18}{17}$$.",
+            "points": 3
+          }
+        ]
+      }
+    },
+    "jhs2": {
+      "levelTitle": "JHS 2: Proportional Sharing & Unitary Calculations",
+      "summary": "Sharing amounts into given ratio parts, finding unknown portions, and solving direct proportion problems.",
+      "notes": "### 1. Ratio Sharing Formula\nTo divide a total quantity $T$ among recipients in the ratio $a : b : c$:\n\n1. Find the **total ratio parts**:\n$$S = a + b + c$$\n\n2. Calculate each person's share:\n$$\\text{Share of } A = \\frac{a}{S} \\times T$$\n$$\\text{Share of } B = \\frac{b}{S} \\times T$$\n\n### 2. Finding Total Amount When One Share is Known\nIf the share corresponding to ratio part $a$ is $X$, then:\n$$\\text{Value of 1 part} = \\frac{X}{a}$$\n$$\\text{Total Quantity} = \\text{Total parts} \\times \\left(\\frac{X}{a}\\right)$$\n\n### 3. Direct Proportion\nTwo quantities $x$ and $y$ are directly proportional if increasing one increases the other in the same proportion:\n$$\\frac{y_1}{x_1} = \\frac{y_2}{x_2} = k \\quad (\\text{constant})$$",
+      "workedExamples": [
+        {
+          "id": "we_jhs2_01",
+          "title": "Dividing a Sum of Money",
+          "problem": "Share $\\text{GH}\\!\\!\\unicode{x20B5} 720$ between Kofi and Ama in the ratio $5 : 3$.",
+          "steps": [
+            "Calculate total ratio parts: $5 + 3 = 8$.",
+            "Calculate Kofi's share: $\\frac{5}{8} \\times 720 = 5 \\times 90 = \\text{GH}\\!\\!\\unicode{x20B5} 450$.",
+            "Calculate Ama's share: $\\frac{3}{8} \\times 720 = 3 \\times 90 = \\text{GH}\\!\\!\\unicode{x20B5} 270$.",
+            "Check: $450 + 270 = 720$."
+          ],
+          "finalAnswer": "$$\\text{Kofi} = \\text{GH}\\!\\!\\unicode{x20B5} 450, \\quad \\text{Ama} = \\text{GH}\\!\\!\\unicode{x20B5} 270$$"
+        },
+        {
+          "id": "we_jhs2_02",
+          "title": "Finding Unknown Whole from Part Difference",
+          "problem": "Two business partners share profits in the ratio $7 : 4$. If the larger share is $\\text{GH}\\!\\!\\unicode{x20B5} 150$ more than the smaller share, find the total profit shared.",
+          "steps": [
+            "Difference in ratio parts = $7 - 4 = 3\\text{ parts}$.",
+            "Value of 1 part = $\\frac{150}{3} = \\text{GH}\\!\\!\\unicode{x20B5} 50$.",
+            "Total ratio parts = $7 + 4 = 11\\text{ parts}$.",
+            "Total profit = $11 \\times 50 = \\text{GH}\\!\\!\\unicode{x20B5} 550$."
+          ],
+          "finalAnswer": "$$\\text{GH}\\!\\!\\unicode{x20B5} 550$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_r_j2_l01",
+            "difficulty": "low",
+            "prompt": "Divide $60\\text{ kg}$ in the ratio $2 : 3$. What is the smaller share?",
+            "options": ["24 kg", "36 kg", "20 kg", "30 kg"],
+            "correctAnswer": "24 kg",
+            "hint": "Total parts = 2 + 3 = 5. Smaller share = (2/5) × 60.",
+            "workedSolution": "$$\\frac{2}{5} \\times 60 = 24\\text{ kg}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_r_j2_l02",
+            "difficulty": "low",
+            "prompt": "If $6$ exercise books cost $\\text{GH}\\!\\!\\unicode{x20B5} 48$, what is the cost of $10$ exercise books?",
+            "options": ["GH₵ 80", "GH₵ 72", "GH₵ 60", "GH₵ 90"],
+            "correctAnswer": "GH₵ 80",
+            "hint": "Cost of 1 book = 48 / 6 = GH₵ 8.",
+            "workedSolution": "$$\\text{Cost per book} = \\frac{48}{6} = 8$$.\n$$\\text{Cost for 10 books} = 10 \\times 8 = \\text{GH}\\!\\!\\unicode{x20B5} 80$$.",
+            "points": 1
+          },
+          {
+            "id": "q_r_j2_l03",
+            "difficulty": "low",
+            "prompt": "Three angles in a triangle are in the ratio $1 : 2 : 3$. Find the size of the smallest angle.",
+            "options": ["30°", "45°", "60°", "20°"],
+            "correctAnswer": "30°",
+            "hint": "Angles in a triangle add up to 180°. Total parts = 1 + 2 + 3 = 6.",
+            "workedSolution": "$$\\text{Smallest angle} = \\frac{1}{6} \\times 180^\\circ = 30^\\circ$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_r_j2_m01",
+            "difficulty": "medium",
+            "prompt": "Kwame and Esi shared an amount of money in the ratio $5 : 2$. If Kwame received $\\text{GH}\\!\\!\\unicode{x20B5} 120$ more than Esi, calculate the total amount shared.",
+            "options": ["GH₵ 280", "GH₵ 240", "GH₵ 300", "GH₵ 350"],
+            "correctAnswer": "GH₵ 280",
+            "hint": "Difference in parts: 5 - 2 = 3 parts. 3 parts = GH₵ 120.",
+            "workedSolution": "$$\\text{1 part} = \\frac{120}{3} = 40$$.\n$$\\text{Total parts} = 5 + 2 = 7$$.\n$$\\text{Total amount} = 7 \\times 40 = \\text{GH}\\!\\!\\unicode{x20B5} 280$$.",
+            "points": 2
+          },
+          {
+            "id": "q_r_j2_m02",
+            "difficulty": "medium",
+            "prompt": "A car travels $240\\text{ km}$ on $20\\text{ litres}$ of petrol. How far can it travel on $35\\text{ litres}$ under the same driving conditions?",
+            "options": ["420 km", "400 km", "380 km", "450 km"],
+            "correctAnswer": "420 km",
+            "hint": "Distance per litre = 240 / 20 = 12 km/l.",
+            "workedSolution": "$$\\text{Rate} = \\frac{240}{20} = 12\\text{ km/l}$$.\n$$\\text{Distance} = 35 \\times 12 = 420\\text{ km}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_r_j2_m03",
+            "difficulty": "medium",
+            "prompt": "The ratio of boys to girls in a school is $4 : 5$. If there are $360$ boys, how many total students are in the school?",
+            "options": ["810", "450", "720", "800"],
+            "correctAnswer": "810",
+            "hint": "4 parts = 360 boys. Total parts = 9.",
+            "workedSolution": "$$\\text{1 part} = \\frac{360}{4} = 90$$.\n$$\\text{Total students} = 9 \\times 90 = 810$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_r_j2_h01",
+            "difficulty": "hard",
+            "prompt": "A sum of money was shared between Mensah, Yaw, and Kweku in the ratio $2 : 3 : 5$. If Kweku received $\\text{GH}\\!\\!\\unicode{x20B5} 180$ more than Mensah, calculate Yaw's share.",
+            "options": ["GH₵ 180", "GH₵ 120", "GH₵ 240", "GH₵ 150"],
+            "correctAnswer": "GH₵ 180",
+            "hint": "Kweku's parts - Mensah's parts = 5 - 2 = 3 parts. 3 parts = GH₵ 180.",
+            "workedSolution": "$$\\text{Difference in parts} = 5 - 2 = 3\\text{ parts}$$.\n$$3\\text{ parts} = \\text{GH}\\!\\!\\unicode{x20B5} 180 \\implies 1\\text{ part} = 60$$.\n$$\\text{Yaw's share} = 3 \\times 60 = \\text{GH}\\!\\!\\unicode{x20B5} 180$$.",
+            "points": 3
+          },
+          {
+            "id": "q_r_j2_h02",
+            "difficulty": "hard",
+            "prompt": "A map is drawn to a scale of $1 : 50,000$. If the distance between two towns on the map is $8\\text{ cm}$, find the actual ground distance in kilometres.",
+            "options": ["4 km", "40 km", "0.4 km", "400 km"],
+            "correctAnswer": "4 km",
+            "hint": "Multiply 8 cm by 50,000 to get cm, then divide by 100,000 to convert to km.",
+            "workedSolution": "$$\\text{Actual distance in cm} = 8 \\times 50,000 = 400,000\\text{ cm}$$.\n$$\\text{Actual distance in km} = \\frac{400,000}{100,000} = 4\\text{ km}$$.",
+            "points": 3
+          },
+          {
+            "id": "q_r_j2_h03",
+            "difficulty": "hard",
+            "prompt": "The perimeter of a rectangle is $84\\text{ cm}$. If the length and breadth are in the ratio $4 : 3$, calculate the area of the rectangle.",
+            "options": ["432 cm²", "864 cm²", "360 cm²", "400 cm²"],
+            "correctAnswer": "432 cm²",
+            "hint": "Perimeter = 2(L + B) = 84 => L + B = 42. Ratio parts = 4 + 3 = 7.",
+            "workedSolution": "$$L + B = \\frac{84}{2} = 42\\text{ cm}$$.\n$$\\text{1 part} = \\frac{42}{7} = 6\\text{ cm}$$.\n$$L = 4 \\times 6 = 24\\text{ cm}, \\quad B = 3 \\times 6 = 18\\text{ cm}$$.\n$$\\text{Area} = 24 \\times 18 = 432\\text{ cm}^2$$.",
+            "points": 3
+          }
+        ]
+      }
+    },
+    "jhs3": {
+      "levelTitle": "JHS 3: Inverse Proportions, Compound Rates & Financial Applications",
+      "summary": "Inverse rates (men-days, worker speeds), multi-tier fractional remainders, and BECE exam integration.",
+      "notes": "### 1. Inverse Proportion Concept\nTwo quantities $x$ and $y$ are inversely proportional when an increase in one leads to a proportional decrease in the other:\n\n$$x \\times y = k \\quad (\\text{constant product})$$\n$$x_1 y_1 = x_2 y_2$$\n\n> **Classic Example:** If more workers are employed, the task takes fewer days.\n\n### 2. Worker-Days Formula\n$$\\text{Total Work} = \\text{Workers} \\times \\text{Days}$$\n$$\\text{Days required} = \\frac{\\text{Total Work}}{\\text{New number of workers}}$$\n\n### 3. Speed, Distance & Time\n$$\\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}}$$\nAt a constant distance, speed and time are **inversely proportional**:\n$$S_1 T_1 = S_2 T_2$$\n\n### 4. Compound Rates & Multi-Tier Remainder Problems\nWhen fractions are spent sequentially, always multiply remaining proportions:\n$$\\text{Remainder} = 1 - \\text{First portion}$$\n$$\\text{Next expenditure} = \\text{Fraction} \\times \\text{Remainder}$$",
+      "workedExamples": [
+        {
+          "id": "we_jhs3_01",
+          "title": "Worker-Day Construction Problem",
+          "problem": "Twelve men can weed a cocoa farm in 6 days. How many days will it take 8 men to weed the same farm, assuming they work at the exact same rate?",
+          "steps": [
+            "Calculate total workload in man-days: $12 \\times 6 = 72\\text{ man-days}$.",
+            "Set up inverse proportion equation: $8 \\times D = 72$.",
+            "Solve for $D$: $D = \\frac{72}{8} = 9\\text{ days}$."
+          ],
+          "finalAnswer": "$$9\\text{ days}$$"
+        },
+        {
+          "id": "we_jhs3_02",
+          "title": "Multi-Stage Sequential Remainder Problem",
+          "problem": "A trader spent $1/4$ of her monthly earnings on rent and $2/5$ of the remainder on food. If she had $\\text{GH}\\!\\!\\unicode{x20B5} 900$ left, find her total monthly earnings.",
+          "steps": [
+            "First remainder after rent: $1 - \\frac{1}{4} = \\frac{3}{4}$.",
+            "Fraction spent on food: $\\frac{2}{5} \\times \\frac{3}{4} = \\frac{6}{20} = \\frac{3}{10}$.",
+            "Total fraction spent: $\\frac{1}{4} + \\frac{3}{10} = \\frac{5 + 6}{20} = \\frac{11}{20}$.",
+            "Final remainder fraction: $1 - \\frac{11}{20} = \\frac{9}{20}$.",
+            "Set up equation: $\\frac{9}{20} \\times \\text{Total} = 900$.",
+            "Solve: $\\text{Total} = 900 \\times \\frac{20}{9} = 100 \\times 20 = \\text{GH}\\!\\!\\unicode{x20B5} 2,000$."
+          ],
+          "finalAnswer": "$$\\text{GH}\\!\\!\\unicode{x20B5} 2,000$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_r_j3_l01",
+            "difficulty": "low",
+            "prompt": "If $4$ men can paint a school hall in $6$ days, how many days will $8$ men take at the same working rate?",
+            "options": ["3 days", "4 days", "2 days", "12 days"],
+            "correctAnswer": "3 days",
+            "hint": "Total work = 4 × 6 = 24 man-days. Days for 8 men = 24 / 8.",
+            "workedSolution": "$$\\text{Days} = \\frac{4 \\times 6}{8} = \\frac{24}{8} = 3\\text{ days}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_r_j3_l02",
+            "difficulty": "low",
+            "prompt": "A car traveling at an average speed of $60\\text{ km/h}$ completes a journey in $4\\text{ hours}$. How long would it take at $80\\text{ km/h}$?",
+            "options": ["3 hours", "3.5 hours", "2.5 hours", "5 hours"],
+            "correctAnswer": "3 hours",
+            "hint": "Distance = 60 × 4 = 240 km. Time at 80 km/h = 240 / 80.",
+            "workedSolution": "$$\\text{Distance} = 60 \\times 4 = 240\\text{ km}$$.\n$$\\text{New Time} = \\frac{240}{80} = 3\\text{ hours}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_r_j3_l03",
+            "difficulty": "low",
+            "prompt": "Six water pumps can drain a flooded field in $10\\text{ hours}$. How many pumps are needed to drain the field in $5\\text{ hours}$?",
+            "options": ["12 pumps", "10 pumps", "8 pumps", "15 pumps"],
+            "correctAnswer": "12 pumps",
+            "hint": "Pumps × hours = constant. 6 × 10 = P × 5.",
+            "workedSolution": "$$6 \\times 10 = P \\times 5 \\implies 60 = 5P \\implies P = 12$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_r_j3_m01",
+            "difficulty": "medium",
+            "prompt": "A builder has enough provisions to feed $15$ workers for $12$ days. If $5$ additional workers join the team, for how many days will the provisions last at the same consumption rate?",
+            "options": ["9 days", "10 days", "8 days", "7 days"],
+            "correctAnswer": "9 days",
+            "hint": "Total provisions = 15 × 12 = 180 worker-days. New number of workers = 15 + 5 = 20.",
+            "workedSolution": "$$\\text{New workers} = 15 + 5 = 20$$.\n$$\\text{Days} = \\frac{15 \\times 12}{20} = \\frac{180}{20} = 9\\text{ days}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_r_j3_m02",
+            "difficulty": "medium",
+            "prompt": "A student spends $1/3$ of his pocket money on transport and $1/4$ on lunch. What fraction of his pocket money is left?",
+            "options": ["5 / 12", "7 / 12", "1 / 6", "1 / 2"],
+            "correctAnswer": "5 / 12",
+            "hint": "Find total spent: 1/3 + 1/4 = 7/12. Remainder = 1 - 7/12.",
+            "workedSolution": "$$\\text{Total spent} = \\frac{1}{3} + \\frac{1}{4} = \\frac{4 + 3}{12} = \\frac{7}{12}$$.\n$$\\text{Fraction remaining} = 1 - \\frac{7}{12} = \\frac{5}{12}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_r_j3_m03",
+            "difficulty": "medium",
+            "prompt": "If $9$ taps can fill a municipal storage tank in $4\\text{ hours}$, how long will it take if $3$ taps develop a fault and are shut down?",
+            "options": ["6 hours", "5 hours", "5.5 hours", "8 hours"],
+            "correctAnswer": "6 hours",
+            "hint": "Remaining taps = 9 - 3 = 6. 9 × 4 = 6 × Time.",
+            "workedSolution": "$$\\text{Remaining taps} = 9 - 3 = 6$$.\n$$\\text{Time} = \\frac{9 \\times 4}{6} = \\frac{36}{6} = 6\\text{ hours}$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_r_j3_h01",
+            "difficulty": "hard",
+            "prompt": "Fifteen men can dig a foundation trench in 12 days working 8 hours a day. In how many days can 18 men dig the same trench working 10 hours a day?",
+            "options": ["8 days", "9 days", "6 days", "10 days"],
+            "correctAnswer": "8 days",
+            "hint": "Total man-hours = Men × Days × Hours = 15 × 12 × 8 = 1,440. Set equal to 18 × D × 10.",
+            "workedSolution": "$$\\text{Total man-hours} = 15 \\times 12 \\times 8 = 1,440$$.\n$$18 \\times D \\times 10 = 1,440$$\n$$180 D = 1,440 \\implies D = \\frac{1,440}{180} = 8\\text{ days}$$.",
+            "points": 3
+          },
+          {
+            "id": "q_r_j3_h02",
+            "difficulty": "hard",
+            "prompt": "A farmer spent $2/5$ of his harvest proceeds on fertilizer, $1/3$ of the remainder on labor, and saved the remaining $\\text{GH}\\!\\!\\unicode{x20B5} 2,400$. Find the total value of his harvest proceeds.",
+            "options": ["GH₵ 6,000", "GH₵ 5,500", "GH₵ 7,200", "GH₵ 8,000"],
+            "correctAnswer": "GH₵ 6,000",
+            "hint": "Remainder after fertilizer = 3/5. Fraction spent on labor = (1/3) × (3/5) = 1/5. Saved fraction = 3/5 - 1/5 = 2/5.",
+            "workedSolution": "$$\\text{Remainder 1} = 1 - \\frac{2}{5} = \\frac{3}{5}$$.\n$$\\text{Labor fraction} = \\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$$.\n$$\\text{Fraction saved} = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$.\n$$\\frac{2}{5} \\times \\text{Total} = 2,400 \\implies \\text{Total} = 2,400 \\times \\frac{5}{2} = \\text{GH}\\!\\!\\unicode{x20B5} 6,000$$.",
+            "points": 3
+          },
+          {
+            "id": "q_r_j3_h03",
+            "difficulty": "hard",
+            "prompt": "Three partners $P$, $Q$, and $R$ invested $\\text{GH}\\!\\!\\unicode{x20B5} 4,000$, $\\text{GH}\\!\\!\\unicode{x20B5} 6,000$, and $\\text{GH}\\!\\!\\unicode{x20B5} 10,000$ respectively in a venture. At the end of the year, $20\\%$ of the profit was set aside as a reserve fund, and the remaining profit was shared according to their investments. If $Q$'s share was $\\text{GH}\\!\\!\\unicode{x20B5} 1,800$, what was the total annual profit?",
+            "options": ["GH₵ 7,500", "GH₵ 6,000", "GH₵ 8,000", "GH₵ 9,000"],
+            "correctAnswer": "GH₵ 7,500",
+            "hint": "Investment ratio = 4:6:10 = 2:3:5. Q's fraction of distributed profit = 3/10. Distributed profit = 80% of Total.",
+            "workedSolution": "$$\\text{Ratio} = 4000 : 6000 : 10000 = 2 : 3 : 5$$.\n$$\\text{Total parts} = 10$$.\n$$Q\\text{'s share} = \\frac{3}{10} \\times \\text{Distributed Profit} = 1,800 \\implies \\text{Distributed Profit} = 1,800 \\times \\frac{10}{3} = 6,000$$.\n$$\\text{Distributed Profit is } 80\\% \\text{ of Total} \\implies \\text{Total Profit} = \\frac{6,000}{0.80} = \\text{GH}\\!\\!\\unicode{x20B5} 7,500$$.",
+            "points": 3
+          }
+        ]
+      }
+    }
+  },
+  "linkedExamQuestions": [
+    {
+      "setId": "jhs-math-mastery-series-27",
+      "year": 1999,
+      "paper": 1,
+      "questionNumber": 8,
+      "promptSnippet": "Express the ratio of 45 minutes to 2 hours in simplest form."
+    },
+    {
+      "setId": "jhs-math-mastery-series-14",
+      "year": 1993,
+      "paper": 1,
+      "questionNumber": 12,
+      "promptSnippet": "Share an amount of money between two children in the ratio 3 : 5."
+    },
+    {
+      "setId": "jhs-math-mastery-series-46",
+      "year": 1990,
+      "paper": 2,
+      "questionNumber": 4,
+      "promptSnippet": "Modal brand and soft drink preference percentage calculations."
+    }
+  ],
+  "updatedAt": "2026-09-16T12:00:00.000Z"
+}
