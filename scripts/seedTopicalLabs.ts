@@ -189,7 +189,8 @@ async function runSeeding() {
   console.log('================================================================');
 
   // 1. Seed Subject Topics Manifest
-  const manifestPath = 'global_curriculum/jhs/subjects/math';
+  const manifestPath = 'global_curriculum/jhs/subjects/math/manifests/topical_labs';
+  const legacyManifestPath = 'global_curriculum/jhs/subjects/math';
   console.log(`\n📋 Ingesting Subject Topics Manifest at: ${manifestPath}...`);
   if (!isDryRun && db) {
     const manifestRef = db.doc(manifestPath);
@@ -197,7 +198,15 @@ async function runSeeding() {
       ...JHS_MATH_MANIFEST,
       updatedAt: FieldValue.serverTimestamp()
     }, { merge: true });
-    console.log(`✅ [WRITTEN] Subject manifest synchronized with ${JHS_MATH_MANIFEST.totalTopics} topics.`);
+
+    // Also keep root subject doc synchronized
+    const legacyRef = db.doc(legacyManifestPath);
+    await legacyRef.set({
+      ...JHS_MATH_MANIFEST,
+      updatedAt: FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    console.log(`✅ [WRITTEN] Subject manifest synchronized with ${JHS_MATH_MANIFEST.totalTopics} topics at ${manifestPath}.`);
   } else {
     console.log(`🔍 [VALIDATED] Manifest with ${JHS_MATH_MANIFEST.totalTopics} topics ready.`);
   }

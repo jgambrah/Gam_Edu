@@ -109,7 +109,8 @@ export const DEFAULT_JHS_MATH_MANIFEST: SubjectTopicsManifest = {
 
 /**
  * Fetches the subject topics manifest document.
- * Path: global_curriculum/{levelId}/subjects/{subjectId}
+ * Path: global_curriculum/{levelId}/subjects/{subjectId}/manifests/topical_labs
+ * Fallback: global_curriculum/{levelId}/subjects/{subjectId}
  * Costs exactly 1 Firestore document read.
  */
 export async function fetchSubjectTopicsManifest(
@@ -117,11 +118,25 @@ export async function fetchSubjectTopicsManifest(
   subjectId: string = 'math'
 ): Promise<SubjectTopicsManifest> {
   try {
-    const manifestRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId);
-    const snap = await getDoc(manifestRef);
+    // 1. Primary registry path: global_curriculum/jhs/subjects/math/manifests/topical_labs
+    const primaryRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'manifests', 'topical_labs');
+    const primarySnap = await getDoc(primaryRef);
 
-    if (snap.exists()) {
-      const data = snap.data() as SubjectTopicsManifest;
+    if (primarySnap.exists()) {
+      const data = primarySnap.data() as SubjectTopicsManifest;
+      return {
+        ...DEFAULT_JHS_MATH_MANIFEST,
+        ...data,
+        topics: data.topics && data.topics.length > 0 ? data.topics : DEFAULT_JHS_MATH_MANIFEST.topics
+      };
+    }
+
+    // 2. Fallback to subject document
+    const subjectRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId);
+    const subjectSnap = await getDoc(subjectRef);
+
+    if (subjectSnap.exists()) {
+      const data = subjectSnap.data() as SubjectTopicsManifest;
       return {
         ...DEFAULT_JHS_MATH_MANIFEST,
         ...data,

@@ -2508,8 +2508,18 @@ function MathLab({
                 <TopicalLabRunner
                     topicDoc={activeTopicalLab}
                     studentId={studentId}
+                    tenantId={tenantId}
                     initialLevel="jhs1"
                     onBack={() => setActiveTopicalLab(null)}
+                    onNavigateToSet={(targetSetId) => {
+                        setActiveTopicalLab(null);
+                        handleLaunchModule({
+                            title: `Exam Paper (${targetSetId})`,
+                            setId: targetSetId,
+                            topicId: 'core_curriculum_mastery',
+                            kind: 'exam_series'
+                        });
+                    }}
                 />
             ) : activeTopicMeta ? (
                 isLoadingSet ? (
