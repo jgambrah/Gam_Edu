@@ -1,0 +1,574 @@
+{
+  "id": "jhs-math-mastery-series-43",
+  "title": "Junior Core Mathematics • Objective Mastery Series (Set 43)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Comprehensive Objective Exam Series",
+  "variantType": "standard",
+  "totalQuestions": 40,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "prompt": "If set $$A = \\{2, 3, 5, 9, 12\\}$$ and set $$B = \\{9, 2, k, 5, 3\\}$$ such that $$A = B$$, what is the value of $k$?",
+      "options": [
+        "12",
+        "5",
+        "3",
+        "9"
+      ],
+      "correctAnswer": "12",
+      "hint": "Equal sets contain the exact same elements.",
+      "workedSolution": "Comparing the elements of A and B, the missing element in B is 12. Therefore, k = 12.",
+      "points": 1
+    },
+    {
+      "id": "q02",
+      "prompt": "Given sets $$P = \\{\\text{car}, \\text{bus}\\}$$ and $$Q = \\{\\text{van}, \\text{car}, \\text{bus}\\}$$, which of the following statements is TRUE?",
+      "options": [
+        "$$P = Q$$",
+        "$$P \\subset Q$$",
+        "$$Q \\subset P$$",
+        "$$P \\cap Q = \\emptyset$$"
+      ],
+      "correctAnswer": "$$P \\subset Q$$",
+      "hint": "All elements of set P are also contained in set Q.",
+      "workedSolution": "Since every member of P is also an element of Q and P does not equal Q, P is a proper subset of Q ($$P \\subset Q$$).",
+      "points": 1
+    },
+    {
+      "id": "q03",
+      "prompt": "The following vertical addition is performed in base ten:\n$$\\begin{matrix} 3240 \\\\ + 1150 \\\\ + x \\\\ \\hline 6150 \\end{matrix}$$\nFind the missing addend $x$.",
+      "options": [
+        "1760",
+        "1850",
+        "1750",
+        "1660"
+      ],
+      "correctAnswer": "1760",
+      "hint": "Add the first two numbers: $3240 + 1150 = 4390$. Subtract from 6150.",
+      "workedSolution": "$$3240 + 1150 = 4390$$. $$x = 6150 - 4390 = 1760$$.",
+      "points": 1
+    },
+    {
+      "id": "q04",
+      "prompt": "Given that $$3^2 \\times 2^2 \\times 5 = 180$$, find the least positive integer that must be multiplied by $180$ to make the product a perfect square.",
+      "options": [
+        "5",
+        "2",
+        "3",
+        "10"
+      ],
+      "correctAnswer": "5",
+      "hint": "For a number to be a perfect square, all exponents in its prime factorization must be even.",
+      "workedSolution": "The factor 5 has an exponent of 1. Multiplying by 5 gives $$3^2 \\times 2^2 \\times 5^2 = (3 \\times 2 \\times 5)^2 = 30^2$$.",
+      "points": 1
+    },
+    {
+      "id": "q05",
+      "prompt": "Express $5384.15$ in standard form.",
+      "options": [
+        "$$5.38415 \\times 10^3$$",
+        "$$5.38415 \\times 10^4$$",
+        "$$53.8415 \\times 10^2$$",
+        "$$5.38415 \\times 10^{-3}$$"
+      ],
+      "correctAnswer": "$$5.38415 \\times 10^3$$",
+      "hint": "Move the decimal point 3 places to the left so that $1 \\le A < 10$.",
+      "workedSolution": "$$5384.15 = 5.38415 \\times 10^3$$.",
+      "points": 1
+    },
+    {
+      "id": "q06",
+      "prompt": "Convert the binary numeral $$11011_{\\text{two}}$$ to a decimal numeral (base ten).",
+      "options": [
+        "27",
+        "25",
+        "31",
+        "29"
+      ],
+      "correctAnswer": "27",
+      "hint": "$$1(2^4) + 1(2^3) + 0(2^2) + 1(2^1) + 1(2^0)$$.",
+      "workedSolution": "$$16 + 8 + 0 + 2 + 1 = 27$$.",
+      "points": 1
+    },
+    {
+      "id": "q07",
+      "prompt": "A student spent $3/8$ of her pocket money on books and $1/4$ on lunch. What fraction of her pocket money was spent altogether on books and lunch?",
+      "options": [
+        "$$\\frac{5}{8}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{3}{8}$$",
+        "$$\\frac{7}{8}$$"
+      ],
+      "correctAnswer": "$$\\frac{5}{8}$$",
+      "hint": "Add the fractions: $\\frac{3}{8} + \\frac{1}{4}$.",
+      "workedSolution": "$$\\frac{3}{8} + \\frac{2}{8} = \\frac{5}{8}$$.",
+      "points": 1
+    },
+    {
+      "id": "q08",
+      "prompt": "The product of three numbers is $1,560$. Two of the numbers are $4$ and $13$. Find the third number.",
+      "options": [
+        "30",
+        "25",
+        "35",
+        "20"
+      ],
+      "correctAnswer": "30",
+      "hint": "Product of the first two = $4 \\times 13 = 52$. Divide 1,560 by 52.",
+      "workedSolution": "$$\\text{Third number} = \\frac{1,560}{52} = 30$$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "Find the Greatest Common Factor (GCF) of $$2^4 \\times 3^2$$ and $$2^2 \\times 3^3$$.",
+      "options": [
+        "36",
+        "72",
+        "18",
+        "144"
+      ],
+      "correctAnswer": "36",
+      "hint": "Take the lowest power of each common prime factor: $2^2 \\times 3^2$.",
+      "workedSolution": "$$2^2 \\times 3^2 = 4 \\times 9 = 36$$.",
+      "points": 1
+    },
+    {
+      "id": "q10",
+      "prompt": "Two supplementary interior angles on the same side of a transversal crossing two parallel lines are in the ratio $2 : 3$. Find the size of the larger angle.",
+      "options": [
+        "$$108^\\circ$$",
+        "$$72^\\circ$$",
+        "$$120^\\circ$$",
+        "$$90^\\circ$$"
+      ],
+      "correctAnswer": "$$108^\\circ$$",
+      "hint": "Co-interior angles sum to 180°. Larger angle = (3 / 5) × 180°.",
+      "workedSolution": "$$\\frac{3}{5} \\times 180^\\circ = 3 \\times 36^\\circ = 108^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "From Question 10, find the size of the smaller interior angle.",
+      "options": [
+        "$$72^\\circ$$",
+        "$$60^\\circ$$",
+        "$$54^\\circ$$",
+        "$$80^\\circ$$"
+      ],
+      "correctAnswer": "$$72^\\circ$$",
+      "hint": "Subtract: 180° - 108°.",
+      "workedSolution": "$$180^\\circ - 108^\\circ = 72^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "If an angle is vertically opposite to an angle measuring $72^\\circ$, what is its measure?",
+      "options": [
+        "$$72^\\circ$$",
+        "$$108^\\circ$$",
+        "$$18^\\circ$$",
+        "$$144^\\circ$$"
+      ],
+      "correctAnswer": "$$72^\\circ$$",
+      "hint": "Vertically opposite angles are equal.",
+      "workedSolution": "Vertically opposite angles have equal measure, so the angle is $$72^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "Simplify: $$4x^2 y^3 \\times 3x^3 y$$.",
+      "options": [
+        "$$12x^5 y^4$$",
+        "$$12x^6 y^3$$",
+        "$$7x^5 y^4$$",
+        "$$12x^5 y^3$$"
+      ],
+      "correctAnswer": "$$12x^5 y^4$$",
+      "hint": "Multiply coefficients: $4 \\times 3 = 12$. Add exponents for x and y.",
+      "workedSolution": "$$(4 \\times 3) \\times x^{2+3} \\times y^{3+1} = 12x^5 y^4$$.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "In the relation $$v = u + at$$, find $v$ when $u = 8$, $a = 5$, and $t = 3$.",
+      "options": [
+        "23",
+        "39",
+        "16",
+        "29"
+      ],
+      "correctAnswer": "23",
+      "hint": "Substitute the values: $8 + (5 \\times 3)$.",
+      "workedSolution": "$$v = 8 + (5 \\times 3) = 8 + 15 = 23$$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "The test scores of ten students are: $$2, 3, 4, 4, 6, 8, 8, 8, 9, 10$$. What is the modal score?",
+      "options": [
+        "8",
+        "4",
+        "6",
+        "9"
+      ],
+      "correctAnswer": "8",
+      "hint": "The mode is the score occurring with the highest frequency.",
+      "workedSolution": "Score 8 appears 3 times, which is more frequent than any other score. Mode = 8.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "From the test scores in Question 15 ($$2, 3, 4, 4, 6, 8, 8, 8, 9, 10$$), find the median score.",
+      "options": [
+        "7",
+        "6",
+        "8",
+        "6.5"
+      ],
+      "correctAnswer": "7",
+      "hint": "The middle two values (5th and 6th) are 6 and 8. Average them.",
+      "workedSolution": "$$\\text{Median} = \\frac{6 + 8}{2} = \\frac{14}{2} = 7$$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "Calculate the mean of the ten scores in Question 15 ($$2, 3, 4, 4, 6, 8, 8, 8, 9, 10$$).",
+      "options": [
+        "6.2",
+        "6.0",
+        "6.5",
+        "5.8"
+      ],
+      "correctAnswer": "6.2",
+      "hint": "Sum all scores and divide by 10.",
+      "workedSolution": "$$\\sum x = 2 + 3 + 4 + 4 + 6 + 8 + 8 + 8 + 9 + 10 = 62$$. Mean = $$62 / 10 = 6.2$$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "What is the probability of selecting a student who scored $8$ from the group in Question 15?",
+      "options": [
+        "$$\\frac{3}{10}$$",
+        "$$\\frac{1}{10}$$",
+        "$$\\frac{2}{5}$$",
+        "$$\\frac{1}{5}$$"
+      ],
+      "correctAnswer": "$$\\frac{3}{10}$$",
+      "hint": "Score 8 appears 3 times out of 10 students.",
+      "workedSolution": "$$P(8) = \\frac{3}{10}$$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "A real estate agent earns a commission of $10\\%$ on property sales. If his commission on a house sale is $\\text{GH¢ } 45,000.00$, find the total sale price of the house.",
+      "options": [
+        "GH¢ 450,000.00",
+        "GH¢ 400,000.00",
+        "GH¢ 500,000.00",
+        "GH¢ 350,000.00"
+      ],
+      "correctAnswer": "GH¢ 450,000.00",
+      "hint": "Total sales = Commission / 0.10.",
+      "workedSolution": "$$\\text{Total sales} = \\frac{45,000.00}{0.10} = \\text{GH¢ } 450,000.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "A map is drawn to a scale of $1 : 50,000$. What actual distance in kilometres is represented by a segment of $6\\text{ cm}$ on the map?",
+      "options": [
+        "3.0 km",
+        "0.3 km",
+        "30 km",
+        "5.0 km"
+      ],
+      "correctAnswer": "3.0 km",
+      "hint": "$$6\\text{ cm} \\times 50,000 = 300,000\\text{ cm}$$. Divide by 100,000 to convert to kilometres.",
+      "workedSolution": "$$300,000\\text{ cm} = \\frac{300,000}{100,000} = 3.0\\text{ km}$$.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "Kofi and Ama share an amount of $\\text{GH¢ } 800.00$ in the ratio $5 : 3$. Find Kofi's share.",
+      "options": [
+        "GH¢ 500.00",
+        "GH¢ 300.00",
+        "GH¢ 480.00",
+        "GH¢ 520.00"
+      ],
+      "correctAnswer": "GH¢ 500.00",
+      "hint": "Total ratio parts = 5 + 3 = 8. Kofi's share = (5 / 8) × 800.",
+      "workedSolution": "$$\\frac{5}{8} \\times 800 = 5 \\times 100 = \\text{GH¢ } 500.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "Simplify: $$\\frac{3x}{4} - \\frac{x - y}{2}$$.",
+      "options": [
+        "$$\\frac{x + 2y}{4}$$",
+        "$$\\frac{x - 2y}{4}$$",
+        "$$\\frac{5x - 2y}{4}$$",
+        "$$\\frac{x + y}{4}$$"
+      ],
+      "correctAnswer": "$$\\frac{x + 2y}{4}$$",
+      "hint": "Common denominator is 4: $\\frac{3x - 2(x - y)}{4}$.",
+      "workedSolution": "$$\\frac{3x - 2x + 2y}{4} = \\frac{x + 2y}{4}$$.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "If $$y^7 \\div y^4 = 27$$, find the value of $y$.",
+      "options": [
+        "3",
+        "9",
+        "2",
+        "4"
+      ],
+      "correctAnswer": "3",
+      "hint": "$$y^{7-4} = y^3$$. Solve $y^3 = 27$.",
+      "workedSolution": "$$y^3 = 27 \\implies y = \\sqrt[3]{27} = 3$$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "Find one-hundredth ($1/100$) of $2.485$.",
+      "options": [
+        "0.02485",
+        "0.2485",
+        "0.002485",
+        "24.85"
+      ],
+      "correctAnswer": "0.02485",
+      "hint": "Dividing by 100 shifts the decimal point 2 places to the left.",
+      "workedSolution": "$$2.485 \\div 100 = 0.02485$$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "State the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4\\}$ produce outputs $y = \\{3, 5, 7, 9\\}$.",
+      "options": [
+        "$$x \\to 2x + 1$$",
+        "$$x \\to 2x - 1$$",
+        "$$x \\to 3x$$",
+        "$$x \\to x + 2$$"
+      ],
+      "correctAnswer": "$$x \\to 2x + 1$$",
+      "hint": "Common difference is 2. At $x = 1$, $2(1) + 1 = 3$.",
+      "workedSolution": "Rate of change is 2 ($2x$). When $x = 1$, $2(1) + c = 3 \\implies c = 1$. The rule is $$x \\to 2x + 1$$.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "The circumference of a circular running track is $880\\text{ m}$. Find the diameter of the track. (Take $\\pi = \\frac{22}{7}$).",
+      "options": [
+        "280 m",
+        "140 m",
+        "560 m",
+        "220 m"
+      ],
+      "correctAnswer": "280 m",
+      "hint": "Circumference $C = \\pi d \\implies d = \\frac{C}{\\pi}$.",
+      "workedSolution": "$$d = 880 \\div \\frac{22}{7} = 880 \\times \\frac{7}{22} = 40 \\times 7 = 280\\text{ m}$$.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "Given column vectors $$u = \\begin{pmatrix} 2 \\\\ 3 \\end{pmatrix}$$ and $$v = \\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix}$$, evaluate $$3(u + v)$$.",
+      "options": [
+        "$$\\begin{pmatrix} 3 \\\\ 15 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 3 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 1 \\\\ 5 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 9 \\\\ 15 \\end{pmatrix}$$"
+      ],
+      "correctAnswer": "$$\\begin{pmatrix} 3 \\\\ 15 \\end{pmatrix}$$",
+      "hint": "$$u + v = \\begin{pmatrix} 1 \\\\ 5 \\end{pmatrix}$$. Multiply each component by 3.",
+      "workedSolution": "$$u + v = \\begin{pmatrix} 2 + (-1) \\\\ 3 + 2 \\end{pmatrix} = \\begin{pmatrix} 1 \\\\ 5 \\end{pmatrix}$$. $$3\\begin{pmatrix} 1 \\\\ 5 \\end{pmatrix} = \\begin{pmatrix} 3 \\\\ 15 \\end{pmatrix}$$.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "Which of the following geometric instruments is primarily used to measure the size of an angle in degrees?",
+      "options": [
+        "Protractor",
+        "Set square",
+        "Pair of compasses",
+        "Divider"
+      ],
+      "correctAnswer": "Protractor",
+      "hint": "Standard semi-circular graduated angle-measuring tool.",
+      "workedSolution": "A protractor is specifically designed for measuring and constructing angles in degrees.",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "Express the ratio of $75\\text{ cm}$ to $50\\text{ cm}$ in its simplest form.",
+      "options": [
+        "3 : 2",
+        "2 : 3",
+        "5 : 3",
+        "4 : 3"
+      ],
+      "correctAnswer": "3 : 2",
+      "hint": "Divide both numbers by their highest common factor, 25.",
+      "workedSolution": "$$\\frac{75}{25} : \\frac{50}{25} = 3 : 2$$.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "A line segment of length $4\\text{ cm}$ is enlarged to a new length of $12\\text{ cm}$. What is the linear scale factor of enlargement?",
+      "options": [
+        "3",
+        "2",
+        "4",
+        "1/3"
+      ],
+      "correctAnswer": "3",
+      "hint": "Scale factor = Image length / Object length.",
+      "workedSolution": "$$k = \\frac{12}{4} = 3$$.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "If a line segment of length $5.4\\text{ m}$ is enlarged by a scale factor of $1/3$, find the length of the image segment.",
+      "options": [
+        "1.8 m",
+        "1.6 m",
+        "2.2 m",
+        "16.2 m"
+      ],
+      "correctAnswer": "1.8 m",
+      "hint": "Multiply 5.4 by 1/3.",
+      "workedSolution": "$$\\text{Image length} = 5.4 \\times \\frac{1}{3} = 1.8\\text{ m}$$.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "In a right-angled triangle $PQR$, right-angled at $Q$, side $|PQ| = 12\\text{ cm}$ and side $|QR| = 5\\text{ cm}$. Find the value of $\\tan \\angle PRQ$.",
+      "options": [
+        "$$\\frac{12}{5}$$",
+        "$$\\frac{5}{12}$$",
+        "$$\\frac{12}{13}$$",
+        "$$\\frac{5}{13}$$"
+      ],
+      "correctAnswer": "$$\\frac{12}{5}$$",
+      "hint": "$\\tan \\theta = \\text{Opposite} / \\text{Adjacent}$. Opposite side to angle R is PQ = 12.",
+      "workedSolution": "$$\\tan \\angle PRQ = \\frac{|PQ|}{|QR|} = \\frac{12}{5}$$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "A customer purchased a gas stove for $\\text{GH¢ } 360.00$ after receiving a $10\\%$ cash discount on the marked price. Calculate the marked price.",
+      "options": [
+        "GH¢ 400.00",
+        "GH¢ 396.00",
+        "GH¢ 420.00",
+        "GH¢ 380.00"
+      ],
+      "correctAnswer": "GH¢ 400.00",
+      "hint": "Customer paid 90% of the marked price: Marked Price = 360.00 / 0.90.",
+      "workedSolution": "$$\\text{Marked Price} = \\frac{360.00}{0.90} = \\text{GH¢ } 400.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "In a class of $45$ pupils, $25$ study French, $7$ study both French and Spanish, and each pupil studies at least one of the two languages. How many pupils study Spanish?",
+      "options": [
+        "27",
+        "20",
+        "18",
+        "32"
+      ],
+      "correctAnswer": "27",
+      "hint": "$$n(F \\cup S) = n(F) + n(S) - n(F \\cap S) \\implies 45 = 25 + n(S) - 7$$.",
+      "workedSolution": "$$45 = 18 + n(S) \\implies n(S) = 45 - 18 = 27\\text{ pupils}$$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "From Question 34, how many pupils study Spanish ONLY?",
+      "options": [
+        "20",
+        "27",
+        "18",
+        "25"
+      ],
+      "correctAnswer": "20",
+      "hint": "Spanish only = Total Spanish - Both = 27 - 7.",
+      "workedSolution": "$$\\text{Spanish only} = 27 - 7 = 20\\text{ pupils}$$.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "From Question 34, how many pupils study French ONLY?",
+      "options": [
+        "18",
+        "25",
+        "20",
+        "7"
+      ],
+      "correctAnswer": "18",
+      "hint": "French only = Total French - Both = 25 - 7.",
+      "workedSolution": "$$\\text{French only} = 25 - 7 = 18\\text{ pupils}$$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "When a certain number is subtracted from $14$ and the difference is multiplied by $3$, the result is $18$. Find the number.",
+      "options": [
+        "8",
+        "6",
+        "10",
+        "4"
+      ],
+      "correctAnswer": "8",
+      "hint": "$$3(14 - x) = 18 \\implies 14 - x = 6$$.",
+      "workedSolution": "$$14 - x = 6 \\implies x = 14 - 6 = 8$$.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "Point $B$ is located on a three-figure bearing of $045^\\circ$ from Point $A$. What is the bearing of $A$ from $B$?",
+      "options": [
+        "$$225^\\circ$$",
+        "$$135^\\circ$$",
+        "$$315^\\circ$$",
+        "$$180^\\circ$$"
+      ],
+      "correctAnswer": "$$225^\\circ$$",
+      "hint": "Back-bearing = Forward bearing $+ 180^\\circ$ when $< 180^\\circ$.",
+      "workedSolution": "$$45^\\circ + 180^\\circ = 225^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "If $24\\%$ of the length of a cord is $72\\text{ cm}$, find the full length of the cord.",
+      "options": [
+        "300 cm",
+        "250 cm",
+        "280 cm",
+        "360 cm"
+      ],
+      "correctAnswer": "300 cm",
+      "hint": "Full length = $72 / 0.24$.",
+      "workedSolution": "$$\\text{Full length} = \\frac{72}{0.24} = \\frac{7200}{24} = 300\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "In a geometric compass construction, intersecting arcs centered at points on a line equidistant from an external point $P$ are used to:",
+      "options": [
+        "Construct a perpendicular to a given line from a point outside the line",
+        "Construct a line parallel to the given line",
+        "Bisect an acute angle",
+        "Construct an equilateral triangle"
+      ],
+      "correctAnswer": "Construct a perpendicular to a given line from a point outside the line",
+      "hint": "The construction drops a perpendicular line onto a line segment from an external point.",
+      "workedSolution": "This standard compass technique constructs a perpendicular from an external point onto a given straight line.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-16T15:00:00.000Z",
+  "lastUpdated": "2026-09-16T15:00:00.000Z"
+}
