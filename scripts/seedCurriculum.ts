@@ -9153,6 +9153,213 @@ export const SET_JHS_MASTERY_SERIES_29: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 4e. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 30)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-30
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_30: CurriculumQuestionSet = {
+  "id": "jhs-math-mastery-series-30",
+  "title": "Junior Core Mathematics • Structured Problem-Solving Series (Set 30)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Structured Theory, Geometry & Data Modeling",
+  "variantType": "standard",
+  "totalQuestions": 6,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "title": "Question 1: Venn Diagram Modeling, Mixed Fractions & Fractional Equations",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 360 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='180' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U = 50</text><circle cx='135' cy='105' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='225' cy='105' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='95' y='45' font-size='12' font-weight='bold' fill='#2563eb'>English (E: 32)</text><text x='215' y='45' font-size='12' font-weight='bold' fill='#059669'>Math (M: 28)</text><text x='95' y='110' font-size='12' fill='#1e293b'>32 - x</text><text x='175' y='110' font-size='13' font-weight='bold' fill='#dc2626'>x</text><text x='235' y='110' font-size='12' fill='#1e293b'>28 - x</text><text x='25' y='165' font-size='11' fill='#64748b'>Neither = 6</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "In a class of $50$ students, $32$ passed English Language, $28$ passed Mathematics, and $6$ failed both subjects.\nUsing the Venn diagram provided above:\n(i) Formulate an algebraic equation representing the data.\n(ii) Find the number of students who passed **both** subjects.\n(iii) Calculate the number of students who passed English Language **only**.",
+          "hint": "Sum of all subsets in the universal set equals 50: $(32 - x) + x + (28 - x) + 6 = 50$.",
+          "modelAnswer": "(i) 66 - x = 50, (ii) 16 students, (iii) 16 students",
+          "workedSolution": "**(i) Algebraic Equation:**\n$(32 - x) + x + (28 - x) + 6 = 50$\n$66 - x = 50$\n\n**(ii) Students passing both subjects ($x$):**\n$x = 66 - 50 = 16\\text{ students}$\n\n**(iii) Students passing English only:**\n$\\text{English only} = 32 - x = 32 - 16 = 16\\text{ students}$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Simplify the fractional expression:\n$3\\frac{3}{4} - 1\\frac{2}{3} + 2\\frac{1}{2}$",
+          "hint": "Group whole numbers and fractions using a common denominator of 12.",
+          "modelAnswer": "4 7/12",
+          "workedSolution": "**Method: Combining whole numbers and fractional parts**\n$= (3 - 1 + 2) + \\left(\\frac{3}{4} - \\frac{2}{3} + \\frac{1}{2}\\right)$\n$= 4 + \\left(\\frac{9 - 8 + 6}{12}\\right)$\n$= 4 + \\frac{7}{12} = 4\\frac{7}{12}$\n*(Or as improper fraction: $\\frac{55}{12}$)*."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Solve for $y$ in the equation:\n$\\frac{2y + 3}{5} - \\frac{y - 1}{2} = 1$",
+          "hint": "Multiply both sides by 10 (the LCM of 5 and 2) to eliminate the denominators.",
+          "modelAnswer": "y = 1",
+          "workedSolution": "Multiply both sides by $10$:\n$10\\left(\\frac{2y + 3}{5}\\right) - 10\\left(\\frac{y - 1}{2}\\right) = 10(1)$\n$2(2y + 3) - 5(y - 1) = 10$\n$4y + 6 - 5y + 5 = 10$\n$-y + 11 = 10$\n$-y = 10 - 11 = -1 \\implies y = 1$."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "title": "Question 2: Commercial Markups, Discounts & Simple Interest",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "A merchant purchased a refrigerator for $\\text{GH¢ } 600.00$ and marked it to make a profit of $25\\%$ on the cost price.\n(i) Calculate the marked price of the refrigerator.\n(ii) If a customer is allowed a cash discount of $8\\%$ on the marked price, find the cash sale price.",
+          "hint": "Marked price = 125% of Cost Price. Cash price = 92% of the marked price.",
+          "modelAnswer": "(i) GH¢ 750.00, (ii) GH¢ 690.00",
+          "workedSolution": "**(i) Marked Price:**\n$\\text{Marked Price} = 125\\% \\times 600.00 = 1.25 \\times 600 = \\text{GH¢ } 750.00$\n\n**(ii) Cash Sale Price:**\n$\\text{Discount} = 8\\% \\times 750.00 = 0.08 \\times 750 = \\text{GH¢ } 60.00$\n$\\text{Cash Price} = 750.00 - 60.00 = \\text{GH¢ } 690.00$\n*(Or: $0.92 \\times 750.00 = \\text{GH¢ } 690.00$)*."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 4,
+          "prompt": "Calculate the actual percentage profit made by the merchant on the refrigerator based on the original cost price after granting the discount.",
+          "hint": "Profit = Cash Sale Price - Cost Price. Profit % = (Profit / Cost Price) × 100%.",
+          "modelAnswer": "15%",
+          "workedSolution": "$\\text{Actual Profit} = 690.00 - 600.00 = \\text{GH¢ } 90.00$\n$\\text{Percentage Profit} = \\left(\\frac{90.00}{600.00}\\right) \\times 100\\% = \\frac{90}{6}\\% = 15\\%$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 5,
+          "prompt": "An investor deposited $\\text{GH¢ } 800.00$ in a bank account that pays simple interest at a rate of $7\\frac{1}{2}\\%\\text{ per annum}$. Calculate the total amount accrued in the account at the end of $3\\text{ years}$.",
+          "hint": "$I = \\frac{P \\times R \\times T}{100}$. Total Amount = Principal + Interest.",
+          "modelAnswer": "GH¢ 980.00",
+          "workedSolution": "$I = \\frac{800 \\times 7.5 \\times 3}{100} = 8 \\times 22.5 = \\text{GH¢ } 180.00$\n$\\text{Total Amount} = 800.00 + 180.00 = \\text{GH¢ } 980.00$."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "title": "Question 3: Right-Angled Shadow Geometry, Pythagoras & Trigonometric Ratios",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 340 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><polygon points='50,180 250,180 250,40' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><rect x='235' y='165' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.5'/><line x1='50' y1='180' x2='250' y2='40' stroke='#2563eb' stroke-width='2.5'/><text x='35' y='195' font-size='12' font-weight='bold'>A</text><text x='260' y='195' font-size='12' font-weight='bold'>B</text><text x='260' y='35' font-size='12' font-weight='bold'>T</text><text x='130' y='200' font-size='12' font-weight='bold'>Shadow = 16 m</text><text x='265' y='115' font-size='12' font-weight='bold' fill='#dc2626'>Tower = 12 m</text><text x='125' y='100' font-size='12' font-weight='bold' fill='#2563eb'>L = ?</text><path d='M75,180 A25,25 0 0,0 72,168' fill='none' stroke='#059669' stroke-width='1.5'/><text x='85' y='172' font-size='11' font-weight='bold' fill='#059669'>θ</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "A vertical utility pole $BT$ of height $12\\text{ m}$ casts a shadow $AB$ of length $16\\text{ m}$ on level ground as shown above.\n(i) Calculate the straight-line distance $L = |AT|$ from the tip of the pole to the end of the shadow.\n(ii) State the value of $\\tan \\theta$ as a common fraction in its lowest terms.",
+          "hint": "Apply Pythagoras' theorem in $\\Delta ABT$: $L^2 = 16^2 + 12^2$. $\\tan \\theta = \\text{opposite} / \\text{adjacent}$.",
+          "modelAnswer": "(i) 20 m, (ii) 3/4",
+          "workedSolution": "**(i) Distance $L$:**\n$L^2 = |AB|^2 + |BT|^2 = 16^2 + 12^2 = 256 + 144 = 400$\n$L = \\sqrt{400} = 20\\text{ m}$\n\n**(ii) $\\tan \\theta$:**\n$\\tan \\theta = \\frac{|BT|}{|AB|} = \\frac{12}{16} = \\frac{3}{4}$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Find $\\sin \\theta$ and $\\cos \\theta$ as common fractions in simplest form.",
+          "hint": "$\\sin \\theta = \\text{opposite} / \\text{hypotenuse}$, $\\cos \\theta = \\text{adjacent} / \\text{hypotenuse}$.",
+          "modelAnswer": "sin θ = 3/5, cos θ = 4/5",
+          "workedSolution": "$\\sin \\theta = \\frac{12}{20} = \\frac{3}{5}$\n$\\cos \\theta = \\frac{16}{20} = \\frac{4}{5}$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Calculate the area of the vertical triangular space bounded by the pole, its shadow, and the line $AT$.",
+          "hint": "Area = 1/2 × base × height.",
+          "modelAnswer": "96 m²",
+          "workedSolution": "$\\text{Area} = \\frac{1}{2} \\times 16 \\times 12 = 8 \\times 12 = 96\\text{ m}^2$."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "title": "Question 4: Linear Simultaneous Graphs & Point of Intersection",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Copy and complete the table of values for the straight lines $y_1 = 3x - 1$ and $y_2 = 5 - x$:\n\n| $x$ | -1 | 0 | 1 | 2 | 3 | 4 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y_1 = 3x - 1$ | -4 | **?** | 2 | **?** | 8 | **?** |\n| $y_2 = 5 - x$ | **?** | 5 | **?** | 3 | **?** | 1 |",
+          "hint": "Substitute each missing x value into both equations.",
+          "modelAnswer": "y₁: [-4, -1, 2, 5, 8, 11]; y₂: [6, 5, 4, 3, 2, 1]",
+          "workedSolution": "For $y_1 = 3x - 1$:\n- $x = 0 \\implies 3(0) - 1 = -1$\n- $x = 2 \\implies 3(2) - 1 = 5$\n- $x = 4 \\implies 3(4) - 1 = 11$\n\nFor $y_2 = 5 - x$:\n- $x = -1 \\implies 5 - (-1) = 6$\n- $x = 1 \\implies 5 - 1 = 4$\n- $x = 3 \\implies 5 - 3 = 2$"
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Determine the coordinates of the point of intersection of the two lines $y_1$ and $y_2$.",
+          "hint": "Set $3x - 1 = 5 - x$ and solve for $x$, then find $y$.",
+          "modelAnswer": "(1.5, 3.5)",
+          "workedSolution": "$3x - 1 = 5 - x$\n$3x + x = 5 + 1$\n$4x = 6 \\implies x = \\frac{6}{4} = 1.5$\nSubstitute $x = 1.5$ into $y_2$:\n$y = 5 - 1.5 = 3.5$\nThe point of intersection is **$(1.5, 3.5)$** (or $(3/2, 7/2)$)."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Find the truth set of the inequality: $3x - 1 < 5 - x$.",
+          "hint": "Solve $4x < 6$.",
+          "modelAnswer": "{x : x < 1.5}",
+          "workedSolution": "$3x + x < 5 + 1$\n$4x < 6 \\implies x < 1.5$\nTruth set: **$\\{x : x < 1.5, \\, x \\in \\mathbb{R}\\}$**."
+        }
+      ]
+    },
+    {
+      "id": "q05",
+      "title": "Question 5: Cylindrical Water Tank Capacity & Volume Modeling",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 340 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><g transform='translate(120,20)'><ellipse cx='50' cy='20' rx='45' ry='15' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><line x1='5' y1='20' x2='5' y2='160' stroke='#1e40af' stroke-width='2'/><line x1='95' y1='20' x2='95' y2='160' stroke='#1e40af' stroke-width='2'/><ellipse cx='50' cy='160' rx='45' ry='15' fill='#dbeafe' stroke='#1e40af' stroke-width='2'/><line x1='105' y1='20' x2='105' y2='160' stroke='#dc2626' stroke-width='1.5'/><text x='115' y='95' font-size='11' font-weight='bold' fill='#dc2626'>h = 20 cm</text><line x1='50' y1='20' x2='95' y2='20' stroke='#059669' stroke-width='1.5'/><text x='60' y='15' font-size='10' font-weight='bold' fill='#059669'>r = 7 cm</text></g></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "An upright cylindrical metal container has internal radius $7\\text{ cm}$ and height $20\\text{ cm}$ as shown above.\nTaking $\\pi = \\frac{22}{7}$, calculate:\n(i) The area of its circular base.\n(ii) The total internal volume of the cylinder.",
+          "hint": "Base Area = $\\pi r^2$. Volume = Base Area × height.",
+          "modelAnswer": "(i) 154 cm², (ii) 3,080 cm³",
+          "workedSolution": "**(i) Base Area:**\n$\\text{Area} = \\pi r^2 = \\frac{22}{7} \\times 7^2 = 22 \\times 7 = 154\\text{ cm}^2$\n\n**(ii) Internal Volume:**\n$V = \\pi r^2 h = 154 \\times 20 = 3,080\\text{ cm}^3$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "If $2,310\\text{ cm}^3$ of liquid is poured into the container, calculate the depth ($d$) of the liquid.",
+          "hint": "Volume of liquid = Base Area × depth = $154 \\times d$.",
+          "modelAnswer": "15 cm",
+          "workedSolution": "$\\text{Volume} = \\text{Base Area} \\times d$\n$2,310 = 154 \\times d$\n$d = \\frac{2,310}{154} = 15\\text{ cm}$\nTherefore, the depth of the liquid is **$15\\text{ cm}$**."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Calculate the curved surface area of the cylinder.",
+          "hint": "Curved surface area = $2\\pi r h$.",
+          "modelAnswer": "880 cm²",
+          "workedSolution": "$\\text{CSA} = 2\\pi r h = 2 \\times \\frac{22}{7} \\times 7 \\times 20 = 44 \\times 20 = 880\\text{ cm}^2$."
+        }
+      ]
+    },
+    {
+      "id": "q06",
+      "title": "Question 6: Class Frequency Distribution, Central Tendency & Probability",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Marks Scored</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='55' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='100' y='90' width='25' height='70' fill='#93c5fd' stroke='#1d4ed8'/><rect x='145' y='40' width='25' height='120' fill='#2563eb' stroke='#1d4ed8'/><rect x='190' y='75' width='25' height='85' fill='#93c5fd' stroke='#1d4ed8'/><rect x='235' y='110' width='25' height='50' fill='#93c5fd' stroke='#1d4ed8'/><rect x='280' y='140' width='25' height='20' fill='#93c5fd' stroke='#1d4ed8'/><text x='65' y='173' font-size='10'>1</text><text x='110' y='173' font-size='10'>2</text><text x='155' y='173' font-size='10'>3</text><text x='200' y='173' font-size='10'>4</text><text x='245' y='173' font-size='10'>5</text><text x='288' y='173' font-size='10'>6</text><text x='20' y='45' font-size='10'>7</text><text x='20' y='80' font-size='10'>5</text><text x='20' y='130' font-size='10'>2</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "The test scores of $20$ students in a class quiz are displayed in the bar chart above:\n\n| Mark ($x$) | 1 | 2 | 3 | 4 | 5 | 6 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 4 | 7 | 4 | 2 | 1 |\n\n(i) State the **modal mark**.\n(ii) Find the total number of students ($N = \\sum f$).\n(iii) Calculate the **mean mark** of the class.",
+          "hint": "Mode is the mark with highest frequency. Mean = $\\sum fx / \\sum f$.",
+          "modelAnswer": "(i) 3 marks, (ii) 20 students, (iii) 3.15 marks",
+          "workedSolution": "**(i) Modal mark:**\nThe highest frequency is $7$, which corresponds to mark **3**.\n\n**(ii) Total students:**\n$N = \\sum f = 2 + 4 + 7 + 4 + 2 + 1 = 20\\text{ students}$\n\n**(iii) Mean mark:**\n$\\sum fx = (1 \\times 2) + (2 \\times 4) + (3 \\times 7) + (4 \\times 4) + (5 \\times 2) + (6 \\times 1)$\n$\\sum fx = 2 + 8 + 21 + 16 + 10 + 6 = 63$\n$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{63}{20} = 3.15\\text{ marks}$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "If a student is chosen at random from this group:\n(i) What is the probability that the student scored at least $4\\text{ marks}$?\n(ii) What percentage of the class scored less than $3\\text{ marks}$?",
+          "hint": "'At least 4' means marks 4, 5, 6. 'Less than 3' means marks 1 and 2.",
+          "modelAnswer": "(i) 7/20, (ii) 30%",
+          "workedSolution": "**(i) Probability of scoring at least 4 (marks 4, 5, 6):**\n$\\text{Count} = f(4) + f(5) + f(6) = 4 + 2 + 1 = 7$\n$P(x \\ge 4) = \\frac{7}{20}$\n\n**(ii) Percentage scoring less than 3 (marks 1 and 2):**\n$\\text{Count} = f(1) + f(2) = 2 + 4 = 6$\n$\\text{Percentage} = \\left(\\frac{6}{20}\\right) \\times 100\\% = 6 \\times 5 = 30\\%$."
+        }
+      ]
+    }
+  ],
+  "seededAt": "2026-09-16T08:30:00.000Z",
+  "lastUpdated": "2026-09-16T08:30:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -9632,6 +9839,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_29
   );
   results.push(result32);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 33: JHS Math -> Core Curriculum Series (Set 30 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 33: Junior Core Math Structured Problem-Solving Series (Set 30)...');
+  const result33 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_30
+  );
+  results.push(result33);
 
 
 

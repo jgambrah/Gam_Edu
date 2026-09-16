@@ -834,6 +834,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "P \\cap Q = \\{4, 8, 12, 24\\}",
         sampleAnswer: "{4, 8, 12, 24}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 30)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 30 / 1998 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 30 / 1998 past paper adaptation) with embedded SVG diagrams covering Venn diagram modeling, commercial discount & simple interest, utility shadow trigonometry, simultaneous linear intersections, cylindrical capacity, and quiz score frequency bar charts.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-30",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "In a class of 50 students, 32 passed English, 28 passed Math, and 6 failed both. Find the number who passed both:",
+        sampleFormula: "(32 - x) + x + (28 - x) + 6 = 50 \\implies 66 - x = 50 \\implies x = 16",
+        sampleAnswer: "16 students"
+    },
 
 
 
