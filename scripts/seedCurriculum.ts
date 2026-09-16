@@ -9939,6 +9939,214 @@ export const SET_JHS_MASTERY_SERIES_31: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 4g. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 32)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-32
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_32: CurriculumQuestionSet = {
+  "id": "jhs-math-mastery-series-32",
+  "title": "Junior Core Mathematics • Structured Problem-Solving Series (Set 32)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Structured Theory, Geometry & Data Modeling",
+  "variantType": "standard",
+  "totalQuestions": 6,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "title": "Question 1: Venn Diagram Set Analysis, Fraction Operations & Rational Equations",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 360 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='350' height='180' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U = 48</text><circle cx='135' cy='105' r='60' fill='none' stroke='#2563eb' stroke-width='2'/><circle cx='225' cy='105' r='60' fill='none' stroke='#059669' stroke-width='2'/><text x='95' y='45' font-size='12' font-weight='bold' fill='#2563eb'>Biology (B: 30)</text><text x='215' y='45' font-size='12' font-weight='bold' fill='#059669'>Chemistry (C: 26)</text><text x='95' y='110' font-size='12' fill='#1e293b'>30 - x</text><text x='175' y='110' font-size='13' font-weight='bold' fill='#dc2626'>x</text><text x='235' y='110' font-size='12' fill='#1e293b'>26 - x</text><text x='25' y='165' font-size='11' fill='#64748b'>Neither = 4</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "In a cohort of $48$ senior science students, $30$ offer Biology, $26$ offer Chemistry, and $4$ offer neither subject.\nUsing the Venn diagram provided above:\n(i) Formulate an algebraic equation connecting the subsets.\n(ii) Find the number of students who offer **both** subjects.\n(iii) Calculate the number of students who offer Biology **only**.",
+          "hint": "Sum of all subsets in the Venn diagram equals 48: $(30 - x) + x + (26 - x) + 4 = 48$.",
+          "modelAnswer": "(i) 60 - x = 48, (ii) 12 students, (iii) 18 students",
+          "workedSolution": "**(i) Algebraic Equation:**\n$(30 - x) + x + (26 - x) + 4 = 48$\n$60 - x = 48$\n\n**(ii) Students offering both subjects ($x$):**\n$x = 60 - 48 = 12\\text{ students}$\n\n**(iii) Students offering Biology only:**\n$\\text{Biology only} = 30 - x = 30 - 12 = 18\\text{ students}$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Evaluate and simplify completely:\n$4\\frac{2}{3} - 2\\frac{1}{4} + 1\\frac{1}{2}$",
+          "hint": "Combine whole numbers and fractions using a common denominator of 12.",
+          "modelAnswer": "3 11/12",
+          "workedSolution": "**Method: Combining whole numbers and fractional parts**\n$= (4 - 2 + 1) + \\left(\\frac{2}{3} - \\frac{1}{4} + \\frac{1}{2}\\right)$\n$= 3 + \\left(\\frac{8 - 3 + 6}{12}\\right)$\n$= 3 + \\frac{11}{12} = 3\\frac{11}{12}$\n*(Or as improper fraction: $\\frac{47}{12}$)*."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Solve for $k$ in the equation:\n$\\frac{3k - 2}{4} - \\frac{k - 3}{2} = 1$",
+          "hint": "Multiply both sides by 4 (the LCM of 4 and 2) to eliminate the denominators.",
+          "modelAnswer": "k = 0",
+          "workedSolution": "Multiply through by $4$:\n$4\\left(\\frac{3k - 2}{4}\\right) - 4\\left(\\frac{k - 3}{2}\\right) = 4(1)$\n$(3k - 2) - 2(k - 3) = 4$\n$3k - 2 - 2k + 6 = 4$\n$k + 4 = 4 \\implies k = 4 - 4 = 0$."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "title": "Question 2: Ratio Sharing, Simple Interest & Base Five Conversion",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Three partners, Kofi, Ama, and Yaw, shared a total business profit of $\\text{GH¢ } 1,800.00$ in the ratio $2 : 3 : 5$ respectively.\n(i) Calculate the share of each partner.\n(ii) What percentage of the total profit did Yaw receive?",
+          "hint": "Total ratio units = 2 + 3 + 5 = 10. Value of 1 unit = 1800 / 10.",
+          "modelAnswer": "(i) Kofi: GH¢ 360.00, Ama: GH¢ 540.00, Yaw: GH¢ 900.00; (ii) 50%",
+          "workedSolution": "**(i) Share Distribution:**\nTotal units = $2 + 3 + 5 = 10$.\nValue of 1 unit = $\\frac{\\text{GH¢ } 1,800.00}{10} = \\text{GH¢ } 180.00$\n- **Kofi:** $2 \\times 180.00 = \\text{GH¢ } 360.00$\n- **Ama:** $3 \\times 180.00 = \\text{GH¢ } 540.00$\n- **Yaw:** $5 \\times 180.00 = \\text{GH¢ } 900.00$\n\n**(ii) Yaw's percentage share:**\n$\\text{Percentage} = \\left(\\frac{5}{10}\\right) \\times 100\\% = 50\\%$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Ama deposited her profit share of $\\text{GH¢ } 540.00$ into a savings account at a simple interest rate of $8\\%\\text{ per annum}$ for $3\\text{ years}$. Calculate the total amount she had in her account at the end of the $3\\text{ years}$.",
+          "hint": "$I = \\frac{P \\times R \\times T}{100}$. Total Amount = Principal + Simple Interest.",
+          "modelAnswer": "GH¢ 669.60",
+          "workedSolution": "$I = \\frac{540 \\times 8 \\times 3}{100} = \\frac{540 \\times 24}{100} = \\frac{12,960}{100} = \\text{GH¢ } 129.60$\n$\\text{Total Amount} = P + I = 540.00 + 129.60 = \\text{GH¢ } 669.60$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Convert $87_{\\text{ten}}$ to a base five numeral.",
+          "hint": "Divide repeatedly by 5: $87 = 3(25) + 2(5) + 2(1)$.",
+          "modelAnswer": "322_five",
+          "workedSolution": "$87 \\div 5 = 17\\text{ R } 2$\n$17 \\div 5 = 3\\text{ R } 2$\n$3 \\div 5 = 0\\text{ R } 3$\nReading remainders bottom-up gives: **$322_{\\text{five}}$**."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "title": "Question 3: Right-Angled Shadow Geometry, Pythagoras & Angle Ratios",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 340 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><polygon points='50,180 250,180 250,30' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/><rect x='235' y='165' width='15' height='15' fill='none' stroke='#334155' stroke-width='1.5'/><line x1='50' y1='180' x2='250' y2='30' stroke='#2563eb' stroke-width='2.5'/><text x='35' y='195' font-size='12' font-weight='bold'>A</text><text x='260' y='195' font-size='12' font-weight='bold'>B</text><text x='260' y='25' font-size='12' font-weight='bold'>T</text><text x='130' y='200' font-size='12' font-weight='bold'>Shadow = 20 m</text><text x='265' y='110' font-size='12' font-weight='bold' fill='#dc2626'>Tower = 15 m</text><text x='125' y='95' font-size='12' font-weight='bold' fill='#2563eb'>L = ?</text><path d='M75,180 A25,25 0 0,0 71,166' fill='none' stroke='#059669' stroke-width='1.5'/><text x='85' y='172' font-size='11' font-weight='bold' fill='#059669'>θ</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "A radio mast $BT$ of height $15\\text{ m}$ stands vertically on horizontal ground. It casts a shadow $AB$ of length $20\\text{ m}$ as shown in the diagram above.\n(i) Calculate the straight-line distance $L = |AT|$ from the tip of the mast to the tip of its shadow.\n(ii) State the value of $\\tan \\theta$ as a common fraction in simplest form.",
+          "hint": "Apply Pythagoras' theorem in $\\Delta ABT$: $L^2 = 20^2 + 15^2$. $\\tan \\theta = \\text{opposite} / \\text{adjacent}$.",
+          "modelAnswer": "(i) 25 m, (ii) 3/4",
+          "workedSolution": "**(i) Distance $L$:**\n$L^2 = |AB|^2 + |BT|^2 = 20^2 + 15^2 = 400 + 225 = 625$\n$L = \\sqrt{625} = 25\\text{ m}$\n\n**(ii) Value of $\\tan \\theta$:**\n$\\tan \\theta = \\frac{|BT|}{|AB|} = \\frac{15}{20} = \\frac{3}{4}$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Find $\\sin \\theta$ and $\\cos \\theta$ as common fractions in lowest terms.",
+          "hint": "$\\sin \\theta = \\text{opposite} / \\text{hypotenuse}$, $\\cos \\theta = \\text{adjacent} / \\text{hypotenuse}$.",
+          "modelAnswer": "sin θ = 3/5, cos θ = 4/5",
+          "workedSolution": "$\\sin \\theta = \\frac{15}{25} = \\frac{3}{5}$\n$\\cos \\theta = \\frac{20}{25} = \\frac{4}{5}$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Calculate the area of the vertical triangular space enclosed by the mast, its shadow, and the line of sight $AT$.",
+          "hint": "Area = 1/2 × base × height.",
+          "modelAnswer": "150 m²",
+          "workedSolution": "$\\text{Area} = \\frac{1}{2} \\times 20 \\times 15 = 10 \\times 15 = 150\\text{ m}^2$."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "title": "Question 4: Linear Simultaneous Graphing & Graphical Coordinates",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='290' y2='140' stroke='#64748b' stroke-width='1.5'/><line x1='160' y1='20' x2='160' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='135' font-size='12'>x</text><text x='165' y='30' font-size='12'>y</text><line x1='60' y1='220' x2='260' y2='40' stroke='#2563eb' stroke-width='2'/><line x1='60' y1='50' x2='260' y2='210' stroke='#dc2626' stroke-width='2'/><circle cx='180' cy='115' r='5' fill='#059669'/><text x='190' y='110' font-size='12' font-weight='bold' fill='#059669'>(1, 3)</text><text x='250' y='35' font-size='11' fill='#2563eb'>y₁ = 2x + 1</text><text x='250' y='215' font-size='11' fill='#dc2626'>y₂ = 4 - x</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Copy and complete the table of values for the relations $y_1 = 2x + 1$ and $y_2 = 4 - x$:\n\n| $x$ | -2 | -1 | 0 | 1 | 2 | 3 | 4 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n| $y_1 = 2x + 1$ | -3 | **?** | 1 | **?** | 5 | **?** | 9 |\n| $y_2 = 4 - x$ | 6 | **?** | 4 | **?** | 2 | **?** | 0 |",
+          "hint": "Substitute each missing x value into $y_1 = 2x + 1$ and $y_2 = 4 - x$.",
+          "modelAnswer": "y₁: [-3, -1, 1, 3, 5, 7, 9]; y₂: [6, 5, 4, 3, 2, 1, 0]",
+          "workedSolution": "For $y_1 = 2x + 1$:\n- $x = -1 \\implies 2(-1) + 1 = -1$\n- $x = 1 \\implies 2(1) + 1 = 3$\n- $x = 3 \\implies 2(3) + 1 = 7$\n\nFor $y_2 = 4 - x$:\n- $x = -1 \\implies 4 - (-1) = 5$\n- $x = 1 \\implies 4 - 1 = 3$\n- $x = 3 \\implies 4 - 3 = 1$"
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "From the simultaneous graph above, determine:\n(i) The coordinates of the point where the two lines intersect.\n(ii) The gradient of the line $y_1 = 2x + 1$.",
+          "hint": "Set $2x + 1 = 4 - x$ to solve for $x$, then find $y$. Gradient is the coefficient of $x$.",
+          "modelAnswer": "(i) (1, 3), (ii) Gradient = 2",
+          "workedSolution": "**(i) Point of intersection:**\n$2x + 1 = 4 - x$\n$2x + x = 4 - 1$\n$3x = 3 \\implies x = 1$\nWhen $x = 1$, $y = 2(1) + 1 = 3$. Point of intersection is **$(1, 3)$**.\n\n**(ii) Gradient:**\n$y_1 = 2x + 1 \\implies m = 2$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Find the truth set of the inequality: $2x + 1 \\ge 4 - x$.",
+          "hint": "Solve $3x \\ge 3$.",
+          "modelAnswer": "{x : x ≥ 1}",
+          "workedSolution": "$2x + x \\ge 4 - 1$\n$3x \\ge 3 \\implies x \\ge 1$\nTruth set: **$\\{x : x \\ge 1, \\, x \\in \\mathbb{R}\\}$**."
+        }
+      ]
+    },
+    {
+      "id": "q05",
+      "title": "Question 5: Rectangular Water Reservoir Capacity, Surface Area & Liquid Depth",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 350 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><rect x='30' y='70' width='170' height='110' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><path d='M30,70 L80,30 L250,30 L200,70 Z' fill='#dbeafe' stroke='#1e40af' stroke-width='1.5'/><path d='M200,70 L250,30 L250,140 L200,180 Z' fill='#bfdbfe' stroke='#1e40af' stroke-width='1.5'/><text x='100' y='200' font-size='12' font-weight='bold'>l = 8 m</text><text x='235' y='165' font-size='12' font-weight='bold'>w = 5 m</text><text x='5' y='130' font-size='12' font-weight='bold'>h = 3 m</text><line x1='30' y1='120' x2='200' y2='120' stroke='#0284c7' stroke-width='1.5' stroke-dasharray='4'/><line x1='200' y1='120' x2='250' y2='80' stroke='#0284c7' stroke-width='1.5' stroke-dasharray='4'/><text x='85' y='145' font-size='11' fill='#0369a1' font-weight='bold'>Water Volume = 80 m³</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 5,
+          "prompt": "A closed rectangular water reservoir has length $8\\text{ m}$, width $5\\text{ m}$, and height $3\\text{ m}$ as shown above.\nCalculate the **total surface area** of the reservoir when completely enclosed.",
+          "hint": "Total Surface Area = $2(lw + lh + wh)$.",
+          "modelAnswer": "158 m²",
+          "workedSolution": "$\\text{TSA} = 2(lw + lh + wh)$\n$= 2[(8 \\times 5) + (8 \\times 3) + (5 \\times 3)]$\n$= 2[40 + 24 + 15] = 2[79] = 158\\text{ m}^2$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Calculate the **total capacity** of the reservoir in cubic metres ($\\text{m}^3$) and convert your answer to litres, given that $1\\text{ m}^3 = 1,000\\text{ litres}$.",
+          "hint": "Volume = length × width × height. Multiply volume by 1,000 to get litres.",
+          "modelAnswer": "120 m³ (or 120,000 litres)",
+          "workedSolution": "$V = l \\times w \\times h = 8\\text{ m} \\times 5\\text{ m} \\times 3\\text{ m} = 120\\text{ m}^3$\n$\\text{Capacity in litres} = 120 \\times 1,000 = 120,000\\text{ litres}$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 5,
+          "prompt": "If $80\\text{ m}^3$ of water is pumped into the empty reservoir, calculate the depth ($d$) of the water.",
+          "hint": "Depth $d = \\text{Volume} / (l \\times w)$.",
+          "modelAnswer": "2 m",
+          "workedSolution": "$\\text{Base area} = 8 \\times 5 = 40\\text{ m}^2$\n$d = \\frac{80}{40} = 2\\text{ m}$\nTherefore, the depth of the water is **$2\\text{ m}$**."
+        }
+      ]
+    },
+    {
+      "id": "q06",
+      "title": "Question 6: Discrete Frequency Statistics, Central Tendency & Probability",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Marks Scored</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='55' y='125' width='25' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='100' y='90' width='25' height='70' fill='#93c5fd' stroke='#1d4ed8'/><rect x='145' y='20' width='25' height='140' fill='#2563eb' stroke='#1d4ed8'/><rect x='190' y='75' width='25' height='85' fill='#93c5fd' stroke='#1d4ed8'/><rect x='235' y='110' width='25' height='50' fill='#93c5fd' stroke='#1d4ed8'/><rect x='280' y='140' width='25' height='20' fill='#93c5fd' stroke='#1d4ed8'/><text x='65' y='173' font-size='10'>1</text><text x='110' y='173' font-size='10'>2</text><text x='155' y='173' font-size='10'>3</text><text x='200' y='173' font-size='10'>4</text><text x='245' y='173' font-size='10'>5</text><text x='288' y='173' font-size='10'>6</text><text x='20' y='25' font-size='10'>8</text><text x='20' y='80' font-size='10'>5</text><text x='20' y='130' font-size='10'>2</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "The test scores of $20$ pupils in a mental mathematics test are recorded in the bar chart above:\n\n| Mark ($x$) | 1 | 2 | 3 | 4 | 5 | 6 |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 4 | 8 | 3 | 2 | 1 |\n\n(i) State the **modal mark**.\n(ii) Find the total number of pupils ($N = \\sum f$).\n(iii) Calculate the **mean mark** of the class.",
+          "hint": "Mode is the score with highest frequency. Mean = $\\sum fx / \\sum f$.",
+          "modelAnswer": "(i) 3 marks, (ii) 20 pupils, (iii) 3.1 marks",
+          "workedSolution": "**(i) Modal mark:**\nThe highest frequency is $8$, corresponding to mark **3**.\n\n**(ii) Total pupils:**\n$N = \\sum f = 2 + 4 + 8 + 3 + 2 + 1 = 20\\text{ pupils}$\n\n**(iii) Mean mark:**\n$\\sum fx = (1 \\times 2) + (2 \\times 4) + (3 \\times 8) + (4 \\times 3) + (5 \\times 2) + (6 \\times 1)$\n$\\sum fx = 2 + 8 + 24 + 12 + 10 + 6 = 62$\n$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{62}{20} = 3.1\\text{ marks}$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "If a pupil is selected at random from this class:\n(i) Find the probability that the pupil scored strictly more than $3\\text{ marks}$.\n(ii) What percentage of the class scored at least $2\\text{ marks}$?",
+          "hint": "Scores > 3 are 4, 5, 6. At least 2 means scores 2, 3, 4, 5, 6.",
+          "modelAnswer": "(i) 3/10, (ii) 90%",
+          "workedSolution": "**(i) Probability of scoring > 3 (marks 4, 5, 6):**\n$\\text{Count} = f(4) + f(5) + f(6) = 3 + 2 + 1 = 6$\n$P(x > 3) = \\frac{6}{20} = \\frac{3}{10}$\n\n**(ii) Percentage scoring at least 2 (marks 2, 3, 4, 5, 6):**\n$\\text{Count} = 20 - f(1) = 20 - 2 = 18$\n$\\text{Percentage} = \\left(\\frac{18}{20}\\right) \\times 100\\% = 18 \\times 5 = 90\\%$."
+        }
+      ]
+    }
+  ],
+  "seededAt": "2026-09-16T09:30:00.000Z",
+  "lastUpdated": "2026-09-16T09:30:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -10442,6 +10650,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_31
   );
   results.push(result34);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 35: JHS Math -> Core Curriculum Series (Set 32 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 35: Junior Core Math Structured Problem-Solving Series (Set 32)...');
+  const result35 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_32
+  );
+  results.push(result35);
 
 
 

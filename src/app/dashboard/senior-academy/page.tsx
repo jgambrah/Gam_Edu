@@ -870,6 +870,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "M \\cap N = \\{6, 12\\}",
         sampleAnswer: "{6, 12}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 32)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 32 / 1997 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 32 / 1997 past paper adaptation) with embedded SVG diagrams covering Biology/Chemistry Venn modeling, ratio profit sharing & simple interest, radio mast elevation Pythagoras, simultaneous linear intersection graphs, rectangular reservoir water volume, and discrete frequency test bar charts.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-32",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "In a cohort of 48 senior science students, 30 offer Biology, 26 offer Chemistry, and 4 offer neither. Find the number who offer both:",
+        sampleFormula: "(30 - x) + x + (26 - x) + 4 = 48 \\implies 60 - x = 48 \\implies x = 12",
+        sampleAnswer: "12 students"
+    },
 
 
 
