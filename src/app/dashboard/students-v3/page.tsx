@@ -256,19 +256,27 @@ export default function StudentsV3Page() {
       };
 
       const snapRef = doc(firestore, 'student_directory_snapshots', snapshotDocId);
-      await setDoc(snapRef, snapshotPayload, { merge: true });
+      try {
+        await setDoc(snapRef, snapshotPayload, { merge: true });
+        toast({ 
+          title: "1-Read Snapshot Compiled & Saved 📦", 
+          description: `Consolidated ${studentList.length} student records into 1 document for future instant, 1-read loads.` 
+        });
+      } catch (cacheErr) {
+        console.warn("Snapshot cache write notice (live data will be used):", cacheErr);
+        toast({ 
+          title: "Student Records Loaded 🎓", 
+          description: `Loaded ${studentList.length} students directly from database.` 
+        });
+      }
 
       setActiveSnapshot(snapshotPayload);
       setHasLoadedStudents(true);
       setStatusMsg("Ready");
-      toast({ 
-        title: "1-Read Snapshot Compiled & Saved 📦", 
-        description: `Consolidated ${studentList.length} student records into 1 document for future instant, 1-read loads.` 
-      });
     } catch (err: any) {
       console.error("Recompile Error:", err);
-      setStatusMsg("Error compiling snapshot");
-      toast({ variant: 'destructive', title: "Compilation Failed", description: err.message || "Could not compile snapshot." });
+      setStatusMsg("Error loading data");
+      toast({ variant: 'destructive', title: "Loading Failed", description: err.message || "Could not fetch students." });
     } finally {
       setIsCompilingSnapshot(false);
       setIsLoadingStudents(false);

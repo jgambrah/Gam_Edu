@@ -146,19 +146,27 @@ export default function ParentsPage() {
         };
 
         const snapRef = doc(firestore, 'parent_directory_snapshots', snapshotDocId);
-        await setDoc(snapRef, snapshotPayload, { merge: true });
+        try {
+          await setDoc(snapRef, snapshotPayload, { merge: true });
+          toast({ 
+            title: "1-Read Snapshot Compiled & Saved 📦", 
+            description: `Consolidated ${parentList.length} parent profiles into 1 document for future instant, 1-read loads.` 
+          });
+        } catch (cacheErr) {
+          console.warn("Parent snapshot cache write notice (live data will be used):", cacheErr);
+          toast({ 
+            title: "Parent Profiles Loaded 📦", 
+            description: `Loaded ${parentList.length} parent profiles directly from database.` 
+          });
+        }
 
         setParents(parentList);
         setStudents(studentList);
         setActiveSnapshot(snapshotPayload);
         setHasLoadedParents(true);
-        toast({ 
-          title: "1-Read Snapshot Compiled & Saved 📦", 
-          description: `Consolidated ${parentList.length} parent profiles into 1 document for future instant, 1-read loads.` 
-        });
     } catch (err: any) {
         console.error("Recompile Parent Snapshot Error:", err);
-        toast({ variant: 'destructive', title: "Compilation Failed", description: err.message || "Failed to compile parent snapshot." });
+        toast({ variant: 'destructive', title: "Loading Failed", description: err.message || "Failed to load parent profiles." });
     } finally {
         setIsCompilingSnapshot(false);
         setIsLoadingParents(false);

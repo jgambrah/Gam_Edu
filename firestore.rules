@@ -233,6 +233,45 @@ service cloud.firestore {
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(parentId);
     }
 
+    // =========================================================
+    // 4B. 1-READ OPTIMIZATION DIRECTORY & REPORT SNAPSHOTS
+    // =========================================================
+    match /student_directory_snapshots/{snapshotId} {
+      allow read, get, list: if isSignedIn();
+      allow write, create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /parent_directory_snapshots/{snapshotId} {
+      allow read, get, list: if isSignedIn();
+      allow write, create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /academic_report_snapshots/{snapshotId} {
+      allow read, get, list: if isSignedIn();
+      allow write, create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /attendance_report_snapshots/{snapshotId} {
+      allow read, get, list: if isSignedIn();
+      allow write, create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /learning_analytics_snapshots/{snapshotId} {
+      allow read, get, list: if isSignedIn();
+      allow write, create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /assessment_records_snapshots/{snapshotId} {
+      allow read, get, list: if isSignedIn();
+      allow write, create, update: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+
     match /notifications/{notificationId} {
       allow create: if isSignedIn();
       allow read, update, list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
