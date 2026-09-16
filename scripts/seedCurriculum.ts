@@ -9360,6 +9360,585 @@ export const SET_JHS_MASTERY_SERIES_30: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 4f. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 31)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-31
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_31: CurriculumQuestionSet = {
+  "id": "jhs-math-mastery-series-31",
+  "title": "Junior Core Mathematics • Objective Mastery Series (Set 31)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Comprehensive Objective Exam Series",
+  "variantType": "standard",
+  "totalQuestions": 40,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "prompt": "If set $M = \\{x : x \\text{ is a multiple of } 3, \\, 1 \\le x \\le 18\\}$ and set $N = \\{x : x \\text{ is an even factor of } 24\\}$, find $M \\cap N$.",
+      "options": [
+        "{3, 6, 12}",
+        "{6, 12}",
+        "{2, 4, 6, 12}",
+        "{6, 12, 18}"
+      ],
+      "correctAnswer": "{6, 12}",
+      "hint": "List both sets: M contains multiples of 3 up to 18; N contains factors of 24 that are divisible by 2.",
+      "workedSolution": "$M = \\{3, 6, 9, 12, 15, 18\\}$ and $N = \\{2, 4, 6, 8, 12, 24\\}$. The intersection is $M \\cap N = \\{6, 12\\}$.",
+      "points": 1
+    },
+    {
+      "id": "q02",
+      "prompt": "Express $0.0075$ as a fraction in its lowest terms.",
+      "options": [
+        "$\\frac{3}{40}$",
+        "$\\frac{75}{1000}$",
+        "$\\frac{1}{125}$",
+        "$\\frac{3}{400}$"
+      ],
+      "correctAnswer": "$\\frac{3}{400}$",
+      "hint": "Write $0.0075 = \\frac{75}{10000}$ and divide both numerator and denominator by 25.",
+      "workedSolution": "$\\frac{75}{10000} = \\frac{75 \\div 25}{10000 \\div 25} = \\frac{3}{400}$.",
+      "points": 1
+    },
+    {
+      "id": "q03",
+      "prompt": "Find the Least Common Multiple (LCM) of $14, 21,$ and $28$.",
+      "options": [
+        "84",
+        "42",
+        "168",
+        "126"
+      ],
+      "correctAnswer": "84",
+      "hint": "$14 = 2 \\times 7$, $21 = 3 \\times 7$, $28 = 2^2 \\times 7$. Take the product of highest prime powers.",
+      "workedSolution": "$\\text{LCM} = 2^2 \\times 3 \\times 7 = 4 \\times 21 = 84$.",
+      "points": 1
+    },
+    {
+      "id": "q04",
+      "prompt": "Express $540$ as a product of prime factors in index notation.",
+      "options": [
+        "$2^3 \\times 3^2 \\times 5$",
+        "$2^2 \\times 3^2 \\times 5^2$",
+        "$2^2 \\times 3^3 \\times 5$",
+        "$4 \\times 27 \\times 5$"
+      ],
+      "correctAnswer": "$2^2 \\times 3^3 \\times 5$",
+      "hint": "$540 = 54 \\times 10 = (2 \\times 27) \\times (2 \\times 5)$.",
+      "workedSolution": "$540 = 2^2 \\times 3^3 \\times 5$.",
+      "points": 1
+    },
+    {
+      "id": "q05",
+      "prompt": "Convert the binary numeral $10111_{\\text{two}}$ to a numeral in base ten.",
+      "options": [
+        "21",
+        "27",
+        "25",
+        "23"
+      ],
+      "correctAnswer": "23",
+      "hint": "$1(2^4) + 0(2^3) + 1(2^2) + 1(2^1) + 1(2^0)$.",
+      "workedSolution": "$16 + 0 + 4 + 2 + 1 = 23$.",
+      "points": 1
+    },
+    {
+      "id": "q06",
+      "prompt": "Solve for $p$ in the equation: $5p - 8 = 2p + 7$.",
+      "options": [
+        "3",
+        "5",
+        "-5",
+        "6"
+      ],
+      "correctAnswer": "5",
+      "hint": "Group terms in p: $5p - 2p = 7 + 8$.",
+      "workedSolution": "$3p = 15 \\implies p = 5$.",
+      "points": 1
+    },
+    {
+      "id": "q07",
+      "prompt": "Write $4,582,000$ in standard form.",
+      "options": [
+        "$4.582 \\times 10^5$",
+        "$45.82 \\times 10^5$",
+        "$4.582 \\times 10^6$",
+        "$4.582 \\times 10^{-6}$"
+      ],
+      "correctAnswer": "$4.582 \\times 10^6$",
+      "hint": "Move the decimal point 6 places to the left: $A \\times 10^n$ where $1 \\le A < 10$.",
+      "workedSolution": "$4,582,000 = 4.582 \\times 10^6$.",
+      "points": 1
+    },
+    {
+      "id": "q08",
+      "prompt": "A trader purchased a bicycle for $\\text{GH¢ } 180.00$ and sold it at a loss of $15\\%$. Calculate the selling price.",
+      "options": [
+        "GH¢ 153.00",
+        "GH¢ 155.00",
+        "GH¢ 162.00",
+        "GH¢ 148.00"
+      ],
+      "correctAnswer": "GH¢ 153.00",
+      "hint": "Loss = 15% of 180 = 27. Selling price = 180 - 27.",
+      "workedSolution": "$\\text{Loss} = 0.15 \\times 180 = 27$. $\\text{Selling price} = 180 - 27 = \\text{GH¢ } 153.00$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "Simplify: $3\\frac{1}{2} - 1\\frac{3}{4} + 2\\frac{1}{8}$.",
+      "options": [
+        "$3\\frac{5}{8}$",
+        "$4\\frac{1}{8}$",
+        "$3\\frac{3}{8}$",
+        "$3\\frac{7}{8}$"
+      ],
+      "correctAnswer": "$3\\frac{7}{8}$",
+      "hint": "Combine whole numbers: $3 - 1 + 2 = 4$. Use common denominator 8: $\\frac{4 - 6 + 1}{8} = -\\frac{1}{8}$.",
+      "workedSolution": "$4 - \\frac{1}{8} = 3\\frac{7}{8}$.",
+      "points": 1
+    },
+    {
+      "id": "q10",
+      "prompt": "The test scores of eight students are: $8, 12, 15, 10, 12, 9, 14, 12$. Determine the modal score.",
+      "options": [
+        "10",
+        "12",
+        "14",
+        "15"
+      ],
+      "correctAnswer": "12",
+      "hint": "The mode is the number that appears most frequently in the list.",
+      "workedSolution": "Score 12 appears 3 times, which is more than any other score. The modal score is 12.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "From the test scores in Question 10 ($8, 9, 10, 12, 12, 12, 14, 15$), find the median score.",
+      "options": [
+        "11",
+        "10.5",
+        "12",
+        "12.5"
+      ],
+      "correctAnswer": "12",
+      "hint": "The ordered middle values (4th and 5th terms) are 12 and 12.",
+      "workedSolution": "$\\text{Median} = \\frac{12 + 12}{2} = 12$.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "Calculate the simple interest on $\\text{GH¢ } 600.00$ at $7\\%\\text{ per annum}$ for $4\\text{ years}$.",
+      "options": [
+        "GH¢ 168.00",
+        "GH¢ 140.00",
+        "GH¢ 180.00",
+        "GH¢ 156.00"
+      ],
+      "correctAnswer": "GH¢ 168.00",
+      "hint": "$I = \\frac{P \\times R \\times T}{100}$.",
+      "workedSolution": "$I = \\frac{600 \\times 7 \\times 4}{100} = 6 \\times 28 = \\text{GH¢ } 168.00$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "A vehicle travels a distance of $180\\text{ km}$ at a constant speed of $72\\text{ km/h}$. How long did the journey take?",
+      "options": [
+        "2 hours 15 minutes",
+        "2 hours 30 minutes",
+        "2 hours 45 minutes",
+        "3 hours"
+      ],
+      "correctAnswer": "2 hours 30 minutes",
+      "hint": "Time = Distance ÷ Speed: $180 \\div 72$.",
+      "workedSolution": "$\\text{Time} = \\frac{180}{72} = 2.5\\text{ hours} = 2\\text{ hours } 30\\text{ minutes}$.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "Factorize completely: $3ax - 6ay + bx - 2by$.",
+      "options": [
+        "$(x + 2y)(3a - b)$",
+        "$(x - 2y)(3a - b)$",
+        "$(x + 2y)(3a + b)$",
+        "$(x - 2y)(3a + b)$"
+      ],
+      "correctAnswer": "$(x - 2y)(3a + b)$",
+      "hint": "Group terms: $3a(x - 2y) + b(x - 2y)$.",
+      "workedSolution": "$3a(x - 2y) + b(x - 2y) = (x - 2y)(3a + b)$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "Find the area of a circle whose radius is $14\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+      "options": [
+        "$88\\text{ cm}^2$",
+        "$616\\text{ cm}^2$",
+        "$308\\text{ cm}^2$",
+        "$154\\text{ cm}^2$"
+      ],
+      "correctAnswer": "$616\\text{ cm}^2$",
+      "hint": "Area = $\\pi r^2$.",
+      "workedSolution": "$\\text{Area} = \\frac{22}{7} \\times 14 \\times 14 = 22 \\times 2 \\times 14 = 616\\text{ cm}^2$.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "Solve the linear inequality: $6x - 7 \\le 2x + 9$.",
+      "options": [
+        "$x \\ge 4$",
+        "$x \\le 2$",
+        "$x \\le 4$",
+        "$x \\ge 2$"
+      ],
+      "correctAnswer": "$x \\le 4$",
+      "hint": "$6x - 2x \\le 9 + 7 \\implies 4x \\le 16$.",
+      "workedSolution": "$4x \\le 16 \\implies x \\le 4$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "If $3 : 8 = x : 40$, find the value of $x$.",
+      "options": [
+        "15",
+        "12",
+        "18",
+        "20"
+      ],
+      "correctAnswer": "15",
+      "hint": "Cross-multiply: $8x = 3 \\times 40$.",
+      "workedSolution": "$8x = 120 \\implies x = 15$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "Simplify: $4p^3 q \\times 3pq^2$.",
+      "options": [
+        "$12p^3 q^2$",
+        "$7p^4 q^3$",
+        "$12p^3 q^3$",
+        "$12p^4 q^3$"
+      ],
+      "correctAnswer": "$12p^4 q^3$",
+      "hint": "Multiply numerical coefficients: $4 \\times 3 = 12$. Add exponents for p and q.",
+      "workedSolution": "$(4 \\times 3) \\times p^{3+1} \\times q^{1+2} = 12p^4 q^3$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "A bag contains $10$ green apples and $15$ red apples. What is the probability of selecting a green apple at random?",
+      "options": [
+        "$\\frac{2}{3}$",
+        "$\\frac{1}{2}$",
+        "$\\frac{2}{5}$",
+        "$\\frac{3}{5}$"
+      ],
+      "correctAnswer": "$\\frac{2}{5}$",
+      "hint": "Total apples = 10 + 15 = 25. Probability = 10 / 25.",
+      "workedSolution": "$P(\\text{green}) = \\frac{10}{25} = \\frac{2}{5}$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "Find the Highest Common Factor (HCF) of $32, 48,$ and $80$.",
+      "options": [
+        "16",
+        "8",
+        "12",
+        "24"
+      ],
+      "correctAnswer": "16",
+      "hint": "Find the largest number that divides 32, 48, and 80 without a remainder.",
+      "workedSolution": "$32 = 16 \\times 2$, $48 = 16 \\times 3$, $80 = 16 \\times 5$. The HCF is 16.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "The three interior angles of a triangle are $2x^\\circ, 3x^\\circ,$ and $5x^\\circ$. Find the value of $x$.",
+      "options": [
+        "$20^\\circ$",
+        "$15^\\circ$",
+        "$24^\\circ$",
+        "$18^\\circ$"
+      ],
+      "correctAnswer": "$18^\\circ$",
+      "hint": "Sum of interior angles of a triangle is $180^\\circ$: $2x + 3x + 5x = 180$.",
+      "workedSolution": "$10x = 180 \\implies x = 18^\\circ$.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "Given column vectors $u = \\begin{pmatrix} 4 \\\\ -3 \\end{pmatrix}$ and $v = \\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix}$, evaluate $u + 3v$.",
+      "options": [
+        "$\\begin{pmatrix} 1 \\\\ 3 \\end{pmatrix}$",
+        "$\\begin{pmatrix} 1 \\\\ -3 \\end{pmatrix}$",
+        "$\\begin{pmatrix} 7 \\\\ 3 \\end{pmatrix}$",
+        "$\\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix}$"
+      ],
+      "correctAnswer": "$\\begin{pmatrix} 1 \\\\ 3 \\end{pmatrix}$",
+      "hint": "$4 + 3(-1) = 1$ and $-3 + 3(2) = 3$.",
+      "workedSolution": "$\\begin{pmatrix} 4 + 3(-1) \\\\ -3 + 3(2) \\end{pmatrix} = \\begin{pmatrix} 4 - 3 \\\\ -3 + 6 \\end{pmatrix} = \\begin{pmatrix} 1 \\\\ 3 \\end{pmatrix}$.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "In a town with a population of $75,000$, $44\\%$ are children. How many adults live in the town?",
+      "options": [
+        "33,000",
+        "40,000",
+        "42,000",
+        "45,000"
+      ],
+      "correctAnswer": "42,000",
+      "hint": "Adults make up $100\\% - 44\\% = 56\\%$. Calculate 56% of 75,000.",
+      "workedSolution": "$\\frac{56}{100} \\times 75,000 = 56 \\times 750 = 42,000\\text{ adults}$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "State the rule for the linear mapping where inputs $x = \\{1, 2, 3, 4\\}$ produce outputs $y = \\{6, 11, 16, 21\\}$.",
+      "options": [
+        "$x \\to 5x - 1$",
+        "$x \\to 5x + 1$",
+        "$x \\to 4x + 2$",
+        "$x \\to 6x$"
+      ],
+      "correctAnswer": "$x \\to 5x + 1$",
+      "hint": "Common difference is $11 - 6 = 5$. Check for $x = 1$: $5(1) + 1 = 6$.",
+      "workedSolution": "Common difference is 5 ($5x$). When $x = 1$, $5(1) + c = 6 \\implies c = 1$. The rule is $x \\to 5x + 1$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "In a right-angled triangle $PQR$, right-angled at $Q$, hypotenuse $|PR| = 15\\text{ cm}$ and base $|QR| = 9\\text{ cm}$. Find the height $|PQ|$.",
+      "options": [
+        "10 cm",
+        "11 cm",
+        "13 cm",
+        "12 cm"
+      ],
+      "correctAnswer": "12 cm",
+      "hint": "$|PQ|^2 = 15^2 - 9^2 = 225 - 81$.",
+      "workedSolution": "$|PQ|^2 = 225 - 81 = 144 \\implies |PQ| = \\sqrt{144} = 12\\text{ cm}$.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "Make $h$ the subject of the formula: $A = \\frac{1}{2}(a + b)h$.",
+      "options": [
+        "$h = \\frac{A}{2(a + b)}$",
+        "$h = \\frac{2A}{a + b}$",
+        "$h = \\frac{2(a + b)}{A}$",
+        "$h = 2A(a + b)$"
+      ],
+      "correctAnswer": "$h = \\frac{2A}{a + b}$",
+      "hint": "Multiply both sides by 2, then divide by $(a + b)$.",
+      "workedSolution": "$2A = (a + b)h \\implies h = \\frac{2A}{a + b}$.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "Expand and simplify: $(3x + 2)(x - 4)$.",
+      "options": [
+        "$3x^2 - 10x - 8$",
+        "$3x^2 + 10x - 8$",
+        "$3x^2 - 14x - 8$",
+        "$3x^2 - 8$"
+      ],
+      "correctAnswer": "$3x^2 - 10x - 8$",
+      "hint": "$3x(x - 4) + 2(x - 4) = 3x^2 - 12x + 2x - 8$.",
+      "workedSolution": "$3x^2 - 10x - 8$.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "How many lines of symmetry does a regular pentagon have?",
+      "options": [
+        "4",
+        "6",
+        "5",
+        "10"
+      ],
+      "correctAnswer": "5",
+      "hint": "A regular polygon with $n$ sides has $n$ lines of symmetry.",
+      "workedSolution": "A regular pentagon has 5 lines of symmetry.",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "A solid cube has edges of length $4\\text{ cm}$. Find its total surface area.",
+      "options": [
+        "$64\\text{ cm}^2$",
+        "$96\\text{ cm}^2$",
+        "$48\\text{ cm}^2$",
+        "$16\\text{ cm}^2$"
+      ],
+      "correctAnswer": "$96\\text{ cm}^2$",
+      "hint": "A cube has 6 congruent square faces: Area = $6s^2$.",
+      "workedSolution": "$\\text{Total Surface Area} = 6 \\times 4^2 = 6 \\times 16 = 96\\text{ cm}^2$.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "Find the volume of the cube in Question 29.",
+      "options": [
+        "$96\\text{ cm}^3$",
+        "$32\\text{ cm}^3$",
+        "$128\\text{ cm}^3$",
+        "$64\\text{ cm}^3$"
+      ],
+      "correctAnswer": "$64\\text{ cm}^3$",
+      "hint": "Volume = $s^3$.",
+      "workedSolution": "$V = 4^3 = 64\\text{ cm}^3$.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "Two angles lie on a straight line. If one angle is $124^\\circ$, what is the size of the adjacent angle?",
+      "options": [
+        "$56^\\circ$",
+        "$66^\\circ$",
+        "$46^\\circ$",
+        "$124^\\circ$"
+      ],
+      "correctAnswer": "$56^\\circ$",
+      "hint": "Angles on a straight line add up to $180^\\circ$.",
+      "workedSolution": "$180^\\circ - 124^\\circ = 56^\\circ$.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "Under a rotation of $180^\\circ$ about the origin $(0, 0)$, the image of point $P(2, -5)$ is:",
+      "options": [
+        "(-2, -5)",
+        "(2, 5)",
+        "(-2, 5)",
+        "(5, -2)"
+      ],
+      "correctAnswer": "(-2, 5)",
+      "hint": "Rotation of 180° maps $(x, y) \\to (-x, -y)$.",
+      "workedSolution": "$(2, -5) \\to (-2, -(-5)) = (-2, 5)$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "Evaluate: $\\frac{2^6 \\times 3^3}{2^4 \\times 3}$.",
+      "options": [
+        "18",
+        "36",
+        "72",
+        "24"
+      ],
+      "correctAnswer": "36",
+      "hint": "$2^{6-4} \\times 3^{3-1} = 2^2 \\times 3^2$.",
+      "workedSolution": "$4 \\times 9 = 36$.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "In a pie chart, an angle of $90^\\circ$ represents $35\\text{ items}$. How many items does the whole pie chart represent?",
+      "options": [
+        "140 items",
+        "105 items",
+        "120 items",
+        "150 items"
+      ],
+      "correctAnswer": "140 items",
+      "hint": "The angle 90° is $\\frac{1}{4}$ of 360°. Multiply 35 by 4.",
+      "workedSolution": "$\\frac{360^\\circ}{90^\\circ} \\times 35 = 4 \\times 35 = 140\\text{ items}$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "Simplify: $\\frac{3}{4y} + \\frac{1}{2y}$.",
+      "options": [
+        "$\\frac{4}{6y}$",
+        "$\\frac{1}{y}$",
+        "$\\frac{5}{2y}$",
+        "$\\frac{5}{4y}$"
+      ],
+      "correctAnswer": "$\\frac{5}{4y}$",
+      "hint": "Common denominator is $4y$: $\\frac{3 + 2}{4y}$.",
+      "workedSolution": "$\\frac{3 + 2}{4y} = \\frac{5}{4y}$.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "If $5$ workers take $8\\text{ days}$ to complete a job, how many workers will complete the same job in $4\\text{ days}$?",
+      "options": [
+        "8 workers",
+        "12 workers",
+        "10 workers",
+        "9 workers"
+      ],
+      "correctAnswer": "10 workers",
+      "hint": "Total work = $5 \\times 8 = 40\\text{ worker-days}$. Divide by 4 days.",
+      "workedSolution": "$\\text{Workers} = \\frac{40}{4} = 10\\text{ workers}$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "If $p = -3$ and $q = 2$, evaluate: $p^2 - 4q$.",
+      "options": [
+        "1",
+        "17",
+        "-1",
+        "7"
+      ],
+      "correctAnswer": "1",
+      "hint": "$(-3)^2 - 4(2) = 9 - 8$.",
+      "workedSolution": "$9 - 8 = 1$.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "Calculate the magnitude of vector $u = \\begin{pmatrix} -5 \\\\ 12 \\end{pmatrix}$.",
+      "options": [
+        "17 units",
+        "13 units",
+        "15 units",
+        "11 units"
+      ],
+      "correctAnswer": "13 units",
+      "hint": "$|u| = \\sqrt{(-5)^2 + 12^2} = \\sqrt{25 + 144}$.",
+      "workedSolution": "$|u| = \\sqrt{169} = 13\\text{ units}$.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "Find the exterior angle of a regular decagon ($10\\text{ sides}$).",
+      "options": [
+        "$40^\\circ$",
+        "$30^\\circ$",
+        "$36^\\circ$",
+        "$45^\\circ$"
+      ],
+      "correctAnswer": "$36^\\circ$",
+      "hint": "Exterior angle = $360^\\circ / 10$.",
+      "workedSolution": "$\\frac{360^\\circ}{10} = 36^\\circ$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "A pair of vertically opposite angles are represented by $(5x - 20)^\\circ$ and $(3x + 16)^\\circ$. Find the value of $x$.",
+      "options": [
+        "16",
+        "14",
+        "20",
+        "18"
+      ],
+      "correctAnswer": "18",
+      "hint": "Vertically opposite angles are equal: $5x - 20 = 3x + 16$.",
+      "workedSolution": "$5x - 3x = 16 + 20 \\implies 2x = 36 \\implies x = 18$.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-16T09:00:00.000Z",
+  "lastUpdated": "2026-09-16T09:00:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -9851,6 +10430,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_30
   );
   results.push(result33);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 34: JHS Math -> Core Curriculum Series (Set 31 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 34: Junior Core Math Objective Mastery Series (Set 31)...');
+  const result34 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_31
+  );
+  results.push(result34);
 
 
 

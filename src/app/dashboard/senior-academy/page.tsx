@@ -852,6 +852,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "(32 - x) + x + (28 - x) + 6 = 50 \\implies 66 - x = 50 \\implies x = 16",
         sampleAnswer: "16 students"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 31)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 31 / 1997 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 31 / 1997 past paper adaptation) with balanced option randomization covering set operations, fractions, LCM & prime factors, binary conversion, linear equations, percentages, circle area, and column vectors.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-31",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1997 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set M = {multiples of 3, 1 ≤ x ≤ 18} and set N = {even factors of 24}, find M ∩ N:",
+        sampleFormula: "M \\cap N = \\{6, 12\\}",
+        sampleAnswer: "{6, 12}"
+    },
 
 
 
