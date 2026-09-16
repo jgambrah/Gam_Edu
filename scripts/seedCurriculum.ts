@@ -13815,6 +13815,14 @@ export const SET_JHS_MASTERY_SERIES_45: CurriculumQuestionSet = JSON.parse(
 );
 
 // ============================================================================
+// 4t. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 46)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-46
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_46: CurriculumQuestionSet = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'payloads', 'jhs-math-mastery-series-46.json'), 'utf-8')
+);
+
+// ============================================================================
 export interface SeedResult {
   path: string;
   sizeBytes: number;
@@ -14523,6 +14531,28 @@ export async function runCurriculumSeeding() {
       lastUpdated: FieldValue.serverTimestamp(),
     }, { merge: true });
     console.log('✅ Topic manifest synchronized with jhs-math-mastery-series-45.');
+  }
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 49: JHS Math -> Core Curriculum Series (Set 46 Structured in core_curriculum_mastery)
+  console.log('▶ Ingesting Set 49: Junior Core Math Structured Problem-Solving Series (Set 46)...');
+  const result49 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_46
+  );
+  results.push(result49);
+
+  // Synchronize Topic Manifest for Set 46
+  if (db && !isDryRun) {
+    const topicRef = db.doc('global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery');
+    await topicRef.set({
+      questionSetIds: FieldValue.arrayUnion('jhs-math-mastery-series-46'),
+      lastUpdated: FieldValue.serverTimestamp(),
+    }, { merge: true });
+    console.log('✅ Topic manifest synchronized with jhs-math-mastery-series-46.');
   }
 
 
