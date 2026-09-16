@@ -44,10 +44,10 @@ service cloud.firestore {
     function getUserSchoolId() {
       return (request.auth.token != null && request.auth.token.schoolId != null)
         ? request.auth.token.schoolId
-        : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
-          ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId
-          : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
-             ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
+        : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+           ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
+           : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
+             ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId
              : (exists(/databases/$(database)/documents/students/$(request.auth.uid))
                 ? get(/databases/$(database)/documents/students/$(request.auth.uid)).data.schoolId
                 : (exists(/databases/$(database)/documents/parents/$(request.auth.uid))
@@ -58,10 +58,10 @@ service cloud.firestore {
     function getUserRole() {
       return (request.auth.token != null && request.auth.token.role != null)
         ? request.auth.token.role
-        : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
-          ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
-          : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
-             ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+           ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+           : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
+             ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
              : ''));
     }
 
@@ -184,11 +184,11 @@ service cloud.firestore {
 
 
     match /schoolSettings/{docId} {
-      allow read: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == docId);
+      allow read, get, list: if isSignedIn();
       allow write: if isSuperAdmin() || ((isAdmin() || isFinanceStaff()) && getUserSchoolId() == docId);
 
       match /{subcollection}/{subdocId} {
-        allow read: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == docId);
+        allow read, get, list: if isSignedIn();
         allow write: if isSuperAdmin() || ((isAdmin() || isFinanceStaff()) && getUserSchoolId() == docId);
       }
     }
@@ -319,12 +319,12 @@ service cloud.firestore {
     // =========================================================
 
      match /classes/{classId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 
     match /subjects/{subjectId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
     }
 
@@ -349,17 +349,17 @@ service cloud.firestore {
     }
 
     match /timetables/{timetableId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
     }
 
     match /rooms/{roomId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
     }
 
     match /timeSlots/{timeSlotId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 
