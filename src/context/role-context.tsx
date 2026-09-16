@@ -17,9 +17,12 @@ interface RoleContextType {
 
 const RoleContext = createContext<RoleContextType>({ role: null, setRole: () => {}, loading: true, profile: null, refreshRole: () => {} });
 
-// Hardcoded Super Admin / CEO Identities
+// Hardcoded Super Admin / CEO Identities & School Owners
 const SUPER_ADMIN_EMAIL = 'jamesgambrah@gmail.com';
 const SUPER_ADMIN_UID = 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
+const MERCY_ADMIN_EMAIL = 'atampokaadongo@gmail.com';
+const MERCY_ADMIN_UID = '7GVi5qCxC4YDnjKkjVwSjAYtQz73';
+const MERCY_SCHOOL_ID = 'oHr3BrGdK2eS5MQ5zmZU';
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -38,8 +41,11 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
       setLoading(true);
       try {
-        // --- 0. SUPER ADMIN CHECK ---
-        if (currentUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL || currentUser.uid === SUPER_ADMIN_UID) {
+        // --- 0. SUPER ADMIN / SCHOOL OWNER CHECK ---
+        const isSuperAdminUser = currentUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL || currentUser.uid === SUPER_ADMIN_UID;
+        const isMercyAdminUser = currentUser.email?.toLowerCase() === MERCY_ADMIN_EMAIL || currentUser.uid === MERCY_ADMIN_UID;
+
+        if (isSuperAdminUser || isMercyAdminUser) {
           setRole('Director');
           let staffData: any = null;
           const staffRef = doc(firestore, 'staff', currentUser.uid);
@@ -54,18 +60,43 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
                 staffData = snap.docs[0].data();
               }
             } catch (err) {
-              console.warn("[RoleContext] Super Admin staff query by email failed:", err);
+              console.warn("[RoleContext] Staff query by email failed:", err);
             }
           }
 
           const storedSchoolId = typeof window !== 'undefined'
             ? (localStorage.getItem('gam_school_id') || localStorage.getItem('selected_school_id'))
             : null;
-          const finalSchoolId = staffData?.schoolId || storedSchoolId || 'oHr3BrGdK2eS5MQ5zmZU';
+          const finalSchoolId = isMercyAdminUser ? MERCY_SCHOOL_ID : (staffData?.schoolId || storedSchoolId || 'oHr3BrGdK2eS5MQ5zmZU');
+
+          // Ensure users/{uid} and staff/{uid} exist in Firestore so security rules and backend recognize the admin immediately
+          try {
+            await setDoc(doc(firestore, 'users', currentUser.uid), {
+              uid: currentUser.uid,
+              role: 'Director',
+              schoolId: finalSchoolId,
+              email: currentUser.email?.toLowerCase() || '',
+              firstName: staffData?.firstName || (isMercyAdminUser ? 'Mercy' : 'Super'),
+              lastName: staffData?.lastName || (isMercyAdminUser ? 'Atampoka Adongo' : 'Admin'),
+            }, { merge: true });
+
+            await setDoc(doc(firestore, 'staff', currentUser.uid), {
+              uid: currentUser.uid,
+              role: 'Director',
+              schoolId: finalSchoolId,
+              email: currentUser.email?.toLowerCase() || '',
+              firstName: staffData?.firstName || (isMercyAdminUser ? 'Mercy' : 'Super'),
+              lastName: staffData?.lastName || (isMercyAdminUser ? 'Atampoka Adongo' : 'Admin'),
+              isActive: true,
+              ...(staffData || {})
+            }, { merge: true });
+          } catch (syncErr) {
+            console.warn("[RoleContext] Admin record sync warning:", syncErr);
+          }
 
           setProfile({
-            firstName: staffData?.firstName || 'Super',
-            lastName: staffData?.lastName || 'Admin',
+            firstName: staffData?.firstName || (isMercyAdminUser ? 'Mercy' : 'Super'),
+            lastName: staffData?.lastName || (isMercyAdminUser ? 'Atampoka Adongo' : 'Admin'),
             email: currentUser.email,
             role: 'Director',
             schoolId: finalSchoolId,
@@ -85,14 +116,18 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           setRole(data.role as Role); 
           setProfile(data);
           if (data.role && data.schoolId) {
-            setDoc(doc(firestore, 'users', currentUser.uid), {
-              uid: currentUser.uid,
-              role: data.role,
-              schoolId: data.schoolId,
-              email: currentUser.email?.toLowerCase(),
-              firstName: data.firstName || '',
-              lastName: data.lastName || '',
-            }, { merge: true }).catch(() => {});
+            try {
+              await setDoc(doc(firestore, 'users', currentUser.uid), {
+                uid: currentUser.uid,
+                role: data.role,
+                schoolId: data.schoolId,
+                email: currentUser.email?.toLowerCase(),
+                firstName: data.firstName || '',
+                lastName: data.lastName || '',
+              }, { merge: true });
+            } catch (err) {
+              console.warn("[RoleContext] User sync warning:", err);
+            }
           }
           setLoading(false);
           return;
@@ -110,27 +145,29 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
               setProfile(data);
 
               if (data.role && data.schoolId) {
-                // 1. Sync to users/{currentUser.uid} so Firestore Security Rules (getUserRole(), getUserSchoolId())
-                // recognize the staff member immediately on all school collection requests
-                setDoc(doc(firestore, 'users', currentUser.uid), {
-                  uid: currentUser.uid,
-                  role: data.role,
-                  schoolId: data.schoolId,
-                  email: currentUser.email.toLowerCase(),
-                  firstName: data.firstName || '',
-                  lastName: data.lastName || '',
-                  staffDocId: staffDoc.id,
-                }, { merge: true }).catch((err) => {
-                  console.warn("[RoleContext] Could not sync user record to users/uid:", err);
-                });
-
-                // 2. Also ensure staff/{currentUser.uid} exists if staff was originally created with an auto-ID
-                if (staffDoc.id !== currentUser.uid) {
-                  setDoc(doc(firestore, 'staff', currentUser.uid), {
-                    ...data,
+                try {
+                  // 1. Sync to users/{currentUser.uid} so Firestore Security Rules (getUserRole(), getUserSchoolId())
+                  // recognize the staff member immediately on all school collection requests
+                  await setDoc(doc(firestore, 'users', currentUser.uid), {
                     uid: currentUser.uid,
-                    originalDocId: staffDoc.id,
-                  }, { merge: true }).catch(() => {});
+                    role: data.role,
+                    schoolId: data.schoolId,
+                    email: currentUser.email.toLowerCase(),
+                    firstName: data.firstName || '',
+                    lastName: data.lastName || '',
+                    staffDocId: staffDoc.id,
+                  }, { merge: true });
+
+                  // 2. Also ensure staff/{currentUser.uid} exists if staff was originally created with an auto-ID
+                  if (staffDoc.id !== currentUser.uid) {
+                    await setDoc(doc(firestore, 'staff', currentUser.uid), {
+                      ...data,
+                      uid: currentUser.uid,
+                      originalDocId: staffDoc.id,
+                    }, { merge: true });
+                  }
+                } catch (err) {
+                  console.warn("[RoleContext] Could not sync user record to users/uid:", err);
                 }
               }
 

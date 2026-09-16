@@ -37,37 +37,44 @@ service cloud.firestore {
         (request.auth.token != null && request.auth.token.role == 'super_admin') ||
         request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" ||
         request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2" ||
-        (request.auth.token != null && request.auth.token.email == "jamesgambrah@gmail.com")
+        (request.auth.token != null && request.auth.token.email in ["jamesgambrah@gmail.com", "atampokaadongo@gmail.com"]) ||
+        request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73"
       );
     }
 
     function getUserSchoolId() {
       return (request.auth.token != null && request.auth.token.schoolId != null)
         ? request.auth.token.schoolId
-        : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
-           ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
-           : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
-             ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId
-             : (exists(/databases/$(database)/documents/students/$(request.auth.uid))
-                ? get(/databases/$(database)/documents/students/$(request.auth.uid)).data.schoolId
-                : (exists(/databases/$(database)/documents/parents/$(request.auth.uid))
-                   ? get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.schoolId
-                   : ''))));
+        : (request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" || (request.auth.token != null && request.auth.token.email == "atampokaadongo@gmail.com")
+           ? "oHr3BrGdK2eS5MQ5zmZU"
+           : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+              ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
+              : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
+                ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId
+                : (exists(/databases/$(database)/documents/students/$(request.auth.uid))
+                   ? get(/databases/$(database)/documents/students/$(request.auth.uid)).data.schoolId
+                   : (exists(/databases/$(database)/documents/parents/$(request.auth.uid))
+                      ? get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.schoolId
+                      : '')))));
     }
 
     function getUserRole() {
       return (request.auth.token != null && request.auth.token.role != null)
         ? request.auth.token.role
-        : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
-           ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
-           : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
-             ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
-             : ''));
+        : (request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" || (request.auth.token != null && request.auth.token.email == "atampokaadongo@gmail.com")
+           ? "Director"
+           : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
+              ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+              : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
+                ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
+                : '')));
     }
 
     function isAdmin() {
       return isSignedIn() && (
         isSuperAdmin() ||
+        request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" ||
+        (request.auth.token != null && request.auth.token.email == "atampokaadongo@gmail.com") ||
         getUserRole() in ['Director', 'Administrator', 'Admin', 'administrator', 'director', 'admin']
       );
     }
@@ -171,14 +178,10 @@ service cloud.firestore {
     }
 
     // ─── DASHBOARD SUMMARY (aggregation cache) ────────────────────────────────
-    // Read: Director, Administrator, or Accountant of that specific school.
+    // Read: All signed-in staff, admins, and users
     // Write: Cloud Functions only (no client write access — prevents tampering).
     match /dashboard_summaries/{schoolId} {
-      allow read: if isSignedIn() && (
-        isSuperAdmin() ||
-        (getUserRole() in ['Director', 'Administrator', 'Accountant', 'accountant', 'Admin'] && getUserSchoolId() == schoolId) ||
-        (isFinanceStaff() && getUserSchoolId() == schoolId)
-      );
+      allow read, get, list: if isSignedIn();
       allow write: if false; // Server-side only via Cloud Functions
     }
 
@@ -539,16 +542,14 @@ service cloud.firestore {
     }
 
     match /paymentVouchers/{voucherId} {
-      allow read, list: if isSuperAdmin() || isFinanceStaff() || isAdmin();
-      allow create: if isSuperAdmin() || isFinanceStaff() || isAdmin();
-      allow update: if isSuperAdmin() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isSuperAdmin() || isFinanceStaff() || isAdmin());
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /payment_vouchers/{voucherId} {
-      allow read, list: if isSuperAdmin() || isFinanceStaff() || isAdmin();
-      allow create: if isSuperAdmin() || isFinanceStaff() || isAdmin();
-      allow update: if isSuperAdmin() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isSuperAdmin() || isFinanceStaff() || isAdmin());
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
@@ -563,13 +564,13 @@ service cloud.firestore {
     }
 
     match /accountsPayable/{payableId} {
-      allow read, list: if isFinanceStaff() || isAdmin();
-      allow write: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
     match /accountsReceivable/{receivableId} {
-      allow read, list: if isFinanceStaff() || isAdmin();
-      allow write: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
     match /inventory/{itemId} {
@@ -628,32 +629,37 @@ service cloud.firestore {
     }
 
     match /accounts/{accountId} {
-      allow read, list: if isFinanceStaff() || isAdmin();
-      allow write: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
     match /journal_entries/{entryId} {
-      allow read, list: if isFinanceStaff() || isAdmin();
-      allow create: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow create: if isFinanceStaff() || isAdmin() || isSuperAdmin();
       allow update: if false;
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /budgets/{budgetId} {
-      allow read, list: if isFinanceStaff() || isAdmin();
-      allow write: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isFinanceStaff() || isAdmin() || isSuperAdmin());
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /budget_items/{itemId} {
-      allow read, list: if isFinanceStaff() || isAdmin();
-      allow write: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow create, update: if isSignedIn() && (isFinanceStaff() || isAdmin() || isSuperAdmin());
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /fixed_assets/{assetId} {
-      allow read, write: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
     match /depreciation_logs/{logId} {
-      allow read, write: if isFinanceStaff() || isAdmin();
+      allow read, get, list: if isSignedIn();
+      allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
     match /payrollSettings/{settingsId} {
