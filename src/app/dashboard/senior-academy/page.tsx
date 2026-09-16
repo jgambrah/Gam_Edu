@@ -978,6 +978,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "\\{1, 2, 3, 6, 9, 18\\}",
         sampleAnswer: "{1, 2, 3, 6, 9, 18}"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 38)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "5 Multi-Part Problems • 60 mins • Structured Theory (Set 38 / 1994 Variant)",
+        description: "Standardized 5-question structured theory examination variant (Set 38 / 1994 past paper adaptation) with embedded SVG diagrams covering binomial expansions, inequality modeling & vectors, ladder incline trigonometry & constant evaluation, compass right-angled isosceles triangle construction, Cartesian square transformations, and commercial canteen soft drink sales pie charting.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-38",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 5,
+        examTag: "5 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "A ladder of length L touches a wall at height 16 m while resting 12 m away from the wall base. Calculate L:",
+        sampleFormula: "L^2 = 12^2 + 16^2 = 144 + 256 = 400 \\implies L = 20\\text{ m}",
+        sampleAnswer: "20 m"
+    },
+
 
 
 
