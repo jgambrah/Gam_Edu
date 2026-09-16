@@ -1033,6 +1033,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleAnswer: "-1"
     },
     {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 41)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 41 / 1992 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 41 / 1992 past paper adaptation) with balanced option randomization covering prime factors, two-set Venn cardinalities, square root of decimals, base ten to five conversions, simple interest, displacement vectors & magnitudes, right-angled trigonometry (tanθ), and pie chart sector angles.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-41",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1992 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Find the displacement vector PQ from point P(1, 4) to point Q(5, -2):",
+        sampleFormula: "\\vec{PQ} = \\begin{pmatrix} 5 - 1 \\\\ -2 - 4 \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ -6 \\end{pmatrix}",
+        sampleAnswer: "(4, -6)ᵀ"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",

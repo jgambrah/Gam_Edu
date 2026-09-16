@@ -13203,6 +13203,585 @@ export const SET_JHS_MASTERY_SERIES_40: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 4p. ALIGNED CORE CURRICULUM SERIES: JHS Math Objective Mastery Series (Set 41)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-41
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_41: CurriculumQuestionSet = {
+  "id": "jhs-math-mastery-series-41",
+  "title": "Junior Core Mathematics • Objective Mastery Series (Set 41)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Comprehensive Objective Exam Series",
+  "variantType": "standard",
+  "totalQuestions": 40,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "prompt": "Find the set of prime factors of $18$.",
+      "options": [
+        "{1, 2, 3}",
+        "{2, 3}",
+        "{2, 3, 9}",
+        "{3, 6}"
+      ],
+      "correctAnswer": "{2, 3}",
+      "hint": "Identify factors of 18 that are prime numbers.",
+      "workedSolution": "Factors of 18 are 1, 2, 3, 6, 9, 18. Among these, the prime numbers are 2 and 3.",
+      "points": 1
+    },
+    {
+      "id": "q02",
+      "prompt": "If set $$A = \\{5, 9, 11\\}$$ and set $$B = \\{7, 9, 11\\}$$, find $$A \\cup B$$.",
+      "options": [
+        "{5, 7}",
+        "{9, 11}",
+        "{5, 9, 11}",
+        "{5, 7, 9, 11}"
+      ],
+      "correctAnswer": "{5, 7, 9, 11}",
+      "hint": "Combine all elements from both sets without repeating members.",
+      "workedSolution": "$$A \\cup B = \\{5, 7, 9, 11\\}$$.",
+      "points": 1
+    },
+    {
+      "id": "q03",
+      "prompt": "In a survey, set $P$ has $35$ members and set $Q$ has $20$ members. If $$P \\cap Q$$ has $8$ members, find the number of members in $$P \\cup Q$$.",
+      "options": [
+        "47",
+        "55",
+        "39",
+        "45"
+      ],
+      "correctAnswer": "47",
+      "hint": "$$n(P \\cup Q) = n(P) + n(Q) - n(P \\cap Q)$$.",
+      "workedSolution": "$$n(P \\cup Q) = 35 + 20 - 8 = 47$$.",
+      "points": 1
+    },
+    {
+      "id": "q04",
+      "prompt": "Evaluate: $$\\sqrt{6.25}$$.",
+      "options": [
+        "2.25",
+        "0.25",
+        "2.5",
+        "25"
+      ],
+      "correctAnswer": "2.5",
+      "hint": "$$6.25 = \\frac{625}{100}$$. Find $\\frac{\\sqrt{625}}{\\sqrt{100}}$.",
+      "workedSolution": "$$\\sqrt{6.25} = \\sqrt{\\frac{625}{100}} = \\frac{25}{10} = 2.5$$.",
+      "points": 1
+    },
+    {
+      "id": "q05",
+      "prompt": "Convert $48_{\\text{ten}}$ to a base five numeral.",
+      "options": [
+        "$$134_{\\text{five}}$$",
+        "$$143_{\\text{five}}$$",
+        "$$243_{\\text{five}}$$",
+        "$$141_{\\text{five}}$$"
+      ],
+      "correctAnswer": "$$143_{\\text{five}}$$",
+      "hint": "Divide repeatedly by 5: $48 = 1(25) + 4(5) + 3(1)$.",
+      "workedSolution": "$$48 \\div 5 = 9\\text{ R } 3$$; $$9 \\div 5 = 1\\text{ R } 4$$; $$1 \\div 5 = 0\\text{ R } 1$$. Reading upwards: $$143_{\\text{five}}$$.",
+      "points": 1
+    },
+    {
+      "id": "q06",
+      "prompt": "Find the least positive whole number which must be added to $175$ to make it exactly divisible by $13$.",
+      "options": [
+        "7",
+        "6",
+        "5",
+        "8"
+      ],
+      "correctAnswer": "7",
+      "hint": "Divide 175 by 13: $175 = 13 \\times 13 + 6$. Calculate $13 - 6$.",
+      "workedSolution": "$$175 \\div 13 = 13\\text{ R } 6$$. Adding $$13 - 6 = 7$$ gives $182$, which is $13 \\times 14$.",
+      "points": 1
+    },
+    {
+      "id": "q07",
+      "prompt": "Simplify: $$3 \\times \\left(2\\frac{1}{2} + 1\\frac{1}{4}\\right)$$.",
+      "options": [
+        "$$11\\frac{1}{2}$$",
+        "$$9\\frac{3}{4}$$",
+        "$$10\\frac{1}{2}$$",
+        "$$11\\frac{1}{4}$$"
+      ],
+      "correctAnswer": "$$11\\frac{1}{4}$$",
+      "hint": "$$2\\frac{1}{2} + 1\\frac{1}{4} = 3\\frac{3}{4} = \\frac{15}{4}$$. Multiply by 3.",
+      "workedSolution": "$$3 \\times \\frac{15}{4} = \\frac{45}{4} = 11\\frac{1}{4}$$.",
+      "points": 1
+    },
+    {
+      "id": "q08",
+      "prompt": "If $$7.44 \\div 2.4 = 3.1$$, find the exact value of $$74.4 \\div 2.4$$.",
+      "options": [
+        "0.31",
+        "3.1",
+        "31",
+        "310"
+      ],
+      "correctAnswer": "31",
+      "hint": "The numerator is multiplied by 10, so the quotient increases by a factor of 10.",
+      "workedSolution": "$$\\frac{74.4}{2.4} = \\frac{7.44 \\times 10}{2.4} = 3.1 \\times 10 = 31$$.",
+      "points": 1
+    },
+    {
+      "id": "q09",
+      "prompt": "Express $0.375$ as a common fraction in its lowest terms.",
+      "options": [
+        "$$\\frac{3}{8}$$",
+        "$$\\frac{5}{8}$$",
+        "$$\\frac{3}{5}$$",
+        "$$\\frac{7}{16}$$"
+      ],
+      "correctAnswer": "$$\\frac{3}{8}$$",
+      "hint": "$$\\frac{375}{1000}$$. Divide both numerator and denominator by 125.",
+      "workedSolution": "$$\\frac{375}{1000} = \\frac{375 \\div 125}{1000 \\div 125} = \\frac{3}{8}$$.",
+      "points": 1
+    },
+    {
+      "id": "q10",
+      "prompt": "An amount of money is shared between Kwame and Ama in the ratio $2 : 5$. If Ama receives $\\text{GH¢ } 3,500.00$, find Kwame's share.",
+      "options": [
+        "GH¢ 1,000.00",
+        "GH¢ 1,400.00",
+        "GH¢ 1,750.00",
+        "GH¢ 1,200.00"
+      ],
+      "correctAnswer": "GH¢ 1,400.00",
+      "hint": "5 ratio units = GH¢ 3,500.00. Value of 1 unit = 700. Multiply by 2.",
+      "workedSolution": "$$\\text{Kwame's share} = \\frac{2}{5} \\times 3,500.00 = 2 \\times 700 = \\text{GH¢ } 1,400.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q11",
+      "prompt": "If $\\$1.00 = \\text{GH¢ } 4.50$, what is the Ghana Cedi value of an article priced at $\\$8.00$?",
+      "options": [
+        "GH¢ 38.50",
+        "GH¢ 32.00",
+        "GH¢ 40.00",
+        "GH¢ 36.00"
+      ],
+      "correctAnswer": "GH¢ 36.00",
+      "hint": "Multiply 8 by 4.50.",
+      "workedSolution": "$$8 \\times 4.50 = \\text{GH¢ } 36.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q12",
+      "prompt": "Calculate the simple interest on $\\text{GH¢ } 36,000.00$ at $4\\%\\text{ per annum}$ for $6\\text{ months}$.",
+      "options": [
+        "GH¢ 360.00",
+        "GH¢ 1,440.00",
+        "GH¢ 720.00",
+        "GH¢ 900.00"
+      ],
+      "correctAnswer": "GH¢ 720.00",
+      "hint": "Time $T = 6/12 = 0.5\\text{ year}$. Simple interest = $\\frac{P \\times R \\times T}{100}$.",
+      "workedSolution": "$$I = \\frac{36,000 \\times 4 \\times 0.5}{100} = 360 \\times 2 = \\text{GH¢ } 720.00$$.",
+      "points": 1
+    },
+    {
+      "id": "q13",
+      "prompt": "The distances of four towns $A, B, C,$ and $D$ from a central depot are $12\\text{ km}, 24\\text{ km}, 18\\text{ km},$ and $30\\text{ km}$ respectively. Which town is farthest from the depot?",
+      "options": [
+        "Town D",
+        "Town B",
+        "Town C",
+        "Town A"
+      ],
+      "correctAnswer": "Town D",
+      "hint": "Identify the town with the greatest distance.",
+      "workedSolution": "Town D is at 30 km, which is the farthest distance.",
+      "points": 1
+    },
+    {
+      "id": "q14",
+      "prompt": "From Question 13, how much farther is Town $D$ than Town $C$ from the depot?",
+      "options": [
+        "6 km",
+        "12 km",
+        "8 km",
+        "14 km"
+      ],
+      "correctAnswer": "12 km",
+      "hint": "Subtract: $30 - 18$.",
+      "workedSolution": "$$30\\text{ km} - 18\\text{ km} = 12\\text{ km}$$.",
+      "points": 1
+    },
+    {
+      "id": "q15",
+      "prompt": "A box contains $30$ beads, some yellow and some blue. If the probability of picking a yellow bead at random is $1/5$, find the number of yellow beads in the box.",
+      "options": [
+        "8",
+        "5",
+        "6",
+        "10"
+      ],
+      "correctAnswer": "6",
+      "hint": "Number of yellow beads = $\\frac{1}{5} \\times 30$.",
+      "workedSolution": "$$\\frac{1}{5} \\times 30 = 6\\text{ yellow beads}$$.",
+      "points": 1
+    },
+    {
+      "id": "q16",
+      "prompt": "A basket contains $15$ oranges of which $5$ are unripe. What is the probability of picking a ripe orange at random?",
+      "options": [
+        "$$\\frac{3}{5}$$",
+        "$$\\frac{1}{3}$$",
+        "$$\\frac{1}{2}$$",
+        "$$\\frac{2}{3}$$"
+      ],
+      "correctAnswer": "$$\\frac{2}{3}$$",
+      "hint": "Ripe oranges = $15 - 5 = 10$. Probability = 10 / 15.",
+      "workedSolution": "$$P(\\text{ripe}) = \\frac{10}{15} = \\frac{2}{3}$$.",
+      "points": 1
+    },
+    {
+      "id": "q17",
+      "prompt": "Find the value of $$y^2 - 4y + 5$$ when $y = -3$.",
+      "options": [
+        "8",
+        "26",
+        "20",
+        "-16"
+      ],
+      "correctAnswer": "26",
+      "hint": "$$(-3)^2 = 9$$ and $$-4(-3) = +12$$.",
+      "workedSolution": "$$(-3)^2 - 4(-3) + 5 = 9 + 12 + 5 = 26$$.",
+      "points": 1
+    },
+    {
+      "id": "q18",
+      "prompt": "If $x = 3$, find the value of $k$ in the equation: $$4x - 5 = x + k$$.",
+      "options": [
+        "4",
+        "7",
+        "12",
+        "9"
+      ],
+      "correctAnswer": "4",
+      "hint": "Substitute $x = 3$: $4(3) - 5 = 3 + k$.",
+      "workedSolution": "$$12 - 5 = 3 + k \\implies 7 = 3 + k \\implies k = 4$$.",
+      "points": 1
+    },
+    {
+      "id": "q19",
+      "prompt": "Which inequality is represented on a number line with a solid arrow pointing to the left starting at a closed circle on $3$?",
+      "options": [
+        "$$x > 3$$",
+        "$$x < 3$$",
+        "$$x \\ge 3$$",
+        "$$x \\le 3$$"
+      ],
+      "correctAnswer": "$$x \\le 3$$",
+      "hint": "Closed circle at 3 means includes 3; pointing to the left means less than or equal to 3.",
+      "workedSolution": "A closed circle at 3 with arrow directed to the left represents $$x \\le 3$$.",
+      "points": 1
+    },
+    {
+      "id": "q20",
+      "prompt": "In the linear mapping $$x \\to 3x - 2$$, find the output $y$ when input $x = 4$.",
+      "options": [
+        "12",
+        "14",
+        "10",
+        "8"
+      ],
+      "correctAnswer": "10",
+      "hint": "Substitute $x = 4$ into $3x - 2$.",
+      "workedSolution": "$$y = 3(4) - 2 = 12 - 2 = 10$$.",
+      "points": 1
+    },
+    {
+      "id": "q21",
+      "prompt": "From the mapping in Question 20 ($$y = 3x - 2$$), find the input $x$ when output $y = 19$.",
+      "options": [
+        "7",
+        "6",
+        "8",
+        "5"
+      ],
+      "correctAnswer": "7",
+      "hint": "$$3x - 2 = 19 \\implies 3x = 21$$.",
+      "workedSolution": "$$3x = 19 + 2 = 21 \\implies x = 7$$.",
+      "points": 1
+    },
+    {
+      "id": "q22",
+      "prompt": "Point $Q$ is located due West of point $P$. What is the three-figure bearing of point $Q$ from $P$?",
+      "options": [
+        "$$360^\\circ$$",
+        "$$090^\\circ$$",
+        "$$180^\\circ$$",
+        "$$270^\\circ$$"
+      ],
+      "correctAnswer": "$$270^\\circ$$",
+      "hint": "Due West corresponds to 270° measured clockwise from North.",
+      "workedSolution": "The cardinal direction West is defined as bearing $$270^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q23",
+      "prompt": "A polygon has $8\\text{ sides}$. Which expression gives the sum of its interior angles?",
+      "options": [
+        "$$8 \\times 180^\\circ$$",
+        "$$6 \\times 180^\\circ$$",
+        "$$5 \\times 180^\\circ$$",
+        "$$4 \\times 180^\\circ$$"
+      ],
+      "correctAnswer": "$$6 \\times 180^\\circ$$",
+      "hint": "Sum of interior angles = $(n - 2) \\times 180^\\circ$. Substitute $n = 8$.",
+      "workedSolution": "$$(8 - 2) \\times 180^\\circ = 6 \\times 180^\\circ$$.",
+      "points": 1
+    },
+    {
+      "id": "q24",
+      "prompt": "Given that $5\\text{ miles} = 8\\text{ km}$, convert $15\\text{ miles}$ to kilometres.",
+      "options": [
+        "25 km",
+        "20 km",
+        "24 km",
+        "18 km"
+      ],
+      "correctAnswer": "24 km",
+      "hint": "$$15\\text{ miles} = 3 \\times 5\\text{ miles}$$. Multiply 8 km by 3.",
+      "workedSolution": "$$3 \\times 8\\text{ km} = 24\\text{ km}$$.",
+      "points": 1
+    },
+    {
+      "id": "q25",
+      "prompt": "From the conversion in Question 24 ($5\\text{ miles} = 8\\text{ km}$), convert $16\\text{ km}$ to miles.",
+      "options": [
+        "10 miles",
+        "8 miles",
+        "12 miles",
+        "15 miles"
+      ],
+      "correctAnswer": "10 miles",
+      "hint": "$$16\\text{ km} = 2 \\times 8\\text{ km}$$. Multiply 5 miles by 2.",
+      "workedSolution": "$$2 \\times 5\\text{ miles} = 10\\text{ miles}$$.",
+      "points": 1
+    },
+    {
+      "id": "q26",
+      "prompt": "In a right-angled triangle, the perpendicular sides measure $8\\text{ cm}$ and $15\\text{ cm}$. Find the length of the hypotenuse.",
+      "options": [
+        "16 cm",
+        "19 cm",
+        "17 cm",
+        "18 cm"
+      ],
+      "correctAnswer": "17 cm",
+      "hint": "$$c^2 = 8^2 + 15^2 = 64 + 225$$.",
+      "workedSolution": "$$c^2 = 64 + 225 = 289 \\implies c = \\sqrt{289} = 17\\text{ cm}$$.",
+      "points": 1
+    },
+    {
+      "id": "q27",
+      "prompt": "In the triangle from Question 26, if angle $\\theta$ is opposite the side of length $8\\text{ cm}$, state the value of $\\tan \\theta$.",
+      "options": [
+        "$$\\frac{8}{17}$$",
+        "$$\\frac{8}{15}$$",
+        "$$\\frac{15}{17}$$",
+        "$$\\frac{15}{8}$$"
+      ],
+      "correctAnswer": "$$\\frac{8}{15}$$",
+      "hint": "$$\\tan \\theta = \\frac{\\text{Opposite}}{\\text{Adjacent}}$$.",
+      "workedSolution": "$$\\tan \\theta = \\frac{8}{15}$$.",
+      "points": 1
+    },
+    {
+      "id": "q28",
+      "prompt": "Find the displacement vector $\\vec{PQ}$ from point $P(1, 4)$ to point $Q(5, -2)$.",
+      "options": [
+        "$$\\begin{pmatrix} 6 \\\\ 2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} -4 \\\\ 6 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 4 \\\\ 2 \\end{pmatrix}$$",
+        "$$\\begin{pmatrix} 4 \\\\ -6 \\end{pmatrix}$$"
+      ],
+      "correctAnswer": "$$\\begin{pmatrix} 4 \\\\ -6 \\end{pmatrix}$$",
+      "hint": "$$\\vec{PQ} = Q - P = \\begin{pmatrix} 5 - 1 \\\\ -2 - 4 \\end{pmatrix}$$.",
+      "workedSolution": "$$\\vec{PQ} = \\begin{pmatrix} 5 - 1 \\\\ -2 - 4 \\end{pmatrix} = \\begin{pmatrix} 4 \\\\ -6 \\end{pmatrix}$$.",
+      "points": 1
+    },
+    {
+      "id": "q29",
+      "prompt": "Calculate the magnitude of vector $$u = \\begin{pmatrix} 8 \\\\ -6 \\end{pmatrix}$$.",
+      "options": [
+        "12 units",
+        "14 units",
+        "10 units",
+        "8 units"
+      ],
+      "correctAnswer": "10 units",
+      "hint": "$$|u| = \\sqrt{8^2 + (-6)^2} = \\sqrt{64 + 36}$$.",
+      "workedSolution": "$$|u| = \\sqrt{64 + 36} = \\sqrt{100} = 10\\text{ units}$$.",
+      "points": 1
+    },
+    {
+      "id": "q30",
+      "prompt": "A square has an area of $9\\text{ cm}^2$ and its enlarged image has an area of $36\\text{ cm}^2$. What is the linear scale factor of the enlargement?",
+      "options": [
+        "2",
+        "4",
+        "3",
+        "1.5"
+      ],
+      "correctAnswer": "2",
+      "hint": "Area scale factor = $k^2 = 36 / 9 = 4$. Linear scale factor = $\\sqrt{4}$.",
+      "workedSolution": "$$k^2 = \\frac{36}{9} = 4 \\implies k = 2$$.",
+      "points": 1
+    },
+    {
+      "id": "q31",
+      "prompt": "The volume of a cube is $64\\text{ cm}^3$. Find the area of one of its faces.",
+      "options": [
+        "$$8\\text{ cm}^2$$",
+        "$$16\\text{ cm}^2$$",
+        "$$24\\text{ cm}^2$$",
+        "$$32\\text{ cm}^2$$"
+      ],
+      "correctAnswer": "$$16\\text{ cm}^2$$",
+      "hint": "Side length $s = \\sqrt[3]{64} = 4\\text{ cm}$. Area of a face = $s^2$.",
+      "workedSolution": "$$s = 4\\text{ cm}$$. Face area = $$4^2 = 16\\text{ cm}^2$$.",
+      "points": 1
+    },
+    {
+      "id": "q32",
+      "prompt": "A cylinder has height $5\\text{ cm}$ and radius $3.5\\text{ cm}$. Find its curved surface area. (Take $\\pi = \\frac{22}{7}$).",
+      "options": [
+        "$$55\\text{ cm}^2$$",
+        "$$220\\text{ cm}^2$$",
+        "$$77\\text{ cm}^2$$",
+        "$$110\\text{ cm}^2$$"
+      ],
+      "correctAnswer": "$$110\\text{ cm}^2$$",
+      "hint": "Curved surface area = $2\\pi r h$.",
+      "workedSolution": "$$\\text{CSA} = 2 \\times \\frac{22}{7} \\times 3.5 \\times 5 = 2 \\times 22 \\times 0.5 \\times 5 = 22 \\times 5 = 110\\text{ cm}^2$$.",
+      "points": 1
+    },
+    {
+      "id": "q33",
+      "prompt": "Find the area of a parallelogram with base $14\\text{ cm}$ and perpendicular height $6\\text{ cm}$.",
+      "options": [
+        "$$84\\text{ cm}^2$$",
+        "$$42\\text{ cm}^2$$",
+        "$$60\\text{ cm}^2$$",
+        "$$96\\text{ cm}^2$$"
+      ],
+      "correctAnswer": "$$84\\text{ cm}^2$$",
+      "hint": "Area = base × height.",
+      "workedSolution": "$$\\text{Area} = 14 \\times 6 = 84\\text{ cm}^2$$.",
+      "points": 1
+    },
+    {
+      "id": "q34",
+      "prompt": "If one-half of a number is added to one-third of the same number, the sum is $15$. Find the number.",
+      "options": [
+        "20",
+        "12",
+        "18",
+        "24"
+      ],
+      "correctAnswer": "18",
+      "hint": "$$\\frac{1}{2}x + \\frac{1}{3}x = \\frac{5}{6}x = 15$$.",
+      "workedSolution": "$$\\frac{5}{6}x = 15 \\implies x = 15 \\times \\frac{6}{5} = 3 \\times 6 = 18$$.",
+      "points": 1
+    },
+    {
+      "id": "q35",
+      "prompt": "If $2 : y$ is equivalent to $8 : 28$, find the value of $y$.",
+      "options": [
+        "9",
+        "6",
+        "8",
+        "7"
+      ],
+      "correctAnswer": "7",
+      "hint": "Cross-multiply: $8y = 2 \\times 28 = 56$.",
+      "workedSolution": "$$8y = 56 \\implies y = 7$$.",
+      "points": 1
+    },
+    {
+      "id": "q36",
+      "prompt": "Express $5/8$ as a percentage.",
+      "options": [
+        "58.0%",
+        "62.5%",
+        "65.0%",
+        "60.0%"
+      ],
+      "correctAnswer": "62.5%",
+      "hint": "$$\\frac{5}{8} \\times 100\\% = \\frac{500}{8}\\%$$.",
+      "workedSolution": "$$\\frac{500}{8}\\% = 62.5\\%$$.",
+      "points": 1
+    },
+    {
+      "id": "q37",
+      "prompt": "A trader bought goods for $\\text{GH¢ } 500.00$ and sold them for $\\text{GH¢ } 600.00$. Calculate the percentage profit.",
+      "options": [
+        "16.7%",
+        "25%",
+        "20%",
+        "15%"
+      ],
+      "correctAnswer": "20%",
+      "hint": "Profit = 600 - 500 = 100. Profit % = (100 / 500) × 100%.",
+      "workedSolution": "$$\\frac{100}{500} \\times 100\\% = \\frac{1}{5} \\times 100\\% = 20\\%$$.",
+      "points": 1
+    },
+    {
+      "id": "q38",
+      "prompt": "How many straight edges does a rectangular cuboid have?",
+      "options": [
+        "12",
+        "8",
+        "6",
+        "16"
+      ],
+      "correctAnswer": "12",
+      "hint": "A cuboid has 4 length edges, 4 width edges, and 4 height edges.",
+      "workedSolution": "A cuboid has exactly 12 edges.",
+      "points": 1
+    },
+    {
+      "id": "q39",
+      "prompt": "In a pie chart representing a farm of $360\\text{ hectares}$, a crop occupies a sector of $75^\\circ$. What is the area of land occupied by this crop?",
+      "options": [
+        "80 hectares",
+        "60 hectares",
+        "90 hectares",
+        "75 hectares"
+      ],
+      "correctAnswer": "75 hectares",
+      "hint": "Since the full circle is 360°, each 1° represents 1 hectare.",
+      "workedSolution": "$$\\frac{75^\\circ}{360^\\circ} \\times 360\\text{ ha} = 75\\text{ hectares}$$.",
+      "points": 1
+    },
+    {
+      "id": "q40",
+      "prompt": "From the pie chart in Question 39, what fraction of the total farmland is occupied by a sector of $90^\\circ$?",
+      "options": [
+        "$$\\frac{1}{3}$$",
+        "$$\\frac{1}{4}$$",
+        "$$\\frac{1}{5}$$",
+        "$$\\frac{2}{5}$$"
+      ],
+      "correctAnswer": "$$\\frac{1}{4}$$",
+      "hint": "Fraction = $90^\\circ / 360^\\circ$.",
+      "workedSolution": "$$\\frac{90^\\circ}{360^\\circ} = \\frac{1}{4}$$.",
+      "points": 1
+    }
+  ],
+  "seededAt": "2026-09-16T14:00:00.000Z",
+  "lastUpdated": "2026-09-16T14:00:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -13814,6 +14393,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_40
   );
   results.push(result43);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 44: JHS Math -> Core Curriculum Series (Set 41 Objective in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 44: Junior Core Math Objective Mastery Series (Set 41)...');
+  const result44 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_41
+  );
+  results.push(result44);
 
 
 
