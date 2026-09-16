@@ -942,6 +942,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "P \\cap Q = \\{4, 12, 36\\} \\implies n(P \\cap Q) = 3",
         sampleAnswer: "3"
     },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 36)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Multi-Part Problems • 60 mins • Structured Theory (Set 36 / 1995 Variant)",
+        description: "Standardized 6-question structured theory examination variant (Set 36 / 1995 past paper adaptation) with embedded SVG diagrams covering History/Geography Venn modeling, investment return ratio sharing & total amount simple interest, telecommunication mast shadow Pythagoras, simultaneous linear intersection graphs, rectangular reservoir water capacity, and discrete mathematics quiz frequency bar charts.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-36",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "In a class of 42 students, 26 study History, 22 study Geography, and 4 study neither subject. Find the number of students who study both:",
+        sampleFormula: "(26 - x) + x + (22 - x) + 4 = 42 \\implies 52 - x = 42 \\implies x = 10",
+        sampleAnswer: "10 students"
+    },
+
 
 
 
