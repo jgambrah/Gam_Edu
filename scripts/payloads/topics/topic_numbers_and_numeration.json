@@ -1,0 +1,420 @@
+{
+  "id": "topic_numbers_and_numeration",
+  "topicId": "numbers_and_numeration",
+  "title": "Numbers, Numeration & Operations",
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "badge": "Strand 1: Number & Numeration",
+  "description": "Comprehensive mastery of integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.",
+  "totalPracticeQuestions": 27,
+  "version": 1,
+  "levels": {
+    "jhs1": {
+      "levelTitle": "JHS 1: Foundations of Numbers, Factors & Place Value",
+      "summary": "Prime factors, index notation, HCF, LCM, and non-decimal base operations (Base Five & Binary).",
+      "notes": "### 1. Factors & Prime Factorization\nA **factor** of a whole number divides it completely without leaving a remainder.\nA **prime number** has exactly two distinct factors: $1$ and itself (e.g., $2, 3, 5, 7, 11$). Note that $1$ is neither prime nor composite.\n\n### 2. Highest Common Factor (HCF) & Lowest Common Multiple (LCM)\n* **HCF:** Product of the smallest powers of common prime factors.\n* **LCM:** Product of the highest powers of all occurring prime factors.\n\n### 3. Base Numeration\n* **Base Ten:** Uses digits $0, 1, 2, 3, 4, 5, 6, 7, 8, 9$.\n* **Base Five:** Uses digits $0, 1, 2, 3, 4$.\n  $$\\text{Converting } 142_{\\text{five}} \\to \\text{Base Ten}: (1 \\times 5^2) + (4 \\times 5^1) + (2 \\times 5^0) = 25 + 20 + 2 = 47_{\\text{ten}}$$",
+      "workedExamples": [
+        {
+          "id": "we_num_j1_01",
+          "title": "Prime Factorization & Index Notation",
+          "problem": "Express $720$ as a product of prime factors in index notation.",
+          "steps": [
+            "Break down 720 using successive division by prime numbers: $720 = 2 \\times 360 = 2^2 \\times 180 = 2^3 \\times 90 = 2^4 \\times 45$.",
+            "Factor 45: $45 = 3^2 \\times 5$.",
+            "Combine all powers: $720 = 2^4 \\times 3^2 \\times 5$."
+          ],
+          "finalAnswer": "$$2^4 \\times 3^2 \\times 5$$"
+        },
+        {
+          "id": "we_num_j1_02",
+          "title": "Converting Decimal to Base Five",
+          "problem": "Convert $63_{\\text{ten}}$ to a base five numeral.",
+          "steps": [
+            "Divide 63 by 5: $63 \\div 5 = 12 \\text{ remainder } 3$.",
+            "Divide 12 by 5: $12 \\div 5 = 2 \\text{ remainder } 2$.",
+            "Divide 2 by 5: $2 \\div 5 = 0 \\text{ remainder } 2$.",
+            "Read remainders from bottom to top: 2, 2, 3."
+          ],
+          "finalAnswer": "$$223_{\\text{five}}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_num_j1_l01",
+            "difficulty": "low",
+            "prompt": "Find the set of prime factors of $18$.",
+            "options": ["{2, 3}", "{1, 2, 3}", "{2, 3, 9}", "{3, 6}"],
+            "correctAnswer": "{2, 3}",
+            "hint": "List the factors of 18, then select only the prime numbers.",
+            "workedSolution": "Factors of 18 are 1, 2, 3, 6, 9, 18. Among these, only 2 and 3 are prime numbers.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j1_l02",
+            "difficulty": "low",
+            "prompt": "Convert $24_{\\text{five}}$ to a base ten numeral.",
+            "options": ["14", "12", "19", "24"],
+            "correctAnswer": "14",
+            "hint": "Expand in powers of 5: (2 × 5¹) + (4 × 5⁰).",
+            "workedSolution": "$$(2 \\times 5) + (4 \\times 1) = 10 + 4 = 14_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j1_l03",
+            "difficulty": "low",
+            "prompt": "What is the Least Common Multiple (LCM) of $4, 6,$ and $10$?",
+            "options": ["60", "30", "120", "24"],
+            "correctAnswer": "60",
+            "hint": "Find the prime factors: $4 = 2^2$, $6 = 2 \\times 3$, $10 = 2 \\times 5$.",
+            "workedSolution": "$$\\text{LCM} = 2^2 \\times 3 \\times 5 = 4 \\times 15 = 60$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_num_j1_m01",
+            "difficulty": "medium",
+            "prompt": "Convert $47_{\\text{ten}}$ to a base five numeral.",
+            "options": ["142_five", "132_five", "242_five", "141_five"],
+            "correctAnswer": "142_five",
+            "hint": "Repeatedly divide 47 by 5 and collect remainders upwards.",
+            "workedSolution": "$$47 = 1(25) + 4(5) + 2(1) = 142_{\\text{five}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j1_m02",
+            "difficulty": "medium",
+            "prompt": "Find the Highest Common Factor (HCF) of $36, 54,$ and $72$.",
+            "options": ["18", "12", "9", "24"],
+            "correctAnswer": "18",
+            "hint": "Identify the largest integer that divides all three numbers evenly.",
+            "workedSolution": "$$36 = 18 \\times 2$$, $$54 = 18 \\times 3$$, $$72 = 18 \\times 4$$. The HCF is 18.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j1_m03",
+            "difficulty": "medium",
+            "prompt": "Convert $11011_{\\text{two}}$ to a base ten numeral.",
+            "options": ["27", "25", "31", "29"],
+            "correctAnswer": "27",
+            "hint": "Expand: 1(16) + 1(8) + 0(4) + 1(2) + 1(1).",
+            "workedSolution": "$$16 + 8 + 0 + 2 + 1 = 27_{\\text{ten}}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_num_j1_h01",
+            "difficulty": "hard",
+            "prompt": "If $$23_x = 13_{\\text{ten}}$$, find the unknown base $x$.",
+            "options": ["five", "four", "six", "seven"],
+            "correctAnswer": "five",
+            "hint": "Write as an equation: $2x + 3 = 13$.",
+            "workedSolution": "$$2x + 3 = 13 \\implies 2x = 10 \\implies x = 5$$. The base is five.",
+            "points": 2
+          },
+          {
+            "id": "q_num_j1_h02",
+            "difficulty": "hard",
+            "prompt": "Find the least whole number that must be added to $175$ to make it exactly divisible by $13$.",
+            "options": ["7", "6", "5", "8"],
+            "correctAnswer": "7",
+            "hint": "Find the remainder when 175 is divided by 13.",
+            "workedSolution": "$$175 = (13 \\times 13) + 6$$. To reach the next multiple of 13, add $$13 - 6 = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_num_j1_h03",
+            "difficulty": "hard",
+            "prompt": "Find the missing binary numeral $x$ in: $$111010_{\\text{two}} - x = 10111_{\\text{two}}$$.",
+            "options": ["100011_two", "101011_two", "110011_two", "100111_two"],
+            "correctAnswer": "100011_two",
+            "hint": "Convert to base ten first: 58 - 23 = 35. Convert 35 back to base two.",
+            "workedSolution": "$$58 - 23 = 35_{\\text{ten}} = 32 + 2 + 1 = 100011_{\\text{two}}$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "jhs2": {
+      "levelTitle": "JHS 2: Fractions, Decimals & Scientific Standard Form",
+      "summary": "Arithmetic of fractions, recurring decimals, powers of ten, and standard index notation.",
+      "notes": "### 1. Operations with Mixed Numbers\n* Always express mixed fractions as improper fractions before multiplying or dividing.\n* Apply precedence of operations: **BODMAS** (Brackets, Orders/Of, Division, Multiplication, Addition, Subtraction).\n\n### 2. Scientific Notation (Standard Form)\nA number written in standard form has the structure:\n$$A \\times 10^n$$\nwhere $1 \\le A < 10$ and $n$ is an integer.\n* For numbers $\\ge 10$, $n$ is positive (e.g., $5,384 = 5.384 \\times 10^3$).\n* For numbers between $0$ and $1$, $n$ is negative (e.g., $0.000518 = 5.18 \\times 10^{-4}$).",
+      "workedExamples": [
+        {
+          "id": "we_num_j2_01",
+          "title": "Converting to Standard Form",
+          "problem": "Express $0.000518$ in standard form.",
+          "steps": [
+            "Identify the first non-zero digit: 5.",
+            "Place the decimal immediately after it: 5.18.",
+            "Count how many places the decimal shifted to the right: 4 places.",
+            "Since the number is less than 1, the exponent is negative: $10^{-4}$."
+          ],
+          "finalAnswer": "$$5.18 \\times 10^{-4}$$"
+        },
+        {
+          "id": "we_num_j2_02",
+          "title": "Mixed Fraction Operations with Precedence",
+          "problem": "Evaluate: $$\\left(2\\frac{1}{2} \\div 1\\frac{1}{4}\\right) \\times \\frac{3}{4}$$.",
+          "steps": [
+            "Convert mixed fractions to improper fractions: $\\frac{5}{2} \\div \\frac{5}{4}$.",
+            "Multiply by the reciprocal: $\\frac{5}{2} \\times \\frac{4}{5} = 2$.",
+            "Multiply by the remaining term: $2 \\times \\frac{3}{4} = \\frac{6}{4} = 1\\frac{1}{2}$."
+          ],
+          "finalAnswer": "$$1\\frac{1}{2}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_num_j2_l01",
+            "difficulty": "low",
+            "prompt": "Write $0.000785$ in standard form.",
+            "options": ["7.85 × 10⁻⁴", "7.85 × 10⁻³", "7.85 × 10⁴", "78.5 × 10⁻⁵"],
+            "correctAnswer": "7.85 × 10⁻⁴",
+            "hint": "Shift the decimal point 4 places to the right to place it after 7.",
+            "workedSolution": "$$0.000785 = 7.85 \\times 10^{-4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j2_l02",
+            "difficulty": "low",
+            "prompt": "Evaluate: $$0.125 \\times 0.08$$.",
+            "options": ["0.01", "0.001", "0.1", "0.0001"],
+            "correctAnswer": "0.01",
+            "hint": "$$125 \\times 8 = 1000$$. Count 5 total decimal places.",
+            "workedSolution": "$$0.125 \\times 0.08 = 0.01000 = 0.01$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j2_l03",
+            "difficulty": "low",
+            "prompt": "Express $0.375$ as a fraction in simplest form.",
+            "options": ["3/8", "5/8", "3/5", "7/16"],
+            "correctAnswer": "3/8",
+            "hint": "Write as 375/1000 and divide both terms by 125.",
+            "workedSolution": "$$\\frac{375 \\div 125}{1000 \\div 125} = \\frac{3}{8}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_num_j2_m01",
+            "difficulty": "medium",
+            "prompt": "Simplify: $$\\frac{5}{6} - \\frac{1}{4} + \\frac{2}{3}$$.",
+            "options": ["1 1/4", "1 1/12", "11/12", "7/12"],
+            "correctAnswer": "1 1/4",
+            "hint": "Use the common denominator 12.",
+            "workedSolution": "$$\\frac{10 - 3 + 8}{12} = \\frac{15}{12} = 1\\frac{3}{12} = 1\\frac{1}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j2_m02",
+            "difficulty": "medium",
+            "prompt": "Evaluate: $$\\left(3\\frac{1}{3} \\times 1\\frac{1}{5}\\right) \\div 2$$.",
+            "options": ["2", "3", "4", "1"],
+            "correctAnswer": "2",
+            "hint": "Convert to improper fractions: $(10/3 × 6/5) ÷ 2$.",
+            "workedSolution": "$$\\left(\\frac{10}{3} \\times \\frac{6}{5}\\right) \\div 2 = 4 \\div 2 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j2_m03",
+            "difficulty": "medium",
+            "prompt": "If $$\\frac{1}{y} = 2\\frac{1}{2}$$, find the value of $y$.",
+            "options": ["2/5", "5/2", "1/5", "3/5"],
+            "correctAnswer": "2/5",
+            "hint": "$$2\\frac{1}{2} = \\frac{5}{2}$$. Invert both sides.",
+            "workedSolution": "$$\\frac{1}{y} = \\frac{5}{2} \\implies y = \\frac{2}{5}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_num_j2_h01",
+            "difficulty": "hard",
+            "prompt": "Evaluate: $$\\frac{1}{3}\\left(2\\frac{1}{4} + \\frac{3}{4} \\div \\frac{1}{2}\\right)$$.",
+            "options": ["1 1/4", "1 1/2", "1", "2 1/4"],
+            "correctAnswer": "1 1/4",
+            "hint": "Divide $3/4$ by $1/2$ first, add to $2\\frac{1}{4}$, then multiply by $1/3$.",
+            "workedSolution": "$$\\frac{3}{4} \\div \\frac{1}{2} = \\frac{3}{2}$$. $$2\\frac{1}{4} + 1\\frac{1}{2} = \\frac{15}{4}$$. $$\\frac{1}{3} \\times \\frac{15}{4} = \\frac{5}{4} = 1\\frac{1}{4}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_num_j2_h02",
+            "difficulty": "hard",
+            "prompt": "Evaluate and express in standard form: $$\\frac{0.035 \\times 1.02}{0.00015}$$.",
+            "options": ["2.38 × 10²", "2.38 × 10³", "2.38 × 10¹", "23.8 × 10¹"],
+            "correctAnswer": "2.38 × 10²",
+            "hint": "Multiply numerator and denominator by 100,000 to eliminate decimals.",
+            "workedSolution": "$$\\frac{35 \\times 102}{15} = \\frac{7 \\times 34}{1} = 238 = 2.38 \\times 10^2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_num_j2_h03",
+            "difficulty": "hard",
+            "prompt": "A trader withdrew money from the bank. He spent $\\frac{1}{3}$ on stock and $\\frac{1}{2}$ on transport. If he had $\\text{GH¢ } 300.00$ left, how much did he withdraw?",
+            "options": ["GH¢ 1,800.00", "GH¢ 1,500.00", "GH¢ 1,200.00", "GH¢ 900.00"],
+            "correctAnswer": "GH¢ 1,800.00",
+            "hint": "Fraction remaining = $1 - (1/3 + 1/2) = 1/6$.",
+            "workedSolution": "$$\\text{Remaining fraction} = 1 - \\frac{5}{6} = \\frac{1}{6}$$. $$\\text{Total} = 300 \\times 6 = \\text{GH¢ } 1,800.00$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "jhs3": {
+      "levelTitle": "JHS 3: Laws of Indices, Roots & Approximations",
+      "summary": "Rules of exponents, significant figures, decimal places, and multi-step evaluation.",
+      "notes": "### 1. Laws of Indices\nFor any non-zero real base $a$ and integers $m, n$:\n* **Product Rule:** $a^m \\times a^n = a^{m+n}$\n* **Quotient Rule:** $a^m \\div a^n = a^{m-n}$\n* **Power Rule:** $(a^m)^n = a^{mn}$\n* **Zero Index:** $a^0 = 1$ ($a \\ne 0$)\n\n### 2. Significant Figures & Rounding\n* Non-zero digits are always significant.\n* Zeros between non-zero digits are significant (e.g., $4.037$ has 4 sig figs).\n* Leading zeros are NOT significant (e.g., $0.00385$ has 3 sig figs).",
+      "workedExamples": [
+        {
+          "id": "we_num_j3_01",
+          "title": "Simplifying using Index Laws",
+          "problem": "Evaluate: $$\\frac{3^5 \\times 2^5}{6^3}$$.",
+          "steps": [
+            "Combine powers with the same exponent: $3^5 \\times 2^5 = (3 \\times 2)^5 = 6^5$.",
+            "Divide by $6^3$ using the quotient law: $6^5 \\div 6^3 = 6^{5-3} = 6^2$.",
+            "Evaluate $6^2 = 36$."
+          ],
+          "finalAnswer": "$$36$$"
+        },
+        {
+          "id": "we_num_j3_02",
+          "title": "Rounding to Significant Figures",
+          "problem": "Round $48.962$ correct to three significant figures.",
+          "steps": [
+            "Identify the first three significant digits: 4, 8, and 9.",
+            "Inspect the fourth digit: 6.",
+            "Since 6 is $\\ge 5$, round up the 9 to 10, carrying over 1 to 48: 49.0."
+          ],
+          "finalAnswer": "$$49.0$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_num_j3_l01",
+            "difficulty": "low",
+            "prompt": "Evaluate: $$\\frac{3^5 \\times 2^5}{6^3}$$.",
+            "options": ["36", "18", "72", "24"],
+            "correctAnswer": "36",
+            "hint": "$$3^5 \\times 2^5 = 6^5$$. Subtract indices: $6^{5-3} = 6^2$.",
+            "workedSolution": "$$6^{5-3} = 6^2 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j3_l02",
+            "difficulty": "low",
+            "prompt": "Simplify: $$12^8 \\div 12^6$$.",
+            "options": ["144", "24", "12", "72"],
+            "correctAnswer": "144",
+            "hint": "Subtract indices: $12^{8-6} = 12^2$.",
+            "workedSolution": "$$12^{8-6} = 12^2 = 144$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j3_l03",
+            "difficulty": "low",
+            "prompt": "Correct $0.02751$ to three decimal places.",
+            "options": ["0.028", "0.027", "0.03", "0.28"],
+            "correctAnswer": "0.028",
+            "hint": "Inspect the 4th decimal digit (5) and round up.",
+            "workedSolution": "The 4th decimal place is 5, so 0.027 rounds up to 0.028.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_num_j3_m01",
+            "difficulty": "medium",
+            "prompt": "Evaluate: $$\\frac{2^7 \\times 5^4}{10^3}$$.",
+            "options": ["80", "40", "160", "20"],
+            "correctAnswer": "80",
+            "hint": "Note that $10^3 = 2^3 \\times 5^3$. Subtract indices for 2 and 5.",
+            "workedSolution": "$$2^{7-3} \\times 5^{4-3} = 2^4 \\times 5^1 = 16 \\times 5 = 80$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j3_m02",
+            "difficulty": "medium",
+            "prompt": "Evaluate: $$\\sqrt{6.25}$$.",
+            "options": ["2.5", "0.25", "2.25", "25"],
+            "correctAnswer": "2.5",
+            "hint": "Express as $\\sqrt{625 / 100}$.",
+            "workedSolution": "$$\\sqrt{625} / \\sqrt{100} = 25 / 10 = 2.5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_num_j3_m03",
+            "difficulty": "medium",
+            "prompt": "Write $48.962\\text{ km}$ correct to three significant figures.",
+            "options": ["49.0 km", "48.9 km", "49.00 km", "48.96 km"],
+            "correctAnswer": "49.0 km",
+            "hint": "The 4th significant digit is 6, which rounds 48.9 up to 49.0.",
+            "workedSolution": "Rounding to 3 significant figures gives 49.0 km.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_num_j3_h01",
+            "difficulty": "hard",
+            "prompt": "Given that $$3^2 \\times 2^2 \\times 5 = 180$$, find the least positive integer that must be multiplied by $180$ to make the product a perfect square.",
+            "options": ["5", "2", "3", "10"],
+            "correctAnswer": "5",
+            "hint": "Identify which prime factor has an odd power.",
+            "workedSolution": "In $180 = 2^2 \\times 3^2 \\times 5^1$, 5 is the only factor with an odd power. Multiplying by 5 gives $30^2$.",
+            "points": 2
+          },
+          {
+            "id": "q_num_j3_h02",
+            "difficulty": "hard",
+            "prompt": "Find the value of $k$ given that $$k = (2^7 \\div 2^4) \\times 8$$.",
+            "options": ["2⁶", "2⁵", "2⁷", "2⁴"],
+            "correctAnswer": "2⁶",
+            "hint": "$$2^{7-4} = 2^3$$, and $8 = 2^3$. Add indices.",
+            "workedSolution": "$$2^{7-4} \\times 2^3 = 2^3 \\times 2^3 = 2^{3+3} = 2^6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_num_j3_h03",
+            "difficulty": "hard",
+            "prompt": "If $$y^7 \\div y^4 = 27$$, find the value of $y$.",
+            "options": ["3", "9", "2", "4"],
+            "correctAnswer": "3",
+            "hint": "$$y^{7-4} = y^3 = 27$$. Take the cube root.",
+            "workedSolution": "$$y^3 = 27 \\implies y = \\sqrt[3]{27} = 3$$.",
+            "points": 2
+          }
+        ]
+      }
+    }
+  },
+  "linkedExamQuestions": [
+    {
+      "setId": "jhs-math-mastery-series-33",
+      "year": 1996,
+      "paper": 1,
+      "questionNumber": 4,
+      "promptSnippet": "Express 720 as a product of prime factors in index notation."
+    },
+    {
+      "setId": "jhs-math-mastery-series-35",
+      "year": 1995,
+      "paper": 1,
+      "questionNumber": 5,
+      "promptSnippet": "Convert the base ten numeral 63_ten to a base five numeral."
+    },
+    {
+      "setId": "jhs-math-mastery-series-41",
+      "year": 1992,
+      "paper": 1,
+      "questionNumber": 4,
+      "promptSnippet": "Evaluate the square root of 6.25."
+    }
+  ],
+  "updatedAt": "2026-09-16T17:00:00.000Z"
+}

@@ -86,12 +86,12 @@ const JHS_MATH_MANIFEST = {
     },
     {
       id: 'topic_numbers_and_numeration',
-      title: 'Integers, Decimals & Fractions',
+      title: 'Numbers, Numeration & Operations',
       strand: 'Strand 1: Number & Numeration',
       levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
+      questionCount: 27,
       hasNotes: true,
-      description: 'Operations on integers, place value, rounding, prime factorization, and rational fraction arithmetic.'
+      description: 'Comprehensive mastery of integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.'
     },
     {
       id: 'topic_linear_equations_and_inequalities',
@@ -214,6 +214,7 @@ async function runSeeding() {
   // 2. Seed Topics
   await seedTopicLabDoc('topic_ratio_and_proportion.json');
   await seedTopicLabDoc('topic_algebraic_expressions.json');
+  await seedTopicLabDoc('topic_numbers_and_numeration.json');
 
   console.log('\n================================================================');
   console.log('🎉 TOPICAL PRACTICE LABS SEEDING COMPLETE!');
