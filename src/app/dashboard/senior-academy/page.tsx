@@ -924,6 +924,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "(25 - x) + x + (22 - x) + 3 = 40 \\implies 50 - x = 40 \\implies x = 10",
         sampleAnswer: "10 students"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 35)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 35 / 1995 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 35 / 1995 past paper adaptation) with balanced option randomization covering set intersections, decimal division, LCM & index notation, base five conversions, percentage loss, circular perimeter, and regular polygon angles.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-35",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1995 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set P = {x : x is a factor of 36} and set Q = {x : x is a multiple of 4, 1 ≤ x ≤ 36}, find n(P ∩ Q):",
+        sampleFormula: "P \\cap Q = \\{4, 12, 36\\} \\implies n(P \\cap Q) = 3",
+        sampleAnswer: "3"
+    },
+
 
 
 
