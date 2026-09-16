@@ -43,10 +43,11 @@ type AssignmentCreationFormProps = {
 export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps) {
   const firestore = useFirestore();
   const { user } = useUser();
-  const { role } = useRole();
+  const { role, profile } = useRole();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { schoolId } = useCurrentSchool();
+  const { schoolId: currentSchoolId } = useCurrentSchool();
+  const schoolId = profile?.schoolId || currentSchoolId;
 
   // 1. Fetch ALL classes for the school, regardless of role.
   const classesQuery = useMemoFirebase(
@@ -159,7 +160,14 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
   });
 
   async function onSubmit(values: z.infer<typeof assignmentSchema>) {
-    if (!user || !schoolId || !firestore) return;
+    if (!user || !schoolId || !firestore) {
+      toast({
+        variant: 'destructive',
+        title: 'School Profile Missing',
+        description: 'Unable to detect your school identifier. Please refresh the page and try again.',
+      });
+      return;
+    }
     setIsSubmitting(true);
     try {
       const payload: any = {
@@ -197,12 +205,12 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
       form.reset();
       setQuestionsFile(null);
       setOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating assignment:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'An error occurred while creating the assignment.',
+        title: 'Submission Error',
+        description: error?.message || 'An error occurred while creating the assignment.',
       });
     } finally {
       setIsSubmitting(false);

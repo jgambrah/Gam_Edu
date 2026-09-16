@@ -2250,18 +2250,23 @@ function MathLab({
                                 domain = 'STATISTICS & PROBABILITY';
                             }
 
+                            const isPending = t.status === 'pending_content';
                             scanned.push({
                                 title: t.title,
                                 domain,
                                 gradeTier: 'Junior Secondary (JHS)',
-                                meta: `${t.questionCount || 27} Practice Qs • JHS 1 - 3 • Concept Notes & Worked Examples`,
-                                description: t.description || `Master ${t.title} with tiered concept notes, worked examples, and graded practice pools.`,
+                                meta: isPending
+                                    ? `Curriculum Strand • Tiered Notes & Drills in Preparation`
+                                    : `${t.questionCount || 27} Practice Qs • JHS 1 - 3 • Concept Notes & Worked Examples`,
+                                description: t.description || (isPending
+                                    ? `Official ${t.strand} curriculum unit. Interactive tiered learning drills and concept notes are being mapped.`
+                                    : `Master ${t.title} with tiered concept notes, worked examples, and graded practice pools.`),
                                 difficulty: 'Foundation',
                                 topicId: t.id,
                                 setId: t.id,
                                 kind: 'topical',
                                 format: 'topical_lab',
-                                questionCount: t.questionCount || 27,
+                                questionCount: t.questionCount || (isPending ? 0 : 27),
                                 subject: 'Mathematics'
                             });
                         });
@@ -2427,6 +2432,12 @@ function MathLab({
                 const labDoc = await getTopicalLabDoc(topicDocId);
                 if (labDoc) {
                     setActiveTopicalLab(labDoc);
+                    return;
+                } else {
+                    toast({
+                        title: 'Module In Preparation 📚',
+                        description: `Tiered notes and practice pools for "${mod.title}" are currently being synchronized according to national curriculum standards. Check back shortly!`
+                    });
                     return;
                 }
             } catch (err) {

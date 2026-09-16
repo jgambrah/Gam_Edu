@@ -71,6 +71,7 @@ self.addEventListener('fetch', (event) => {
   
   if (!event.request.url.startsWith(self.location.origin)) return;
   if (event.request.url.includes('/_next/webpack-hmr')) return;
+  if (event.request.url.includes('/api/')) return;
 
   // NETWORK FIRST STRATEGY WITH AUTOMATIC CHUNK PURGE
   event.respondWith(
@@ -84,14 +85,25 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       })
-      .catch(() => {
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) return cachedResponse;
-          // If a Next.js JS chunk is missing from network and cache, clear cache to force fresh reload
-          if (event.request.url.includes('/_next/static/')) {
-            caches.delete(CACHE_NAME);
-          }
-          return new Response('Network error', { status: 408, headers: { 'Content-Type': 'text/plain' } });
+      .catch(async () => {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) return cachedResponse;
+
+        // If a Next.js JS chunk is missing from network and cache, clear cache to force fresh reload
+        if (event.request.url.includes('/_next/static/')) {
+          await caches.delete(CACHE_NAME);
+        }
+
+        // For navigation requests, fallback to root or cached dashboard if available
+        if (event.request.mode === 'navigate') {
+          const fallback = await caches.match('/dashboard') || await caches.match('/');
+          if (fallback) return fallback;
+        }
+
+        return new Response('Offline or Network unavailable', { 
+          status: 503, 
+          statusText: 'Service Unavailable',
+          headers: { 'Content-Type': 'text/plain' } 
         });
       })
   );

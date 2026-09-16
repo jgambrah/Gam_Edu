@@ -33,76 +33,77 @@ export const DEFAULT_JHS_MATH_MANIFEST: SubjectTopicsManifest = {
   totalTopics: 8,
   topics: [
     {
-      id: 'topic_ratio_and_proportion',
-      title: 'Ratio, Proportion & Rates',
-      strand: 'Strand 1: Number & Numeration',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Master foundational direct comparison, multi-tier sharing, inverse proportions, and compound commercial rates.'
-    },
-    {
-      id: 'topic_algebraic_expressions',
-      title: 'Algebraic Expressions & Equations',
-      strand: 'Strand 2: Patterns & Algebra',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Algebraic terminology, simplification, linear equations, factorization, and change of subject.'
-    },
-    {
       id: 'topic_numbers_and_numeration',
-      title: 'Integers, Decimals & Fractions',
+      title: 'Numbers, Numeration & Operations',
       strand: 'Strand 1: Number & Numeration',
       levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
+      status: 'ready',
       hasNotes: true,
-      description: 'Operations on integers, place value, rounding, prime factorization, and rational fraction arithmetic.'
-    },
-    {
-      id: 'topic_linear_equations_and_inequalities',
-      title: 'Linear Equations & Inequalities',
-      strand: 'Strand 2: Patterns & Algebra',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Single-variable linear inequalities, truth sets, number line graphs, and word problem modeling.'
-    },
-    {
-      id: 'topic_geometry_and_construction',
-      title: 'Plane Geometry & Geometric Construction',
-      strand: 'Strand 3: Geometry & Measurement',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Angles, parallel lines, compass triangle constructions, mediators, and circumcircles.'
-    },
-    {
-      id: 'topic_mensuration_perimeter_area_volume',
-      title: 'Mensuration: Perimeter, Area & Volume',
-      strand: 'Strand 3: Geometry & Measurement',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Polygons, circles, surface areas of prisms, cylinders, and volumetric displacement.'
-    },
-    {
-      id: 'topic_data_handling_and_probability',
-      title: 'Data Handling, Statistics & Probability',
-      strand: 'Strand 4: Data & Statistics',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Frequency tables, bar charts, pie charts, mean, median, mode, and simple experimental probability.'
+      questionCount: 27,
+      description: 'Comprehensive mastery of integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.'
     },
     {
       id: 'topic_sets_and_operations',
-      title: 'Set Theory, Operations & Venn Modeling',
+      title: 'Sets, Logic & Venn Diagrams',
       strand: 'Strand 1: Number & Numeration',
       levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
+      status: 'pending_content',
+      hasNotes: false,
       description: 'Listing elements, set builder notation, union, intersection, and universal two-set Venn diagrams.'
+    },
+    {
+      id: 'topic_ratio_proportion_and_rates',
+      title: 'Ratio, Proportion, Rates & Business Math',
+      strand: 'Strand 1: Number & Numeration',
+      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
+      status: 'pending_content',
+      hasNotes: false,
+      description: 'Direct comparison, unitary method, ratio sharing, rates of work, percentage profit/loss, and simple interest.'
+    },
+    {
+      id: 'topic_algebraic_expressions_and_equations',
+      title: 'Algebraic Expressions, Formulae & Equations',
+      strand: 'Strand 2: Patterns & Algebra',
+      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
+      status: 'pending_content',
+      hasNotes: false,
+      description: 'Algebraic terminology, simplification, linear equations, factorization, and change of subject.'
+    },
+    {
+      id: 'topic_relations_mappings_and_graphs',
+      title: 'Relations, Mappings & Coordinate Graphs',
+      strand: 'Strand 2: Patterns & Algebra',
+      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
+      status: 'pending_content',
+      hasNotes: false,
+      description: 'Arrow diagrams, domain and range, linear mapping rules, Cartesian coordinates, and graph plotting.'
+    },
+    {
+      id: 'topic_geometry_polygons_and_mensuration',
+      title: 'Geometry, Polygons & Mensuration',
+      strand: 'Strand 3: Geometry & Measurement',
+      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
+      status: 'pending_content',
+      hasNotes: false,
+      description: 'Angle properties, polygon interior angles, Pythagorean theorem, perimeter, area of plane figures, and volume.'
+    },
+    {
+      id: 'topic_transformations_vectors_and_bearings',
+      title: 'Transformations, Vectors & Bearings',
+      strand: 'Strand 3: Geometry & Measurement',
+      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
+      status: 'pending_content',
+      hasNotes: false,
+      description: 'Reflection, rotation, translation, column vectors, vector addition, and compass bearings.'
+    },
+    {
+      id: 'topic_statistics_and_probability',
+      title: 'Data Statistics & Probability',
+      strand: 'Strand 4: Handling Data',
+      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
+      status: 'pending_content',
+      hasNotes: false,
+      description: 'Data collection, frequency tables, bar charts, pie charts, mean, median, mode, and simple experimental probability.'
     }
   ]
 };
@@ -166,6 +167,13 @@ export async function getSubjectTopicsManifest(
   });
 }
 
+const TOPIC_DOC_ALIASES: Record<string, string> = {
+  topic_ratio_proportion_and_rates: 'topic_ratio_and_proportion',
+  topic_algebraic_expressions_and_equations: 'topic_algebraic_expressions',
+  topic_ratio_and_proportion: 'topic_ratio_proportion_and_rates',
+  topic_algebraic_expressions: 'topic_algebraic_expressions_and_equations'
+};
+
 /**
  * Fetches a single Topical Lab document containing all tiered levels and question pools.
  * Path: global_curriculum/{levelId}/subjects/{subjectId}/topics/{topicDocId}
@@ -186,6 +194,20 @@ export async function fetchTopicalLabDoc(
         id: snap.id
       };
     }
+
+    // Check alias if primary doc not found
+    const aliasId = TOPIC_DOC_ALIASES[topicDocId];
+    if (aliasId) {
+      const aliasRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topics', aliasId);
+      const aliasSnap = await getDoc(aliasRef);
+      if (aliasSnap.exists()) {
+        return {
+          ...(aliasSnap.data() as TopicalLabDocument),
+          id: snap.id
+        };
+      }
+    }
+
     return null;
   } catch (err) {
     console.warn(`[topicalLabService] Error reading topic lab document (${topicDocId}):`, err);

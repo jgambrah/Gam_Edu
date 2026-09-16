@@ -60,86 +60,16 @@ try {
 
 const isDryRun = process.argv.includes('--dry-run') || process.argv.includes('--validate-only');
 
-// All 8 Core Topics for JHS Mathematics (Ghanaian National Curriculum / BECE)
-const JHS_MATH_MANIFEST = {
-  subject: 'Mathematics',
-  tier: 'Junior Secondary (JHS)',
-  totalTopics: 8,
-  topics: [
-    {
-      id: 'topic_ratio_and_proportion',
-      title: 'Ratio, Proportion & Rates',
-      strand: 'Strand 1: Number & Numeration',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 27,
-      hasNotes: true,
-      description: 'Master foundational direct comparison, multi-tier sharing, inverse proportions, and compound commercial rates.'
-    },
-    {
-      id: 'topic_algebraic_expressions',
-      title: 'Algebraic Expressions & Equations',
-      strand: 'Strand 2: Patterns & Algebra',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 27,
-      hasNotes: true,
-      description: 'Algebraic terminology, simplification, linear equations, factorization, and change of subject.'
-    },
-    {
-      id: 'topic_numbers_and_numeration',
-      title: 'Numbers, Numeration & Operations',
-      strand: 'Strand 1: Number & Numeration',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 27,
-      hasNotes: true,
-      description: 'Comprehensive mastery of integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.'
-    },
-    {
-      id: 'topic_linear_equations_and_inequalities',
-      title: 'Linear Equations & Inequalities',
-      strand: 'Strand 2: Patterns & Algebra',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Single-variable linear inequalities, truth sets, number line graphs, and word problem modeling.'
-    },
-    {
-      id: 'topic_geometry_and_construction',
-      title: 'Plane Geometry & Geometric Construction',
-      strand: 'Strand 3: Geometry & Measurement',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Angles, parallel lines, compass triangle constructions, mediators, and circumcircles.'
-    },
-    {
-      id: 'topic_mensuration_perimeter_area_volume',
-      title: 'Mensuration: Perimeter, Area & Volume',
-      strand: 'Strand 3: Geometry & Measurement',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Polygons, circles, surface areas of prisms, cylinders, and volumetric displacement.'
-    },
-    {
-      id: 'topic_data_handling_and_probability',
-      title: 'Data Handling, Statistics & Probability',
-      strand: 'Strand 4: Data & Statistics',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Frequency tables, bar charts, pie charts, mean, median, mode, and simple experimental probability.'
-    },
-    {
-      id: 'topic_sets_and_operations',
-      title: 'Set Theory, Operations & Venn Modeling',
-      strand: 'Strand 1: Number & Numeration',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      questionCount: 45,
-      hasNotes: true,
-      description: 'Listing elements, set builder notation, union, intersection, and universal two-set Venn diagrams.'
-    }
-  ]
-};
+// 8 Core Topics for JHS Mathematics (Ghanaian National Curriculum / BECE)
+const manifestPayloadPath = path.join(__dirname, 'payloads', 'manifests', 'topical_labs_math_jhs.json');
+const JHS_MATH_MANIFEST = fs.existsSync(manifestPayloadPath)
+  ? JSON.parse(fs.readFileSync(manifestPayloadPath, 'utf-8'))
+  : {
+      subject: 'Mathematics',
+      tier: 'Junior Secondary (JHS)',
+      totalTopics: 8,
+      topics: []
+    };
 
 async function seedTopicLabDoc(payloadFile: string): Promise<void> {
   const filePath = path.join(__dirname, 'payloads', 'topics', payloadFile);

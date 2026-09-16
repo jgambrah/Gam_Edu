@@ -69,11 +69,15 @@ import { errorEmitter, FirestorePermissionError } from '@/firebase';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
+import { useRole } from '@/context/role-context';
+
 export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
   const { user } = useUser();
+  const { profile } = useRole();
   const { toast } = useToast();
-  const { schoolId } = useCurrentSchool();
+  const { schoolId: currentSchoolId } = useCurrentSchool();
+  const schoolId = profile?.schoolId || currentSchoolId;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewQuiz, setPreviewQuiz] = useState<any | null>(null);
   const [formValues, setFormValues] = useState<any | null>(null);

@@ -1,0 +1,71 @@
+{
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "totalTopics": 8,
+  "topics": [
+    {
+      "id": "topic_numbers_and_numeration",
+      "title": "Numbers, Numeration & Operations",
+      "strand": "Strand 1: Number & Numeration",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "ready",
+      "hasNotes": true
+    },
+    {
+      "id": "topic_sets_and_operations",
+      "title": "Sets, Logic & Venn Diagrams",
+      "strand": "Strand 1: Number & Numeration",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "pending_content",
+      "hasNotes": false
+    },
+    {
+      "id": "topic_ratio_proportion_and_rates",
+      "title": "Ratio, Proportion, Rates & Business Math",
+      "strand": "Strand 1: Number & Numeration",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "pending_content",
+      "hasNotes": false
+    },
+    {
+      "id": "topic_algebraic_expressions_and_equations",
+      "title": "Algebraic Expressions, Formulae & Equations",
+      "strand": "Strand 2: Patterns & Algebra",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "pending_content",
+      "hasNotes": false
+    },
+    {
+      "id": "topic_relations_mappings_and_graphs",
+      "title": "Relations, Mappings & Coordinate Graphs",
+      "strand": "Strand 2: Patterns & Algebra",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "pending_content",
+      "hasNotes": false
+    },
+    {
+      "id": "topic_geometry_polygons_and_mensuration",
+      "title": "Geometry, Polygons & Mensuration",
+      "strand": "Strand 3: Geometry & Measurement",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "pending_content",
+      "hasNotes": false
+    },
+    {
+      "id": "topic_transformations_vectors_and_bearings",
+      "title": "Transformations, Vectors & Bearings",
+      "strand": "Strand 3: Geometry & Measurement",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "pending_content",
+      "hasNotes": false
+    },
+    {
+      "id": "topic_statistics_and_probability",
+      "title": "Data Statistics & Probability",
+      "strand": "Strand 4: Handling Data",
+      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
+      "status": "pending_content",
+      "hasNotes": false
+    }
+  ]
+}
