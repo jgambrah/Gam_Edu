@@ -960,6 +960,25 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "(26 - x) + x + (22 - x) + 4 = 42 \\implies 52 - x = 42 \\implies x = 10",
         sampleAnswer: "10 students"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 37)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 37 / 1994 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 37 / 1994 past paper adaptation) with balanced option randomization covering factors of whole numbers, disjoint set relations, age word problems, line symmetry, primes, inequalities, simple interest, variable subject change, difference of two squares, and probability.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-37",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1994 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "Which of the following represents the complete set of factors of 18?",
+        sampleFormula: "\\{1, 2, 3, 6, 9, 18\\}",
+        sampleAnswer: "{1, 2, 3, 6, 9, 18}"
+    },
+
 
 
 
