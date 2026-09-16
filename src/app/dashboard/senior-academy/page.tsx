@@ -816,6 +816,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleFormula: "|PR|^2 = 24^2 + 10^2 = 676 \\implies |PR| = 26\\text{ m}, \\quad \\tan \\theta = \\frac{5}{12}",
         sampleAnswer: "26 m, 5/12"
     },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 29)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Objective Examination (Set 29 / 1998 Variant)",
+        description: "Standardized 40-question objective examination variant (Set 29 / 1998 past paper adaptation) with balanced option randomization covering set operations, decimals, LCM & prime factors, linear equations, percentages, geometry, and column vectors.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-29",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Objective Questions • BECE 1998 Variant",
+        subject: "Mathematics",
+        sampleInstruction: "If set P = {multiples of 4, 1 < x < 25} and set Q = {factors of 24}, find P ∩ Q:",
+        sampleFormula: "P \\cap Q = \\{4, 8, 12, 24\\}",
+        sampleAnswer: "{4, 8, 12, 24}"
+    },
 
 
 
