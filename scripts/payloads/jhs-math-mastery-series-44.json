@@ -1,0 +1,120 @@
+{
+  "id": "jhs-math-mastery-series-44",
+  "title": "Junior Core Mathematics • Structured Problem-Solving Series (Set 44)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Structured Theory, Geometry & Data Modeling",
+  "variantType": "standard",
+  "totalQuestions": 4,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "title": "Question 1: Set Theory (Primes vs Odds) & Multi-Tier Proportional Sharing",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Let $$P = \\{x : x \\text{ is a prime number less than } 15\\}$$ and $$Q = \\{x : x \\text{ is an odd integer less than } 15\\}$$.\n(i) List the elements of set $P$ and set $Q$.\n(ii) Find $P \\cap Q$.\n(iii) Find $P \\cup Q$.",
+          "hint": "Prime numbers less than 15 start at 2 (note that 1 is not prime). Odd numbers less than 15 start at 1.",
+          "modelAnswer": "(i) P = {2, 3, 5, 7, 11, 13}, Q = {1, 3, 5, 7, 9, 11, 13}; (ii) {3, 5, 7, 11, 13}; (iii) {1, 2, 3, 5, 7, 9, 11, 13}",
+          "workedSolution": "**(i) Sets:**\n- $$P = \\{2, 3, 5, 7, 11, 13\\}$$\n- $$Q = \\{1, 3, 5, 7, 9, 11, 13\\}$$\n\n**(ii) Intersection ($P \\cap Q$):**\nCommon elements are prime and odd:\n$$P \\cap Q = \\{3, 5, 7, 11, 13\\}$$\n\n**(iii) Union ($P \\cup Q$):**\nCombine all elements from both sets:\n$$P \\cup Q = \\{1, 2, 3, 5, 7, 9, 11, 13\\}$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 9,
+          "prompt": "Three students, Kwabena, Afua, and Yaw, shared a batch of fresh mangoes. Kwabena received $\\frac{1}{4}$ of the total mangoes. The remaining mangoes were shared between Afua and Yaw in the ratio $4 : 5$ respectively.\nIf Yaw received $30\\text{ mangoes}$:\n(i) How many mangoes did Afua receive?\n(ii) What was the total number of mangoes shared by all three students?\n(iii) How many mangoes did Kwabena receive?",
+          "hint": "5 ratio units correspond to 30 mangoes for Yaw, so 1 unit = 6 mangoes. Find Afua's share (4 units). Their combined total represents 3/4 of the whole batch.",
+          "modelAnswer": "(i) 24 mangoes, (ii) 72 mangoes, (iii) 18 mangoes",
+          "workedSolution": "**(i) Afua's Share:**\nYaw's ratio is $5$ parts $\\implies 5\\text{ parts} = 30\\text{ mangoes}$.\n$$1\\text{ part} = \\frac{30}{5} = 6\\text{ mangoes}$$\nAfua received $4$ parts:\n$$\\text{Afua's share} = 4 \\times 6 = 24\\text{ mangoes}$$\n\n**(ii) Total Mangoes:**\nRemainder shared by Afua and Yaw = $$24 + 30 = 54\\text{ mangoes}$$.\nSince Kwabena took $\\frac{1}{4}$, the remainder represents $$1 - \\frac{1}{4} = \\frac{3}{4}$$ of the total.\n$$\\frac{3}{4} \\times \\text{Total} = 54$$\n$$\\text{Total} = 54 \\times \\frac{4}{3} = 18 \\times 4 = 72\\text{ mangoes}$$\n\n**(iii) Kwabena's Share:**\n$$\\text{Kwabena's share} = \\frac{1}{4} \\times 72 = 18\\text{ mangoes}$$\n*(Check: $18 + 24 + 30 = 72$)*."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "title": "Question 2: Geometric Compass Construction, Line Mediator & Circle Arc Intersection",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 340 230' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><polygon points='50,180 230,180 140,50' fill='#eff6ff' stroke='#1e293b' stroke-width='2'/><line x1='50' y1='180' x2='230' y2='180' stroke='#1e293b' stroke-width='2.5'/><circle cx='140' cy='50' r='85' fill='none' stroke='#2563eb' stroke-width='1.5' stroke-dasharray='4'/><line x1='140' y1='20' x2='140' y2='210' stroke='#dc2626' stroke-width='1.5'/><circle cx='140' cy='135' r='4' fill='#dc2626'/><text x='35' y='195' font-size='12' font-weight='bold'>Y</text><text x='235' y='195' font-size='12' font-weight='bold'>Z</text><text x='140' y='40' font-size='12' font-weight='bold'>X</text><text x='150' y='135' font-size='11' font-weight='bold' fill='#dc2626'>A</text><text x='125' y='198' font-size='11'>|YZ| = 8 cm</text><text x='65' y='110' font-size='11'>|XY| = 10 cm</text><text x='180' y='110' font-size='11'>|XZ| = 10 cm</text><text x='65' y='173' font-size='10'>60°</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 8,
+          "prompt": "In a geometric compass and ruler construction:\n1. Construct line segment $|YZ| = 8\\text{ cm}$.\n2. At $Y$, construct an angle $\\angle XYZ = 60^\\circ$.\n3. With center $Y$ and radius $10\\text{ cm}$, draw an arc to locate vertex $X$, and complete triangle $XYZ$.\nCalculate the perpendicular height of $X$ above the base line $YZ$ ($h = |XY| \\sin 60^\\circ$, where $\\sin 60^\\circ = \\frac{\\sqrt{3}}{2} \\approx 0.866$).",
+          "hint": "Height = 10 × sin(60°).",
+          "modelAnswer": "h ≈ 8.66 cm",
+          "workedSolution": "$$h = |XY| \\sin 60^\\circ = 10 \\times 0.866 = 8.66\\text{ cm}$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 7,
+          "prompt": "(i) Construct the mediator (perpendicular bisector) of side $YZ$.\n(ii) With center $X$ and radius $r = 6\\text{ cm}$, construct an arc intersecting the mediator of $YZ$ at point $A$ inside triangle $XYZ$.\n(iii) Calculate the straight-line distance $|YA|$ from vertex $Y$ to point $A$, given that the midpoint of $YZ$ is $M$ ($|YM| = 4\\text{ cm}$) and point $A$ lies at a vertical height of $3.5\\text{ cm}$ above $M$.",
+          "hint": "Apply Pythagoras' theorem in right-angled triangle YMA: $|YA|^2 = |YM|^2 + |MA|^2$.",
+          "modelAnswer": "|YA| ≈ 5.32 cm",
+          "workedSolution": "In right-angled triangle $\\Delta YMA$:\n$$|YM| = \\frac{1}{2}|YZ| = \\frac{8}{2} = 4\\text{ cm}$$\n$$|MA| = 3.5\\text{ cm}$$\n$$|YA|^2 = |YM|^2 + |MA|^2 = 4^2 + 3.5^2 = 16 + 12.25 = 28.25$$\n$$|YA| = \\sqrt{28.25} \\approx 5.315\\text{ cm}$$\nTherefore, $$|YA| \\approx 5.32\\text{ cm}$$ (or approximately $5.3\\text{ cm}$ by direct compass measurement)."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "title": "Question 3: Rational Fractional Equations, Quadratic Evaluation & Group Factorization",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Solve for $x$ in the fractional linear equation:\n$$\\frac{3x - 1}{4} - \\frac{x - 2}{3} = 1$$",
+          "hint": "Multiply each term on both sides by 12 (the LCM of 4 and 3) to clear all denominators.",
+          "modelAnswer": "x = 1.4 (or 7/5)",
+          "workedSolution": "Multiply through by $12$:\n$$12\\left(\\frac{3x - 1}{4}\\right) - 12\\left(\\frac{x - 2}{3}\\right) = 12(1)$$\n$$3(3x - 1) - 4(x - 2) = 12$$\n$$9x - 3 - 4x + 8 = 12$$\n$$5x + 5 = 12$$\n$$5x = 12 - 5 = 7$$\n$$x = \\frac{7}{5} = 1\\frac{2}{5} = 1.4$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Given that $m = -3$ and $n = \\frac{1}{2}$, evaluate:\n(i) $$m^2 (2n - 3)$$\n(ii) $$\\frac{3n - m}{m}$$",
+          "hint": "Substitute m = -3 and n = 0.5 into each expression, paying careful attention to negative signs.",
+          "modelAnswer": "(i) -18, (ii) -1.5 (or -3/2)",
+          "workedSolution": "**(i) Evaluation of $$m^2 (2n - 3)$$:**\n$$m^2 = (-3)^2 = 9$$\n$$2n - 3 = 2\\left(\\frac{1}{2}\\right) - 3 = 1 - 3 = -2$$\n$$m^2(2n - 3) = 9 \\times (-2) = -18$$\n\n**(ii) Evaluation of $$\\frac{3n - m}{m}$$:**\n$$3n - m = 3\\left(\\frac{1}{2}\\right) - (-3) = \\frac{3}{2} + 3 = 4.5 = \\frac{9}{2}$$\n$$\\frac{3n - m}{m} = \\frac{9/2}{-3} = -\\frac{9}{6} = -\\frac{3}{2} = -1.5$$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Factorize completely the four-term algebraic polynomial:\n$$3ax + ay + by - 3bx$$",
+          "hint": "Rearrange terms to group common factors: $(3ax - 3bx) + (ay + by)$.",
+          "modelAnswer": "(a - b)(3x + y)",
+          "workedSolution": "Rearrange terms:\n$$= (3ax - 3bx) + (ay - by) \\quad \\text{or} \\quad 3x(a - b) + y(a - b)$$\nFactor out $(a - b)$:\n$$= (a - b)(3x + y)$$."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "title": "Question 4: Prefect Election Pie Charting & Discrete Height Frequency Statistics",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 320 220' width='100%' height='200' xmlns='http://www.w3.org/2000/svg'><circle cx='150' cy='110' r='85' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M150,110 L150,25 A85,85 0 0,1 230,82 Z' fill='#bfdbfe' stroke='#1e40af'/><path d='M150,110 L230,82 A85,85 0 0,1 193,183 Z' fill='#bbf7d0' stroke='#166534'/><path d='M150,110 L193,183 A85,85 0 0,1 150,25 Z' fill='#fef08a' stroke='#854d0e'/><text x='165' y='65' font-size='10' font-weight='bold'>Acquaye: 60°</text><text x='185' y='135' font-size='10' font-weight='bold'>Borquaye: 120°</text><text x='80' y='115' font-size='10' font-weight='bold'>Commey: 180°</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 7,
+          "prompt": "In an election for class prefect, the votes received by three candidates were as follows:\n- **Acquaye:** $6\\text{ votes}$\n- **Borquaye:** $12\\text{ votes}$\n- **Commey:** $18\\text{ votes}$\n\n(i) Calculate the sector angle for each candidate on a pie chart.\n(ii) What fraction of the total votes was cast for Borquaye in simplest form?",
+          "hint": "Total votes = 6 + 12 + 18 = 36. Angle = (votes / 36) × 360° = votes × 10°.",
+          "modelAnswer": "(i) Acquaye: 60°, Borquaye: 120°, Commey: 180°; (ii) 1/3",
+          "workedSolution": "**(i) Sector Angles:**\nTotal votes = $$6 + 12 + 18 = 36\\text{ votes}$$.\nEach vote represents $$\\frac{360^\\circ}{36} = 10^\\circ$$.\n- **Acquaye:** $$6 \\times 10^\\circ = 60^\\circ$$\n- **Borquaye:** $$12 \\times 10^\\circ = 120^\\circ$$\n- **Commey:** $$18 \\times 10^\\circ = 180^\\circ$$\n\n**(ii) Borquaye's Fraction:**\n$$\\text{Fraction} = \\frac{12}{36} = \\frac{1}{3}$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 8,
+          "prompt": "The heights in centimetres of $10$ pupils are recorded below:\n$$165, \\, 165, \\, 155, \\, 159, \\, 174, \\, 154, \\, 169, \\, 155, \\, 155, \\, 150$$\n(i) Construct a frequency distribution table for this dataset.\n(ii) Determine the **modal height**.\n(iii) Calculate the **median height** of the distribution.",
+          "hint": "Arrange the 10 heights in ascending order to find the mode and the average of the 5th and 6th values for the median.",
+          "modelAnswer": "(i) Table constructed, (ii) Modal height = 155 cm, (iii) Median height = 157 cm",
+          "workedSolution": "**(i) Frequency Distribution Table:**\n\n| Height ($x\\text{ cm}$) | Tally | Frequency ($f$) |\n| :---: | :---: | :---: |\n| 150 | / | 1 |\n| 154 | / | 1 |\n| 155 | /// | 3 |\n| 159 | / | 1 |\n| 165 | // | 2 |\n| 169 | / | 1 |\n| 174 | / | 1 |\n| **Total** | | **$\\sum f = 10$** |\n\n**(ii) Modal Height:**\nThe height $155\\text{ cm}$ appears with the highest frequency ($3\\text{ times}$). The **modal height is 155 cm**.\n\n**(iii) Median Height:**\nArranging all 10 values in ascending order:\n$$150, \\, 154, \\, 155, \\, 155, \\, \\mathbf{155}, \\, \\mathbf{159}, \\, 165, \\, 165, \\, 169, \\, 174$$\nThe middle two entries (5th and 6th positions) are $155\\text{ cm}$ and $159\\text{ cm}$.\n$$\\text{Median} = \\frac{155 + 159}{2} = \\frac{314}{2} = 157\\text{ cm}$$."
+        }
+      ]
+    }
+  ],
+  "seededAt": "2026-09-16T15:30:00.000Z",
+  "lastUpdated": "2026-09-16T15:30:00.000Z"
+}
