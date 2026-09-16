@@ -110,6 +110,18 @@ async function seedTopicLabDoc(payloadFile: string): Promise<void> {
       updatedAt: FieldValue.serverTimestamp()
     }, { merge: true });
     console.log(`✅ [WRITTEN] ${docPath}`);
+
+    if (data.id === 'topic_ratios_and_proportion') {
+      await db.doc('global_curriculum/jhs/subjects/math/topics/topic_ratio_and_proportion').set({
+        ...payload,
+        updatedAt: FieldValue.serverTimestamp()
+      }, { merge: true });
+      await db.doc('global_curriculum/jhs/subjects/math/topics/topic_ratio_proportion_and_rates').set({
+        ...payload,
+        updatedAt: FieldValue.serverTimestamp()
+      }, { merge: true });
+      console.log(`✅ [WRITTEN] Synced alias doc paths: topic_ratio_and_proportion & topic_ratio_proportion_and_rates`);
+    }
   }
 }
 
@@ -142,8 +154,7 @@ async function runSeeding() {
   }
 
   // 2. Seed Topics
-  await seedTopicLabDoc('topic_ratio_and_proportion.json');
-  await seedTopicLabDoc('topic_algebraic_expressions.json');
+  await seedTopicLabDoc('topic_ratios_and_proportion.json');
   await seedTopicLabDoc('topic_numbers_and_numeration.json');
 
   console.log('\n================================================================');

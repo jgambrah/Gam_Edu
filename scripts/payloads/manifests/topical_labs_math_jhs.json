@@ -20,12 +20,13 @@
       "hasNotes": false
     },
     {
-      "id": "topic_ratio_proportion_and_rates",
-      "title": "Ratio, Proportion, Rates & Business Math",
+      "id": "topic_ratios_and_proportion",
+      "title": "Ratio, Proportion & Rates",
       "strand": "Strand 1: Number & Numeration",
       "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "pending_content",
-      "hasNotes": false
+      "status": "ready",
+      "hasNotes": true,
+      "questionCount": 45
     },
     {
       "id": "topic_algebraic_expressions_and_equations",

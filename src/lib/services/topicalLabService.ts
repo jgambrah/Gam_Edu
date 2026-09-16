@@ -168,9 +168,10 @@ export async function getSubjectTopicsManifest(
 }
 
 const TOPIC_DOC_ALIASES: Record<string, string> = {
-  topic_ratio_proportion_and_rates: 'topic_ratio_and_proportion',
+  topic_ratios_and_proportion: 'topic_ratio_and_proportion',
+  topic_ratio_proportion_and_rates: 'topic_ratios_and_proportion',
+  topic_ratio_and_proportion: 'topic_ratios_and_proportion',
   topic_algebraic_expressions_and_equations: 'topic_algebraic_expressions',
-  topic_ratio_and_proportion: 'topic_ratio_proportion_and_rates',
   topic_algebraic_expressions: 'topic_algebraic_expressions_and_equations'
 };
 

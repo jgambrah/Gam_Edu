@@ -89,15 +89,22 @@ export function TopicalLabRunner({
 
   // Current level data
   const currentLevelData = useMemo(() => {
-    return (
-      topicDoc.levels?.[activeLevel] || {
-        levelTitle: `${activeLevel.toUpperCase()} Practice`,
-        summary: '',
-        notes: 'No concept notes available for this level yet.',
-        workedExamples: [],
-        practicePool: { low: [], medium: [], hard: [] }
-      }
-    );
+    const levelKeyMap: Record<string, string[]> = {
+      jhs1: ['jhs1', 'b7', 'basic7'],
+      jhs2: ['jhs2', 'b8', 'basic8'],
+      jhs3: ['jhs3', 'b9', 'basic9']
+    };
+    const possibleKeys = levelKeyMap[activeLevel] || [activeLevel];
+    for (const key of possibleKeys) {
+      if ((topicDoc.levels as any)?.[key]) return (topicDoc.levels as any)[key];
+    }
+    return {
+      levelTitle: `${activeLevel.toUpperCase()} Practice`,
+      summary: '',
+      notes: 'No concept notes available for this level yet.',
+      workedExamples: [],
+      practicePool: { low: [], medium: [], hard: [] }
+    };
   }, [topicDoc, activeLevel]);
 
   // Current pool of practice questions
