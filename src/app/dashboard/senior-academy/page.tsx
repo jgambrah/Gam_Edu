@@ -1015,6 +1015,24 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleAnswer: "6x^2 + 7xy + 2y^2"
     },
     {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 40)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "5 Multi-Part Problems • 60 mins • Structured Theory (Set 40 / 1993 Variant)",
+        description: "Standardized 5-question structured theory examination variant (Set 40 / 1993 past paper adaptation) with embedded SVG diagrams covering rational fraction simplification & linear equations, geometric compass triangle construction & angle bisectors, commercial equipment depreciation & percentage profit, Cartesian coordinate slope & intersection graphing, and discrete frequency age distribution bar charting.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-40",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 5,
+        examTag: "5 Structured Problems • Step-by-Step Marking Rubric",
+        subject: "Mathematics",
+        sampleInstruction: "Points A(-2, 3) and B(4, -3) lie on the Cartesian plane. Calculate the gradient m of AB:",
+        sampleFormula: "m = \\frac{-3 - 3}{4 - (-2)} = \\frac{-6}{6} = -1",
+        sampleAnswer: "-1"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",

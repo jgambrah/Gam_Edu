@@ -13037,6 +13037,172 @@ export const SET_JHS_MASTERY_SERIES_39: CurriculumQuestionSet = {
 };
 
 // ============================================================================
+// 4o. ALIGNED CORE CURRICULUM SERIES: JHS Math Structured Problem-Solving Series (Set 40)
+// Target: global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets/jhs-math-mastery-series-40
+// ============================================================================
+export const SET_JHS_MASTERY_SERIES_40: CurriculumQuestionSet = {
+  "id": "jhs-math-mastery-series-40",
+  "title": "Junior Core Mathematics • Structured Problem-Solving Series (Set 40)",
+  "tier": "Junior Secondary (JHS)",
+  "subject": "Mathematics",
+  "topic": "Structured Theory, Geometry & Data Modeling",
+  "variantType": "standard",
+  "totalQuestions": 5,
+  "version": 1,
+  "questions": [
+    {
+      "id": "q01",
+      "title": "Question 1: Rational Fraction Simplification, Linear Equations & Vector Linear Combinations",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 5,
+          "prompt": "Simplify completely the algebraic fractional expression:\n$$\\frac{3x + 6y}{4} - \\frac{2(x - 2y)}{3}$$",
+          "hint": "Find the LCM of denominators 4 and 3, which is 12, then expand and collect like terms.",
+          "modelAnswer": "(x + 34y) / 12",
+          "workedSolution": "$$\\frac{3(3x + 6y) - 4[2(x - 2y)]}{12}$$\n$$= \\frac{9x + 18y - 8(x - 2y)}{12}$$\n$$= \\frac{9x + 18y - 8x + 16y}{12}$$\n$$= \\frac{x + 34y}{12}$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Solve for $m$ in the linear equation:\n$$4(m - 3) - \\frac{1}{2}(2m + 8) = 5$$",
+          "hint": "Expand the terms: $4m - 12 - m - 4 = 5$, or clear fractions by multiplying through by 2.",
+          "modelAnswer": "m = 7",
+          "workedSolution": "$$4m - 12 - m - 4 = 5$$\n$$3m - 16 = 5$$\n$$3m = 5 + 16 = 21$$\n$$m = \\frac{21}{3} = 7$$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 5,
+          "prompt": "Given column vectors $$r = \\begin{pmatrix} 2 \\\\ 5 \\end{pmatrix}$$ and $$q = \\begin{pmatrix} -3 \\\\ 1 \\end{pmatrix}$$, evaluate the vector:\n$$4(r + 2q)$$",
+          "hint": "Find $2q$ first, add to vector $r$, then multiply the resulting components by 4.",
+          "modelAnswer": "(-16, 28)ᵀ",
+          "workedSolution": "$$2q = 2\\begin{pmatrix} -3 \\\\ 1 \\end{pmatrix} = \\begin{pmatrix} -6 \\\\ 2 \\end{pmatrix}$$\n$$r + 2q = \\begin{pmatrix} 2 \\\\ 5 \\end{pmatrix} + \\begin{pmatrix} -6 \\\\ 2 \\end{pmatrix} = \\begin{pmatrix} 2 - 6 \\\\ 5 + 2 \\end{pmatrix} = \\begin{pmatrix} -4 \\\\ 7 \\end{pmatrix}$$\n$$4(r + 2q) = 4\\begin{pmatrix} -4 \\\\ 7 \\end{pmatrix} = \\begin{pmatrix} -16 \\\\ 28 \\end{pmatrix}$$."
+        }
+      ]
+    },
+    {
+      "id": "q02",
+      "title": "Question 2: Geometric Compass Construction, Angle Bisector & Triangle Area",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 340 230' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><polygon points='40,190 260,190 40,63' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><rect x='40' y='172' width='18' height='18' fill='none' stroke='#1e40af' stroke-width='1.5'/><line x1='40' y1='63' x2='150' y2='190' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='4'/><text x='25' y='195' font-size='12' font-weight='bold'>B</text><text x='270' y='195' font-size='12' font-weight='bold'>A</text><text x='25' y='55' font-size='12' font-weight='bold'>C</text><text x='150' y='210' font-size='11' font-weight='bold' fill='#dc2626'>D</text><text x='140' y='180' font-size='11'>|BA| = 12 cm</text><text x='230' y='180' font-size='11'>30°</text><text x='48' y='85' font-size='11'>60°</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 9,
+          "prompt": "In a geometric construction using a ruler and a pair of compasses only:\n1. Construct line segment $|BA| = 12\\text{ cm}$.\n2. At $B$, construct angle $\\angle ABC = 90^\\circ$.\n3. At $A$, construct angle $\\angle BAC = 30^\\circ$ such that ray $AC$ meets the perpendicular line from $B$ at $C$.\n(i) Calculate the length of vertical side $|BC|$ using the tangent ratio ($\\tan 30^\\circ = \\frac{1}{\\sqrt{3}} \\approx 0.577$).\n(ii) If the angle bisector of $\\angle BCA$ meets side $BA$ at $D$, state the size of angle $\\angle BCD$.",
+          "hint": "In right-angled triangle ABC: $\\tan 30^\\circ = |BC| / |BA| \\implies |BC| = 12 \\times \\tan 30^\\circ$. Angle BCA = 60°, so its bisector divides it into two 30° angles.",
+          "modelAnswer": "(i) |BC| ≈ 6.93 cm (or 4√3 cm), (ii) ∠BCD = 30°",
+          "workedSolution": "**(i) Length $|BC|$:**\n$$\\tan 30^\\circ = \\frac{|BC|}{|BA|}$$\n$$|BC| = 12 \\times \\tan 30^\\circ = 12 \\times \\frac{1}{\\sqrt{3}} = 4\\sqrt{3} \\approx 6.93\\text{ cm}$$\n\n**(ii) Angle $\\angle BCD$:**\n$$\\angle BCA = 180^\\circ - (90^\\circ + 30^\\circ) = 60^\\circ$$\nSince line segment $CD$ bisects $\\angle BCA$:\n$$\\angle BCD = \\frac{60^\\circ}{2} = 30^\\circ$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 6,
+          "prompt": "(i) What type of triangle is triangle $CDA$?\n(ii) Calculate the area of triangle $ABC$ using $|BA| = 12\\text{ cm}$ and $|BC| = 6.93\\text{ cm}$.",
+          "hint": "In triangle CDA, $\\angle ACD = 30^\\circ$ and $\\angle CAD = 30^\\circ$. Two equal base angles define an isosceles triangle. Area = 1/2 × base × height.",
+          "modelAnswer": "(i) Isosceles triangle, (ii) 41.58 cm²",
+          "workedSolution": "**(i) Type of Triangle $CDA$:**\nIn $\\Delta CDA$, $\\angle ACD = 30^\\circ$ and $\\angle CAD = 30^\\circ$.\nSince two interior angles are equal, triangle $CDA$ is an **Isosceles triangle** ($|CD| = |DA|$).\n\n**(ii) Area of $\\Delta ABC$:**\n$$\\text{Area} = \\frac{1}{2} \\times |BA| \\times |BC| = \\frac{1}{2} \\times 12 \\times 6.93 = 6 \\times 6.93 = 41.58\\text{ cm}^2$$."
+        }
+      ]
+    },
+    {
+      "id": "q03",
+      "title": "Question 3: Commercial Equipment Depreciation & Trading Profit/Loss",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 7,
+          "prompt": "An educational institution purchased a desktop computer for $\\text{GH¢ } 1,200.00$. After one year of use, its book value depreciated to $80\\%$ of the purchase price.\nCalculate the depreciated value of the computer at the end of the year.",
+          "hint": "Value after 1 year = 80% of GH¢ 1,200.00.",
+          "modelAnswer": "GH¢ 960.00",
+          "workedSolution": "$$\\text{Depreciated Value} = \\frac{80}{100} \\times \\text{GH¢ } 1,200.00 = 80 \\times 12 = \\text{GH¢ } 960.00$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 8,
+          "prompt": "If the institution later sold the depreciated computer for $\\text{GH¢ } 1,056.00$:\n(i) State whether a profit or loss was made compared to its depreciated value, and calculate its amount.\n(ii) Calculate the percentage profit made relative to the depreciated value.",
+          "hint": "Compare Selling Price (GH¢ 1,056.00) with Cost/Depreciated value (GH¢ 960.00). Profit % = (Profit / Depreciated Value) × 100%.",
+          "modelAnswer": "(i) Profit of GH¢ 96.00, (ii) 10%",
+          "workedSolution": "**(i) Financial Outcome:**\n$$\\text{Selling Price} = \\text{GH¢ } 1,056.00 > \\text{Depreciated Value} = \\text{GH¢ } 960.00$$\nA **Profit** was made.\n$$\\text{Profit} = 1,056.00 - 960.00 = \\text{GH¢ } 96.00$$\n\n**(ii) Percentage Profit:**\n$$\\text{Percentage Profit} = \\left(\\frac{96.00}{960.00}\\right) \\times 100\\% = \\frac{1}{10} \\times 100\\% = 10\\%$$."
+        }
+      ]
+    },
+    {
+      "id": "q04",
+      "title": "Question 4: Cartesian Coordinate Graphing, Linear Gradients & Line Intersections",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 320 250' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='130' x2='290' y2='130' stroke='#64748b' stroke-width='1.5'/><line x1='150' y1='20' x2='150' y2='230' stroke='#64748b' stroke-width='1.5'/><text x='290' y='125' font-size='12'>x</text><text x='155' y='30' font-size='12'>y</text><line x1='70' y1='40' x2='250' y2='220' stroke='#2563eb' stroke-width='2.5'/><circle cx='100' cy='70' r='4' fill='#2563eb'/><circle cx='220' cy='190' r='4' fill='#2563eb'/><text x='65' y='65' font-size='10' font-weight='bold' fill='#2563eb'>A(-2, 3)</text><text x='225' y='195' font-size='10' font-weight='bold' fill='#2563eb'>B(4, -3)</text><line x1='70' y1='170' x2='250' y2='50' stroke='#dc2626' stroke-width='2'/><circle cx='90' cy='157' r='4' fill='#dc2626'/><circle cx='210' cy='77' r='4' fill='#dc2626'/><text x='55' y='155' font-size='10' font-weight='bold' fill='#dc2626'>C(-3, -1)</text><text x='215' y='75' font-size='10' font-weight='bold' fill='#dc2626'>D(3, 3)</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "Points $A(-2, 3)$ and $B(4, -3)$ lie on the Cartesian plane shown above.\n(i) Calculate the gradient (slope) of the straight line segment $AB$.\n(ii) Find the equation of the line passing through $A$ and $B$.",
+          "hint": "Gradient $m = \\frac{y_2 - y_1}{x_2 - x_1}$. Use point-slope form $y - y_1 = m(x - x_1)$.",
+          "modelAnswer": "(i) m = -1, (ii) y = -x + 1 (or x + y = 1)",
+          "workedSolution": "**(i) Gradient of $AB$:**\n$$m = \\frac{-3 - 3}{4 - (-2)} = \\frac{-6}{4 + 2} = \\frac{-6}{6} = -1$$\n\n**(ii) Equation of Line $AB$:**\n$$y - 3 = -1(x - (-2))$$\n$$y - 3 = -x - 2$$\n$$y = -x + 1 \\quad \\text{or} \\quad x + y = 1$$."
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "Line segment $CD$ connects points $C(-3, -1)$ and $D(3, 3)$.\n(i) Calculate the gradient of line $CD$.\n(ii) What is the value of $y$ on line $CD$ when $x = 0$?",
+          "hint": "Gradient $m = \\frac{3 - (-1)}{3 - (-3)}$. Find the y-intercept.",
+          "modelAnswer": "(i) m = 2/3, (ii) y = 1",
+          "workedSolution": "**(i) Gradient of $CD$:**\n$$m_{CD} = \\frac{3 - (-1)}{3 - (-3)} = \\frac{4}{6} = \\frac{2}{3}$$\n\n**(ii) $y$-intercept when $x = 0$:**\nEquation of line $CD$: $$y - 3 = \\frac{2}{3}(x - 3) \\implies y - 3 = \\frac{2}{3}x - 2 \\implies y = \\frac{2}{3}x + 1$$.\nWhen $x = 0$, $$y = 1$$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "Determine the coordinates of the point of intersection between line $AB$ ($y = -x + 1$) and line $CD$ ($y = \\frac{2}{3}x + 1$).",
+          "hint": "Equate the two expressions for y.",
+          "modelAnswer": "(0, 1)",
+          "workedSolution": "$$-x + 1 = \\frac{2}{3}x + 1$$\n$$-x - \\frac{2}{3}x = 1 - 1 = 0$$\n$$-\\frac{5}{3}x = 0 \\implies x = 0$$\nWhen $x = 0$, $$y = -0 + 1 = 1$$.\nPoint of intersection is **$(0, 1)$**."
+        }
+      ]
+    },
+    {
+      "id": "q05",
+      "title": "Question 5: Discrete Frequency Age Statistics, Mean Calculation & Bar Charting",
+      "totalMarks": 15,
+      "format": "structured_essay",
+      "diagramSvg": "<svg viewBox='0 0 350 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='35' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='35' y1='160' x2='35' y2='20' stroke='#334155' stroke-width='2'/><text x='150' y='188' font-size='11' font-weight='bold'>Age (years)</text><text x='5' y='18' font-size='11' font-weight='bold'>Frequency</text><rect x='60' y='75' width='28' height='85' fill='#93c5fd' stroke='#1d4ed8'/><rect x='115' y='40' width='28' height='120' fill='#2563eb' stroke='#1d4ed8'/><rect x='170' y='125' width='28' height='35' fill='#93c5fd' stroke='#1d4ed8'/><rect x='225' y='90' width='28' height='70' fill='#93c5fd' stroke='#1d4ed8'/><rect x='280' y='125' width='28' height='35' fill='#93c5fd' stroke='#1d4ed8'/><text x='68' y='173' font-size='10'>9</text><text x='121' y='173' font-size='10'>11</text><text x='177' y='173' font-size='10'>13</text><text x='232' y='173' font-size='10'>15</text><text x='287' y='173' font-size='10'>17</text><text x='20' y='45' font-size='10'>7</text><text x='20' y='80' font-size='10'>5</text><text x='20' y='95' font-size='10'>4</text><text x='20' y='130' font-size='10'>2</text></svg>",
+      "parts": [
+        {
+          "partLabel": "(a)",
+          "marks": 6,
+          "prompt": "The ages of $20$ pupils in a junior secondary class are recorded as follows:\n$$13, 9, 15, 17, 13, 9, 11, 9, 11, 15, 17, 15, 11, 9, 9, 11, 15, 11, 11, 11$$\nConstruct a frequency distribution table for this dataset using the unique ages $9, 11, 13, 15,$ and $17$.",
+          "hint": "Tally the occurrences of each unique age: 9 appears 5 times, 11 appears 7 times, etc.",
+          "modelAnswer": "Ages: 9 (f=5), 11 (f=7), 13 (f=2), 15 (f=4), 17 (f=2). Total f = 20",
+          "workedSolution": "**Frequency Distribution Table:**\n\n| Age ($x$) | Tally | Frequency ($f$) | $fx$ |\n| :---: | :---: | :---: | :---: |\n| 9 | //// | 5 | 45 |\n| 11 | //// // | 7 | 77 |\n| 13 | // | 2 | 26 |\n| 15 | //// | 4 | 60 |\n| 17 | // | 2 | 34 |\n| **Total** | | **$\\sum f = 20$** | **$\\sum fx = 242$** |"
+        },
+        {
+          "partLabel": "(b)",
+          "marks": 5,
+          "prompt": "From the frequency distribution table:\n(i) State the **modal age**.\n(ii) Calculate the **mean age** of the pupils, correct to one decimal place.",
+          "hint": "Mode is the age with the highest frequency. Mean = $\\sum fx / \\sum f$.",
+          "modelAnswer": "(i) 11 years, (ii) 12.1 years",
+          "workedSolution": "**(i) Modal age:**\nThe highest frequency is $7$ (corresponding to $11\\text{ years}$). The **modal age is 11 years**.\n\n**(ii) Mean age:**\n$$\\text{Mean} = \\frac{\\sum fx}{\\sum f} = \\frac{242}{20} = 12.1\\text{ years}$$."
+        },
+        {
+          "partLabel": "(c)",
+          "marks": 4,
+          "prompt": "If a pupil is chosen at random from this group, find:\n(i) The probability that the pupil is at least $15\\text{ years old}$.\n(ii) The percentage of pupils who are younger than $11\\text{ years}$.",
+          "hint": "At least 15 means ages 15 and 17. Younger than 11 means age 9.",
+          "modelAnswer": "(i) 3/10, (ii) 25%",
+          "workedSolution": "**(i) Probability of age $\\ge 15$ (ages 15 and 17):**\n$$\\text{Count} = f(15) + f(17) = 4 + 2 = 6$$\n$$P(\\text{age } \\ge 15) = \\frac{6}{20} = \\frac{3}{10}$$\n\n**(ii) Percentage younger than 11 (age 9):**\n$$\\text{Count} = f(9) = 5$$\n$$\\text{Percentage} = \\left(\\frac{5}{20}\\right) \\times 100\\% = 25\\%$$."
+        }
+      ]
+    }
+  ],
+  "seededAt": "2026-09-16T13:30:00.000Z",
+  "lastUpdated": "2026-09-16T13:30:00.000Z"
+};
+
+// ============================================================================
 // 4. INGESTION FUNCTION: Writes exactly 1 document to the question set path
 // ============================================================================
 export interface SeedResult {
@@ -13636,6 +13802,18 @@ export async function runCurriculumSeeding() {
     SET_JHS_MASTERY_SERIES_39
   );
   results.push(result42);
+
+  console.log('\n----------------------------------------------------------------\n');
+
+  // Seed Set 43: JHS Math -> Core Curriculum Series (Set 40 Structured in core_curriculum_mastery)
+  console.log('▶  Ingesting Set 43: Junior Core Math Structured Problem-Solving Series (Set 40)...');
+  const result43 = await seedTopicSet(
+    'jhs',
+    'math',
+    'core_curriculum_mastery',
+    SET_JHS_MASTERY_SERIES_40
+  );
+  results.push(result43);
 
 
 
