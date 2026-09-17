@@ -209,38 +209,40 @@
     "jhs2": {
       "levelTitle": "JHS 2: Fractions, Decimals & Scientific Standard Form",
       "summary": "Arithmetic of fractions, recurring decimals, powers of ten, and standard index notation.",
-      "notes": "### 1. Scientific Notation (Standard Form)\n\nA quantity is expressed in standard form when written as:\n$$A \\times 10^n$$\nwhere $1 \\le A < 10$ and $n \\in \\mathbb{Z}$ (an integer).\n* **Positive Power ($n > 0$):** Numbers $\\ge 10$ (e.g., $8,765,000 = 8.765 \\times 10^6$).\n* **Negative Power ($n < 0$):** Numbers between 0 and 1 (e.g., $0.00042 = 4.2 \\times 10^{-4}$).\n\n---\n\n### 2. Significant Figures & Decimal Places\n\n* Non-zero digits are always significant.\n* Zeros between non-zero digits are significant (e.g., $4.005$ has 4 sig figs).\n* Leading zeros serving as place-holders are not significant (e.g., $0.0035$ has 2 sig figs).\n* Trailing zeros in a decimal are significant (e.g., $2.500$ has 4 sig figs).\n\n---\n\n### 3. Laws of Indices\n\nFor real bases $a, b \\ne 0$ and integers $m, n$:\n* **Product Law:** $a^m \\times a^n = a^{m+n}$\n* **Quotient Law:** $a^m \\div a^n = a^{m-n}$\n* **Power Law:** $(a^m)^n = a^{m \\times n}$\n* **Zero Index:** $a^0 = 1$\n* **Negative Index:** $a^{-n} = \\frac{1}{a^n}$\n* **Power of a Product:** $(ab)^n = a^n b^n$\n\n---\n\n### 4. Perfect Squares & Consecutive Odd Subtractions\n\nA perfect square $n = k^2$ can be verified by successively subtracting consecutive odd numbers starting from 1 until the remainder reaches 0. The count of subtractions is $\\sqrt{n}$.",
+      "notes": "### 1. Scientific Notation (Standard Form)\n\nScientific notation standardizes extremely large astronomical measurements or microscopic quantities into a uniform decimal format:\n\n$$A \\times 10^n$$\n\nwhere **$1 \\le A < 10$** (the mantissa contains exactly one non-zero digit before the decimal point) and **$n \\in \\mathbb{Z}$** (an integer exponent).\n\n* **Large Numbers ($n > 0$):** Move the decimal point to the left.\n  $$8,765,000 = 8.765 \\times 10^6$$\n* **Small Decimals ($n < 0$):** Move the decimal point to the right.\n  $$0.00042 = 4.2 \\times 10^{-4}$$\n\n<details>\n<summary>🔍 <b>Self-Check Challenge: Standard Form Traps</b> (Click to test yourself)</summary>\n\n> **Question:** Is $24.5 \\times 10^3$ in standard form? If not, convert it correctly.\n>\n> **Explanation:**\n> * No, because $24.5$ is greater than $10$.\n> * Rewrite the mantissa: $24.5 = 2.45 \\times 10^1$.\n> * Combine powers: $2.45 \\times 10^1 \\times 10^3 = \\mathbf{2.45 \\times 10^4}$.\n</details>\n\n---\n\n### 2. Significant Figures & Rounding Protocols\n\nSignificant figures indicate the precision of measured quantities:\n\n* All non-zero digits ($1$ through $9$) are significant.\n* **Captive Zeros:** Zeros trapped between non-zero digits are always significant (e.g., $4.005$ has 4 sig. figs.).\n* **Leading Zeros:** Zeros preceding the first non-zero digit are place-holders and are NOT significant (e.g., $0.0035$ has 2 sig. figs.).\n* **Trailing Zeros in Decimals:** Trailing zeros to the right of a decimal point are significant (e.g., $2.500$ has 4 sig. figs.).\n\n<details>\n<summary>⚠️ <b>Common Exam Trap: Whole Number Trailing Zeros</b> (Click to inspect)</summary>\n\n> Round $56,734$ correct to two significant figures:\n> * Inspect the third digit: $7 \\ge 5$, so round the second digit up ($6 \\to 7$).\n> * Replace discarded places with place-holding zeros: **$57,000$**.\n> * *Never write $57$; trailing zeros are mandatory to preserve the place value of tens of thousands!*\n</details>\n\n---\n\n### 3. Master Laws of Indices\n\nFor non-zero real bases $a, b$ and integer indices $m, n$:\n\n1. **Product Law:** Multiply like bases by adding powers:\n   $$a^m \\times a^n = a^{m+n}$$\n2. **Quotient Law:** Divide like bases by subtracting powers:\n   $$a^m \\div a^n = a^{m-n}$$\n3. **Power Law:** Raise a power to a power by multiplying indices:\n   $$(a^m)^n = a^{m \\times n}$$\n4. **Zero Power Law:** Any non-zero base with zero exponent equals 1:\n   $$a^0 = 1 \\quad (a \\ne 0)$$\n5. **Negative Index Law:** A negative exponent indicates the reciprocal:\n   $$a^{-n} = \\frac{1}{a^n}$$\n6. **Power of a Product:** Distribute the exponent to each factor:\n   $$(ab)^n = a^n b^n$$\n\n<details>\n<summary>💡 <b>Why is $a^0 = 1$?</b> (Click to see the mathematical proof)</summary>\n\n> Consider $\\frac{a^3}{a^3}$:\n> * By basic arithmetic division, any non-zero quantity divided by itself equals $1$:\n>   $$\\frac{a^3}{a^3} = 1$$\n> * By the Quotient Law of Indices:\n>   $$\\frac{a^3}{a^3} = a^{3 - 3} = a^0$$\n> * Therefore: $$a^0 = 1$$\n</details>\n\n---\n\n### 4. Exponential Equations (Indicial Equations)\n\nTo solve equations where the unknown variable is in the exponent ($a^{f(x)} = a^k$):\n1. Express both sides of the equation using the **same prime base**.\n2. Equate the exponents directly: $f(x) = k$.\n3. Solve the resulting linear equation.\n\n---\n\n### 5. Perfect Squares & Consecutive Odd Subtractions\n\nA perfect square $n$ can be established and its square root computed by subtracting consecutive odd numbers ($1, 3, 5, 7, 9, \\dots$) from $n$ until reaching zero. The total count of subtractions performed equals $\\sqrt{n}$.",
       "workedExamples": [
         {
           "id": "we_num_j2_01",
-          "title": "Standard Form Multiplication & Division",
-          "problem": "Evaluate $(0.00036 \\times 40,000) \\div 0.0012$ and leave your answer in standard form.",
+          "title": "Standard Form Compound Evaluation",
+          "problem": "Evaluate $(0.00036 \\times 40,000) \\div 0.0012$ and express your final answer in standard scientific form.",
           "steps": [
-            "Convert each term to standard form: $3.6 \\times 10^{-4}$, $4.0 \\times 10^4$, and $1.2 \\times 10^{-3}$.",
-            "Multiply numerators: $(3.6 \\times 4.0) \\times 10^{-4 + 4} = 14.4 \\times 10^0 = 14.4$.",
-            "Divide: $\\frac{14.4}{1.2 \\times 10^{-3}} = \\frac{14.4}{1.2} \\times 10^3 = 12 \\times 10^3$.",
-            "Adjust to standard form ($1 \\le A < 10$): $1.2 \\times 10^1 \\times 10^3 = 1.2 \\times 10^4$."
+            "Step 1 (Why we do this: Convert all terms to standard form first): Convert each decimal and whole number into $A \\times 10^n$: $0.00036 = 3.6 \\times 10^{-4}$, $40,000 = 4.0 \\times 10^4$, and $0.0012 = 1.2 \\times 10^{-3}$.",
+            "Step 2 (Why we do this: Multiply the numerator terms using index product rules): Group mantissas and combine powers of 10: $(3.6 \\times 4.0) \\times 10^{-4 + 4} = 14.4 \\times 10^0 = 14.4$.",
+            "Step 3 (Why we do this: Divide by denominator using index quotient rules): $\\frac{14.4}{1.2 \\times 10^{-3}} = \\left(\\frac{14.4}{1.2}\\right) \\times 10^{0 - (-3)} = 12 \\times 10^3$.",
+            "Step 4 (Why we do this: Re-align to valid scientific notation 1 ≤ A < 10): The mantissa 12 is greater than 10. Write $12 = 1.2 \\times 10^1$. Therefore, $1.2 \\times 10^1 \\times 10^3 = 1.2 \\times 10^4$."
           ],
           "finalAnswer": "$$1.2 \\times 10^4$$"
         },
         {
           "id": "we_num_j2_02",
-          "title": "Solving Exponential Equations",
+          "title": "Solving Exponential Equations with Common Bases",
           "problem": "Solve for $x$ in the equation: $2^{x+2} = 16$.",
           "steps": [
-            "Express the right-hand side in base 2: $16 = 2^4$.",
-            "Equate powers since bases are equal: $x + 2 = 4$.",
-            "Solve for $x$: $x = 4 - 2 = 2$."
+            "Step 1 (Why we do this: Re-write the non-base side into powers of 2): Express 16 as an exponent of base 2: $16 = 2 \\times 2 \\times 2 \\times 2 = 2^4$.",
+            "Step 2 (Why we do this: Equate exponents across equal bases): Since the bases on both sides are identical (base 2), equate their powers: $x + 2 = 4$.",
+            "Step 3 (Why we do this: Solve the one-step linear equation): Subtract 2 from both sides: $x = 4 - 2 = 2$.",
+            "Step 4 (Why we do this: Substitute to verify): Check the result: $2^{2 + 2} = 2^4 = 16$. The equation holds."
           ],
           "finalAnswer": "$$x = 2$$"
         },
         {
           "id": "we_num_j2_03",
-          "title": "Square Root by Consecutive Odd Subtraction",
+          "title": "Square Root Evaluation via Consecutive Odd Subtractions",
           "problem": "Determine $\\sqrt{49}$ using the consecutive odd subtraction method.",
           "steps": [
-            "Subtract consecutive odd numbers starting from 1 until reaching 0:\n1. $49 - 1 = 48$\n2. $48 - 3 = 45$\n3. $45 - 5 = 40$\n4. $40 - 7 = 33$\n5. $33 - 9 = 24$\n6. $24 - 11 = 13$\n7. $13 - 13 = 0$",
-            "Count the total number of subtractions performed: 7."
+            "Step 1 (Why we do this: Apply the sum of first n odd numbers theorem): The sum of the first $n$ odd integers equals $n^2$. Subtracting consecutive odd numbers from a perfect square until zero counts $\\sqrt{n}$.",
+            "Step 2 (Why we do this: Execute consecutive subtractions systematically):\n  1. $49 - 1 = 48$\n  2. $48 - 3 = 45$\n  3. $45 - 5 = 40$\n  4. $40 - 7 = 33$\n  5. $33 - 9 = 24$\n  6. $24 - 11 = 13$\n  7. $13 - 13 = 0$",
+            "Step 3 (Why we do this: Count the completed steps): Exactly 7 subtractions were required to reach zero. Thus, $\\sqrt{49} = 7$."
           ],
           "finalAnswer": "$$\\sqrt{49} = 7$$"
         }
@@ -781,38 +783,40 @@
     "b8": {
       "levelTitle": "JHS 2: Fractions, Decimals & Scientific Standard Form",
       "summary": "Arithmetic of fractions, recurring decimals, powers of ten, and standard index notation.",
-      "notes": "### 1. Scientific Notation (Standard Form)\n\nA quantity is expressed in standard form when written as:\n$$A \\times 10^n$$\nwhere $1 \\le A < 10$ and $n \\in \\mathbb{Z}$ (an integer).\n* **Positive Power ($n > 0$):** Numbers $\\ge 10$ (e.g., $8,765,000 = 8.765 \\times 10^6$).\n* **Negative Power ($n < 0$):** Numbers between 0 and 1 (e.g., $0.00042 = 4.2 \\times 10^{-4}$).\n\n---\n\n### 2. Significant Figures & Decimal Places\n\n* Non-zero digits are always significant.\n* Zeros between non-zero digits are significant (e.g., $4.005$ has 4 sig figs).\n* Leading zeros serving as place-holders are not significant (e.g., $0.0035$ has 2 sig figs).\n* Trailing zeros in a decimal are significant (e.g., $2.500$ has 4 sig figs).\n\n---\n\n### 3. Laws of Indices\n\nFor real bases $a, b \\ne 0$ and integers $m, n$:\n* **Product Law:** $a^m \\times a^n = a^{m+n}$\n* **Quotient Law:** $a^m \\div a^n = a^{m-n}$\n* **Power Law:** $(a^m)^n = a^{m \\times n}$\n* **Zero Index:** $a^0 = 1$\n* **Negative Index:** $a^{-n} = \\frac{1}{a^n}$\n* **Power of a Product:** $(ab)^n = a^n b^n$\n\n---\n\n### 4. Perfect Squares & Consecutive Odd Subtractions\n\nA perfect square $n = k^2$ can be verified by successively subtracting consecutive odd numbers starting from 1 until the remainder reaches 0. The count of subtractions is $\\sqrt{n}$.",
+      "notes": "### 1. Scientific Notation (Standard Form)\n\nScientific notation standardizes extremely large astronomical measurements or microscopic quantities into a uniform decimal format:\n\n$$A \\times 10^n$$\n\nwhere **$1 \\le A < 10$** (the mantissa contains exactly one non-zero digit before the decimal point) and **$n \\in \\mathbb{Z}$** (an integer exponent).\n\n* **Large Numbers ($n > 0$):** Move the decimal point to the left.\n  $$8,765,000 = 8.765 \\times 10^6$$\n* **Small Decimals ($n < 0$):** Move the decimal point to the right.\n  $$0.00042 = 4.2 \\times 10^{-4}$$\n\n<details>\n<summary>🔍 <b>Self-Check Challenge: Standard Form Traps</b> (Click to test yourself)</summary>\n\n> **Question:** Is $24.5 \\times 10^3$ in standard form? If not, convert it correctly.\n>\n> **Explanation:**\n> * No, because $24.5$ is greater than $10$.\n> * Rewrite the mantissa: $24.5 = 2.45 \\times 10^1$.\n> * Combine powers: $2.45 \\times 10^1 \\times 10^3 = \\mathbf{2.45 \\times 10^4}$.\n</details>\n\n---\n\n### 2. Significant Figures & Rounding Protocols\n\nSignificant figures indicate the precision of measured quantities:\n\n* All non-zero digits ($1$ through $9$) are significant.\n* **Captive Zeros:** Zeros trapped between non-zero digits are always significant (e.g., $4.005$ has 4 sig. figs.).\n* **Leading Zeros:** Zeros preceding the first non-zero digit are place-holders and are NOT significant (e.g., $0.0035$ has 2 sig. figs.).\n* **Trailing Zeros in Decimals:** Trailing zeros to the right of a decimal point are significant (e.g., $2.500$ has 4 sig. figs.).\n\n<details>\n<summary>⚠️ <b>Common Exam Trap: Whole Number Trailing Zeros</b> (Click to inspect)</summary>\n\n> Round $56,734$ correct to two significant figures:\n> * Inspect the third digit: $7 \\ge 5$, so round the second digit up ($6 \\to 7$).\n> * Replace discarded places with place-holding zeros: **$57,000$**.\n> * *Never write $57$; trailing zeros are mandatory to preserve the place value of tens of thousands!*\n</details>\n\n---\n\n### 3. Master Laws of Indices\n\nFor non-zero real bases $a, b$ and integer indices $m, n$:\n\n1. **Product Law:** Multiply like bases by adding powers:\n   $$a^m \\times a^n = a^{m+n}$$\n2. **Quotient Law:** Divide like bases by subtracting powers:\n   $$a^m \\div a^n = a^{m-n}$$\n3. **Power Law:** Raise a power to a power by multiplying indices:\n   $$(a^m)^n = a^{m \\times n}$$\n4. **Zero Power Law:** Any non-zero base with zero exponent equals 1:\n   $$a^0 = 1 \\quad (a \\ne 0)$$\n5. **Negative Index Law:** A negative exponent indicates the reciprocal:\n   $$a^{-n} = \\frac{1}{a^n}$$\n6. **Power of a Product:** Distribute the exponent to each factor:\n   $$(ab)^n = a^n b^n$$\n\n<details>\n<summary>💡 <b>Why is $a^0 = 1$?</b> (Click to see the mathematical proof)</summary>\n\n> Consider $\\frac{a^3}{a^3}$:\n> * By basic arithmetic division, any non-zero quantity divided by itself equals $1$:\n>   $$\\frac{a^3}{a^3} = 1$$\n> * By the Quotient Law of Indices:\n>   $$\\frac{a^3}{a^3} = a^{3 - 3} = a^0$$\n> * Therefore: $$a^0 = 1$$\n</details>\n\n---\n\n### 4. Exponential Equations (Indicial Equations)\n\nTo solve equations where the unknown variable is in the exponent ($a^{f(x)} = a^k$):\n1. Express both sides of the equation using the **same prime base**.\n2. Equate the exponents directly: $f(x) = k$.\n3. Solve the resulting linear equation.\n\n---\n\n### 5. Perfect Squares & Consecutive Odd Subtractions\n\nA perfect square $n$ can be established and its square root computed by subtracting consecutive odd numbers ($1, 3, 5, 7, 9, \\dots$) from $n$ until reaching zero. The total count of subtractions performed equals $\\sqrt{n}$.",
       "workedExamples": [
         {
           "id": "we_num_j2_01",
-          "title": "Standard Form Multiplication & Division",
-          "problem": "Evaluate $(0.00036 \\times 40,000) \\div 0.0012$ and leave your answer in standard form.",
+          "title": "Standard Form Compound Evaluation",
+          "problem": "Evaluate $(0.00036 \\times 40,000) \\div 0.0012$ and express your final answer in standard scientific form.",
           "steps": [
-            "Convert each term to standard form: $3.6 \\times 10^{-4}$, $4.0 \\times 10^4$, and $1.2 \\times 10^{-3}$.",
-            "Multiply numerators: $(3.6 \\times 4.0) \\times 10^{-4 + 4} = 14.4 \\times 10^0 = 14.4$.",
-            "Divide: $\\frac{14.4}{1.2 \\times 10^{-3}} = \\frac{14.4}{1.2} \\times 10^3 = 12 \\times 10^3$.",
-            "Adjust to standard form ($1 \\le A < 10$): $1.2 \\times 10^1 \\times 10^3 = 1.2 \\times 10^4$."
+            "Step 1 (Why we do this: Convert all terms to standard form first): Convert each decimal and whole number into $A \\times 10^n$: $0.00036 = 3.6 \\times 10^{-4}$, $40,000 = 4.0 \\times 10^4$, and $0.0012 = 1.2 \\times 10^{-3}$.",
+            "Step 2 (Why we do this: Multiply the numerator terms using index product rules): Group mantissas and combine powers of 10: $(3.6 \\times 4.0) \\times 10^{-4 + 4} = 14.4 \\times 10^0 = 14.4$.",
+            "Step 3 (Why we do this: Divide by denominator using index quotient rules): $\\frac{14.4}{1.2 \\times 10^{-3}} = \\left(\\frac{14.4}{1.2}\\right) \\times 10^{0 - (-3)} = 12 \\times 10^3$.",
+            "Step 4 (Why we do this: Re-align to valid scientific notation 1 ≤ A < 10): The mantissa 12 is greater than 10. Write $12 = 1.2 \\times 10^1$. Therefore, $1.2 \\times 10^1 \\times 10^3 = 1.2 \\times 10^4$."
           ],
           "finalAnswer": "$$1.2 \\times 10^4$$"
         },
         {
           "id": "we_num_j2_02",
-          "title": "Solving Exponential Equations",
+          "title": "Solving Exponential Equations with Common Bases",
           "problem": "Solve for $x$ in the equation: $2^{x+2} = 16$.",
           "steps": [
-            "Express the right-hand side in base 2: $16 = 2^4$.",
-            "Equate powers since bases are equal: $x + 2 = 4$.",
-            "Solve for $x$: $x = 4 - 2 = 2$."
+            "Step 1 (Why we do this: Re-write the non-base side into powers of 2): Express 16 as an exponent of base 2: $16 = 2 \\times 2 \\times 2 \\times 2 = 2^4$.",
+            "Step 2 (Why we do this: Equate exponents across equal bases): Since the bases on both sides are identical (base 2), equate their powers: $x + 2 = 4$.",
+            "Step 3 (Why we do this: Solve the one-step linear equation): Subtract 2 from both sides: $x = 4 - 2 = 2$.",
+            "Step 4 (Why we do this: Substitute to verify): Check the result: $2^{2 + 2} = 2^4 = 16$. The equation holds."
           ],
           "finalAnswer": "$$x = 2$$"
         },
         {
           "id": "we_num_j2_03",
-          "title": "Square Root by Consecutive Odd Subtraction",
+          "title": "Square Root Evaluation via Consecutive Odd Subtractions",
           "problem": "Determine $\\sqrt{49}$ using the consecutive odd subtraction method.",
           "steps": [
-            "Subtract consecutive odd numbers starting from 1 until reaching 0:\n1. $49 - 1 = 48$\n2. $48 - 3 = 45$\n3. $45 - 5 = 40$\n4. $40 - 7 = 33$\n5. $33 - 9 = 24$\n6. $24 - 11 = 13$\n7. $13 - 13 = 0$",
-            "Count the total number of subtractions performed: 7."
+            "Step 1 (Why we do this: Apply the sum of first n odd numbers theorem): The sum of the first $n$ odd integers equals $n^2$. Subtracting consecutive odd numbers from a perfect square until zero counts $\\sqrt{n}$.",
+            "Step 2 (Why we do this: Execute consecutive subtractions systematically):\n  1. $49 - 1 = 48$\n  2. $48 - 3 = 45$\n  3. $45 - 5 = 40$\n  4. $40 - 7 = 33$\n  5. $33 - 9 = 24$\n  6. $24 - 11 = 13$\n  7. $13 - 13 = 0$",
+            "Step 3 (Why we do this: Count the completed steps): Exactly 7 subtractions were required to reach zero. Thus, $\\sqrt{49} = 7$."
           ],
           "finalAnswer": "$$\\sqrt{49} = 7$$"
         }
