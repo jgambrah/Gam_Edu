@@ -1,0 +1,1934 @@
+{
+  "id": "topic_ratio_proportion_financial",
+  "topicId": "ratio_proportion_financial",
+  "topicSlug": "ratio_proportion_financial",
+  "title": "Ratio, Proportion & Financial Math",
+  "subject": "Mathematics",
+  "tier": "Junior High School (JHS)",
+  "badge": "Strand 1: Number",
+  "description": "Comprehensive mastery of direct comparisons, unit rates, proportion tables, travel graphs, inverse rates, simple interest, and commercial taxes.",
+  "strand": {
+    "code": "S1",
+    "name": "Number"
+  },
+  "subStrand": "Ratios, Proportions & Commercial Applications",
+  "version": 2,
+  "totalPracticeQuestions": 45,
+  "updatedAt": "2026-09-16T12:00:00.000Z",
+  "levels": {
+    "b7": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "levelTitle": "Basic 7 (JHS 1): Ratio Language, Unit Rates & Comparisons",
+      "contentStandard": "B7.1.4.1: Demonstrate an understanding of the concept of ratios and its relationship to fractions and use it to solve problems involving rates, ratios, and proportional reasoning.",
+      "indicatorsCovered": [
+        "B7.1.4.1.1",
+        "B7.1.4.1.2",
+        "B7.1.4.1.3",
+        "B7.1.4.1.4",
+        "B7.1.4.1.5"
+      ],
+      "summary": "Direct comparisons, unit rates, equivalent ratio tables, and percentage as a rate per hundred.",
+      "notes": "### 1. Ratio Language & Unit Rates\nA ratio compares two quantities of the exact same unit. When quantities have different units, they form a **rate**.\n\n$$\\text{Unit Rate} = \\frac{\\text{Quantity } A}{\\text{Quantity } B}$$\n\n> **Key Rule:** A ratio $a : b$ can be written as a fraction $\\frac{a}{b}$. Always simplify ratios by dividing both terms by their **Highest Common Factor (HCF)**.\n\n### 2. Dividing Quantities in a Given Ratio\nTo divide total quantity $T$ in ratio $a : b : c$:\n1. Total parts: $S = a + b + c$\n2. Individual share: $\\text{Share} = \\frac{\\text{Ratio Part}}{S} \\times T$\n\n### 3. Percentages as Rates per Hundred\nA percentage is a ratio with a base of $100$. For discounts of $d\\%$:\n$$\\text{Selling Price} = \\text{Marked Price} \\times \\left(1 - \\frac{d}{100}\\right)$$",
+      "workedExamples": [
+        {
+          "id": "we_b7_01",
+          "title": "Simplifying Unit Rates in Context",
+          "indicator": "B7.1.4.1.2",
+          "problem": "A baker uses 3 cups of sugar for every 4 cups of flour. What is the unit rate of sugar per cup of flour?",
+          "steps": [
+            "Express the relationship as a ratio: 3 cups sugar : 4 cups flour.",
+            "Divide the first quantity by the second: $\\frac{3}{4}$.",
+            "State the rate: $\\frac{3}{4}$ cup of sugar per cup of flour."
+          ],
+          "finalAnswer": "$$\\frac{3}{4}\\text{ cup of sugar per cup of flour}$$"
+        },
+        {
+          "id": "we_b7_02",
+          "title": "Multi-Person Ratio Sharing",
+          "indicator": "B7.1.4.1.3",
+          "problem": "Share GH¢ 3,600 among Kwame, Abena, and Kofi in the ratio 2 : 3 : 4. How much does Abena receive?",
+          "steps": [
+            "Calculate total parts: $2 + 3 + 4 = 9\\text{ parts}$.",
+            "Identify Abena's share fraction: $\\frac{3}{9} = \\frac{1}{3}$.",
+            "Compute her monetary share: $\\frac{1}{3} \\times 3,600 = \\text{GH¢ } 1,200$."
+          ],
+          "finalAnswer": "$$\\text{GH¢ } 1,200$$"
+        },
+        {
+          "id": "we_b7_03",
+          "title": "Reverse Percentage Discount Calculation",
+          "indicator": "B7.1.4.1.5",
+          "problem": "A school bag was sold for GH¢ 120.00 after a 25% discount was granted. Calculate the original marked price.",
+          "steps": [
+            "Selling price percentage = $100\\% - 25\\% = 75\\%$.",
+            "Express as equation: $0.75 \\times \\text{Marked Price} = 120$.",
+            "Divide to find Marked Price: $\\frac{120}{0.75} = \\frac{120 \\times 100}{75} = \\text{GH¢ } 160.00$."
+          ],
+          "finalAnswer": "$$\\text{GH¢ } 160.00$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.1",
+            "prompt": "There are 45 boys and 60 girls in a basic school club. Write the ratio of boys to girls in simplest form.",
+            "options": [
+              "3 : 4",
+              "4 : 3",
+              "9 : 12",
+              "1 : 2"
+            ],
+            "correctAnswer": "3 : 4",
+            "hint": "Divide both numbers by their highest common factor, 15.",
+            "workedSolution": "$$\\frac{45 \\div 15}{60 \\div 15} = \\frac{3}{4} = 3 : 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.1",
+            "prompt": "Express 75 cm to 1.5 m as a simplified ratio in lowest terms.",
+            "options": [
+              "1 : 2",
+              "1 : 5",
+              "3 : 4",
+              "2 : 1"
+            ],
+            "correctAnswer": "1 : 2",
+            "hint": "Convert 1.5 m to centimetres first: 1.5 m = 150 cm.",
+            "workedSolution": "$$75\\text{ cm} : 150\\text{ cm} = \\frac{75}{150} = \\frac{1}{2} = 1 : 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.2",
+            "prompt": "If a car uses 8 litres of fuel to travel 96 kilometres, what is the fuel consumption rate in km per litre?",
+            "options": [
+              "12 km/l",
+              "14 km/l",
+              "10 km/l",
+              "16 km/l"
+            ],
+            "correctAnswer": "12 km/l",
+            "hint": "Divide the total distance by the litres of fuel.",
+            "workedSolution": "$$\\text{Rate} = \\frac{96\\text{ km}}{8\\text{ litres}} = 12\\text{ km/l}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.1",
+            "prompt": "In an examination, the ratio of passes to failures is 7 : 3. What fraction of the candidates passed?",
+            "options": [
+              "7/10",
+              "3/10",
+              "7/3",
+              "3/7"
+            ],
+            "correctAnswer": "7/10",
+            "hint": "Total parts = 7 + 3 = 10.",
+            "workedSolution": "$$\\text{Fraction of passes} = \\frac{7}{7 + 3} = \\frac{7}{10}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.4",
+            "prompt": "Express the ratio 3 : 5 as a percentage.",
+            "options": [
+              "60%",
+              "30%",
+              "40%",
+              "75%"
+            ],
+            "correctAnswer": "60%",
+            "hint": "Convert the ratio to a fraction (3/5) and multiply by 100%.",
+            "workedSolution": "$$\\frac{3}{5} \\times 100\\% = 60\\%$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "Kafui, Adoley, and Jantuah shared GH¢ 108,000 in the ratio of their ages: 36, 48, and 24 years respectively. What is Jantuah's share?",
+            "options": [
+              "GH¢ 24,000",
+              "GH¢ 36,000",
+              "GH¢ 48,000",
+              "GH¢ 12,000"
+            ],
+            "correctAnswer": "GH¢ 24,000",
+            "hint": "Simplify the age ratio 36 : 48 : 24 first by dividing through by 12.",
+            "workedSolution": "Ratio simplifies to $3 : 4 : 2$. Total parts = $3 + 4 + 2 = 9$. Jantuah's share = $\\frac{2}{9} \\times 108,000 = 2 \\times 12,000 = \\text{GH¢ } 24,000$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "Two ropes have lengths in the ratio 5 : 8. If the shorter rope is 35 metres long, what is the length of the longer rope?",
+            "options": [
+              "56 m",
+              "48 m",
+              "64 m",
+              "50 m"
+            ],
+            "correctAnswer": "56 m",
+            "hint": "5 parts correspond to 35 metres. Find the value of 1 part.",
+            "workedSolution": "$$1\\text{ part} = \\frac{35}{5} = 7\\text{ m}$$.\n$$\\text{Longer rope} = 8 \\times 7 = 56\\text{ m}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.2",
+            "prompt": "A printing machine produces 420 pages in 6 minutes. How many pages can it print in 15 minutes at the same rate?",
+            "options": [
+              "1,050 pages",
+              "980 pages",
+              "1,200 pages",
+              "840 pages"
+            ],
+            "correctAnswer": "1,050 pages",
+            "hint": "Find the unit rate per minute first: 420 / 6 = 70 pages/min.",
+            "workedSolution": "$$\\text{Rate} = \\frac{420}{6} = 70\\text{ pages/min}$$.\n$$\\text{Pages in 15 min} = 15 \\times 70 = 1,050\\text{ pages}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.4",
+            "prompt": "A merchant buys a carton of biscuits for GH¢ 80.00 and sells it for GH¢ 100.00. Calculate his percentage profit.",
+            "options": [
+              "25%",
+              "20%",
+              "15%",
+              "30%"
+            ],
+            "correctAnswer": "25%",
+            "hint": "Profit = 100 - 80 = 20. Percentage profit is based on Cost Price.",
+            "workedSolution": "$$\\text{Percentage Profit} = \\frac{20}{80} \\times 100\\% = 25\\%$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "The ratio of boys to girls in a school assembly is 7 : 8. If there are 560 boys, how many total students are in the assembly?",
+            "options": [
+              "1,200 students",
+              "1,120 students",
+              "1,280 students",
+              "960 students"
+            ],
+            "correctAnswer": "1,200 students",
+            "hint": "7 parts = 560 boys. Total parts = 7 + 8 = 15.",
+            "workedSolution": "$$1\\text{ part} = \\frac{560}{7} = 80$$.\n$$\\text{Total students} = 15 \\times 80 = 1,200$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.5",
+            "prompt": "A shop offers a discount of 20% during a promotion. If a customer paid GH¢ 80.00 for a shirt, calculate the original marked price.",
+            "options": [
+              "GH¢ 100.00",
+              "GH¢ 96.00",
+              "GH¢ 120.00",
+              "GH¢ 160.00"
+            ],
+            "correctAnswer": "GH¢ 100.00",
+            "hint": "The discounted price represents $100\\% - 20\\% = 80\\%$ of the original price.",
+            "workedSolution": "$$80\\% \\times P = 80 \\implies P = 80 \\times \\frac{100}{80} = \\text{GH¢ } 100.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "If $x : y = 2 : 3$ and $y : z = 4 : 5$, evaluate the combined ratio $x : z$.",
+            "options": [
+              "8 : 15",
+              "2 : 5",
+              "3 : 4",
+              "6 : 15"
+            ],
+            "correctAnswer": "8 : 15",
+            "hint": "Multiply the fractions x/y and y/z to obtain x/z.",
+            "workedSolution": "$$\\frac{x}{z} = \\frac{x}{y} \\times \\frac{y}{z} = \\frac{2}{3} \\times \\frac{4}{5} = \\frac{8}{15} \\implies x : z = 8 : 15$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "A sum of money was shared between Kwame and Ama in the ratio 5 : 3. If Kwame received GH¢ 90.00 more than Ama, find the total sum shared.",
+            "options": [
+              "GH¢ 360.00",
+              "GH¢ 320.00",
+              "GH¢ 400.00",
+              "GH¢ 270.00"
+            ],
+            "correctAnswer": "GH¢ 360.00",
+            "hint": "Difference in parts: 5 - 3 = 2 parts. 2 parts correspond to GH¢ 90.00.",
+            "workedSolution": "$$2\\text{ parts} = 90 \\implies 1\\text{ part} = 45$$.\n$$\\text{Total parts} = 5 + 3 = 8$$.\n$$\\text{Total} = 8 \\times 45 = \\text{GH¢ } 360.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.5",
+            "prompt": "The price of an electrical item increased by 15% to GH¢ 460.00. What was its price before the increase?",
+            "options": [
+              "GH¢ 400.00",
+              "GH¢ 390.00",
+              "GH¢ 420.00",
+              "GH¢ 410.00"
+            ],
+            "correctAnswer": "GH¢ 400.00",
+            "hint": "The new price represents 115% of the original cost.",
+            "workedSolution": "$$115\\% \\times P = 460 \\implies P = \\frac{460 \\times 100}{115} = 4 \\times 100 = \\text{GH¢ } 400.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "Three angles in a quadrilateral are in the ratio 2 : 3 : 4. If the fourth angle is 90°, find the largest angle in the quadrilateral.",
+            "options": [
+              "120°",
+              "100°",
+              "140°",
+              "135°"
+            ],
+            "correctAnswer": "120°",
+            "hint": "Sum of angles in a quadrilateral is 360°. Sum of first three = 360° - 90° = 270°.",
+            "workedSolution": "$$\\text{Sum of remaining parts} = 2 + 3 + 4 = 9$$.\n$$1\\text{ part} = \\frac{270^\\circ}{9} = 30^\\circ$$.\n$$\\text{Largest angle} = 4 \\times 30^\\circ = 120^\\circ$$.",
+            "points": 3
+          }
+        ]
+      }
+    },
+    "b8": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "levelTitle": "Basic 8 (JHS 2): Proportionality, Map Scales & Travel Rates",
+      "contentStandard": "B8.1.4.1: Demonstrate an understanding of ratio, rate and proportions and use these to solve real-world mathematical problems.",
+      "indicatorsCovered": [
+        "B8.1.4.1.1",
+        "B8.1.4.1.2",
+        "B8.1.4.1.3",
+        "B8.1.4.1.4",
+        "B8.1.4.1.5"
+      ],
+      "summary": "Unit conversions using ratio reasoning, constant of proportionality, and travel graphs (distance-time).",
+      "notes": "### 1. Constant of Proportionality\nWhen two quantities $x$ and $y$ vary directly, their quotient is a fixed constant $k$:\n\n$$y = kx \\quad \\iff \\quad k = \\frac{y}{x}$$\n\n> The graph of a direct proportion is always a straight line passing through the origin $(0, 0)$.\n\n### 2. Map Scales & Linear Scale Factor\nA map scale $1 : n$ means $1\\text{ unit on map} = n\\text{ units in reality}$:\n$$\\text{Actual Distance} = \\text{Map Distance} \\times n$$\n*To convert cm to km, divide by $100,000$.*\n\n### 3. Travel Graphs & Speed\n$$\\text{Average Speed} = \\frac{\\text{Total Distance}}{\\text{Total Time Taken}}$$\nOn a distance-time graph, the **gradient** represents the speed.",
+      "workedExamples": [
+        {
+          "id": "we_b8_01",
+          "title": "Finding Constant of Proportionality",
+          "indicator": "B8.1.4.1.2",
+          "problem": "The cost of maize $C$ is directly proportional to the weight $w$ in kg. If 15 kg of maize costs GH¢ 120.00, find the constant of proportionality and the formula connecting C and w.",
+          "steps": [
+            "Write the proportionality relation: $C = kw$.",
+            "Substitute given values: $120 = k \\times 15$.",
+            "Solve for $k$: $k = \\frac{120}{15} = 8$.",
+            "State equation: $C = 8w$ (cost is GH¢ 8 per kg)."
+          ],
+          "finalAnswer": "$$k = 8, \\quad C = 8w$$"
+        },
+        {
+          "id": "we_b8_02",
+          "title": "Map Scale Conversion to Kilometres",
+          "indicator": "B8.1.4.1.4",
+          "problem": "On a survey map drawn to a scale of 1 : 25,000, the distance between two villages is 16 cm. What is the real ground distance in kilometres?",
+          "steps": [
+            "Calculate distance in centimetres: $16 \\times 25,000 = 400,000\\text{ cm}$.",
+            "Convert cm to metres by dividing by 100: $400,000 \\div 100 = 4,000\\text{ m}$.",
+            "Convert metres to kilometres by dividing by 1,000: $4,000 \\div 1,000 = 4\\text{ km}$."
+          ],
+          "finalAnswer": "$$4\\text{ km}$$"
+        },
+        {
+          "id": "we_b8_03",
+          "title": "Average Speed on a Journey",
+          "indicator": "B8.1.4.1.5",
+          "problem": "A bus travels 180 km from Accra to Cape Coast in 2 hours 30 minutes. Calculate the average speed in km/h.",
+          "steps": [
+            "Convert 2 hours 30 minutes to decimal hours: $2\\text{ h } + \\frac{30}{60}\\text{ h} = 2.5\\text{ hours}$.",
+            "Apply speed formula: $\\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}} = \\frac{180}{2.5}$.",
+            "Simplify: $\\frac{180 \\times 2}{5} = \\frac{360}{5} = 72\\text{ km/h}$."
+          ],
+          "finalAnswer": "$$72\\text{ km/h}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "If $y$ is directly proportional to $x$, and $y = 28$ when $x = 4$, find the constant of proportionality $k$.",
+            "options": [
+              "7",
+              "6",
+              "8",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "Divide y by x: k = 28 / 4.",
+            "workedSolution": "$$k = \\frac{y}{x} = \\frac{28}{4} = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A motorist covers 210 km in 3 hours. What is the average speed in km/h?",
+            "options": [
+              "70 km/h",
+              "65 km/h",
+              "75 km/h",
+              "80 km/h"
+            ],
+            "correctAnswer": "70 km/h",
+            "hint": "Speed = Distance / Time.",
+            "workedSolution": "$$\\text{Speed} = \\frac{210}{3} = 70\\text{ km/h}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.4",
+            "prompt": "On a map of scale 1 : 100,000, a road measures 5 cm. What is the actual length of the road in kilometres?",
+            "options": [
+              "5 km",
+              "50 km",
+              "0.5 km",
+              "500 km"
+            ],
+            "correctAnswer": "5 km",
+            "hint": "1 cm on map = 100,000 cm = 1 km in reality.",
+            "workedSolution": "$$5 \\times 100,000\\text{ cm} = 500,000\\text{ cm} = 5\\text{ km}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.1",
+            "prompt": "Convert a speed of 90 km/h to metres per second (m/s).",
+            "options": [
+              "25 m/s",
+              "20 m/s",
+              "30 m/s",
+              "15 m/s"
+            ],
+            "correctAnswer": "25 m/s",
+            "hint": "Multiply by 1,000 and divide by 3,600 (or multiply by 5/18).",
+            "workedSolution": "$$90 \\times \\frac{5}{18} = 5 \\times 5 = 25\\text{ m/s}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "If 12 pens cost GH¢ 36.00, how much will 7 pens cost at the same rate?",
+            "options": [
+              "GH¢ 21.00",
+              "GH¢ 24.00",
+              "GH¢ 18.00",
+              "GH¢ 28.00"
+            ],
+            "correctAnswer": "GH¢ 21.00",
+            "hint": "Cost per pen = 36 / 12 = GH¢ 3.00.",
+            "workedSolution": "$$\\text{Cost per pen} = \\frac{36}{12} = 3$$.\n$$\\text{Cost for 7 pens} = 7 \\times 3 = \\text{GH¢ } 21.00$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "The electrical resistance $R$ of a wire is directly proportional to its length $L$. When $L = 50\\text{ m}$, $R = 10\\,\\Omega$. What is the resistance of a wire of length $125\\text{ m}$ of the same material?",
+            "options": [
+              "25 Ω",
+              "20 Ω",
+              "30 Ω",
+              "22.5 Ω"
+            ],
+            "correctAnswer": "25 Ω",
+            "hint": "Find k = R / L = 10 / 50 = 0.2.",
+            "workedSolution": "$$k = \\frac{10}{50} = 0.2$$.\n$$R = 0.2 \\times 125 = 25\\,\\Omega$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A train travels for 1 hour 45 minutes at an average speed of 80 km/h. What total distance does it cover?",
+            "options": [
+              "140 km",
+              "120 km",
+              "160 km",
+              "135 km"
+            ],
+            "correctAnswer": "140 km",
+            "hint": "Convert 1 hour 45 minutes to hours: 1 + 45/60 = 1.75 hours.",
+            "workedSolution": "$$\\text{Time} = 1.75\\text{ hours}$$.\n$$\\text{Distance} = 80 \\times 1.75 = 140\\text{ km}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.4",
+            "prompt": "Two towns are 35 km apart. How far apart will they appear on a map with scale 1 : 250,000?",
+            "options": [
+              "14 cm",
+              "12 cm",
+              "10 cm",
+              "16 cm"
+            ],
+            "correctAnswer": "14 cm",
+            "hint": "Convert 35 km to cm: 35 × 100,000 = 3,500,000 cm. Then divide by 250,000.",
+            "workedSolution": "$$\\text{Map distance} = \\frac{3,500,000}{250,000} = \\frac{350}{25} = 14\\text{ cm}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.3",
+            "prompt": "The ratio of zinc to copper in a brass alloy is 3 : 7. How much zinc is needed to mix with 42 kg of copper?",
+            "options": [
+              "18 kg",
+              "21 kg",
+              "15 kg",
+              "24 kg"
+            ],
+            "correctAnswer": "18 kg",
+            "hint": "7 parts of copper = 42 kg. 1 part = 6 kg.",
+            "workedSolution": "$$1\\text{ part} = \\frac{42}{7} = 6\\text{ kg}$$.\n$$\\text{Zinc} = 3 \\times 6 = 18\\text{ kg}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A cyclist travels 30 km at 15 km/h, and then another 30 km at 10 km/h. What is the average speed for the entire 60 km journey?",
+            "options": [
+              "12 km/h",
+              "12.5 km/h",
+              "13 km/h",
+              "11.5 km/h"
+            ],
+            "correctAnswer": "12 km/h",
+            "hint": "Total time = t1 + t2 = 30/15 + 30/10 = 2 + 3 = 5 hours.",
+            "workedSolution": "$$t_1 = \\frac{30}{15} = 2\\text{ h}, \\quad t_2 = \\frac{30}{10} = 3\\text{ h}$$.\n$$\\text{Total Time} = 5\\text{ h}$$.\n$$\\text{Average Speed} = \\frac{60}{5} = 12\\text{ km/h}$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.4",
+            "prompt": "On a map of scale 1 : 50,000, a rectangular forest reserve measures 6 cm by 4 cm. Calculate the actual ground area of the forest reserve in square kilometres (km²).",
+            "options": [
+              "6 km²",
+              "60 km²",
+              "12 km²",
+              "3 km²"
+            ],
+            "correctAnswer": "6 km²",
+            "hint": "Find ground dimensions first: 6 cm = 3 km, 4 cm = 2 km.",
+            "workedSolution": "$$\\text{Actual length} = 6 \\times 50,000\\text{ cm} = 300,000\\text{ cm} = 3\\text{ km}$$.\n$$\\text{Actual width} = 4 \\times 50,000\\text{ cm} = 200,000\\text{ cm} = 2\\text{ km}$$.\n$$\\text{Actual Area} = 3 \\times 2 = 6\\text{ km}^2$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A car leaves Kumasi for Sunyani at 8:15 am traveling at 72 km/h. If the distance is 120 km, at what time does the car reach Sunyani?",
+            "options": [
+              "9:55 am",
+              "9:45 am",
+              "10:00 am",
+              "10:15 am"
+            ],
+            "correctAnswer": "9:55 am",
+            "hint": "Time taken = 120 / 72 = 5/3 hours = 1 hour 40 minutes.",
+            "workedSolution": "$$\\text{Time} = \\frac{120}{72} = \\frac{5}{3}\\text{ hours} = 1\\text{ hour } 40\\text{ minutes}$$.\n$$8:15\\text{ am} + 1\\text{ h } 40\\text{ min} = 9:55\\text{ am}$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "Variable $y$ is proportional to the square of $x$. If $y = 36$ when $x = 3$, find the value of $y$ when $x = 5$.",
+            "options": [
+              "100",
+              "75",
+              "120",
+              "80"
+            ],
+            "correctAnswer": "100",
+            "hint": "y = kx². Find k: 36 = k(9) => k = 4.",
+            "workedSolution": "$$y = kx^2 \\implies 36 = k(3^2) \\implies k = 4$$.\n$$\\text{When } x = 5: \\quad y = 4 \\times 5^2 = 4 \\times 25 = 100$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.3",
+            "prompt": "In a school, 40% of students are girls. The ratio of boarders to day students among the girls is 3 : 2. If there are 120 girl boarders, what is the total school population?",
+            "options": [
+              "500 students",
+              "600 students",
+              "450 students",
+              "750 students"
+            ],
+            "correctAnswer": "500 students",
+            "hint": "3 parts = 120 girl boarders => Total girls = (5/3) * 120 = 200. Girls are 40% of total school.",
+            "workedSolution": "$$\\text{Total girls} = \\frac{5}{3} \\times 120 = 200$$.\n$$40\\% \\times \\text{Total} = 200 \\implies \\text{Total} = \\frac{200 \\times 100}{40} = 500$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "Tap A fills an empty water tank in 4 hours, while Tap B fills the same tank in 6 hours. How long will both taps take to fill the tank working together?",
+            "options": [
+              "2.4 hours",
+              "2.5 hours",
+              "3 hours",
+              "2 hours"
+            ],
+            "correctAnswer": "2.4 hours",
+            "hint": "Combined rate per hour = 1/4 + 1/6 = 5/12 of tank per hour.",
+            "workedSolution": "$$\\text{Combined Rate} = \\frac{1}{4} + \\frac{1}{6} = \\frac{3 + 2}{12} = \\frac{5}{12}\\text{ tank/hour}$$.\n$$\\text{Time} = \\frac{12}{5} = 2.4\\text{ hours} \\text{ (2 hours 24 minutes)}$$.",
+            "points": 3
+          }
+        ]
+      }
+    },
+    "b9": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "levelTitle": "Basic 9 (JHS 3): Inverse Proportions, Commercial Taxes & Financial Mathematics",
+      "contentStandard": "B9.1.4.1: Apply the understanding of ratio, rate and proportions to solve problems that involve rates, ratios, and proportional reasoning in real-world contexts.",
+      "indicatorsCovered": [
+        "B9.1.4.1.1",
+        "B9.1.4.1.2",
+        "B9.1.4.1.3",
+        "B9.1.4.1.4"
+      ],
+      "summary": "Multi-step applications: simple interest, VAT/NHIL, depreciation, insurance, and SSNIT pension calculations.",
+      "notes": "### 1. Inverse Proportion Concept\nTwo quantities are inversely proportional when an increase in one causes a proportionate decrease in the other, keeping their product constant:\n\n$$x_1 y_1 = x_2 y_2 = k$$\n\n> **Classic Applications:** Worker-days ($\text{Men} \\times \\text{Days} = \\text{Constant}$), speed and journey duration.\n\n### 2. Simple Interest\n$$\\text{Simple Interest } (I) = \\frac{P \\times R \\times T}{100}$$\n$$\\text{Total Amount Repayable } (A) = P + I$$\n*Where $P = \\text{Principal}$, $R = \\text{Annual Rate (\\%)}$, $T = \\text{Time in years}$.*\n\n### 3. Commercial Taxes: VAT & NHIL\n* Value Added Tax (VAT) and National Health Insurance Levy (NHIL) are calculated on the net taxable supply of goods/services.\n* **Compound Depreciation:** Value after $n$ years at rate $r\\%$:\n$$V = P \\left(1 - \\frac{r}{100}\\right)^n$$",
+      "workedExamples": [
+        {
+          "id": "we_b9_01",
+          "title": "Worker-Day Inverse Proportion",
+          "indicator": "B9.1.4.1.1",
+          "problem": "Twelve artisans can paint a block of classrooms in 6 days. How many days will it take 8 artisans working at the same speed?",
+          "steps": [
+            "Calculate total man-days: $12 \\times 6 = 72\\text{ man-days}$.",
+            "Let $D$ be the required days for 8 workers: $8 \\times D = 72$.",
+            "Solve for $D$: $D = \\frac{72}{8} = 9\\text{ days}$."
+          ],
+          "finalAnswer": "$$9\\text{ days}$$"
+        },
+        {
+          "id": "we_b9_02",
+          "title": "Simple Interest Loan Repayment",
+          "indicator": "B9.1.4.1.2",
+          "problem": "A teacher takes an institutional loan of GH¢ 8,000 at a simple interest rate of 15% per annum for 3 years. Find the total interest and total amount repaid.",
+          "steps": [
+            "Apply simple interest formula: $I = \\frac{8,000 \\times 15 \\times 3}{100}$.",
+            "Calculate interest: $80 \\times 45 = \\text{GH¢ } 3,600$.",
+            "Calculate total repayment: $A = 8,000 + 3,600 = \\text{GH¢ } 11,600$."
+          ],
+          "finalAnswer": "$$\\text{Interest} = \\text{GH¢ } 3,600, \\quad \\text{Total} = \\text{GH¢ } 11,600$$"
+        },
+        {
+          "id": "we_b9_03",
+          "title": "Value Added Tax (VAT) Invoice Calculation",
+          "indicator": "B9.1.4.1.3",
+          "problem": "The pre-tax price of a computer is GH¢ 4,000. If VAT is charged at 15% and NHIL at 2.5%, calculate the total amount payable by the consumer.",
+          "steps": [
+            "Total tax percentage = $15\\% + 2.5\\% = 17.5\\%$.",
+            "Calculate tax amount: $4,000 \\times 0.175 = \\text{GH¢ } 700$.",
+            "Compute gross invoice amount: $4,000 + 700 = \\text{GH¢ } 4,700$."
+          ],
+          "finalAnswer": "$$\\text{GH¢ } 4,700.00$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "If 6 men weed a farm in 10 days, how many men would weed the same farm in 5 days at the same working rate?",
+            "options": [
+              "12 men",
+              "15 men",
+              "8 men",
+              "10 men"
+            ],
+            "correctAnswer": "12 men",
+            "hint": "Men × Days = constant. 6 × 10 = M × 5.",
+            "workedSolution": "$$6 \\times 10 = M \\times 5 \\implies 60 = 5M \\implies M = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "Calculate the simple interest on GH¢ 2,000 invested for 2 years at 10% per annum.",
+            "options": [
+              "GH¢ 400",
+              "GH¢ 200",
+              "GH¢ 600",
+              "GH¢ 500"
+            ],
+            "correctAnswer": "GH¢ 400",
+            "hint": "I = (P × R × T) / 100.",
+            "workedSolution": "$$I = \\frac{2000 \\times 10 \\times 2}{100} = \\text{GH¢ } 400$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.3",
+            "prompt": "A television costs GH¢ 1,200 before tax. If VAT is charged at 15%, calculate the amount of VAT paid.",
+            "options": [
+              "GH¢ 180",
+              "GH¢ 150",
+              "GH¢ 200",
+              "GH¢ 120"
+            ],
+            "correctAnswer": "GH¢ 180",
+            "hint": "VAT = 15% of GH¢ 1,200.",
+            "workedSolution": "$$\\text{VAT} = \\frac{15}{100} \\times 1200 = 15 \\times 12 = \\text{GH¢ } 180$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "A car traveling at 60 km/h takes 4 hours for a trip. How long will the trip take at 80 km/h?",
+            "options": [
+              "3 hours",
+              "3.5 hours",
+              "2.5 hours",
+              "5 hours"
+            ],
+            "correctAnswer": "3 hours",
+            "hint": "Distance = 60 × 4 = 240 km. New time = 240 / 80.",
+            "workedSolution": "$$T = \\frac{60 \\times 4}{80} = \\frac{240}{80} = 3\\text{ hours}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.4",
+            "prompt": "A machine depreciates at 10% per year. If it was bought for GH¢ 5,000, what is its value after 1 year?",
+            "options": [
+              "GH¢ 4,500",
+              "GH¢ 4,000",
+              "GH¢ 4,800",
+              "GH¢ 4,200"
+            ],
+            "correctAnswer": "GH¢ 4,500",
+            "hint": "Depreciation = 10% of 5,000 = 500. Value = 5,000 - 500.",
+            "workedSolution": "$$V = 5000 - (0.10 \\times 5000) = 5000 - 500 = \\text{GH¢ } 4,500$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "At what rate per annum will GH¢ 4,000 yield a simple interest of GH¢ 1,200 in 3 years?",
+            "options": [
+              "10%",
+              "12%",
+              "8%",
+              "15%"
+            ],
+            "correctAnswer": "10%",
+            "hint": "R = (100 × I) / (P × T).",
+            "workedSolution": "$$R = \\frac{100 \\times 1200}{4000 \\times 3} = \\frac{120,000}{12,000} = 10\\%$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "A food store has enough grain to feed 150 boarding students for 24 days. If 30 additional students join, how many days will the same stock of grain last?",
+            "options": [
+              "20 days",
+              "18 days",
+              "22 days",
+              "16 days"
+            ],
+            "correctAnswer": "20 days",
+            "hint": "Total students = 150 + 30 = 180. Days = (150 × 24) / 180.",
+            "workedSolution": "$$\\text{Days} = \\frac{150 \\times 24}{180} = \\frac{3600}{180} = 20\\text{ days}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.3",
+            "prompt": "The total cost of a refrigerator including 17.5% combined VAT/NHIL is GH¢ 4,700.00. What was the net price before tax?",
+            "options": [
+              "GH¢ 4,000.00",
+              "GH¢ 3,850.00",
+              "GH¢ 4,200.00",
+              "GH¢ 3,900.00"
+            ],
+            "correctAnswer": "GH¢ 4,000.00",
+            "hint": "117.5% corresponds to GH¢ 4,700.00.",
+            "workedSolution": "$$1.175 \\times P = 4700 \\implies P = \\frac{4700}{1.175} = \\text{GH¢ } 4,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "How long will it take for a principal of GH¢ 5,000 to earn an interest of GH¢ 1,500 at 6% simple interest per annum?",
+            "options": [
+              "5 years",
+              "4 years",
+              "6 years",
+              "3 years"
+            ],
+            "correctAnswer": "5 years",
+            "hint": "T = (100 × I) / (P × R).",
+            "workedSolution": "$$T = \\frac{100 \\times 1500}{5000 \\times 6} = \\frac{150,000}{30,000} = 5\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "Four identical pipes can fill a swimming pool in 9 hours. If 6 of these pipes are opened simultaneously, how long will it take to fill the pool?",
+            "options": [
+              "6 hours",
+              "5 hours",
+              "7 hours",
+              "4.5 hours"
+            ],
+            "correctAnswer": "6 hours",
+            "hint": "Pipes × hours = constant. 4 × 9 = 6 × t.",
+            "workedSolution": "$$t = \\frac{4 \\times 9}{6} = \\frac{36}{6} = 6\\text{ hours}$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "Twenty men were contracted to build a road in 30 days. After working for 10 days, 5 men left the job. How many additional days beyond the initial 30 days will it take the remaining men to complete the road?",
+            "options": [
+              "6 days",
+              "5 days",
+              "8 days",
+              "4 days"
+            ],
+            "correctAnswer": "6 days",
+            "hint": "Remaining work = 20 men × 20 days = 400 man-days. Remaining workers = 15 men.",
+            "workedSolution": "$$\\text{Remaining work} = 20 \\times 20 = 400\\text{ man-days}$$.\n$$\\text{Days with 15 men} = \\frac{400}{15} = 26\\frac{2}{3}\\text{ days}$$.\n$$\\text{Additional days beyond the 20 planned} = 26\\frac{2}{3} - 20 \\approx 6.67 \\text{ (or 6 full extra days beyond schedule)}$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "A business woman invested a sum of money in a financial institution at 12% per annum simple interest. After 4 years, the total amount payable to her was GH¢ 14,800.00. Calculate the principal invested.",
+            "options": [
+              "GH¢ 10,000.00",
+              "GH¢ 11,000.00",
+              "GH¢ 9,500.00",
+              "GH¢ 12,000.00"
+            ],
+            "correctAnswer": "GH¢ 10,000.00",
+            "hint": "Amount A = P(1 + RT/100). For 4 years at 12%: A = P(1 + 0.48) = 1.48P.",
+            "workedSolution": "$$1.48P = 14,800 \\implies P = \\frac{14,800}{1.48} = \\text{GH¢ } 10,000.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.4",
+            "prompt": "A cocoa farmer spent 1/3 of his annual harvest income on farm inputs and 1/4 of the remainder on children's school fees. If he had GH¢ 6,000.00 left, calculate his total harvest income.",
+            "options": [
+              "GH¢ 12,000.00",
+              "GH¢ 10,500.00",
+              "GH¢ 14,000.00",
+              "GH¢ 15,000.00"
+            ],
+            "correctAnswer": "GH¢ 12,000.00",
+            "hint": "Remainder after inputs = 2/3. Spent on fees = 1/4 × 2/3 = 1/6. Final remainder = 2/3 - 1/6 = 3/6 = 1/2.",
+            "workedSolution": "$$\\text{Remaining after inputs} = 1 - \\frac{1}{3} = \\frac{2}{3}$$.\n$$\\text{Fees} = \\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$$.\n$$\\text{Left} = \\frac{2}{3} - \\frac{1}{6} = \\frac{3}{6} = \\frac{1}{2}$$.\n$$\\frac{1}{2} \\times \\text{Total} = 6,000 \\implies \\text{Total} = \\text{GH¢ } 12,000.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.4",
+            "prompt": "An asset valued at GH¢ 40,000 depreciates by 10% in the first year and by 5% in the second year. Find the value of the asset at the end of the second year.",
+            "options": [
+              "GH¢ 34,200.00",
+              "GH¢ 34,000.00",
+              "GH¢ 35,000.00",
+              "GH¢ 33,800.00"
+            ],
+            "correctAnswer": "GH¢ 34,200.00",
+            "hint": "Value after year 1 = 40,000 × 0.90 = 36,000. Value after year 2 = 36,000 × 0.95.",
+            "workedSolution": "$$V_1 = 40,000 \\times 0.90 = 36,000$$.\n$$V_2 = 36,000 \\times 0.95 = \\text{GH¢ } 34,200.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "A bank charges simple interest on loans. Mr. Mensah borrowed GH¢ 6,000.00 and agreed to pay GH¢ 200.00 every month for 3 years. What annual rate of simple interest was charged?",
+            "options": [
+              "6.67%",
+              "7.5%",
+              "8%",
+              "5.5%"
+            ],
+            "correctAnswer": "6.67%",
+            "hint": "Total paid = 200 × 36 = 7,200. Interest I = 7,200 - 6,000 = 1,200. Rate R = (100 × 1200) / (6000 × 3).",
+            "workedSolution": "$$\\text{Total Repaid} = 200 \\times 36 = \\text{GH¢ } 7,200$$.\n$$I = 7,200 - 6,000 = \\text{GH¢ } 1,200$$.\n$$R = \\frac{100 \\times 1200}{6000 \\times 3} = \\frac{1200}{180} = 6.67\\%$$.",
+            "points": 3
+          }
+        ]
+      }
+    },
+    "jhs1": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "levelTitle": "Basic 7 (JHS 1): Ratio Language, Unit Rates & Comparisons",
+      "contentStandard": "B7.1.4.1: Demonstrate an understanding of the concept of ratios and its relationship to fractions and use it to solve problems involving rates, ratios, and proportional reasoning.",
+      "indicatorsCovered": [
+        "B7.1.4.1.1",
+        "B7.1.4.1.2",
+        "B7.1.4.1.3",
+        "B7.1.4.1.4",
+        "B7.1.4.1.5"
+      ],
+      "summary": "Direct comparisons, unit rates, equivalent ratio tables, and percentage as a rate per hundred.",
+      "notes": "### 1. Ratio Language & Unit Rates\nA ratio compares two quantities of the exact same unit. When quantities have different units, they form a **rate**.\n\n$$\\text{Unit Rate} = \\frac{\\text{Quantity } A}{\\text{Quantity } B}$$\n\n> **Key Rule:** A ratio $a : b$ can be written as a fraction $\\frac{a}{b}$. Always simplify ratios by dividing both terms by their **Highest Common Factor (HCF)**.\n\n### 2. Dividing Quantities in a Given Ratio\nTo divide total quantity $T$ in ratio $a : b : c$:\n1. Total parts: $S = a + b + c$\n2. Individual share: $\\text{Share} = \\frac{\\text{Ratio Part}}{S} \\times T$\n\n### 3. Percentages as Rates per Hundred\nA percentage is a ratio with a base of $100$. For discounts of $d\\%$:\n$$\\text{Selling Price} = \\text{Marked Price} \\times \\left(1 - \\frac{d}{100}\\right)$$",
+      "workedExamples": [
+        {
+          "id": "we_b7_01",
+          "title": "Simplifying Unit Rates in Context",
+          "indicator": "B7.1.4.1.2",
+          "problem": "A baker uses 3 cups of sugar for every 4 cups of flour. What is the unit rate of sugar per cup of flour?",
+          "steps": [
+            "Express the relationship as a ratio: 3 cups sugar : 4 cups flour.",
+            "Divide the first quantity by the second: $\\frac{3}{4}$.",
+            "State the rate: $\\frac{3}{4}$ cup of sugar per cup of flour."
+          ],
+          "finalAnswer": "$$\\frac{3}{4}\\text{ cup of sugar per cup of flour}$$"
+        },
+        {
+          "id": "we_b7_02",
+          "title": "Multi-Person Ratio Sharing",
+          "indicator": "B7.1.4.1.3",
+          "problem": "Share GH¢ 3,600 among Kwame, Abena, and Kofi in the ratio 2 : 3 : 4. How much does Abena receive?",
+          "steps": [
+            "Calculate total parts: $2 + 3 + 4 = 9\\text{ parts}$.",
+            "Identify Abena's share fraction: $\\frac{3}{9} = \\frac{1}{3}$.",
+            "Compute her monetary share: $\\frac{1}{3} \\times 3,600 = \\text{GH¢ } 1,200$."
+          ],
+          "finalAnswer": "$$\\text{GH¢ } 1,200$$"
+        },
+        {
+          "id": "we_b7_03",
+          "title": "Reverse Percentage Discount Calculation",
+          "indicator": "B7.1.4.1.5",
+          "problem": "A school bag was sold for GH¢ 120.00 after a 25% discount was granted. Calculate the original marked price.",
+          "steps": [
+            "Selling price percentage = $100\\% - 25\\% = 75\\%$.",
+            "Express as equation: $0.75 \\times \\text{Marked Price} = 120$.",
+            "Divide to find Marked Price: $\\frac{120}{0.75} = \\frac{120 \\times 100}{75} = \\text{GH¢ } 160.00$."
+          ],
+          "finalAnswer": "$$\\text{GH¢ } 160.00$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.1",
+            "prompt": "There are 45 boys and 60 girls in a basic school club. Write the ratio of boys to girls in simplest form.",
+            "options": [
+              "3 : 4",
+              "4 : 3",
+              "9 : 12",
+              "1 : 2"
+            ],
+            "correctAnswer": "3 : 4",
+            "hint": "Divide both numbers by their highest common factor, 15.",
+            "workedSolution": "$$\\frac{45 \\div 15}{60 \\div 15} = \\frac{3}{4} = 3 : 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.1",
+            "prompt": "Express 75 cm to 1.5 m as a simplified ratio in lowest terms.",
+            "options": [
+              "1 : 2",
+              "1 : 5",
+              "3 : 4",
+              "2 : 1"
+            ],
+            "correctAnswer": "1 : 2",
+            "hint": "Convert 1.5 m to centimetres first: 1.5 m = 150 cm.",
+            "workedSolution": "$$75\\text{ cm} : 150\\text{ cm} = \\frac{75}{150} = \\frac{1}{2} = 1 : 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.2",
+            "prompt": "If a car uses 8 litres of fuel to travel 96 kilometres, what is the fuel consumption rate in km per litre?",
+            "options": [
+              "12 km/l",
+              "14 km/l",
+              "10 km/l",
+              "16 km/l"
+            ],
+            "correctAnswer": "12 km/l",
+            "hint": "Divide the total distance by the litres of fuel.",
+            "workedSolution": "$$\\text{Rate} = \\frac{96\\text{ km}}{8\\text{ litres}} = 12\\text{ km/l}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.1",
+            "prompt": "In an examination, the ratio of passes to failures is 7 : 3. What fraction of the candidates passed?",
+            "options": [
+              "7/10",
+              "3/10",
+              "7/3",
+              "3/7"
+            ],
+            "correctAnswer": "7/10",
+            "hint": "Total parts = 7 + 3 = 10.",
+            "workedSolution": "$$\\text{Fraction of passes} = \\frac{7}{7 + 3} = \\frac{7}{10}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B7.1.4.1.4",
+            "prompt": "Express the ratio 3 : 5 as a percentage.",
+            "options": [
+              "60%",
+              "30%",
+              "40%",
+              "75%"
+            ],
+            "correctAnswer": "60%",
+            "hint": "Convert the ratio to a fraction (3/5) and multiply by 100%.",
+            "workedSolution": "$$\\frac{3}{5} \\times 100\\% = 60\\%$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "Kafui, Adoley, and Jantuah shared GH¢ 108,000 in the ratio of their ages: 36, 48, and 24 years respectively. What is Jantuah's share?",
+            "options": [
+              "GH¢ 24,000",
+              "GH¢ 36,000",
+              "GH¢ 48,000",
+              "GH¢ 12,000"
+            ],
+            "correctAnswer": "GH¢ 24,000",
+            "hint": "Simplify the age ratio 36 : 48 : 24 first by dividing through by 12.",
+            "workedSolution": "Ratio simplifies to $3 : 4 : 2$. Total parts = $3 + 4 + 2 = 9$. Jantuah's share = $\\frac{2}{9} \\times 108,000 = 2 \\times 12,000 = \\text{GH¢ } 24,000$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "Two ropes have lengths in the ratio 5 : 8. If the shorter rope is 35 metres long, what is the length of the longer rope?",
+            "options": [
+              "56 m",
+              "48 m",
+              "64 m",
+              "50 m"
+            ],
+            "correctAnswer": "56 m",
+            "hint": "5 parts correspond to 35 metres. Find the value of 1 part.",
+            "workedSolution": "$$1\\text{ part} = \\frac{35}{5} = 7\\text{ m}$$.\n$$\\text{Longer rope} = 8 \\times 7 = 56\\text{ m}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.2",
+            "prompt": "A printing machine produces 420 pages in 6 minutes. How many pages can it print in 15 minutes at the same rate?",
+            "options": [
+              "1,050 pages",
+              "980 pages",
+              "1,200 pages",
+              "840 pages"
+            ],
+            "correctAnswer": "1,050 pages",
+            "hint": "Find the unit rate per minute first: 420 / 6 = 70 pages/min.",
+            "workedSolution": "$$\\text{Rate} = \\frac{420}{6} = 70\\text{ pages/min}$$.\n$$\\text{Pages in 15 min} = 15 \\times 70 = 1,050\\text{ pages}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.4",
+            "prompt": "A merchant buys a carton of biscuits for GH¢ 80.00 and sells it for GH¢ 100.00. Calculate his percentage profit.",
+            "options": [
+              "25%",
+              "20%",
+              "15%",
+              "30%"
+            ],
+            "correctAnswer": "25%",
+            "hint": "Profit = 100 - 80 = 20. Percentage profit is based on Cost Price.",
+            "workedSolution": "$$\\text{Percentage Profit} = \\frac{20}{80} \\times 100\\% = 25\\%$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "The ratio of boys to girls in a school assembly is 7 : 8. If there are 560 boys, how many total students are in the assembly?",
+            "options": [
+              "1,200 students",
+              "1,120 students",
+              "1,280 students",
+              "960 students"
+            ],
+            "correctAnswer": "1,200 students",
+            "hint": "7 parts = 560 boys. Total parts = 7 + 8 = 15.",
+            "workedSolution": "$$1\\text{ part} = \\frac{560}{7} = 80$$.\n$$\\text{Total students} = 15 \\times 80 = 1,200$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.5",
+            "prompt": "A shop offers a discount of 20% during a promotion. If a customer paid GH¢ 80.00 for a shirt, calculate the original marked price.",
+            "options": [
+              "GH¢ 100.00",
+              "GH¢ 96.00",
+              "GH¢ 120.00",
+              "GH¢ 160.00"
+            ],
+            "correctAnswer": "GH¢ 100.00",
+            "hint": "The discounted price represents $100\\% - 20\\% = 80\\%$ of the original price.",
+            "workedSolution": "$$80\\% \\times P = 80 \\implies P = 80 \\times \\frac{100}{80} = \\text{GH¢ } 100.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "If $x : y = 2 : 3$ and $y : z = 4 : 5$, evaluate the combined ratio $x : z$.",
+            "options": [
+              "8 : 15",
+              "2 : 5",
+              "3 : 4",
+              "6 : 15"
+            ],
+            "correctAnswer": "8 : 15",
+            "hint": "Multiply the fractions x/y and y/z to obtain x/z.",
+            "workedSolution": "$$\\frac{x}{z} = \\frac{x}{y} \\times \\frac{y}{z} = \\frac{2}{3} \\times \\frac{4}{5} = \\frac{8}{15} \\implies x : z = 8 : 15$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "A sum of money was shared between Kwame and Ama in the ratio 5 : 3. If Kwame received GH¢ 90.00 more than Ama, find the total sum shared.",
+            "options": [
+              "GH¢ 360.00",
+              "GH¢ 320.00",
+              "GH¢ 400.00",
+              "GH¢ 270.00"
+            ],
+            "correctAnswer": "GH¢ 360.00",
+            "hint": "Difference in parts: 5 - 3 = 2 parts. 2 parts correspond to GH¢ 90.00.",
+            "workedSolution": "$$2\\text{ parts} = 90 \\implies 1\\text{ part} = 45$$.\n$$\\text{Total parts} = 5 + 3 = 8$$.\n$$\\text{Total} = 8 \\times 45 = \\text{GH¢ } 360.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.5",
+            "prompt": "The price of an electrical item increased by 15% to GH¢ 460.00. What was its price before the increase?",
+            "options": [
+              "GH¢ 400.00",
+              "GH¢ 390.00",
+              "GH¢ 420.00",
+              "GH¢ 410.00"
+            ],
+            "correctAnswer": "GH¢ 400.00",
+            "hint": "The new price represents 115% of the original cost.",
+            "workedSolution": "$$115\\% \\times P = 460 \\implies P = \\frac{460 \\times 100}{115} = 4 \\times 100 = \\text{GH¢ } 400.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b7_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B7.1.4.1.3",
+            "prompt": "Three angles in a quadrilateral are in the ratio 2 : 3 : 4. If the fourth angle is 90°, find the largest angle in the quadrilateral.",
+            "options": [
+              "120°",
+              "100°",
+              "140°",
+              "135°"
+            ],
+            "correctAnswer": "120°",
+            "hint": "Sum of angles in a quadrilateral is 360°. Sum of first three = 360° - 90° = 270°.",
+            "workedSolution": "$$\\text{Sum of remaining parts} = 2 + 3 + 4 = 9$$.\n$$1\\text{ part} = \\frac{270^\\circ}{9} = 30^\\circ$$.\n$$\\text{Largest angle} = 4 \\times 30^\\circ = 120^\\circ$$.",
+            "points": 3
+          }
+        ]
+      }
+    },
+    "jhs2": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "levelTitle": "Basic 8 (JHS 2): Proportionality, Map Scales & Travel Rates",
+      "contentStandard": "B8.1.4.1: Demonstrate an understanding of ratio, rate and proportions and use these to solve real-world mathematical problems.",
+      "indicatorsCovered": [
+        "B8.1.4.1.1",
+        "B8.1.4.1.2",
+        "B8.1.4.1.3",
+        "B8.1.4.1.4",
+        "B8.1.4.1.5"
+      ],
+      "summary": "Unit conversions using ratio reasoning, constant of proportionality, and travel graphs (distance-time).",
+      "notes": "### 1. Constant of Proportionality\nWhen two quantities $x$ and $y$ vary directly, their quotient is a fixed constant $k$:\n\n$$y = kx \\quad \\iff \\quad k = \\frac{y}{x}$$\n\n> The graph of a direct proportion is always a straight line passing through the origin $(0, 0)$.\n\n### 2. Map Scales & Linear Scale Factor\nA map scale $1 : n$ means $1\\text{ unit on map} = n\\text{ units in reality}$:\n$$\\text{Actual Distance} = \\text{Map Distance} \\times n$$\n*To convert cm to km, divide by $100,000$.*\n\n### 3. Travel Graphs & Speed\n$$\\text{Average Speed} = \\frac{\\text{Total Distance}}{\\text{Total Time Taken}}$$\nOn a distance-time graph, the **gradient** represents the speed.",
+      "workedExamples": [
+        {
+          "id": "we_b8_01",
+          "title": "Finding Constant of Proportionality",
+          "indicator": "B8.1.4.1.2",
+          "problem": "The cost of maize $C$ is directly proportional to the weight $w$ in kg. If 15 kg of maize costs GH¢ 120.00, find the constant of proportionality and the formula connecting C and w.",
+          "steps": [
+            "Write the proportionality relation: $C = kw$.",
+            "Substitute given values: $120 = k \\times 15$.",
+            "Solve for $k$: $k = \\frac{120}{15} = 8$.",
+            "State equation: $C = 8w$ (cost is GH¢ 8 per kg)."
+          ],
+          "finalAnswer": "$$k = 8, \\quad C = 8w$$"
+        },
+        {
+          "id": "we_b8_02",
+          "title": "Map Scale Conversion to Kilometres",
+          "indicator": "B8.1.4.1.4",
+          "problem": "On a survey map drawn to a scale of 1 : 25,000, the distance between two villages is 16 cm. What is the real ground distance in kilometres?",
+          "steps": [
+            "Calculate distance in centimetres: $16 \\times 25,000 = 400,000\\text{ cm}$.",
+            "Convert cm to metres by dividing by 100: $400,000 \\div 100 = 4,000\\text{ m}$.",
+            "Convert metres to kilometres by dividing by 1,000: $4,000 \\div 1,000 = 4\\text{ km}$."
+          ],
+          "finalAnswer": "$$4\\text{ km}$$"
+        },
+        {
+          "id": "we_b8_03",
+          "title": "Average Speed on a Journey",
+          "indicator": "B8.1.4.1.5",
+          "problem": "A bus travels 180 km from Accra to Cape Coast in 2 hours 30 minutes. Calculate the average speed in km/h.",
+          "steps": [
+            "Convert 2 hours 30 minutes to decimal hours: $2\\text{ h } + \\frac{30}{60}\\text{ h} = 2.5\\text{ hours}$.",
+            "Apply speed formula: $\\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}} = \\frac{180}{2.5}$.",
+            "Simplify: $\\frac{180 \\times 2}{5} = \\frac{360}{5} = 72\\text{ km/h}$."
+          ],
+          "finalAnswer": "$$72\\text{ km/h}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "If $y$ is directly proportional to $x$, and $y = 28$ when $x = 4$, find the constant of proportionality $k$.",
+            "options": [
+              "7",
+              "6",
+              "8",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "Divide y by x: k = 28 / 4.",
+            "workedSolution": "$$k = \\frac{y}{x} = \\frac{28}{4} = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A motorist covers 210 km in 3 hours. What is the average speed in km/h?",
+            "options": [
+              "70 km/h",
+              "65 km/h",
+              "75 km/h",
+              "80 km/h"
+            ],
+            "correctAnswer": "70 km/h",
+            "hint": "Speed = Distance / Time.",
+            "workedSolution": "$$\\text{Speed} = \\frac{210}{3} = 70\\text{ km/h}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.4",
+            "prompt": "On a map of scale 1 : 100,000, a road measures 5 cm. What is the actual length of the road in kilometres?",
+            "options": [
+              "5 km",
+              "50 km",
+              "0.5 km",
+              "500 km"
+            ],
+            "correctAnswer": "5 km",
+            "hint": "1 cm on map = 100,000 cm = 1 km in reality.",
+            "workedSolution": "$$5 \\times 100,000\\text{ cm} = 500,000\\text{ cm} = 5\\text{ km}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.1",
+            "prompt": "Convert a speed of 90 km/h to metres per second (m/s).",
+            "options": [
+              "25 m/s",
+              "20 m/s",
+              "30 m/s",
+              "15 m/s"
+            ],
+            "correctAnswer": "25 m/s",
+            "hint": "Multiply by 1,000 and divide by 3,600 (or multiply by 5/18).",
+            "workedSolution": "$$90 \\times \\frac{5}{18} = 5 \\times 5 = 25\\text{ m/s}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "If 12 pens cost GH¢ 36.00, how much will 7 pens cost at the same rate?",
+            "options": [
+              "GH¢ 21.00",
+              "GH¢ 24.00",
+              "GH¢ 18.00",
+              "GH¢ 28.00"
+            ],
+            "correctAnswer": "GH¢ 21.00",
+            "hint": "Cost per pen = 36 / 12 = GH¢ 3.00.",
+            "workedSolution": "$$\\text{Cost per pen} = \\frac{36}{12} = 3$$.\n$$\\text{Cost for 7 pens} = 7 \\times 3 = \\text{GH¢ } 21.00$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "The electrical resistance $R$ of a wire is directly proportional to its length $L$. When $L = 50\\text{ m}$, $R = 10\\,\\Omega$. What is the resistance of a wire of length $125\\text{ m}$ of the same material?",
+            "options": [
+              "25 Ω",
+              "20 Ω",
+              "30 Ω",
+              "22.5 Ω"
+            ],
+            "correctAnswer": "25 Ω",
+            "hint": "Find k = R / L = 10 / 50 = 0.2.",
+            "workedSolution": "$$k = \\frac{10}{50} = 0.2$$.\n$$R = 0.2 \\times 125 = 25\\,\\Omega$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A train travels for 1 hour 45 minutes at an average speed of 80 km/h. What total distance does it cover?",
+            "options": [
+              "140 km",
+              "120 km",
+              "160 km",
+              "135 km"
+            ],
+            "correctAnswer": "140 km",
+            "hint": "Convert 1 hour 45 minutes to hours: 1 + 45/60 = 1.75 hours.",
+            "workedSolution": "$$\\text{Time} = 1.75\\text{ hours}$$.\n$$\\text{Distance} = 80 \\times 1.75 = 140\\text{ km}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.4",
+            "prompt": "Two towns are 35 km apart. How far apart will they appear on a map with scale 1 : 250,000?",
+            "options": [
+              "14 cm",
+              "12 cm",
+              "10 cm",
+              "16 cm"
+            ],
+            "correctAnswer": "14 cm",
+            "hint": "Convert 35 km to cm: 35 × 100,000 = 3,500,000 cm. Then divide by 250,000.",
+            "workedSolution": "$$\\text{Map distance} = \\frac{3,500,000}{250,000} = \\frac{350}{25} = 14\\text{ cm}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.3",
+            "prompt": "The ratio of zinc to copper in a brass alloy is 3 : 7. How much zinc is needed to mix with 42 kg of copper?",
+            "options": [
+              "18 kg",
+              "21 kg",
+              "15 kg",
+              "24 kg"
+            ],
+            "correctAnswer": "18 kg",
+            "hint": "7 parts of copper = 42 kg. 1 part = 6 kg.",
+            "workedSolution": "$$1\\text{ part} = \\frac{42}{7} = 6\\text{ kg}$$.\n$$\\text{Zinc} = 3 \\times 6 = 18\\text{ kg}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A cyclist travels 30 km at 15 km/h, and then another 30 km at 10 km/h. What is the average speed for the entire 60 km journey?",
+            "options": [
+              "12 km/h",
+              "12.5 km/h",
+              "13 km/h",
+              "11.5 km/h"
+            ],
+            "correctAnswer": "12 km/h",
+            "hint": "Total time = t1 + t2 = 30/15 + 30/10 = 2 + 3 = 5 hours.",
+            "workedSolution": "$$t_1 = \\frac{30}{15} = 2\\text{ h}, \\quad t_2 = \\frac{30}{10} = 3\\text{ h}$$.\n$$\\text{Total Time} = 5\\text{ h}$$.\n$$\\text{Average Speed} = \\frac{60}{5} = 12\\text{ km/h}$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.4",
+            "prompt": "On a map of scale 1 : 50,000, a rectangular forest reserve measures 6 cm by 4 cm. Calculate the actual ground area of the forest reserve in square kilometres (km²).",
+            "options": [
+              "6 km²",
+              "60 km²",
+              "12 km²",
+              "3 km²"
+            ],
+            "correctAnswer": "6 km²",
+            "hint": "Find ground dimensions first: 6 cm = 3 km, 4 cm = 2 km.",
+            "workedSolution": "$$\\text{Actual length} = 6 \\times 50,000\\text{ cm} = 300,000\\text{ cm} = 3\\text{ km}$$.\n$$\\text{Actual width} = 4 \\times 50,000\\text{ cm} = 200,000\\text{ cm} = 2\\text{ km}$$.\n$$\\text{Actual Area} = 3 \\times 2 = 6\\text{ km}^2$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "A car leaves Kumasi for Sunyani at 8:15 am traveling at 72 km/h. If the distance is 120 km, at what time does the car reach Sunyani?",
+            "options": [
+              "9:55 am",
+              "9:45 am",
+              "10:00 am",
+              "10:15 am"
+            ],
+            "correctAnswer": "9:55 am",
+            "hint": "Time taken = 120 / 72 = 5/3 hours = 1 hour 40 minutes.",
+            "workedSolution": "$$\\text{Time} = \\frac{120}{72} = \\frac{5}{3}\\text{ hours} = 1\\text{ hour } 40\\text{ minutes}$$.\n$$8:15\\text{ am} + 1\\text{ h } 40\\text{ min} = 9:55\\text{ am}$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.2",
+            "prompt": "Variable $y$ is proportional to the square of $x$. If $y = 36$ when $x = 3$, find the value of $y$ when $x = 5$.",
+            "options": [
+              "100",
+              "75",
+              "120",
+              "80"
+            ],
+            "correctAnswer": "100",
+            "hint": "y = kx². Find k: 36 = k(9) => k = 4.",
+            "workedSolution": "$$y = kx^2 \\implies 36 = k(3^2) \\implies k = 4$$.\n$$\\text{When } x = 5: \\quad y = 4 \\times 5^2 = 4 \\times 25 = 100$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.3",
+            "prompt": "In a school, 40% of students are girls. The ratio of boarders to day students among the girls is 3 : 2. If there are 120 girl boarders, what is the total school population?",
+            "options": [
+              "500 students",
+              "600 students",
+              "450 students",
+              "750 students"
+            ],
+            "correctAnswer": "500 students",
+            "hint": "3 parts = 120 girl boarders => Total girls = (5/3) * 120 = 200. Girls are 40% of total school.",
+            "workedSolution": "$$\\text{Total girls} = \\frac{5}{3} \\times 120 = 200$$.\n$$40\\% \\times \\text{Total} = 200 \\implies \\text{Total} = \\frac{200 \\times 100}{40} = 500$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b8_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B8.1.4.1.5",
+            "prompt": "Tap A fills an empty water tank in 4 hours, while Tap B fills the same tank in 6 hours. How long will both taps take to fill the tank working together?",
+            "options": [
+              "2.4 hours",
+              "2.5 hours",
+              "3 hours",
+              "2 hours"
+            ],
+            "correctAnswer": "2.4 hours",
+            "hint": "Combined rate per hour = 1/4 + 1/6 = 5/12 of tank per hour.",
+            "workedSolution": "$$\\text{Combined Rate} = \\frac{1}{4} + \\frac{1}{6} = \\frac{3 + 2}{12} = \\frac{5}{12}\\text{ tank/hour}$$.\n$$\\text{Time} = \\frac{12}{5} = 2.4\\text{ hours} \\text{ (2 hours 24 minutes)}$$.",
+            "points": 3
+          }
+        ]
+      }
+    },
+    "jhs3": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "levelTitle": "Basic 9 (JHS 3): Inverse Proportions, Commercial Taxes & Financial Mathematics",
+      "contentStandard": "B9.1.4.1: Apply the understanding of ratio, rate and proportions to solve problems that involve rates, ratios, and proportional reasoning in real-world contexts.",
+      "indicatorsCovered": [
+        "B9.1.4.1.1",
+        "B9.1.4.1.2",
+        "B9.1.4.1.3",
+        "B9.1.4.1.4"
+      ],
+      "summary": "Multi-step applications: simple interest, VAT/NHIL, depreciation, insurance, and SSNIT pension calculations.",
+      "notes": "### 1. Inverse Proportion Concept\nTwo quantities are inversely proportional when an increase in one causes a proportionate decrease in the other, keeping their product constant:\n\n$$x_1 y_1 = x_2 y_2 = k$$\n\n> **Classic Applications:** Worker-days ($\text{Men} \\times \\text{Days} = \\text{Constant}$), speed and journey duration.\n\n### 2. Simple Interest\n$$\\text{Simple Interest } (I) = \\frac{P \\times R \\times T}{100}$$\n$$\\text{Total Amount Repayable } (A) = P + I$$\n*Where $P = \\text{Principal}$, $R = \\text{Annual Rate (\\%)}$, $T = \\text{Time in years}$.*\n\n### 3. Commercial Taxes: VAT & NHIL\n* Value Added Tax (VAT) and National Health Insurance Levy (NHIL) are calculated on the net taxable supply of goods/services.\n* **Compound Depreciation:** Value after $n$ years at rate $r\\%$:\n$$V = P \\left(1 - \\frac{r}{100}\\right)^n$$",
+      "workedExamples": [
+        {
+          "id": "we_b9_01",
+          "title": "Worker-Day Inverse Proportion",
+          "indicator": "B9.1.4.1.1",
+          "problem": "Twelve artisans can paint a block of classrooms in 6 days. How many days will it take 8 artisans working at the same speed?",
+          "steps": [
+            "Calculate total man-days: $12 \\times 6 = 72\\text{ man-days}$.",
+            "Let $D$ be the required days for 8 workers: $8 \\times D = 72$.",
+            "Solve for $D$: $D = \\frac{72}{8} = 9\\text{ days}$."
+          ],
+          "finalAnswer": "$$9\\text{ days}$$"
+        },
+        {
+          "id": "we_b9_02",
+          "title": "Simple Interest Loan Repayment",
+          "indicator": "B9.1.4.1.2",
+          "problem": "A teacher takes an institutional loan of GH¢ 8,000 at a simple interest rate of 15% per annum for 3 years. Find the total interest and total amount repaid.",
+          "steps": [
+            "Apply simple interest formula: $I = \\frac{8,000 \\times 15 \\times 3}{100}$.",
+            "Calculate interest: $80 \\times 45 = \\text{GH¢ } 3,600$.",
+            "Calculate total repayment: $A = 8,000 + 3,600 = \\text{GH¢ } 11,600$."
+          ],
+          "finalAnswer": "$$\\text{Interest} = \\text{GH¢ } 3,600, \\quad \\text{Total} = \\text{GH¢ } 11,600$$"
+        },
+        {
+          "id": "we_b9_03",
+          "title": "Value Added Tax (VAT) Invoice Calculation",
+          "indicator": "B9.1.4.1.3",
+          "problem": "The pre-tax price of a computer is GH¢ 4,000. If VAT is charged at 15% and NHIL at 2.5%, calculate the total amount payable by the consumer.",
+          "steps": [
+            "Total tax percentage = $15\\% + 2.5\\% = 17.5\\%$.",
+            "Calculate tax amount: $4,000 \\times 0.175 = \\text{GH¢ } 700$.",
+            "Compute gross invoice amount: $4,000 + 700 = \\text{GH¢ } 4,700$."
+          ],
+          "finalAnswer": "$$\\text{GH¢ } 4,700.00$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "If 6 men weed a farm in 10 days, how many men would weed the same farm in 5 days at the same working rate?",
+            "options": [
+              "12 men",
+              "15 men",
+              "8 men",
+              "10 men"
+            ],
+            "correctAnswer": "12 men",
+            "hint": "Men × Days = constant. 6 × 10 = M × 5.",
+            "workedSolution": "$$6 \\times 10 = M \\times 5 \\implies 60 = 5M \\implies M = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "Calculate the simple interest on GH¢ 2,000 invested for 2 years at 10% per annum.",
+            "options": [
+              "GH¢ 400",
+              "GH¢ 200",
+              "GH¢ 600",
+              "GH¢ 500"
+            ],
+            "correctAnswer": "GH¢ 400",
+            "hint": "I = (P × R × T) / 100.",
+            "workedSolution": "$$I = \\frac{2000 \\times 10 \\times 2}{100} = \\text{GH¢ } 400$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.3",
+            "prompt": "A television costs GH¢ 1,200 before tax. If VAT is charged at 15%, calculate the amount of VAT paid.",
+            "options": [
+              "GH¢ 180",
+              "GH¢ 150",
+              "GH¢ 200",
+              "GH¢ 120"
+            ],
+            "correctAnswer": "GH¢ 180",
+            "hint": "VAT = 15% of GH¢ 1,200.",
+            "workedSolution": "$$\\text{VAT} = \\frac{15}{100} \\times 1200 = 15 \\times 12 = \\text{GH¢ } 180$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "A car traveling at 60 km/h takes 4 hours for a trip. How long will the trip take at 80 km/h?",
+            "options": [
+              "3 hours",
+              "3.5 hours",
+              "2.5 hours",
+              "5 hours"
+            ],
+            "correctAnswer": "3 hours",
+            "hint": "Distance = 60 × 4 = 240 km. New time = 240 / 80.",
+            "workedSolution": "$$T = \\frac{60 \\times 4}{80} = \\frac{240}{80} = 3\\text{ hours}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "indicator": "B9.1.4.1.4",
+            "prompt": "A machine depreciates at 10% per year. If it was bought for GH¢ 5,000, what is its value after 1 year?",
+            "options": [
+              "GH¢ 4,500",
+              "GH¢ 4,000",
+              "GH¢ 4,800",
+              "GH¢ 4,200"
+            ],
+            "correctAnswer": "GH¢ 4,500",
+            "hint": "Depreciation = 10% of 5,000 = 500. Value = 5,000 - 500.",
+            "workedSolution": "$$V = 5000 - (0.10 \\times 5000) = 5000 - 500 = \\text{GH¢ } 4,500$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "At what rate per annum will GH¢ 4,000 yield a simple interest of GH¢ 1,200 in 3 years?",
+            "options": [
+              "10%",
+              "12%",
+              "8%",
+              "15%"
+            ],
+            "correctAnswer": "10%",
+            "hint": "R = (100 × I) / (P × T).",
+            "workedSolution": "$$R = \\frac{100 \\times 1200}{4000 \\times 3} = \\frac{120,000}{12,000} = 10\\%$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "A food store has enough grain to feed 150 boarding students for 24 days. If 30 additional students join, how many days will the same stock of grain last?",
+            "options": [
+              "20 days",
+              "18 days",
+              "22 days",
+              "16 days"
+            ],
+            "correctAnswer": "20 days",
+            "hint": "Total students = 150 + 30 = 180. Days = (150 × 24) / 180.",
+            "workedSolution": "$$\\text{Days} = \\frac{150 \\times 24}{180} = \\frac{3600}{180} = 20\\text{ days}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.3",
+            "prompt": "The total cost of a refrigerator including 17.5% combined VAT/NHIL is GH¢ 4,700.00. What was the net price before tax?",
+            "options": [
+              "GH¢ 4,000.00",
+              "GH¢ 3,850.00",
+              "GH¢ 4,200.00",
+              "GH¢ 3,900.00"
+            ],
+            "correctAnswer": "GH¢ 4,000.00",
+            "hint": "117.5% corresponds to GH¢ 4,700.00.",
+            "workedSolution": "$$1.175 \\times P = 4700 \\implies P = \\frac{4700}{1.175} = \\text{GH¢ } 4,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "How long will it take for a principal of GH¢ 5,000 to earn an interest of GH¢ 1,500 at 6% simple interest per annum?",
+            "options": [
+              "5 years",
+              "4 years",
+              "6 years",
+              "3 years"
+            ],
+            "correctAnswer": "5 years",
+            "hint": "T = (100 × I) / (P × R).",
+            "workedSolution": "$$T = \\frac{100 \\times 1500}{5000 \\times 6} = \\frac{150,000}{30,000} = 5\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "Four identical pipes can fill a swimming pool in 9 hours. If 6 of these pipes are opened simultaneously, how long will it take to fill the pool?",
+            "options": [
+              "6 hours",
+              "5 hours",
+              "7 hours",
+              "4.5 hours"
+            ],
+            "correctAnswer": "6 hours",
+            "hint": "Pipes × hours = constant. 4 × 9 = 6 × t.",
+            "workedSolution": "$$t = \\frac{4 \\times 9}{6} = \\frac{36}{6} = 6\\text{ hours}$$.",
+            "points": 2
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.1",
+            "prompt": "Twenty men were contracted to build a road in 30 days. After working for 10 days, 5 men left the job. How many additional days beyond the initial 30 days will it take the remaining men to complete the road?",
+            "options": [
+              "6 days",
+              "5 days",
+              "8 days",
+              "4 days"
+            ],
+            "correctAnswer": "6 days",
+            "hint": "Remaining work = 20 men × 20 days = 400 man-days. Remaining workers = 15 men.",
+            "workedSolution": "$$\\text{Remaining work} = 20 \\times 20 = 400\\text{ man-days}$$.\n$$\\text{Days with 15 men} = \\frac{400}{15} = 26\\frac{2}{3}\\text{ days}$$.\n$$\\text{Additional days beyond the 20 planned} = 26\\frac{2}{3} - 20 \\approx 6.67 \\text{ (or 6 full extra days beyond schedule)}$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "A business woman invested a sum of money in a financial institution at 12% per annum simple interest. After 4 years, the total amount payable to her was GH¢ 14,800.00. Calculate the principal invested.",
+            "options": [
+              "GH¢ 10,000.00",
+              "GH¢ 11,000.00",
+              "GH¢ 9,500.00",
+              "GH¢ 12,000.00"
+            ],
+            "correctAnswer": "GH¢ 10,000.00",
+            "hint": "Amount A = P(1 + RT/100). For 4 years at 12%: A = P(1 + 0.48) = 1.48P.",
+            "workedSolution": "$$1.48P = 14,800 \\implies P = \\frac{14,800}{1.48} = \\text{GH¢ } 10,000.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.4",
+            "prompt": "A cocoa farmer spent 1/3 of his annual harvest income on farm inputs and 1/4 of the remainder on children's school fees. If he had GH¢ 6,000.00 left, calculate his total harvest income.",
+            "options": [
+              "GH¢ 12,000.00",
+              "GH¢ 10,500.00",
+              "GH¢ 14,000.00",
+              "GH¢ 15,000.00"
+            ],
+            "correctAnswer": "GH¢ 12,000.00",
+            "hint": "Remainder after inputs = 2/3. Spent on fees = 1/4 × 2/3 = 1/6. Final remainder = 2/3 - 1/6 = 3/6 = 1/2.",
+            "workedSolution": "$$\\text{Remaining after inputs} = 1 - \\frac{1}{3} = \\frac{2}{3}$$.\n$$\\text{Fees} = \\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$$.\n$$\\text{Left} = \\frac{2}{3} - \\frac{1}{6} = \\frac{3}{6} = \\frac{1}{2}$$.\n$$\\frac{1}{2} \\times \\text{Total} = 6,000 \\implies \\text{Total} = \\text{GH¢ } 12,000.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.4",
+            "prompt": "An asset valued at GH¢ 40,000 depreciates by 10% in the first year and by 5% in the second year. Find the value of the asset at the end of the second year.",
+            "options": [
+              "GH¢ 34,200.00",
+              "GH¢ 34,000.00",
+              "GH¢ 35,000.00",
+              "GH¢ 33,800.00"
+            ],
+            "correctAnswer": "GH¢ 34,200.00",
+            "hint": "Value after year 1 = 40,000 × 0.90 = 36,000. Value after year 2 = 36,000 × 0.95.",
+            "workedSolution": "$$V_1 = 40,000 \\times 0.90 = 36,000$$.\n$$V_2 = 36,000 \\times 0.95 = \\text{GH¢ } 34,200.00$$.",
+            "points": 3
+          },
+          {
+            "id": "q_b9_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "indicator": "B9.1.4.1.2",
+            "prompt": "A bank charges simple interest on loans. Mr. Mensah borrowed GH¢ 6,000.00 and agreed to pay GH¢ 200.00 every month for 3 years. What annual rate of simple interest was charged?",
+            "options": [
+              "6.67%",
+              "7.5%",
+              "8%",
+              "5.5%"
+            ],
+            "correctAnswer": "6.67%",
+            "hint": "Total paid = 200 × 36 = 7,200. Interest I = 7,200 - 6,000 = 1,200. Rate R = (100 × 1200) / (6000 × 3).",
+            "workedSolution": "$$\\text{Total Repaid} = 200 \\times 36 = \\text{GH¢ } 7,200$$.\n$$I = 7,200 - 6,000 = \\text{GH¢ } 1,200$$.\n$$R = \\frac{100 \\times 1200}{6000 \\times 3} = \\frac{1200}{180} = 6.67\\%$$.",
+            "points": 3
+          }
+        ]
+      }
+    }
+  },
+  "linkedPastPapers": [
+    {
+      "setId": "jhs-math-mastery-series-36",
+      "year": 1995,
+      "paper": 2,
+      "questionNumber": "2(a)",
+      "promptSnippet": "Three partners shared an investment return of GH¢ 3,000 in the ratio 2:3:5..."
+    },
+    {
+      "setId": "jhs-math-mastery-series-38",
+      "year": 1997,
+      "paper": 2,
+      "questionNumber": "3(b)",
+      "promptSnippet": "A trader paid a tax of 12.5% on an invoice of goods valued at..."
+    }
+  ],
+  "strandCode": "S1",
+  "strandName": "Strand 1: Number"
+}

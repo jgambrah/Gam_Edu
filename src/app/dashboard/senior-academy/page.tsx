@@ -13,7 +13,7 @@ import {
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
   Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star,
-  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock
+  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock, Bookmark
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -150,10 +150,14 @@ export function mapGradeTierToLevelId(tier: SecondaryGradeTier): GlobalCurriculu
 interface SuggestedModuleCard {
     title: string;
     domain: string;
+    strandName?: string;
+    strandCode?: string;
+    subStrand?: string;
+    levelsAvailable?: string[];
     gradeTier: SecondaryGradeTier;
     meta: string;
     description: string;
-    difficulty: 'Foundation' | 'Intermediate' | 'Advanced';
+    difficulty?: 'Foundation' | 'Intermediate' | 'Advanced';
     sampleInstruction?: string;
     sampleFormula?: string;
     sampleAnswer?: string;
@@ -2183,11 +2187,11 @@ function CounterDisplay({ count }: { count: number }) {
 }
 
 const MATH_DOMAINS = [
-    'ALL DOMAINS',
-    'ALGEBRA',
-    'ARITHMETIC & NUMERACY',
-    'GEOMETRY & TRIGONOMETRY',
-    'STATISTICS & PROBABILITY'
+    'ALL STRANDS',
+    'STRAND 1: NUMBER',
+    'STRAND 2: ALGEBRA',
+    'STRAND 3: GEOMETRY & MEASUREMENT',
+    'STRAND 4: HANDLING DATA'
 ];
 
 function MathLab({ 
@@ -2217,7 +2221,7 @@ function MathLab({
     const [problem, setProblem] = useState<any>(null);
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
-    const [selectedDomain, setSelectedDomain] = useState<string>('ALL DOMAINS');
+    const [selectedDomain, setSelectedDomain] = useState<string>('ALL STRANDS');
     const [activeQuestionSet, setActiveQuestionSet] = useState<CurriculumQuestionSet | null>(null);
     const [activeTopicMeta, setActiveTopicMeta] = useState<{ title: string; topicId: string } | null>(null);
     const [activeTopicalLab, setActiveTopicalLab] = useState<TopicalLabDocument | null>(null);
@@ -2241,28 +2245,44 @@ function MathLab({
                     const manifest = await getSubjectTopicsManifest('jhs', 'math');
                     if (manifest && manifest.topics && manifest.topics.length > 0) {
                         manifest.topics.forEach((t) => {
-                            let domain = 'ARITHMETIC & NUMERACY';
-                            const strandUpper = (t.strand || '').toUpperCase();
-                            if (strandUpper.includes('ALGEBRA') || strandUpper.includes('PATTERNS')) {
-                                domain = 'ALGEBRA';
-                            } else if (strandUpper.includes('GEOMETRY') || strandUpper.includes('MEASUREMENT')) {
-                                domain = 'GEOMETRY & TRIGONOMETRY';
-                            } else if (strandUpper.includes('DATA') || strandUpper.includes('STATISTICS') || strandUpper.includes('PROBABILITY')) {
-                                domain = 'STATISTICS & PROBABILITY';
+                            let strandName = t.strandName || t.strand || 'Strand 1: Number';
+                            const strandCode = t.strandCode || '';
+                            if (strandCode === 'S1' || strandCode === '1') {
+                                strandName = 'Strand 1: Number';
+                            } else if (strandCode === 'S2' || strandCode === '2') {
+                                strandName = 'Strand 2: Algebra';
+                            } else if (strandCode === 'S3' || strandCode === '3') {
+                                strandName = 'Strand 3: Geometry & Measurement';
+                            } else if (strandCode === 'S4' || strandCode === '4') {
+                                strandName = 'Strand 4: Handling Data';
+                            } else {
+                                const strandUpper = strandName.toUpperCase();
+                                if (strandUpper.includes('ALGEBRA') || strandUpper.includes('PATTERNS')) {
+                                    strandName = 'Strand 2: Algebra';
+                                } else if (strandUpper.includes('GEOMETRY') || strandUpper.includes('MEASUREMENT')) {
+                                    strandName = 'Strand 3: Geometry & Measurement';
+                                } else if (strandUpper.includes('DATA') || strandUpper.includes('STATISTICS') || strandUpper.includes('PROBABILITY')) {
+                                    strandName = 'Strand 4: Handling Data';
+                                } else {
+                                    strandName = 'Strand 1: Number';
+                                }
                             }
 
                             const isPending = t.status === 'pending_content';
                             scanned.push({
                                 title: t.title,
-                                domain,
+                                domain: strandName.toUpperCase(),
+                                strandName: strandName,
+                                strandCode: t.strandCode || (strandName.includes('1') ? 'S1' : strandName.includes('2') ? 'S2' : strandName.includes('3') ? 'S3' : 'S4'),
+                                subStrand: t.subStrand,
+                                levelsAvailable: t.levelsAvailable || ['B7', 'B8', 'B9'],
                                 gradeTier: 'Junior Secondary (JHS)',
                                 meta: isPending
                                     ? `Curriculum Strand • Tiered Notes & Drills in Preparation`
-                                    : `${t.questionCount || 27} Practice Qs • JHS 1 - 3 • Concept Notes & Worked Examples`,
+                                    : `Basic 7 – Basic 9 • Concept Notes & Worked Examples`,
                                 description: t.description || (isPending
-                                    ? `Official ${t.strand} curriculum unit. Interactive tiered learning drills and concept notes are being mapped.`
+                                    ? `Official ${strandName} curriculum unit. Interactive tiered learning drills and concept notes are being mapped.`
                                     : `Master ${t.title} with tiered concept notes, worked examples, and graded practice pools.`),
-                                difficulty: 'Foundation',
                                 topicId: t.id,
                                 setId: t.id,
                                 kind: 'topical',
@@ -2397,9 +2417,13 @@ function MathLab({
                 if (!isEssay) return false;
             }
 
-            // 5. Domain Filter (for topical mode)
-            if (viewMode === 'topical' && selectedDomain !== 'ALL DOMAINS') {
-                if (mod.domain !== selectedDomain) return false;
+            // 5. Strand / Domain Filter (for topical mode)
+            if (viewMode === 'topical' && selectedDomain !== 'ALL STRANDS' && selectedDomain !== 'ALL DOMAINS') {
+                const modDomain = (mod.domain || '').toUpperCase();
+                const modStrand = (mod.strandName || '').toUpperCase();
+                if (modDomain !== selectedDomain && !modStrand.includes(selectedDomain) && !selectedDomain.includes(modDomain)) {
+                    return false;
+                }
             }
 
             // 6. Search Query (debounced instant match over in-memory catalog)
@@ -2408,10 +2432,11 @@ function MathLab({
                 const matchTitle = mod.title.toLowerCase().includes(q);
                 const matchDesc = mod.description.toLowerCase().includes(q);
                 const matchDomain = mod.domain.toLowerCase().includes(q);
+                const matchStrand = (mod.strandName || '').toLowerCase().includes(q) || (mod.subStrand || '').toLowerCase().includes(q);
                 const matchMeta = mod.meta.toLowerCase().includes(q);
                 const matchSample = (mod.sampleInstruction || '').toLowerCase().includes(q);
                 const matchTag = (mod.examTag || '').toLowerCase().includes(q);
-                if (!matchTitle && !matchDesc && !matchDomain && !matchMeta && !matchSample && !matchTag) {
+                if (!matchTitle && !matchDesc && !matchDomain && !matchStrand && !matchMeta && !matchSample && !matchTag) {
                     return false;
                 }
             }
@@ -2522,7 +2547,7 @@ function MathLab({
                     topicDoc={activeTopicalLab}
                     studentId={studentId}
                     tenantId={tenantId}
-                    initialLevel="jhs1"
+                    initialLevel="b7"
                     onBack={() => setActiveTopicalLab(null)}
                     onNavigateToSet={(targetSetId) => {
                         setActiveTopicalLab(null);
@@ -2751,8 +2776,8 @@ function MathLab({
                                     >
                                         <div>
                                             {/* Card Badges */}
-                                            <div className="flex items-center justify-between gap-2 mb-3">
-                                                {isExamCard ? (
+                                            {isExamCard ? (
+                                                <div className="flex items-center justify-between gap-2 mb-3">
                                                     <span className={cn(
                                                         "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border uppercase tracking-wider flex items-center gap-1.5",
                                                         isPaper2 
@@ -2771,28 +2796,38 @@ function MathLab({
                                                             </>
                                                         )}
                                                     </span>
-                                                ) : (
-                                                    <span className="text-[10px] font-bold text-slate-400 bg-slate-800/80 border border-slate-700/60 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                                        {mod.domain}
-                                                    </span>
-                                                )}
 
-                                                {mod.status === 'pending_content' ? (
-                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider bg-amber-500/15 text-amber-300 border-amber-500/30 flex items-center gap-1">
-                                                        <Clock className="w-3 h-3" />
-                                                        <span>Content coming soon</span>
+                                                    {mod.status === 'pending_content' ? (
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider bg-amber-500/15 text-amber-300 border-amber-500/30 flex items-center gap-1">
+                                                            <Clock className="w-3 h-3" />
+                                                            <span>Content coming soon</span>
+                                                        </span>
+                                                    ) : mod.difficulty ? (
+                                                        <span className={cn(
+                                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                                        )}>
+                                                            {mod.difficulty}
+                                                        </span>
+                                                    ) : null}
+                                                </div>
+                                            ) : (
+                                                /* Topical Practice Lab: Official NaCCA Strand Tag Header (NO rigid difficulty badge) */
+                                                <div className="flex items-center justify-between gap-2 mb-3">
+                                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-xs">
+                                                        <Bookmark className="w-3 h-3 text-indigo-400" />
+                                                        <span>{mod.strandName ? mod.strandName.toUpperCase() : mod.domain}</span>
                                                     </span>
-                                                ) : (
-                                                    <span className={cn(
-                                                        "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                                        mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                                        mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                                        "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                                    )}>
-                                                        {mod.difficulty}
-                                                    </span>
-                                                )}
-                                            </div>
+
+                                                    {mod.subStrand && (
+                                                        <span className="text-[10px] font-semibold text-slate-400 hidden sm:inline truncate max-w-[150px]" title={mod.subStrand}>
+                                                            {mod.subStrand}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
 
                                             {/* Exam Series Highlights / Automated Tags */}
                                             {isExamCard && (
@@ -2811,9 +2846,30 @@ function MathLab({
                                             <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
                                                 {mod.title}
                                             </h4>
-                                            <p className="text-xs text-slate-400 line-clamp-2 mb-4 min-h-[36px] leading-relaxed">
+
+                                            {/* Scope Snippet: 1-2 sentence description of skills covered */}
+                                            <p className="text-xs text-slate-400 line-clamp-2 mb-3 min-h-[36px] leading-relaxed">
                                                 {mod.description}
                                             </p>
+
+                                            {/* Class Coverage Chips: [ B7 (JHS 1) ] [ B8 (JHS 2) ] [ B9 (JHS 3) ] */}
+                                            {!isExamCard && (
+                                                <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+                                                    {(mod.levelsAvailable || ['B7', 'B8', 'B9']).map((lvlKey) => {
+                                                        const label = lvlKey === 'B7' || lvlKey === 'b7' ? 'B7 (JHS 1)' :
+                                                                      lvlKey === 'B8' || lvlKey === 'b8' ? 'B8 (JHS 2)' :
+                                                                      lvlKey === 'B9' || lvlKey === 'b9' ? 'B9 (JHS 3)' : lvlKey;
+                                                        return (
+                                                            <span
+                                                                key={lvlKey}
+                                                                className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800/90 text-slate-300 border border-slate-700/80 shadow-xs"
+                                                            >
+                                                                {label}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">

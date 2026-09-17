@@ -111,16 +111,23 @@ async function seedTopicLabDoc(payloadFile: string): Promise<void> {
     }, { merge: true });
     console.log(`✅ [WRITTEN] ${docPath}`);
 
-    if (data.id === 'topic_ratios_and_proportion') {
+    if (data.id === 'topic_ratio_proportion_financial' || data.id === 'topic_ratios_and_proportion') {
+      await db.doc('global_curriculum/jhs/subjects/math/topics/topic_ratio_proportion_financial').set({
+        ...payload,
+        id: 'topic_ratio_proportion_financial',
+        updatedAt: FieldValue.serverTimestamp()
+      }, { merge: true });
+      await db.doc('global_curriculum/jhs/subjects/math/topics/topic_ratios_and_proportion').set({
+        ...payload,
+        id: 'topic_ratios_and_proportion',
+        updatedAt: FieldValue.serverTimestamp()
+      }, { merge: true });
       await db.doc('global_curriculum/jhs/subjects/math/topics/topic_ratio_and_proportion').set({
         ...payload,
+        id: 'topic_ratio_and_proportion',
         updatedAt: FieldValue.serverTimestamp()
       }, { merge: true });
-      await db.doc('global_curriculum/jhs/subjects/math/topics/topic_ratio_proportion_and_rates').set({
-        ...payload,
-        updatedAt: FieldValue.serverTimestamp()
-      }, { merge: true });
-      console.log(`✅ [WRITTEN] Synced alias doc paths: topic_ratio_and_proportion & topic_ratio_proportion_and_rates`);
+      console.log(`✅ [WRITTEN] Synced alias doc paths: topic_ratio_proportion_financial, topic_ratios_and_proportion & topic_ratio_and_proportion`);
     }
   }
 }
@@ -154,8 +161,11 @@ async function runSeeding() {
   }
 
   // 2. Seed Topics
-  await seedTopicLabDoc('topic_ratios_and_proportion.json');
+  await seedTopicLabDoc('topic_ratio_proportion_financial.json');
   await seedTopicLabDoc('topic_numbers_and_numeration.json');
+  if (fs.existsSync(path.join(__dirname, 'payloads', 'topics', 'topic_algebraic_expressions.json'))) {
+    await seedTopicLabDoc('topic_algebraic_expressions.json');
+  }
 
   console.log('\n================================================================');
   console.log('🎉 TOPICAL PRACTICE LABS SEEDING COMPLETE!');

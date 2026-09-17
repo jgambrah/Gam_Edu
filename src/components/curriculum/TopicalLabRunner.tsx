@@ -47,17 +47,35 @@ interface TopicalLabRunnerProps {
   onNavigateToSet?: (setId: string) => void;
 }
 
-const LEVEL_META: Record<TopicalLabLevelKey, { label: string; sub: string }> = {
+const LEVEL_META: Record<string, { label: string; shortLabel: string; sub: string }> = {
+  b7: {
+    label: 'Basic 7 (JHS 1)',
+    shortLabel: 'B7 (JHS 1)',
+    sub: 'Foundations & Core Rules'
+  },
+  b8: {
+    label: 'Basic 8 (JHS 2)',
+    shortLabel: 'B8 (JHS 2)',
+    sub: 'Applications & Direct Proportions'
+  },
+  b9: {
+    label: 'Basic 9 (JHS 3)',
+    shortLabel: 'B9 (JHS 3)',
+    sub: 'Inverse Proportions & Advanced Rates'
+  },
   jhs1: {
-    label: 'JHS 1',
-    sub: 'Foundations of Direct Comparison'
+    label: 'Basic 7 (JHS 1)',
+    shortLabel: 'B7 (JHS 1)',
+    sub: 'Foundations & Core Rules'
   },
   jhs2: {
-    label: 'JHS 2',
-    sub: 'Proportional Sharing & Unitary Calculations'
+    label: 'Basic 8 (JHS 2)',
+    shortLabel: 'B8 (JHS 2)',
+    sub: 'Applications & Direct Proportions'
   },
   jhs3: {
-    label: 'JHS 3',
+    label: 'Basic 9 (JHS 3)',
+    shortLabel: 'B9 (JHS 3)',
     sub: 'Inverse Proportions & Advanced Rates'
   }
 };
@@ -66,14 +84,14 @@ export function TopicalLabRunner({
   topicDoc,
   studentId,
   tenantId,
-  initialLevel = 'jhs1',
+  initialLevel = 'b7',
   onBack,
   onNavigateToSet
 }: TopicalLabRunnerProps) {
   const { toast } = useToast();
   const firestore = useFirestore();
 
-  // 1. Level Selector State (JHS 1, JHS 2, JHS 3)
+  // 1. Level Selector State (Basic 7, Basic 8, Basic 9)
   const [activeLevel, setActiveLevel] = useState<TopicalLabLevelKey>(initialLevel);
 
   // 2. Core Section Tabs State: 'notes_examples' | 'practice_labs' | 'past_exams'
@@ -90,16 +108,19 @@ export function TopicalLabRunner({
   // Current level data
   const currentLevelData = useMemo(() => {
     const levelKeyMap: Record<string, string[]> = {
-      jhs1: ['jhs1', 'b7', 'basic7'],
-      jhs2: ['jhs2', 'b8', 'basic8'],
-      jhs3: ['jhs3', 'b9', 'basic9']
+      b7: ['b7', 'jhs1', 'basic7'],
+      b8: ['b8', 'jhs2', 'basic8'],
+      b9: ['b9', 'jhs3', 'basic9'],
+      jhs1: ['b7', 'jhs1', 'basic7'],
+      jhs2: ['b8', 'jhs2', 'basic8'],
+      jhs3: ['b9', 'jhs3', 'basic9']
     };
     const possibleKeys = levelKeyMap[activeLevel] || [activeLevel];
     for (const key of possibleKeys) {
       if ((topicDoc.levels as any)?.[key]) return (topicDoc.levels as any)[key];
     }
     return {
-      levelTitle: `${activeLevel.toUpperCase()} Practice`,
+      levelTitle: `${(LEVEL_META[activeLevel]?.label || activeLevel).toUpperCase()} Practice`,
       summary: '',
       notes: 'No concept notes available for this level yet.',
       workedExamples: [],
@@ -116,14 +137,16 @@ export function TopicalLabRunner({
   const adaptedQuestionSet: CurriculumQuestionSet = useMemo(() => {
     const diffLabel =
       difficulty === 'low'
-        ? 'Foundational (Low)'
+        ? 'Foundational (Low - DOK 1)'
         : difficulty === 'medium'
-        ? 'Intermediate (Medium)'
-        : 'Advanced (Hard)';
+        ? 'Intermediate (Medium - DOK 2)'
+        : 'Advanced (Hard - DOK 3)';
+
+    const activeMeta = LEVEL_META[activeLevel] || { label: activeLevel.toUpperCase() };
 
     return {
       id: `${topicDoc.id}_${activeLevel}_${difficulty}`,
-      title: `${topicDoc.title} • ${LEVEL_META[activeLevel].label} [${diffLabel}]`,
+      title: `${topicDoc.title} • ${activeMeta.label} [${diffLabel}]`,
       tier: topicDoc.tier,
       subject: topicDoc.subject,
       topic: topicDoc.title,
@@ -215,30 +238,30 @@ export function TopicalLabRunner({
           </div>
         </div>
 
-        {/* LEVEL SELECTOR BAR (TOP): [ JHS 1 ] | [ JHS 2 ] | [ JHS 3 ] */}
+        {/* LEVEL SELECTOR BAR (TOP): [ Basic 7 (JHS 1) ] | [ Basic 8 (JHS 2) ] | [ Basic 9 (JHS 3) ] */}
         <div className="mt-6 pt-5 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
             <GraduationCap className="w-4 h-4 text-indigo-400" />
-            <span>Academic Tier Context:</span>
+            <span>Curriculum Level Selector:</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2 w-full sm:w-auto">
-            {(['jhs1', 'jhs2', 'jhs3'] as TopicalLabLevelKey[]).map((lvl) => {
+            {(['b7', 'b8', 'b9'] as const).map((lvl) => {
               const meta = LEVEL_META[lvl];
-              const isActive = activeLevel === lvl;
+              const isActive = activeLevel === lvl || (lvl === 'b7' && activeLevel === 'jhs1') || (lvl === 'b8' && activeLevel === 'jhs2') || (lvl === 'b9' && activeLevel === 'jhs3');
               return (
                 <button
                   key={lvl}
                   type="button"
                   onClick={() => handleLevelSwitch(lvl)}
                   className={cn(
-                    'px-5 py-2.5 rounded-xl text-xs font-black transition-all duration-200 border cursor-pointer flex flex-col items-center justify-center text-center',
+                    'px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 border cursor-pointer flex flex-col items-center justify-center text-center',
                     isActive
                       ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white border-indigo-400/50 shadow-lg shadow-indigo-600/30 scale-102'
                       : 'bg-slate-950/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 border-slate-800'
                   )}
                 >
-                  <span className="text-sm font-black">{meta.label}</span>
+                  <span className="text-xs sm:text-sm font-black">{meta.label}</span>
                   <span className="text-[10px] opacity-75 font-normal hidden md:inline">
                     {meta.sub}
                   </span>
@@ -441,7 +464,7 @@ export function TopicalLabRunner({
                       : 'text-slate-400 hover:text-slate-200'
                   )}
                 >
-                  <span>🟢 Foundational (Low)</span>
+                  <span>🟢 Foundational (Low - DOK 1)</span>
                   <span className="text-[10px] opacity-75">
                     ({currentLevelData.practicePool?.low?.length || 0})
                   </span>
@@ -457,7 +480,7 @@ export function TopicalLabRunner({
                       : 'text-slate-400 hover:text-slate-200'
                   )}
                 >
-                  <span>🟡 Intermediate (Medium)</span>
+                  <span>🟡 Intermediate (Medium - DOK 2)</span>
                   <span className="text-[10px] opacity-75">
                     ({currentLevelData.practicePool?.medium?.length || 0})
                   </span>
@@ -473,7 +496,7 @@ export function TopicalLabRunner({
                       : 'text-slate-400 hover:text-slate-200'
                   )}
                 >
-                  <span>🔴 Advanced (Hard)</span>
+                  <span>🔴 Advanced (Hard - DOK 3)</span>
                   <span className="text-[10px] opacity-75">
                     ({currentLevelData.practicePool?.hard?.length || 0})
                   </span>

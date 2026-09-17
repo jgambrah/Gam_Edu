@@ -5,68 +5,91 @@
   "topics": [
     {
       "id": "topic_numbers_and_numeration",
-      "title": "Numbers, Numeration & Operations",
-      "strand": "Strand 1: Number & Numeration",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "ready",
-      "hasNotes": true
-    },
-    {
-      "id": "topic_sets_and_operations",
-      "title": "Sets, Logic & Venn Diagrams",
-      "strand": "Strand 1: Number & Numeration",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "pending_content",
-      "hasNotes": false
-    },
-    {
-      "id": "topic_ratios_and_proportion",
-      "title": "Ratio, Proportion & Rates",
-      "strand": "Strand 1: Number & Numeration",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "ready",
+      "title": "Numbers & Number Operations",
+      "strandCode": "S1",
+      "strandName": "Strand 1: Number",
+      "subStrand": "Number Operations & Computation",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.",
       "hasNotes": true,
-      "questionCount": 45
+      "status": "ready"
     },
     {
-      "id": "topic_algebraic_expressions_and_equations",
-      "title": "Algebraic Expressions, Formulae & Equations",
-      "strand": "Strand 2: Patterns & Algebra",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "pending_content",
-      "hasNotes": false
+      "id": "topic_fractions_decimals_percentages",
+      "title": "Fractions, Decimals & Percentages",
+      "strandCode": "S1",
+      "strandName": "Strand 1: Number",
+      "subStrand": "Fractions, Decimals & Percentages",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master operations on proper/improper fractions, decimal rounding, percentage change, and recurring decimals.",
+      "hasNotes": true,
+      "status": "ready"
     },
     {
-      "id": "topic_relations_mappings_and_graphs",
-      "title": "Relations, Mappings & Coordinate Graphs",
-      "strand": "Strand 2: Patterns & Algebra",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "pending_content",
-      "hasNotes": false
+      "id": "topic_ratio_proportion_financial",
+      "title": "Ratio, Proportion & Financial Math",
+      "strandCode": "S1",
+      "strandName": "Strand 1: Number",
+      "subStrand": "Ratios, Proportions & Commercial Applications",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master unit rates, proportional sharing, speed/travel graphs, simple interest, taxes, and compound rates.",
+      "hasNotes": true,
+      "status": "ready"
     },
     {
-      "id": "topic_geometry_polygons_and_mensuration",
-      "title": "Geometry, Polygons & Mensuration",
-      "strand": "Strand 3: Geometry & Measurement",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "pending_content",
-      "hasNotes": false
+      "id": "topic_sets_and_venn_diagrams",
+      "title": "Sets & Venn Diagrams",
+      "strandCode": "S1",
+      "strandName": "Strand 1: Number",
+      "subStrand": "Sets, Logic & Venn Diagrams",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master listing elements, set builder notation, union, intersection, complement, and universal two-set Venn diagrams.",
+      "hasNotes": true,
+      "status": "ready"
     },
     {
-      "id": "topic_transformations_vectors_and_bearings",
-      "title": "Transformations, Vectors & Bearings",
-      "strand": "Strand 3: Geometry & Measurement",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "pending_content",
-      "hasNotes": false
+      "id": "topic_algebraic_expressions",
+      "title": "Patterns & Algebraic Expressions",
+      "strandCode": "S2",
+      "strandName": "Strand 2: Algebra",
+      "subStrand": "Patterns, Relations & Expressions",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master foundational algebraic substitution, pairwise grouping factorization, fractional expansion, and change of subject.",
+      "hasNotes": true,
+      "status": "ready"
     },
     {
-      "id": "topic_statistics_and_probability",
-      "title": "Data Statistics & Probability",
-      "strand": "Strand 4: Handling Data",
-      "levelsAvailable": ["JHS 1", "JHS 2", "JHS 3"],
-      "status": "pending_content",
-      "hasNotes": false
+      "id": "topic_equations_inequalities_graphs",
+      "title": "Equations, Inequalities & Coordinate Graphs",
+      "strandCode": "S2",
+      "strandName": "Strand 2: Algebra",
+      "subStrand": "Linear Equations, Inequalities & Graphs",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master linear equations in one and two variables, linear inequalities on number lines, Cartesian plotting, and linear mappings.",
+      "hasNotes": true,
+      "status": "ready"
+    },
+    {
+      "id": "topic_geometry_and_trigonometry",
+      "title": "Geometry, Measurement & Trigonometry",
+      "strandCode": "S3",
+      "strandName": "Strand 3: Geometry & Measurement",
+      "subStrand": "Shapes, Angles, Mensuration & Bearings",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master angle properties, polygon interior angles, Pythagorean theorem, perimeter, area, volume, and compass bearings.",
+      "hasNotes": true,
+      "status": "ready"
+    },
+    {
+      "id": "topic_data_handling_probability",
+      "title": "Handling Data & Probability",
+      "strandCode": "S4",
+      "strandName": "Strand 4: Handling Data",
+      "subStrand": "Data Collection, Presentation & Probability",
+      "levelsAvailable": ["B7", "B8", "B9"],
+      "description": "Master frequency tables, bar charts, pie charts, mean, median, mode, stem-and-leaf, and experimental/theoretical probability.",
+      "hasNotes": true,
+      "status": "ready"
     }
   ]
 }

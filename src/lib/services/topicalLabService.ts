@@ -34,76 +34,107 @@ export const DEFAULT_JHS_MATH_MANIFEST: SubjectTopicsManifest = {
   topics: [
     {
       id: 'topic_numbers_and_numeration',
-      title: 'Numbers, Numeration & Operations',
-      strand: 'Strand 1: Number & Numeration',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
+      title: 'Numbers & Number Operations',
+      strandCode: 'S1',
+      strandName: 'Strand 1: Number',
+      strand: 'Strand 1: Number',
+      subStrand: 'Number Operations & Computation',
+      levelsAvailable: ['B7', 'B8', 'B9'],
       status: 'ready',
       hasNotes: true,
       questionCount: 27,
-      description: 'Comprehensive mastery of integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.'
+      description: 'Master integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.'
     },
     {
-      id: 'topic_sets_and_operations',
-      title: 'Sets, Logic & Venn Diagrams',
-      strand: 'Strand 1: Number & Numeration',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      status: 'pending_content',
-      hasNotes: false,
-      description: 'Listing elements, set builder notation, union, intersection, and universal two-set Venn diagrams.'
+      id: 'topic_fractions_decimals_percentages',
+      title: 'Fractions, Decimals & Percentages',
+      strandCode: 'S1',
+      strandName: 'Strand 1: Number',
+      strand: 'Strand 1: Number',
+      subStrand: 'Fractions, Decimals & Percentages',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 27,
+      description: 'Operations on proper/improper fractions, decimal conversions, percentage increases/decreases, and recurring decimals.'
     },
     {
-      id: 'topic_ratio_proportion_and_rates',
-      title: 'Ratio, Proportion, Rates & Business Math',
-      strand: 'Strand 1: Number & Numeration',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      status: 'pending_content',
-      hasNotes: false,
-      description: 'Direct comparison, unitary method, ratio sharing, rates of work, percentage profit/loss, and simple interest.'
+      id: 'topic_ratio_proportion_financial',
+      title: 'Ratio, Proportion & Financial Math',
+      strandCode: 'S1',
+      strandName: 'Strand 1: Number',
+      strand: 'Strand 1: Number',
+      subStrand: 'Ratios, Proportions & Commercial Applications',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 45,
+      description: 'Master unit rates, proportional sharing, speed/travel graphs, simple interest, taxes, and compound rates.'
     },
     {
-      id: 'topic_algebraic_expressions_and_equations',
-      title: 'Algebraic Expressions, Formulae & Equations',
-      strand: 'Strand 2: Patterns & Algebra',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      status: 'pending_content',
-      hasNotes: false,
-      description: 'Algebraic terminology, simplification, linear equations, factorization, and change of subject.'
+      id: 'topic_sets_and_venn_diagrams',
+      title: 'Sets & Venn Diagrams',
+      strandCode: 'S1',
+      strandName: 'Strand 1: Number',
+      strand: 'Strand 1: Number',
+      subStrand: 'Sets, Logic & Venn Diagrams',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 27,
+      description: 'Listing elements, set builder notation, union, intersection, complement, and universal two-set Venn diagrams.'
     },
     {
-      id: 'topic_relations_mappings_and_graphs',
-      title: 'Relations, Mappings & Coordinate Graphs',
-      strand: 'Strand 2: Patterns & Algebra',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      status: 'pending_content',
-      hasNotes: false,
-      description: 'Arrow diagrams, domain and range, linear mapping rules, Cartesian coordinates, and graph plotting.'
+      id: 'topic_algebraic_expressions',
+      title: 'Patterns & Algebraic Expressions',
+      strandCode: 'S2',
+      strandName: 'Strand 2: Algebra',
+      strand: 'Strand 2: Algebra',
+      subStrand: 'Patterns, Relations & Expressions',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 27,
+      description: 'Foundational algebraic substitution, pairwise grouping factorization, fractional expansion, and change of subject.'
     },
     {
-      id: 'topic_geometry_polygons_and_mensuration',
-      title: 'Geometry, Polygons & Mensuration',
+      id: 'topic_equations_inequalities_graphs',
+      title: 'Equations, Inequalities & Coordinate Graphs',
+      strandCode: 'S2',
+      strandName: 'Strand 2: Algebra',
+      strand: 'Strand 2: Algebra',
+      subStrand: 'Linear Equations, Inequalities & Graphs',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 27,
+      description: 'Linear equations in one and two variables, linear inequalities on number lines, Cartesian plotting, and linear mappings.'
+    },
+    {
+      id: 'topic_geometry_and_trigonometry',
+      title: 'Geometry, Measurement & Trigonometry',
+      strandCode: 'S3',
+      strandName: 'Strand 3: Geometry & Measurement',
       strand: 'Strand 3: Geometry & Measurement',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      status: 'pending_content',
-      hasNotes: false,
-      description: 'Angle properties, polygon interior angles, Pythagorean theorem, perimeter, area of plane figures, and volume.'
+      subStrand: 'Shapes, Angles, Mensuration & Bearings',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 27,
+      description: 'Angle properties, polygon interior angles, Pythagorean theorem, perimeter, area, volume, and compass bearings.'
     },
     {
-      id: 'topic_transformations_vectors_and_bearings',
-      title: 'Transformations, Vectors & Bearings',
-      strand: 'Strand 3: Geometry & Measurement',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      status: 'pending_content',
-      hasNotes: false,
-      description: 'Reflection, rotation, translation, column vectors, vector addition, and compass bearings.'
-    },
-    {
-      id: 'topic_statistics_and_probability',
-      title: 'Data Statistics & Probability',
+      id: 'topic_data_handling_probability',
+      title: 'Handling Data & Probability',
+      strandCode: 'S4',
+      strandName: 'Strand 4: Handling Data',
       strand: 'Strand 4: Handling Data',
-      levelsAvailable: ['JHS 1', 'JHS 2', 'JHS 3'],
-      status: 'pending_content',
-      hasNotes: false,
-      description: 'Data collection, frequency tables, bar charts, pie charts, mean, median, mode, and simple experimental probability.'
+      subStrand: 'Data Collection, Presentation & Probability',
+      levelsAvailable: ['B7', 'B8', 'B9'],
+      status: 'ready',
+      hasNotes: true,
+      questionCount: 27,
+      description: 'Frequency tables, bar charts, pie charts, mean, median, mode, stem-and-leaf, and experimental/theoretical probability.'
     }
   ]
 };
@@ -168,11 +199,20 @@ export async function getSubjectTopicsManifest(
 }
 
 const TOPIC_DOC_ALIASES: Record<string, string> = {
-  topic_ratios_and_proportion: 'topic_ratio_and_proportion',
-  topic_ratio_proportion_and_rates: 'topic_ratios_and_proportion',
-  topic_ratio_and_proportion: 'topic_ratios_and_proportion',
+  topic_ratio_proportion_financial: 'topic_ratios_and_proportion',
+  topic_ratios_and_proportion: 'topic_ratio_proportion_financial',
+  topic_ratio_proportion_and_rates: 'topic_ratio_proportion_financial',
+  topic_ratio_and_proportion: 'topic_ratio_proportion_financial',
   topic_algebraic_expressions_and_equations: 'topic_algebraic_expressions',
-  topic_algebraic_expressions: 'topic_algebraic_expressions_and_equations'
+  topic_algebraic_expressions: 'topic_algebraic_expressions_and_equations',
+  topic_sets_and_venn_diagrams: 'topic_sets_and_operations',
+  topic_sets_and_operations: 'topic_sets_and_venn_diagrams',
+  topic_equations_inequalities_graphs: 'topic_relations_mappings_and_graphs',
+  topic_relations_mappings_and_graphs: 'topic_equations_inequalities_graphs',
+  topic_geometry_and_trigonometry: 'topic_geometry_polygons_and_mensuration',
+  topic_geometry_polygons_and_mensuration: 'topic_geometry_and_trigonometry',
+  topic_data_handling_probability: 'topic_statistics_and_probability',
+  topic_statistics_and_probability: 'topic_data_handling_probability'
 };
 
 /**

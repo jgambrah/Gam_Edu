@@ -8,7 +8,7 @@
  * Example: global_curriculum/jhs/subjects/math/topics/topic_ratio_and_proportion
  */
 
-export type TopicalLabLevelKey = 'jhs1' | 'jhs2' | 'jhs3';
+export type TopicalLabLevelKey = 'b7' | 'b8' | 'b9' | 'jhs1' | 'jhs2' | 'jhs3';
 
 export type TopicalPracticeDifficulty = 'low' | 'medium' | 'hard';
 
@@ -65,7 +65,7 @@ export interface TopicalLabDocument {
   description: string;
   totalPracticeQuestions: number;
   version: number;
-  levels: Record<TopicalLabLevelKey, TopicalLabLevel>;
+  levels: Record<string, TopicalLabLevel>;
   linkedExamQuestions?: LinkedExamQuestion[];
   seededAt?: string;
   updatedAt: string;
@@ -74,7 +74,10 @@ export interface TopicalLabDocument {
 export interface TopicManifestItem {
   id: string;
   title: string;
-  strand: string;
+  strand?: string;
+  strandCode?: string;
+  strandName?: string;
+  subStrand?: string;
   levelsAvailable: string[];
   status?: 'ready' | 'pending_content' | string;
   questionCount?: number;
@@ -89,3 +92,4 @@ export interface SubjectTopicsManifest {
   topics: TopicManifestItem[];
   updatedAt?: string;
 }
+
