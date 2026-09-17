@@ -12,30 +12,55 @@
     "jhs1": {
       "levelTitle": "JHS 1: Foundations of Numbers, Factors & Place Value",
       "summary": "Prime factors, index notation, HCF, LCM, and non-decimal base operations (Base Five & Binary).",
-      "notes": "### 1. Factors & Prime Factorization\nA **factor** of a whole number divides it completely without leaving a remainder.\nA **prime number** has exactly two distinct factors: $1$ and itself (e.g., $2, 3, 5, 7, 11$). Note that $1$ is neither prime nor composite.\n\n### 2. Highest Common Factor (HCF) & Lowest Common Multiple (LCM)\n* **HCF:** Product of the smallest powers of common prime factors.\n* **LCM:** Product of the highest powers of all occurring prime factors.\n\n### 3. Base Numeration\n* **Base Ten:** Uses digits $0, 1, 2, 3, 4, 5, 6, 7, 8, 9$.\n* **Base Five:** Uses digits $0, 1, 2, 3, 4$.\n  $$\\text{Converting } 142_{\\text{five}} \\to \\text{Base Ten}: (1 \\times 5^2) + (4 \\times 5^1) + (2 \\times 5^0) = 25 + 20 + 2 = 47_{\\text{ten}}$$",
+      "notes": "### 1. Place Value, Ordering & Large Quantities\n\n* **The Base-10 Positional System:** The position of a digit determines its absolute value. Moving one place to the left increases a digit's value by a factor of 10:\n  $$\\text{Value} = \\text{Digit} \\times 10^k \\quad (k \\in \\mathbb{W})$$\n\n* **Expanded Form:**\n  $$6,245,789 = (6 \\times 10^6) + (2 \\times 10^5) + (4 \\times 10^4) + (5 \\times 10^3) + (7 \\times 10^2) + (8 \\times 10^1) + (9 \\times 10^0)$$\n\n* **Order Relations:**\n  * Strict inequality: $a > b$ ($a$ exceeds $b$) or $a < b$ ($a$ is less than $b$).\n  * Equivalence: $a = b$.\n  * Compare digits column-by-column starting from the highest place value.\n\n---\n\n### 2. Rounding Axioms: Round Off, Round Up & Round Down\n\n* **Round Off (Standard Rule):** Identify the digit $d$ at place value $10^k$ and inspect the digit immediately to its right ($r$):\n  $$\\text{Action} = \\begin{cases} d \\text{ remains unchanged}, & \\text{if } r \\in \\{0, 1, 2, 3, 4\\} \\\\ d \\leftarrow d + 1, & \\text{if } r \\in \\{5, 6, 7, 8, 9\\} \\end{cases}$$\n\n* **Round Up (Ceiling $\\lceil x \\rceil$):** Always advance to the next multiple of $10^k$ if any remainder exists.\n* **Round Down (Floor $\\lfloor x \\rfloor$):** Always truncate to the lower multiple of $10^k$, discarding remainders.\n\n---\n\n### 3. Factors, Multiples & Prime Decomposition\n\n* **Divisibility:** An integer $d$ is a factor of $n$ ($d \\mid n$) if and only if there exists an integer $q$ such that $n = d \\times q$.\n* **Prime & Composite Numbers:**\n  * **Prime:** An integer $p > 1$ having exactly two distinct positive divisors: $1$ and $p$.\n  * **Composite:** An integer $n > 1$ with more than two divisors.\n  * **Unit:** $1$ has only one divisor; it is neither prime nor composite.\n* **Fundamental Theorem of Arithmetic:** Every integer $n \\ge 2$ can be uniquely expressed as a product of prime powers:\n  $$n = p_1^{a_1} \\times p_2^{a_2} \\times \\dots \\times p_k^{a_k} \\quad (p_1 < p_2 < \\dots < p_k, \\ a_i \\ge 1)$$\n\n---\n\n### 4. Highest Common Factor (HCF) & Lowest Common Multiple (LCM)\n\nFor two numbers $A = \\prod p_i^{a_i}$ and $B = \\prod p_i^{b_i}$:\n* **Highest Common Factor (HCF):** Product of the lowest power of each common prime factor:\n  $$\\text{HCF}(A, B) = \\prod p_i^{\\min(a_i, b_i)}$$\n* **Lowest Common Multiple (LCM):** Product of the highest power of every prime factor present:\n  $$\\text{LCM}(A, B) = \\prod p_i^{\\max(a_i, b_i)}$$\n* **Product Identity:**\n  $$\\text{HCF}(A, B) \\times \\text{LCM}(A, B) = A \\times B$$\n\n---\n\n### 5. Standard Divisibility Rules\n\n* **Divisibility by 2:** Last digit is an even integer ($0, 2, 4, 6, 8$).\n* **Divisibility by 3:** The sum of digits $\\sum d_i$ is divisible by 3.\n* **Divisibility by 4:** The number formed by the last two digits is divisible by 4.\n* **Divisibility by 5:** Last digit is $0$ or $5$.\n* **Divisibility by 6:** Divisible by both 2 and 3.\n* **Divisibility by 7:** Double the last digit and subtract it from the remaining truncated number; the result must be 0 or a multiple of 7.\n* **Divisibility by 9:** The sum of digits $\\sum d_i$ is divisible by 9.\n\n---\n\n### 6. Non-Decimal Bases (Bases 2, 5, and 10)\n\nA number $N$ in base $b$ uses digits $\\{0, 1, \\dots, b-1\\}$:\n$$N_b = \\sum_{i=0}^k d_i b^i = (d_k \\times b^k) + \\dots + (d_1 \\times b^1) + (d_0 \\times b^0)$$\n* **Base 2 (Binary):** Digits $\\{0, 1\\}$. Place values: $1, 2, 4, 8, 16, 32, \\dots$\n* **Base 5 (Quinary):** Digits $\\{0, 1, 2, 3, 4\\}$. Place values: $1, 5, 25, 125, \\dots$\n* **Conversion Methods:**\n  * **Base $b \\to$ Base 10:** Expand using powers of $b$.\n  * **Base 10 $\\to$ Base $b$:** Divide repeatedly by $b$ and read remainders from bottom to top.",
       "workedExamples": [
         {
           "id": "we_num_j1_01",
-          "title": "Prime Factorization & Index Notation",
-          "problem": "Express $720$ as a product of prime factors in index notation.",
+          "title": "Prime Factor Decomposition & Systematic HCF/LCM",
+          "problem": "Given the numbers $72$ and $108$:\n(i) Express each number as a product of prime factors in index notation.\n(ii) Determine their Highest Common Factor (HCF).\n(iii) Determine their Lowest Common Multiple (LCM).",
           "steps": [
-            "Break down 720 using successive division by prime numbers: $720 = 2 \\times 360 = 2^2 \\times 180 = 2^3 \\times 90 = 2^4 \\times 45$.",
-            "Factor 45: $45 = 3^2 \\times 5$.",
-            "Combine all powers: $720 = 2^4 \\times 3^2 \\times 5$."
+            "Prime factorize 72: $72 = 2 \\times 36 = 2 \\times 2 \\times 18 = 2^3 \\times 3^2$.",
+            "Prime factorize 108: $108 = 2 \\times 54 = 2 \\times 2 \\times 27 = 2^2 \\times 3^3$.",
+            "Calculate HCF using minimum powers: $\\text{HCF} = 2^{\\min(3, 2)} \\times 3^{\\min(2, 3)} = 2^2 \\times 3^2 = 4 \\times 9 = 36$.",
+            "Calculate LCM using maximum powers: $\\text{LCM} = 2^{\\max(3, 2)} \\times 3^{\\max(2, 3)} = 2^3 \\times 3^3 = 8 \\times 27 = 216$."
           ],
-          "finalAnswer": "$$2^4 \\times 3^2 \\times 5$$"
+          "finalAnswer": "$$\\text{HCF} = 36, \\quad \\text{LCM} = 216$$"
         },
         {
           "id": "we_num_j1_02",
-          "title": "Converting Decimal to Base Five",
-          "problem": "Convert $63_{\\text{ten}}$ to a base five numeral.",
+          "title": "Real-World Periodic Interval Modeling (LCM)",
+          "problem": "Three irrigation pumps activate at intervals of $12\\text{ minutes}$, $18\\text{ minutes}$, and $24\\text{ minutes}$ respectively. If all three turn on together at $6:00\\text{ a.m.}$, at what time will they next activate simultaneously?",
           "steps": [
-            "Divide 63 by 5: $63 \\div 5 = 12 \\text{ remainder } 3$.",
-            "Divide 12 by 5: $12 \\div 5 = 2 \\text{ remainder } 2$.",
-            "Divide 2 by 5: $2 \\div 5 = 0 \\text{ remainder } 2$.",
-            "Read remainders from bottom to top: 2, 2, 3."
+            "Identify that the simultaneous activation requires the Lowest Common Multiple (LCM) of 12, 18, and 24.",
+            "Factor each interval: $12 = 2^2 \\times 3^1$, $18 = 2^1 \\times 3^2$, $24 = 2^3 \\times 3^1$.",
+            "Determine LCM: $2^{\\max(2, 1, 3)} \\times 3^{\\max(1, 2, 1)} = 2^3 \\times 3^2 = 8 \\times 9 = 72\\text{ minutes}$.",
+            "Convert to hours and minutes: $72\\text{ minutes} = 1\\text{ hr } 12\\text{ min}$.",
+            "Add to start time: $6:00\\text{ a.m.} + 1\\text{ hr } 12\\text{ min} = 7:12\\text{ a.m.}$"
           ],
-          "finalAnswer": "$$223_{\\text{five}}$$"
+          "finalAnswer": "$$7:12\\text{ a.m.}$$"
+        },
+        {
+          "id": "we_num_j1_03",
+          "title": "Multi-Base Conversion (Base 5 to Base 2 via Base 10)",
+          "problem": "Convert the base five numeral $234_{\\text{five}}$ into a base two (binary) numeral.",
+          "steps": [
+            "Convert $234_{\\text{five}}$ to base ten: $(2 \\times 5^2) + (3 \\times 5^1) + (4 \\times 5^0) = 50 + 15 + 4 = 69_{\\text{ten}}$.",
+            "Divide 69 successively by 2, recording remainders:\n  * $69 \\div 2 = 34 \\text{ R } 1$\n  * $34 \\div 2 = 17 \\text{ R } 0$\n  * $17 \\div 2 = 8 \\text{ R } 1$\n  * $8 \\div 2 = 4 \\text{ R } 0$\n  * $4 \\div 2 = 2 \\text{ R } 0$\n  * $2 \\div 2 = 1 \\text{ R } 0$\n  * $1 \\div 2 = 0 \\text{ R } 1$",
+            "Read remainders from bottom to top: $1000101$."
+          ],
+          "finalAnswer": "$$1000101_{\\text{two}}$$"
+        },
+        {
+          "id": "we_num_j1_04",
+          "title": "Unknown Radix Equation Resolution",
+          "problem": "If $43_x = 31_{\\text{ten}}$, find the value of the unknown integer base $x$.",
+          "steps": [
+            "Expand the left-hand side in powers of $x$: $(4 \\times x^1) + (3 \\times x^0) = 4x + 3$.",
+            "Set up the equation: $4x + 3 = 31$.",
+            "Solve for $x$: $4x = 31 - 3 = 28 \\implies x = 28 / 4 = 7$.",
+            "Verify: Digits 4 and 3 are strictly less than the base 7, so the base is valid."
+          ],
+          "finalAnswer": "$$x = 7 \\quad (\\text{Base Seven})$$"
         }
       ],
       "practicePool": {
@@ -530,30 +555,55 @@
     "b7": {
       "levelTitle": "JHS 1: Foundations of Numbers, Factors & Place Value",
       "summary": "Prime factors, index notation, HCF, LCM, and non-decimal base operations (Base Five & Binary).",
-      "notes": "### 1. Factors & Prime Factorization\nA **factor** of a whole number divides it completely without leaving a remainder.\nA **prime number** has exactly two distinct factors: $1$ and itself (e.g., $2, 3, 5, 7, 11$). Note that $1$ is neither prime nor composite.\n\n### 2. Highest Common Factor (HCF) & Lowest Common Multiple (LCM)\n* **HCF:** Product of the smallest powers of common prime factors.\n* **LCM:** Product of the highest powers of all occurring prime factors.\n\n### 3. Base Numeration\n* **Base Ten:** Uses digits $0, 1, 2, 3, 4, 5, 6, 7, 8, 9$.\n* **Base Five:** Uses digits $0, 1, 2, 3, 4$.\n  $$\\text{Converting } 142_{\\text{five}} \\to \\text{Base Ten}: (1 \\times 5^2) + (4 \\times 5^1) + (2 \\times 5^0) = 25 + 20 + 2 = 47_{\\text{ten}}$$",
+      "notes": "### 1. Place Value, Ordering & Large Quantities\n\n* **The Base-10 Positional System:** The position of a digit determines its absolute value. Moving one place to the left increases a digit's value by a factor of 10:\n  $$\\text{Value} = \\text{Digit} \\times 10^k \\quad (k \\in \\mathbb{W})$$\n\n* **Expanded Form:**\n  $$6,245,789 = (6 \\times 10^6) + (2 \\times 10^5) + (4 \\times 10^4) + (5 \\times 10^3) + (7 \\times 10^2) + (8 \\times 10^1) + (9 \\times 10^0)$$\n\n* **Order Relations:**\n  * Strict inequality: $a > b$ ($a$ exceeds $b$) or $a < b$ ($a$ is less than $b$).\n  * Equivalence: $a = b$.\n  * Compare digits column-by-column starting from the highest place value.\n\n---\n\n### 2. Rounding Axioms: Round Off, Round Up & Round Down\n\n* **Round Off (Standard Rule):** Identify the digit $d$ at place value $10^k$ and inspect the digit immediately to its right ($r$):\n  $$\\text{Action} = \\begin{cases} d \\text{ remains unchanged}, & \\text{if } r \\in \\{0, 1, 2, 3, 4\\} \\\\ d \\leftarrow d + 1, & \\text{if } r \\in \\{5, 6, 7, 8, 9\\} \\end{cases}$$\n\n* **Round Up (Ceiling $\\lceil x \\rceil$):** Always advance to the next multiple of $10^k$ if any remainder exists.\n* **Round Down (Floor $\\lfloor x \\rfloor$):** Always truncate to the lower multiple of $10^k$, discarding remainders.\n\n---\n\n### 3. Factors, Multiples & Prime Decomposition\n\n* **Divisibility:** An integer $d$ is a factor of $n$ ($d \\mid n$) if and only if there exists an integer $q$ such that $n = d \\times q$.\n* **Prime & Composite Numbers:**\n  * **Prime:** An integer $p > 1$ having exactly two distinct positive divisors: $1$ and $p$.\n  * **Composite:** An integer $n > 1$ with more than two divisors.\n  * **Unit:** $1$ has only one divisor; it is neither prime nor composite.\n* **Fundamental Theorem of Arithmetic:** Every integer $n \\ge 2$ can be uniquely expressed as a product of prime powers:\n  $$n = p_1^{a_1} \\times p_2^{a_2} \\times \\dots \\times p_k^{a_k} \\quad (p_1 < p_2 < \\dots < p_k, \\ a_i \\ge 1)$$\n\n---\n\n### 4. Highest Common Factor (HCF) & Lowest Common Multiple (LCM)\n\nFor two numbers $A = \\prod p_i^{a_i}$ and $B = \\prod p_i^{b_i}$:\n* **Highest Common Factor (HCF):** Product of the lowest power of each common prime factor:\n  $$\\text{HCF}(A, B) = \\prod p_i^{\\min(a_i, b_i)}$$\n* **Lowest Common Multiple (LCM):** Product of the highest power of every prime factor present:\n  $$\\text{LCM}(A, B) = \\prod p_i^{\\max(a_i, b_i)}$$\n* **Product Identity:**\n  $$\\text{HCF}(A, B) \\times \\text{LCM}(A, B) = A \\times B$$\n\n---\n\n### 5. Standard Divisibility Rules\n\n* **Divisibility by 2:** Last digit is an even integer ($0, 2, 4, 6, 8$).\n* **Divisibility by 3:** The sum of digits $\\sum d_i$ is divisible by 3.\n* **Divisibility by 4:** The number formed by the last two digits is divisible by 4.\n* **Divisibility by 5:** Last digit is $0$ or $5$.\n* **Divisibility by 6:** Divisible by both 2 and 3.\n* **Divisibility by 7:** Double the last digit and subtract it from the remaining truncated number; the result must be 0 or a multiple of 7.\n* **Divisibility by 9:** The sum of digits $\\sum d_i$ is divisible by 9.\n\n---\n\n### 6. Non-Decimal Bases (Bases 2, 5, and 10)\n\nA number $N$ in base $b$ uses digits $\\{0, 1, \\dots, b-1\\}$:\n$$N_b = \\sum_{i=0}^k d_i b^i = (d_k \\times b^k) + \\dots + (d_1 \\times b^1) + (d_0 \\times b^0)$$\n* **Base 2 (Binary):** Digits $\\{0, 1\\}$. Place values: $1, 2, 4, 8, 16, 32, \\dots$\n* **Base 5 (Quinary):** Digits $\\{0, 1, 2, 3, 4\\}$. Place values: $1, 5, 25, 125, \\dots$\n* **Conversion Methods:**\n  * **Base $b \\to$ Base 10:** Expand using powers of $b$.\n  * **Base 10 $\\to$ Base $b$:** Divide repeatedly by $b$ and read remainders from bottom to top.",
       "workedExamples": [
         {
           "id": "we_num_j1_01",
-          "title": "Prime Factorization & Index Notation",
-          "problem": "Express $720$ as a product of prime factors in index notation.",
+          "title": "Prime Factor Decomposition & Systematic HCF/LCM",
+          "problem": "Given the numbers $72$ and $108$:\n(i) Express each number as a product of prime factors in index notation.\n(ii) Determine their Highest Common Factor (HCF).\n(iii) Determine their Lowest Common Multiple (LCM).",
           "steps": [
-            "Break down 720 using successive division by prime numbers: $720 = 2 \\times 360 = 2^2 \\times 180 = 2^3 \\times 90 = 2^4 \\times 45$.",
-            "Factor 45: $45 = 3^2 \\times 5$.",
-            "Combine all powers: $720 = 2^4 \\times 3^2 \\times 5$."
+            "Prime factorize 72: $72 = 2 \\times 36 = 2 \\times 2 \\times 18 = 2^3 \\times 3^2$.",
+            "Prime factorize 108: $108 = 2 \\times 54 = 2 \\times 2 \\times 27 = 2^2 \\times 3^3$.",
+            "Calculate HCF using minimum powers: $\\text{HCF} = 2^{\\min(3, 2)} \\times 3^{\\min(2, 3)} = 2^2 \\times 3^2 = 4 \\times 9 = 36$.",
+            "Calculate LCM using maximum powers: $\\text{LCM} = 2^{\\max(3, 2)} \\times 3^{\\max(2, 3)} = 2^3 \\times 3^3 = 8 \\times 27 = 216$."
           ],
-          "finalAnswer": "$$2^4 \\times 3^2 \\times 5$$"
+          "finalAnswer": "$$\\text{HCF} = 36, \\quad \\text{LCM} = 216$$"
         },
         {
           "id": "we_num_j1_02",
-          "title": "Converting Decimal to Base Five",
-          "problem": "Convert $63_{\\text{ten}}$ to a base five numeral.",
+          "title": "Real-World Periodic Interval Modeling (LCM)",
+          "problem": "Three irrigation pumps activate at intervals of $12\\text{ minutes}$, $18\\text{ minutes}$, and $24\\text{ minutes}$ respectively. If all three turn on together at $6:00\\text{ a.m.}$, at what time will they next activate simultaneously?",
           "steps": [
-            "Divide 63 by 5: $63 \\div 5 = 12 \\text{ remainder } 3$.",
-            "Divide 12 by 5: $12 \\div 5 = 2 \\text{ remainder } 2$.",
-            "Divide 2 by 5: $2 \\div 5 = 0 \\text{ remainder } 2$.",
-            "Read remainders from bottom to top: 2, 2, 3."
+            "Identify that the simultaneous activation requires the Lowest Common Multiple (LCM) of 12, 18, and 24.",
+            "Factor each interval: $12 = 2^2 \\times 3^1$, $18 = 2^1 \\times 3^2$, $24 = 2^3 \\times 3^1$.",
+            "Determine LCM: $2^{\\max(2, 1, 3)} \\times 3^{\\max(1, 2, 1)} = 2^3 \\times 3^2 = 8 \\times 9 = 72\\text{ minutes}$.",
+            "Convert to hours and minutes: $72\\text{ minutes} = 1\\text{ hr } 12\\text{ min}$.",
+            "Add to start time: $6:00\\text{ a.m.} + 1\\text{ hr } 12\\text{ min} = 7:12\\text{ a.m.}$"
           ],
-          "finalAnswer": "$$223_{\\text{five}}$$"
+          "finalAnswer": "$$7:12\\text{ a.m.}$$"
+        },
+        {
+          "id": "we_num_j1_03",
+          "title": "Multi-Base Conversion (Base 5 to Base 2 via Base 10)",
+          "problem": "Convert the base five numeral $234_{\\text{five}}$ into a base two (binary) numeral.",
+          "steps": [
+            "Convert $234_{\\text{five}}$ to base ten: $(2 \\times 5^2) + (3 \\times 5^1) + (4 \\times 5^0) = 50 + 15 + 4 = 69_{\\text{ten}}$.",
+            "Divide 69 successively by 2, recording remainders:\n  * $69 \\div 2 = 34 \\text{ R } 1$\n  * $34 \\div 2 = 17 \\text{ R } 0$\n  * $17 \\div 2 = 8 \\text{ R } 1$\n  * $8 \\div 2 = 4 \\text{ R } 0$\n  * $4 \\div 2 = 2 \\text{ R } 0$\n  * $2 \\div 2 = 1 \\text{ R } 0$\n  * $1 \\div 2 = 0 \\text{ R } 1$",
+            "Read remainders from bottom to top: $1000101$."
+          ],
+          "finalAnswer": "$$1000101_{\\text{two}}$$"
+        },
+        {
+          "id": "we_num_j1_04",
+          "title": "Unknown Radix Equation Resolution",
+          "problem": "If $43_x = 31_{\\text{ten}}$, find the value of the unknown integer base $x$.",
+          "steps": [
+            "Expand the left-hand side in powers of $x$: $(4 \\times x^1) + (3 \\times x^0) = 4x + 3$.",
+            "Set up the equation: $4x + 3 = 31$.",
+            "Solve for $x$: $4x = 31 - 3 = 28 \\implies x = 28 / 4 = 7$.",
+            "Verify: Digits 4 and 3 are strictly less than the base 7, so the base is valid."
+          ],
+          "finalAnswer": "$$x = 7 \\quad (\\text{Base Seven})$$"
         }
       ],
       "practicePool": {
