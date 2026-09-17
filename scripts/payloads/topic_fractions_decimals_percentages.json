@@ -14,7 +14,7 @@
   },
   "badge": "Strand 1: Number",
   "description": "Master benchmark equivalences, mixed fraction operations, recurring decimals, real-life fractional sharing, and multi-step BODMAS evaluation.",
-  "totalPracticeQuestions": 168,
+  "totalPracticeQuestions": 309,
   "version": 1,
   "levels": {
     "b7": {
@@ -2508,110 +2508,1614 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_frac_b8_l01",
+            "id": "q_b8_frac_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Evaluate: $$\\frac{3}{4} \\div \\frac{3}{8} + \\frac{1}{2}$$.",
+            "prompt": "Evaluate: $$\\frac{3}{4} \\div \\frac{3}{8}$$.",
             "options": [
-              "2 1/2",
-              "1",
-              "3",
+              "2",
+              "1/2",
+              "9/32",
               "1 1/2"
             ],
-            "correctAnswer": "2 1/2",
-            "hint": "Divide first: $3/4 \\times 8/3 = 2$. Then add $1/2$.",
-            "workedSolution": "$$\\left(\\frac{3}{4} \\times \\frac{8}{3}\\right) + \\frac{1}{2} = 2 + \\frac{1}{2} = 2\\frac{1}{2}$$.",
+            "correctAnswer": "2",
+            "hint": "Invert the divisor and multiply: $\\frac{3}{4} \\times \\frac{8}{3}$.",
+            "workedSolution": "$$\\frac{3}{4} \\times \\frac{8}{3} = \\frac{24}{12} = 2$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b8_l02",
+            "id": "q_b8_frac_l02",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Evaluate: $$\\left(\\frac{3}{4} + \\frac{5}{8}\\right) \\times \\frac{4}{11}$$.",
+            "prompt": "Evaluate: $$\\frac{1}{2} + \\frac{1}{3} \\times \\frac{3}{4}$$.",
             "options": [
-              "1/2",
-              "1/4",
               "3/4",
+              "5/8",
+              "5/12",
               "1"
             ],
-            "correctAnswer": "1/2",
-            "hint": "Brackets first: $3/4 + 5/8 = 11/8$. Then multiply by $4/11$.",
-            "workedSolution": "$$\\frac{6 + 5}{8} \\times \\frac{4}{11} = \\frac{11}{8} \\times \\frac{4}{11} = \\frac{4}{8} = \\frac{1}{2}$$.",
+            "correctAnswer": "3/4",
+            "hint": "Multiplication precedes addition in BODMAS: evaluate $\\frac{1}{3} \\times \\frac{3}{4}$ first.",
+            "workedSolution": "$$\\frac{1}{3} \\times \\frac{3}{4} = \\frac{1}{4}$$\n$$\\frac{1}{2} + \\frac{1}{4} = \\frac{2 + 1}{4} = \\frac{3}{4}$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b8_l03",
+            "id": "q_b8_frac_l03",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "What is $35\\%$ of $\\text{GH¢ } 480.00$?",
+            "prompt": "Evaluate: $$\\left(\\frac{5}{6} - \\frac{1}{2}\\right) \\times 3$$.",
             "options": [
-              "GH¢ 168.00",
-              "GH¢ 144.00",
-              "GH¢ 180.00",
-              "GH¢ 192.00"
+              "1",
+              "1/3",
+              "2/3",
+              "1 1/2"
             ],
-            "correctAnswer": "GH¢ 168.00",
-            "hint": "$$\\frac{35}{100} \\times 480$$.",
-            "workedSolution": "$$0.35 \\times 480 = \\text{GH¢ } 168.00$$.",
+            "correctAnswer": "1",
+            "hint": "Compute operations inside the bracket first.",
+            "workedSolution": "$$\\frac{5}{6} - \\frac{3}{6} = \\frac{2}{6} = \\frac{1}{3}$$\n$$\\frac{1}{3} \\times 3 = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $25\\%$ of $\\text{GH¢ } 360.00$?",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 120.00",
+              "GH¢ 80.00",
+              "GH¢ 180.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$25\\% = \\frac{1}{4}$$. Find $\\frac{1}{4} \\times 360$.",
+            "workedSolution": "$$\\frac{1}{4} \\times 360 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{5} \\times \\frac{15}{16}$$.",
+            "options": [
+              "3/8",
+              "5/8",
+              "3/16",
+              "1/4"
+            ],
+            "correctAnswer": "3/8",
+            "hint": "Cross-cancel common factors between numerators and denominators.",
+            "workedSolution": "$$\\frac{2 \\times 15}{5 \\times 16} = \\frac{1 \\times 3}{1 \\times 8} = \\frac{3}{8}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$4 - 1\\frac{2}{5}$$.",
+            "options": [
+              "2 3/5",
+              "3 2/5",
+              "2 2/5",
+              "3 3/5"
+            ],
+            "correctAnswer": "2 3/5",
+            "hint": "Rewrite 4 as $3\\frac{5}{5}$.",
+            "workedSolution": "$$3\\frac{5}{5} - 1\\frac{2}{5} = (3 - 1) + \\left(\\frac{5 - 2}{5}\\right) = 2\\frac{3}{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{5}{8} \\div 5$$.",
+            "options": [
+              "1/8",
+              "25/8",
+              "1",
+              "5/40"
+            ],
+            "correctAnswer": "1/8",
+            "hint": "Dividing by 5 is equivalent to multiplying by $\\frac{1}{5}$.",
+            "workedSolution": "$$\\frac{5}{8} \\times \\frac{1}{5} = \\frac{1}{8}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What fraction of $1\\text{ hour}$ is $20\\text{ minutes}$?",
+            "options": [
+              "1/3",
+              "1/4",
+              "1/5",
+              "2/5"
+            ],
+            "correctAnswer": "1/3",
+            "hint": "$1\\text{ hour} = 60\\text{ minutes}$. Reduce $\\frac{20}{60}$.",
+            "workedSolution": "$$\\frac{20}{60} = \\frac{1}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{7}{10} - \\frac{2}{5}$$.",
+            "options": [
+              "3/10",
+              "1/2",
+              "5/10",
+              "1/5"
+            ],
+            "correctAnswer": "3/10",
+            "hint": "Express with common denominator 10: $\\frac{2}{5} = \\frac{4}{10}$.",
+            "workedSolution": "$$\\frac{7}{10} - \\frac{4}{10} = \\frac{3}{10}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $10\\%$ of $\\text{GH¢ } 1,500.00$.",
+            "options": [
+              "GH¢ 150.00",
+              "GH¢ 15.00",
+              "GH¢ 100.00",
+              "GH¢ 300.00"
+            ],
+            "correctAnswer": "GH¢ 150.00",
+            "hint": "Divide $1,500$ by 10.",
+            "workedSolution": "$$\\frac{10}{100} \\times 1500 = \\text{GH¢ } 150.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 16$$.",
+            "options": [
+              "12",
+              "15",
+              "9",
+              "8"
+            ],
+            "correctAnswer": "12",
+            "hint": "Divide 16 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 16 = 3 \\times 4 = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 32$$.",
+            "options": [
+              "24",
+              "27",
+              "21",
+              "16"
+            ],
+            "correctAnswer": "24",
+            "hint": "Divide 32 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 32 = 3 \\times 8 = 24$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 48$$.",
+            "options": [
+              "36",
+              "39",
+              "33",
+              "24"
+            ],
+            "correctAnswer": "36",
+            "hint": "Divide 48 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 48 = 3 \\times 12 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 24$$.",
+            "options": [
+              "18",
+              "21",
+              "15",
+              "12"
+            ],
+            "correctAnswer": "18",
+            "hint": "Divide 24 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 24 = 3 \\times 6 = 18$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 40$$.",
+            "options": [
+              "30",
+              "33",
+              "27",
+              "20"
+            ],
+            "correctAnswer": "30",
+            "hint": "Divide 40 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 40 = 3 \\times 10 = 30$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 16$$.",
+            "options": [
+              "12",
+              "15",
+              "9",
+              "8"
+            ],
+            "correctAnswer": "12",
+            "hint": "Divide 16 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 16 = 3 \\times 4 = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 32$$.",
+            "options": [
+              "24",
+              "27",
+              "21",
+              "16"
+            ],
+            "correctAnswer": "24",
+            "hint": "Divide 32 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 32 = 3 \\times 8 = 24$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 48$$.",
+            "options": [
+              "36",
+              "39",
+              "33",
+              "24"
+            ],
+            "correctAnswer": "36",
+            "hint": "Divide 48 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 48 = 3 \\times 12 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 24$$.",
+            "options": [
+              "18",
+              "21",
+              "15",
+              "12"
+            ],
+            "correctAnswer": "18",
+            "hint": "Divide 24 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 24 = 3 \\times 6 = 18$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\times 40$$.",
+            "options": [
+              "30",
+              "33",
+              "27",
+              "20"
+            ],
+            "correctAnswer": "30",
+            "hint": "Divide 40 by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 40 = 3 \\times 10 = 30$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\div \\frac{4}{9}$$.",
+            "options": [
+              "3/2",
+              "1",
+              "2/3",
+              "4/5"
+            ],
+            "correctAnswer": "3/2",
+            "hint": "Multiply by the reciprocal: $\\frac{2}{3} \\times \\frac{9}{4}$.",
+            "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{4} = 3/2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $20\\%$ of $\\text{GH¢ } 450.00$.",
+            "options": [
+              "GH¢ 90.00",
+              "GH¢ 100.00",
+              "GH¢ 80.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 90.00",
+            "hint": "$$\\frac{20}{100} \\times 450$$.",
+            "workedSolution": "$$\\frac{20}{100} \\times 450 = \\text{GH¢ } 90.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} + \\frac{1}{2}$$.",
+            "options": [
+              "1",
+              "3/4",
+              "1 1/2",
+              "1/2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply first: $\\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$. Then add $\\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{1}{2} + \\frac{1}{2} = 1$$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_frac_b8_m01",
+            "id": "q_b8_frac_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Simplify: $$\\frac{2}{3}\\left(\\frac{3}{4} - \\frac{1}{2}\\right) + \\frac{5}{6}$$.",
+            "prompt": "Evaluate: $$\\frac{3}{4} + \\frac{5}{8} \\times \\frac{4}{5} - \\frac{1}{6}$$.",
             "options": [
-              "1",
-              "5/6",
+              "1 1/12",
               "1 1/6",
-              "2/3"
+              "5/6",
+              "1"
             ],
-            "correctAnswer": "1",
-            "hint": "Evaluate inside parentheses first: $3/4 - 1/2 = 1/4$.",
-            "workedSolution": "$$\\frac{2}{3}\\left(\\frac{1}{4}\\right) + \\frac{5}{6} = \\frac{2}{12} + \\frac{5}{6} = \\frac{1}{6} + \\frac{5}{6} = \\frac{6}{6} = 1$$.",
+            "correctAnswer": "1 1/12",
+            "hint": "Multiply first: $\\frac{5}{8} \\times \\frac{4}{5} = \\frac{1}{2}$, then find common denominator 12.",
+            "workedSolution": "$$\\frac{5}{8} \\times \\frac{4}{5} = \\frac{1}{2}$$\n$$\\frac{3}{4} + \\frac{1}{2} - \\frac{1}{6} = \\frac{9 + 6 - 2}{12} = \\frac{13}{12} = 1\\frac{1}{12}$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b8_m02",
+            "id": "q_b8_frac_m02",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "In a school, $\\frac{2}{3}$ of the learners eat at the canteen, $\\frac{1}{4}$ bring packed food, and the remaining 35 learners go home for lunch. How many total learners are in the school?",
+            "prompt": "In a school of 480 pupils, $\\frac{5}{8}$ walk to school, $\\frac{1}{4}$ take public transport, and the rest ride bicycles. How many pupils ride bicycles?",
             "options": [
-              "420",
-              "360",
-              "480",
+              "60",
+              "80",
+              "120",
+              "40"
+            ],
+            "correctAnswer": "60",
+            "hint": "Sum fractions for walking and transport: $\\frac{5}{8} + \\frac{2}{8} = \\frac{7}{8}$. Bicycles $= 1 - \\frac{7}{8} = \\frac{1}{8}$.",
+            "workedSolution": "$$\\frac{5}{8} + \\frac{1}{4} = \\frac{5 + 2}{8} = \\frac{7}{8}$$\n$$\\text{Bicycle Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Number of pupils} = \\frac{1}{8} \\times 480 = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$\\left(2\\frac{1}{2} + 1\\frac{3}{4}\\right) \\div 1\\frac{1}{8}$$.",
+            "options": [
+              "3 7/9",
+              "4",
+              "3 1/2",
+              "4 1/4"
+            ],
+            "correctAnswer": "3 7/9",
+            "hint": "Numerator: $\\frac{5}{2} + \\frac{7}{4} = \\frac{17}{4}$. Divisor: $\\frac{9}{8}$. Multiply $\\frac{17}{4} \\times \\frac{8}{9}$.",
+            "workedSolution": "$$\\frac{5}{2} + \\frac{7}{4} = \\frac{10 + 7}{4} = \\frac{17}{4}$$\n$$\\frac{17}{4} \\div \\frac{9}{8} = \\frac{17}{4} \\times \\frac{8}{9} = \\frac{34}{9} = 3\\frac{7}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A man earns $\\text{GH¢ } 3,600.00$ a month. He spends $40\\%$ on food and $\\frac{1}{4}$ on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 1,260.00",
+              "GH¢ 1,440.00",
+              "GH¢ 1,080.00",
+              "GH¢ 1,620.00"
+            ],
+            "correctAnswer": "GH¢ 1,260.00",
+            "hint": "Total spent fraction $= 40\\% + 25\\% = 65\\%$. Remaining $= 35\\%$.",
+            "workedSolution": "$$\\text{Food} = 0.40 \\times 3,600 = \\text{GH¢ } 1,440.00$$\n$$\\text{Rent} = \\frac{1}{4} \\times 3,600 = \\text{GH¢ } 900.00$$\n$$\\text{Total Spent} = 1,440 + 900 = \\text{GH¢ } 2,340.00$$\n$$\\text{Balance Left} = 3,600 - 2,340 = \\text{GH¢ } 1,260.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $$\\frac{4}{9} \\div \\left(\\frac{2}{3} - \\frac{1}{6}\\right)$$.",
+            "options": [
+              "8/9",
+              "2/3",
+              "4/3",
+              "1/2"
+            ],
+            "correctAnswer": "8/9",
+            "hint": "Evaluate bracket first: $\\frac{2}{3} - \\frac{1}{6} = \\frac{4 - 1}{6} = \\frac{3}{6} = \\frac{1}{2}$.",
+            "workedSolution": "$$\\frac{2}{3} - \\frac{1}{6} = \\frac{3}{6} = \\frac{1}{2}$$\n$$\\frac{4}{9} \\div \\frac{1}{2} = \\frac{4}{9} \\times 2 = \\frac{8}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 190.00$ and sold them at a profit of $25\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 237.50",
+              "GH¢ 261.25",
+              "GH¢ 142.50",
+              "GH¢ 257.50"
+            ],
+            "correctAnswer": "GH¢ 237.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{25}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 190 \\times 1.25 = \\text{GH¢ } 237.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $400$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "50",
+              "100",
+              "65",
+              "100"
+            ],
+            "correctAnswer": "50",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 400 = 50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 240.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 216.00",
+              "GH¢ 230.00",
+              "GH¢ 204.00",
+              "GH¢ 264.00"
+            ],
+            "correctAnswer": "GH¢ 216.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 240 = \\text{GH¢ } 24.00$$\n$$\\text{Cash Price} = 240 - 24.00 = \\text{GH¢ } 216.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 250.00$ and sold them at a profit of $20\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 300.00",
+              "GH¢ 325.00",
+              "GH¢ 200.00",
+              "GH¢ 320.00"
+            ],
+            "correctAnswer": "GH¢ 300.00",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{20}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 250 \\times 1.20 = \\text{GH¢ } 300.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $480$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "60",
+              "120",
+              "75",
+              "120"
+            ],
+            "correctAnswer": "60",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 480 = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 280.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 252.00",
+              "GH¢ 270.00",
+              "GH¢ 238.00",
+              "GH¢ 308.00"
+            ],
+            "correctAnswer": "GH¢ 252.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 280 = \\text{GH¢ } 28.00$$\n$$\\text{Cash Price} = 280 - 28.00 = \\text{GH¢ } 252.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 310.00$ and sold them at a profit of $15\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 356.50",
+              "GH¢ 379.75",
+              "GH¢ 263.50",
+              "GH¢ 376.50"
+            ],
+            "correctAnswer": "GH¢ 356.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{15}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 310 \\times 1.15 = \\text{GH¢ } 356.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $560$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "70",
+              "140",
+              "85",
+              "140"
+            ],
+            "correctAnswer": "70",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 560 = 70$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 320.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 288.00",
+              "GH¢ 310.00",
+              "GH¢ 272.00",
+              "GH¢ 352.00"
+            ],
+            "correctAnswer": "GH¢ 288.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 320 = \\text{GH¢ } 32.00$$\n$$\\text{Cash Price} = 320 - 32.00 = \\text{GH¢ } 288.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 370.00$ and sold them at a profit of $25\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 462.50",
+              "GH¢ 508.75",
+              "GH¢ 277.50",
+              "GH¢ 482.50"
+            ],
+            "correctAnswer": "GH¢ 462.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{25}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 370 \\times 1.25 = \\text{GH¢ } 462.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $640$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "80",
+              "160",
+              "95",
+              "160"
+            ],
+            "correctAnswer": "80",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 640 = 80$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 360.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 324.00",
+              "GH¢ 350.00",
+              "GH¢ 306.00",
+              "GH¢ 396.00"
+            ],
+            "correctAnswer": "GH¢ 324.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 360 = \\text{GH¢ } 36.00$$\n$$\\text{Cash Price} = 360 - 36.00 = \\text{GH¢ } 324.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 430.00$ and sold them at a profit of $20\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 516.00",
+              "GH¢ 559.00",
+              "GH¢ 344.00",
+              "GH¢ 536.00"
+            ],
+            "correctAnswer": "GH¢ 516.00",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{20}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 430 \\times 1.20 = \\text{GH¢ } 516.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $720$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "90",
+              "180",
+              "105",
+              "180"
+            ],
+            "correctAnswer": "90",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 720 = 90$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 400.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 360.00",
+              "GH¢ 390.00",
+              "GH¢ 340.00",
+              "GH¢ 440.00"
+            ],
+            "correctAnswer": "GH¢ 360.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 400 = \\text{GH¢ } 40.00$$\n$$\\text{Cash Price} = 400 - 40.00 = \\text{GH¢ } 360.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 490.00$ and sold them at a profit of $15\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 563.50",
+              "GH¢ 600.25",
+              "GH¢ 416.50",
+              "GH¢ 583.50"
+            ],
+            "correctAnswer": "GH¢ 563.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{15}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 490 \\times 1.15 = \\text{GH¢ } 563.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $800$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "100",
+              "200",
+              "115",
+              "200"
+            ],
+            "correctAnswer": "100",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 800 = 100$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 440.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 396.00",
+              "GH¢ 430.00",
+              "GH¢ 374.00",
+              "GH¢ 484.00"
+            ],
+            "correctAnswer": "GH¢ 396.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 440 = \\text{GH¢ } 44.00$$\n$$\\text{Cash Price} = 440 - 44.00 = \\text{GH¢ } 396.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 550.00$ and sold them at a profit of $25\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 687.50",
+              "GH¢ 756.25",
+              "GH¢ 412.50",
+              "GH¢ 707.50"
+            ],
+            "correctAnswer": "GH¢ 687.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{25}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 550 \\times 1.25 = \\text{GH¢ } 687.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $880$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "110",
+              "220",
+              "125",
+              "220"
+            ],
+            "correctAnswer": "110",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 880 = 110$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 480.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 432.00",
+              "GH¢ 470.00",
+              "GH¢ 408.00",
+              "GH¢ 528.00"
+            ],
+            "correctAnswer": "GH¢ 432.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 480 = \\text{GH¢ } 48.00$$\n$$\\text{Cash Price} = 480 - 48.00 = \\text{GH¢ } 432.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 610.00$ and sold them at a profit of $20\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 732.00",
+              "GH¢ 793.00",
+              "GH¢ 488.00",
+              "GH¢ 752.00"
+            ],
+            "correctAnswer": "GH¢ 732.00",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{20}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 610 \\times 1.20 = \\text{GH¢ } 732.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $960$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "120",
+              "240",
+              "135",
+              "240"
+            ],
+            "correctAnswer": "120",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 960 = 120$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 520.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 468.00",
+              "GH¢ 510.00",
+              "GH¢ 442.00",
+              "GH¢ 572.00"
+            ],
+            "correctAnswer": "GH¢ 468.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 520 = \\text{GH¢ } 52.00$$\n$$\\text{Cash Price} = 520 - 52.00 = \\text{GH¢ } 468.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 670.00$ and sold them at a profit of $15\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 770.50",
+              "GH¢ 820.75",
+              "GH¢ 569.50",
+              "GH¢ 790.50"
+            ],
+            "correctAnswer": "GH¢ 770.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{15}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 670 \\times 1.15 = \\text{GH¢ } 770.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $1040$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "130",
+              "260",
+              "145",
+              "260"
+            ],
+            "correctAnswer": "130",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 1040 = 130$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 560.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 504.00",
+              "GH¢ 550.00",
+              "GH¢ 476.00",
+              "GH¢ 616.00"
+            ],
+            "correctAnswer": "GH¢ 504.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 560 = \\text{GH¢ } 56.00$$\n$$\\text{Cash Price} = 560 - 56.00 = \\text{GH¢ } 504.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 730.00$ and sold them at a profit of $25\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 912.50",
+              "GH¢ 1003.75",
+              "GH¢ 547.50",
+              "GH¢ 932.50"
+            ],
+            "correctAnswer": "GH¢ 912.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{25}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 730 \\times 1.25 = \\text{GH¢ } 912.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $1120$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "140",
+              "280",
+              "155",
+              "280"
+            ],
+            "correctAnswer": "140",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 1120 = 140$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An item marked at $\\text{GH¢ } 600.00$ is discounted by $10\\%$. What is the cash price?",
+            "options": [
+              "GH¢ 540.00",
+              "GH¢ 590.00",
+              "GH¢ 510.00",
+              "GH¢ 660.00"
+            ],
+            "correctAnswer": "GH¢ 540.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 600 = \\text{GH¢ } 60.00$$\n$$\\text{Cash Price} = 600 - 60.00 = \\text{GH¢ } 540.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 790.00$ and sold them at a profit of $20\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 948.00",
+              "GH¢ 1027.00",
+              "GH¢ 632.00",
+              "GH¢ 968.00"
+            ],
+            "correctAnswer": "GH¢ 948.00",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{20}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 790 \\times 1.20 = \\text{GH¢ } 948.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$2\\frac{1}{2} \\times \\frac{2}{3} + \\frac{1}{4}$$.",
+            "options": [
+              "1 11/12",
+              "1",
+              "1 1/2",
+              "2"
+            ],
+            "correctAnswer": "1 11/12",
+            "hint": "Multiply $2\\frac{1}{2} \\times \\frac{2}{3}$ first, then add $\\frac{1}{4}$.",
+            "workedSolution": "$$2\\frac{1}{2} \\times \\frac{2}{3} = \\frac{5}{2} \\times \\frac{2}{3} = \\frac{5}{3}$$\n$$\\frac{5}{3} + \\frac{1}{4} = 1 11/12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an examination of $1200$ candidates, $\\frac{3}{8}$ scored Grade A and $\\frac{1}{2}$ scored Grade B. The remainder scored Grade C. How many candidates scored Grade C?",
+            "options": [
+              "150",
+              "300",
+              "165",
               "300"
             ],
-            "correctAnswer": "420",
-            "hint": "Remaining fraction = $1 - (2/3 + 1/4) = 1/12$. Set $1/12 N = 35$.",
-            "workedSolution": "$$\\frac{2}{3} + \\frac{1}{4} = \\frac{8 + 3}{12} = \\frac{11}{12}$$\n$$\\text{Fraction going home} = 1 - \\frac{11}{12} = \\frac{1}{12}$$\n$$\\frac{1}{12}N = 35 \\implies N = 35 \\times 12 = 420\\text{ learners}$$.",
+            "correctAnswer": "150",
+            "hint": "Sum the fractions for A and B: $\\frac{3}{8} + \\frac{4}{8} = \\frac{7}{8}$. Grade C is $\\frac{1}{8}$.",
+            "workedSolution": "$$\\text{Grade C Fraction} = 1 - \\frac{7}{8} = \\frac{1}{8}$$\n$$\\text{Candidates} = \\frac{1}{8} \\times 1200 = 150$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b8_m03",
+            "id": "q_b8_frac_m49",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Find the area of a rectangle whose dimensions are $3\\frac{3}{4}\\text{ cm}$ long by $1\\frac{1}{3}\\text{ cm}$ wide.",
+            "prompt": "An item marked at $\\text{GH¢ } 640.00$ is discounted by $10\\%$. What is the cash price?",
             "options": [
-              "5 cm²",
-              "4 1/2 cm²",
-              "5 1/4 cm²",
-              "6 cm²"
+              "GH¢ 576.00",
+              "GH¢ 630.00",
+              "GH¢ 544.00",
+              "GH¢ 704.00"
             ],
-            "correctAnswer": "5 cm²",
-            "hint": "Area = Length × Width: $\\frac{15}{4} \\times \\frac{4}{3}$.",
-            "workedSolution": "$$\\text{Area} = \\frac{15}{4} \\times \\frac{4}{3} = \\frac{60}{12} = 5\\text{ cm}^2$$.",
+            "correctAnswer": "GH¢ 576.00",
+            "hint": "Discount is $10\\%$. Cash price $= 90\\%$ of original marked price.",
+            "workedSolution": "$$\\text{Discount} = 0.10 \\times 640 = \\text{GH¢ } 64.00$$\n$$\\text{Cash Price} = 640 - 64.00 = \\text{GH¢ } 576.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_frac_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A merchant purchased goods for $\\text{GH¢ } 850.00$ and sold them at a profit of $15\\%$. Find the selling price.",
+            "options": [
+              "GH¢ 977.50",
+              "GH¢ 1041.25",
+              "GH¢ 722.50",
+              "GH¢ 997.50"
+            ],
+            "correctAnswer": "GH¢ 977.50",
+            "hint": "Selling price $= \\text{Cost Price} \\times (1 + \\frac{15}{100})$.",
+            "workedSolution": "$$\\text{Selling Price} = 850 \\times 1.15 = \\text{GH¢ } 977.50$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_frac_b8_h01",
+            "id": "q_b8_frac_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Simplify: $$\\frac{1\\frac{1}{2} + 2\\frac{2}{3}}{3\\frac{1}{4} - 1\\frac{1}{6}}$$.",
+            "prompt": "Simplify completely: $$\\frac{1\\frac{1}{2} + 2\\frac{2}{3}}{3\\frac{1}{4} - 1\\frac{1}{6}}$$.",
             "options": [
               "2",
               "1 1/2",
@@ -2619,15 +4123,15 @@
               "1 3/4"
             ],
             "correctAnswer": "2",
-            "hint": "Numerator = $3/2 + 8/3 = 25/6$. Denominator = $13/4 - 7/6 = 25/12$.",
-            "workedSolution": "$$\\text{Numerator} = \\frac{9 + 16}{6} = \\frac{25}{6}$$\n$$\\text{Denominator} = \\frac{39 - 14}{12} = \\frac{25}{12}$$\n$$\\frac{25}{6} \\div \\frac{25}{12} = \\frac{25}{6} \\times \\frac{12}{25} = 2$$.",
+            "hint": "Evaluate numerator and denominator separately before dividing.",
+            "workedSolution": "$$\\text{Numerator} = \\frac{3}{2} + \\frac{8}{3} = \\frac{9 + 16}{6} = \\frac{25}{6}$$\n$$\\text{Denominator} = \\frac{13}{4} - \\frac{7}{6} = \\frac{39 - 14}{12} = \\frac{25}{12}$$\n$$\\frac{25}{6} \\div \\frac{25}{12} = \\frac{25}{6} \\times \\frac{12}{25} = 2$$.",
             "points": 2
           },
           {
-            "id": "q_frac_b8_h02",
+            "id": "q_b8_frac_h02",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Dufie spent $\\frac{1}{3}$ of her pocket money on breakfast and $\\frac{1}{6}$ of what remained on sweets. If she still had $\\text{GH¢ } 55.00$, how much was her original pocket money?",
+            "prompt": "Dufie spent $\\frac{1}{3}$ of her pocket money on breakfast and $\\frac{1}{6}$ of what was left on biscuits. If she still had $\\text{GH¢ } 55.00$ remaining, how much was her original pocket money?",
             "options": [
               "GH¢ 99.00",
               "GH¢ 110.00",
@@ -2635,24 +4139,776 @@
               "GH¢ 85.00"
             ],
             "correctAnswer": "GH¢ 99.00",
-            "hint": "After breakfast, $2/3$ remains. Sweets = $1/6 \\times 2/3 = 1/9$. Remaining fraction = $2/3 - 1/9 = 5/9$.",
-            "workedSolution": "$$\\text{Remainder after breakfast} = 1 - \\frac{1}{3} = \\frac{2}{3}$$\n$$\\text{Spent on sweets} = \\frac{1}{6} \\times \\frac{2}{3} = \\frac{1}{9}$$\n$$\\text{Final Remainder} = \\frac{2}{3} - \\frac{1}{9} = \\frac{6 - 1}{9} = \\frac{5}{9}$$\n$$\\frac{5}{9}M = 55 \\implies M = 55 \\times \\frac{9}{5} = 11 \\times 9 = \\text{GH¢ } 99.00$$.",
+            "hint": "Remainder after breakfast is $2/3$. Biscuits take $1/6 \\times 2/3 = 1/9$. Final remainder fraction is $2/3 - 1/9 = 5/9$.",
+            "workedSolution": "$$\\text{Remainder after breakfast} = 1 - \\frac{1}{3} = \\frac{2}{3}$$\n$$\\text{Biscuits} = \\frac{1}{6} \\times \\frac{2}{3} = \\frac{1}{9}$$\n$$\\text{Remaining Fraction} = \\frac{2}{3} - \\frac{1}{9} = \\frac{6 - 1}{9} = \\frac{5}{9}$$\n$$\\frac{5}{9}M = 55 \\implies M = 55 \\times \\frac{9}{5} = 11 \\times 9 = \\text{GH¢ } 99.00$$.",
             "points": 2
           },
           {
-            "id": "q_frac_b8_h03",
+            "id": "q_b8_frac_h03",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Two containers of squash drink were prepared. Drink A had $\\frac{3}{8}$ fruit concentrate, while Drink B had $\\frac{2}{5}$ fruit concentrate. Which drink tastes stronger of fruit, and by what fraction?",
+            "prompt": "Evaluate: $$\\frac{\\left(\\frac{2}{3} + \\frac{1}{4}\\right) \\times 2\\frac{2}{5}}{\\frac{5}{6} - \\frac{1}{3}}$$.",
             "options": [
-              "Drink B is stronger by 1/40",
-              "Drink A is stronger by 1/40",
-              "Drink B is stronger by 1/20",
-              "Both drinks are equal"
+              "4.4",
+              "3.2",
+              "4.0",
+              "5.1"
             ],
-            "correctAnswer": "Drink B is stronger by 1/40",
-            "hint": "Express with common denominator 40: $3/8 = 15/40$ and $2/5 = 16/40$.",
-            "workedSolution": "$$\\text{Drink A} = \\frac{3}{8} = \\frac{15}{40}$$\n$$\\text{Drink B} = \\frac{2}{5} = \\frac{16}{40}$$\nSince $\\frac{16}{40} > \\frac{15}{40}$, Drink B is stronger by $$\\frac{16}{40} - \\frac{15}{40} = \\frac{1}{40}$$.",
+            "correctAnswer": "4.4",
+            "hint": "Numerator: $\\frac{11}{12} \\times \\frac{12}{5} = \\frac{11}{5}$. Denominator: $\\frac{5}{6} - \\frac{2}{6} = \\frac{3}{6} = \\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Numerator} = \\left(\\frac{8 + 3}{12}\\right) \\times \\frac{12}{5} = \\frac{11}{12} \\times \\frac{12}{5} = \\frac{11}{5}$$\n$$\\text{Denominator} = \\frac{1}{2}$$\n$$\\frac{11}{5} \\div \\frac{1}{2} = \\frac{11}{5} \\times 2 = \\frac{22}{5} = 4.4$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A farmer sold $\\frac{2}{5}$ of his harvest of yams to a wholesaler and $25\\%$ of the remainder to a retailer. If he still has $360$ tubers left, how many yams did he harvest altogether?",
+            "options": [
+              "800",
+              "720",
+              "900",
+              "1,000"
+            ],
+            "correctAnswer": "800",
+            "hint": "Remainder after wholesaler is $3/5$. Retailer gets $1/4 \\times 3/5 = 3/20$. Final fraction is $3/5 - 3/20 = 9/20$.",
+            "workedSolution": "$$\\text{Left after wholesaler} = 1 - \\frac{2}{5} = \\frac{3}{5}$$\n$$\\text{Sold to retailer} = \\frac{1}{4} \\times \\frac{3}{5} = \\frac{3}{20}$$\n$$\\text{Final leftover fraction} = \\frac{3}{5} - \\frac{3}{20} = \\frac{12 - 3}{20} = \\frac{9}{20}$$\n$$\\frac{9}{20}Y = 360 \\implies Y = 360 \\times \\frac{20}{9} = 40 \\times 20 = 800\\text{ tubers}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify without using a calculator: $$\\frac{3\\frac{1}{2} - 1\\frac{1}{4}}{2\\frac{1}{3} + 1\\frac{1}{6}} \\times 1\\frac{5}{9}$$.",
+            "options": [
+              "1",
+              "1 1/3",
+              "3/4",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Numerator: $\\frac{7}{2} - \\frac{5}{4} = \\frac{9}{4}$. Denominator: $\\frac{7}{3} + \\frac{7}{6} = \\frac{21}{6} = \\frac{7}{2}$.",
+            "workedSolution": "$$\\text{Numerator} = \\frac{14 - 5}{4} = \\frac{9}{4}$$\n$$\\text{Denominator} = \\frac{14 + 7}{6} = \\frac{21}{6} = \\frac{7}{2}$$\n$$\\frac{9}{4} \\div \\frac{7}{2} = \\frac{9}{4} \\times \\frac{2}{7} = \\frac{9}{14}$$\n$$\\frac{9}{14} \\times 1\\frac{5}{9} = \\frac{9}{14} \\times \\frac{14}{9} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 1560.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 780.00",
+              "GH¢ 880.00",
+              "GH¢ 680.00",
+              "GH¢ 520.00"
+            ],
+            "correctAnswer": "GH¢ 780.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 1560 = \\text{GH¢ } 780.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $150\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "450 litres",
+              "510 litres",
+              "390 litres",
+              "900 litres"
+            ],
+            "correctAnswer": "450 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 150$.",
+            "workedSolution": "$$\\frac{1}{3}C = 150 \\implies C = 150 \\times 3 = 450\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $228\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "91.2 acres",
+              "101.2 acres",
+              "81.2 acres",
+              "76 acres"
+            ],
+            "correctAnswer": "91.2 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 228 = 91.2\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 1800.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 900.00",
+              "GH¢ 1000.00",
+              "GH¢ 800.00",
+              "GH¢ 600.00"
+            ],
+            "correctAnswer": "GH¢ 900.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 1800 = \\text{GH¢ } 900.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $90\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "270 litres",
+              "330 litres",
+              "210 litres",
+              "540 litres"
+            ],
+            "correctAnswer": "270 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 90$.",
+            "workedSolution": "$$\\frac{1}{3}C = 90 \\implies C = 90 \\times 3 = 270\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $276\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "110.4 acres",
+              "120.4 acres",
+              "100.4 acres",
+              "92 acres"
+            ],
+            "correctAnswer": "110.4 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 276 = 110.4\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 2040.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1020.00",
+              "GH¢ 1120.00",
+              "GH¢ 920.00",
+              "GH¢ 680.00"
+            ],
+            "correctAnswer": "GH¢ 1020.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 2040 = \\text{GH¢ } 1020.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $210\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "630 litres",
+              "690 litres",
+              "570 litres",
+              "1260 litres"
+            ],
+            "correctAnswer": "630 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 210$.",
+            "workedSolution": "$$\\frac{1}{3}C = 210 \\implies C = 210 \\times 3 = 630\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $324\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "129.6 acres",
+              "139.6 acres",
+              "119.6 acres",
+              "108 acres"
+            ],
+            "correctAnswer": "129.6 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 324 = 129.6\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 2280.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1140.00",
+              "GH¢ 1240.00",
+              "GH¢ 1040.00",
+              "GH¢ 760.00"
+            ],
+            "correctAnswer": "GH¢ 1140.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 2280 = \\text{GH¢ } 1140.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $150\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "450 litres",
+              "510 litres",
+              "390 litres",
+              "900 litres"
+            ],
+            "correctAnswer": "450 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 150$.",
+            "workedSolution": "$$\\frac{1}{3}C = 150 \\implies C = 150 \\times 3 = 450\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $372\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "148.8 acres",
+              "158.8 acres",
+              "138.8 acres",
+              "124 acres"
+            ],
+            "correctAnswer": "148.8 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 372 = 148.8\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 2520.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1260.00",
+              "GH¢ 1360.00",
+              "GH¢ 1160.00",
+              "GH¢ 840.00"
+            ],
+            "correctAnswer": "GH¢ 1260.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 2520 = \\text{GH¢ } 1260.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $90\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "270 litres",
+              "330 litres",
+              "210 litres",
+              "540 litres"
+            ],
+            "correctAnswer": "270 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 90$.",
+            "workedSolution": "$$\\frac{1}{3}C = 90 \\implies C = 90 \\times 3 = 270\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $420\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "168 acres",
+              "178 acres",
+              "158 acres",
+              "140 acres"
+            ],
+            "correctAnswer": "168 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 420 = 168\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 2760.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1380.00",
+              "GH¢ 1480.00",
+              "GH¢ 1280.00",
+              "GH¢ 920.00"
+            ],
+            "correctAnswer": "GH¢ 1380.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 2760 = \\text{GH¢ } 1380.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $210\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "630 litres",
+              "690 litres",
+              "570 litres",
+              "1260 litres"
+            ],
+            "correctAnswer": "630 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 210$.",
+            "workedSolution": "$$\\frac{1}{3}C = 210 \\implies C = 210 \\times 3 = 630\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $468\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "187.2 acres",
+              "197.2 acres",
+              "177.2 acres",
+              "156 acres"
+            ],
+            "correctAnswer": "187.2 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 468 = 187.2\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 3000.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1500.00",
+              "GH¢ 1600.00",
+              "GH¢ 1400.00",
+              "GH¢ 1000.00"
+            ],
+            "correctAnswer": "GH¢ 1500.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 3000 = \\text{GH¢ } 1500.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $150\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "450 litres",
+              "510 litres",
+              "390 litres",
+              "900 litres"
+            ],
+            "correctAnswer": "450 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 150$.",
+            "workedSolution": "$$\\frac{1}{3}C = 150 \\implies C = 150 \\times 3 = 450\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $516\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "206.4 acres",
+              "216.4 acres",
+              "196.4 acres",
+              "172 acres"
+            ],
+            "correctAnswer": "206.4 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 516 = 206.4\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 3240.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1620.00",
+              "GH¢ 1720.00",
+              "GH¢ 1520.00",
+              "GH¢ 1080.00"
+            ],
+            "correctAnswer": "GH¢ 1620.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 3240 = \\text{GH¢ } 1620.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $90\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "270 litres",
+              "330 litres",
+              "210 litres",
+              "540 litres"
+            ],
+            "correctAnswer": "270 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 90$.",
+            "workedSolution": "$$\\frac{1}{3}C = 90 \\implies C = 90 \\times 3 = 270\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $564\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "225.6 acres",
+              "235.6 acres",
+              "215.6 acres",
+              "188 acres"
+            ],
+            "correctAnswer": "225.6 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 564 = 225.6\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 3480.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1740.00",
+              "GH¢ 1840.00",
+              "GH¢ 1640.00",
+              "GH¢ 1160.00"
+            ],
+            "correctAnswer": "GH¢ 1740.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 3480 = \\text{GH¢ } 1740.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $210\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "630 litres",
+              "690 litres",
+              "570 litres",
+              "1260 litres"
+            ],
+            "correctAnswer": "630 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 210$.",
+            "workedSolution": "$$\\frac{1}{3}C = 210 \\implies C = 210 \\times 3 = 630\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $612\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "244.8 acres",
+              "254.8 acres",
+              "234.8 acres",
+              "204 acres"
+            ],
+            "correctAnswer": "244.8 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 612 = 244.8\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 3720.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1860.00",
+              "GH¢ 1960.00",
+              "GH¢ 1760.00",
+              "GH¢ 1240.00"
+            ],
+            "correctAnswer": "GH¢ 1860.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 3720 = \\text{GH¢ } 1860.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $150\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "450 litres",
+              "510 litres",
+              "390 litres",
+              "900 litres"
+            ],
+            "correctAnswer": "450 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 150$.",
+            "workedSolution": "$$\\frac{1}{3}C = 150 \\implies C = 150 \\times 3 = 450\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $660\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "264 acres",
+              "274 acres",
+              "254 acres",
+              "220 acres"
+            ],
+            "correctAnswer": "264 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 660 = 264\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 3960.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 1980.00",
+              "GH¢ 2080.00",
+              "GH¢ 1880.00",
+              "GH¢ 1320.00"
+            ],
+            "correctAnswer": "GH¢ 1980.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 3960 = \\text{GH¢ } 1980.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{2\\frac{1}{2} - \\frac{1}{3}}{1\\frac{1}{2} + \\frac{2}{3}}$$.",
+            "options": [
+              "1",
+              "1 1/6",
+              "5/6",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Evaluate numerator and denominator separately using common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{5}{2} - \\frac{1}{3} = \\frac{15 - 2}{6} = \\frac{13}{6}$$\n$$\\text{Denominator: } \\frac{3}{2} + \\frac{2}{3} = \\frac{9 + 4}{6} = \\frac{13}{6}$$\n$$\\frac{13/6}{13/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A community storage tank was $\\frac{5}{6}$ full of water. After $90\\text{ litres}$ were used for irrigation, the tank was $\\frac{1}{2}$ full. What is the full capacity of the tank?",
+            "options": [
+              "270 litres",
+              "330 litres",
+              "210 litres",
+              "540 litres"
+            ],
+            "correctAnswer": "270 litres",
+            "hint": "Fraction used $= \\frac{5}{6} - \\frac{1}{2} = \\frac{5 - 3}{6} = \\frac{2}{6} = \\frac{1}{3}$. Set $\\frac{1}{3}C = 90$.",
+            "workedSolution": "$$\\frac{1}{3}C = 90 \\implies C = 90 \\times 3 = 270\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A piece of land measuring $708\\text{ acres}$ was shared among three siblings. The eldest received $\\frac{2}{5}$ of the land, the second received $\\frac{1}{3}$ of the remainder, and the youngest received the rest. How many acres did the youngest receive?",
+            "options": [
+              "283.2 acres",
+              "293.2 acres",
+              "273.2 acres",
+              "236 acres"
+            ],
+            "correctAnswer": "283.2 acres",
+            "hint": "Calculate remainder after eldest: $\\frac{3}{5}$. Second gets $\\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Youngest gets $\\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Youngest Fraction} = \\frac{3}{5} - \\left(\\frac{1}{3} \\times \\frac{3}{5}\\right) = \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$$\n$$\\text{Youngest Share} = \\frac{2}{5} \\times 708 = 283.2\\text{ acres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_frac_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An artisan receives $\\text{GH¢ } 4200.00$. He gives $\\frac{1}{3}$ to his mother, spends $\\frac{1}{4}$ of the remainder on utilities, and saves the rest. How much does he save?",
+            "options": [
+              "GH¢ 2100.00",
+              "GH¢ 2200.00",
+              "GH¢ 2000.00",
+              "GH¢ 1400.00"
+            ],
+            "correctAnswer": "GH¢ 2100.00",
+            "hint": "Remainder after mother is $\\frac{2}{3}$. Utilities take $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$, so savings is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Savings Fraction} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{2}{3} \\times \\frac{3}{4} = \\frac{1}{2}$$\n$$\\text{Savings} = \\frac{1}{2} \\times 4200 = \\text{GH¢ } 2100.00$$.",
             "points": 2
           }
         ]
