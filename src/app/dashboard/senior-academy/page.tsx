@@ -993,6 +993,231 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleAnswer: "(4, -6)ᵀ"
     },
     {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 42)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "5 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-42",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 5,
+        examTag: "5 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 43)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Comprehensive Objective Exam Series",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-43",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 44)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "4 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-44",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 4,
+        examTag: "4 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 45)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Comprehensive Objective Exam Series",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-45",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 46)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "4 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-46",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 4,
+        examTag: "4 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 47)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Comprehensive Objective Exam Series",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-47",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 48)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-48",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 49)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Comprehensive Objective Exam Series",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-49",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 50)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-50",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 51)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Comprehensive Objective Exam Series",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-51",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 52)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-52",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 53)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Comprehensive Objective Exam Series",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-53",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 54)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-54",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 55)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Comprehensive Objective Exam Series",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-55",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 56)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Mastery Series",
+        description: "Structured Theory, Geometry & Data Modeling",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-56",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",
@@ -2307,7 +2532,7 @@ function MathLab({
     }, [dbProblems, activeGrade]);
 
     // Zero Read-Cost Client-Side Filter over merged static + dynamic sets
-    const filteredModules = useMemo(() => {
+    const filteredModules = useMemo<SuggestedModuleCard[]>(() => {
         let candidateList: SuggestedModuleCard[] = [];
 
         if (viewMode === 'topical') {
@@ -2332,7 +2557,7 @@ function MathLab({
             candidateList = combined;
         }
 
-        return candidateList.filter(mod => {
+        const filtered = candidateList.filter(mod => {
             // 1. Tier Match
             if (mod.gradeTier !== activeGrade) return false;
 
@@ -2395,6 +2620,25 @@ function MathLab({
 
             return true;
         });
+
+        // Numerical sorting for Standard Exam Series (Set 1 through Set 56+)
+        if (viewMode === 'exam_series') {
+            return [...filtered].sort((a, b) => {
+                const extractNum = (item: any) => {
+                    const mId = (item.setId || '').match(/(?:series|set)-?(\d+)/i) || (item.setId || '').match(/(\d+)$/);
+                    if (mId) return parseInt(mId[1], 10);
+                    const mTitle = (item.title || '').match(/Set\s*(\d+)/i);
+                    if (mTitle) return parseInt(mTitle[1], 10);
+                    return 9999;
+                };
+                const numA = extractNum(a);
+                const numB = extractNum(b);
+                if (numA !== numB) return numA - numB;
+                return (a.title || '').localeCompare(b.title || '');
+            });
+        }
+
+        return filtered;
     }, [activeGrade, viewMode, filterSubject, filterFormat, selectedDomain, searchQuery, dynamicSets]);
 
     const handleLaunchModule = async (mod: any) => {
