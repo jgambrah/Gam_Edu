@@ -1,0 +1,490 @@
+{
+  "id": "topic_fractions_decimals_percentages",
+  "topicId": "fractions_decimals_percentages",
+  "title": "Fractions, Decimals & Percentages",
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "strand": {
+    "code": "S1",
+    "name": "STRAND 1: NUMBER"
+  },
+  "subStrand": {
+    "code": "SS3",
+    "name": "Fractions, Decimals and Percentages"
+  },
+  "badge": "Strand 1: Number",
+  "description": "Master benchmark equivalences, mixed fraction operations, recurring decimals, real-life fractional sharing, and multi-step BODMAS evaluation.",
+  "totalPracticeQuestions": 27,
+  "version": 1,
+  "levels": {
+    "b7": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "contentStandard": "B7.1.3.1 - B7.1.3.3: Simplify, compare, and order positive fractions, decimals, and percentages; perform operations and solve fractional sharing problems.",
+      "indicatorsCovered": [
+        "B7.1.3.1.1",
+        "B7.1.3.1.2",
+        "B7.1.3.2.1",
+        "B7.1.3.2.2",
+        "B7.1.3.3.1",
+        "B7.1.3.3.2",
+        "B7.1.3.3.3"
+      ],
+      "summary": "Benchmark fraction-decimal-percent equivalences, comparing and ordering, addition/subtraction of mixed fractions, and fractional parts of quantities.",
+      "notes": "### 1. The Tri-Equivalence Model (Fractions, Decimals & Percentages)\n\nFractions, decimals, and percentages are three representations of the exact same underlying value:\n* **Fraction ($\\frac{a}{b}$):** Parts of a whole divided into equal portions.\n* **Decimal:** Positional base-10 fractional value ($0.1 = \\frac{1}{10}, 0.01 = \\frac{1}{100}$).\n* **Percentage (\\%):** A specialized rate per hundred ($\\frac{p}{100}$).\n\n#### The Benchmark Conversions Table (Instant Recall)\n\n| Fraction | Decimal | Percentage |\n| :---: | :---: | :---: |\n| $\\frac{1}{10}$ | $0.1$ | $10\\%$ |\n| $\\frac{1}{5}$ | $0.2$ | $20\\%$ |\n| $\\frac{1}{4}$ | $0.25$ | $25\\%$ |\n| $\\frac{1}{3}$ | $0.\\dot{3}$ | $33\\frac{1}{3}\\%$ |\n| $\\frac{1}{2}$ | $0.5$ | $50\\%$ |\n| $\\frac{3}{4}$ | $0.75$ | $75\\%$ |\n\n<details>\n<summary>🔍 <b>Self-Check Challenge: Fast Benchmark Conversion</b> (Click to test yourself)</summary>\n\n> **Question:** Convert $\\frac{3}{5}$ into a decimal and a percentage without long division.\n>\n> **Explanation:**\n> * Since the benchmark $\\frac{1}{5} = 0.2 = 20\\%$, then $\\frac{3}{5} = 3 \\times 0.2 = \\mathbf{0.6}$ or $3 \\times 20\\% = \\mathbf{60\\%}$.\n</details>\n\n---\n\n### 2. Ordering Unlike Fractions: The Unified Form Strategy\n\nWhen ordering a mixture of fractions, decimals, and percentages, **convert all terms into a common format** (either decimals or percentages) before comparing.\n\n*Example:* To order $\\frac{3}{8}$, $38\\%$, and $0.35$:\n1. $\\frac{3}{8} = 0.375 = 37.5\\%$\n2. $38\\% = 0.380 = 38.0\\%$\n3. $0.35 = 0.350 = 35.0\\%$\n$$\\text{Ascending Order: } 0.35 < \\frac{3}{8} < 38\\%$$\n\n---\n\n### 3. Addition & Subtraction of Mixed Fractions\n\n* **Rule:** Find the Lowest Common Multiple (LCM) of the denominators.\n* **Decomposition Method:** Group whole numbers and fractional parts separately:\n  $$2\\frac{2}{5} + 1\\frac{2}{3} = (2 + 1) + \\left(\\frac{2}{5} + \\frac{2}{3}\\right) = 3 + \\left(\\frac{6 + 10}{15}\\right) = 3 + \\frac{16}{15} = 3 + 1\\frac{1}{15} = 4\\frac{1}{15}$$\n\n<details>\n<summary>⚠️ <b>Common Exam Trap: Borrowing in Subtraction</b> (Click to inspect)</summary>\n\n> In $3\\frac{1}{4} - 1\\frac{3}{4}$, you cannot compute $\\frac{1}{4} - \\frac{3}{4}$ directly.\n> * Borrow 1 whole from 3: $3\\frac{1}{4} = 2 + \\left(1 + \\frac{1}{4}\\right) = 2\\frac{5}{4}$.\n> * Now subtract: $(2 - 1) + \\left(\\frac{5}{4} - \\frac{3}{4}\\right) = 1 + \\frac{2}{4} = \\mathbf{1\\frac{1}{2}}$.\n</details>\n\n---\n\n### 4. Multiplication & Division of Fractions\n\n* **Multiplication represents 'of':** Multiply numerators directly across, and denominators directly across:\n  $$\\frac{a}{b} \\times \\frac{c}{d} = \\frac{a \\times c}{b \\times d}$$\n* **Division represents 'reciprocal multiplication':** Invert the divisor and multiply:\n  $$\\frac{a}{b} \\div \\frac{c}{d} = \\frac{a}{b} \\times \\frac{d}{c} = \\frac{ad}{bc}$$",
+      "workedExamples": [
+        {
+          "id": "we_frac_b7_01",
+          "title": "Mixed Fraction Arithmetic with Grouping",
+          "problem": "Evaluate: $$3\\frac{1}{3} - 1\\frac{3}{4} + 2\\frac{1}{2}$$.",
+          "steps": [
+            "Step 1 (Why we do this: Convert mixed numbers to improper fractions to maintain a uniform denominator): \n  * $3\\frac{1}{3} = \\frac{10}{3}$\n  * $1\\frac{3}{4} = \\frac{7}{4}$\n  * $2\\frac{1}{2} = \\frac{5}{2}$",
+            "Step 2 (Why we do this: Determine the LCM of denominators): The denominators are 3, 4, and 2. $\\text{LCM}(3, 4, 2) = 12$.",
+            "Step 3 (Why we do this: Re-write each fraction with denominator 12): \n  $$\\frac{10 \\times 4}{12} - \\frac{7 \\times 3}{12} + \\frac{5 \\times 6}{12} = \\frac{40 - 21 + 30}{12}$$",
+            "Step 4 (Why we do this: Evaluate the numerator): \n  $$40 - 21 + 30 = 19 + 30 = 49$$",
+            "Step 5 (Why we do this: Express the improper fraction as a simplified mixed number): \n  $$\\frac{49}{12} = 4\\frac{1}{12}$$"
+          ],
+          "finalAnswer": "$$4\\frac{1}{12}$$"
+        },
+        {
+          "id": "we_frac_b7_02",
+          "title": "Fraction of a Quantity Word Problem",
+          "problem": "A carpenter bought an $8\\frac{3}{4}\\text{ metre}$ timber beam. He cut off $5$ pieces, each measuring $1\\frac{1}{4}\\text{ metres}$ long. What length of timber remained?",
+          "steps": [
+            "Step 1 (Why we do this: Calculate total length utilized): Multiply the number of pieces by the unit length: $5 \\times 1\\frac{1}{4} = 5 \\times \\frac{5}{4} = \\frac{25}{4}\\text{ metres} = 6\\frac{1}{4}\\text{ metres}$.",
+            "Step 2 (Why we do this: Subtract used portion from original length): \n  $$8\\frac{3}{4} - 6\\frac{1}{4} = (8 - 6) + \\left(\\frac{3}{4} - \\frac{1}{4}\\right)$$",
+            "Step 3 (Why we do this: Simplify the remainder): \n  $$2 + \\frac{2}{4} = 2 + \\frac{1}{2} = 2\\frac{1}{2}\\text{ metres}$$"
+          ],
+          "finalAnswer": "$$2\\frac{1}{2}\\text{ metres}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_frac_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following fractions is equivalent to $75\\%$?",
+            "options": ["3/4", "1/4", "5/8", "2/3"],
+            "correctAnswer": "3/4",
+            "hint": "$$75\\% = \\frac{75}{100}$$. Divide both terms by 25.",
+            "workedSolution": "$$\\frac{75 \\div 25}{100 \\div 25} = \\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{5}{8} \\div \\frac{1}{4}$$.",
+            "options": ["2 1/2", "5/32", "1 1/4", "2"],
+            "correctAnswer": "2 1/2",
+            "hint": "Invert the divisor and multiply: $\\frac{5}{8} \\times \\frac{4}{1}$.",
+            "workedSolution": "$$\\frac{5}{8} \\times \\frac{4}{1} = \\frac{20}{8} = \\frac{5}{2} = 2\\frac{1}{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.625$ as a fraction in its lowest terms.",
+            "options": ["5/8", "3/8", "7/8", "5/16"],
+            "correctAnswer": "5/8",
+            "hint": "Divide $625$ and $1000$ by $125$.",
+            "workedSolution": "$$\\frac{625 \\div 125}{1000 \\div 125} = \\frac{5}{8}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_frac_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange the following quantities in ascending order: $0.45, \\, \\frac{2}{5}, \\, 42\\%$.",
+            "options": [
+              "2/5 < 42% < 0.45",
+              "42% < 2/5 < 0.45",
+              "0.45 < 42% < 2/5",
+              "2/5 < 0.45 < 42%"
+            ],
+            "correctAnswer": "2/5 < 42% < 0.45",
+            "hint": "Convert to percentages: $0.45 = 45\\%$, $2/5 = 40\\%$, and $42\\%$.",
+            "workedSolution": "$$40\\% < 42\\% < 45\\% \\implies \\frac{2}{5} < 42\\% < 0.45$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "There are $120$ students in a class. If $\\frac{3}{5}$ of them are girls, how many boys are in the class?",
+            "options": ["48", "72", "50", "36"],
+            "correctAnswer": "48",
+            "hint": "Fraction of boys = $1 - \\frac{3}{5} = \\frac{2}{5}$. Multiply $\\frac{2}{5} \\times 120$.",
+            "workedSolution": "$$\\text{Boys} = \\frac{2}{5} \\times 120 = 2 \\times 24 = 48$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $$2\\frac{1}{3} + 3\\frac{1}{2} - 1\\frac{5}{6}$$.",
+            "options": ["4", "4 1/3", "3 2/3", "4 1/6"],
+            "correctAnswer": "4",
+            "hint": "Use the common denominator 6: $\\frac{7}{3} + \\frac{7}{2} - \\frac{11}{6}$.",
+            "workedSolution": "$$\\frac{14 + 21 - 11}{6} = \\frac{24}{6} = 4$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_frac_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A tank was $\\frac{2}{3}$ full of water. When $150\\text{ litres}$ of water were drawn out, it became $\\frac{1}{4}$ full. Find the total capacity of the tank.",
+            "options": ["360 litres", "300 litres", "450 litres", "240 litres"],
+            "correctAnswer": "360 litres",
+            "hint": "Fraction drawn out = $\\frac{2}{3} - \\frac{1}{4} = \\frac{5}{12}$. Set $\\frac{5}{12} C = 150$.",
+            "workedSolution": "$$\\frac{2}{3} - \\frac{1}{4} = \\frac{8 - 3}{12} = \\frac{5}{12}$$.\n$$\\frac{5}{12}C = 150 \\implies C = 150 \\times \\frac{12}{5} = 30 \\times 12 = 360\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_frac_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\left(2\\frac{1}{2} \\div 1\\frac{1}{4}\\right) - \\left(\\frac{3}{5} \\times 1\\frac{2}{3}\\right)$$.",
+            "options": ["1", "1/2", "1 1/2", "0"],
+            "correctAnswer": "1",
+            "hint": "Evaluate brackets separately: $5/2 \\div 5/4 = 2$ and $3/5 \\times 5/3 = 1$.",
+            "workedSolution": "$$\\left(\\frac{5}{2} \\times \\frac{4}{5}\\right) - \\left(\\frac{3}{5} \\times \\frac{5}{3}\\right) = 2 - 1 = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_frac_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A woman spent $\\frac{2}{5}$ of her monthly allowance on food, and $\\frac{1}{3}$ of the remainder on rent. If she had $\\text{GH¢ } 800.00$ left, how much was her original allowance?",
+            "options": ["GH¢ 2,000.00", "GH¢ 1,800.00", "GH¢ 2,400.00", "GH¢ 1,500.00"],
+            "correctAnswer": "GH¢ 2,000.00",
+            "hint": "Remainder after food = $1 - 2/5 = 3/5$. Spent on rent = $1/3 \\times 3/5 = 1/5$. Final remainder = $3/5 - 1/5 = 2/5$.",
+            "workedSolution": "$$\\text{Food} = \\frac{2}{5}$$\n$$\\text{Rent} = \\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$$\n$$\\text{Remaining Fraction} = 1 - \\left(\\frac{2}{5} + \\frac{1}{5}\\right) = \\frac{2}{5}$$\n$$\\frac{2}{5}A = 800 \\implies A = 800 \\times \\frac{5}{2} = \\text{GH¢ } 2,000.00$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "b8": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "contentStandard": "B8.1.3.1: Apply operations on fractions to solve real-world problems involving quantities and apply the order of operations (BODMAS).",
+      "indicatorsCovered": [
+        "B8.1.3.1.1",
+        "B8.1.3.1.2",
+        "B8.1.3.1.3"
+      ],
+      "summary": "Compound fraction evaluation, nested BODMAS/PEMDAS operations, and fractional word problems.",
+      "notes": "### 1. Order of Operations with Fractions (BODMAS / PEMDAS)\n\nWhen simplifying expressions containing multiple operations, follow the strict hierarchy of precedence:\n1. **B / P (Brackets / Parentheses):** Compute terms inside grouping symbols first.\n2. **O / E (Orders / Exponents & 'Of'):** Evaluate powers, roots, and the word 'of' ($'of' = \\times$).\n3. **D & M (Division & Multiplication):** Perform division and multiplication strictly from **left to right**.\n4. **A & S (Addition & Subtraction):** Perform addition and subtraction from **left to right**.\n\n<details>\n<summary>⚠️ <b>Common Exam Trap: Left-to-Right Precedence</b> (Click to inspect)</summary>\n\n> Evaluate: $$\\frac{3}{4} \\div \\frac{3}{4} \\times \\frac{1}{2}$$\n> * Multiplication does NOT take priority over division! They have equal priority and are evaluated from left to right.\n> * Step 1: $\\frac{3}{4} \\div \\frac{3}{4} = 1$\n> * Step 2: $1 \\times \\frac{1}{2} = \\mathbf{\\frac{1}{2}}$\n> * *(If you multiplied first, you would get $\\frac{3}{4} \\div \\frac{3}{8} = 2$, which is wrong!)*\n</details>\n\n---\n\n### 2. Complex Algebraic & Nested Fractions\n\nA fraction with fractional expressions in the numerator, denominator, or both is evaluated by simplifying the top and bottom independently before dividing:\n\n$$\\frac{\\frac{a}{b} + \\frac{c}{d}}{\\frac{e}{f} - \\frac{g}{h}} = \\left(\\frac{a}{b} + \\frac{c}{d}\\right) \\div \\left(\\frac{e}{f} - \\frac{g}{h}\\right)$$",
+      "workedExamples": [
+        {
+          "id": "we_frac_b8_01",
+          "title": "Strict BODMAS Evaluation on Mixed Fractions",
+          "problem": "Evaluate: $$\\frac{3}{4} + \\frac{5}{8} \\times \\frac{4}{5} - \\frac{1}{6}$$.",
+          "steps": [
+            "Step 1 (Why we do this: Execute Multiplication first according to BODMAS): Evaluate $\\frac{5}{8} \\times \\frac{4}{5}$ before addition: $\\frac{5 \\times 4}{8 \\times 5} = \\frac{20}{40} = \\frac{1}{2}$.",
+            "Step 2 (Why we do this: Substitute simplified product back into expression): The expression becomes $\\frac{3}{4} + \\frac{1}{2} - \\frac{1}{6}$.",
+            "Step 3 (Why we do this: Find the LCM of denominators for addition and subtraction): The denominators are 4, 2, and 6. $\\text{LCM}(4, 2, 6) = 12$.",
+            "Step 4 (Why we do this: Convert and combine numerators): \n  $$\\frac{3(3) + 1(6) - 1(2)}{12} = \\frac{9 + 6 - 2}{12} = \\frac{13}{12}$$",
+            "Step 5 (Why we do this: Express as a mixed number): \n  $$\\frac{13}{12} = 1\\frac{1}{12}$$"
+          ],
+          "finalAnswer": "$$1\\frac{1}{12}$$"
+        },
+        {
+          "id": "we_frac_b8_02",
+          "title": "Complex Fraction Division with Brackets",
+          "problem": "Evaluate: $$\\frac{\\frac{2}{3} + \\frac{1}{2}}{\\frac{5}{6} - \\frac{1}{4}}$$.",
+          "steps": [
+            "Step 1 (Why we do this: Simplify the numerator): \n  $$\\frac{2}{3} + \\frac{1}{2} = \\frac{4 + 3}{6} = \\frac{7}{6}$$",
+            "Step 2 (Why we do this: Simplify the denominator): \n  $$\\frac{5}{6} - \\frac{1}{4} = \\frac{10 - 3}{12} = \\frac{7}{12}$$",
+            "Step 3 (Why we do this: Divide numerator by denominator using reciprocal multiplication): \n  $$\\frac{7}{6} \\div \\frac{7}{12} = \\frac{7}{6} \\times \\frac{12}{7}$$",
+            "Step 4 (Why we do this: Cancel common factors): \n  $$\\frac{1}{1} \\times \\frac{2}{1} = 2$$"
+          ],
+          "finalAnswer": "$$2$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_frac_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\frac{3}{4} \\div \\frac{3}{8} + \\frac{1}{2}$$.",
+            "options": ["2 1/2", "1", "3", "1 1/2"],
+            "correctAnswer": "2 1/2",
+            "hint": "Divide first: $3/4 \\times 8/3 = 2$. Then add $1/2$.",
+            "workedSolution": "$$\\left(\\frac{3}{4} \\times \\frac{8}{3}\\right) + \\frac{1}{2} = 2 + \\frac{1}{2} = 2\\frac{1}{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $$\\left(\\frac{3}{4} + \\frac{5}{8}\\right) \\times \\frac{4}{11}$$.",
+            "options": ["1/2", "1/4", "3/4", "1"],
+            "correctAnswer": "1/2",
+            "hint": "Brackets first: $3/4 + 5/8 = 11/8$. Then multiply by $4/11$.",
+            "workedSolution": "$$\\frac{6 + 5}{8} \\times \\frac{4}{11} = \\frac{11}{8} \\times \\frac{4}{11} = \\frac{4}{8} = \\frac{1}{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $35\\%$ of $\\text{GH¢ } 480.00$?",
+            "options": ["GH¢ 168.00", "GH¢ 144.00", "GH¢ 180.00", "GH¢ 192.00"],
+            "correctAnswer": "GH¢ 168.00",
+            "hint": "$$\\frac{35}{100} \\times 480$$.",
+            "workedSolution": "$$0.35 \\times 480 = \\text{GH¢ } 168.00$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_frac_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $$\\frac{2}{3}\\left(\\frac{3}{4} - \\frac{1}{2}\\right) + \\frac{5}{6}$$.",
+            "options": ["1", "5/6", "1 1/6", "2/3"],
+            "correctAnswer": "1",
+            "hint": "Evaluate inside parentheses first: $3/4 - 1/2 = 1/4$.",
+            "workedSolution": "$$\\frac{2}{3}\\left(\\frac{1}{4}\\right) + \\frac{5}{6} = \\frac{2}{12} + \\frac{5}{6} = \\frac{1}{6} + \\frac{5}{6} = \\frac{6}{6} = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a school, $\\frac{2}{3}$ of the learners eat at the canteen, $\\frac{1}{4}$ bring packed food, and the remaining 35 learners go home for lunch. How many total learners are in the school?",
+            "options": ["420", "360", "480", "300"],
+            "correctAnswer": "420",
+            "hint": "Remaining fraction = $1 - (2/3 + 1/4) = 1/12$. Set $1/12 N = 35$.",
+            "workedSolution": "$$\\frac{2}{3} + \\frac{1}{4} = \\frac{8 + 3}{12} = \\frac{11}{12}$$\n$$\\text{Fraction going home} = 1 - \\frac{11}{12} = \\frac{1}{12}$$\n$$\\frac{1}{12}N = 35 \\implies N = 35 \\times 12 = 420\\text{ learners}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the area of a rectangle whose dimensions are $3\\frac{3}{4}\\text{ cm}$ long by $1\\frac{1}{3}\\text{ cm}$ wide.",
+            "options": ["5 cm²", "4 1/2 cm²", "5 1/4 cm²", "6 cm²"],
+            "correctAnswer": "5 cm²",
+            "hint": "Area = Length × Width: $\\frac{15}{4} \\times \\frac{4}{3}$.",
+            "workedSolution": "$$\\text{Area} = \\frac{15}{4} \\times \\frac{4}{3} = \\frac{60}{12} = 5\\text{ cm}^2$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_frac_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify: $$\\frac{1\\frac{1}{2} + 2\\frac{2}{3}}{3\\frac{1}{4} - 1\\frac{1}{6}}$$.",
+            "options": ["2", "1 1/2", "2 1/3", "1 3/4"],
+            "correctAnswer": "2",
+            "hint": "Numerator = $3/2 + 8/3 = 25/6$. Denominator = $13/4 - 7/6 = 25/12$.",
+            "workedSolution": "$$\\text{Numerator} = \\frac{9 + 16}{6} = \\frac{25}{6}$$\n$$\\text{Denominator} = \\frac{39 - 14}{12} = \\frac{25}{12}$$\n$$\\frac{25}{6} \\div \\frac{25}{12} = \\frac{25}{6} \\times \\frac{12}{25} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_frac_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Dufie spent $\\frac{1}{3}$ of her pocket money on breakfast and $\\frac{1}{6}$ of what remained on sweets. If she still had $\\text{GH¢ } 55.00$, how much was her original pocket money?",
+            "options": ["GH¢ 99.00", "GH¢ 110.00", "GH¢ 90.00", "GH¢ 85.00"],
+            "correctAnswer": "GH¢ 99.00",
+            "hint": "After breakfast, $2/3$ remains. Sweets = $1/6 \\times 2/3 = 1/9$. Remaining fraction = $2/3 - 1/9 = 5/9$.",
+            "workedSolution": "$$\\text{Remainder after breakfast} = 1 - \\frac{1}{3} = \\frac{2}{3}$$\n$$\\text{Spent on sweets} = \\frac{1}{6} \\times \\frac{2}{3} = \\frac{1}{9}$$\n$$\\text{Final Remainder} = \\frac{2}{3} - \\frac{1}{9} = \\frac{6 - 1}{9} = \\frac{5}{9}$$\n$$\\frac{5}{9}M = 55 \\implies M = 55 \\times \\frac{9}{5} = 11 \\times 9 = \\text{GH¢ } 99.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_frac_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two containers of squash drink were prepared. Drink A had $\\frac{3}{8}$ fruit concentrate, while Drink B had $\\frac{2}{5}$ fruit concentrate. Which drink tastes stronger of fruit, and by what fraction?",
+            "options": [
+              "Drink B is stronger by 1/40",
+              "Drink A is stronger by 1/40",
+              "Drink B is stronger by 1/20",
+              "Both drinks are equal"
+            ],
+            "correctAnswer": "Drink B is stronger by 1/40",
+            "hint": "Express with common denominator 40: $3/8 = 15/40$ and $2/5 = 16/40$.",
+            "workedSolution": "$$\\text{Drink A} = \\frac{3}{8} = \\frac{15}{40}$$\n$$\\text{Drink B} = \\frac{2}{5} = \\frac{16}{40}$$\nSince $\\frac{16}{40} > \\frac{15}{40}$, Drink B is stronger by $$\\frac{16}{40} - \\frac{15}{40} = \\frac{1}{40}$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "b9": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "contentStandard": "B9.1.3.1: Apply fraction and decimal arithmetic to real-world commercial problems, recurring decimal conversions, and multi-tier remainder budgeting.",
+      "indicatorsCovered": [
+        "B9.1.3.1.1",
+        "B9.1.3.1.2",
+        "B9.1.3.1.3"
+      ],
+      "summary": "Recurring decimals to common fractions, compound percentage discounts, and multi-tier salary remainder word problems.",
+      "notes": "### 1. Converting Recurring Decimals to Common Fractions\n\nA recurring decimal has a pattern of digits repeating indefinitely ($0.\\dot{7} = 0.777\\dots$ or $0.\\dot{2}\\dot{3} = 0.2323\\dots$). Because it represents a rational number, it can be converted into the fraction $\\frac{a}{b}$:\n\n* **Algebraic Algorithm:**\n  1. Let $x$ equal the recurring decimal: $x = 0.\\dot{7} = 0.777\\dots$\n  2. Multiply by $10^k$ (where $k$ is the number of repeating digits) to shift one repeating block across the decimal: $10x = 7.777\\dots$\n  3. Subtract the original equation: $10x - x = 7.777\\dots - 0.777\\dots \\implies 9x = 7$\n  4. Solve for $x$: $x = \\frac{7}{9}$\n\n<details>\n<summary>🔍 <b>Quick Inspection Rule for Recurring Decimals</b> (Click to inspect)</summary>\n\n> * A single recurring digit: $0.\\dot{a} = \\frac{a}{9}$ (e.g., $0.\\dot{4} = \\frac{4}{9}$)\n> * Two recurring digits: $0.\\dot{a}\\dot{b} = \\frac{ab}{99}$ (e.g., $0.\\dot{4}\\dot{5} = \\frac{45}{99} = \\frac{5}{11}$)\n> * Three recurring digits: $0.\\dot{a}b\\dot{c} = \\frac{abc}{999}$\n</details>\n\n---\n\n### 2. Multi-Tier Remainder Financial Allocations\n\nIn BECE theory examinations, salary and estate distributions involve cascading 'remainders':\n$$\\text{Stage 1: } R_1 = \\text{Total} - \\text{First Expenditure}$$\n$$\\text{Stage 2: } E_2 = \\text{Fraction} \\times R_1$$\n$$\\text{Final Balance: } R_2 = R_1 - E_2$$\n\nNever subtract subsequent fractions from the original Total unless explicitly stated as *\"of the total\"*!",
+      "workedExamples": [
+        {
+          "id": "we_frac_b9_01",
+          "title": "Converting Mixed Recurring Decimal to Fraction",
+          "problem": "Convert the recurring decimal $0.2\\dot{5}$ ($0.2555\\dots$) into a common fraction in its lowest terms.",
+          "steps": [
+            "Step 1 (Why we do this: Set up the algebraic baseline): Let $x = 0.2555\\dots$",
+            "Step 2 (Why we do this: Shift non-repeating digits past the decimal point): Multiply by 10 to isolate the repeating part: $10x = 2.555\\dots$ (Equation 1).",
+            "Step 3 (Why we do this: Shift one repeating period past the decimal point): Multiply by 100: $100x = 25.555\\dots$ (Equation 2).",
+            "Step 4 (Why we do this: Subtract equations to eliminate the infinite recurring tail): \n  $$100x - 10x = 25.555\\dots - 2.555\\dots$$\n  $$90x = 23$$",
+            "Step 5 (Why we do this: Solve for x and simplify): \n  $$x = \\frac{23}{90}$$"
+          ],
+          "finalAnswer": "$$\\frac{23}{90}$$"
+        },
+        {
+          "id": "we_frac_b9_02",
+          "title": "Estate Inheritance Multi-Tier Fraction Distribution",
+          "problem": "A cocoa farmer willed his estate among his wife and three children. The wife received $\\frac{1}{3}$ of the entire estate. The eldest son received $\\frac{1}{4}$ of the remainder. The remaining balance was shared equally between the two youngest daughters. If each daughter received $\\text{GH¢ } 15,000.00$, calculate the total value of the farmer's estate.",
+          "steps": [
+            "Step 1 (Why we do this: Find the remainder after the wife's share): The wife's share $= \\frac{1}{3}$. Remainder $= 1 - \\frac{1}{3} = \\frac{2}{3}$.",
+            "Step 2 (Why we do this: Calculate eldest son's share from the remainder): \n  $$\\text{Eldest Son} = \\frac{1}{4} \\times \\frac{2}{3} = \\frac{2}{12} = \\frac{1}{6}$$",
+            "Step 3 (Why we do this: Determine the balance left for the daughters): \n  $$\\text{Balance} = \\frac{2}{3} - \\frac{1}{6} = \\frac{4 - 1}{6} = \\frac{3}{6} = \\frac{1}{2}$$",
+            "Step 4 (Why we do this: Determine each daughter's individual fraction): Since two daughters share $\\frac{1}{2}$ equally, each daughter receives:\n  $$\\frac{1}{2} \\div 2 = \\frac{1}{4}$$",
+            "Step 5 (Why we do this: Equate individual fraction to cash amount and solve for Total Estate E): \n  $$\\frac{1}{4}E = 15,000 \\implies E = 15,000 \\times 4 = \\text{GH¢ } 60,000.00$$"
+          ],
+          "finalAnswer": "$$\\text{Total Estate Value} = \\text{GH¢ } 60,000.00$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_frac_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{8}$ into a common fraction.",
+            "options": ["8/9", "4/5", "8/10", "8/99"],
+            "correctAnswer": "8/9",
+            "hint": "A single recurring digit $0.\\dot{a} = \\frac{a}{9}$.",
+            "workedSolution": "$$x = 0.888\\dots \\implies 10x - x = 8 \\implies 9x = 8 \\implies x = \\frac{8}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A television marked $\\text{GH¢ } 2,250.00$ was sold for $\\text{GH¢ } 2,025.00$. What percentage discount was granted?",
+            "options": ["10%", "12%", "15%", "8%"],
+            "correctAnswer": "10%",
+            "hint": "Discount = $2,250 - 2,025 = 225$. Percentage = $(225 / 2250) \\times 100\\%$.",
+            "workedSolution": "$$\\text{Discount} = \\text{GH¢ } 225.00$$.\n$$\\text{Percentage} = \\frac{225}{2250} \\times 100\\% = 10\\%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.\\dot{3}\\dot{6}$ as a fraction in its simplest form.",
+            "options": ["4/11", "36/100", "12/33", "1/3"],
+            "correctAnswer": "4/11",
+            "hint": "$$0.\\dot{a}\\dot{b} = \\frac{ab}{99}$$. Divide $36$ and $99$ by $9$.",
+            "workedSolution": "$$\\frac{36 \\div 9}{99 \\div 9} = \\frac{4}{11}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_frac_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} - \\frac{5}{8} \\div 2\\frac{1}{2}$$.",
+            "options": ["1/4", "1/2", "3/8", "0"],
+            "correctAnswer": "1/4",
+            "hint": "$2/3 \\times 3/4 = 1/2$. $5/8 \\div 5/2 = 5/8 \\times 2/5 = 1/4$.",
+            "workedSolution": "$$\\frac{1}{2} - \\frac{1}{4} = \\frac{2 - 1}{4} = \\frac{1}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In an election between two candidates, the winner obtained $56\\%$ of the valid votes. If the winner won by a majority of $1,800$ votes, find the total number of valid votes cast.",
+            "options": ["15,000", "12,000", "18,000", "20,000"],
+            "correctAnswer": "15,000",
+            "hint": "Opponent received $100\\% - 56\\% = 44\\%$. Majority difference = $56\\% - 44\\% = 12\\%$. Set $12\\% V = 1800$.",
+            "workedSolution": "$$56\\% - 44\\% = 12\\%$$\n$$12\\% V = 1,800 \\implies V = 1,800 \\times \\frac{100}{12} = 150 \\times 100 = 15,000\\text{ votes}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_frac_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $0.1\\dot{6}$ ($0.1666\\dots$) into a simple common fraction.",
+            "options": ["1/6", "16/99", "1/60", "2/15"],
+            "correctAnswer": "1/6",
+            "hint": "$10x = 1.666\\dots$ and $100x = 16.666\\dots$. $90x = 15$.",
+            "workedSolution": "$$90x = 15 \\implies x = \\frac{15}{90} = \\frac{1}{6}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_frac_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A trader bought a consignment of goods. She spent $\\frac{1}{4}$ of her capital on transport and $\\frac{2}{5}$ of the remainder on storage. If she was left with $\\text{GH¢ } 5,400.00$, calculate her initial capital.",
+            "options": ["GH¢ 12,000.00", "GH¢ 10,800.00", "GH¢ 14,000.00", "GH¢ 9,600.00"],
+            "correctAnswer": "GH¢ 12,000.00",
+            "hint": "Remainder after transport = $3/4$. Storage = $2/5 \\times 3/4 = 3/10$. Remaining fraction = $3/4 - 3/10 = 9/20$.",
+            "workedSolution": "$$\\text{Transport} = \\frac{1}{4}$$\n$$\\text{Storage} = \\frac{2}{5} \\times \\frac{3}{4} = \\frac{3}{10}$$\n$$\\text{Spent so far} = \\frac{1}{4} + \\frac{3}{10} = \\frac{5 + 6}{20} = \\frac{11}{20}$$\n$$\\text{Fraction Remaining} = 1 - \\frac{11}{20} = \\frac{9}{20}$$\n$$\\frac{9}{20}C = 5,400 \\implies C = 5,400 \\times \\frac{20}{9} = 600 \\times 20 = \\text{GH¢ } 12,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_frac_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{34 \\div 3^2 + 40 - 2^3 \\times 3^2 \\div 9}{2\\frac{1}{2} - 1\\frac{1}{4}}$$.",
+            "options": ["28.62", "30.44", "32.18", "25.00"],
+            "correctAnswer": "28.62",
+            "hint": "Numerator: $34 \\div 9 \\approx 3.778$, $2^3 \\times 9 \\div 9 = 8$. $3.778 + 40 - 8 = 35.778$. Denominator: $2.5 - 1.25 = 1.25$.",
+            "workedSolution": "$$\\text{Numerator} = \\frac{34}{9} + 40 - (8 \\times 9 \\div 9) = \\frac{34}{9} + 32 = \\frac{322}{9} \\approx 35.778$$\n$$\\text{Denominator} = \\frac{5}{2} - \\frac{5}{4} = \\frac{5}{4} = 1.25$$\n$$\\frac{322}{9} \\div \\frac{5}{4} = \\frac{322 \\times 4}{45} = \\frac{1288}{45} \\approx 28.62$$.",
+            "points": 2
+          },
+          {
+            "id": "q_frac_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Express the recurring decimal $2.1\\dot{4}\\dot{5}$ as a mixed number in simplest form.",
+            "options": ["2 8/55", "2 145/990", "2 7/50", "2 16/110"],
+            "correctAnswer": "2 8/55",
+            "hint": "Separate integer 2: $x = 0.14545\\dots$. $10x = 1.4545\\dots$, $1000x = 145.4545\\dots$. $990x = 144$.",
+            "workedSolution": "$$\\text{Fractional Part: } 990x = 144 \\implies x = \\frac{144}{990} = \\frac{72}{495} = \\frac{8}{55}$$\n$$\\text{Whole expression} = 2\\frac{8}{55}$$.",
+            "points": 2
+          }
+        ]
+      }
+    }
+  },
+  "linkedExamQuestions": [
+    {
+      "setId": "jhs-math-mastery-series-45",
+      "year": 1990,
+      "paper": 1,
+      "questionNumber": 2,
+      "promptSnippet": "Simplify 5/6 - 1/4 + 2/3."
+    },
+    {
+      "setId": "jhs-math-mastery-series-46",
+      "year": 1990,
+      "paper": 2,
+      "questionNumber": "2(b)",
+      "promptSnippet": "Solve for x in the fractional equation x/3 + 2/5 = 2x/5 - 1/2."
+    }
+  ],
+  "updatedAt": "2026-09-17T12:30:00.000Z"
+}

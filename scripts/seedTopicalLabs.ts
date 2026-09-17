@@ -166,6 +166,9 @@ async function runSeeding() {
   if (fs.existsSync(path.join(__dirname, 'payloads', 'topics', 'topic_sets_and_venn_diagrams.json'))) {
     await seedTopicLabDoc('topic_sets_and_venn_diagrams.json');
   }
+  if (fs.existsSync(path.join(__dirname, 'payloads', 'topics', 'topic_fractions_decimals_percentages.json'))) {
+    await seedTopicLabDoc('topic_fractions_decimals_percentages.json');
+  }
   if (fs.existsSync(path.join(__dirname, 'payloads', 'topics', 'topic_algebraic_expressions.json'))) {
     await seedTopicLabDoc('topic_algebraic_expressions.json');
   }
