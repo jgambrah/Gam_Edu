@@ -14,7 +14,7 @@
   },
   "badge": "Strand 2: Algebra",
   "description": "Master linear equations, concrete balance scale models, inequalities on number lines, Cartesian slope-intercept form (y = mx + c), and simultaneous graph intersections.",
-  "totalPracticeQuestions": 168,
+  "totalPracticeQuestions": 309,
   "version": 1,
   "levels": {
     "b7": {
@@ -2510,142 +2510,1614 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_eq_b8_l01",
+            "id": "q_b8_eq_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Find the gradient of the line passing through $(2, 3)$ and $(6, 11)$.",
+            "prompt": "Which inequality is represented on the number line below?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='71.25' y1='44' x2='71.25' y2='56' stroke='#475569' stroke-width='1.5'/><text x='71.25' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='107.5' y1='44' x2='107.5' y2='56' stroke='#475569' stroke-width='1.5'/><text x='107.5' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='143.75' y1='44' x2='143.75' y2='56' stroke='#475569' stroke-width='1.5'/><text x='143.75' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='216.25' y1='44' x2='216.25' y2='56' stroke='#475569' stroke-width='1.5'/><text x='216.25' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='252.5' y1='44' x2='252.5' y2='56' stroke='#475569' stroke-width='1.5'/><text x='252.5' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='288.75' y1='44' x2='288.75' y2='56' stroke='#475569' stroke-width='1.5'/><text x='288.75' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='216.25' y1='50' x2='216.25' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='216.25' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='216.25' cy='32' r='5.5' fill='#ffffff' stroke='#2563eb' stroke-width='2.5'/></svg>",
             "options": [
+              "x > 2",
+              "x ≥ 2",
+              "x < 2",
+              "x ≤ 2"
+            ],
+            "correctAnswer": "x > 2",
+            "hint": "An open circle at 2 with the arrow pointing to the right means strictly greater than 2.",
+            "workedSolution": "The unshaded circle at 2 denotes $>$, and the ray pointing rightward indicates values exceeding 2. Thus, $x > 2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Calculate the gradient ($m$) of the straight line passing through the points $(1, 2)$ and $(3, 8)$.",
+            "options": [
+              "3",
               "2",
               "4",
-              "1/2",
-              "3"
+              "6"
             ],
-            "correctAnswer": "2",
-            "hint": "$$m = \\frac{11 - 3}{6 - 2}$$.",
-            "workedSolution": "$$m = \\frac{8}{4} = 2$$.",
+            "correctAnswer": "3",
+            "hint": "Use the gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1}$.",
+            "workedSolution": "$$m = \\frac{8 - 2}{3 - 1} = \\frac{6}{2} = 3$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b8_l02",
+            "id": "q_b8_eq_l03",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "What is the gradient of the straight line $y = 5x + 13$?",
+            "prompt": "In the straight line equation $y = 4x - 7$, what are the gradient and the $y$-intercept?",
             "options": [
-              "5",
-              "13",
-              "-5",
-              "5/13"
+              "Gradient = 4, y-intercept = -7",
+              "Gradient = -7, y-intercept = 4",
+              "Gradient = 4, y-intercept = 7",
+              "Gradient = -4, y-intercept = -7"
             ],
-            "correctAnswer": "5",
-            "hint": "In $y = mx + c$, $m$ is the coefficient of $x$.",
-            "workedSolution": "Comparing with $y = mx + c$, $m = 5$.",
+            "correctAnswer": "Gradient = 4, y-intercept = -7",
+            "hint": "Compare with the slope-intercept form: $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 4$ and the constant term is $c = -7$.",
             "points": 1
           },
           {
-            "id": "q_eq_b8_l03",
+            "id": "q_b8_eq_l04",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Which inequality has its solution illustrated by a closed circle on 2 directed to the right?",
+            "prompt": "Which inequality is shown on the number line below?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='71.25' y1='44' x2='71.25' y2='56' stroke='#475569' stroke-width='1.5'/><text x='71.25' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='107.5' y1='44' x2='107.5' y2='56' stroke='#475569' stroke-width='1.5'/><text x='107.5' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='143.75' y1='44' x2='143.75' y2='56' stroke='#475569' stroke-width='1.5'/><text x='143.75' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='216.25' y1='44' x2='216.25' y2='56' stroke='#475569' stroke-width='1.5'/><text x='216.25' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='252.5' y1='44' x2='252.5' y2='56' stroke='#475569' stroke-width='1.5'/><text x='252.5' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='288.75' y1='44' x2='288.75' y2='56' stroke='#475569' stroke-width='1.5'/><text x='288.75' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='180' y1='50' x2='180' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='180' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='180' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ -1",
+              "x < -1",
+              "x ≥ -1",
+              "x > -1"
+            ],
+            "correctAnswer": "x ≤ -1",
+            "hint": "A solid (filled) circle represents $\\le$ or $\\ge$. The arrow points to the left.",
+            "workedSolution": "A solid circle at $-1$ with a ray directed leftward denotes numbers less than or equal to $-1$: $x \\le -1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $x + 4 > 9$.",
+            "options": [
+              "x > 5",
+              "x > 13",
+              "x < 5",
+              "x ≥ 5"
+            ],
+            "correctAnswer": "x > 5",
+            "hint": "Subtract 4 from both sides: $9 - 4$.",
+            "workedSolution": "$$x > 9 - 4 \\implies x > 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient of any perfectly horizontal straight line?",
+            "options": [
+              "0",
+              "1",
+              "undefined",
+              "-1"
+            ],
+            "correctAnswer": "0",
+            "hint": "For a horizontal line, $\\Delta y = y_2 - y_1 = 0$.",
+            "workedSolution": "Since there is no vertical rise ($\\Delta y = 0$), $m = \\frac{0}{\\Delta x} = 0$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve: $2x \\le 10$.",
+            "options": [
+              "x ≤ 5",
+              "x ≥ 5",
+              "x ≤ 20",
+              "x < 5"
+            ],
+            "correctAnswer": "x ≤ 5",
+            "hint": "Divide both sides by 2.",
+            "workedSolution": "$$x \\le \\frac{10}{2} \\implies x \\le 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "From the coordinate graph below:<br/><svg viewBox='0 0 320 200' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='30' y1='100' x2='290' y2='100' stroke='#64748b' stroke-width='2'/><polygon points='290,97 298,100 290,103' fill='#64748b'/><text x='298' y='115' font-size='12' font-weight='bold' fill='#334155'>x</text><line x1='160' y1='180' x2='160' y2='20' stroke='#64748b' stroke-width='2'/><polygon points='157,20 160,12 163,20' fill='#64748b'/><text x='170' y='20' font-size='12' font-weight='bold' fill='#334155'>y</text><text x='148' y='115' font-size='11' fill='#64748b'>O</text><line x1='60' y1='160' x2='260' y2='40' stroke='#2563eb' stroke-width='3'/><circle cx='100' cy='136' r='4.5' fill='#dc2626'/><text x='105' y='152' font-size='11' font-weight='bold' fill='#dc2626'>(0, 1)</text><circle cx='220' cy='64' r='4.5' fill='#dc2626'/><text x='215' y='52' font-size='11' font-weight='bold' fill='#dc2626'>(2, 5)</text><text x='50' y='40' font-size='12' font-weight='bold' fill='#2563eb'>y = 2x + 1</text></svg><br/>What is the $y$-intercept of the line?",
+            "options": [
+              "(0, 1)",
+              "(1, 0)",
+              "(0, 2)",
+              "(2, 5)"
+            ],
+            "correctAnswer": "(0, 1)",
+            "hint": "The $y$-intercept is where the line crosses the vertical $y$-axis ($x = 0$).",
+            "workedSolution": "The line intersects the vertical $y$-axis at $y = 1$, giving coordinate $(0, 1)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient of a straight line passing through $(0, 0)$ and $(4, 12)$.",
+            "options": [
+              "3",
+              "4",
+              "1/3",
+              "12"
+            ],
+            "correctAnswer": "3",
+            "hint": "$$m = \\frac{12 - 0}{4 - 0}$$.",
+            "workedSolution": "$$m = \\frac{12}{4} = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve: $x - 5 < 2$.",
+            "options": [
+              "x < 7",
+              "x < -3",
+              "x > 7",
+              "x ≤ 7"
+            ],
+            "correctAnswer": "x < 7",
+            "hint": "Add 5 to both sides: $2 + 5$.",
+            "workedSolution": "$$x < 2 + 5 \\implies x < 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='151' y1='50' x2='151' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='151' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='151' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ -1",
+              "x ≥ -1",
+              "x < -1",
+              "x > -1"
+            ],
+            "correctAnswer": "x ≤ -1",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at -1, circle is solid, and ray points left: $x \\le -1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='238' y1='50' x2='238' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='238' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='238' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
             "options": [
               "x ≥ 2",
-              "x > 2",
               "x ≤ 2",
+              "x > 2",
               "x < 2"
             ],
             "correctAnswer": "x ≥ 2",
-            "hint": "Closed circle means 'or equal to' ($\\ge$), and right arrow means greater than.",
-            "workedSolution": "$$x \\ge 2$$.",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at 2. The circle is solid, and the ray points right, so $x \\ge 2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(2, 2)$ and $(4, 8)$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{8 - 2}{4 - 2}$.",
+            "workedSolution": "$$m = \\frac{8 - 2}{4 - 2} = \\frac{6}{2} = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 6x - 3$?",
+            "options": [
+              "m = 6, c = -3",
+              "m = -3, c = 6",
+              "m = 6, c = 3",
+              "m = -6, c = -3"
+            ],
+            "correctAnswer": "m = 6, c = -3",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 6$ and the constant term is $c = -3$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='122' y1='50' x2='122' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='122' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='122' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ -2",
+              "x ≥ -2",
+              "x < -2",
+              "x > -2"
+            ],
+            "correctAnswer": "x ≤ -2",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at -2, circle is solid, and ray points left: $x \\le -2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='151' y1='50' x2='151' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='151' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='151' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ -1",
+              "x ≤ -1",
+              "x > -1",
+              "x < -1"
+            ],
+            "correctAnswer": "x ≥ -1",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at -1. The circle is solid, and the ray points right, so $x \\ge -1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(3, 2)$ and $(5, 10)$.",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{10 - 2}{5 - 3}$.",
+            "workedSolution": "$$m = \\frac{10 - 2}{5 - 3} = \\frac{8}{2} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 5x + 1$?",
+            "options": [
+              "m = 5, c = 1",
+              "m = 1, c = 5",
+              "m = 5, c = -1",
+              "m = -5, c = 1"
+            ],
+            "correctAnswer": "m = 5, c = 1",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 5$ and the constant term is $c = 1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='238' y1='50' x2='238' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='238' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='238' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ 2",
+              "x ≥ 2",
+              "x < 2",
+              "x > 2"
+            ],
+            "correctAnswer": "x ≤ 2",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at 2, circle is solid, and ray points left: $x \\le 2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='267' y1='50' x2='267' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='267' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='267' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ 3",
+              "x ≤ 3",
+              "x > 3",
+              "x < 3"
+            ],
+            "correctAnswer": "x ≥ 3",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at 3. The circle is solid, and the ray points right, so $x \\ge 3$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(1, 2)$ and $(3, 6)$.",
+            "options": [
+              "2",
+              "3",
+              "1",
+              "4"
+            ],
+            "correctAnswer": "2",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{6 - 2}{3 - 1}$.",
+            "workedSolution": "$$m = \\frac{6 - 2}{3 - 1} = \\frac{4}{2} = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 4x - 2$?",
+            "options": [
+              "m = 4, c = -2",
+              "m = -2, c = 4",
+              "m = 4, c = 2",
+              "m = -4, c = -2"
+            ],
+            "correctAnswer": "m = 4, c = -2",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 4$ and the constant term is $c = -2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='209' y1='50' x2='209' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='209' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='209' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ 1",
+              "x ≥ 1",
+              "x < 1",
+              "x > 1"
+            ],
+            "correctAnswer": "x ≤ 1",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at 1, circle is solid, and ray points left: $x \\le 1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='180' y1='50' x2='180' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='180' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='180' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ 0",
+              "x ≤ 0",
+              "x > 0",
+              "x < 0"
+            ],
+            "correctAnswer": "x ≥ 0",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at 0. The circle is solid, and the ray points right, so $x \\ge 0$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(2, 2)$ and $(4, 8)$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{8 - 2}{4 - 2}$.",
+            "workedSolution": "$$m = \\frac{8 - 2}{4 - 2} = \\frac{6}{2} = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 3x + 2$?",
+            "options": [
+              "m = 3, c = 2",
+              "m = 2, c = 3",
+              "m = 3, c = -2",
+              "m = -3, c = 2"
+            ],
+            "correctAnswer": "m = 3, c = 2",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 3$ and the constant term is $c = 2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='180' y1='50' x2='180' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='180' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='180' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ 0",
+              "x ≥ 0",
+              "x < 0",
+              "x > 0"
+            ],
+            "correctAnswer": "x ≤ 0",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at 0, circle is solid, and ray points left: $x \\le 0$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='93' y1='50' x2='93' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='93' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='93' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ -3",
+              "x ≤ -3",
+              "x > -3",
+              "x < -3"
+            ],
+            "correctAnswer": "x ≥ -3",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at -3. The circle is solid, and the ray points right, so $x \\ge -3$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(3, 2)$ and $(5, 10)$.",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{10 - 2}{5 - 3}$.",
+            "workedSolution": "$$m = \\frac{10 - 2}{5 - 3} = \\frac{8}{2} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 2x - 1$?",
+            "options": [
+              "m = 2, c = -1",
+              "m = -1, c = 2",
+              "m = 2, c = 1",
+              "m = -2, c = -1"
+            ],
+            "correctAnswer": "m = 2, c = -1",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 2$ and the constant term is $c = -1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='151' y1='50' x2='151' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='151' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='151' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ -1",
+              "x ≥ -1",
+              "x < -1",
+              "x > -1"
+            ],
+            "correctAnswer": "x ≤ -1",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at -1, circle is solid, and ray points left: $x \\le -1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='209' y1='50' x2='209' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='209' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='209' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ 1",
+              "x ≤ 1",
+              "x > 1",
+              "x < 1"
+            ],
+            "correctAnswer": "x ≥ 1",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at 1. The circle is solid, and the ray points right, so $x \\ge 1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(1, 2)$ and $(3, 6)$.",
+            "options": [
+              "2",
+              "3",
+              "1",
+              "4"
+            ],
+            "correctAnswer": "2",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{6 - 2}{3 - 1}$.",
+            "workedSolution": "$$m = \\frac{6 - 2}{3 - 1} = \\frac{4}{2} = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 6x + 3$?",
+            "options": [
+              "m = 6, c = 3",
+              "m = 3, c = 6",
+              "m = 6, c = -3",
+              "m = -6, c = 3"
+            ],
+            "correctAnswer": "m = 6, c = 3",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 6$ and the constant term is $c = 3$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='122' y1='50' x2='122' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='122' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='122' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ -2",
+              "x ≥ -2",
+              "x < -2",
+              "x > -2"
+            ],
+            "correctAnswer": "x ≤ -2",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at -2, circle is solid, and ray points left: $x \\le -2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='122' y1='50' x2='122' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='122' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='122' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ -2",
+              "x ≤ -2",
+              "x > -2",
+              "x < -2"
+            ],
+            "correctAnswer": "x ≥ -2",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at -2. The circle is solid, and the ray points right, so $x \\ge -2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(2, 2)$ and $(4, 8)$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{8 - 2}{4 - 2}$.",
+            "workedSolution": "$$m = \\frac{8 - 2}{4 - 2} = \\frac{6}{2} = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 5x + 0$?",
+            "options": [
+              "m = 5, c = 0",
+              "m = 0, c = 5",
+              "m = 5, c = 0",
+              "m = -5, c = 0"
+            ],
+            "correctAnswer": "m = 5, c = 0",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 5$ and the constant term is $c = 0$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='238' y1='50' x2='238' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='238' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='238' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ 2",
+              "x ≥ 2",
+              "x < 2",
+              "x > 2"
+            ],
+            "correctAnswer": "x ≤ 2",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at 2, circle is solid, and ray points left: $x \\le 2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='238' y1='50' x2='238' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='238' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='238' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ 2",
+              "x ≤ 2",
+              "x > 2",
+              "x < 2"
+            ],
+            "correctAnswer": "x ≥ 2",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at 2. The circle is solid, and the ray points right, so $x \\ge 2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(3, 2)$ and $(5, 10)$.",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{10 - 2}{5 - 3}$.",
+            "workedSolution": "$$m = \\frac{10 - 2}{5 - 3} = \\frac{8}{2} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 4x - 3$?",
+            "options": [
+              "m = 4, c = -3",
+              "m = -3, c = 4",
+              "m = 4, c = 3",
+              "m = -4, c = -3"
+            ],
+            "correctAnswer": "m = 4, c = -3",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 4$ and the constant term is $c = -3$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='209' y1='50' x2='209' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='209' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='209' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ 1",
+              "x ≥ 1",
+              "x < 1",
+              "x > 1"
+            ],
+            "correctAnswer": "x ≤ 1",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at 1, circle is solid, and ray points left: $x \\le 1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='151' y1='50' x2='151' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='151' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='151' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ -1",
+              "x ≤ -1",
+              "x > -1",
+              "x < -1"
+            ],
+            "correctAnswer": "x ≥ -1",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at -1. The circle is solid, and the ray points right, so $x \\ge -1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(1, 2)$ and $(3, 6)$.",
+            "options": [
+              "2",
+              "3",
+              "1",
+              "4"
+            ],
+            "correctAnswer": "2",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{6 - 2}{3 - 1}$.",
+            "workedSolution": "$$m = \\frac{6 - 2}{3 - 1} = \\frac{4}{2} = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 3x + 1$?",
+            "options": [
+              "m = 3, c = 1",
+              "m = 1, c = 3",
+              "m = 3, c = -1",
+              "m = -3, c = 1"
+            ],
+            "correctAnswer": "m = 3, c = 1",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 3$ and the constant term is $c = 1$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality matches the ray shown on this number line?<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='180' y1='50' x2='180' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='180' y1='32' x2='15' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='15,27 7,32 15,37' fill='#2563eb'/><circle cx='180' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≤ 0",
+              "x ≥ 0",
+              "x < 0",
+              "x > 0"
+            ],
+            "correctAnswer": "x ≤ 0",
+            "hint": "The ray points to the left (less than). Circle is solid (inclusive).",
+            "workedSolution": "The boundary is at 0, circle is solid, and ray points left: $x \\le 0$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Identify the inequality shown on this axis:<br/><svg viewBox='0 0 360 90' width='100%' height='90' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#e2e8f0' stroke-width='1'/><line x1='20' y1='50' x2='340' y2='50' stroke='#1e293b' stroke-width='2'/><polygon points='20,46 12,50 20,54' fill='#1e293b'/><polygon points='340,46 348,50 340,54' fill='#1e293b'/><line x1='35' y1='44' x2='35' y2='56' stroke='#475569' stroke-width='1.5'/><text x='35' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-5</text><line x1='64' y1='44' x2='64' y2='56' stroke='#475569' stroke-width='1.5'/><text x='64' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-4</text><line x1='93' y1='44' x2='93' y2='56' stroke='#475569' stroke-width='1.5'/><text x='93' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-3</text><line x1='122' y1='44' x2='122' y2='56' stroke='#475569' stroke-width='1.5'/><text x='122' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-2</text><line x1='151' y1='44' x2='151' y2='56' stroke='#475569' stroke-width='1.5'/><text x='151' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>-1</text><line x1='180' y1='44' x2='180' y2='56' stroke='#475569' stroke-width='1.5'/><text x='180' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>0</text><line x1='209' y1='44' x2='209' y2='56' stroke='#475569' stroke-width='1.5'/><text x='209' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>1</text><line x1='238' y1='44' x2='238' y2='56' stroke='#475569' stroke-width='1.5'/><text x='238' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>2</text><line x1='267' y1='44' x2='267' y2='56' stroke='#475569' stroke-width='1.5'/><text x='267' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>3</text><line x1='296' y1='44' x2='296' y2='56' stroke='#475569' stroke-width='1.5'/><text x='296' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>4</text><line x1='325' y1='44' x2='325' y2='56' stroke='#475569' stroke-width='1.5'/><text x='325' y='72' font-size='11' font-family='sans-serif' fill='#334155' text-anchor='middle'>5</text><line x1='267' y1='50' x2='267' y2='32' stroke='#2563eb' stroke-width='2' stroke-dasharray='3'/><line x1='267' y1='32' x2='345' y2='32' stroke='#2563eb' stroke-width='3.5'/><polygon points='345,27 353,32 345,37' fill='#2563eb'/><circle cx='267' cy='32' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/></svg>",
+            "options": [
+              "x ≥ 3",
+              "x ≤ 3",
+              "x > 3",
+              "x < 3"
+            ],
+            "correctAnswer": "x ≥ 3",
+            "hint": "Check the circle type (solid = inclusive) and the arrow direction (right = greater than).",
+            "workedSolution": "The boundary is at 3. The circle is solid, and the ray points right, so $x \\ge 3$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient ($m$) of the line passing through $(2, 2)$ and $(4, 8)$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "Gradient formula: $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{8 - 2}{4 - 2}$.",
+            "workedSolution": "$$m = \\frac{8 - 2}{4 - 2} = \\frac{6}{2} = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient and $y$-intercept of the straight line $y = 2x - 2$?",
+            "options": [
+              "m = 2, c = -2",
+              "m = -2, c = 2",
+              "m = 2, c = 2",
+              "m = -2, c = -2"
+            ],
+            "correctAnswer": "m = 2, c = -2",
+            "hint": "Compare directly with slope-intercept form $y = mx + c$.",
+            "workedSolution": "In $y = mx + c$, the coefficient of $x$ is $m = 2$ and the constant term is $c = -2$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_eq_b8_m01",
+            "id": "q_b8_eq_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Find the equation of a line with slope $2$ and $y$-intercept $-3$.",
+            "prompt": "Solve the inequality: $$-3x < 12$$.",
             "options": [
-              "y = 2x - 3",
-              "y = -3x + 2",
-              "2x - y = -3",
-              "y = 2x + 3"
+              "x > -4",
+              "x < -4",
+              "x > 4",
+              "x ≤ -4"
             ],
-            "correctAnswer": "y = 2x - 3",
-            "hint": "Substitute $m = 2$ and $c = -3$ into $y = mx + c$.",
-            "workedSolution": "$$y = 2x + (-3) \\implies y = 2x - 3$$.",
+            "correctAnswer": "x > -4",
+            "hint": "When dividing or multiplying both sides of an inequality by a negative number, reverse the inequality sign.",
+            "workedSolution": "$$\\frac{-3x}{-3} > \\frac{12}{-3} \\implies x > -4$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b8_m02",
+            "id": "q_b8_eq_m02",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Solve the inequality: $x + 4 \\le 3x - 16$.",
+            "prompt": "Express $2x + 3y = 12$ in the slope-intercept form $y = mx + c$, and identify its gradient.",
             "options": [
-              "x ≥ 10",
-              "x ≤ 10",
+              "y = -2/3x + 4; gradient = -2/3",
+              "y = 2/3x + 4; gradient = 2/3",
+              "y = -2x + 12; gradient = -2",
+              "y = -3/2x + 6; gradient = -3/2"
+            ],
+            "correctAnswer": "y = -2/3x + 4; gradient = -2/3",
+            "hint": "Isolate $3y$: $3y = -2x + 12$, then divide every term by 3.",
+            "workedSolution": "$$3y = -2x + 12 \\implies y = -\\frac{2}{3}x + 4$$\n$$\\text{Gradient } m = -\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $4x - 5 \\ge 2x + 7$.",
+            "options": [
               "x ≥ 6",
-              "x ≤ 6"
+              "x ≤ 6",
+              "x ≥ 1",
+              "x ≥ 12"
             ],
-            "correctAnswer": "x ≥ 10",
-            "hint": "Subtract $x$ from both sides, add 16 to both sides.",
-            "workedSolution": "$$4 + 16 \\le 3x - x \\implies 20 \\le 2x \\implies x \\ge 10$$.",
+            "correctAnswer": "x ≥ 6",
+            "hint": "Subtract $2x$ from both sides, then add 5 to both sides.",
+            "workedSolution": "$$4x - 2x \\ge 7 + 5 \\implies 2x \\ge 12 \\implies x \\ge 6$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b8_m03",
+            "id": "q_b8_eq_m04",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Find the $y$-intercept of the line $2x - 8y + 3 = 0$.",
+            "prompt": "Find the gradient of the line passing through $(-2, 5)$ and $(4, -7)$.",
             "options": [
-              "3/8",
-              "-3/8",
-              "3/2",
-              "-3/2"
+              "-2",
+              "2",
+              "-1/2",
+              "-3"
             ],
-            "correctAnswer": "3/8",
-            "hint": "Rearrange to $8y = 2x + 3 \\implies y = \\frac{2}{8}x + \\frac{3}{8}$.",
-            "workedSolution": "$$8y = 2x + 3 \\implies y = \\frac{1}{4}x + \\frac{3}{8}$$. $y$-intercept is $3/8$.",
+            "correctAnswer": "-2",
+            "hint": "$$m = \\frac{-7 - 5}{4 - (-2)}$$.",
+            "workedSolution": "$$m = \\frac{-12}{4 + 2} = \\frac{-12}{6} = -2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $5 - 2x \\le 13$.",
+            "options": [
+              "x ≥ -4",
+              "x ≤ -4",
+              "x ≥ 4",
+              "x ≤ 4"
+            ],
+            "correctAnswer": "x ≥ -4",
+            "hint": "Subtract 5: $-2x \\le 8$. Divide by $-2$ and flip the inequality sign.",
+            "workedSolution": "$$-2x \\le 13 - 5 \\implies -2x \\le 8 \\implies x \\ge \\frac{8}{-2} \\implies x \\ge -4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $x + 2y = 8$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -1/2x + 4; y-intercept = (0, 4)",
+              "y = 1/2x + 4; y-intercept = (0, 4)",
+              "y = -2/1x + 8; y-intercept = (0, 8)",
+              "y = -1x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -1/2x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $x$, then divide by 2. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$2y = -x + 8 \\implies y = -\\frac{1}{2}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 6$.",
+            "options": [
+              "x ≥ 5",
+              "x ≤ 5",
+              "x ≥ 4",
+              "x > 5"
+            ],
+            "correctAnswer": "x ≥ 5",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 6 + 4 \\implies 2x \\ge 10 \\implies x \\ge 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $4x + 5 < 29$.",
+            "options": [
+              "x < 6",
+              "x > 6",
+              "x ≤ 6",
+              "x < 7"
+            ],
+            "correctAnswer": "x < 6",
+            "hint": "Subtract 5 from both sides: 29 - 5 = 24. Then divide by 4.",
+            "workedSolution": "$$4x < 24 \\implies x < \\frac{24}{4} \\implies x < 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 15$$.",
+            "options": [
+              "x ≥ -5",
+              "x ≤ -5",
+              "x ≥ 5",
+              "x ≤ 5"
+            ],
+            "correctAnswer": "x ≥ -5",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{15}{-3} \\implies x \\ge -5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $2x + 3y = 12$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -2/3x + 4; y-intercept = (0, 4)",
+              "y = 2/3x + 4; y-intercept = (0, 4)",
+              "y = -3/2x + 12; y-intercept = (0, 12)",
+              "y = -2x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -2/3x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $2x$, then divide by 3. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$3y = -2x + 12 \\implies y = -\\frac{2}{3}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 4$.",
+            "options": [
+              "x ≥ 4",
+              "x ≤ 4",
+              "x ≥ 3",
+              "x > 4"
+            ],
+            "correctAnswer": "x ≥ 4",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 4 + 4 \\implies 2x \\ge 8 \\implies x \\ge 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $2x + 4 < 14$.",
+            "options": [
+              "x < 5",
+              "x > 5",
+              "x ≤ 5",
+              "x < 6"
+            ],
+            "correctAnswer": "x < 5",
+            "hint": "Subtract 4 from both sides: 14 - 4 = 10. Then divide by 2.",
+            "workedSolution": "$$2x < 10 \\implies x < \\frac{10}{2} \\implies x < 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 9$$.",
+            "options": [
+              "x ≥ -3",
+              "x ≤ -3",
+              "x ≥ 3",
+              "x ≤ 3"
+            ],
+            "correctAnswer": "x ≥ -3",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{9}{-3} \\implies x \\ge -3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $3x + 4y = 16$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -3/4x + 4; y-intercept = (0, 4)",
+              "y = 3/4x + 4; y-intercept = (0, 4)",
+              "y = -4/3x + 16; y-intercept = (0, 16)",
+              "y = -3x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -3/4x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $3x$, then divide by 4. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$4y = -3x + 16 \\implies y = -\\frac{3}{4}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 2$.",
+            "options": [
+              "x ≥ 3",
+              "x ≤ 3",
+              "x ≥ 2",
+              "x > 3"
+            ],
+            "correctAnswer": "x ≥ 3",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 2 + 4 \\implies 2x \\ge 6 \\implies x \\ge 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $3x + 3 < 15$.",
+            "options": [
+              "x < 4",
+              "x > 4",
+              "x ≤ 4",
+              "x < 5"
+            ],
+            "correctAnswer": "x < 4",
+            "hint": "Subtract 3 from both sides: 15 - 3 = 12. Then divide by 3.",
+            "workedSolution": "$$3x < 12 \\implies x < \\frac{12}{3} \\implies x < 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 21$$.",
+            "options": [
+              "x ≥ -7",
+              "x ≤ -7",
+              "x ≥ 7",
+              "x ≤ 7"
+            ],
+            "correctAnswer": "x ≥ -7",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{21}{-3} \\implies x \\ge -7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $x + 2y = 8$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -1/2x + 4; y-intercept = (0, 4)",
+              "y = 1/2x + 4; y-intercept = (0, 4)",
+              "y = -2/1x + 8; y-intercept = (0, 8)",
+              "y = -1x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -1/2x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $x$, then divide by 2. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$2y = -x + 8 \\implies y = -\\frac{1}{2}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 10$.",
+            "options": [
+              "x ≥ 7",
+              "x ≤ 7",
+              "x ≥ 6",
+              "x > 7"
+            ],
+            "correctAnswer": "x ≥ 7",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 10 + 4 \\implies 2x \\ge 14 \\implies x \\ge 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $4x + 2 < 14$.",
+            "options": [
+              "x < 3",
+              "x > 3",
+              "x ≤ 3",
+              "x < 4"
+            ],
+            "correctAnswer": "x < 3",
+            "hint": "Subtract 2 from both sides: 14 - 2 = 12. Then divide by 4.",
+            "workedSolution": "$$4x < 12 \\implies x < \\frac{12}{4} \\implies x < 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 15$$.",
+            "options": [
+              "x ≥ -5",
+              "x ≤ -5",
+              "x ≥ 5",
+              "x ≤ 5"
+            ],
+            "correctAnswer": "x ≥ -5",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{15}{-3} \\implies x \\ge -5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $2x + 3y = 12$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -2/3x + 4; y-intercept = (0, 4)",
+              "y = 2/3x + 4; y-intercept = (0, 4)",
+              "y = -3/2x + 12; y-intercept = (0, 12)",
+              "y = -2x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -2/3x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $2x$, then divide by 3. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$3y = -2x + 12 \\implies y = -\\frac{2}{3}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 8$.",
+            "options": [
+              "x ≥ 6",
+              "x ≤ 6",
+              "x ≥ 5",
+              "x > 6"
+            ],
+            "correctAnswer": "x ≥ 6",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 8 + 4 \\implies 2x \\ge 12 \\implies x \\ge 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $2x + 6 < 20$.",
+            "options": [
+              "x < 7",
+              "x > 7",
+              "x ≤ 7",
+              "x < 8"
+            ],
+            "correctAnswer": "x < 7",
+            "hint": "Subtract 6 from both sides: 20 - 6 = 14. Then divide by 2.",
+            "workedSolution": "$$2x < 14 \\implies x < \\frac{14}{2} \\implies x < 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 9$$.",
+            "options": [
+              "x ≥ -3",
+              "x ≤ -3",
+              "x ≥ 3",
+              "x ≤ 3"
+            ],
+            "correctAnswer": "x ≥ -3",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{9}{-3} \\implies x \\ge -3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $3x + 4y = 16$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -3/4x + 4; y-intercept = (0, 4)",
+              "y = 3/4x + 4; y-intercept = (0, 4)",
+              "y = -4/3x + 16; y-intercept = (0, 16)",
+              "y = -3x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -3/4x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $3x$, then divide by 4. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$4y = -3x + 16 \\implies y = -\\frac{3}{4}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 6$.",
+            "options": [
+              "x ≥ 5",
+              "x ≤ 5",
+              "x ≥ 4",
+              "x > 5"
+            ],
+            "correctAnswer": "x ≥ 5",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 6 + 4 \\implies 2x \\ge 10 \\implies x \\ge 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $3x + 5 < 23$.",
+            "options": [
+              "x < 6",
+              "x > 6",
+              "x ≤ 6",
+              "x < 7"
+            ],
+            "correctAnswer": "x < 6",
+            "hint": "Subtract 5 from both sides: 23 - 5 = 18. Then divide by 3.",
+            "workedSolution": "$$3x < 18 \\implies x < \\frac{18}{3} \\implies x < 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 21$$.",
+            "options": [
+              "x ≥ -7",
+              "x ≤ -7",
+              "x ≥ 7",
+              "x ≤ 7"
+            ],
+            "correctAnswer": "x ≥ -7",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{21}{-3} \\implies x \\ge -7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $x + 2y = 8$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -1/2x + 4; y-intercept = (0, 4)",
+              "y = 1/2x + 4; y-intercept = (0, 4)",
+              "y = -2/1x + 8; y-intercept = (0, 8)",
+              "y = -1x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -1/2x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $x$, then divide by 2. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$2y = -x + 8 \\implies y = -\\frac{1}{2}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 4$.",
+            "options": [
+              "x ≥ 4",
+              "x ≤ 4",
+              "x ≥ 3",
+              "x > 4"
+            ],
+            "correctAnswer": "x ≥ 4",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 4 + 4 \\implies 2x \\ge 8 \\implies x \\ge 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $4x + 4 < 24$.",
+            "options": [
+              "x < 5",
+              "x > 5",
+              "x ≤ 5",
+              "x < 6"
+            ],
+            "correctAnswer": "x < 5",
+            "hint": "Subtract 4 from both sides: 24 - 4 = 20. Then divide by 4.",
+            "workedSolution": "$$4x < 20 \\implies x < \\frac{20}{4} \\implies x < 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 15$$.",
+            "options": [
+              "x ≥ -5",
+              "x ≤ -5",
+              "x ≥ 5",
+              "x ≤ 5"
+            ],
+            "correctAnswer": "x ≥ -5",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{15}{-3} \\implies x \\ge -5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $2x + 3y = 12$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -2/3x + 4; y-intercept = (0, 4)",
+              "y = 2/3x + 4; y-intercept = (0, 4)",
+              "y = -3/2x + 12; y-intercept = (0, 12)",
+              "y = -2x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -2/3x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $2x$, then divide by 3. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$3y = -2x + 12 \\implies y = -\\frac{2}{3}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 2$.",
+            "options": [
+              "x ≥ 3",
+              "x ≤ 3",
+              "x ≥ 2",
+              "x > 3"
+            ],
+            "correctAnswer": "x ≥ 3",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 2 + 4 \\implies 2x \\ge 6 \\implies x \\ge 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $2x + 3 < 11$.",
+            "options": [
+              "x < 4",
+              "x > 4",
+              "x ≤ 4",
+              "x < 5"
+            ],
+            "correctAnswer": "x < 4",
+            "hint": "Subtract 3 from both sides: 11 - 3 = 8. Then divide by 2.",
+            "workedSolution": "$$2x < 8 \\implies x < \\frac{8}{2} \\implies x < 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 9$$.",
+            "options": [
+              "x ≥ -3",
+              "x ≤ -3",
+              "x ≥ 3",
+              "x ≤ 3"
+            ],
+            "correctAnswer": "x ≥ -3",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{9}{-3} \\implies x \\ge -3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $3x + 4y = 16$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -3/4x + 4; y-intercept = (0, 4)",
+              "y = 3/4x + 4; y-intercept = (0, 4)",
+              "y = -4/3x + 16; y-intercept = (0, 16)",
+              "y = -3x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -3/4x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $3x$, then divide by 4. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$4y = -3x + 16 \\implies y = -\\frac{3}{4}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 10$.",
+            "options": [
+              "x ≥ 7",
+              "x ≤ 7",
+              "x ≥ 6",
+              "x > 7"
+            ],
+            "correctAnswer": "x ≥ 7",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 10 + 4 \\implies 2x \\ge 14 \\implies x \\ge 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $3x + 2 < 11$.",
+            "options": [
+              "x < 3",
+              "x > 3",
+              "x ≤ 3",
+              "x < 4"
+            ],
+            "correctAnswer": "x < 3",
+            "hint": "Subtract 2 from both sides: 11 - 2 = 9. Then divide by 3.",
+            "workedSolution": "$$3x < 9 \\implies x < \\frac{9}{3} \\implies x < 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 21$$.",
+            "options": [
+              "x ≥ -7",
+              "x ≤ -7",
+              "x ≥ 7",
+              "x ≤ 7"
+            ],
+            "correctAnswer": "x ≥ -7",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{21}{-3} \\implies x \\ge -7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $x + 2y = 8$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -1/2x + 4; y-intercept = (0, 4)",
+              "y = 1/2x + 4; y-intercept = (0, 4)",
+              "y = -2/1x + 8; y-intercept = (0, 8)",
+              "y = -1x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -1/2x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $x$, then divide by 2. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$2y = -x + 8 \\implies y = -\\frac{1}{2}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 8$.",
+            "options": [
+              "x ≥ 6",
+              "x ≤ 6",
+              "x ≥ 5",
+              "x > 6"
+            ],
+            "correctAnswer": "x ≥ 6",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 8 + 4 \\implies 2x \\ge 12 \\implies x \\ge 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $4x + 6 < 34$.",
+            "options": [
+              "x < 7",
+              "x > 7",
+              "x ≤ 7",
+              "x < 8"
+            ],
+            "correctAnswer": "x < 7",
+            "hint": "Subtract 6 from both sides: 34 - 6 = 28. Then divide by 4.",
+            "workedSolution": "$$4x < 28 \\implies x < \\frac{28}{4} \\implies x < 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 15$$.",
+            "options": [
+              "x ≥ -5",
+              "x ≤ -5",
+              "x ≥ 5",
+              "x ≤ 5"
+            ],
+            "correctAnswer": "x ≥ -5",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{15}{-3} \\implies x \\ge -5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $2x + 3y = 12$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -2/3x + 4; y-intercept = (0, 4)",
+              "y = 2/3x + 4; y-intercept = (0, 4)",
+              "y = -3/2x + 12; y-intercept = (0, 12)",
+              "y = -2x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -2/3x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $2x$, then divide by 3. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$3y = -2x + 12 \\implies y = -\\frac{2}{3}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x - 4 \\ge x + 6$.",
+            "options": [
+              "x ≥ 5",
+              "x ≤ 5",
+              "x ≥ 4",
+              "x > 5"
+            ],
+            "correctAnswer": "x ≥ 5",
+            "hint": "Group variable terms on the left: $3x - x = 2x$. Add 4 to the right.",
+            "workedSolution": "$$3x - x \\ge 6 + 4 \\implies 2x \\ge 10 \\implies x \\ge 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the linear inequality: $2x + 5 < 17$.",
+            "options": [
+              "x < 6",
+              "x > 6",
+              "x ≤ 6",
+              "x < 7"
+            ],
+            "correctAnswer": "x < 6",
+            "hint": "Subtract 5 from both sides: 17 - 5 = 12. Then divide by 2.",
+            "workedSolution": "$$2x < 12 \\implies x < \\frac{12}{2} \\implies x < 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$-3x \\le 9$$.",
+            "options": [
+              "x ≥ -3",
+              "x ≤ -3",
+              "x ≥ 3",
+              "x ≤ 3"
+            ],
+            "correctAnswer": "x ≥ -3",
+            "hint": "Divide both sides by -3 and reverse the inequality sign from $\\le$ to $\\ge$.",
+            "workedSolution": "$$\\frac{-3x}{-3} \\ge \\frac{9}{-3} \\implies x \\ge -3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_eq_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Express $3x + 4y = 16$ in the form $y = mx + c$, and identify the $y$-intercept.",
+            "options": [
+              "y = -3/4x + 4; y-intercept = (0, 4)",
+              "y = 3/4x + 4; y-intercept = (0, 4)",
+              "y = -4/3x + 16; y-intercept = (0, 16)",
+              "y = -3x + 4; y-intercept = (4, 0)"
+            ],
+            "correctAnswer": "y = -3/4x + 4; y-intercept = (0, 4)",
+            "hint": "Subtract $3x$, then divide by 4. The $y$-intercept is $(0, c)$.",
+            "workedSolution": "$$4y = -3x + 16 \\implies y = -\\frac{3}{4}x + 4$$\n$$\\text{y-intercept is } (0, 4)$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_eq_b8_h01",
+            "id": "q_b8_eq_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Find the equation of a line passing through $(3, -1)$ with slope $\\frac{2}{3}$.",
-            "options": [
-              "2x - 3y = 9",
-              "2x - 3y = 3",
-              "3x - 2y = 9",
-              "2x + 3y = 3"
-            ],
-            "correctAnswer": "2x - 3y = 9",
-            "hint": "$$y - (-1) = \\frac{2}{3}(x - 3)$$. Multiply through by 3.",
-            "workedSolution": "$$3(y + 1) = 2(x - 3) \\implies 3y + 3 = 2x - 6 \\implies 2x - 3y = 9$$.",
-            "points": 2
-          },
-          {
-            "id": "q_eq_b8_h02",
-            "difficulty": "hard",
-            "dokLevel": 3,
-            "prompt": "A school has a budget of $\\text{GH¢ } 240.00$ to buy drinks. A sachet drink costs $\\text{GH¢ } 10.00$ and a bottle drink costs $\\text{GH¢ } 12.00$. If they buy 12 sachet drinks, what is the maximum number of bottle drinks ($b$) they can buy?",
-            "options": [
-              "b ≤ 10",
-              "b ≤ 11",
-              "b ≤ 12",
-              "b ≤ 9"
-            ],
-            "correctAnswer": "b ≤ 10",
-            "hint": "$$10(12) + 12b \\le 240 \\implies 120 + 12b \\le 240$$.",
-            "workedSolution": "$$120 + 12b \\le 240 \\implies 12b \\le 120 \\implies b \\le 10$$.",
-            "points": 2
-          },
-          {
-            "id": "q_eq_b8_h03",
-            "difficulty": "hard",
-            "dokLevel": 3,
-            "prompt": "If $x$ is an integer such that $-2 < x \\le 3$, list the complete truth set for $x$.",
+            "prompt": "Find the set of all integers $x$ that satisfy the double inequality: $$-3 < 2x + 1 \\le 7$$.",
             "options": [
               "{-1, 0, 1, 2, 3}",
               "{-2, -1, 0, 1, 2, 3}",
@@ -2653,8 +4125,792 @@
               "{-1, 0, 1, 2}"
             ],
             "correctAnswer": "{-1, 0, 1, 2, 3}",
-            "hint": "$-2$ is not included (strict inequality), while $3$ is included.",
-            "workedSolution": "$$\\{-1, 0, 1, 2, 3\\}$$.",
+            "hint": "Subtract 1 across all three parts: $-4 < 2x \\le 6$. Divide by 2: $-2 < x \\le 3$.",
+            "workedSolution": "$$-3 - 1 < 2x \\le 7 - 1 \\implies -4 < 2x \\le 6 \\implies -2 < x \\le 3$$\nIntegers strictly greater than $-2$ and up to $3$ are: $\\{-1, 0, 1, 2, 3\\}$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the straight line passing through $(2, 3)$ with gradient $m = -2$.",
+            "options": [
+              "y = -2x + 7",
+              "y = -2x + 5",
+              "y = 2x - 1",
+              "y = -2x - 7"
+            ],
+            "correctAnswer": "y = -2x + 7",
+            "hint": "Use $y - y_1 = m(x - x_1)$ or substitute $(2, 3)$ into $y = -2x + c$.",
+            "workedSolution": "$$3 = -2(2) + c \\implies 3 = -4 + c \\implies c = 7$$\n$$y = -2x + 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{x - 1}{3} - \\frac{x + 2}{4} > 1$$.",
+            "options": [
+              "x > 22",
+              "x < 22",
+              "x > 18",
+              "x ≥ 22"
+            ],
+            "correctAnswer": "x > 22",
+            "hint": "Multiply through by the LCM of 3 and 4, which is 12: $4(x - 1) - 3(x + 2) > 12$.",
+            "workedSolution": "$$4(x - 1) - 3(x + 2) > 12 \\implies 4x - 4 - 3x - 6 > 12$$\n$$x - 10 > 12 \\implies x > 22$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student must maintain a mean score of at least 70 across 4 examination papers to qualify for a scholarship. Her scores on the first 3 papers are 65, 72, and 68. What is the minimum score she must obtain on the fourth paper?",
+            "options": [
+              "75",
+              "70",
+              "78",
+              "80"
+            ],
+            "correctAnswer": "75",
+            "hint": "Form the inequality: $\\frac{65 + 72 + 68 + x}{4} \\ge 70$.",
+            "workedSolution": "$$\\frac{205 + x}{4} \\ge 70 \\implies 205 + x \\ge 280 \\implies x \\ge 280 - 205 \\implies x \\ge 75$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the straight line passing through $(3, 5)$ and $(7, 13)$.",
+            "options": [
+              "y = 2x - 1",
+              "y = 2x + 1",
+              "y = 3x - 4",
+              "y = 2x - 5"
+            ],
+            "correctAnswer": "y = 2x - 1",
+            "hint": "Calculate gradient $m = \\frac{13 - 5}{7 - 3} = 2$. Then find $c = 5 - 2(3)$.",
+            "workedSolution": "$$m = \\frac{8}{4} = 2$$\n$$y = 2x + c \\implies 5 = 2(3) + c \\implies 5 = 6 + c \\implies c = -1$$\n$$y = 2x - 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 1}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 19",
+              "x < 19",
+              "x ≥ 19",
+              "x > 21"
+            ],
+            "correctAnswer": "x > 19",
+            "hint": "Multiply by LCM (6): $3(x + 1) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 1) - 2(x - 1) > 24 \\implies 3x + 3 - 2x + 2 > 24$$\n$$x + 5 > 24 \\implies x > 19$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 47.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "6 pens",
+              "7 pens",
+              "5 pens",
+              "8 pens"
+            ],
+            "correctAnswer": "6 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 47$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 47 \\implies 2p \\le 12 \\implies p \\le 6.0$$\nSince $p$ must be a whole number, maximum pens = 6.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 4$$?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "4"
+            ],
+            "correctAnswer": "8",
+            "hint": "The integers range from -3 to 4. Total count = 4 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 4\\}$. Total values = $4 - (-4) = 8$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(1, 3)$ and $(4, 9)$.",
+            "options": [
+              "y = 2x + 1",
+              "y = 2x - 1",
+              "y = 3x + 1",
+              "y = -2x + 1"
+            ],
+            "correctAnswer": "y = 2x + 1",
+            "hint": "Find gradient $m = \\frac{9 - 3}{4 - 1} = 2$. Substitute $(1, 3)$ into $y = 2x + c$.",
+            "workedSolution": "$$m = \\frac{9 - 3}{4 - 1} = \\frac{6}{3} = 2$$\n$$3 = 2(1) + c \\implies c = 1$$\n$$y = 2x + 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 2}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 16",
+              "x < 16",
+              "x ≥ 16",
+              "x > 18"
+            ],
+            "correctAnswer": "x > 16",
+            "hint": "Multiply by LCM (6): $3(x + 2) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 2) - 2(x - 1) > 24 \\implies 3x + 6 - 2x + 2 > 24$$\n$$x + 8 > 24 \\implies x > 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 51.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "8 pens",
+              "9 pens",
+              "7 pens",
+              "10 pens"
+            ],
+            "correctAnswer": "8 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 51$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 51 \\implies 2p \\le 16 \\implies p \\le 8.0$$\nSince $p$ must be a whole number, maximum pens = 8.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 2$$?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "2"
+            ],
+            "correctAnswer": "6",
+            "hint": "The integers range from -3 to 2. Total count = 2 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 2\\}$. Total values = $2 - (-4) = 6$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(2, 3)$ and $(5, 12)$.",
+            "options": [
+              "y = 3x - 3",
+              "y = 3x + 3",
+              "y = 4x - 3",
+              "y = -3x - 3"
+            ],
+            "correctAnswer": "y = 3x - 3",
+            "hint": "Find gradient $m = \\frac{12 - 3}{5 - 2} = 3$. Substitute $(2, 3)$ into $y = 3x + c$.",
+            "workedSolution": "$$m = \\frac{12 - 3}{5 - 2} = \\frac{9}{3} = 3$$\n$$3 = 3(2) + c \\implies c = -3$$\n$$y = 3x - 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 3}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 13",
+              "x < 13",
+              "x ≥ 13",
+              "x > 15"
+            ],
+            "correctAnswer": "x > 13",
+            "hint": "Multiply by LCM (6): $3(x + 3) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 3) - 2(x - 1) > 24 \\implies 3x + 9 - 2x + 2 > 24$$\n$$x + 11 > 24 \\implies x > 13$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 55.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "10 pens",
+              "11 pens",
+              "9 pens",
+              "12 pens"
+            ],
+            "correctAnswer": "10 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 55$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 55 \\implies 2p \\le 20 \\implies p \\le 10.0$$\nSince $p$ must be a whole number, maximum pens = 10.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 6$$?",
+            "options": [
+              "10",
+              "11",
+              "9",
+              "6"
+            ],
+            "correctAnswer": "10",
+            "hint": "The integers range from -3 to 6. Total count = 6 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 6\\}$. Total values = $6 - (-4) = 10$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(3, 3)$ and $(6, 15)$.",
+            "options": [
+              "y = 4x - 9",
+              "y = 4x + 9",
+              "y = 5x - 9",
+              "y = -4x - 9"
+            ],
+            "correctAnswer": "y = 4x - 9",
+            "hint": "Find gradient $m = \\frac{15 - 3}{6 - 3} = 4$. Substitute $(3, 3)$ into $y = 4x + c$.",
+            "workedSolution": "$$m = \\frac{15 - 3}{6 - 3} = \\frac{12}{3} = 4$$\n$$3 = 4(3) + c \\implies c = -9$$\n$$y = 4x - 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 1}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 19",
+              "x < 19",
+              "x ≥ 19",
+              "x > 21"
+            ],
+            "correctAnswer": "x > 19",
+            "hint": "Multiply by LCM (6): $3(x + 1) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 1) - 2(x - 1) > 24 \\implies 3x + 3 - 2x + 2 > 24$$\n$$x + 5 > 24 \\implies x > 19$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 59.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "12 pens",
+              "13 pens",
+              "11 pens",
+              "14 pens"
+            ],
+            "correctAnswer": "12 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 59$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 59 \\implies 2p \\le 24 \\implies p \\le 12.0$$\nSince $p$ must be a whole number, maximum pens = 12.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 4$$?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "4"
+            ],
+            "correctAnswer": "8",
+            "hint": "The integers range from -3 to 4. Total count = 4 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 4\\}$. Total values = $4 - (-4) = 8$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(1, 3)$ and $(4, 9)$.",
+            "options": [
+              "y = 2x + 1",
+              "y = 2x - 1",
+              "y = 3x + 1",
+              "y = -2x + 1"
+            ],
+            "correctAnswer": "y = 2x + 1",
+            "hint": "Find gradient $m = \\frac{9 - 3}{4 - 1} = 2$. Substitute $(1, 3)$ into $y = 2x + c$.",
+            "workedSolution": "$$m = \\frac{9 - 3}{4 - 1} = \\frac{6}{3} = 2$$\n$$3 = 2(1) + c \\implies c = 1$$\n$$y = 2x + 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 2}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 16",
+              "x < 16",
+              "x ≥ 16",
+              "x > 18"
+            ],
+            "correctAnswer": "x > 16",
+            "hint": "Multiply by LCM (6): $3(x + 2) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 2) - 2(x - 1) > 24 \\implies 3x + 6 - 2x + 2 > 24$$\n$$x + 8 > 24 \\implies x > 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 43.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "4 pens",
+              "5 pens",
+              "3 pens",
+              "6 pens"
+            ],
+            "correctAnswer": "4 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 43$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 43 \\implies 2p \\le 8 \\implies p \\le 4.0$$\nSince $p$ must be a whole number, maximum pens = 4.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 2$$?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "2"
+            ],
+            "correctAnswer": "6",
+            "hint": "The integers range from -3 to 2. Total count = 2 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 2\\}$. Total values = $2 - (-4) = 6$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(2, 3)$ and $(5, 12)$.",
+            "options": [
+              "y = 3x - 3",
+              "y = 3x + 3",
+              "y = 4x - 3",
+              "y = -3x - 3"
+            ],
+            "correctAnswer": "y = 3x - 3",
+            "hint": "Find gradient $m = \\frac{12 - 3}{5 - 2} = 3$. Substitute $(2, 3)$ into $y = 3x + c$.",
+            "workedSolution": "$$m = \\frac{12 - 3}{5 - 2} = \\frac{9}{3} = 3$$\n$$3 = 3(2) + c \\implies c = -3$$\n$$y = 3x - 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 3}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 13",
+              "x < 13",
+              "x ≥ 13",
+              "x > 15"
+            ],
+            "correctAnswer": "x > 13",
+            "hint": "Multiply by LCM (6): $3(x + 3) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 3) - 2(x - 1) > 24 \\implies 3x + 9 - 2x + 2 > 24$$\n$$x + 11 > 24 \\implies x > 13$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 47.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "6 pens",
+              "7 pens",
+              "5 pens",
+              "8 pens"
+            ],
+            "correctAnswer": "6 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 47$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 47 \\implies 2p \\le 12 \\implies p \\le 6.0$$\nSince $p$ must be a whole number, maximum pens = 6.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 6$$?",
+            "options": [
+              "10",
+              "11",
+              "9",
+              "6"
+            ],
+            "correctAnswer": "10",
+            "hint": "The integers range from -3 to 6. Total count = 6 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 6\\}$. Total values = $6 - (-4) = 10$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(3, 3)$ and $(6, 15)$.",
+            "options": [
+              "y = 4x - 9",
+              "y = 4x + 9",
+              "y = 5x - 9",
+              "y = -4x - 9"
+            ],
+            "correctAnswer": "y = 4x - 9",
+            "hint": "Find gradient $m = \\frac{15 - 3}{6 - 3} = 4$. Substitute $(3, 3)$ into $y = 4x + c$.",
+            "workedSolution": "$$m = \\frac{15 - 3}{6 - 3} = \\frac{12}{3} = 4$$\n$$3 = 4(3) + c \\implies c = -9$$\n$$y = 4x - 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 1}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 19",
+              "x < 19",
+              "x ≥ 19",
+              "x > 21"
+            ],
+            "correctAnswer": "x > 19",
+            "hint": "Multiply by LCM (6): $3(x + 1) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 1) - 2(x - 1) > 24 \\implies 3x + 3 - 2x + 2 > 24$$\n$$x + 5 > 24 \\implies x > 19$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 51.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "8 pens",
+              "9 pens",
+              "7 pens",
+              "10 pens"
+            ],
+            "correctAnswer": "8 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 51$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 51 \\implies 2p \\le 16 \\implies p \\le 8.0$$\nSince $p$ must be a whole number, maximum pens = 8.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 4$$?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "4"
+            ],
+            "correctAnswer": "8",
+            "hint": "The integers range from -3 to 4. Total count = 4 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 4\\}$. Total values = $4 - (-4) = 8$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(1, 3)$ and $(4, 9)$.",
+            "options": [
+              "y = 2x + 1",
+              "y = 2x - 1",
+              "y = 3x + 1",
+              "y = -2x + 1"
+            ],
+            "correctAnswer": "y = 2x + 1",
+            "hint": "Find gradient $m = \\frac{9 - 3}{4 - 1} = 2$. Substitute $(1, 3)$ into $y = 2x + c$.",
+            "workedSolution": "$$m = \\frac{9 - 3}{4 - 1} = \\frac{6}{3} = 2$$\n$$3 = 2(1) + c \\implies c = 1$$\n$$y = 2x + 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 2}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 16",
+              "x < 16",
+              "x ≥ 16",
+              "x > 18"
+            ],
+            "correctAnswer": "x > 16",
+            "hint": "Multiply by LCM (6): $3(x + 2) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 2) - 2(x - 1) > 24 \\implies 3x + 6 - 2x + 2 > 24$$\n$$x + 8 > 24 \\implies x > 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 55.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "10 pens",
+              "11 pens",
+              "9 pens",
+              "12 pens"
+            ],
+            "correctAnswer": "10 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 55$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 55 \\implies 2p \\le 20 \\implies p \\le 10.0$$\nSince $p$ must be a whole number, maximum pens = 10.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 2$$?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "2"
+            ],
+            "correctAnswer": "6",
+            "hint": "The integers range from -3 to 2. Total count = 2 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 2\\}$. Total values = $2 - (-4) = 6$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(2, 3)$ and $(5, 12)$.",
+            "options": [
+              "y = 3x - 3",
+              "y = 3x + 3",
+              "y = 4x - 3",
+              "y = -3x - 3"
+            ],
+            "correctAnswer": "y = 3x - 3",
+            "hint": "Find gradient $m = \\frac{12 - 3}{5 - 2} = 3$. Substitute $(2, 3)$ into $y = 3x + c$.",
+            "workedSolution": "$$m = \\frac{12 - 3}{5 - 2} = \\frac{9}{3} = 3$$\n$$3 = 3(2) + c \\implies c = -3$$\n$$y = 3x - 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 3}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 13",
+              "x < 13",
+              "x ≥ 13",
+              "x > 15"
+            ],
+            "correctAnswer": "x > 13",
+            "hint": "Multiply by LCM (6): $3(x + 3) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 3) - 2(x - 1) > 24 \\implies 3x + 9 - 2x + 2 > 24$$\n$$x + 11 > 24 \\implies x > 13$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 59.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "12 pens",
+              "13 pens",
+              "11 pens",
+              "14 pens"
+            ],
+            "correctAnswer": "12 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 59$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 59 \\implies 2p \\le 24 \\implies p \\le 12.0$$\nSince $p$ must be a whole number, maximum pens = 12.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 6$$?",
+            "options": [
+              "10",
+              "11",
+              "9",
+              "6"
+            ],
+            "correctAnswer": "10",
+            "hint": "The integers range from -3 to 6. Total count = 6 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 6\\}$. Total values = $6 - (-4) = 10$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(3, 3)$ and $(6, 15)$.",
+            "options": [
+              "y = 4x - 9",
+              "y = 4x + 9",
+              "y = 5x - 9",
+              "y = -4x - 9"
+            ],
+            "correctAnswer": "y = 4x - 9",
+            "hint": "Find gradient $m = \\frac{15 - 3}{6 - 3} = 4$. Substitute $(3, 3)$ into $y = 4x + c$.",
+            "workedSolution": "$$m = \\frac{15 - 3}{6 - 3} = \\frac{12}{3} = 4$$\n$$3 = 4(3) + c \\implies c = -9$$\n$$y = 4x - 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 1}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 19",
+              "x < 19",
+              "x ≥ 19",
+              "x > 21"
+            ],
+            "correctAnswer": "x > 19",
+            "hint": "Multiply by LCM (6): $3(x + 1) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 1) - 2(x - 1) > 24 \\implies 3x + 3 - 2x + 2 > 24$$\n$$x + 5 > 24 \\implies x > 19$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 43.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "4 pens",
+              "5 pens",
+              "3 pens",
+              "6 pens"
+            ],
+            "correctAnswer": "4 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 43$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 43 \\implies 2p \\le 8 \\implies p \\le 4.0$$\nSince $p$ must be a whole number, maximum pens = 4.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 4$$?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "4"
+            ],
+            "correctAnswer": "8",
+            "hint": "The integers range from -3 to 4. Total count = 4 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 4\\}$. Total values = $4 - (-4) = 8$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(1, 3)$ and $(4, 9)$.",
+            "options": [
+              "y = 2x + 1",
+              "y = 2x - 1",
+              "y = 3x + 1",
+              "y = -2x + 1"
+            ],
+            "correctAnswer": "y = 2x + 1",
+            "hint": "Find gradient $m = \\frac{9 - 3}{4 - 1} = 2$. Substitute $(1, 3)$ into $y = 2x + c$.",
+            "workedSolution": "$$m = \\frac{9 - 3}{4 - 1} = \\frac{6}{3} = 2$$\n$$3 = 2(1) + c \\implies c = 1$$\n$$y = 2x + 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 2}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 16",
+              "x < 16",
+              "x ≥ 16",
+              "x > 18"
+            ],
+            "correctAnswer": "x > 16",
+            "hint": "Multiply by LCM (6): $3(x + 2) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 2) - 2(x - 1) > 24 \\implies 3x + 6 - 2x + 2 > 24$$\n$$x + 8 > 24 \\implies x > 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo has $\\text{GH¢ } 47.00$ to buy 7 exercise books at $\\text{GH¢ } 5.00$ each and some pens at $\\text{GH¢ } 2.00$ each. What is the maximum number of pens he can buy?",
+            "options": [
+              "6 pens",
+              "7 pens",
+              "5 pens",
+              "8 pens"
+            ],
+            "correctAnswer": "6 pens",
+            "hint": "Form the inequality: $5(7) + 2p \\le 47$. Solve for maximum integer $p$.",
+            "workedSolution": "$$35 + 2p \\le 47 \\implies 2p \\le 12 \\implies p \\le 6.0$$\nSince $p$ must be a whole number, maximum pens = 6.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x \\in \\mathbb{Z}$, how many integer values satisfy the double inequality: $$-4 < x \\le 2$$?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "2"
+            ],
+            "correctAnswer": "6",
+            "hint": "The integers range from -3 to 2. Total count = 2 - -4.",
+            "workedSolution": "The integer set is $\\{-3, \\dots, 2\\}$. Total values = $2 - (-4) = 6$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of the line passing through $(2, 3)$ and $(5, 12)$.",
+            "options": [
+              "y = 3x - 3",
+              "y = 3x + 3",
+              "y = 4x - 3",
+              "y = -3x - 3"
+            ],
+            "correctAnswer": "y = 3x - 3",
+            "hint": "Find gradient $m = \\frac{12 - 3}{5 - 2} = 3$. Substitute $(2, 3)$ into $y = 3x + c$.",
+            "workedSolution": "$$m = \\frac{12 - 3}{5 - 2} = \\frac{9}{3} = 3$$\n$$3 = 3(2) + c \\implies c = -3$$\n$$y = 3x - 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_eq_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional inequality for $x$: $$\\frac{x + 3}{2} - \\frac{x - 1}{3} > 4$$.",
+            "options": [
+              "x > 13",
+              "x < 13",
+              "x ≥ 13",
+              "x > 15"
+            ],
+            "correctAnswer": "x > 13",
+            "hint": "Multiply by LCM (6): $3(x + 3) - 2(x - 1) > 24$.",
+            "workedSolution": "$$3(x + 3) - 2(x - 1) > 24 \\implies 3x + 9 - 2x + 2 > 24$$\n$$x + 11 > 24 \\implies x > 13$$.",
             "points": 2
           }
         ]
