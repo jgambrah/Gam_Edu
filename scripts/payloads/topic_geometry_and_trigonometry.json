@@ -1,0 +1,487 @@
+{
+  "id": "topic_geometry_and_trigonometry",
+  "topicId": "geometry_and_trigonometry",
+  "title": "Geometry, Measurement & Trigonometry",
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "strand": {
+    "code": "S3",
+    "name": "STRAND 3: GEOMETRY & MEASUREMENT"
+  },
+  "subStrand": {
+    "code": "SS1 & SS2",
+    "name": "Shapes, Angles, Mensuration & Trigonometry"
+  },
+  "badge": "Strand 3: Geometry & Measurement",
+  "description": "Master angle theorems, polygon interior angles, circle circumference and area, the Pythagorean theorem, primary trigonometric ratios, and 3D surface areas of prisms.",
+  "totalPracticeQuestions": 27,
+  "version": 1,
+  "levels": {
+    "b7": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "contentStandard": "B7.3.1.1 / B7.3.2.1 / B7.3.2.2: Demonstrate understanding of angles (complementary, supplementary, vertically opposite), perimeter of plane figures, circumference of circles, and derive the area of a triangle.",
+      "indicatorsCovered": [
+        "B7.3.1.1.1",
+        "B7.3.1.1.2",
+        "B7.3.1.1.3",
+        "B7.3.2.1.1",
+        "B7.3.2.1.2",
+        "B7.3.2.2.1",
+        "B7.3.2.2.2"
+      ],
+      "summary": "Angle classifications, complementary & supplementary rules, circle circumference, and triangle area deduction.",
+      "diagramSvg": "<svg viewBox='0 0 380 180' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='140' x2='350' y2='140' stroke='#334155' stroke-width='2'/><line x1='190' y1='140' x2='290' y2='40' stroke='#2563eb' stroke-width='3'/><path d='M 230 140 A 40 40 0 0 0 218 112' fill='none' stroke='#dc2626' stroke-width='2'/><path d='M 150 140 A 40 40 0 0 1 218 112' fill='none' stroke='#16a34a' stroke-width='2'/><text x='235' y='125' font-size='13' font-weight='bold' fill='#dc2626'>45°</text><text x='155' y='125' font-size='13' font-weight='bold' fill='#16a34a'>135°</text><circle cx='190' cy='140' r='4' fill='#0f172a'/><text x='185' y='160' font-size='12' fill='#64748b'>O</text><text x='95' y='170' font-size='11' font-weight='bold' fill='#1e293b'>Supplementary: 135° + 45° = 180°</text></svg>",
+      "notes": "### 1. Fundamental Angle Relationships\n\n* **Complementary Angles:** Two angles whose sum equals exactly $90^\\circ$:\n  $$\\theta_1 + \\theta_2 = 90^\\circ$$\n* **Supplementary Angles:** Two angles whose sum equals exactly $180^\\circ$ (angles on a straight line):\n  $$\\theta_1 + \\theta_2 = 180^\\circ$$\n* **Vertically Opposite Angles:** When two straight lines intersect, the non-adjacent opposite angles are equal:\n  $$\\angle A = \\angle B$$\n* **Angles at a Point:** The complete rotation of angles around a single point sums to $360^\\circ$:\n  $$\\sum \\theta = 360^\\circ$$\n\n<details>\n<summary>🔍 <b>Self-Check: Complement vs. Supplement</b> (Click to inspect)</summary>\n\n> **Question:** An angle measures $62^\\circ$. Find its complement and its supplement.\n>\n> **Explanation:**\n> * **Complement:** $90^\\circ - 62^\\circ = \\mathbf{28^\\circ}$\n> * **Supplement:** $180^\\circ - 62^\\circ = \\mathbf{118^\\circ}$\n</details>\n\n---\n\n### 2. Perimeter & Circumference of Circles\n\n* **Perimeter:** The total continuous distance around the outer boundary of a 2D plane shape.\n* **The Circle Ratio ($\\pi$):** Pi is defined as the constant ratio of a circle's circumference ($C$) to its diameter ($d$):\n  $$\\pi = \\frac{C}{d} = \\frac{C}{2r} \\approx \\frac{22}{7} \\approx 3.142$$\n* **Circumference Formula:**\n  $$C = 2\\pi r = \\pi d$$\n\n---\n\n### 3. Area of a Triangle\n\nEvery triangle is exactly half of a bounding rectangle or parallelogram sharing the same base $b$ and perpendicular height $h$:\n$$\\text{Area of Triangle} = \\frac{1}{2} \\times \\text{base} \\times \\text{perpendicular height} = \\frac{1}{2}bh$$",
+      "workedExamples": [
+        {
+          "id": "we_geom_b7_01",
+          "title": "Supplementary and Linear Angle Resolution",
+          "problem": "In the road intersection diagram, an angle of $135^\\circ$ forms a straight line with an angle marked $A^\\circ$. Determine the numerical value of angle $A^\\circ$.",
+          "steps": [
+            "Step 1 (Why we do this: Identify the geometric relationship): Angles on a straight line are supplementary and sum to $180^\\circ$.",
+            "Step 2 (Why we do this: Set up the linear angle equation): \n  $$135^\\circ + A = 180^\\circ$$",
+            "Step 3 (Why we do this: Subtract 135° from both sides to isolate A): \n  $$A = 180^\\circ - 135^\\circ = 45^\\circ$$"
+          ],
+          "finalAnswer": "$$A = 45^\\circ$$"
+        },
+        {
+          "id": "we_geom_b7_02",
+          "title": "Circumference of a Circular Track",
+          "problem": "A circular roundabout has a radius of $140\\text{ cm}$. Taking $\\pi = \\frac{22}{7}$, calculate:\n(i) Its diameter.\n(ii) Its circumference.",
+          "steps": [
+            "Step 1 (Why we do this: Diameter is twice the radius): \n  $$d = 2r = 2 \\times 140\\text{ cm} = 280\\text{ cm}$$",
+            "Step 2 (Why we do this: Apply the circumference formula C = 2πr): \n  $$C = 2 \\times \\frac{22}{7} \\times 140$$",
+            "Step 3 (Why we do this: Cancel common factor 7 into 140): \n  $$C = 2 \\times 22 \\times 20 = 44 \\times 20 = 880\\text{ cm}$$"
+          ],
+          "finalAnswer": "$$\\text{Diameter} = 280\\text{ cm}, \\quad \\text{Circumference} = 880\\text{ cm}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_geom_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If two angles are complementary and one measures $35^\\circ$, what is the measure of the other angle?",
+            "options": ["55°", "145°", "65°", "45°"],
+            "correctAnswer": "55°",
+            "hint": "Complementary angles sum to $90^\\circ$. Calculate $90 - 35$.",
+            "workedSolution": "$$90^\\circ - 35^\\circ = 55^\\circ$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the area of a triangle with base $12\\text{ cm}$ and perpendicular height $5\\text{ cm}$?",
+            "options": ["30 cm²", "60 cm²", "17 cm²", "25 cm²"],
+            "correctAnswer": "30 cm²",
+            "hint": "$$\\text{Area} = \\frac{1}{2} \\times b \\times h$$.",
+            "workedSolution": "$$\\frac{1}{2} \\times 12 \\times 5 = 6 \\times 5 = 30\\text{ cm}^2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the circumference of a circle with diameter $14\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+            "options": ["44 cm", "88 cm", "154 cm", "22 cm"],
+            "correctAnswer": "44 cm",
+            "hint": "$$C = \\pi d = \\frac{22}{7} \\times 14$$.",
+            "workedSolution": "$$\\frac{22}{7} \\times 14 = 22 \\times 2 = 44\\text{ cm}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_geom_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A triangular sail has an angle of $135^\\circ$ on one side of a straight baseline. What is the adjacent supplementary angle $A$?",
+            "options": ["45°", "90°", "135°", "180°"],
+            "correctAnswer": "45°",
+            "hint": "$$180^\\circ - 135^\\circ$$.",
+            "workedSolution": "$$180^\\circ - 135^\\circ = 45^\\circ$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The perimeter of an equilateral triangle is $24\\text{ cm}$. What is the length of each side?",
+            "options": ["8 cm", "6 cm", "12 cm", "7 cm"],
+            "correctAnswer": "8 cm",
+            "hint": "All three sides are equal: $3s = 24$.",
+            "workedSolution": "$$s = \\frac{24}{3} = 8\\text{ cm}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the perimeter of a regular garden of 4 equal sides of $5\\text{ m}$ each, without a $2\\text{ m}$ gate entrance.",
+            "options": ["18 m", "20 m", "10 m", "16 m"],
+            "correctAnswer": "18 m",
+            "hint": "Total distance around is $4 \\times 5 = 20\\text{ m}$. Subtract the $2\\text{ m}$ gate.",
+            "workedSolution": "$$(4 \\times 5) - 2 = 20 - 2 = 18\\text{ m}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_geom_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two supplementary angles are in the ratio $2 : 3$. What is the measure of the smaller angle?",
+            "options": ["72°", "108°", "36°", "54°"],
+            "correctAnswer": "72°",
+            "hint": "Total parts $= 2 + 3 = 5$. Set $5\\text{ parts} = 180^\\circ$.",
+            "workedSolution": "$$\\text{Value of 1 part} = \\frac{180^\\circ}{5} = 36^\\circ$$\n$$\\text{Smaller angle} = 2 \\times 36^\\circ = 72^\\circ$$.",
+            "points": 2
+          },
+          {
+            "id": "q_geom_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The perimeter of a rectangle is $54\\text{ cm}$. If the length is twice its width, find the area of the rectangle.",
+            "options": ["162 cm²", "144 cm²", "180 cm²", "128 cm²"],
+            "correctAnswer": "162 cm²",
+            "hint": "$$2(2w + w) = 54 \\implies 6w = 54 \\implies w = 9$$. Length $= 18$. Area $= 18 \\times 9$.",
+            "workedSolution": "$$6w = 54 \\implies w = 9\\text{ cm}$$\n$$l = 2(9) = 18\\text{ cm}$$\n$$\\text{Area} = 18 \\times 9 = 162\\text{ cm}^2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_geom_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A wire bent into a circle has radius $14\\text{ cm}$. If the same wire is bent to form a square, what is the length of each side of the square? (Take $\\pi = \\frac{22}{7}$).",
+            "options": ["22 cm", "44 cm", "28 cm", "11 cm"],
+            "correctAnswer": "22 cm",
+            "hint": "Circumference of circle $= 2 \\times \\frac{22}{7} \\times 14 = 88\\text{ cm}$. Perimeter of square $= 4s = 88$.",
+            "workedSolution": "$$C = 2 \\times \\frac{22}{7} \\times 14 = 88\\text{ cm}$$\n$$4s = 88 \\implies s = \\frac{88}{4} = 22\\text{ cm}$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+
+    "b8": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "contentStandard": "B8.3.1.1 / B8.3.2.1: Parallel lines and alternate/corresponding angles, polygon angle sum deduction, area of circles, and the Pythagorean theorem.",
+      "indicatorsCovered": [
+        "B8.3.1.1.1",
+        "B8.3.1.1.2",
+        "B8.3.2.1.1",
+        "B8.3.2.1.2",
+        "B8.3.2.1.3",
+        "B8.3.2.1.4"
+      ],
+      "summary": "Parallel line transversals, polygon interior angle sums, circle area deduction, and right-angled triangle Pythagoras calculations.",
+      "diagramSvg": "<svg viewBox='0 0 360 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><polygon points='60,150 240,150 240,40' fill='#eff6ff' stroke='#2563eb' stroke-width='3'/><rect x='222' y='132' width='18' height='18' fill='none' stroke='#2563eb' stroke-width='2'/><text x='140' y='170' font-size='13' font-weight='bold' fill='#1e293b'>b = 4 cm</text><text x='250' y='100' font-size='13' font-weight='bold' fill='#1e293b'>a = 3 cm</text><text x='110' y='85' font-size='14' font-weight='bold' fill='#dc2626'>c = ?</text><text x='50' y='25' font-size='12' font-weight='bold' fill='#0f172a'>Pythagoras: a² + b² = c²</text></svg>",
+      "notes": "### 1. Parallel Lines & Transversals\n\nWhen two parallel lines are cut by a transversal line:\n* **Corresponding Angles (F-Pattern):** Are equal.\n* **Alternate Angles (Z-Pattern):** Are equal.\n* **Co-Interior Angles (C-Pattern):** Sum to $180^\\circ$.\n\n---\n\n### 2. Interior Angle Sum of an $n$-Sided Polygon\n\nAny polygon with $n$ sides can be divided into $(n - 2)$ triangles from a single vertex:\n$$\\text{Sum of Interior Angles} = (n - 2) \\times 180^\\circ$$\n* For a **Regular Polygon** (all sides and angles equal), each interior angle is:\n  $$\\text{Each Interior Angle} = \\frac{(n - 2) \\times 180^\\circ}{n}$$\n* **Exterior Angles Theorem:** The sum of exterior angles of **any** convex polygon is always $360^\\circ$.\n\n---\n\n### 3. Area of a Circle\n\nBy slicing a circle into sectors and rearranging them into a pseudo-rectangle of length $\\pi r$ and width $r$:\n$$\\text{Area of Circle} = \\pi r^2$$\n\n---\n\n### 4. The Pythagorean Theorem\n\nIn any right-angled triangle, the area of the square on the **hypotenuse** ($c$, the longest side opposite the $90^\\circ$ right angle) equals the sum of the areas of the squares on the other two sides ($a$ and $b$):\n$$a^2 + b^2 = c^2$$\n$$c = \\sqrt{a^2 + b^2}, \\quad a = \\sqrt{c^2 - b^2}, \\quad b = \\sqrt{c^2 - a^2}$$\n\n#### Standard Pythagorean Triples to Memorize:\n* $(3, 4, 5)$\n* $(5, 12, 13)$\n* $(8, 15, 17)$\n* $(7, 24, 25)$\n* $(9, 40, 41)$",
+      "workedExamples": [
+        {
+          "id": "we_geom_b8_01",
+          "title": "Interior Angle Sum of a Regular Hexagon",
+          "problem": "Calculate the size of one interior angle of a regular hexagon ($6$ sides).",
+          "steps": [
+            "Step 1 (Why we do this: Apply the polygon interior sum theorem for n = 6): \n  $$\\text{Sum} = (n - 2) \\times 180^\\circ = (6 - 2) \\times 180^\\circ = 4 \\times 180^\\circ = 720^\\circ$$",
+            "Step 2 (Why we do this: Divide by the number of equal vertices in a regular polygon): Since a regular hexagon has 6 identical interior angles:\n  $$\\text{Each Angle} = \\frac{720^\\circ}{6} = 120^\\circ$$"
+          ],
+          "finalAnswer": "$$\\text{Interior Angle} = 120^\\circ$$"
+        },
+        {
+          "id": "we_geom_b8_02",
+          "title": "Hypotenuse & Distance Problem via Pythagoras",
+          "problem": "A television screen has a $41\\text{-inch}$ diagonal and a horizontal width of $40\\text{ inches}$. Calculate the vertical screen height $h$.",
+          "steps": [
+            "Step 1 (Why we do this: Model the screen as a right-angled triangle): The diagonal forms the hypotenuse $c = 41\\text{ inches}$. The width is $a = 40\\text{ inches}$. The height is $h = b$.",
+            "Step 2 (Why we do this: State the Pythagorean relationship): \n  $$h^2 + 40^2 = 41^2$$",
+            "Step 3 (Why we do this: Isolate h²): \n  $$h^2 = 41^2 - 40^2 = 1,681 - 1,600 = 81$$",
+            "Step 4 (Why we do this: Take the principal square root): \n  $$h = \\sqrt{81} = 9\\text{ inches}$$"
+          ],
+          "finalAnswer": "$$\\text{Screen Height } h = 9\\text{ inches}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_geom_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the sum of the interior angles of a pentagon ($5$ sides)?",
+            "options": ["540°", "360°", "720°", "180°"],
+            "correctAnswer": "540°",
+            "hint": "$$(n - 2) \\times 180^\\circ = (5 - 2) \\times 180^\\circ$$.",
+            "workedSolution": "$$3 \\times 180^\\circ = 540^\\circ$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In a right-angled triangle, if the two legs are $6\\text{ cm}$ and $8\\text{ cm}$, what is the hypotenuse?",
+            "options": ["10 cm", "14 cm", "12 cm", "9 cm"],
+            "correctAnswer": "10 cm",
+            "hint": "$$c = \\sqrt{6^2 + 8^2} = \\sqrt{36 + 64}$$.",
+            "workedSolution": "$$\\sqrt{100} = 10\\text{ cm}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Calculate the area of a circle with radius $7\\text{ cm}$. (Take $\\pi = \\frac{22}{7}$).",
+            "options": ["154 cm²", "44 cm²", "77 cm²", "308 cm²"],
+            "correctAnswer": "154 cm²",
+            "hint": "$$A = \\pi r^2 = \\frac{22}{7} \\times 49$$.",
+            "workedSolution": "$$\\frac{22}{7} \\times 49 = 22 \\times 7 = 154\\text{ cm}^2$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_geom_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A regular polygon has an exterior angle of $40^\\circ$. How many sides does the polygon have?",
+            "options": ["9 sides", "8 sides", "10 sides", "6 sides"],
+            "correctAnswer": "9 sides",
+            "hint": "$$\\text{Number of sides } n = \\frac{360^\\circ}{\\text{Exterior Angle}}$$.",
+            "workedSolution": "$$n = \\frac{360^\\circ}{40^\\circ} = 9\\text{ sides}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If the square of the hypotenuse is $169$ and the square of the opposite side is $144$, what is the length of the adjacent side?",
+            "options": ["5", "12", "13", "25"],
+            "correctAnswer": "5",
+            "hint": "$$b = \\sqrt{169 - 144}$$.",
+            "workedSolution": "$$\\sqrt{169 - 144} = \\sqrt{25} = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A ladder $13\\text{ m}$ long leans against a vertical wall. If the foot of the ladder is $5\\text{ m}$ away from the base of the wall, how high up the wall does the ladder reach?",
+            "options": ["12 m", "8 m", "11 m", "10 m"],
+            "correctAnswer": "12 m",
+            "hint": "$$h = \\sqrt{13^2 - 5^2} = \\sqrt{169 - 25}$$.",
+            "workedSolution": "$$\\sqrt{144} = 12\\text{ m}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_geom_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two concentric circles have radii $7\\text{ cm}$ and $14\\text{ cm}$. Calculate the area of the ring (annulus) enclosed between them. (Take $\\pi = \\frac{22}{7}$).",
+            "options": ["462 cm²", "616 cm²", "154 cm²", "308 cm²"],
+            "correctAnswer": "462 cm²",
+            "hint": "$$\\text{Area} = \\pi(R^2 - r^2) = \\frac{22}{7}(196 - 49)$$.",
+            "workedSolution": "$$\\text{Area} = \\frac{22}{7} \\times 147 = 22 \\times 21 = 462\\text{ cm}^2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_geom_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An isosceles triangle has two equal sides of $10\\text{ cm}$ each and a base of $12\\text{ cm}$. Find the area of the triangle.",
+            "options": ["48 cm²", "60 cm²", "96 cm²", "40 cm²"],
+            "correctAnswer": "48 cm²",
+            "hint": "Altitude divides base into 6 cm. Height $= \\sqrt{10^2 - 6^2} = 8\\text{ cm}$. Area $= \\frac{1}{2} \\times 12 \\times 8$.",
+            "workedSolution": "$$h = \\sqrt{100 - 36} = 8\\text{ cm}$$\n$$\\text{Area} = \\frac{1}{2} \\times 12 \\times 8 = 48\\text{ cm}^2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_geom_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The interior angles of a pentagon are $x^\\circ, \\, (x + 20)^\\circ, \\, (x + 40)^\\circ, \\, (2x - 10)^\\circ,$ and $110^\\circ$. Find the value of $x$.",
+            "options": ["76°", "80°", "72°", "84°"],
+            "correctAnswer": "76°",
+            "hint": "Sum of pentagon interior angles $= 540^\\circ$.",
+            "workedSolution": "$$x + (x + 20) + (x + 40) + (2x - 10) + 110 = 540$$\n$$5x + 160 = 540 \\implies 5x = 380 \\implies x = 76^\\circ$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+
+    "b9": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "contentStandard": "B9.3.1.2 / B9.3.2.1: Primary trigonometric ratios (SOH CAH TOA), angles of elevation and depression, and total surface area and volume of 3D prisms (cuboid and triangular prism).",
+      "indicatorsCovered": [
+        "B9.3.1.2.1",
+        "B9.3.2.1.1",
+        "B9.3.2.1.2",
+        "B9.3.2.1.3",
+        "B9.3.2.1.4"
+      ],
+      "summary": "Trigonometric ratios (Sine, Cosine, Tangent), angle of elevation/depression calculations, and 3D surface area from nets.",
+      "diagramSvg": "<svg viewBox='0 0 380 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='50' y1='160' x2='320' y2='160' stroke='#334155' stroke-width='2'/><line x1='280' y1='160' x2='280' y2='50' stroke='#16a34a' stroke-width='3'/><line x1='50' y1='160' x2='280' y2='50' stroke='#2563eb' stroke-width='3'/><line x1='50' y1='160' x2='120' y2='160' stroke='#334155' stroke-width='2'/><path d='M 100 160 A 50 50 0 0 0 94 139' fill='none' stroke='#dc2626' stroke-width='2'/><text x='105' y='150' font-size='13' font-weight='bold' fill='#dc2626'>θ (Elevation)</text><text x='160' y='180' font-size='13' font-weight='bold' fill='#1e293b'>Adjacent = 120 m</text><text x='290' y='110' font-size='13' font-weight='bold' fill='#16a34a'>Opposite = h</text><text x='130' y='95' font-size='13' font-weight='bold' fill='#2563eb'>Hypotenuse</text><rect x='262' y='142' width='18' height='18' fill='none' stroke='#334155' stroke-width='2'/></svg>",
+      "notes": "### 1. Primary Trigonometric Ratios (SOH CAH TOA)\n\nIn a right-angled triangle with reference angle $\\theta$:\n* **Hypotenuse ($H$):** The longest side opposite the $90^\\circ$ right angle.\n* **Opposite ($O$):** The side facing directly across from angle $\\theta$.\n* **Adjacent ($A$):** The side adjacent (next to) angle $\\theta$, connecting it to the right angle.\n\n$$\\sin \\theta = \\frac{\\text{Opposite}}{\\text{Hypotenuse}} = \\frac{O}{H}$$\n$$\\cos \\theta = \\frac{\\text{Adjacent}}{\\text{Hypotenuse}} = \\frac{A}{H}$$\n$$\\tan \\theta = \\frac{\\text{Opposite}}{\\text{Adjacent}} = \\frac{O}{A}$$\n\n---\n\n### 2. Angles of Elevation & Depression\n\n* **Angle of Elevation:** The angle measured **upward** from the horizontal eye line to an object above.\n* **Angle of Depression:** The angle measured **downward** from the horizontal eye line to an object below.\n* **Geometric Equivalence:** Because horizontal reference lines are parallel, the **angle of depression equals the alternate angle of elevation**:\n  $$\\text{Angle of Depression} = \\text{Angle of Elevation}$$\n\n---\n\n### 3. Surface Area & Volume of 3D Prisms\n\n* **Surface Area of a Cuboid:**\n  $$\\text{TSA} = 2(lw + lh + wh)$$\n* **Total Surface Area of a Cube:**\n  $$\\text{TSA} = 6s^2$$\n* **Volume of a Cuboid / Rectangular Bucket:**\n  $$\\text{Volume} = l \\times w \\times h$$\n* **Surface Area of a Triangular Prism:**\n  $$\\text{TSA} = 2(\\text{Triangular End Area}) + \\sum (3 \\text{ Rectangular Faces})$$",
+      "workedExamples": [
+        {
+          "id": "we_geom_b9_01",
+          "title": "Angle of Depression Tower Height Resolution",
+          "problem": "The angle of depression of a stone from the top of an observation tower to the ground is $45^\\circ$. If the stone is $120\\text{ metres}$ away from the base of the tower, find the height of the tower. (Take $\\tan 45^\\circ = 1$).",
+          "steps": [
+            "Step 1 (Why we do this: Convert angle of depression to angle of elevation via alternate interior angles): The horizontal line from the tower top is parallel to the ground, so the angle of elevation from the stone to the tower top is also $45^\\circ$.",
+            "Step 2 (Why we do this: Select the trigonometric ratio linking opposite and adjacent): In the right triangle, height $h$ is opposite to $45^\\circ$ and ground distance $120\\text{ m}$ is adjacent:\n  $$\\tan 45^\\circ = \\frac{\\text{Opposite}}{\\text{Adjacent}} = \\frac{h}{120}$$",
+            "Step 3 (Why we do this: Substitute known value tan 45° = 1 and solve for h): \n  $$1 = \\frac{h}{120} \\implies h = 120 \\times 1 = 120\\text{ metres}$$"
+          ],
+          "finalAnswer": "$$\\text{Height of Tower } h = 120\\text{ metres}$$"
+        },
+        {
+          "id": "we_geom_b9_02",
+          "title": "Cube Surface Area and Volume Deduction",
+          "problem": "The total surface area of a solid cube is $384\\text{ cm}^2$. Calculate:\n(i) The length of one side of the cube.\n(ii) The volume of the cube.",
+          "steps": [
+            "Step 1 (Why we do this: A cube has 6 identical square faces): \n  $$\\text{TSA} = 6s^2 = 384$$",
+            "Step 2 (Why we do this: Divide by 6 to find area of one face s²): \n  $$s^2 = \\frac{384}{6} = 64$$",
+            "Step 3 (Why we do this: Take square root to determine side length s): \n  $$s = \\sqrt{64} = 8\\text{ cm}$$",
+            "Step 4 (Why we do this: Compute volume V = s³): \n  $$V = s^3 = 8^3 = 8 \\times 8 \\times 8 = 512\\text{ cm}^3$$"
+          ],
+          "finalAnswer": "$$\\text{Side Length } s = 8\\text{ cm}, \\quad \\text{Volume } V = 512\\text{ cm}^3$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_geom_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In a right triangle with acute angle $\\theta$, what is the ratio defining $\\tan \\theta$?",
+            "options": [
+              "Opposite / Adjacent",
+              "Adjacent / Hypotenuse",
+              "Opposite / Hypotenuse",
+              "Hypotenuse / Opposite"
+            ],
+            "correctAnswer": "Opposite / Adjacent",
+            "hint": "Remember TOA: $\\tan = \\frac{O}{A}$.",
+            "workedSolution": "$$\\tan \\theta = \\frac{\\text{Opposite}}{\\text{Adjacent}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Calculate the total surface area of a cube of side length $5\\text{ cm}$.",
+            "options": ["150 cm²", "125 cm²", "100 cm²", "25 cm²"],
+            "correctAnswer": "150 cm²",
+            "hint": "$$\\text{TSA} = 6s^2 = 6(5^2)$$.",
+            "workedSolution": "$$6 \\times 25 = 150\\text{ cm}^2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $\\sin \\theta = \\frac{3}{5}$, what is $\\cos \\theta$ in the same right triangle?",
+            "options": ["4/5", "3/4", "5/4", "5/3"],
+            "correctAnswer": "4/5",
+            "hint": "This is a 3-4-5 Pythagorean triple: Adjacent $= \\sqrt{5^2 - 3^2} = 4$.",
+            "workedSolution": "$$\\text{Adjacent} = \\sqrt{25 - 9} = 4 \\implies \\cos \\theta = \\frac{4}{5}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_geom_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A tree casts a shadow of $15\\text{ m}$ on level ground when the angle of elevation of the sun is $30^\\circ$. What is the height of the tree? (Take $\\tan 30^\\circ = \\frac{1}{\\sqrt{3}}$).",
+            "options": ["5√3 m", "15√3 m", "10 m", "5 m"],
+            "correctAnswer": "5√3 m",
+            "hint": "$$h = 15 \\times \\tan 30^\\circ = \\frac{15}{\\sqrt{3}}$$. Rationalize denominator.",
+            "workedSolution": "$$h = 15 \\times \\frac{1}{\\sqrt{3}} = \\frac{15\\sqrt{3}}{3} = 5\\sqrt{3}\\text{ m}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A cuboid has dimensions $10\\text{ cm}$ long, $6\\text{ cm}$ wide, and $4\\text{ cm}$ high. What is its total surface area?",
+            "options": ["248 cm²", "240 cm²", "124 cm²", "180 cm²"],
+            "correctAnswer": "248 cm²",
+            "hint": "$$2(lw + lh + wh) = 2(60 + 40 + 24)$$.",
+            "workedSolution": "$$2(60 + 40 + 24) = 2(124) = 248\\text{ cm}^2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_geom_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Two soup tins are similar. Tin P holds $500\\text{ g}$ and has height $11\\text{ cm}$, while Tin Q holds $750\\text{ g}$. What is the ratio of their volumes?",
+            "options": ["2 : 3", "4 : 9", "1 : 2", "3 : 4"],
+            "correctAnswer": "2 : 3",
+            "hint": "Divide $500 : 750$ by 250.",
+            "workedSolution": "$$\\frac{500 \\div 250}{750 \\div 250} = \\frac{2}{3} = 2 : 3$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_geom_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A hunter on top of an $18\\text{ m}$ observation tower sees a bush fire at an angle of depression of $30^\\circ$. Calculate the direct distance between the hunter and the fire. (Take $\\sin 30^\\circ = 0.5$).",
+            "options": ["36 m", "24 m", "31.2 m", "18 m"],
+            "correctAnswer": "36 m",
+            "hint": "The direct distance is the hypotenuse: $\\sin 30^\\circ = \\frac{\\text{Opposite}}{\\text{Hypotenuse}} = \\frac{18}{d}$.",
+            "workedSolution": "$$0.5 = \\frac{18}{d} \\implies d = \\frac{18}{0.5} = 36\\text{ metres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_geom_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A pickup truck has an open bucket measuring $96\\text{ in.}$ long, $48\\text{ in.}$ wide, and $17\\text{ in.}$ deep. What is the total holding volume of the bucket in cubic feet ($\text{ft}^3$)? (Note: $1\\text{ ft} = 12\\text{ in.}$).",
+            "options": ["45.33 ft³", "544 ft³", "38.25 ft³", "48.00 ft³"],
+            "correctAnswer": "45.33 ft³",
+            "hint": "Convert inches to feet first: $96/12 = 8\\text{ ft}$, $48/12 = 4\\text{ ft}$, $17/12\\text{ ft}$.",
+            "workedSolution": "$$\\text{Length} = 8\\text{ ft}, \\quad \\text{Width} = 4\\text{ ft}$$\n$$\\text{Volume} = 8 \\times 4 \\times \\frac{17}{12} = \\frac{32 \\times 17}{12} = \\frac{136}{3} \\approx 45.33\\text{ ft}^3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_geom_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The total surface area of a right triangular prism is $120\\text{ cm}^2$. The triangular cross-section has base $3\\text{ cm}$, height $4\\text{ cm}$, and hypotenuse $5\\text{ cm}$. What is the prism length $L$?",
+            "options": ["9 cm", "8 cm", "10 cm", "12 cm"],
+            "correctAnswer": "9 cm",
+            "hint": "Two ends $= 2(\\frac{1}{2} \\times 3 \\times 4) = 12$. Perimeter $= 3 + 4 + 5 = 12$. Set $12 + 12L = 120$.",
+            "workedSolution": "$$\\text{Two triangle bases} = 2 \\times 6 = 12\\text{ cm}^2$$\n$$\\text{Lateral Area} = 120 - 12 = 108\\text{ cm}^2$$\n$$\\text{Perimeter} = 3 + 4 + 5 = 12\\text{ cm}$$\n$$L = \\frac{108}{12} = 9\\text{ cm}$$.",
+            "points": 2
+          }
+        ]
+      }
+    }
+  },
+  "linkedExamQuestions": [
+    {
+      "setId": "jhs-math-mastery-series-36",
+      "year": 1995,
+      "paper": 2,
+      "questionNumber": "3(a)",
+      "promptSnippet": "The total surface area of a cube is 384 cm^2. Find the side length and volume..."
+    },
+    {
+      "setId": "jhs-math-mastery-series-44",
+      "year": 1991,
+      "paper": 2,
+      "questionNumber": "5(a)",
+      "promptSnippet": "From the top of a building 20m high, the angle of depression to a car is 30 degrees..."
+    }
+  ],
+  "updatedAt": "2026-09-17T14:15:00.000Z"
+}
