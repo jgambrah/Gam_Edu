@@ -1,0 +1,497 @@
+{
+  "id": "topic_equations_inequalities_graphs",
+  "topicId": "equations_inequalities_graphs",
+  "title": "Equations, Inequalities & Coordinate Graphs",
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "strand": {
+    "code": "S2",
+    "name": "STRAND 2: ALGEBRA"
+  },
+  "subStrand": {
+    "code": "SS3",
+    "name": "Linear Equations, Inequalities & Graphs"
+  },
+  "badge": "Strand 2: Algebra",
+  "description": "Master linear equations, concrete balance scale models, inequalities on number lines, Cartesian slope-intercept form (y = mx + c), and simultaneous graph intersections.",
+  "totalPracticeQuestions": 27,
+  "version": 1,
+  "levels": {
+    "b7": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "contentStandard": "B7.2.3.1: Demonstrate an understanding of linear equations of the form x + a = b and ax + b = c by modelling problems concretely, pictorially, and symbolically.",
+      "indicatorsCovered": [
+        "B7.2.3.1.1",
+        "B7.2.3.1.2",
+        "B7.2.3.1.3",
+        "B7.2.3.1.4"
+      ],
+      "summary": "Balance scale equation models, inverse operation backtracking, and solving one-variable linear equations.",
+      "diagramSvg": "<svg viewBox='0 0 400 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><line x1='50' y1='100' x2='350' y2='100' stroke='#1e293b' stroke-width='4'/><polygon points='200,100 180,160 220,160' fill='#475569'/><rect x='160' y='160' width='80' height='12' rx='3' fill='#334155'/><line x1='90' y1='100' x2='90' y2='130' stroke='#64748b' stroke-width='2'/><path d='M 60 130 Q 90 145 120 130 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><rect x='70' y='108' width='22' height='22' rx='3' fill='#3b82f6'/><text x='77' y='124' font-size='12' font-weight='bold' fill='#ffffff'>x</text><circle cx='104' cy='119' r='6' fill='#ef4444'/><circle cx='113' cy='123' r='6' fill='#ef4444'/><circle cx='100' cy='126' r='6' fill='#ef4444'/><line x1='310' y1='100' x2='310' y2='130' stroke='#64748b' stroke-width='2'/><path d='M 280 130 Q 310 145 340 130 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><circle cx='295' cy='118' r='6' fill='#ef4444'/><circle cx='308' cy='118' r='6' fill='#ef4444'/><circle cx='321' cy='118' r='6' fill='#ef4444'/><circle cx='301' cy='126' r='6' fill='#ef4444'/><circle cx='315' cy='126' r='6' fill='#ef4444'/><circle cx='328' cy='126' r='6' fill='#ef4444'/><circle cx='312' cy='110' r='6' fill='#ef4444'/><text x='72' y='80' font-size='13' font-weight='bold' fill='#1e293b'>x + 3</text><text x='192' y='80' font-size='16' font-weight='bold' fill='#0f172a'>=</text><text x='305' y='80' font-size='13' font-weight='bold' fill='#1e293b'>7</text></svg>",
+      "notes": "### 1. The Balance Scale Model of Equations\n\nAn **equation** is a mathematical statement asserting that two expressions are perfectly equal in value, separated by the equals sign ($=$).\n* **The Golden Rule of Algebraic Balance:** Whatever operation is performed on the left-hand side (LHS) **must** be performed identically on the right-hand side (RHS) to maintain equilibrium.\n* **Modeling on a Balance Scale:**\n  * Left Pan: A mystery block of unknown mass $x$ plus 3 unit counter weights ($x + 3$).\n  * Right Pan: 7 unit counter weights.\n  * To isolate $x$, remove 3 units from **both** pans:\n    $$x + 3 - 3 = 7 - 3 \\implies x = 4$$\n\n<details>\n<summary>🔍 <b>Self-Check: Inverse Backtracking (Flag Diagram)</b> (Click to inspect)</summary>\n\n> **Riddle:** *\"Think of a number, double it, and subtract 7. The result is 41. What was the original number?\"*\n>\n> **Step-by-Step Backtracking:**\n> * Forward process: $x \\xrightarrow{\\times 2} 2x \\xrightarrow{- 7} 2x - 7 = 41$\n> * Reverse operations: Add 7, then divide by 2:\n>   $$41 + 7 = 48 \\implies 48 \\div 2 = \\mathbf{24}$$\n</details>\n\n---\n\n### 2. Solving Linear Equations in One Variable\n\nA **linear equation** in one variable has the unknown raised to the power of 1 ($x^1$).\n1. Clear parentheses by expansion using the distributive property.\n2. Clear fractions by multiplying every term by the LCM of denominators.\n3. Collect all variable terms on one side and all constant numbers on the other.\n4. Divide by the variable's coefficient to isolate $x$.",
+      "workedExamples": [
+        {
+          "id": "we_eq_b7_01",
+          "title": "Solving Linear Equations with Balance Operations",
+          "problem": "Solve for $x$ in the linear equation: $$3x + 5 = 20$$",
+          "steps": [
+            "Step 1 (Why we do this: Isolate the variable term by eliminating the constant addition): Subtract 5 from both sides of the equation to maintain balance:\n  $$3x + 5 - 5 = 20 - 5$$",
+            "Step 2 (Why we do this: Simplify both sides): \n  $$3x = 15$$",
+            "Step 3 (Why we do this: Eliminate the coefficient of 3 via inverse operation): Divide both sides by 3:\n  $$\\frac{3x}{3} = \\frac{15}{3} \\implies x = 5$$",
+            "Step 4 (Why we do this: Verify the solution by substitution): Check LHS: $3(5) + 5 = 15 + 5 = 20$. Since LHS = RHS, the solution is correct."
+          ],
+          "finalAnswer": "$$x = 5$$"
+        },
+        {
+          "id": "we_eq_b7_02",
+          "title": "Translating Real-World Distribution into a Linear Equation",
+          "problem": "Adaako and Afrakoma shared 40 oranges. Afrakoma received 6 more oranges than Adaako. Construct a mathematical sentence and determine the number of oranges each person received.",
+          "steps": [
+            "Step 1 (Why we do this: Define the unknown variable): Let Adaako's share be $x$.",
+            "Step 2 (Why we do this: Express the second person's share in terms of x): Afrakoma received 6 more than Adaako, so her share is $x + 6$.",
+            "Step 3 (Why we do this: Form the total equation): The sum of both shares equals 40:\n  $$x + (x + 6) = 40$$",
+            "Step 4 (Why we do this: Combine like terms and solve for x): \n  $$2x + 6 = 40 \\implies 2x = 40 - 6 = 34$$\n  $$x = \\frac{34}{2} = 17\\text{ oranges}$$",
+            "Step 5 (Why we do this: Calculate Afrakoma's share): $x + 6 = 17 + 6 = 23\\text{ oranges}$."
+          ],
+          "finalAnswer": "$$\\text{Adaako} = 17\\text{ oranges}, \\quad \\text{Afrakoma} = 23\\text{ oranges}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_eq_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 7 = 19$.",
+            "options": ["12", "26", "13", "14"],
+            "correctAnswer": "12",
+            "hint": "Subtract 7 from both sides: $19 - 7$.",
+            "workedSolution": "$$x = 19 - 7 = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Two sisters bought 10 tablets together. One bought 4 tablets. Which equation represents the tablets ($t$) the other bought?",
+            "options": ["t = 10 - 4", "t = 10 - 6", "t = 4 + 10", "t = 6 + 10"],
+            "correctAnswer": "t = 10 - 4",
+            "hint": "Total is 10, one part is 4, the remaining part is $10 - 4$.",
+            "workedSolution": "$$t + 4 = 10 \\implies t = 10 - 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $4y = 36$.",
+            "options": ["9", "8", "12", "32"],
+            "correctAnswer": "9",
+            "hint": "Divide both sides by 4.",
+            "workedSolution": "$$y = \\frac{36}{4} = 9$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_eq_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve: $4x + 1 = 3x + 7$.",
+            "options": ["6", "8", "7", "5"],
+            "correctAnswer": "6",
+            "hint": "Subtract $3x$ from both sides, then subtract 1.",
+            "workedSolution": "$$4x - 3x = 7 - 1 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The sum of the ages of a father and his son is 50 years. The father is 4 times as old as the son. How old is the son?",
+            "options": ["10 years", "12 years", "8 years", "15 years"],
+            "correctAnswer": "10 years",
+            "hint": "Let son be $x$, father is $4x$. $x + 4x = 50$.",
+            "workedSolution": "$$5x = 50 \\implies x = 10\\text{ years}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $k$: $20 - 3k = k + 12$.",
+            "options": ["2", "4", "3", "1"],
+            "correctAnswer": "2",
+            "hint": "Add $3k$ to both sides, then subtract 12.",
+            "workedSolution": "$$20 - 12 = k + 3k \\implies 4k = 8 \\implies k = 2$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_eq_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A taxi charges $\\text{GH¢ } 20.00$ for hire for the first $10\\text{ km}$, and $\\text{GH¢ } 5.00$ for every additional kilometre. How much will a customer pay for a $22\\text{ km}$ ride?",
+            "options": ["GH¢ 80.00", "GH¢ 60.00", "GH¢ 75.00", "GH¢ 85.00"],
+            "correctAnswer": "GH¢ 80.00",
+            "hint": "Additional distance $= 22 - 10 = 12\\text{ km}$. Total $= 20 + 12(5)$.",
+            "workedSolution": "$$\\text{Base fare} = 20$$\n$$\\text{Extra km} = 22 - 10 = 12\\text{ km}$$\n$$\\text{Total} = 20 + (12 \\times 5) = 20 + 60 = \\text{GH¢ } 80.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_eq_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $w$: $$\\frac{2w - 3}{4} = \\frac{w + 5}{3}$$.",
+            "options": ["14.5", "13", "14", "15.5"],
+            "correctAnswer": "14.5",
+            "hint": "Cross multiply: $3(2w - 3) = 4(w + 5)$.",
+            "workedSolution": "$$6w - 9 = 4w + 20 \\implies 2w = 29 \\implies w = 14.5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_eq_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Three consecutive odd numbers add up to 57. Find the largest of the three numbers.",
+            "options": ["21", "19", "17", "23"],
+            "correctAnswer": "21",
+            "hint": "Let numbers be $x, x+2, x+4$. Sum $= 3x + 6 = 57$.",
+            "workedSolution": "$$3x + 6 = 57 \\implies 3x = 51 \\implies x = 17$$\n$$\\text{Largest} = 17 + 4 = 21$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+
+    "b8": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "contentStandard": "B8.2.1.1 / B8.2.3.1: Calculate the gradient of a line, write equations of the form y = mx + c, and solve and graph linear inequalities on number lines.",
+      "indicatorsCovered": [
+        "B8.2.1.1.1",
+        "B8.2.1.1.2",
+        "B8.2.1.1.3",
+        "B8.2.3.1.1",
+        "B8.2.3.1.2",
+        "B8.2.3.1.3"
+      ],
+      "summary": "Linear gradient formula, slope-intercept form, linear inequality solutions, and number line representation.",
+      "diagramSvg": "<svg viewBox='0 0 380 150' width='100%' height='140' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='75' x2='350' y2='75' stroke='#334155' stroke-width='2'/><polygon points='20,75 30,70 30,80' fill='#334155'/><polygon points='360,75 350,70 350,80' fill='#334155'/><line x1='60' y1='68' x2='60' y2='82' stroke='#64748b' stroke-width='2'/><text x='55' y='98' font-size='12' fill='#64748b'>-1</text><line x1='120' y1='68' x2='120' y2='82' stroke='#64748b' stroke-width='2'/><text x='117' y='98' font-size='12' fill='#64748b'>0</text><line x1='180' y1='68' x2='180' y2='82' stroke='#64748b' stroke-width='2'/><text x='177' y='98' font-size='12' fill='#64748b'>1</text><line x1='240' y1='68' x2='240' y2='82' stroke='#64748b' stroke-width='2'/><text x='237' y='98' font-size='12' fill='#64748b'>2</text><line x1='300' y1='68' x2='300' y2='82' stroke='#64748b' stroke-width='2'/><text x='297' y='98' font-size='12' fill='#64748b'>3</text><line x1='240' y1='50' x2='345' y2='50' stroke='#2563eb' stroke-width='3'/><polygon points='355,50 345,45 345,55' fill='#2563eb'/><circle cx='240' cy='50' r='6' fill='#2563eb' stroke='#1d4ed8' stroke-width='2'/><text x='245' y='35' font-size='13' font-weight='bold' fill='#2563eb'>x ≥ 2</text></svg>",
+      "notes": "### 1. Straight-Line Geometry: Gradient & Slope-Intercept Form\n\nThe steepness or slope of any straight line in the coordinate plane is its **gradient ($m$)**:\n\n$$m = \\frac{\\text{Change in } y}{\\text{Change in } x} = \\frac{\\Delta y}{\\Delta x} = \\frac{y_2 - y_1}{x_2 - x_1}$$\n\n* **The Slope-Intercept Equation:**\n  $$y = mx + c$$\n  * $m = \\text{Gradient (slope)}$\n  * $c = y\\text{-intercept (the point where the line crosses the y-axis at } (0, c))$\n\n---\n\n### 2. Linear Inequalities & Number Line Representation\n\nAn **inequality** compares expressions using relational operators ($<, \\le, >, \\ge$):\n* **Open Circle ($\\circ$):** Used for strict inequalities ($<$ or $>$) — the boundary number is **not** included.\n* **Closed/Shaded Circle ($\\bullet$):** Used for inclusive inequalities ($\\le$ or $\\ge$) — the boundary number **is** included.\n\n<details>\n<summary>⚠️ <b>CRITICAL RULE: Multiplying or Dividing by a Negative Number</b> (Click to inspect)</summary>\n\n> When you multiply or divide an inequality by a negative number, you **MUST REVERSE** the direction of the inequality sign!\n> * Example: Solve $-2x < 8$\n> * Divide by $-2$ and flip the sign:\n>   $$\\frac{-2x}{-2} > \\frac{8}{-2} \\implies x > -4$$\n</details>",
+      "workedExamples": [
+        {
+          "id": "we_eq_b8_01",
+          "title": "Calculating Gradient and Line Equation from Two Points",
+          "problem": "Find the gradient and equation of the straight line passing through points $A(1, 1)$ and $B(7, 4)$.",
+          "steps": [
+            "Step 1 (Why we do this: Identify coordinate pairs): Let $(x_1, y_1) = (1, 1)$ and $(x_2, y_2) = (7, 4)$.",
+            "Step 2 (Why we do this: Apply the gradient formula): \n  $$m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{4 - 1}{7 - 1} = \\frac{3}{6} = \\frac{1}{2}$$",
+            "Step 3 (Why we do this: Use the point-slope form y - y₁ = m(x - x₁)): \n  $$y - 1 = \\frac{1}{2}(x - 1)$$",
+            "Step 4 (Why we do this: Multiply through by 2 to clear fractions): \n  $$2(y - 1) = x - 1 \\implies 2y - 2 = x - 1$$",
+            "Step 5 (Why we do this: Rearrange to standard y = mx + c form): \n  $$2y = x + 1 \\implies y = \\frac{1}{2}x + \\frac{1}{2}$$"
+          ],
+          "finalAnswer": "$$\\text{Gradient } m = \\frac{1}{2}, \\quad \\text{Equation: } y = \\frac{1}{2}x + \\frac{1}{2}$$"
+        },
+        {
+          "id": "we_eq_b8_02",
+          "title": "Solving Linear Inequalities with Sign Reversal",
+          "problem": "Solve the inequality: $$9 - 5x < 6$$",
+          "steps": [
+            "Step 1 (Why we do this: Collect constant numbers on the RHS): Subtract 9 from both sides:\n  $$-5x < 6 - 9 \\implies -5x < -3$$",
+            "Step 2 (Why we do this: Divide by negative coefficient and reverse inequality sign): Divide both sides by $-5$ and flip $<$ to $>$:\n  $$\\frac{-5x}{-5} > \\frac{-3}{-5}$$",
+            "Step 3 (Why we do this: State the final solution set): \n  $$x > \\frac{3}{5}$$ or $\\{x : x > 0.6\\}$"
+          ],
+          "finalAnswer": "$$x > \\frac{3}{5}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_eq_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the gradient of the line passing through $(2, 3)$ and $(6, 11)$.",
+            "options": ["2", "4", "1/2", "3"],
+            "correctAnswer": "2",
+            "hint": "$$m = \\frac{11 - 3}{6 - 2}$$.",
+            "workedSolution": "$$m = \\frac{8}{4} = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the gradient of the straight line $y = 5x + 13$?",
+            "options": ["5", "13", "-5", "5/13"],
+            "correctAnswer": "5",
+            "hint": "In $y = mx + c$, $m$ is the coefficient of $x$.",
+            "workedSolution": "Comparing with $y = mx + c$, $m = 5$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which inequality has its solution illustrated by a closed circle on 2 directed to the right?",
+            "options": ["x ≥ 2", "x > 2", "x ≤ 2", "x < 2"],
+            "correctAnswer": "x ≥ 2",
+            "hint": "Closed circle means 'or equal to' ($\\ge$), and right arrow means greater than.",
+            "workedSolution": "$$x \\ge 2$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_eq_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the equation of a line with slope $2$ and $y$-intercept $-3$.",
+            "options": ["y = 2x - 3", "y = -3x + 2", "2x - y = -3", "y = 2x + 3"],
+            "correctAnswer": "y = 2x - 3",
+            "hint": "Substitute $m = 2$ and $c = -3$ into $y = mx + c$.",
+            "workedSolution": "$$y = 2x + (-3) \\implies y = 2x - 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $x + 4 \\le 3x - 16$.",
+            "options": ["x ≥ 10", "x ≤ 10", "x ≥ 6", "x ≤ 6"],
+            "correctAnswer": "x ≥ 10",
+            "hint": "Subtract $x$ from both sides, add 16 to both sides.",
+            "workedSolution": "$$4 + 16 \\le 3x - x \\implies 20 \\le 2x \\implies x \\ge 10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the $y$-intercept of the line $2x - 8y + 3 = 0$.",
+            "options": ["3/8", "-3/8", "3/2", "-3/2"],
+            "correctAnswer": "3/8",
+            "hint": "Rearrange to $8y = 2x + 3 \\implies y = \\frac{2}{8}x + \\frac{3}{8}$.",
+            "workedSolution": "$$8y = 2x + 3 \\implies y = \\frac{1}{4}x + \\frac{3}{8}$$. $y$-intercept is $3/8$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_eq_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the equation of a line passing through $(3, -1)$ with slope $\\frac{2}{3}$.",
+            "options": ["2x - 3y = 9", "2x - 3y = 3", "3x - 2y = 9", "2x + 3y = 3"],
+            "correctAnswer": "2x - 3y = 9",
+            "hint": "$$y - (-1) = \\frac{2}{3}(x - 3)$$. Multiply through by 3.",
+            "workedSolution": "$$3(y + 1) = 2(x - 3) \\implies 3y + 3 = 2x - 6 \\implies 2x - 3y = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_eq_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A school has a budget of $\\text{GH¢ } 240.00$ to buy drinks. A sachet drink costs $\\text{GH¢ } 10.00$ and a bottle drink costs $\\text{GH¢ } 12.00$. If they buy 12 sachet drinks, what is the maximum number of bottle drinks ($b$) they can buy?",
+            "options": ["b ≤ 10", "b ≤ 11", "b ≤ 12", "b ≤ 9"],
+            "correctAnswer": "b ≤ 10",
+            "hint": "$$10(12) + 12b \\le 240 \\implies 120 + 12b \\le 240$$.",
+            "workedSolution": "$$120 + 12b \\le 240 \\implies 12b \\le 120 \\implies b \\le 10$$.",
+            "points": 2
+          },
+          {
+            "id": "q_eq_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $x$ is an integer such that $-2 < x \\le 3$, list the complete truth set for $x$.",
+            "options": [
+              "{-1, 0, 1, 2, 3}",
+              "{-2, -1, 0, 1, 2, 3}",
+              "{0, 1, 2, 3}",
+              "{-1, 0, 1, 2}"
+            ],
+            "correctAnswer": "{-1, 0, 1, 2, 3}",
+            "hint": "$-2$ is not included (strict inequality), while $3$ is included.",
+            "workedSolution": "$$\\{-1, 0, 1, 2, 3\\}$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+
+    "b9": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "contentStandard": "B9.2.1.1 / B9.2.3.1: Solve simultaneous linear equations using graphical intersections, and solve rational-coefficient single-variable linear inequalities.",
+      "indicatorsCovered": [
+        "B9.2.1.1.1",
+        "B9.2.1.1.2",
+        "B9.2.1.1.3",
+        "B9.2.3.1.1",
+        "B9.2.3.1.2",
+        "B9.2.3.1.3"
+      ],
+      "summary": "Simultaneous equations solved graphically, table of values plotting, and multi-step rational linear inequalities.",
+      "diagramSvg": "<svg viewBox='0 0 360 220' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='180' x2='330' y2='180' stroke='#334155' stroke-width='2'/><polygon points='340,180 330,175 330,185' fill='#334155'/><line x1='60' y1='200' x2='60' y2='20' stroke='#334155' stroke-width='2'/><polygon points='60,10 55,20 65,20' fill='#334155'/><text x='345' y='185' font-size='12' fill='#334155'>x</text><text x='65' y='20' font-size='12' fill='#334155'>y</text><line x1='40' y1='190' x2='260' y2='30' stroke='#2563eb' stroke-width='2.5'/><text x='265' y='40' font-size='11' font-weight='bold' fill='#2563eb'>y = 2x + 1</text><line x1='40' y1='50' x2='280' y2='170' stroke='#dc2626' stroke-width='2.5'/><text x='285' y='175' font-size='11' font-weight='bold' fill='#dc2626'>y = -x + 7</text><circle cx='140' cy='100' r='6' fill='#10b981' stroke='#047857' stroke-width='2'/><line x1='140' y1='100' x2='140' y2='180' stroke='#64748b' stroke-dasharray='4'/><line x1='140' y1='100' x2='60' y2='100' stroke='#64748b' stroke-dasharray='4'/><text x='135' y='195' font-size='12' font-weight='bold' fill='#1e293b'>2</text><text x='45' y='105' font-size='12' font-weight='bold' fill='#1e293b'>5</text><rect x='150' y='85' width='70' height='24' rx='4' fill='#f1f5f9' stroke='#cbd5e1'/><text x='156' y='101' font-size='11' font-weight='bold' fill='#0f172a'>(2, 5)</text></svg>",
+      "notes": "### 1. Graphical Solution of Simultaneous Linear Equations\n\nA pair of simultaneous linear equations represents two distinct lines on the Cartesian plane:\n\n* **The Point of Intersection $(x_0, y_0)$:** The unique point where both lines cross represents the **simultaneous solution** that satisfies both equations at the exact same time.\n* **Algorithm for Graphical Solutions:**\n  1. Construct a table of values for Equation 1 (e.g., $x \\in \\{-2, -1, 0, 1, 2, 3\\}$).\n  2. Construct a table of values for Equation 2 across the same domain.\n  3. Plot both lines on the same coordinate axes.\n  4. Read the coordinates $(x, y)$ of their point of intersection.\n\n---\n\n### 2. Rational Linear Inequalities\n\nInequalities with fractional coefficients are solved by multiplying every term by the LCM of denominators:\n$$\\frac{1}{2}(2x + 3) \\le x + 1$$\n$$2x + 3 \\le 2(x + 1) \\implies 2x + 3 \\le 2x + 2 \\quad \\text{(Inconsistent/Empty)}$$",
+      "workedExamples": [
+        {
+          "id": "we_eq_b9_01",
+          "title": "Simultaneous System Solved by Coordinate Intersection",
+          "problem": "Solve the system of equations simultaneously using their graphical intersection:\n$$\\begin{cases} y = -x + 7 \\\\ y = 2x + 1 \\end{cases}$$",
+          "steps": [
+            "Step 1 (Why we do this: Equate y-expressions to find the x-coordinate of intersection algebraically): \n  $$-x + 7 = 2x + 1$$",
+            "Step 2 (Why we do this: Group variable terms on one side): \n  $$7 - 1 = 2x + x \\implies 6 = 3x \\implies x = 2$$",
+            "Step 3 (Why we do this: Substitute x = 2 into either line equation to determine y): \n  $$y = -(2) + 7 = 5$$",
+            "Step 4 (Why we do this: Verify on the second line): \n  $$y = 2(2) + 1 = 4 + 1 = 5$$",
+            "Step 5 (Why we do this: Read intersection on the graph): The two straight lines intersect at the point $(2, 5)$."
+          ],
+          "finalAnswer": "$$(x, y) = (2, 5)$$"
+        },
+        {
+          "id": "we_eq_b9_02",
+          "title": "Solving Rational Multi-Term Linear Inequality",
+          "problem": "Solve for $x$ in the inequality: $$\\frac{1}{2}(5 - x) < x + \\frac{11}{2}$$",
+          "steps": [
+            "Step 1 (Why we do this: Clear fractions by multiplying through by the LCM of 2): \n  $$2 \\left[\\frac{1}{2}(5 - x)\\right] < 2(x) + 2\\left(\\frac{11}{2}\\right)$$",
+            "Step 2 (Why we do this: Simplify brackets on both sides): \n  $$5 - x < 2x + 11$$",
+            "Step 3 (Why we do this: Collect x-terms and constants on opposite sides): \n  $$5 - 11 < 2x + x \\implies -6 < 3x$$",
+            "Step 4 (Why we do this: Divide by positive 3, leaving sign direction unchanged): \n  $$x > \\frac{-6}{3} \\implies x > -2$$"
+          ],
+          "finalAnswer": "$$x > -2$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_eq_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If two straight lines intersect at $(3, -2)$ on a Cartesian graph, what is the simultaneous solution of the equations?",
+            "options": ["x = 3, y = -2", "x = -2, y = 3", "x = 1, y = -2", "x = 3, y = 2"],
+            "correctAnswer": "x = 3, y = -2",
+            "hint": "The coordinates $(x, y)$ of the point of intersection give the direct solution.",
+            "workedSolution": "The point of intersection $(x, y) = (3, -2)$ means $x = 3$ and $y = -2$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve: $2x \\ge 8$.",
+            "options": ["x ≥ 4", "x ≤ 4", "x ≥ 16", "x ≤ 16"],
+            "correctAnswer": "x ≥ 4",
+            "hint": "Divide both sides by 2.",
+            "workedSolution": "$$x \\ge \\frac{8}{2} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "From the graph of $y = x + 4$ and $y = 6 - x$, at what point do the lines intersect?",
+            "options": ["(1, 5)", "(2, 4)", "(0, 6)", "(3, 3)"],
+            "correctAnswer": "(1, 5)",
+            "hint": "Equate $x + 4 = 6 - x \\implies 2x = 2 \\implies x = 1$. Then $y = 1 + 4 = 5$.",
+            "workedSolution": "$$x + 4 = 6 - x \\implies 2x = 2 \\implies x = 1$$. $y = 1 + 4 = 5$. Point is $(1, 5)$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_eq_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Jane and Mark bought 8 items for $\\text{GH¢ } 28.00$. Pens cost $\\text{GH¢ } 3.00$ and notebooks cost $\\text{GH¢ } 4.00$. How many pens and notebooks did they buy?",
+            "options": [
+              "4 pens and 4 notebooks",
+              "5 pens and 3 notebooks",
+              "6 pens and 2 notebooks",
+              "3 pens and 5 notebooks"
+            ],
+            "correctAnswer": "4 pens and 4 notebooks",
+            "hint": "$p + n = 8$ and $3p + 4n = 28$.",
+            "workedSolution": "$$3(p + n) = 3(8) = 24$$\n$$(3p + 4n) - (3p + 3n) = 28 - 24 \\implies n = 4$$\n$$p = 8 - 4 = 4\\text{ pens and } 4\\text{ notebooks}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the inequality: $$\\frac{3}{2}y - \\frac{2}{5} < 5$$.",
+            "options": ["y < 3.6", "y > 3.6", "y < 2.5", "y < 4.2"],
+            "correctAnswer": "y < 3.6",
+            "hint": "Multiply through by 10: $15y - 4 < 50$.",
+            "workedSolution": "$$15y - 4 < 50 \\implies 15y < 54 \\implies y < \\frac{54}{15} = 3.6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_eq_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A man has $260\\text{ m}$ of fencing to enclose a rectangular field of width $50\\text{ m}$. What is the length of the field?",
+            "options": ["80 m", "60 m", "70 m", "90 m"],
+            "correctAnswer": "80 m",
+            "hint": "$$2(l + 50) = 260$$.",
+            "workedSolution": "$$l + 50 = 130 \\implies l = 80\\text{ m}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_eq_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A man paid $\\text{GH¢ } 290.00$ for 11 books. Geography books cost $\\text{GH¢ } 30.00$ each and History books cost $\\text{GH¢ } 20.00$ each. How many Geography books did he buy?",
+            "options": ["7", "4", "6", "5"],
+            "correctAnswer": "7",
+            "hint": "$$30g + 20(11 - g) = 290$$.",
+            "workedSolution": "$$30g + 220 - 20g = 290 \\implies 10g = 70 \\implies g = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_eq_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student scores 70 and 76 marks in two tests. What is the MINIMUM mark she must score in the third test to achieve an average of at least 80 marks?",
+            "options": ["94", "92", "88", "90"],
+            "correctAnswer": "94",
+            "hint": "$$\\frac{70 + 76 + x}{3} \\ge 80$$.",
+            "workedSolution": "$$146 + x \\ge 240 \\implies x \\ge 240 - 146 = 94$$.",
+            "points": 2
+          },
+          {
+            "id": "q_eq_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the inequality: $$-3x - 8 > -26$$.",
+            "options": ["x < 6", "x > 6", "x < -6", "x > -6"],
+            "correctAnswer": "x < 6",
+            "hint": "Add 8 to both sides: $-3x > -18$. Divide by $-3$ and reverse sign.",
+            "workedSolution": "$$-3x > -18 \\implies x < \\frac{-18}{-3} = 6$$.",
+            "points": 2
+          }
+        ]
+      }
+    }
+  },
+  "linkedExamQuestions": [
+    {
+      "setId": "jhs-math-mastery-series-44",
+      "year": 1991,
+      "paper": 2,
+      "questionNumber": "4(a)",
+      "promptSnippet": "Solve the simultaneous equations: 2x + y = 7 and 3x - 2y = 0."
+    },
+    {
+      "setId": "jhs-math-mastery-series-45",
+      "year": 1990,
+      "paper": 1,
+      "questionNumber": 12,
+      "promptSnippet": "Find the solution set of 2x - 3 <= 19 on the domain of integers."
+    }
+  ],
+  "updatedAt": "2026-09-17T13:30:00.000Z"
+}

@@ -172,6 +172,9 @@ async function runSeeding() {
   if (fs.existsSync(path.join(__dirname, 'payloads', 'topics', 'topic_algebraic_expressions.json'))) {
     await seedTopicLabDoc('topic_algebraic_expressions.json');
   }
+  if (fs.existsSync(path.join(__dirname, 'payloads', 'topics', 'topic_equations_inequalities_graphs.json'))) {
+    await seedTopicLabDoc('topic_equations_inequalities_graphs.json');
+  }
 
   console.log('\n================================================================');
   console.log('🎉 TOPICAL PRACTICE LABS SEEDING COMPLETE!');
