@@ -14,7 +14,7 @@
   },
   "badge": "Strand 1: Number",
   "description": "Master set definitions, listing elements, set-builder notation, subsets, union, intersection, complement, and 2-set and 3-set Venn problem modeling.",
-  "totalPracticeQuestions": 27,
+  "totalPracticeQuestions": 168,
   "version": 1,
   "levels": {
     "b7": {
@@ -71,151 +71,2407 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_sets_b7_l01",
+            "id": "q_b7_set_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "If $P = \\{2, 3, 5, 7\\}$ and $Q = \\{1, 3, 5, 9\\}$, find $P \\cap Q$.",
+            "prompt": "Which of the following describes an infinite set?",
             "options": [
-              "{3, 5}",
-              "{1, 2, 3, 5, 7, 9}",
-              "{2, 7}",
-              "{1, 9}"
+              "{x : x is a counting number}",
+              "{x : x is a month of the year}",
+              "{x : x is a vowel in the English alphabet}",
+              "{x : x is a factor of 12}"
             ],
-            "correctAnswer": "{3, 5}",
-            "hint": "Identify the elements appearing in both sets.",
-            "workedSolution": "Common elements are 3 and 5. Thus, $P \\cap Q = \\{3, 5\\}$.",
+            "correctAnswer": "{x : x is a counting number}",
+            "hint": "An infinite set has elements that cannot be completely counted or listed to an end.",
+            "workedSolution": "Counting numbers $\\{1, 2, 3, 4, \\dots\\}$ continue endlessly, making it an infinite set.",
             "points": 1
           },
           {
-            "id": "q_sets_b7_l02",
+            "id": "q_b7_set_l02",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "How many subsets can be formed from the set $K = \\{x, y\\}$?",
+            "prompt": "If $P = \\{2, 3, 5, 7, 11\\}$, which of the following statements is true?",
             "options": [
+              "5 ∈ P",
+              "9 ∈ P",
+              "4 ∈ P",
+              "11 ∉ P"
+            ],
+            "correctAnswer": "5 ∈ P",
+            "hint": "The symbol $\\in$ means 'is an element of'.",
+            "workedSolution": "5 is an element of set $P$, so $5 \\in P$ is the true statement.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the number of elements in the empty (null) set $\\emptyset$?",
+            "options": [
+              "0",
+              "1",
+              "undefined",
+              "{0}"
+            ],
+            "correctAnswer": "0",
+            "hint": "The empty set contains no elements at all.",
+            "workedSolution": "By definition, the cardinality of the empty set $n(\\emptyset) = 0$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $A = \\{a, b, c\\}$ and $B = \\{b, c, d\\}$, find $A \\cap B$.",
+            "options": [
+              "{b, c}",
+              "{a, b, c, d}",
+              "{a}",
+              "{d}"
+            ],
+            "correctAnswer": "{b, c}",
+            "hint": "Intersection $\\cap$ denotes elements that belong to BOTH sets simultaneously.",
+            "workedSolution": "$$A \\cap B = \\{b, c\\}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $X = \\{1, 2, 3\\}$ and $Y = \\{3, 4, 5\\}$, what is $X \\cup Y$?",
+            "options": [
+              "{1, 2, 3, 4, 5}",
+              "{3}",
+              "{1, 2, 4, 5}",
+              "{1, 2, 3, 3, 4, 5}"
+            ],
+            "correctAnswer": "{1, 2, 3, 4, 5}",
+            "hint": "Union $\\cup$ combines all elements from both sets without repeating shared elements.",
+            "workedSolution": "$$X \\cup Y = \\{1, 2, 3, 4, 5\\}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following is a subset of $S = \\{2, 4, 6, 8\\}$?",
+            "options": [
+              "{2, 6}",
+              "{2, 5}",
+              "{8, 10}",
+              "{0, 2}"
+            ],
+            "correctAnswer": "{2, 6}",
+            "hint": "Every member of a subset must belong to the parent set.",
+            "workedSolution": "Both 2 and 6 belong to $S$, so $\\{2, 6\\} \\subset S$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "How many subsets can be formed from a set with 3 elements?",
+            "options": [
+              "8",
+              "6",
+              "9",
+              "7"
+            ],
+            "correctAnswer": "8",
+            "hint": "Total number of subsets is given by $2^n$.",
+            "workedSolution": "$$\\text{Number of subsets} = 2^3 = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $n(A) = 7$, what is the cardinality of set $A$?",
+            "options": [
+              "7",
+              "14",
+              "49",
+              "128"
+            ],
+            "correctAnswer": "7",
+            "hint": "Cardinality $n(A)$ is simply the number of distinct elements in set $A$.",
+            "workedSolution": "The cardinality of set $A$ is 7.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If two sets $P$ and $Q$ share no common elements ($P \\cap Q = \\emptyset$), they are called:",
+            "options": [
+              "Disjoint sets",
+              "Universal sets",
+              "Equal sets",
+              "Infinite sets"
+            ],
+            "correctAnswer": "Disjoint sets",
+            "hint": "Disjoint sets have no intersection.",
+            "workedSolution": "Sets with an empty intersection are disjoint sets.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "List the elements of the set $M = \\{x : x \\text{ is a prime number less than } 10\\}$.",
+            "options": [
+              "{2, 3, 5, 7}",
+              "{1, 2, 3, 5, 7}",
+              "{3, 5, 7, 9}",
+              "{2, 3, 5, 7, 9}"
+            ],
+            "correctAnswer": "{2, 3, 5, 7}",
+            "hint": "Remember that 1 is not a prime number and 9 is composite.",
+            "workedSolution": "Prime numbers strictly below 10 are 2, 3, 5, and 7.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of days of the week?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 7 distinct elements, so $n(S) = 7$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of vowels in the English alphabet?",
+            "options": [
+              "5",
+              "6",
               "4",
-              "2",
-              "3",
               "8"
             ],
-            "correctAnswer": "4",
-            "hint": "Total subsets = $2^n$ where $n$ is the number of elements.",
-            "workedSolution": "$$2^2 = 4$$: $\\emptyset, \\{x\\}, \\{y\\}, \\{x, y\\}$.",
+            "correctAnswer": "5",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 5 distinct elements, so $n(S) = 5$.",
             "points": 1
           },
           {
-            "id": "q_sets_b7_l03",
+            "id": "q_b7_set_l13",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Which of the following describes an empty set?",
+            "prompt": "What is the cardinality of the set of factors of 6?",
             "options": [
-              "{x : x is an even prime number greater than 2}",
-              "{0}",
-              "{x : x is a prime number less than 3}",
-              "{∅}"
+              "4",
+              "5",
+              "3",
+              "7"
             ],
-            "correctAnswer": "{x : x is an even prime number greater than 2}",
-            "hint": "2 is the only even prime number in mathematics.",
-            "workedSolution": "Since 2 is the only even prime, there is no even prime greater than 2. Thus the set is empty ($\\emptyset$).",
+            "correctAnswer": "4",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 4 distinct elements, so $n(S) = 4$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of factors of 12?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "6",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 6 distinct elements, so $n(S) = 6$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of factors of 20?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "6",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 6 distinct elements, so $n(S) = 6$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of even numbers between 1 and 15?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 7 distinct elements, so $n(S) = 7$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of odd numbers between 2 and 18?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "8",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 8 distinct elements, so $n(S) = 8$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of prime numbers less than 20?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "8",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 8 distinct elements, so $n(S) = 8$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of letters in the word 'MATHEMATICS'?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "8",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 8 distinct elements, so $n(S) = 8$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of letters in the word 'GHANA'?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "7"
+            ],
+            "correctAnswer": "4",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 4 distinct elements, so $n(S) = 4$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of months of the year beginning with 'J'?",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 3 distinct elements, so $n(S) = 3$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of positive integers less than 10?",
+            "options": [
+              "9",
+              "10",
+              "8",
+              "12"
+            ],
+            "correctAnswer": "9",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 9 distinct elements, so $n(S) = 9$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of factors of 18?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "6",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 6 distinct elements, so $n(S) = 6$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of multiples of 5 less than 35?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "6",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 6 distinct elements, so $n(S) = 6$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the cardinality of the set of perfect squares less than 50?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "List all distinct elements and count them.",
+            "workedSolution": "Listing the elements yields 7 distinct elements, so $n(S) = 7$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 12\\}$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "The elements are $2, 4, 6, \\dots, 12$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{12}{2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 14\\}$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "The elements are $2, 4, 6, \\dots, 14$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{14}{2} = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 16\\}$.",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "8",
+            "hint": "The elements are $2, 4, 6, \\dots, 16$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{16}{2} = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 18\\}$.",
+            "options": [
+              "9",
+              "10",
+              "8",
+              "18"
+            ],
+            "correctAnswer": "9",
+            "hint": "The elements are $2, 4, 6, \\dots, 18$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{18}{2} = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 20\\}$.",
+            "options": [
+              "10",
+              "11",
+              "9",
+              "20"
+            ],
+            "correctAnswer": "10",
+            "hint": "The elements are $2, 4, 6, \\dots, 20$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{20}{2} = 10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 22\\}$.",
+            "options": [
+              "11",
+              "12",
+              "10",
+              "22"
+            ],
+            "correctAnswer": "11",
+            "hint": "The elements are $2, 4, 6, \\dots, 22$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{22}{2} = 11$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 24\\}$.",
+            "options": [
+              "12",
+              "13",
+              "11",
+              "24"
+            ],
+            "correctAnswer": "12",
+            "hint": "The elements are $2, 4, 6, \\dots, 24$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{24}{2} = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 26\\}$.",
+            "options": [
+              "13",
+              "14",
+              "12",
+              "26"
+            ],
+            "correctAnswer": "13",
+            "hint": "The elements are $2, 4, 6, \\dots, 26$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{26}{2} = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 28\\}$.",
+            "options": [
+              "14",
+              "15",
+              "13",
+              "28"
+            ],
+            "correctAnswer": "14",
+            "hint": "The elements are $2, 4, 6, \\dots, 28$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{28}{2} = 14$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 30\\}$.",
+            "options": [
+              "15",
+              "16",
+              "14",
+              "30"
+            ],
+            "correctAnswer": "15",
+            "hint": "The elements are $2, 4, 6, \\dots, 30$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{30}{2} = 15$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 32\\}$.",
+            "options": [
+              "16",
+              "17",
+              "15",
+              "32"
+            ],
+            "correctAnswer": "16",
+            "hint": "The elements are $2, 4, 6, \\dots, 32$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{32}{2} = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 34\\}$.",
+            "options": [
+              "17",
+              "18",
+              "16",
+              "34"
+            ],
+            "correctAnswer": "17",
+            "hint": "The elements are $2, 4, 6, \\dots, 34$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{34}{2} = 17$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 36\\}$.",
+            "options": [
+              "18",
+              "19",
+              "17",
+              "36"
+            ],
+            "correctAnswer": "18",
+            "hint": "The elements are $2, 4, 6, \\dots, 36$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{36}{2} = 18$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 38\\}$.",
+            "options": [
+              "19",
+              "20",
+              "18",
+              "38"
+            ],
+            "correctAnswer": "19",
+            "hint": "The elements are $2, 4, 6, \\dots, 38$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{38}{2} = 19$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 40\\}$.",
+            "options": [
+              "20",
+              "21",
+              "19",
+              "40"
+            ],
+            "correctAnswer": "20",
+            "hint": "The elements are $2, 4, 6, \\dots, 40$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{40}{2} = 20$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 42\\}$.",
+            "options": [
+              "21",
+              "22",
+              "20",
+              "42"
+            ],
+            "correctAnswer": "21",
+            "hint": "The elements are $2, 4, 6, \\dots, 42$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{42}{2} = 21$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 44\\}$.",
+            "options": [
+              "22",
+              "23",
+              "21",
+              "44"
+            ],
+            "correctAnswer": "22",
+            "hint": "The elements are $2, 4, 6, \\dots, 44$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{44}{2} = 22$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 46\\}$.",
+            "options": [
+              "23",
+              "24",
+              "22",
+              "46"
+            ],
+            "correctAnswer": "23",
+            "hint": "The elements are $2, 4, 6, \\dots, 46$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{46}{2} = 23$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 48\\}$.",
+            "options": [
+              "24",
+              "25",
+              "23",
+              "48"
+            ],
+            "correctAnswer": "24",
+            "hint": "The elements are $2, 4, 6, \\dots, 48$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{48}{2} = 24$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 50\\}$.",
+            "options": [
+              "25",
+              "26",
+              "24",
+              "50"
+            ],
+            "correctAnswer": "25",
+            "hint": "The elements are $2, 4, 6, \\dots, 50$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{50}{2} = 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 52\\}$.",
+            "options": [
+              "26",
+              "27",
+              "25",
+              "52"
+            ],
+            "correctAnswer": "26",
+            "hint": "The elements are $2, 4, 6, \\dots, 52$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{52}{2} = 26$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 54\\}$.",
+            "options": [
+              "27",
+              "28",
+              "26",
+              "54"
+            ],
+            "correctAnswer": "27",
+            "hint": "The elements are $2, 4, 6, \\dots, 54$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{54}{2} = 27$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 56\\}$.",
+            "options": [
+              "28",
+              "29",
+              "27",
+              "56"
+            ],
+            "correctAnswer": "28",
+            "hint": "The elements are $2, 4, 6, \\dots, 56$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{56}{2} = 28$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 58\\}$.",
+            "options": [
+              "29",
+              "30",
+              "28",
+              "58"
+            ],
+            "correctAnswer": "29",
+            "hint": "The elements are $2, 4, 6, \\dots, 58$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{58}{2} = 29$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the number of elements in the set $E = \\{x : x \\text{ is an even integer and } 2 \\le x \\le 60\\}$.",
+            "options": [
+              "30",
+              "31",
+              "29",
+              "60"
+            ],
+            "correctAnswer": "30",
+            "hint": "The elements are $2, 4, 6, \\dots, 60$. Divide the upper limit by 2.",
+            "workedSolution": "$$n(E) = \\frac{60}{2} = 30$$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_sets_b7_m01",
+            "id": "q_b7_set_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "If set $A = \\{3, 5, 7, k, 11\\}$ and set $B = \\{7, 3, 11, 9, 5\\}$ such that $A = B$, what is the value of $k$?",
+            "prompt": "Study the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>B</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>1, 3</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>5, 7</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2, 4</text><text x='290' y='165' font-size='11' fill='#64748b'></text></svg><br/>Find $n(A \\cup B)$.",
             "options": [
-              "9",
-              "5",
-              "7",
-              "11"
-            ],
-            "correctAnswer": "9",
-            "hint": "Equal sets contain the exact same elements.",
-            "workedSolution": "Comparing elements of $A$ and $B$, the missing element in $A$ is 9. Thus $k = 9$.",
-            "points": 1
-          },
-          {
-            "id": "q_sets_b7_m02",
-            "difficulty": "medium",
-            "dokLevel": 2,
-            "prompt": "Given $U = \\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\\}$ and $M = \\{x : x \\text{ is a factor of } 10\\}$, find $M'$ (the complement of set $M$).",
-            "options": [
-              "{3, 4, 6, 7, 8, 9}",
-              "{1, 2, 5, 10}",
-              "{2, 3, 5, 7}",
-              "{4, 6, 8, 9}"
-            ],
-            "correctAnswer": "{3, 4, 6, 7, 8, 9}",
-            "hint": "Factors of 10 are {1, 2, 5, 10}. The complement contains all elements in U not in M.",
-            "workedSolution": "$M = \\{1, 2, 5, 10\\}$. $M' = U \\setminus M = \\{3, 4, 6, 7, 8, 9\\}$.",
-            "points": 1
-          },
-          {
-            "id": "q_sets_b7_m03",
-            "difficulty": "medium",
-            "dokLevel": 2,
-            "prompt": "If set $P$ has 16 subsets, how many elements does set $P$ contain?",
-            "options": [
+              "6",
+              "2",
               "4",
-              "8",
-              "3",
               "5"
             ],
+            "correctAnswer": "6",
+            "hint": "Count all distinct elements inside both circles $A$ and $B$.",
+            "workedSolution": "$$A \\cup B = \\{1, 2, 3, 4, 5, 7\\} \\implies n(A \\cup B) = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Study the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>P</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Q</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>a, c</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>b</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>d, e</text><text x='290' y='165' font-size='11' fill='#64748b'></text></svg><br/>Which set represents $P \\cap Q$?",
+            "options": [
+              "{b}",
+              "{a, c}",
+              "{d, e}",
+              "{a, b, c, d, e}"
+            ],
+            "correctAnswer": "{b}",
+            "hint": "Look at the overlapping middle region shared by both circles.",
+            "workedSolution": "The intersection contains only element $b$, so $P \\cap Q = \\{b\\}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $n(A) = 15$, $n(B) = 12$, and $n(A \\cap B) = 5$, find $n(A \\cup B)$.",
+            "options": [
+              "22",
+              "27",
+              "17",
+              "32"
+            ],
+            "correctAnswer": "22",
+            "hint": "Apply the formula: $n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$.",
+            "workedSolution": "$$n(A \\cup B) = 15 + 12 - 5 = 27 - 5 = 22$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given the Universal set $U = \\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\\}$ and $A = \\{2, 3, 5, 7\\}$, find $A'$ (the complement of $A$).",
+            "options": [
+              "{1, 4, 6, 8, 9, 10}",
+              "{4, 6, 8, 9, 10}",
+              "{1, 2, 4, 6, 8, 10}",
+              "{2, 3, 5, 7}"
+            ],
+            "correctAnswer": "{1, 4, 6, 8, 9, 10}",
+            "hint": "List all elements in $U$ that are NOT in set $A$.",
+            "workedSolution": "$$A' = U \\setminus A = \\{1, 4, 6, 8, 9, 10\\}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $A = \\{x : 1 < x \\le 6, \\, x \\in \\mathbb{Z}\\}$ and $B = \\{x : 3 \\le x < 8, \\, x \\in \\mathbb{Z}\\}$, find $A \\cap B$.",
+            "options": [
+              "{3, 4, 5, 6}",
+              "{2, 3, 4, 5, 6}",
+              "{3, 4, 5}",
+              "{4, 5, 6}"
+            ],
+            "correctAnswer": "{3, 4, 5, 6}",
+            "hint": "List both sets: $A = \\{2, 3, 4, 5, 6\\}$ and $B = \\{3, 4, 5, 6, 7\\}$.",
+            "workedSolution": "$$A = \\{2, 3, 4, 5, 6\\}, \\ B = \\{3, 4, 5, 6, 7\\}$$\n$$A \\cap B = \\{3, 4, 5, 6\\}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>X</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Y</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2, 4</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>6</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>8, 10</text><text x='290' y='165' font-size='11' fill='#64748b'>12</text></svg><br/>Determine X only.",
+            "options": [
+              "{2, 4}",
+              "{6}",
+              "{8, 10}",
+              "{1}"
+            ],
+            "correctAnswer": "{2, 4}",
+            "hint": "Locate the relevant region in the Venn diagram for X only.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to X only contains {2, 4}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>M</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>N</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>p, q</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>r, s</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>t</text><text x='290' y='165' font-size='11' fill='#64748b'>u</text></svg><br/>Determine M ∩ N.",
+            "options": [
+              "{r, s}",
+              "{p, q}",
+              "{t}",
+              "{2}"
+            ],
+            "correctAnswer": "{r, s}",
+            "hint": "Locate the relevant region in the Venn diagram for M ∩ N.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to M ∩ N contains {r, s}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>B</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>6, 9</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>12</text><text x='290' y='165' font-size='11' fill='#64748b'>15</text></svg><br/>Determine A ∪ B.",
+            "options": [
+              "{3, 6, 9, 12}",
+              "{6, 9}",
+              "{3}",
+              "{12}"
+            ],
+            "correctAnswer": "{3, 6, 9, 12}",
+            "hint": "Locate the relevant region in the Venn diagram for A ∪ B.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to A ∪ B contains {3, 6, 9, 12}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>P</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Q</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>1, 5</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>7</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>9, 11</text><text x='290' y='165' font-size='11' fill='#64748b'>13</text></svg><br/>Determine Q only.",
+            "options": [
+              "{9, 11}",
+              "{7}",
+              "{1, 5}",
+              "{4}"
+            ],
+            "correctAnswer": "{9, 11}",
+            "hint": "Locate the relevant region in the Venn diagram for Q only.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to Q only contains {9, 11}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>R</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>S</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>a</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>b, c</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>d</text><text x='290' y='165' font-size='11' fill='#64748b'>e, f</text></svg><br/>Determine (R ∪ S)'.",
+            "options": [
+              "{e, f}",
+              "{b, c}",
+              "{a}",
+              "{d}"
+            ],
+            "correctAnswer": "{e, f}",
+            "hint": "Locate the relevant region in the Venn diagram for (R ∪ S)'.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to (R ∪ S)' contains {e, f}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>C</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>D</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>10, 20</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>30</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>40, 50</text><text x='290' y='165' font-size='11' fill='#64748b'>60</text></svg><br/>Determine n(C ∩ D).",
+            "options": [
+              "1",
+              "{30}",
+              "{10, 20}",
+              "{40, 50}"
+            ],
+            "correctAnswer": "1",
+            "hint": "Locate the relevant region in the Venn diagram for n(C ∩ D).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(C ∩ D) contains 1.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>E</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>F</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2, 4, 6</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>8</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>10</text><text x='290' y='165' font-size='11' fill='#64748b'>12</text></svg><br/>Determine n(E ∪ F).",
+            "options": [
+              "5",
+              "{8}",
+              "{2, 4, 6}",
+              "{10}"
+            ],
+            "correctAnswer": "5",
+            "hint": "Locate the relevant region in the Venn diagram for n(E ∪ F).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(E ∪ F) contains 5.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>G</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>H</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>m</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>n</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>p, q</text><text x='290' y='165' font-size='11' fill='#64748b'>r</text></svg><br/>Determine n(H only).",
+            "options": [
+              "2",
+              "{n}",
+              "{m}",
+              "{p, q}"
+            ],
+            "correctAnswer": "2",
+            "hint": "Locate the relevant region in the Venn diagram for n(H only).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(H only) contains 2.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>J</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>K</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>5, 10</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>15, 20</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>25</text><text x='290' y='165' font-size='11' fill='#64748b'>30</text></svg><br/>Determine n(J).",
+            "options": [
+              "4",
+              "{15, 20}",
+              "{5, 10}",
+              "{25}"
+            ],
             "correctAnswer": "4",
-            "hint": "Solve $2^n = 16$.",
-            "workedSolution": "$$2^n = 16 = 2^4 \\implies n = 4$$. Set P has 4 elements.",
+            "hint": "Locate the relevant region in the Venn diagram for n(J).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(J) contains 4.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>V</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>W</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>1</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>2</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3, 4</text><text x='290' y='165' font-size='11' fill='#64748b'>5, 6</text></svg><br/>Determine n(U).",
+            "options": [
+              "6",
+              "{2}",
+              "{1}",
+              "{3, 4}"
+            ],
+            "correctAnswer": "6",
+            "hint": "Locate the relevant region in the Venn diagram for n(U).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(U) contains 6.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>B</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>x, y</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>z</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>w</text><text x='290' y='165' font-size='11' fill='#64748b'>v</text></svg><br/>Determine A ∩ B.",
+            "options": [
+              "{z}",
+              "{x, y}",
+              "{w}",
+              "{11}"
+            ],
+            "correctAnswer": "{z}",
+            "hint": "Locate the relevant region in the Venn diagram for A ∩ B.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to A ∩ B contains {z}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>P</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Q</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>4, 8</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>12</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>16, 20</text><text x='290' y='165' font-size='11' fill='#64748b'>24</text></svg><br/>Determine P only.",
+            "options": [
+              "{4, 8}",
+              "{12}",
+              "{16, 20}",
+              "{12}"
+            ],
+            "correctAnswer": "{4, 8}",
+            "hint": "Locate the relevant region in the Venn diagram for P only.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to P only contains {4, 8}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>S</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>T</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>10</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>20, 30</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>40</text><text x='290' y='165' font-size='11' fill='#64748b'>50</text></svg><br/>Determine S ∪ T.",
+            "options": [
+              "{10, 20, 30, 40}",
+              "{20, 30}",
+              "{10}",
+              "{40}"
+            ],
+            "correctAnswer": "{10, 20, 30, 40}",
+            "hint": "Locate the relevant region in the Venn diagram for S ∪ T.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to S ∪ T contains {10, 20, 30, 40}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>K</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>L</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>7, 14</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>21</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>28</text><text x='290' y='165' font-size='11' fill='#64748b'>35</text></svg><br/>Determine n(K ∪ L).",
+            "options": [
+              "4",
+              "{21}",
+              "{7, 14}",
+              "{28}"
+            ],
+            "correctAnswer": "4",
+            "hint": "Locate the relevant region in the Venn diagram for n(K ∪ L).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(K ∪ L) contains 4.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>D</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>E</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3, 6</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>9, 12</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>15, 18</text><text x='290' y='165' font-size='11' fill='#64748b'>21</text></svg><br/>Determine n(D ∩ E).",
+            "options": [
+              "2",
+              "{9, 12}",
+              "{3, 6}",
+              "{15, 18}"
+            ],
+            "correctAnswer": "2",
+            "hint": "Locate the relevant region in the Venn diagram for n(D ∩ E).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(D ∩ E) contains 2.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>F</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>G</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>1</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>3, 5</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>7</text><text x='290' y='165' font-size='11' fill='#64748b'>9, 11</text></svg><br/>Determine (F ∪ G)'.",
+            "options": [
+              "{9, 11}",
+              "{3, 5}",
+              "{1}",
+              "{7}"
+            ],
+            "correctAnswer": "{9, 11}",
+            "hint": "Locate the relevant region in the Venn diagram for (F ∪ G)'.",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to (F ∪ G)' contains {9, 11}.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>U1</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>U2</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>a, b</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>c</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>d, e</text><text x='290' y='165' font-size='11' fill='#64748b'>f</text></svg><br/>Determine n(U1).",
+            "options": [
+              "3",
+              "{c}",
+              "{a, b}",
+              "{d, e}"
+            ],
+            "correctAnswer": "3",
+            "hint": "Locate the relevant region in the Venn diagram for n(U1).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(U1) contains 3.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>W1</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>W2</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>4, 6</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>8</text><text x='290' y='165' font-size='11' fill='#64748b'>10</text></svg><br/>Determine n(W2).",
+            "options": [
+              "3",
+              "{4, 6}",
+              "{2}",
+              "{8}"
+            ],
+            "correctAnswer": "3",
+            "hint": "Locate the relevant region in the Venn diagram for n(W2).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(W2) contains 3.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>X1</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>X2</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>100</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>200</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>300</text><text x='290' y='165' font-size='11' fill='#64748b'>400</text></svg><br/>Determine n(X1 ∪ X2).",
+            "options": [
+              "3",
+              "{200}",
+              "{100}",
+              "{300}"
+            ],
+            "correctAnswer": "3",
+            "hint": "Locate the relevant region in the Venn diagram for n(X1 ∪ X2).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(X1 ∪ X2) contains 3.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Examine the Venn diagram below:<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Y1</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Y2</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>5, 15</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>25</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>35, 45</text><text x='290' y='165' font-size='11' fill='#64748b'>55</text></svg><br/>Determine n(Y1 only).",
+            "options": [
+              "2",
+              "{25}",
+              "{5, 15}",
+              "{35, 45}"
+            ],
+            "correctAnswer": "2",
+            "hint": "Locate the relevant region in the Venn diagram for n(Y1 only).",
+            "workedSolution": "From the visual Venn diagram, the region corresponding to n(Y1 only) contains 2.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $14$ pupils like Mathematics and $12$ like Science. If $4$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "22",
+              "26",
+              "24",
+              "10"
+            ],
+            "correctAnswer": "22",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 14 + 12 - 4 = 22$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $15$ pupils like Mathematics and $13$ like Science. If $5$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "23",
+              "28",
+              "25",
+              "10"
+            ],
+            "correctAnswer": "23",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 15 + 13 - 5 = 23$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $16$ pupils like Mathematics and $14$ like Science. If $2$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "28",
+              "30",
+              "30",
+              "14"
+            ],
+            "correctAnswer": "28",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 16 + 14 - 2 = 28$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $17$ pupils like Mathematics and $15$ like Science. If $3$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "29",
+              "32",
+              "31",
+              "14"
+            ],
+            "correctAnswer": "29",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 17 + 15 - 3 = 29$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $18$ pupils like Mathematics and $10$ like Science. If $4$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "24",
+              "28",
+              "26",
+              "14"
+            ],
+            "correctAnswer": "24",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 18 + 10 - 4 = 24$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $19$ pupils like Mathematics and $11$ like Science. If $5$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "25",
+              "30",
+              "27",
+              "14"
+            ],
+            "correctAnswer": "25",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 19 + 11 - 5 = 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $12$ pupils like Mathematics and $12$ like Science. If $2$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "22",
+              "24",
+              "24",
+              "10"
+            ],
+            "correctAnswer": "22",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 12 + 12 - 2 = 22$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $13$ pupils like Mathematics and $13$ like Science. If $3$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "23",
+              "26",
+              "25",
+              "10"
+            ],
+            "correctAnswer": "23",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 13 + 13 - 3 = 23$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $14$ pupils like Mathematics and $14$ like Science. If $4$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "24",
+              "28",
+              "26",
+              "10"
+            ],
+            "correctAnswer": "24",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 14 + 14 - 4 = 24$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $15$ pupils like Mathematics and $15$ like Science. If $5$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "25",
+              "30",
+              "27",
+              "10"
+            ],
+            "correctAnswer": "25",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 15 + 15 - 5 = 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $16$ pupils like Mathematics and $10$ like Science. If $2$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "24",
+              "26",
+              "26",
+              "14"
+            ],
+            "correctAnswer": "24",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 16 + 10 - 2 = 24$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $17$ pupils like Mathematics and $11$ like Science. If $3$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "25",
+              "28",
+              "27",
+              "14"
+            ],
+            "correctAnswer": "25",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 17 + 11 - 3 = 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $18$ pupils like Mathematics and $12$ like Science. If $4$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "26",
+              "30",
+              "28",
+              "14"
+            ],
+            "correctAnswer": "26",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 18 + 12 - 4 = 26$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $19$ pupils like Mathematics and $13$ like Science. If $5$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "27",
+              "32",
+              "29",
+              "14"
+            ],
+            "correctAnswer": "27",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 19 + 13 - 5 = 27$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $12$ pupils like Mathematics and $14$ like Science. If $2$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "24",
+              "26",
+              "26",
+              "10"
+            ],
+            "correctAnswer": "24",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 12 + 14 - 2 = 24$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $13$ pupils like Mathematics and $15$ like Science. If $3$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "25",
+              "28",
+              "27",
+              "10"
+            ],
+            "correctAnswer": "25",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 13 + 15 - 3 = 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $14$ pupils like Mathematics and $10$ like Science. If $4$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "20",
+              "24",
+              "22",
+              "10"
+            ],
+            "correctAnswer": "20",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 14 + 10 - 4 = 20$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $15$ pupils like Mathematics and $11$ like Science. If $5$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "21",
+              "26",
+              "23",
+              "10"
+            ],
+            "correctAnswer": "21",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 15 + 11 - 5 = 21$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $16$ pupils like Mathematics and $12$ like Science. If $2$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "26",
+              "28",
+              "28",
+              "14"
+            ],
+            "correctAnswer": "26",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 16 + 12 - 2 = 26$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $17$ pupils like Mathematics and $13$ like Science. If $3$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "27",
+              "30",
+              "29",
+              "14"
+            ],
+            "correctAnswer": "27",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 17 + 13 - 3 = 27$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $18$ pupils like Mathematics and $14$ like Science. If $4$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "28",
+              "32",
+              "30",
+              "14"
+            ],
+            "correctAnswer": "28",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 18 + 14 - 4 = 28$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $19$ pupils like Mathematics and $15$ like Science. If $5$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "29",
+              "34",
+              "31",
+              "14"
+            ],
+            "correctAnswer": "29",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 19 + 15 - 5 = 29$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $12$ pupils like Mathematics and $10$ like Science. If $2$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "20",
+              "22",
+              "22",
+              "10"
+            ],
+            "correctAnswer": "20",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 12 + 10 - 2 = 20$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $13$ pupils like Mathematics and $11$ like Science. If $3$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "21",
+              "24",
+              "23",
+              "10"
+            ],
+            "correctAnswer": "21",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 13 + 11 - 3 = 21$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_set_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a junior high school class, $14$ pupils like Mathematics and $12$ like Science. If $4$ pupils like both subjects, how many pupils like at least one of the two subjects?",
+            "options": [
+              "22",
+              "26",
+              "24",
+              "10"
+            ],
+            "correctAnswer": "22",
+            "hint": "Use the addition rule of cardinality: $n(M \\cup S) = n(M) + n(S) - n(M \\cap S)$.",
+            "workedSolution": "$$n(M \\cup S) = 14 + 12 - 4 = 22$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_sets_b7_h01",
+            "id": "q_b7_set_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Let $A = \\{x : x \\text{ is a multiple of } 3, \\, 1 \\le x \\le 30\\}$ and $B = \\{x : x \\text{ is a multiple of } 4, \\, 1 \\le x \\le 30\\}$. Find the number of elements in $A \\cap B$.",
+            "prompt": "In a class of $40$ students, $25$ play football, $20$ play volleyball, and $5$ play neither sport.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Football</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Volleyball</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>25 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>20 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>5</text></svg><br/>Calculate how many students play BOTH sports.",
             "options": [
-              "2",
-              "3",
+              "10",
+              "15",
               "5",
+              "12"
+            ],
+            "correctAnswer": "10",
+            "hint": "Set up equation: $(25 - x) + x + (20 - x) + 5 = 40$.",
+            "workedSolution": "$$45 - x + 5 = 40 \\implies 50 - x = 40 \\implies x = 10$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Given $U = \\{x : 1 \\le x \\le 20, \\, x \\in \\mathbb{Z}\\}$, $P = \\{\\text{multiples of 3}\\}$ and $Q = \\{\\text{multiples of 4}\\}$. Find $n(P \\cup Q)'$.",
+            "options": [
+              "10",
+              "11",
+              "9",
+              "12"
+            ],
+            "correctAnswer": "10",
+            "hint": "Find $P = \\{3, 6, 9, 12, 15, 18\\}$ and $Q = \\{4, 8, 12, 16, 20\\}$. Determine $n(P \\cup Q)$ and subtract from 20.",
+            "workedSolution": "$$P \\cup Q = \\{3, 4, 6, 8, 9, 12, 15, 16, 18, 20\\} \\implies n(P \\cup Q) = 10$$\n$$n(P \\cup Q)' = 20 - 10 = 10$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a survey of $60$ market traders, $35$ sell yam and $30$ sell plantain. If $x$ traders sell both and $5$ traders sell neither, find the number of traders who sell ONLY plantain.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Yam</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Plantain</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>35 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>30 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>5</text></svg>",
+            "options": [
+              "20",
+              "10",
+              "25",
+              "15"
+            ],
+            "correctAnswer": "20",
+            "hint": "Find $x$ first from total traders, then compute $30 - x$.",
+            "workedSolution": "$$(35 - x) + x + (30 - x) + 5 = 60 \\implies 70 - x = 60 \\implies x = 10$$\n$$\\text{Plantain only} = 30 - 10 = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A set $S$ has $64$ total subsets. How many elements are in set $S$?",
+            "options": [
+              "6",
+              "5",
+              "8",
               "7"
             ],
-            "correctAnswer": "2",
-            "hint": "Elements in $A \\cap B$ must be multiples of $\\text{LCM}(3, 4) = 12$.",
-            "workedSolution": "Multiples of 12 between 1 and 30 are 12 and 24. Thus $A \\cap B = \\{12, 24\\}$, so $n(A \\cap B) = 2$.",
+            "correctAnswer": "6",
+            "hint": "Solve $2^n = 64$.",
+            "workedSolution": "$$2^n = 64 = 2^6 \\implies n = 6$$.",
             "points": 2
           },
           {
-            "id": "q_sets_b7_h02",
+            "id": "q_b7_set_h05",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "If $n(U) = 25$, $n(A) = 14$, $n(B) = 12$, and $A$ and $B$ are disjoint sets, find $n(A \\cup B)'$.",
+            "prompt": "If $n(U) = 50$, $n(A) = 28$, $n(B) = 24$, and $n(A' \\cap B') = 6$, find $n(A \\cap B)$.",
             "options": [
-              "0",
-              "1",
-              "2",
+              "8",
+              "10",
+              "6",
+              "12"
+            ],
+            "correctAnswer": "8",
+            "hint": "$n(A' \\cap B') = n(A \\cup B)' = 6$. So $n(A \\cup B) = 50 - 6 = 44$.",
+            "workedSolution": "$$n(A \\cup B) = 50 - 6 = 44$$\n$$n(A \\cap B) = n(A) + n(B) - n(A \\cup B) = 28 + 24 - 44 = 52 - 44 = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $50$ members, $30$ participate in Music, $25$ participate in Art, and $5$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Music</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Art</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>30 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>25 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>5</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "10",
+              "14",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "10",
+            "hint": "Use the relation: $(30 - x) + x + (25 - x) + 5 = 50$.",
+            "workedSolution": "$$60 - x = 50 \\implies x = 60 - 50 = 10$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $60$ members, $38$ participate in Debate, $32$ participate in Drama, and $6$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Debate</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Drama</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>38 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>32 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>6</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "16",
+              "20",
+              "13",
+              "22"
+            ],
+            "correctAnswer": "16",
+            "hint": "Use the relation: $(38 - x) + x + (32 - x) + 6 = 60$.",
+            "workedSolution": "$$76 - x = 60 \\implies x = 76 - 60 = 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $45$ members, $28$ participate in Biology, $22$ participate in Chemistry, and $5$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Biology</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Chemistry</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>28 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>22 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>5</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "10",
+              "14",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "10",
+            "hint": "Use the relation: $(28 - x) + x + (22 - x) + 5 = 45$.",
+            "workedSolution": "$$55 - x = 45 \\implies x = 55 - 45 = 10$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $70$ members, $45$ participate in Tennis, $35$ participate in Badminton, and $10$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Tennis</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Badminton</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>45 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>35 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>10</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "20",
+              "24",
+              "17",
               "26"
             ],
-            "correctAnswer": "0",
-            "hint": "Check: For disjoint sets, $n(A \\cup B) = n(A) + n(B) = 14 + 12 = 26$, which cannot exceed $n(U) = 25$ unless the universal set is larger. If $n(U) = 30$, then $30 - 26 = 4$. If $n(U) = 26$, $n(A \\cup B)' = 0$.",
-            "workedSolution": "Assuming valid universal set $n(U) = 26$, $n(A \\cup B) = 14 + 12 = 26$, hence $n(A \\cup B)' = 26 - 26 = 0$.",
+            "correctAnswer": "20",
+            "hint": "Use the relation: $(45 - x) + x + (35 - x) + 10 = 70$.",
+            "workedSolution": "$$90 - x = 70 \\implies x = 90 - 70 = 20$$.",
             "points": 2
           },
           {
-            "id": "q_sets_b7_h03",
+            "id": "q_b7_set_h10",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Which of the following statements is ALWAYS TRUE for any two non-empty sets $A$ and $B$?",
+            "prompt": "In a club of $55$ members, $35$ participate in French, $25$ participate in Spanish, and $7$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>French</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Spanish</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>35 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>25 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>7</text></svg><br/>How many members participate in BOTH activities?",
             "options": [
-              "(A ∩ B) ⊆ (A ∪ B)",
-              "A ∪ B = A ∩ B",
-              "A ∩ B = ∅",
-              "(A ∪ B) ⊆ (A ∩ B)"
+              "12",
+              "16",
+              "9",
+              "18"
             ],
-            "correctAnswer": "(A ∩ B) ⊆ (A ∪ B)",
-            "hint": "The common elements of two sets are always part of their combined union.",
-            "workedSolution": "Every element in $A \\cap B$ must belong to $A$ and $B$, and therefore must belong to $A \\cup B$. Thus $(A \\cap B) \\subseteq (A \\cup B)$ is universally true.",
+            "correctAnswer": "12",
+            "hint": "Use the relation: $(35 - x) + x + (25 - x) + 7 = 55$.",
+            "workedSolution": "$$67 - x = 55 \\implies x = 67 - 55 = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $80$ members, $50$ participate in Physics, $44$ participate in Maths, and $10$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Physics</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Maths</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>50 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>44 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>10</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "24",
+              "28",
+              "21",
+              "30"
+            ],
+            "correctAnswer": "24",
+            "hint": "Use the relation: $(50 - x) + x + (44 - x) + 10 = 80$.",
+            "workedSolution": "$$104 - x = 80 \\implies x = 104 - 80 = 24$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $65$ members, $40$ participate in Football, $35$ participate in Athletics, and $5$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Football</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Athletics</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>40 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>35 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>5</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "15",
+              "19",
+              "12",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Use the relation: $(40 - x) + x + (35 - x) + 5 = 65$.",
+            "workedSolution": "$$80 - x = 65 \\implies x = 80 - 65 = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $50$ members, $32$ participate in Reading, $28$ participate in Writing, and $4$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Reading</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Writing</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>32 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>28 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>4</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "14",
+              "18",
+              "11",
+              "20"
+            ],
+            "correctAnswer": "14",
+            "hint": "Use the relation: $(32 - x) + x + (28 - x) + 4 = 50$.",
+            "workedSolution": "$$64 - x = 50 \\implies x = 64 - 50 = 14$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $75$ members, $48$ participate in Gardening, $40$ participate in Cooking, and $7$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Gardening</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Cooking</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>48 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>40 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>7</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "20",
+              "24",
+              "17",
+              "26"
+            ],
+            "correctAnswer": "20",
+            "hint": "Use the relation: $(48 - x) + x + (40 - x) + 7 = 75$.",
+            "workedSolution": "$$95 - x = 75 \\implies x = 95 - 75 = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $90$ members, $55$ participate in Swimming, $50$ participate in Cycling, and $15$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Swimming</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Cycling</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>55 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>50 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>15</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "30",
+              "34",
+              "27",
+              "36"
+            ],
+            "correctAnswer": "30",
+            "hint": "Use the relation: $(55 - x) + x + (50 - x) + 15 = 90$.",
+            "workedSolution": "$$120 - x = 90 \\implies x = 120 - 90 = 30$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $40$ members, $26$ participate in IT, $20$ participate in Business, and $4$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>IT</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Business</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>26 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>20 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>4</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "10",
+              "14",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "10",
+            "hint": "Use the relation: $(26 - x) + x + (20 - x) + 4 = 40$.",
+            "workedSolution": "$$50 - x = 40 \\implies x = 50 - 40 = 10$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $60$ members, $36$ participate in Hockey, $34$ participate in Cricket, and $6$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Hockey</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Cricket</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>36 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>34 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>6</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "16",
+              "20",
+              "13",
+              "22"
+            ],
+            "correctAnswer": "16",
+            "hint": "Use the relation: $(36 - x) + x + (34 - x) + 6 = 60$.",
+            "workedSolution": "$$76 - x = 60 \\implies x = 76 - 60 = 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $50$ members, $30$ participate in English, $30$ participate in History, and $6$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>English</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>History</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>30 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>30 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>6</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "16",
+              "20",
+              "13",
+              "22"
+            ],
+            "correctAnswer": "16",
+            "hint": "Use the relation: $(30 - x) + x + (30 - x) + 6 = 50$.",
+            "workedSolution": "$$66 - x = 50 \\implies x = 66 - 50 = 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $70$ members, $42$ participate in Singing, $38$ participate in Dancing, and $8$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Singing</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Dancing</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>42 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>38 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>8</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "18",
+              "22",
+              "15",
+              "24"
+            ],
+            "correctAnswer": "18",
+            "hint": "Use the relation: $(42 - x) + x + (38 - x) + 8 = 70$.",
+            "workedSolution": "$$88 - x = 70 \\implies x = 88 - 70 = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $85$ members, $52$ participate in Karate, $46$ participate in Judo, and $11$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Karate</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Judo</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>52 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>46 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>11</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "24",
+              "28",
+              "21",
+              "30"
+            ],
+            "correctAnswer": "24",
+            "hint": "Use the relation: $(52 - x) + x + (46 - x) + 11 = 85$.",
+            "workedSolution": "$$109 - x = 85 \\implies x = 109 - 85 = 24$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $60$ members, $37$ participate in Drawing, $31$ participate in Painting, and $4$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Drawing</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Painting</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>37 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>31 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>4</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "12",
+              "16",
+              "9",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Use the relation: $(37 - x) + x + (31 - x) + 4 = 60$.",
+            "workedSolution": "$$72 - x = 60 \\implies x = 72 - 60 = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $75$ members, $46$ participate in Coding, $42$ participate in Robotics, and $9$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Coding</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Robotics</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>46 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>42 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>9</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "22",
+              "26",
+              "19",
+              "28"
+            ],
+            "correctAnswer": "22",
+            "hint": "Use the relation: $(46 - x) + x + (42 - x) + 9 = 75$.",
+            "workedSolution": "$$97 - x = 75 \\implies x = 97 - 75 = 22$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $55$ members, $34$ participate in Geography, $28$ participate in Economics, and $5$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Geography</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Economics</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>34 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>28 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>5</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "12",
+              "16",
+              "9",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Use the relation: $(34 - x) + x + (28 - x) + 5 = 55$.",
+            "workedSolution": "$$67 - x = 55 \\implies x = 67 - 55 = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $80$ members, $48$ participate in Netball, $44$ participate in Handball, and $8$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Netball</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Handball</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>48 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>44 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>8</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "20",
+              "24",
+              "17",
+              "26"
+            ],
+            "correctAnswer": "20",
+            "hint": "Use the relation: $(48 - x) + x + (44 - x) + 8 = 80$.",
+            "workedSolution": "$$100 - x = 80 \\implies x = 100 - 80 = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of $65$ members, $39$ participate in Poetry, $35$ participate in Prose, and $7$ participate in neither.<br/><svg viewBox='0 0 340 190' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='320' height='170' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='25' y='32' font-size='14' font-weight='bold' fill='#0f172a'>U</text><circle cx='125' cy='100' r='58' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='42' font-size='13' font-weight='bold' fill='#1d4ed8'>Poetry</text><circle cx='215' cy='100' r='58' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='235' y='42' font-size='13' font-weight='bold' fill='#047857'>Prose</text><text x='95' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>39 - x</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#b91c1c' text-anchor='middle'>x</text><text x='245' y='105' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>35 - x</text><text x='290' y='165' font-size='11' fill='#64748b'>7</text></svg><br/>How many members participate in BOTH activities?",
+            "options": [
+              "16",
+              "20",
+              "13",
+              "22"
+            ],
+            "correctAnswer": "16",
+            "hint": "Use the relation: $(39 - x) + x + (35 - x) + 7 = 65$.",
+            "workedSolution": "$$81 - x = 65 \\implies x = 81 - 65 = 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $31$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 31$.",
+            "workedSolution": "$$2^n - 1 = 31 \\implies 2^n = 32 = 2^{5} \\implies n = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $63$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 63$.",
+            "workedSolution": "$$2^n - 1 = 63 \\implies 2^n = 64 = 2^{6} \\implies n = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $127$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 127$.",
+            "workedSolution": "$$2^n - 1 = 127 \\implies 2^n = 128 = 2^{7} \\implies n = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $255$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "8",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 255$.",
+            "workedSolution": "$$2^n - 1 = 255 \\implies 2^n = 256 = 2^{8} \\implies n = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $15$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 15$.",
+            "workedSolution": "$$2^n - 1 = 15 \\implies 2^n = 16 = 2^{4} \\implies n = 4$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $31$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 31$.",
+            "workedSolution": "$$2^n - 1 = 31 \\implies 2^n = 32 = 2^{5} \\implies n = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $63$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 63$.",
+            "workedSolution": "$$2^n - 1 = 63 \\implies 2^n = 64 = 2^{6} \\implies n = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $127$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 127$.",
+            "workedSolution": "$$2^n - 1 = 127 \\implies 2^n = 128 = 2^{7} \\implies n = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $255$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "8",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 255$.",
+            "workedSolution": "$$2^n - 1 = 255 \\implies 2^n = 256 = 2^{8} \\implies n = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $15$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 15$.",
+            "workedSolution": "$$2^n - 1 = 15 \\implies 2^n = 16 = 2^{4} \\implies n = 4$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $31$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 31$.",
+            "workedSolution": "$$2^n - 1 = 31 \\implies 2^n = 32 = 2^{5} \\implies n = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $63$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 63$.",
+            "workedSolution": "$$2^n - 1 = 63 \\implies 2^n = 64 = 2^{6} \\implies n = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $127$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 127$.",
+            "workedSolution": "$$2^n - 1 = 127 \\implies 2^n = 128 = 2^{7} \\implies n = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $255$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "8",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 255$.",
+            "workedSolution": "$$2^n - 1 = 255 \\implies 2^n = 256 = 2^{8} \\implies n = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $15$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 15$.",
+            "workedSolution": "$$2^n - 1 = 15 \\implies 2^n = 16 = 2^{4} \\implies n = 4$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $31$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 31$.",
+            "workedSolution": "$$2^n - 1 = 31 \\implies 2^n = 32 = 2^{5} \\implies n = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $63$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 63$.",
+            "workedSolution": "$$2^n - 1 = 63 \\implies 2^n = 64 = 2^{6} \\implies n = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $127$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 127$.",
+            "workedSolution": "$$2^n - 1 = 127 \\implies 2^n = 128 = 2^{7} \\implies n = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $255$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "8",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 255$.",
+            "workedSolution": "$$2^n - 1 = 255 \\implies 2^n = 256 = 2^{8} \\implies n = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $15$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 15$.",
+            "workedSolution": "$$2^n - 1 = 15 \\implies 2^n = 16 = 2^{4} \\implies n = 4$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $31$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 31$.",
+            "workedSolution": "$$2^n - 1 = 31 \\implies 2^n = 32 = 2^{5} \\implies n = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $63$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 63$.",
+            "workedSolution": "$$2^n - 1 = 63 \\implies 2^n = 64 = 2^{6} \\implies n = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $127$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "14"
+            ],
+            "correctAnswer": "7",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 127$.",
+            "workedSolution": "$$2^n - 1 = 127 \\implies 2^n = 128 = 2^{7} \\implies n = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $255$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "8",
+              "9",
+              "7",
+              "16"
+            ],
+            "correctAnswer": "8",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 255$.",
+            "workedSolution": "$$2^n - 1 = 255 \\implies 2^n = 256 = 2^{8} \\implies n = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_set_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A non-empty finite set has exactly $15$ PROPER subsets. What is the number of elements in this set?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "The number of proper subsets is given by $2^n - 1$. Solve $2^n - 1 = 15$.",
+            "workedSolution": "$$2^n - 1 = 15 \\implies 2^n = 16 = 2^{4} \\implies n = 4$$.",
             "points": 2
           }
         ]
