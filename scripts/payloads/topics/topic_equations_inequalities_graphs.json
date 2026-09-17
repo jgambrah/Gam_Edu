@@ -14,7 +14,7 @@
   },
   "badge": "Strand 2: Algebra",
   "description": "Master linear equations, concrete balance scale models, inequalities on number lines, Cartesian slope-intercept form (y = mx + c), and simultaneous graph intersections.",
-  "totalPracticeQuestions": 27,
+  "totalPracticeQuestions": 168,
   "version": 1,
   "levels": {
     "b7": {
@@ -60,112 +60,2412 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_eq_b7_l01",
+            "id": "q_b7_eq_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Solve for $x$: $x + 7 = 19$.",
-            "options": ["12", "26", "13", "14"],
-            "correctAnswer": "12",
-            "hint": "Subtract 7 from both sides: $19 - 7$.",
-            "workedSolution": "$$x = 19 - 7 = 12$$.",
+            "prompt": "The balance scale below is in equilibrium:<br/><svg viewBox='0 0 360 170' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='340' height='150' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Fulcrum and Beam --><line x1='40' y1='80' x2='320' y2='80' stroke='#1e293b' stroke-width='4'/><polygon points='180,80 160,135 200,135' fill='#475569'/><rect x='140' y='135' width='80' height='10' rx='2' fill='#334155'/><!-- Left Pan --><line x1='75' y1='80' x2='75' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 45 105 Q 75 120 105 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='75' y='100' font-size='12' font-weight='bold' fill='#1d4ed8' text-anchor='middle'>x + 3</text><!-- Right Pan --><line x1='285' y1='80' x2='285' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 255 105 Q 285 120 315 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='285' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>8</text><text x='180' y='65' font-size='14' font-weight='bold' fill='#0f172a' text-anchor='middle'>= (In Equilibrium)</text></svg><br/>What is the value of the unknown mass $x$?",
+            "options": [
+              "5",
+              "11",
+              "24",
+              "4"
+            ],
+            "correctAnswer": "5",
+            "hint": "Remove 3 units from both pans: $8 - 3$.",
+            "workedSolution": "$$x + 3 = 8 \\implies x = 8 - 3 = 5$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b7_l02",
+            "id": "q_b7_eq_l02",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Two sisters bought 10 tablets together. One bought 4 tablets. Which equation represents the tablets ($t$) the other bought?",
-            "options": ["t = 10 - 4", "t = 10 - 6", "t = 4 + 10", "t = 6 + 10"],
-            "correctAnswer": "t = 10 - 4",
-            "hint": "Total is 10, one part is 4, the remaining part is $10 - 4$.",
-            "workedSolution": "$$t + 4 = 10 \\implies t = 10 - 4$$.",
+            "prompt": "Solve for $y$: $y - 7 = 15$.",
+            "options": [
+              "22",
+              "8",
+              "105",
+              "21"
+            ],
+            "correctAnswer": "22",
+            "hint": "Apply the inverse operation of subtracting 7 by adding 7 to both sides.",
+            "workedSolution": "$$y = 15 + 7 = 22$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b7_l03",
+            "id": "q_b7_eq_l03",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Solve for $y$: $4y = 36$.",
-            "options": ["9", "8", "12", "32"],
+            "prompt": "Solve: $4x = 36$.",
+            "options": [
+              "9",
+              "8",
+              "144",
+              "32"
+            ],
             "correctAnswer": "9",
             "hint": "Divide both sides by 4.",
-            "workedSolution": "$$y = \\frac{36}{4} = 9$$.",
+            "workedSolution": "$$x = \\frac{36}{4} = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $m$: $$\\frac{m}{5} = 7$$.",
+            "options": [
+              "35",
+              "12",
+              "2",
+              "25"
+            ],
+            "correctAnswer": "35",
+            "hint": "Multiply both sides by 5.",
+            "workedSolution": "$$m = 7 \\times 5 = 35$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the value of $w$ in this balanced scale model?<br/><svg viewBox='0 0 360 170' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='340' height='150' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Fulcrum and Beam --><line x1='40' y1='80' x2='320' y2='80' stroke='#1e293b' stroke-width='4'/><polygon points='180,80 160,135 200,135' fill='#475569'/><rect x='140' y='135' width='80' height='10' rx='2' fill='#334155'/><!-- Left Pan --><line x1='75' y1='80' x2='75' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 45 105 Q 75 120 105 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='75' y='100' font-size='12' font-weight='bold' fill='#1d4ed8' text-anchor='middle'>2w</text><!-- Right Pan --><line x1='285' y1='80' x2='285' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 255 105 Q 285 120 315 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='285' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>18</text><text x='180' y='65' font-size='14' font-weight='bold' fill='#0f172a' text-anchor='middle'>= (In Equilibrium)</text></svg>",
+            "options": [
+              "9",
+              "16",
+              "36",
+              "7"
+            ],
+            "correctAnswer": "9",
+            "hint": "Two blocks of $w$ equal 18 units. Divide 18 by 2.",
+            "workedSolution": "$$2w = 18 \\implies w = \\frac{18}{2} = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which operation is the inverse of multiplying by 6?",
+            "options": [
+              "Dividing by 6",
+              "Adding 6",
+              "Subtracting 6",
+              "Multiplying by -6"
+            ],
+            "correctAnswer": "Dividing by 6",
+            "hint": "Multiplication and division are inverse operations.",
+            "workedSolution": "The inverse of multiplying by 6 is dividing by 6.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve: $x + 12 = 30$.",
+            "options": [
+              "18",
+              "42",
+              "20",
+              "28"
+            ],
+            "correctAnswer": "18",
+            "hint": "Subtract 12 from both sides.",
+            "workedSolution": "$$x = 30 - 12 = 18$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $k - 9 = 4$.",
+            "options": [
+              "13",
+              "5",
+              "36",
+              "-5"
+            ],
+            "correctAnswer": "13",
+            "hint": "Add 9 to both sides: $4 + 9$.",
+            "workedSolution": "$$k = 4 + 9 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve: $6p = 48$.",
+            "options": [
+              "8",
+              "7",
+              "42",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide 48 by 6.",
+            "workedSolution": "$$p = \\frac{48}{6} = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find $x$ from the balanced pan model:<br/><svg viewBox='0 0 360 170' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='340' height='150' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Fulcrum and Beam --><line x1='40' y1='80' x2='320' y2='80' stroke='#1e293b' stroke-width='4'/><polygon points='180,80 160,135 200,135' fill='#475569'/><rect x='140' y='135' width='80' height='10' rx='2' fill='#334155'/><!-- Left Pan --><line x1='75' y1='80' x2='75' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 45 105 Q 75 120 105 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='75' y='100' font-size='12' font-weight='bold' fill='#1d4ed8' text-anchor='middle'>x + 6</text><!-- Right Pan --><line x1='285' y1='80' x2='285' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 255 105 Q 285 120 315 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='285' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>15</text><text x='180' y='65' font-size='14' font-weight='bold' fill='#0f172a' text-anchor='middle'>= (In Equilibrium)</text></svg>",
+            "options": [
+              "9",
+              "21",
+              "10",
+              "8"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract 6 from 15.",
+            "workedSolution": "$$x + 6 = 15 \\implies x = 15 - 6 = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{3} = 9$$.",
+            "options": [
+              "27",
+              "12",
+              "24",
+              "33"
+            ],
+            "correctAnswer": "27",
+            "hint": "Multiply both sides by 3: 9 \\times 3.",
+            "workedSolution": "$$k = 9 \\times 3 = 27$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 5 = 10$.",
+            "options": [
+              "5",
+              "15",
+              "7",
+              "3"
+            ],
+            "correctAnswer": "5",
+            "hint": "Subtract 5 from both sides: 10 - 5.",
+            "workedSolution": "$$x = 10 - 5 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 8 = -1$.",
+            "options": [
+              "7",
+              "-9",
+              "8",
+              "4"
+            ],
+            "correctAnswer": "7",
+            "hint": "Add 8 to both sides: -1 + 8.",
+            "workedSolution": "$$y = -1 + 8 = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $7w = 56$.",
+            "options": [
+              "8",
+              "10",
+              "49",
+              "7"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide both sides by 7.",
+            "workedSolution": "$$w = \\frac{56}{7} = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{2} = 7$$.",
+            "options": [
+              "14",
+              "9",
+              "12",
+              "18"
+            ],
+            "correctAnswer": "14",
+            "hint": "Multiply both sides by 2: 7 \\times 2.",
+            "workedSolution": "$$k = 7 \\times 2 = 14$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 9 = 18$.",
+            "options": [
+              "9",
+              "27",
+              "11",
+              "7"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract 9 from both sides: 18 - 9.",
+            "workedSolution": "$$x = 18 - 9 = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 4 = 7$.",
+            "options": [
+              "11",
+              "3",
+              "12",
+              "8"
+            ],
+            "correctAnswer": "11",
+            "hint": "Add 4 to both sides: 7 + 4.",
+            "workedSolution": "$$y = 7 + 4 = 11$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $6w = 24$.",
+            "options": [
+              "4",
+              "6",
+              "18",
+              "3"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide both sides by 6.",
+            "workedSolution": "$$w = \\frac{24}{6} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{6} = 5$$.",
+            "options": [
+              "30",
+              "11",
+              "24",
+              "42"
+            ],
+            "correctAnswer": "30",
+            "hint": "Multiply both sides by 6: 5 \\times 6.",
+            "workedSolution": "$$k = 5 \\times 6 = 30$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 4 = 17$.",
+            "options": [
+              "13",
+              "21",
+              "15",
+              "11"
+            ],
+            "correctAnswer": "13",
+            "hint": "Subtract 4 from both sides: 17 - 4.",
+            "workedSolution": "$$x = 17 - 4 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 8 = -3$.",
+            "options": [
+              "5",
+              "-11",
+              "6",
+              "2"
+            ],
+            "correctAnswer": "5",
+            "hint": "Add 8 to both sides: -3 + 8.",
+            "workedSolution": "$$y = -3 + 8 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $5w = 40$.",
+            "options": [
+              "8",
+              "10",
+              "35",
+              "7"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide both sides by 5.",
+            "workedSolution": "$$w = \\frac{40}{5} = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{5} = 9$$.",
+            "options": [
+              "45",
+              "14",
+              "40",
+              "55"
+            ],
+            "correctAnswer": "45",
+            "hint": "Multiply both sides by 5: 9 \\times 5.",
+            "workedSolution": "$$k = 9 \\times 5 = 45$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 8 = 13$.",
+            "options": [
+              "5",
+              "21",
+              "7",
+              "3"
+            ],
+            "correctAnswer": "5",
+            "hint": "Subtract 8 from both sides: 13 - 8.",
+            "workedSolution": "$$x = 13 - 8 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 4 = 5$.",
+            "options": [
+              "9",
+              "1",
+              "10",
+              "6"
+            ],
+            "correctAnswer": "9",
+            "hint": "Add 4 to both sides: 5 + 4.",
+            "workedSolution": "$$y = 5 + 4 = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $4w = 16$.",
+            "options": [
+              "4",
+              "6",
+              "12",
+              "3"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide both sides by 4.",
+            "workedSolution": "$$w = \\frac{16}{4} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{4} = 7$$.",
+            "options": [
+              "28",
+              "11",
+              "24",
+              "36"
+            ],
+            "correctAnswer": "28",
+            "hint": "Multiply both sides by 4: 7 \\times 4.",
+            "workedSolution": "$$k = 7 \\times 4 = 28$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 3 = 12$.",
+            "options": [
+              "9",
+              "15",
+              "11",
+              "7"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract 3 from both sides: 12 - 3.",
+            "workedSolution": "$$x = 12 - 3 = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 8 = 5$.",
+            "options": [
+              "13",
+              "-3",
+              "14",
+              "10"
+            ],
+            "correctAnswer": "13",
+            "hint": "Add 8 to both sides: 5 + 8.",
+            "workedSolution": "$$y = 5 + 8 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $3w = 24$.",
+            "options": [
+              "8",
+              "10",
+              "21",
+              "7"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide both sides by 3.",
+            "workedSolution": "$$w = \\frac{24}{3} = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{3} = 5$$.",
+            "options": [
+              "15",
+              "8",
+              "12",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Multiply both sides by 3: 5 \\times 3.",
+            "workedSolution": "$$k = 5 \\times 3 = 15$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 7 = 20$.",
+            "options": [
+              "13",
+              "27",
+              "15",
+              "11"
+            ],
+            "correctAnswer": "13",
+            "hint": "Subtract 7 from both sides: 20 - 7.",
+            "workedSolution": "$$x = 20 - 7 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 4 = 3$.",
+            "options": [
+              "7",
+              "-1",
+              "8",
+              "4"
+            ],
+            "correctAnswer": "7",
+            "hint": "Add 4 to both sides: 3 + 4.",
+            "workedSolution": "$$y = 3 + 4 = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $7w = 28$.",
+            "options": [
+              "4",
+              "6",
+              "21",
+              "3"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide both sides by 7.",
+            "workedSolution": "$$w = \\frac{28}{7} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{2} = 9$$.",
+            "options": [
+              "18",
+              "11",
+              "16",
+              "22"
+            ],
+            "correctAnswer": "18",
+            "hint": "Multiply both sides by 2: 9 \\times 2.",
+            "workedSolution": "$$k = 9 \\times 2 = 18$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 2 = 7$.",
+            "options": [
+              "5",
+              "9",
+              "7",
+              "3"
+            ],
+            "correctAnswer": "5",
+            "hint": "Subtract 2 from both sides: 7 - 2.",
+            "workedSolution": "$$x = 7 - 2 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 8 = 3$.",
+            "options": [
+              "11",
+              "-5",
+              "12",
+              "8"
+            ],
+            "correctAnswer": "11",
+            "hint": "Add 8 to both sides: 3 + 8.",
+            "workedSolution": "$$y = 3 + 8 = 11$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $6w = 48$.",
+            "options": [
+              "8",
+              "10",
+              "42",
+              "7"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide both sides by 6.",
+            "workedSolution": "$$w = \\frac{48}{6} = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{6} = 7$$.",
+            "options": [
+              "42",
+              "13",
+              "36",
+              "54"
+            ],
+            "correctAnswer": "42",
+            "hint": "Multiply both sides by 6: 7 \\times 6.",
+            "workedSolution": "$$k = 7 \\times 6 = 42$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 6 = 15$.",
+            "options": [
+              "9",
+              "21",
+              "11",
+              "7"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract 6 from both sides: 15 - 6.",
+            "workedSolution": "$$x = 15 - 6 = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 4 = 1$.",
+            "options": [
+              "5",
+              "-3",
+              "6",
+              "2"
+            ],
+            "correctAnswer": "5",
+            "hint": "Add 4 to both sides: 1 + 4.",
+            "workedSolution": "$$y = 1 + 4 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $5w = 20$.",
+            "options": [
+              "4",
+              "6",
+              "15",
+              "3"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide both sides by 5.",
+            "workedSolution": "$$w = \\frac{20}{5} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{5} = 5$$.",
+            "options": [
+              "25",
+              "10",
+              "20",
+              "35"
+            ],
+            "correctAnswer": "25",
+            "hint": "Multiply both sides by 5: 5 \\times 5.",
+            "workedSolution": "$$k = 5 \\times 5 = 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 10 = 23$.",
+            "options": [
+              "13",
+              "33",
+              "15",
+              "11"
+            ],
+            "correctAnswer": "13",
+            "hint": "Subtract 10 from both sides: 23 - 10.",
+            "workedSolution": "$$x = 23 - 10 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 8 = 1$.",
+            "options": [
+              "9",
+              "-7",
+              "10",
+              "6"
+            ],
+            "correctAnswer": "9",
+            "hint": "Add 8 to both sides: 1 + 8.",
+            "workedSolution": "$$y = 1 + 8 = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $4w = 32$.",
+            "options": [
+              "8",
+              "10",
+              "28",
+              "7"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide both sides by 4.",
+            "workedSolution": "$$w = \\frac{32}{4} = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $k$: $$\\frac{k}{4} = 9$$.",
+            "options": [
+              "36",
+              "13",
+              "32",
+              "44"
+            ],
+            "correctAnswer": "36",
+            "hint": "Multiply both sides by 4: 9 \\times 4.",
+            "workedSolution": "$$k = 9 \\times 4 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $x + 5 = 10$.",
+            "options": [
+              "5",
+              "15",
+              "7",
+              "3"
+            ],
+            "correctAnswer": "5",
+            "hint": "Subtract 5 from both sides: 10 - 5.",
+            "workedSolution": "$$x = 10 - 5 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $y$: $y - 4 = 9$.",
+            "options": [
+              "13",
+              "5",
+              "14",
+              "10"
+            ],
+            "correctAnswer": "13",
+            "hint": "Add 4 to both sides: 9 + 4.",
+            "workedSolution": "$$y = 9 + 4 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $w$: $3w = 12$.",
+            "options": [
+              "4",
+              "6",
+              "9",
+              "3"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide both sides by 3.",
+            "workedSolution": "$$w = \\frac{12}{3} = 4$$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_eq_b7_m01",
+            "id": "q_b7_eq_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Solve: $4x + 1 = 3x + 7$.",
-            "options": ["6", "8", "7", "5"],
+            "prompt": "Solve for $x$: $3x + 5 = 26$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "First subtract 5 from both sides, then divide by 3.",
+            "workedSolution": "$$3x = 26 - 5 = 21 \\implies x = \\frac{21}{3} = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Look at the function machine below:<br/><svg viewBox='0 0 360 120' width='100%' height='110' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='340' height='100' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Input Node --><circle cx='50' cy='60' r='22' fill='#bfdbfe' stroke='#2563eb' stroke-width='2'/><text x='50' y='65' font-size='14' font-weight='bold' fill='#1e3a8a' text-anchor='middle'>n</text><!-- Arrow 1 --><line x1='75' y1='60' x2='115' y2='60' stroke='#64748b' stroke-width='2' marker-end='url(#arrow)'/><!-- Op 1 Box --><rect x='115' y='40' width='55' height='40' rx='4' fill='#fef08a' stroke='#ca8a04' stroke-width='1.5'/><text x='142' y='65' font-size='12' font-weight='bold' fill='#854d0e' text-anchor='middle'>× 4</text><!-- Arrow 2 --><line x1='170' y1='60' x2='210' y2='60' stroke='#64748b' stroke-width='2'/><!-- Op 2 Box --><rect x='210' y='40' width='55' height='40' rx='4' fill='#fed7aa' stroke='#ea580c' stroke-width='1.5'/><text x='237' y='65' font-size='12' font-weight='bold' fill='#9a3412' text-anchor='middle'>- 7</text><!-- Arrow 3 --><line x1='265' y1='60' x2='300' y2='60' stroke='#64748b' stroke-width='2'/><!-- Output Node --><circle cx='320' cy='60' r='22' fill='#bbf7d0' stroke='#16a34a' stroke-width='2'/><text x='320' y='65' font-size='13' font-weight='bold' fill='#14532d' text-anchor='middle'>25</text></svg><br/>Using inverse operation backtracking, find the original number $n$.",
+            "options": [
+              "8",
+              "7",
+              "9",
+              "6"
+            ],
+            "correctAnswer": "8",
+            "hint": "Reverse the steps: Add 7 to 25, then divide by 4.",
+            "workedSolution": "$$4n - 7 = 25 \\implies 4n = 32 \\implies n = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the value of $x$ from this balance scale in equilibrium:<br/><svg viewBox='0 0 360 170' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='340' height='150' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Fulcrum and Beam --><line x1='40' y1='80' x2='320' y2='80' stroke='#1e293b' stroke-width='4'/><polygon points='180,80 160,135 200,135' fill='#475569'/><rect x='140' y='135' width='80' height='10' rx='2' fill='#334155'/><!-- Left Pan --><line x1='75' y1='80' x2='75' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 45 105 Q 75 120 105 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='75' y='100' font-size='12' font-weight='bold' fill='#1d4ed8' text-anchor='middle'>2x + 4</text><!-- Right Pan --><line x1='285' y1='80' x2='285' y2='105' stroke='#64748b' stroke-width='2'/><path d='M 255 105 Q 285 120 315 105 Z' fill='#cbd5e1' stroke='#475569' stroke-width='2'/><text x='285' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x + 10</text><text x='180' y='65' font-size='14' font-weight='bold' fill='#0f172a' text-anchor='middle'>= (In Equilibrium)</text></svg>",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
             "correctAnswer": "6",
-            "hint": "Subtract $3x$ from both sides, then subtract 1.",
-            "workedSolution": "$$4x - 3x = 7 - 1 \\implies x = 6$$.",
+            "hint": "Remove $x$ from both sides, then remove 4 units.",
+            "workedSolution": "$$2x + 4 = x + 10 \\implies 2x - x = 10 - 4 \\implies x = 6$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b7_m02",
+            "id": "q_b7_eq_m04",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "The sum of the ages of a father and his son is 50 years. The father is 4 times as old as the son. How old is the son?",
-            "options": ["10 years", "12 years", "8 years", "15 years"],
-            "correctAnswer": "10 years",
-            "hint": "Let son be $x$, father is $4x$. $x + 4x = 50$.",
-            "workedSolution": "$$5x = 50 \\implies x = 10\\text{ years}$$.",
+            "prompt": "Solve for $y$: $2(y + 3) = 18$.",
+            "options": [
+              "6",
+              "7",
+              "9",
+              "5"
+            ],
+            "correctAnswer": "6",
+            "hint": "Divide both sides by 2 first: $y + 3 = 9$, then subtract 3.",
+            "workedSolution": "$$y + 3 = \\frac{18}{2} = 9 \\implies y = 9 - 3 = 6$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b7_m03",
+            "id": "q_b7_eq_m05",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Solve for $k$: $20 - 3k = k + 12$.",
-            "options": ["2", "4", "3", "1"],
+            "prompt": "Solve: $5x - 8 = 3x + 6$.",
+            "options": [
+              "7",
+              "6",
+              "8",
+              "5"
+            ],
+            "correctAnswer": "7",
+            "hint": "Subtract $3x$ from both sides, then add 8.",
+            "workedSolution": "$$5x - 3x = 6 + 8 \\implies 2x = 14 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2(x + 3) = 12$.",
+            "options": [
+              "3",
+              "5",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "Divide both sides by 2: $x + 3 = 6$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{12}{2} = 6 \\implies x = 6 - 3 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $5x + 4 = x + 20$.",
+            "options": [
+              "4",
+              "5",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(5 - 1)x = 20 - 4 \\implies 4x = 16 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 5 = 17$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract 5 from both sides: 17 - 5 = 12, then divide by 2.",
+            "workedSolution": "$$2x = 17 - 5 = 12 \\implies x = \\frac{12}{2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 3, and subtract 6. If the result is 15, find the number.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "8"
+            ],
+            "correctAnswer": "7",
+            "hint": "Set up the equation $3x - 6 = 15$. Add 6, then divide by 3.",
+            "workedSolution": "$$3x - 6 = 15 \\implies 3x = 21 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3(x + 3) = 15$.",
+            "options": [
+              "2",
+              "4",
+              "1",
+              "5"
+            ],
             "correctAnswer": "2",
-            "hint": "Add $3k$ to both sides, then subtract 12.",
-            "workedSolution": "$$20 - 12 = k + 3k \\implies 4k = 8 \\implies k = 2$$.",
+            "hint": "Divide both sides by 3: $x + 3 = 5$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{15}{3} = 5 \\implies x = 5 - 3 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4x + 4 = x + 28$.",
+            "options": [
+              "8",
+              "9",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "8",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(4 - 1)x = 28 - 4 \\implies 3x = 24 \\implies x = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 3 = 13$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Subtract 3 from both sides: 13 - 3 = 10, then divide by 2.",
+            "workedSolution": "$$2x = 13 - 3 = 10 \\implies x = \\frac{10}{2} = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 4, and subtract 5. If the result is 15, find the number.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "6"
+            ],
+            "correctAnswer": "5",
+            "hint": "Set up the equation $4x - 5 = 15$. Add 5, then divide by 4.",
+            "workedSolution": "$$4x - 5 = 15 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4(x + 3) = 36$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "6",
+            "hint": "Divide both sides by 4: $x + 3 = 9$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{36}{4} = 9 \\implies x = 9 - 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x + 4 = x + 16$.",
+            "options": [
+              "6",
+              "7",
+              "4",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(3 - 1)x = 16 - 4 \\implies 2x = 12 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 7 = 15$.",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Subtract 7 from both sides: 15 - 7 = 8, then divide by 2.",
+            "workedSolution": "$$2x = 15 - 7 = 8 \\implies x = \\frac{8}{2} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 5, and subtract 4. If the result is 41, find the number.",
+            "options": [
+              "9",
+              "11",
+              "8",
+              "10"
+            ],
+            "correctAnswer": "9",
+            "hint": "Set up the equation $5x - 4 = 41$. Add 4, then divide by 5.",
+            "workedSolution": "$$5x - 4 = 41 \\implies 5x = 45 \\implies x = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2(x + 3) = 16$.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "8"
+            ],
+            "correctAnswer": "5",
+            "hint": "Divide both sides by 2: $x + 3 = 8$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{16}{2} = 8 \\implies x = 8 - 3 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $7x + 4 = x + 28$.",
+            "options": [
+              "4",
+              "5",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(7 - 1)x = 28 - 4 \\implies 6x = 24 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 5 = 11$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Subtract 5 from both sides: 11 - 5 = 6, then divide by 2.",
+            "workedSolution": "$$2x = 11 - 5 = 6 \\implies x = \\frac{6}{2} = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 3, and subtract 3. If the result is 18, find the number.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "8"
+            ],
+            "correctAnswer": "7",
+            "hint": "Set up the equation $3x - 3 = 18$. Add 3, then divide by 3.",
+            "workedSolution": "$$3x - 3 = 18 \\implies 3x = 21 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3(x + 3) = 21$.",
+            "options": [
+              "4",
+              "6",
+              "3",
+              "7"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide both sides by 3: $x + 3 = 7$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{21}{3} = 7 \\implies x = 7 - 3 = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $6x + 4 = x + 44$.",
+            "options": [
+              "8",
+              "9",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "8",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(6 - 1)x = 44 - 4 \\implies 5x = 40 \\implies x = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 3 = 17$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Subtract 3 from both sides: 17 - 3 = 14, then divide by 2.",
+            "workedSolution": "$$2x = 17 - 3 = 14 \\implies x = \\frac{14}{2} = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 4, and subtract 2. If the result is 18, find the number.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "6"
+            ],
+            "correctAnswer": "5",
+            "hint": "Set up the equation $4x - 2 = 18$. Add 2, then divide by 4.",
+            "workedSolution": "$$4x - 2 = 18 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4(x + 3) = 24$.",
+            "options": [
+              "3",
+              "5",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "Divide both sides by 4: $x + 3 = 6$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{24}{4} = 6 \\implies x = 6 - 3 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $5x + 4 = x + 28$.",
+            "options": [
+              "6",
+              "7",
+              "4",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(5 - 1)x = 28 - 4 \\implies 4x = 24 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 7 = 19$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract 7 from both sides: 19 - 7 = 12, then divide by 2.",
+            "workedSolution": "$$2x = 19 - 7 = 12 \\implies x = \\frac{12}{2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 5, and subtract 6. If the result is 39, find the number.",
+            "options": [
+              "9",
+              "11",
+              "8",
+              "10"
+            ],
+            "correctAnswer": "9",
+            "hint": "Set up the equation $5x - 6 = 39$. Add 6, then divide by 5.",
+            "workedSolution": "$$5x - 6 = 39 \\implies 5x = 45 \\implies x = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2(x + 3) = 10$.",
+            "options": [
+              "2",
+              "4",
+              "1",
+              "5"
+            ],
+            "correctAnswer": "2",
+            "hint": "Divide both sides by 2: $x + 3 = 5$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{10}{2} = 5 \\implies x = 5 - 3 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4x + 4 = x + 16$.",
+            "options": [
+              "4",
+              "5",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(4 - 1)x = 16 - 4 \\implies 3x = 12 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 5 = 15$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Subtract 5 from both sides: 15 - 5 = 10, then divide by 2.",
+            "workedSolution": "$$2x = 15 - 5 = 10 \\implies x = \\frac{10}{2} = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 3, and subtract 5. If the result is 16, find the number.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "8"
+            ],
+            "correctAnswer": "7",
+            "hint": "Set up the equation $3x - 5 = 16$. Add 5, then divide by 3.",
+            "workedSolution": "$$3x - 5 = 16 \\implies 3x = 21 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3(x + 3) = 27$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "6",
+            "hint": "Divide both sides by 3: $x + 3 = 9$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{27}{3} = 9 \\implies x = 9 - 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3x + 4 = x + 20$.",
+            "options": [
+              "8",
+              "9",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "8",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(3 - 1)x = 20 - 4 \\implies 2x = 16 \\implies x = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 3 = 11$.",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Subtract 3 from both sides: 11 - 3 = 8, then divide by 2.",
+            "workedSolution": "$$2x = 11 - 3 = 8 \\implies x = \\frac{8}{2} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 4, and subtract 4. If the result is 16, find the number.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "6"
+            ],
+            "correctAnswer": "5",
+            "hint": "Set up the equation $4x - 4 = 16$. Add 4, then divide by 4.",
+            "workedSolution": "$$4x - 4 = 16 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4(x + 3) = 32$.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "8"
+            ],
+            "correctAnswer": "5",
+            "hint": "Divide both sides by 4: $x + 3 = 8$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{32}{4} = 8 \\implies x = 8 - 3 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $7x + 4 = x + 40$.",
+            "options": [
+              "6",
+              "7",
+              "4",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(7 - 1)x = 40 - 4 \\implies 6x = 36 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 7 = 13$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Subtract 7 from both sides: 13 - 7 = 6, then divide by 2.",
+            "workedSolution": "$$2x = 13 - 7 = 6 \\implies x = \\frac{6}{2} = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 5, and subtract 3. If the result is 42, find the number.",
+            "options": [
+              "9",
+              "11",
+              "8",
+              "10"
+            ],
+            "correctAnswer": "9",
+            "hint": "Set up the equation $5x - 3 = 42$. Add 3, then divide by 5.",
+            "workedSolution": "$$5x - 3 = 42 \\implies 5x = 45 \\implies x = 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2(x + 3) = 14$.",
+            "options": [
+              "4",
+              "6",
+              "3",
+              "7"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide both sides by 2: $x + 3 = 7$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{14}{2} = 7 \\implies x = 7 - 3 = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $6x + 4 = x + 24$.",
+            "options": [
+              "4",
+              "5",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(6 - 1)x = 24 - 4 \\implies 5x = 20 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 5 = 19$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Subtract 5 from both sides: 19 - 5 = 14, then divide by 2.",
+            "workedSolution": "$$2x = 19 - 5 = 14 \\implies x = \\frac{14}{2} = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 3, and subtract 2. If the result is 19, find the number.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "8"
+            ],
+            "correctAnswer": "7",
+            "hint": "Set up the equation $3x - 2 = 19$. Add 2, then divide by 3.",
+            "workedSolution": "$$3x - 2 = 19 \\implies 3x = 21 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $3(x + 3) = 18$.",
+            "options": [
+              "3",
+              "5",
+              "2",
+              "6"
+            ],
+            "correctAnswer": "3",
+            "hint": "Divide both sides by 3: $x + 3 = 6$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{18}{3} = 6 \\implies x = 6 - 3 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $5x + 4 = x + 36$.",
+            "options": [
+              "8",
+              "9",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "8",
+            "hint": "Subtract $x$ from both sides, then subtract 4.",
+            "workedSolution": "$$(5 - 1)x = 36 - 4 \\implies 4x = 32 \\implies x = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $2x + 3 = 15$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract 3 from both sides: 15 - 3 = 12, then divide by 2.",
+            "workedSolution": "$$2x = 15 - 3 = 12 \\implies x = \\frac{12}{2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "I think of a number, multiply it by 4, and subtract 6. If the result is 14, find the number.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "6"
+            ],
+            "correctAnswer": "5",
+            "hint": "Set up the equation $4x - 6 = 14$. Add 6, then divide by 4.",
+            "workedSolution": "$$4x - 6 = 14 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_eq_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4(x + 3) = 20$.",
+            "options": [
+              "2",
+              "4",
+              "1",
+              "5"
+            ],
+            "correctAnswer": "2",
+            "hint": "Divide both sides by 4: $x + 3 = 5$, then subtract 3.",
+            "workedSolution": "$$x + 3 = \\frac{20}{4} = 5 \\implies x = 5 - 3 = 2$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_eq_b7_h01",
-            "difficulty": "hard",
-            "dokLevel": 3,
-            "prompt": "A taxi charges $\\text{GH¢ } 20.00$ for hire for the first $10\\text{ km}$, and $\\text{GH¢ } 5.00$ for every additional kilometre. How much will a customer pay for a $22\\text{ km}$ ride?",
-            "options": ["GH¢ 80.00", "GH¢ 60.00", "GH¢ 75.00", "GH¢ 85.00"],
-            "correctAnswer": "GH¢ 80.00",
-            "hint": "Additional distance $= 22 - 10 = 12\\text{ km}$. Total $= 20 + 12(5)$.",
-            "workedSolution": "$$\\text{Base fare} = 20$$\n$$\\text{Extra km} = 22 - 10 = 12\\text{ km}$$\n$$\\text{Total} = 20 + (12 \\times 5) = 20 + 60 = \\text{GH¢ } 80.00$$.",
-            "points": 2
-          },
-          {
-            "id": "q_eq_b7_h02",
+            "id": "q_b7_eq_h01",
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "Solve for $w$: $$\\frac{2w - 3}{4} = \\frac{w + 5}{3}$$.",
-            "options": ["14.5", "13", "14", "15.5"],
+            "options": [
+              "14.5",
+              "13",
+              "14",
+              "15.5"
+            ],
             "correctAnswer": "14.5",
-            "hint": "Cross multiply: $3(2w - 3) = 4(w + 5)$.",
-            "workedSolution": "$$6w - 9 = 4w + 20 \\implies 2w = 29 \\implies w = 14.5$$.",
+            "hint": "Cross-multiply: $3(2w - 3) = 4(w + 5)$.",
+            "workedSolution": "$$6w - 9 = 4w + 20 \\implies 6w - 4w = 20 + 9 \\implies 2w = 29 \\implies w = 14.5$$.",
             "points": 2
           },
           {
-            "id": "q_eq_b7_h03",
+            "id": "q_b7_eq_h02",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Three consecutive odd numbers add up to 57. Find the largest of the three numbers.",
-            "options": ["21", "19", "17", "23"],
-            "correctAnswer": "21",
-            "hint": "Let numbers be $x, x+2, x+4$. Sum $= 3x + 6 = 57$.",
-            "workedSolution": "$$3x + 6 = 57 \\implies 3x = 51 \\implies x = 17$$\n$$\\text{Largest} = 17 + 4 = 21$$.",
+            "prompt": "The sum of three consecutive integers is $72$. What is the largest of the three integers?",
+            "options": [
+              "25",
+              "24",
+              "23",
+              "26"
+            ],
+            "correctAnswer": "25",
+            "hint": "Let integers be $x, x + 1, x + 2$. Form equation: $3x + 3 = 72$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 72 \\implies 3x + 3 = 72 \\implies 3x = 69 \\implies x = 23$$\n$$\\text{Largest} = 23 + 2 = 25$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A father is 4 times as old as his son. In 14 years' time, the father will be only twice as old as his son. How old is the son now?",
+            "options": [
+              "7 years",
+              "6 years",
+              "8 years",
+              "9 years"
+            ],
+            "correctAnswer": "7 years",
+            "hint": "Let son's age be $x$, father's age is $4x$. In 14 years: $4x + 14 = 2(x + 14)$.",
+            "workedSolution": "$$4x + 14 = 2x + 28 \\implies 4x - 2x = 28 - 14 \\implies 2x = 14 \\implies x = 7\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $3(2x - 4) - 2(x + 5) = 14$.",
+            "options": [
+              "9",
+              "8",
+              "7",
+              "10"
+            ],
+            "correctAnswer": "9",
+            "hint": "Expand both sets of brackets carefully: $6x - 12 - 2x - 10 = 14$.",
+            "workedSolution": "$$6x - 12 - 2x - 10 = 14 \\implies 4x - 22 = 14 \\implies 4x = 36 \\implies x = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $m$: $$\\frac{m + 2}{3} - \\frac{m - 1}{4} = 1$$.",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "correctAnswer": "1",
+            "hint": "Multiply every term by the LCM (12): $4(m + 2) - 3(m - 1) = 12$.",
+            "workedSolution": "$$4(m + 2) - 3(m - 1) = 12 \\implies 4m + 8 - 3m + 3 = 12$$\n$$m + 11 = 12 \\implies m = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 14 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "14 years",
+              "16 years",
+              "12 years",
+              "18 years"
+            ],
+            "correctAnswer": "14 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 14 = 2(x + 14)$.",
+            "workedSolution": "$$3x + 14 = 2x + 28 \\implies 3x - 2x = 28 - 14 \\implies x = 14\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 2) - 2(x + 4) = -6$.",
+            "options": [
+              "5",
+              "6",
+              "3",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand brackets: $4x - 8 - 2x - 8 = -6$. Combine like terms.",
+            "workedSolution": "$$4x - 8 - 2x - 8 = -6 \\implies 2x - 16 = -6 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 63. Find the largest of the three integers.",
+            "options": [
+              "22",
+              "20",
+              "21",
+              "23"
+            ],
+            "correctAnswer": "22",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 63$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 63 \\implies 3x + 3 = 63 \\implies 3x = 60 \\implies x = 20$$\n$$\\text{Largest} = 20 + 2 = 22$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 4}{2}$$.",
+            "options": [
+              "14",
+              "16",
+              "13",
+              "15"
+            ],
+            "correctAnswer": "14",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 4)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 4) \\implies 4x - 2 = 3x + 12 \\implies 4x - 3x = 12 + 2 \\implies x = 14$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 10 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "10 years",
+              "12 years",
+              "8 years",
+              "14 years"
+            ],
+            "correctAnswer": "10 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 10 = 2(x + 10)$.",
+            "workedSolution": "$$3x + 10 = 2x + 20 \\implies 3x - 2x = 20 - 10 \\implies x = 10\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 3) - 2(x + 4) = -2$.",
+            "options": [
+              "9",
+              "10",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "9",
+            "hint": "Expand brackets: $4x - 12 - 2x - 8 = -2$. Combine like terms.",
+            "workedSolution": "$$4x - 12 - 2x - 8 = -2 \\implies 2x - 20 = -2 \\implies 2x = 18 \\implies x = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 45. Find the largest of the three integers.",
+            "options": [
+              "16",
+              "14",
+              "15",
+              "17"
+            ],
+            "correctAnswer": "16",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 45$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 45 \\implies 3x + 3 = 45 \\implies 3x = 42 \\implies x = 14$$\n$$\\text{Largest} = 14 + 2 = 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 2}{2}$$.",
+            "options": [
+              "8",
+              "10",
+              "7",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 2)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 2) \\implies 4x - 2 = 3x + 6 \\implies 4x - 3x = 6 + 2 \\implies x = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 14 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "14 years",
+              "16 years",
+              "12 years",
+              "18 years"
+            ],
+            "correctAnswer": "14 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 14 = 2(x + 14)$.",
+            "workedSolution": "$$3x + 14 = 2x + 28 \\implies 3x - 2x = 28 - 14 \\implies x = 14\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 1) - 2(x + 4) = 2$.",
+            "options": [
+              "7",
+              "8",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand brackets: $4x - 4 - 2x - 8 = 2$. Combine like terms.",
+            "workedSolution": "$$4x - 4 - 2x - 8 = 2 \\implies 2x - 12 = 2 \\implies 2x = 14 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 57. Find the largest of the three integers.",
+            "options": [
+              "20",
+              "18",
+              "19",
+              "21"
+            ],
+            "correctAnswer": "20",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 57$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 57 \\implies 3x + 3 = 57 \\implies 3x = 54 \\implies x = 18$$\n$$\\text{Largest} = 18 + 2 = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 6}{2}$$.",
+            "options": [
+              "20",
+              "22",
+              "19",
+              "21"
+            ],
+            "correctAnswer": "20",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 6)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 6) \\implies 4x - 2 = 3x + 18 \\implies 4x - 3x = 18 + 2 \\implies x = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 10 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "10 years",
+              "12 years",
+              "8 years",
+              "14 years"
+            ],
+            "correctAnswer": "10 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 10 = 2(x + 10)$.",
+            "workedSolution": "$$3x + 10 = 2x + 20 \\implies 3x - 2x = 20 - 10 \\implies x = 10\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 2) - 2(x + 4) = -6$.",
+            "options": [
+              "5",
+              "6",
+              "3",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand brackets: $4x - 8 - 2x - 8 = -6$. Combine like terms.",
+            "workedSolution": "$$4x - 8 - 2x - 8 = -6 \\implies 2x - 16 = -6 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 39. Find the largest of the three integers.",
+            "options": [
+              "14",
+              "12",
+              "13",
+              "15"
+            ],
+            "correctAnswer": "14",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 39$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 39 \\implies 3x + 3 = 39 \\implies 3x = 36 \\implies x = 12$$\n$$\\text{Largest} = 12 + 2 = 14$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 4}{2}$$.",
+            "options": [
+              "14",
+              "16",
+              "13",
+              "15"
+            ],
+            "correctAnswer": "14",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 4)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 4) \\implies 4x - 2 = 3x + 12 \\implies 4x - 3x = 12 + 2 \\implies x = 14$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 14 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "14 years",
+              "16 years",
+              "12 years",
+              "18 years"
+            ],
+            "correctAnswer": "14 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 14 = 2(x + 14)$.",
+            "workedSolution": "$$3x + 14 = 2x + 28 \\implies 3x - 2x = 28 - 14 \\implies x = 14\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 3) - 2(x + 4) = -2$.",
+            "options": [
+              "9",
+              "10",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "9",
+            "hint": "Expand brackets: $4x - 12 - 2x - 8 = -2$. Combine like terms.",
+            "workedSolution": "$$4x - 12 - 2x - 8 = -2 \\implies 2x - 20 = -2 \\implies 2x = 18 \\implies x = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 51. Find the largest of the three integers.",
+            "options": [
+              "18",
+              "16",
+              "17",
+              "19"
+            ],
+            "correctAnswer": "18",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 51$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 51 \\implies 3x + 3 = 51 \\implies 3x = 48 \\implies x = 16$$\n$$\\text{Largest} = 16 + 2 = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 2}{2}$$.",
+            "options": [
+              "8",
+              "10",
+              "7",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 2)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 2) \\implies 4x - 2 = 3x + 6 \\implies 4x - 3x = 6 + 2 \\implies x = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 10 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "10 years",
+              "12 years",
+              "8 years",
+              "14 years"
+            ],
+            "correctAnswer": "10 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 10 = 2(x + 10)$.",
+            "workedSolution": "$$3x + 10 = 2x + 20 \\implies 3x - 2x = 20 - 10 \\implies x = 10\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 1) - 2(x + 4) = 2$.",
+            "options": [
+              "7",
+              "8",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand brackets: $4x - 4 - 2x - 8 = 2$. Combine like terms.",
+            "workedSolution": "$$4x - 4 - 2x - 8 = 2 \\implies 2x - 12 = 2 \\implies 2x = 14 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 63. Find the largest of the three integers.",
+            "options": [
+              "22",
+              "20",
+              "21",
+              "23"
+            ],
+            "correctAnswer": "22",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 63$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 63 \\implies 3x + 3 = 63 \\implies 3x = 60 \\implies x = 20$$\n$$\\text{Largest} = 20 + 2 = 22$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 6}{2}$$.",
+            "options": [
+              "20",
+              "22",
+              "19",
+              "21"
+            ],
+            "correctAnswer": "20",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 6)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 6) \\implies 4x - 2 = 3x + 18 \\implies 4x - 3x = 18 + 2 \\implies x = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 14 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "14 years",
+              "16 years",
+              "12 years",
+              "18 years"
+            ],
+            "correctAnswer": "14 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 14 = 2(x + 14)$.",
+            "workedSolution": "$$3x + 14 = 2x + 28 \\implies 3x - 2x = 28 - 14 \\implies x = 14\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 2) - 2(x + 4) = -6$.",
+            "options": [
+              "5",
+              "6",
+              "3",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand brackets: $4x - 8 - 2x - 8 = -6$. Combine like terms.",
+            "workedSolution": "$$4x - 8 - 2x - 8 = -6 \\implies 2x - 16 = -6 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 45. Find the largest of the three integers.",
+            "options": [
+              "16",
+              "14",
+              "15",
+              "17"
+            ],
+            "correctAnswer": "16",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 45$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 45 \\implies 3x + 3 = 45 \\implies 3x = 42 \\implies x = 14$$\n$$\\text{Largest} = 14 + 2 = 16$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 4}{2}$$.",
+            "options": [
+              "14",
+              "16",
+              "13",
+              "15"
+            ],
+            "correctAnswer": "14",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 4)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 4) \\implies 4x - 2 = 3x + 12 \\implies 4x - 3x = 12 + 2 \\implies x = 14$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 10 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "10 years",
+              "12 years",
+              "8 years",
+              "14 years"
+            ],
+            "correctAnswer": "10 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 10 = 2(x + 10)$.",
+            "workedSolution": "$$3x + 10 = 2x + 20 \\implies 3x - 2x = 20 - 10 \\implies x = 10\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 3) - 2(x + 4) = -2$.",
+            "options": [
+              "9",
+              "10",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "9",
+            "hint": "Expand brackets: $4x - 12 - 2x - 8 = -2$. Combine like terms.",
+            "workedSolution": "$$4x - 12 - 2x - 8 = -2 \\implies 2x - 20 = -2 \\implies 2x = 18 \\implies x = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 57. Find the largest of the three integers.",
+            "options": [
+              "20",
+              "18",
+              "19",
+              "21"
+            ],
+            "correctAnswer": "20",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 57$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 57 \\implies 3x + 3 = 57 \\implies 3x = 54 \\implies x = 18$$\n$$\\text{Largest} = 18 + 2 = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 2}{2}$$.",
+            "options": [
+              "8",
+              "10",
+              "7",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 2)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 2) \\implies 4x - 2 = 3x + 6 \\implies 4x - 3x = 6 + 2 \\implies x = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 14 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "14 years",
+              "16 years",
+              "12 years",
+              "18 years"
+            ],
+            "correctAnswer": "14 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 14 = 2(x + 14)$.",
+            "workedSolution": "$$3x + 14 = 2x + 28 \\implies 3x - 2x = 28 - 14 \\implies x = 14\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 1) - 2(x + 4) = 2$.",
+            "options": [
+              "7",
+              "8",
+              "5",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand brackets: $4x - 4 - 2x - 8 = 2$. Combine like terms.",
+            "workedSolution": "$$4x - 4 - 2x - 8 = 2 \\implies 2x - 12 = 2 \\implies 2x = 14 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 39. Find the largest of the three integers.",
+            "options": [
+              "14",
+              "12",
+              "13",
+              "15"
+            ],
+            "correctAnswer": "14",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 39$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 39 \\implies 3x + 3 = 39 \\implies 3x = 36 \\implies x = 12$$\n$$\\text{Largest} = 12 + 2 = 14$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 6}{2}$$.",
+            "options": [
+              "20",
+              "22",
+              "19",
+              "21"
+            ],
+            "correctAnswer": "20",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 6)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 6) \\implies 4x - 2 = 3x + 18 \\implies 4x - 3x = 18 + 2 \\implies x = 20$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 10 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "10 years",
+              "12 years",
+              "8 years",
+              "14 years"
+            ],
+            "correctAnswer": "10 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 10 = 2(x + 10)$.",
+            "workedSolution": "$$3x + 10 = 2x + 20 \\implies 3x - 2x = 20 - 10 \\implies x = 10\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 2) - 2(x + 4) = -6$.",
+            "options": [
+              "5",
+              "6",
+              "3",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand brackets: $4x - 8 - 2x - 8 = -6$. Combine like terms.",
+            "workedSolution": "$$4x - 8 - 2x - 8 = -6 \\implies 2x - 16 = -6 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 51. Find the largest of the three integers.",
+            "options": [
+              "18",
+              "16",
+              "17",
+              "19"
+            ],
+            "correctAnswer": "18",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 51$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 51 \\implies 3x + 3 = 51 \\implies 3x = 48 \\implies x = 16$$\n$$\\text{Largest} = 16 + 2 = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 4}{2}$$.",
+            "options": [
+              "14",
+              "16",
+              "13",
+              "15"
+            ],
+            "correctAnswer": "14",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 4)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 4) \\implies 4x - 2 = 3x + 12 \\implies 4x - 3x = 12 + 2 \\implies x = 14$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 14 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "14 years",
+              "16 years",
+              "12 years",
+              "18 years"
+            ],
+            "correctAnswer": "14 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 14 = 2(x + 14)$.",
+            "workedSolution": "$$3x + 14 = 2x + 28 \\implies 3x - 2x = 28 - 14 \\implies x = 14\\text{ years}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $4(x - 3) - 2(x + 4) = -2$.",
+            "options": [
+              "9",
+              "10",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "9",
+            "hint": "Expand brackets: $4x - 12 - 2x - 8 = -2$. Combine like terms.",
+            "workedSolution": "$$4x - 12 - 2x - 8 = -2 \\implies 2x - 20 = -2 \\implies 2x = 18 \\implies x = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The sum of three consecutive integers is 63. Find the largest of the three integers.",
+            "options": [
+              "22",
+              "20",
+              "21",
+              "23"
+            ],
+            "correctAnswer": "22",
+            "hint": "Let the numbers be $x, x + 1, x + 2$. Set up $3x + 3 = 63$.",
+            "workedSolution": "$$x + (x + 1) + (x + 2) = 63 \\implies 3x + 3 = 63 \\implies 3x = 60 \\implies x = 20$$\n$$\\text{Largest} = 20 + 2 = 22$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{2x - 1}{3} = \\frac{x + 2}{2}$$.",
+            "options": [
+              "8",
+              "10",
+              "7",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Cross-multiply: $2(2x - 1) = 3(x + 2)$. Group like terms.",
+            "workedSolution": "$$2(2x - 1) = 3(x + 2) \\implies 4x - 2 = 3x + 6 \\implies 4x - 3x = 6 + 2 \\implies x = 8$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_eq_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A mother is 3 times as old as her daughter. In 10 years' time, the mother will be only twice as old as her daughter. How old is the daughter now?",
+            "options": [
+              "10 years",
+              "12 years",
+              "8 years",
+              "14 years"
+            ],
+            "correctAnswer": "10 years",
+            "hint": "Let daughter's age be $x$, mother's age is $3x$. Equation: $3x + 10 = 2(x + 10)$.",
+            "workedSolution": "$$3x + 10 = 2x + 20 \\implies 3x - 2x = 20 - 10 \\implies x = 10\\text{ years}$$.",
             "points": 2
           }
         ]
       }
     },
-
     "b8": {
       "levelCode": "B8",
       "gradeLabel": "Basic 8 (JHS 2)",
@@ -214,7 +2514,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "Find the gradient of the line passing through $(2, 3)$ and $(6, 11)$.",
-            "options": ["2", "4", "1/2", "3"],
+            "options": [
+              "2",
+              "4",
+              "1/2",
+              "3"
+            ],
             "correctAnswer": "2",
             "hint": "$$m = \\frac{11 - 3}{6 - 2}$$.",
             "workedSolution": "$$m = \\frac{8}{4} = 2$$.",
@@ -225,7 +2530,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "What is the gradient of the straight line $y = 5x + 13$?",
-            "options": ["5", "13", "-5", "5/13"],
+            "options": [
+              "5",
+              "13",
+              "-5",
+              "5/13"
+            ],
             "correctAnswer": "5",
             "hint": "In $y = mx + c$, $m$ is the coefficient of $x$.",
             "workedSolution": "Comparing with $y = mx + c$, $m = 5$.",
@@ -236,7 +2546,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "Which inequality has its solution illustrated by a closed circle on 2 directed to the right?",
-            "options": ["x ≥ 2", "x > 2", "x ≤ 2", "x < 2"],
+            "options": [
+              "x ≥ 2",
+              "x > 2",
+              "x ≤ 2",
+              "x < 2"
+            ],
             "correctAnswer": "x ≥ 2",
             "hint": "Closed circle means 'or equal to' ($\\ge$), and right arrow means greater than.",
             "workedSolution": "$$x \\ge 2$$.",
@@ -249,7 +2564,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Find the equation of a line with slope $2$ and $y$-intercept $-3$.",
-            "options": ["y = 2x - 3", "y = -3x + 2", "2x - y = -3", "y = 2x + 3"],
+            "options": [
+              "y = 2x - 3",
+              "y = -3x + 2",
+              "2x - y = -3",
+              "y = 2x + 3"
+            ],
             "correctAnswer": "y = 2x - 3",
             "hint": "Substitute $m = 2$ and $c = -3$ into $y = mx + c$.",
             "workedSolution": "$$y = 2x + (-3) \\implies y = 2x - 3$$.",
@@ -260,7 +2580,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Solve the inequality: $x + 4 \\le 3x - 16$.",
-            "options": ["x ≥ 10", "x ≤ 10", "x ≥ 6", "x ≤ 6"],
+            "options": [
+              "x ≥ 10",
+              "x ≤ 10",
+              "x ≥ 6",
+              "x ≤ 6"
+            ],
             "correctAnswer": "x ≥ 10",
             "hint": "Subtract $x$ from both sides, add 16 to both sides.",
             "workedSolution": "$$4 + 16 \\le 3x - x \\implies 20 \\le 2x \\implies x \\ge 10$$.",
@@ -271,7 +2596,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Find the $y$-intercept of the line $2x - 8y + 3 = 0$.",
-            "options": ["3/8", "-3/8", "3/2", "-3/2"],
+            "options": [
+              "3/8",
+              "-3/8",
+              "3/2",
+              "-3/2"
+            ],
             "correctAnswer": "3/8",
             "hint": "Rearrange to $8y = 2x + 3 \\implies y = \\frac{2}{8}x + \\frac{3}{8}$.",
             "workedSolution": "$$8y = 2x + 3 \\implies y = \\frac{1}{4}x + \\frac{3}{8}$$. $y$-intercept is $3/8$.",
@@ -284,7 +2614,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "Find the equation of a line passing through $(3, -1)$ with slope $\\frac{2}{3}$.",
-            "options": ["2x - 3y = 9", "2x - 3y = 3", "3x - 2y = 9", "2x + 3y = 3"],
+            "options": [
+              "2x - 3y = 9",
+              "2x - 3y = 3",
+              "3x - 2y = 9",
+              "2x + 3y = 3"
+            ],
             "correctAnswer": "2x - 3y = 9",
             "hint": "$$y - (-1) = \\frac{2}{3}(x - 3)$$. Multiply through by 3.",
             "workedSolution": "$$3(y + 1) = 2(x - 3) \\implies 3y + 3 = 2x - 6 \\implies 2x - 3y = 9$$.",
@@ -295,7 +2630,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "A school has a budget of $\\text{GH¢ } 240.00$ to buy drinks. A sachet drink costs $\\text{GH¢ } 10.00$ and a bottle drink costs $\\text{GH¢ } 12.00$. If they buy 12 sachet drinks, what is the maximum number of bottle drinks ($b$) they can buy?",
-            "options": ["b ≤ 10", "b ≤ 11", "b ≤ 12", "b ≤ 9"],
+            "options": [
+              "b ≤ 10",
+              "b ≤ 11",
+              "b ≤ 12",
+              "b ≤ 9"
+            ],
             "correctAnswer": "b ≤ 10",
             "hint": "$$10(12) + 12b \\le 240 \\implies 120 + 12b \\le 240$$.",
             "workedSolution": "$$120 + 12b \\le 240 \\implies 12b \\le 120 \\implies b \\le 10$$.",
@@ -320,7 +2660,6 @@
         ]
       }
     },
-
     "b9": {
       "levelCode": "B9",
       "gradeLabel": "Basic 9 (JHS 3)",
@@ -370,7 +2709,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "If two straight lines intersect at $(3, -2)$ on a Cartesian graph, what is the simultaneous solution of the equations?",
-            "options": ["x = 3, y = -2", "x = -2, y = 3", "x = 1, y = -2", "x = 3, y = 2"],
+            "options": [
+              "x = 3, y = -2",
+              "x = -2, y = 3",
+              "x = 1, y = -2",
+              "x = 3, y = 2"
+            ],
             "correctAnswer": "x = 3, y = -2",
             "hint": "The coordinates $(x, y)$ of the point of intersection give the direct solution.",
             "workedSolution": "The point of intersection $(x, y) = (3, -2)$ means $x = 3$ and $y = -2$.",
@@ -381,7 +2725,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "Solve: $2x \\ge 8$.",
-            "options": ["x ≥ 4", "x ≤ 4", "x ≥ 16", "x ≤ 16"],
+            "options": [
+              "x ≥ 4",
+              "x ≤ 4",
+              "x ≥ 16",
+              "x ≤ 16"
+            ],
             "correctAnswer": "x ≥ 4",
             "hint": "Divide both sides by 2.",
             "workedSolution": "$$x \\ge \\frac{8}{2} = 4$$.",
@@ -392,7 +2741,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "From the graph of $y = x + 4$ and $y = 6 - x$, at what point do the lines intersect?",
-            "options": ["(1, 5)", "(2, 4)", "(0, 6)", "(3, 3)"],
+            "options": [
+              "(1, 5)",
+              "(2, 4)",
+              "(0, 6)",
+              "(3, 3)"
+            ],
             "correctAnswer": "(1, 5)",
             "hint": "Equate $x + 4 = 6 - x \\implies 2x = 2 \\implies x = 1$. Then $y = 1 + 4 = 5$.",
             "workedSolution": "$$x + 4 = 6 - x \\implies 2x = 2 \\implies x = 1$$. $y = 1 + 4 = 5$. Point is $(1, 5)$.",
@@ -421,7 +2775,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Solve the inequality: $$\\frac{3}{2}y - \\frac{2}{5} < 5$$.",
-            "options": ["y < 3.6", "y > 3.6", "y < 2.5", "y < 4.2"],
+            "options": [
+              "y < 3.6",
+              "y > 3.6",
+              "y < 2.5",
+              "y < 4.2"
+            ],
             "correctAnswer": "y < 3.6",
             "hint": "Multiply through by 10: $15y - 4 < 50$.",
             "workedSolution": "$$15y - 4 < 50 \\implies 15y < 54 \\implies y < \\frac{54}{15} = 3.6$$.",
@@ -432,7 +2791,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "A man has $260\\text{ m}$ of fencing to enclose a rectangular field of width $50\\text{ m}$. What is the length of the field?",
-            "options": ["80 m", "60 m", "70 m", "90 m"],
+            "options": [
+              "80 m",
+              "60 m",
+              "70 m",
+              "90 m"
+            ],
             "correctAnswer": "80 m",
             "hint": "$$2(l + 50) = 260$$.",
             "workedSolution": "$$l + 50 = 130 \\implies l = 80\\text{ m}$$.",
@@ -445,7 +2809,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "A man paid $\\text{GH¢ } 290.00$ for 11 books. Geography books cost $\\text{GH¢ } 30.00$ each and History books cost $\\text{GH¢ } 20.00$ each. How many Geography books did he buy?",
-            "options": ["7", "4", "6", "5"],
+            "options": [
+              "7",
+              "4",
+              "6",
+              "5"
+            ],
             "correctAnswer": "7",
             "hint": "$$30g + 20(11 - g) = 290$$.",
             "workedSolution": "$$30g + 220 - 20g = 290 \\implies 10g = 70 \\implies g = 7$$.",
@@ -456,7 +2825,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "A student scores 70 and 76 marks in two tests. What is the MINIMUM mark she must score in the third test to achieve an average of at least 80 marks?",
-            "options": ["94", "92", "88", "90"],
+            "options": [
+              "94",
+              "92",
+              "88",
+              "90"
+            ],
             "correctAnswer": "94",
             "hint": "$$\\frac{70 + 76 + x}{3} \\ge 80$$.",
             "workedSolution": "$$146 + x \\ge 240 \\implies x \\ge 240 - 146 = 94$$.",
@@ -467,7 +2841,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "Solve the inequality: $$-3x - 8 > -26$$.",
-            "options": ["x < 6", "x > 6", "x < -6", "x > -6"],
+            "options": [
+              "x < 6",
+              "x > 6",
+              "x < -6",
+              "x > -6"
+            ],
             "correctAnswer": "x < 6",
             "hint": "Add 8 to both sides: $-3x > -18$. Divide by $-3$ and reverse sign.",
             "workedSolution": "$$-3x > -18 \\implies x < \\frac{-18}{-3} = 6$$.",
