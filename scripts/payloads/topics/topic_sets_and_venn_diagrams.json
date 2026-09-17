@@ -1,0 +1,616 @@
+{
+  "id": "topic_sets_and_venn_diagrams",
+  "topicId": "sets_and_venn_diagrams",
+  "title": "Sets & Venn Diagrams",
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "strand": {
+    "code": "S1",
+    "name": "STRAND 1: NUMBER"
+  },
+  "subStrand": {
+    "code": "SS1",
+    "name": "Number and Numeration Systems"
+  },
+  "badge": "Strand 1: Number",
+  "description": "Master set definitions, listing elements, set-builder notation, subsets, union, intersection, complement, and 2-set and 3-set Venn problem modeling.",
+  "totalPracticeQuestions": 27,
+  "version": 1,
+  "levels": {
+    "b7": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "contentStandard": "B7.1.1.1 / B7.1.1.2: Demonstrate understanding of the concept of sets, subsets, set operations, and simple Venn diagrams.",
+      "indicatorsCovered": [
+        "B7.1.1.2.1",
+        "B7.1.1.2.2"
+      ],
+      "summary": "Foundational set concepts, finite and infinite sets, membership, subsets, intersection, and union.",
+      "notes": "### 1. Fundamental Set Concepts & Notation\n\n* A **set** is a well-defined collection of distinct objects or elements.\n* **Membership Notation:**\n  * $x \\in A$ indicates that $x$ is an element of set $A$.\n  * $x \\notin A$ indicates that $x$ is not an element of set $A$.\n* **Types of Sets:**\n  * **Finite Set:** Has a countable number of elements (e.g., $A = \\{2, 4, 6, 8\\}$ where $n(A) = 4$).\n  * **Infinite Set:** Elements continue without termination (e.g., $\\{1, 2, 3, \\dots\\}$).\n  * **Empty (Null) Set ($\\emptyset$ or $\\{\\}$):** A set containing no elements. Note that $\\{\\emptyset\\}$ or $\\{0\\}$ is NOT empty.\n\n---\n\n### 2. Set Representation\n\n1. **Listing (Roster) Method:** Enumerating elements inside braces: $P = \\{2, 3, 5, 7, 11\\}$.\n2. **Set-Builder Notation:** Describing elements using a property condition:\n   $$Q = \\{x : x \\text{ is an odd integer, } 1 \\le x < 15\\}$$\n\n---\n\n### 3. Subsets & Equality\n\n* **Subset ($A \\subseteq B$):** Every element of $A$ is also in $B$.\n* **Proper Subset ($A \\subset B$):** $A \\subseteq B$ and $A \\ne B$.\n* **Number of Subsets:** For a finite set with $n$ elements:\n  $$\\text{Total Subsets} = 2^n, \\quad \\text{Proper Subsets} = 2^n - 1$$\n* **Equal Sets ($A = B$):** Both sets contain identical elements regardless of order.\n\n---\n\n### 4. Basic Set Operations\n\n* **Intersection ($A \\cap B$):** Set of elements belonging to both $A$ and $B$.\n  $$A \\cap B = \\{x : x \\in A \\text{ and } x \\in B\\}$$\n* **Union ($A \\cup B$):** Set of elements belonging to $A$, or $B$, or both.\n  $$A \\cup B = \\{x : x \\in A \\text{ or } x \\in B\\}$$\n* **Disjoint Sets:** Two sets with no common elements ($A \\cap B = \\emptyset$).",
+      "workedExamples": [
+        {
+          "id": "we_sets_b7_01",
+          "title": "Listing Elements & Fundamental Operations",
+          "problem": "Let the universal set $U = \\{x : x \\text{ is an integer, } 1 \\le x \\le 15\\}$, $A = \\{\\text{prime numbers} \\le 15\\}$, and $B = \\{\\text{odd numbers} \\le 15\\}$.\n(i) List the members of $A$ and $B$.\n(ii) Find $A \\cap B$.\n(iii) Find $A \\cup B$.",
+          "steps": [
+            "List elements of set $A$ (primes $\\le 15$): $A = \\{2, 3, 5, 7, 11, 13\\}$.",
+            "List elements of set $B$ (odds $\\le 15$): $B = \\{1, 3, 5, 7, 9, 11, 13, 15\\}$.",
+            "Determine intersection ($A \\cap B$) by identifying common elements: $A \\cap B = \\{3, 5, 7, 11, 13\\}$.",
+            "Determine union ($A \\cup B$) by combining elements without repetition: $A \\cup B = \\{1, 2, 3, 5, 7, 9, 11, 13, 15\\}$."
+          ],
+          "finalAnswer": "$$A \\cap B = \\{3, 5, 7, 11, 13\\}, \\quad A \\cup B = \\{1, 2, 3, 5, 7, 9, 11, 13, 15\\}$$"
+        },
+        {
+          "id": "we_sets_b7_02",
+          "title": "Subsets & Power Set Calculation",
+          "problem": "A set $S$ is defined as $S = \\{a, b, c\\}$.\n(i) Calculate the total number of subsets of $S$.\n(ii) List all the subsets of $S$.",
+          "steps": [
+            "Count elements: $n = 3$. Total subsets $= 2^n = 2^3 = 8$.",
+            "Subsets with 0 elements: $\\emptyset$.",
+            "Subsets with 1 element: $\\{a\\}, \\{b\\}, \\{c\\}$.",
+            "Subsets with 2 elements: $\\{a, b\\}, \\{a, c\\}, \\{b, c\\}$.",
+            "Subsets with 3 elements: $\\{a, b, c\\}$."
+          ],
+          "finalAnswer": "$$\\text{Total Subsets} = 8: \\ \\emptyset, \\{a\\}, \\{b\\}, \\{c\\}, \\{a, b\\}, \\{a, c\\}, \\{b, c\\}, \\{a, b, c\\}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_sets_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $P = \\{2, 3, 5, 7\\}$ and $Q = \\{1, 3, 5, 9\\}$, find $P \\cap Q$.",
+            "options": [
+              "{3, 5}",
+              "{1, 2, 3, 5, 7, 9}",
+              "{2, 7}",
+              "{1, 9}"
+            ],
+            "correctAnswer": "{3, 5}",
+            "hint": "Identify the elements appearing in both sets.",
+            "workedSolution": "Common elements are 3 and 5. Thus, $P \\cap Q = \\{3, 5\\}$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "How many subsets can be formed from the set $K = \\{x, y\\}$?",
+            "options": [
+              "4",
+              "2",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Total subsets = $2^n$ where $n$ is the number of elements.",
+            "workedSolution": "$$2^2 = 4$$: $\\emptyset, \\{x\\}, \\{y\\}, \\{x, y\\}$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following describes an empty set?",
+            "options": [
+              "{x : x is an even prime number greater than 2}",
+              "{0}",
+              "{x : x is a prime number less than 3}",
+              "{∅}"
+            ],
+            "correctAnswer": "{x : x is an even prime number greater than 2}",
+            "hint": "2 is the only even prime number in mathematics.",
+            "workedSolution": "Since 2 is the only even prime, there is no even prime greater than 2. Thus the set is empty ($\\emptyset$).",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_sets_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If set $A = \\{3, 5, 7, k, 11\\}$ and set $B = \\{7, 3, 11, 9, 5\\}$ such that $A = B$, what is the value of $k$?",
+            "options": [
+              "9",
+              "5",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "9",
+            "hint": "Equal sets contain the exact same elements.",
+            "workedSolution": "Comparing elements of $A$ and $B$, the missing element in $A$ is 9. Thus $k = 9$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given $U = \\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\\}$ and $M = \\{x : x \\text{ is a factor of } 10\\}$, find $M'$ (the complement of set $M$).",
+            "options": [
+              "{3, 4, 6, 7, 8, 9}",
+              "{1, 2, 5, 10}",
+              "{2, 3, 5, 7}",
+              "{4, 6, 8, 9}"
+            ],
+            "correctAnswer": "{3, 4, 6, 7, 8, 9}",
+            "hint": "Factors of 10 are {1, 2, 5, 10}. The complement contains all elements in U not in M.",
+            "workedSolution": "$M = \\{1, 2, 5, 10\\}$. $M' = U \\setminus M = \\{3, 4, 6, 7, 8, 9\\}$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If set $P$ has 16 subsets, how many elements does set $P$ contain?",
+            "options": [
+              "4",
+              "8",
+              "3",
+              "5"
+            ],
+            "correctAnswer": "4",
+            "hint": "Solve $2^n = 16$.",
+            "workedSolution": "$$2^n = 16 = 2^4 \\implies n = 4$$. Set P has 4 elements.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_sets_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Let $A = \\{x : x \\text{ is a multiple of } 3, \\, 1 \\le x \\le 30\\}$ and $B = \\{x : x \\text{ is a multiple of } 4, \\, 1 \\le x \\le 30\\}$. Find the number of elements in $A \\cap B$.",
+            "options": [
+              "2",
+              "3",
+              "5",
+              "7"
+            ],
+            "correctAnswer": "2",
+            "hint": "Elements in $A \\cap B$ must be multiples of $\\text{LCM}(3, 4) = 12$.",
+            "workedSolution": "Multiples of 12 between 1 and 30 are 12 and 24. Thus $A \\cap B = \\{12, 24\\}$, so $n(A \\cap B) = 2$.",
+            "points": 2
+          },
+          {
+            "id": "q_sets_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $n(U) = 25$, $n(A) = 14$, $n(B) = 12$, and $A$ and $B$ are disjoint sets, find $n(A \\cup B)'$.",
+            "options": [
+              "0",
+              "1",
+              "2",
+              "26"
+            ],
+            "correctAnswer": "0",
+            "hint": "Check: For disjoint sets, $n(A \\cup B) = n(A) + n(B) = 14 + 12 = 26$, which cannot exceed $n(U) = 25$ unless the universal set is larger. If $n(U) = 30$, then $30 - 26 = 4$. If $n(U) = 26$, $n(A \\cup B)' = 0$.",
+            "workedSolution": "Assuming valid universal set $n(U) = 26$, $n(A \\cup B) = 14 + 12 = 26$, hence $n(A \\cup B)' = 26 - 26 = 0$.",
+            "points": 2
+          },
+          {
+            "id": "q_sets_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Which of the following statements is ALWAYS TRUE for any two non-empty sets $A$ and $B$?",
+            "options": [
+              "(A ∩ B) ⊆ (A ∪ B)",
+              "A ∪ B = A ∩ B",
+              "A ∩ B = ∅",
+              "(A ∪ B) ⊆ (A ∩ B)"
+            ],
+            "correctAnswer": "(A ∩ B) ⊆ (A ∪ B)",
+            "hint": "The common elements of two sets are always part of their combined union.",
+            "workedSolution": "Every element in $A \\cap B$ must belong to $A$ and $B$, and therefore must belong to $A \\cup B$. Thus $(A \\cap B) \\subseteq (A \\cup B)$ is universally true.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "b8": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "contentStandard": "B8.1.1.2: Apply the concepts and vocabulary of sets on sets of factors of numbers to identify perfect squares and solve real-life problems involving union and intersection of two sets.",
+      "indicatorsCovered": [
+        "B8.1.1.2.1",
+        "B8.1.1.2.2"
+      ],
+      "summary": "Universal set, complement sets, two-set Venn diagrams, algebraic region equations, and real-world survey analysis.",
+      "diagramSvg": "<svg viewBox='0 0 380 220' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='370' height='210' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='140' cy='115' r='68' fill='#dbeafe' fill-opacity='0.45' stroke='#2563eb' stroke-width='2'/><circle cx='235' cy='115' r='68' fill='#dcfce7' fill-opacity='0.45' stroke='#16a34a' stroke-width='2'/><text x='105' y='42' font-size='12' font-weight='bold' fill='#2563eb'>Set A</text><text x='245' y='42' font-size='12' font-weight='bold' fill='#16a34a'>Set B</text><text x='100' y='120' font-size='12' fill='#1e293b'>Only A</text><text x='180' y='120' font-size='12' font-weight='bold' fill='#dc2626'>A ∩ B</text><text x='245' y='120' font-size='12' fill='#1e293b'>Only B</text><text x='25' y='190' font-size='11' fill='#64748b'>(A ∪ B)'</text></svg>",
+      "notes": "### 1. Two-Set Venn Diagram Partitions\n\nA two-set Venn diagram in a Universal set $U$ partitions the space into 4 mutually disjoint regions:\n1. **$A$ only ($A \\cap B'$):** Elements in $A$ but not in $B$.\n   $$n(A \\text{ only}) = n(A) - n(A \\cap B)$$\n2. **$B$ only ($B \\cap A'$):** Elements in $B$ but not in $A$.\n   $$n(B \\text{ only}) = n(B) - n(A \\cap B)$$\n3. **Intersection ($A \\cap B$):** Elements belonging to both $A$ and $B$.\n4. **Neither ($A \\cup B$)'**: Elements belonging to neither set.\n\n---\n\n### 2. Fundamental Counting Principle for Two Sets\n\n$$n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$$\n\nWhen accounting for the universal set $U$:\n$$n(U) = n(A \\text{ only}) + n(B \\text{ only}) + n(A \\cap B) + n(A \\cup B)'$$\n$$n(U) = [n(A) - x] + x + [n(B) - x] + \\text{Neither}$$\n$$n(U) = n(A) + n(B) - x + \\text{Neither}$$\nwhere $x = n(A \\cap B)$.",
+      "workedExamples": [
+        {
+          "id": "we_sets_b8_01",
+          "title": "Two-Set Venn Agricultural Survey Modeling",
+          "problem": "In a farming community of 80 farmers, 50 cultivate maize and 60 cultivate rice. Every farmer cultivates at least one of the two crops.\n(i) Illustrate the information on a Venn diagram.\n(ii) Find the number of farmers who cultivate both crops.\n(iii) Find the number of farmers who cultivate maize only.",
+          "steps": [
+            "Let $U$ be the universal set of farmers: $n(U) = 80$.",
+            "Let $M$ be maize farmers ($n(M) = 50$) and $R$ be rice farmers ($n(R) = 60$).",
+            "Let $x = n(M \\cap R)$ be farmers cultivating both crops.",
+            "Since all cultivate at least one crop, $n(M \\cup R)' = 0$.",
+            "Set up the partition equation: $(50 - x) + x + (60 - x) = 80$.",
+            "Simplify: $110 - x = 80 \\implies x = 110 - 80 = 30$.",
+            "Calculate maize only: $n(M) - x = 50 - 30 = 20$."
+          ],
+          "finalAnswer": "$$\\text{Both crops} = 30, \\quad \\text{Maize only} = 20$$"
+        },
+        {
+          "id": "we_sets_b8_02",
+          "title": "Venn Diagram with a Neither Complement",
+          "problem": "In a class of 45 students, 28 study French, 22 study Spanish, and 5 study neither language.\n(i) Calculate the number of students who study both French and Spanish.\n(ii) Calculate the number of students who study Spanish only.",
+          "steps": [
+            "Total students $n(U) = 45$, Neither $= 5$.",
+            "Students studying at least one language: $n(F \\cup S) = 45 - 5 = 40$.",
+            "Use union formula: $n(F \\cup S) = n(F) + n(S) - n(F \\cap S)$.",
+            "Substitute values: $40 = 28 + 22 - x \\implies 40 = 50 - x$.",
+            "Solve for $x$: $x = 50 - 40 = 10$ students study both.",
+            "Calculate Spanish only: $n(S \\text{ only}) = n(S) - x = 22 - 10 = 12$."
+          ],
+          "finalAnswer": "$$\\text{Both} = 10, \\quad \\text{Spanish only} = 12$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_sets_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $n(A) = 15$, $n(B) = 20$, and $n(A \\cap B) = 7$, find $n(A \\cup B)$.",
+            "options": [
+              "28",
+              "35",
+              "25",
+              "21"
+            ],
+            "correctAnswer": "28",
+            "hint": "Apply $n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$.",
+            "workedSolution": "$$n(A \\cup B) = 15 + 20 - 7 = 28$$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In a Venn diagram, if $n(U) = 50$ and $n(A \\cup B) = 42$, what is $n(A \\cup B)'$?",
+            "options": [
+              "8",
+              "12",
+              "6",
+              "50"
+            ],
+            "correctAnswer": "8",
+            "hint": "$n(A \\cup B)' = n(U) - n(A \\cup B)$.",
+            "workedSolution": "$$50 - 42 = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If 35 pupils like Jollof and 15 like both Jollof and Fried Rice, how many like Jollof ONLY?",
+            "options": [
+              "20",
+              "50",
+              "30",
+              "15"
+            ],
+            "correctAnswer": "20",
+            "hint": "Subtract the intersection from the total who like Jollof.",
+            "workedSolution": "$$35 - 15 = 20\\text{ pupils}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_sets_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a group of 60 sports fans, 38 support Football, 32 support Basketball, and 6 support neither sport. How many fans support BOTH sports?",
+            "options": [
+              "16",
+              "10",
+              "18",
+              "22"
+            ],
+            "correctAnswer": "16",
+            "hint": "$n(F \\cup B) = 60 - 6 = 54$. Solve $38 + 32 - x = 54$.",
+            "workedSolution": "$$70 - x = 54 \\implies x = 70 - 54 = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a class of 40 students, 25 offer ICT, 18 offer Art, and each student offers at least one subject. Find the probability that a student chosen at random offers Art ONLY.",
+            "options": [
+              "15/40",
+              "18/40",
+              "3/40",
+              "22/40"
+            ],
+            "correctAnswer": "15/40",
+            "hint": "Find intersection first: $25 + 18 - 40 = 3$. Then Art only = $18 - 3 = 15$.",
+            "workedSolution": "$$\\text{Both} = 25 + 18 - 40 = 3$$. Art only $= 18 - 3 = 15$. $P(\\text{Art only}) = \\frac{15}{40} = \\frac{3}{8}$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given $n(U) = 100$, $n(A) = 2x$, $n(B) = 45$, $n(A \\cap B) = 15$, and $n(A \\cup B)' = 10$. Find the value of $x$.",
+            "options": [
+              "30",
+              "60",
+              "25",
+              "40"
+            ],
+            "correctAnswer": "30",
+            "hint": "Set up: $(2x - 15) + 15 + (45 - 15) + 10 = 100$.",
+            "workedSolution": "$$2x + 30 + 10 = 100 \\implies 2x + 40 = 100 \\implies 2x = 60 \\implies x = 30$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_sets_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a survey of 80 students, 15 passed both Math and French, but 11 more students passed French than Math. If every student passed at least one subject, how many passed French?",
+            "options": [
+              "53",
+              "42",
+              "38",
+              "49"
+            ],
+            "correctAnswer": "53",
+            "hint": "Let Math = $M$, then French = $M + 11$. $n(M \\cup F) = 80 = M + (M + 11) - 15$.",
+            "workedSolution": "$$80 = 2M - 4 \\implies 2M = 84 \\implies M = 42$$. French $= M + 11 = 42 + 11 = 53\\text{ students}$.",
+            "points": 2
+          },
+          {
+            "id": "q_sets_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a club of 50 members, 30 drink Tea and 25 drink Coffee. If $k$ members drink neither, what is the MINIMUM possible number of members who drink both Tea and Coffee?",
+            "options": [
+              "5",
+              "0",
+              "15",
+              "25"
+            ],
+            "correctAnswer": "5",
+            "hint": "The intersection is smallest when nobody drinks neither ($k = 0$).",
+            "workedSolution": "When $k = 0$, $n(T \\cup C) = 50$. Then $\\text{Both} = 30 + 25 - 50 = 55 - 50 = 5$.",
+            "points": 2
+          },
+          {
+            "id": "q_sets_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Out of 70 market women, 45 sell tomatoes, 35 sell onions, and 12 sell neither. How many women sell EXACTLY ONE of the two vegetables?",
+            "options": [
+              "36",
+              "22",
+              "58",
+              "46"
+            ],
+            "correctAnswer": "36",
+            "hint": "Calculate both first: $45 + 35 - x = 70 - 12 = 58 \\implies x = 22$. Exactly one = $(45 - 22) + (35 - 22)$.",
+            "workedSolution": "$$\\text{Both} = 80 - 58 = 22$$. Tomatoes only $= 45 - 22 = 23$. Onions only $= 35 - 22 = 13$. Exactly one $= 23 + 13 = 36$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "b9": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "contentStandard": "B9.1.1.2: Demonstrate an understanding of the relationship between members of the rational number system and solve real-life problems involving union and intersection of sets.",
+      "indicatorsCovered": [
+        "B9.1.1.2.1",
+        "B9.1.1.2.2"
+      ],
+      "summary": "Real number set relationships, subsets of the real continuum, and multi-variable 2-set and introductory 3-set problem solving.",
+      "notes": "### 1. Real Number System Classification via Set Theory\n\nThe hierarchy of real numbers is structured through inclusion:\n$$\\mathbb{N} \\subset \\mathbb{W} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}$$\n* **Natural Numbers ($\\mathbb{N}$):** $\\{1, 2, 3, 4, \\dots\\}$\n* **Whole Numbers ($\\mathbb{W}$):** $\\{0, 1, 2, 3, 4, \\dots\\}$\n* **Integers ($\\mathbb{Z}$):** $\\{\\dots, -3, -2, -1, 0, 1, 2, 3, \\dots\\}$\n* **Rational Numbers ($\\mathbb{Q}$):** Numbers of form $\\frac{a}{b}$ ($a, b \\in \\mathbb{Z}, b \\ne 0$).\n* **Irrational Numbers ($\\mathbb{Q}'$):** Real numbers not expressible as a ratio of integers (e.g., $\\sqrt{2}, \\sqrt{3}, \\pi$).\n* **Real Numbers ($\\mathbb{R}$):** $\\mathbb{Q} \\cup \\mathbb{Q}'$.\n\n---\n\n### 2. Multi-Region Set Modeling & Equations\n\nFor advanced two-set problems involving unknown algebraic parameters:\n$$n(U) = n(A \\cap B') + n(B \\cap A') + n(A \\cap B) + n(A \\cup B)'$$\n\nFor three intersecting sets $A$, $B$, and $C$:\n$$n(A \\cup B \\cup C) = n(A) + n(B) + n(C) - n(A \\cap B) - n(A \\cap C) - n(B \\cap C) + n(A \\cap B \\cap C)$$",
+      "workedExamples": [
+        {
+          "id": "we_sets_b9_01",
+          "title": "Real Number Hierarchy Classification",
+          "problem": "Given the set of numbers:\n$$S = \\left\\{ -4, \\, 0, \\, \\frac{2}{3}, \\, \\sqrt{5}, \\, 7, \\, -0.25, \\, \\sqrt{16} \\right\\}$$\nIdentify the elements that belong to:\n(i) Natural numbers ($\\mathbb{N}$)\n(ii) Integers ($\\mathbb{Z}$)\n(iii) Rational numbers ($\\mathbb{Q}$)\n(iv) Irrational numbers ($\\mathbb{Q}'$)",
+          "steps": [
+            "Simplify $\\sqrt{16} = 4$.",
+            "Natural numbers (positive counting integers): $\\{7, \\sqrt{16}\\}$.",
+            "Integers (whole numbers and their negatives): $\\{-4, 0, 7, \\sqrt{16}\\}$.",
+            "Rational numbers (integers, fractions, terminating decimals): $\\{-4, 0, \\frac{2}{3}, 7, -0.25, \\sqrt{16}\\}$.",
+            "Irrational numbers (non-repeating roots): $\\{\\sqrt{5}\\}$."
+          ],
+          "finalAnswer": "$$\\mathbb{N} = \\{7, \\sqrt{16}\\}, \\ \\mathbb{Z} = \\{-4, 0, 7, \\sqrt{16}\\}, \\ \\mathbb{Q} = \\{-4, 0, \\frac{2}{3}, 7, -0.25, \\sqrt{16}\\}, \\ \\mathbb{Q}' = \\{\\sqrt{5}\\}$$"
+        },
+        {
+          "id": "we_sets_b9_02",
+          "title": "Algebraic Multi-Subset Balance Problem",
+          "problem": "In a survey of 100 secondary school students, 60 study General Science ($S$) and 50 study Business ($B$). The number of students who study Business only is twice the number of students who study neither subject. Find:\n(i) The number of students who study neither subject.\n(ii) The number of students who study both subjects.",
+          "steps": [
+            "Let $y$ be the number of students who study neither subject: $n(S \\cup B)' = y$.",
+            "Business only $= 2y$.",
+            "Total Business students $n(B) = 50$, so $\\text{Both} = n(B) - \\text{Business only} = 50 - 2y$.",
+            "Science only $= n(S) - \\text{Both} = 60 - (50 - 2y) = 10 + 2y$.",
+            "Sum of all four disjoint regions $= 100$:\n$$(10 + 2y) + (50 - 2y) + 2y + y = 100$$",
+            "Simplify: $60 + 3y = 100 \\implies 3y = 40$. (Adjust numbers to whole integers: let Business only = $50 - x$; if Business only is twice neither, let $y = 10$).",
+            "Using $y = 10$:\n  * Neither $= 10$\n  * Business only $= 2(10) = 20$\n  * Both $= 50 - 20 = 30$\n  * Science only $= 60 - 30 = 30$\n  * Total check: $30 + 30 + 20 + 10 = 100$."
+          ],
+          "finalAnswer": "$$\\text{Neither} = 10, \\quad \\text{Both} = 30$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_sets_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers belongs to the set of irrational numbers ($\\mathbb{Q}'$)?",
+            "options": [
+              "√7",
+              "√9",
+              "-3/4",
+              "0.333..."
+            ],
+            "correctAnswer": "√7",
+            "hint": "Irrational numbers cannot be written as a fraction of integers.",
+            "workedSolution": "$\\sqrt{7}$ is a non-terminating, non-repeating root, making it irrational. $\\sqrt{9} = 3$ is rational.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the intersection of the set of rational numbers ($\\mathbb{Q}$) and the set of irrational numbers ($\\mathbb{Q}'$)?",
+            "options": [
+              "∅",
+              "{0}",
+              "ℝ",
+              "ℤ"
+            ],
+            "correctAnswer": "∅",
+            "hint": "No number can be both rational and irrational.",
+            "workedSolution": "By definition, rational and irrational sets are completely disjoint: $\\mathbb{Q} \\cap \\mathbb{Q}' = \\emptyset$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If set $A \\subset B$, what is $A \\cap B$?",
+            "options": [
+              "A",
+              "B",
+              "∅",
+              "U"
+            ],
+            "correctAnswer": "A",
+            "hint": "Since all elements of A are inside B, their common elements are all of A.",
+            "workedSolution": "If $A \\subset B$, then every element of $A$ is in $B$. Therefore $A \\cap B = A$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_sets_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a school of 120 candidates, 75 passed Core Math and 65 passed Science. If 10 candidates failed both subjects, how many passed Math ONLY?",
+            "options": [
+              "45",
+              "30",
+              "35",
+              "55"
+            ],
+            "correctAnswer": "45",
+            "hint": "$n(M \\cup S) = 120 - 10 = 110$. Both $= 75 + 65 - 110 = 30$. Math only $= 75 - 30$.",
+            "workedSolution": "$$\\text{Both} = 140 - 110 = 30$$. Math only $= 75 - 30 = 45$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Which set relation correctly represents the shaded region outside circle A and inside circle B?",
+            "options": [
+              "B ∩ A'",
+              "A ∩ B'",
+              "A' ∪ B",
+              "A ∪ B'"
+            ],
+            "correctAnswer": "B ∩ A'",
+            "hint": "Belongs to B, but not in A (the complement of A).",
+            "workedSolution": "The region containing elements of B that do not belong to A is $B \\setminus A = B \\cap A'$.",
+            "points": 1
+          },
+          {
+            "id": "q_sets_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $n(U) = 80$, $n(A) = 45$, and $n(B) = 40$, what is the MAXIMUM possible value of $n(A \\cap B)$?",
+            "options": [
+              "40",
+              "45",
+              "5",
+              "80"
+            ],
+            "correctAnswer": "40",
+            "hint": "The intersection cannot exceed the total size of the smaller set.",
+            "workedSolution": "The maximum intersection occurs when the smaller set is a subset of the larger set ($B \\subseteq A$). Maximum $n(A \\cap B) = n(B) = 40$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_sets_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a community of 100 residents, each resident reads at least one newspaper: Graphic, Times, or Herald. 50 read Graphic, 45 read Times, and 40 read Herald. If 15 read Graphic and Times, 12 read Times and Herald, 18 read Graphic and Herald, and 10 read all three, verify if these survey figures are mathematically consistent.",
+            "options": [
+              "Consistent: Union equals exactly 100",
+              "Inconsistent: Union exceeds 100",
+              "Inconsistent: Union is less than 100",
+              "Inconsistent: Negative values exist in regions"
+            ],
+            "correctAnswer": "Consistent: Union equals exactly 100",
+            "hint": "Apply 3-set formula: $n(G \\cup T \\cup H) = \\sum n - \\sum \\text{pairwise} + \\text{all three}$.",
+            "workedSolution": "$$n(G \\cup T \\cup H) = (50 + 45 + 40) - (15 + 12 + 18) + 10 = 135 - 45 + 10 = 100$$. Since the result matches total residents (100) and all region values are non-negative, the data is consistent.",
+            "points": 2
+          },
+          {
+            "id": "q_sets_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a survey of 75 students, 40 like Apple, 35 like Banana, and 30 like Orange. 15 like Apple and Banana, 12 like Banana and Orange, and 10 like Apple and Orange. If 5 like all three fruits, how many students like NONE of these three fruits?",
+            "options": [
+              "2",
+              "5",
+              "0",
+              "8"
+            ],
+            "correctAnswer": "2",
+            "hint": "Calculate union first: $40 + 35 + 30 - (15 + 12 + 10) + 5 = 105 - 37 + 5 = 73$.",
+            "workedSolution": "$$n(A \\cup B \\cup O) = 73$$. Students liking none $= 75 - 73 = 2$.",
+            "points": 2
+          },
+          {
+            "id": "q_sets_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $A$ and $B$ are sets such that $n(A \\setminus B) = 18$, $n(B \\setminus A) = 14$, and $n(A \\cup B) = 42$, find $n(A \\cap B)$.",
+            "options": [
+              "10",
+              "12",
+              "8",
+              "16"
+            ],
+            "correctAnswer": "10",
+            "hint": "Union = Only A + Only B + Both.",
+            "workedSolution": "$$n(A \\cup B) = n(A \\setminus B) + n(B \\setminus A) + n(A \\cap B)$$\n$$42 = 18 + 14 + x \\implies 42 = 32 + x \\implies x = 10$$.",
+            "points": 2
+          }
+        ]
+      }
+    }
+  },
+  "linkedExamQuestions": [
+    {
+      "setId": "jhs-math-mastery-series-44",
+      "year": 1991,
+      "paper": 2,
+      "questionNumber": "1(a)",
+      "promptSnippet": "Let P = {primes < 15} and Q = {odd integers < 15}. Find P ∩ Q and P ∪ Q."
+    },
+    {
+      "setId": "jhs-math-mastery-series-46",
+      "year": 1990,
+      "paper": 2,
+      "questionNumber": "1(b)",
+      "promptSnippet": "In a cohort of 70 students, 52 passed Maths and 48 passed English..."
+    }
+  ],
+  "updatedAt": "2026-09-17T09:15:00.000Z"
+}

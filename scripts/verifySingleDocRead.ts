@@ -12,15 +12,15 @@ if (!getApps().length && fs.existsSync(fallbackKeyPath)) {
 
 const db = getFirestore();
 
-async function checkDoc() {
-  const docRef = db.doc('global_curriculum/jhs/subjects/math/topics/topic_numbers_and_numeration');
+async function checkDoc(topicId: string = process.argv[2] || 'topic_sets_and_venn_diagrams') {
+  const docRef = db.doc(`global_curriculum/jhs/subjects/math/topics/${topicId}`);
   const snap = await docRef.get();
   const data = snap.data();
   const jsonStr = JSON.stringify(data);
   const bytes = Buffer.byteLength(jsonStr, 'utf8');
   const subcollections = await docRef.listCollections();
 
-  console.log('--- 1-DOCUMENT READ GUARANTEE AUDIT ---');
+  console.log(`\n--- 1-DOCUMENT READ GUARANTEE AUDIT: ${topicId} ---`);
   console.log('Doc exists:', snap.exists);
   console.log('Document size in bytes:', bytes, `(${(bytes / 1024).toFixed(2)} KB)`);
   console.log('Firestore limit:', '1,048,576 bytes (1 MiB)');
