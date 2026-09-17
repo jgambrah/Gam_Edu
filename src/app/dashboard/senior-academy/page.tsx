@@ -253,73 +253,7 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         sampleAnswer: "20"
     },
 
-    // Junior Secondary (JHS)
-    {
-        title: "Linear & Quadratic Equations",
-        domain: "ALGEBRA",
-        gradeTier: "Junior Secondary (JHS)",
-        meta: "4 Subtopics • 45 mins",
-        description: "Formulate and solve first and second-degree polynomial systems using factoring and the quadratic formula.",
-        difficulty: "Intermediate",
-        sampleInstruction: "Solve for the positive value of x in the quadratic expression:",
-        sampleFormula: "2x^2 - 8x + 6 = 0",
-        sampleAnswer: "3"
-    },
-    {
-        title: "Algebraic Fractions & Indices",
-        domain: "ALGEBRA",
-        gradeTier: "Junior Secondary (JHS)",
-        meta: "3 Subtopics • 35 mins",
-        description: "Simplifying rational algebraic expressions, fractional exponents, and exponential power laws.",
-        difficulty: "Advanced",
-        sampleInstruction: "Simplify and evaluate the exponential index expression:",
-        sampleFormula: "\\frac{2^3 \\times 2^4}{2^5}",
-        sampleAnswer: "4"
-    },
-    {
-        title: "Simultaneous Systems",
-        domain: "ALGEBRA",
-        gradeTier: "Junior Secondary (JHS)",
-        meta: "5 Subtopics • 50 mins",
-        description: "Solve coupled multi-variable linear equations using substitution, elimination, and graph intersections.",
-        difficulty: "Intermediate",
-        sampleInstruction: "Solve for the value of y in the simultaneous system:",
-        sampleFormula: "\\begin{cases} 2x + y = 11 \\\\ x - y = 1 \\end{cases}",
-        sampleAnswer: "3"
-    },
-    {
-        title: "Fractions, Percentages & Proportions",
-        domain: "ARITHMETIC & NUMERACY",
-        gradeTier: "Junior Secondary (JHS)",
-        meta: "4 Subtopics • 30 mins",
-        description: "Ratios, direct proportions, fraction conversions, and commercial percentage discount calculations.",
-        difficulty: "Foundation",
-        sampleInstruction: "Calculate 25% of 240 in integer format:",
-        sampleFormula: "25\\% \\times 240",
-        sampleAnswer: "60"
-    },
-    {
-        title: "Pythagorean & Trig Ratios",
-        domain: "GEOMETRY & TRIGONOMETRY",
-        gradeTier: "Junior Secondary (JHS)",
-        meta: "4 Subtopics • 45 mins",
-        description: "Right-angled triangle geometry, sine, cosine, and tangent trigonometric relationships.",
-        difficulty: "Intermediate",
-        sampleInstruction: "Calculate hypotenuse length c for a right-angled triangle where a = 3 and b = 4:",
-        sampleFormula: "c = \\sqrt{3^2 + 4^2}",
-        sampleAnswer: "5"
-    },
-    {
-        title: "Set Theory & Probability",
-        domain: "STATISTICS & PROBABILITY",
-        gradeTier: "Junior Secondary (JHS)",
-        meta: "3 Subtopics • 30 mins",
-        description: "Venn diagrams, sample spaces, union, intersection, and event outcome odds.",
-        difficulty: "Foundation",
-        sampleInstruction: "A fair 6-sided die is rolled. Calculate the probability of rolling a prime number (decimal form):",
-        sampleFormula: "P(\\text{Prime}) = \\frac{3}{6}",
-        sampleAnswer: "0.5"
-    },
+    // Junior Secondary (JHS) Exam Series (Standardized Past Papers & Mastery Sets)
     {
         title: "Junior Core Mathematics • Paper 1 (Objective Mastery)",
         domain: "ARITHMETIC & NUMERACY",
@@ -2374,13 +2308,31 @@ function MathLab({
 
     // Zero Read-Cost Client-Side Filter over merged static + dynamic sets
     const filteredModules = useMemo(() => {
-        const combined = [...SUGGESTED_MATH_MODULES];
-        dynamicSets.forEach(dyn => {
-            const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
-            if (!exists) combined.push(dyn);
-        });
+        let candidateList: SuggestedModuleCard[] = [];
 
-        return combined.filter(mod => {
+        if (viewMode === 'topical') {
+            // In Topical Practice Labs mode, strictly display canonical topical practice labs from Firestore manifest
+            const topicalCards = dynamicSets.filter(d => d.kind === 'topical' || d.format === 'topical_lab');
+            if (topicalCards.length > 0) {
+                candidateList = topicalCards;
+            } else if (activeGrade === 'Senior Secondary (SHS)') {
+                candidateList = SUGGESTED_MATH_MODULES.filter(m => m.gradeTier === activeGrade && m.kind !== 'exam_series');
+            } else {
+                candidateList = [];
+            }
+        } else {
+            // In Standard Exam Series mode, merge static exam series with dynamic exam series
+            const combined = [...SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series')];
+            dynamicSets.forEach(dyn => {
+                if (dyn.kind === 'exam_series') {
+                    const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
+                    if (!exists) combined.push(dyn);
+                }
+            });
+            candidateList = combined;
+        }
+
+        return candidateList.filter(mod => {
             // 1. Tier Match
             if (mod.gradeTier !== activeGrade) return false;
 
