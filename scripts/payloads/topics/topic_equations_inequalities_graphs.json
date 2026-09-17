@@ -14,7 +14,7 @@
   },
   "badge": "Strand 2: Algebra",
   "description": "Master linear equations, concrete balance scale models, inequalities on number lines, Cartesian slope-intercept form (y = mx + c), and simultaneous graph intersections.",
-  "totalPracticeQuestions": 309,
+  "totalPracticeQuestions": 450,
   "version": 1,
   "levels": {
     "b7": {
@@ -4961,151 +4961,2407 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_eq_b9_l01",
+            "id": "q_b9_eq_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "If two straight lines intersect at $(3, -2)$ on a Cartesian graph, what is the simultaneous solution of the equations?",
+            "prompt": "The diagram below shows the graphs of two linear equations plotted on the Cartesian plane:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='114' y1='134' x2='314' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='249' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>x + y = 5</text><line x1='114' y1='-16' x2='314' y2='124' stroke='#059669' stroke-width='2.5'/><text x='249' y='139' font-size='10' font-weight='bold' fill='#059669'>2x - y = 1</text><circle cx='214' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='214' y1='54' x2='214' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='214' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='222' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(2, 3)</text></svg><br/>What is the simultaneous solution $(x, y)$ of the two equations?",
             "options": [
-              "x = 3, y = -2",
-              "x = -2, y = 3",
-              "x = 1, y = -2",
-              "x = 3, y = 2"
+              "(2, 3)",
+              "(3, 2)",
+              "(1, 4)",
+              "(4, 1)"
             ],
-            "correctAnswer": "x = 3, y = -2",
-            "hint": "The coordinates $(x, y)$ of the point of intersection give the direct solution.",
-            "workedSolution": "The point of intersection $(x, y) = (3, -2)$ means $x = 3$ and $y = -2$.",
+            "correctAnswer": "(2, 3)",
+            "hint": "The simultaneous solution is represented by the point where the two lines intersect.",
+            "workedSolution": "The lines intersect at the point $x = 2$ and $y = 3$, so the solution is $(2, 3)$.",
             "points": 1
           },
           {
-            "id": "q_eq_b9_l02",
+            "id": "q_b9_eq_l02",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Solve: $2x \\ge 8$.",
+            "prompt": "Complete the table of values for the relation $y = 2x - 1$ when $x = 3$:<br/><br/>| $x$ | 0 | 1 | 2 | 3 |<br/>| :---: | :---: | :---: | :---: | :---: |<br/>| $y$ | -1 | 1 | 3 | **?** |",
             "options": [
-              "x ≥ 4",
+              "5",
+              "4",
+              "6",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Substitute $x = 3$ into $y = 2x - 1$.",
+            "workedSolution": "$$y = 2(3) - 1 = 6 - 1 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{4} + 2 > 5$$.",
+            "options": [
+              "x > 12",
+              "x > 28",
+              "x > 7",
+              "x < 12"
+            ],
+            "correctAnswer": "x > 12",
+            "hint": "Subtract 2 from both sides first, then multiply by 4.",
+            "workedSolution": "$$\\frac{x}{4} > 5 - 2 \\implies \\frac{x}{4} > 3 \\implies x > 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Study the graph below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='92' y1='156' x2='292' y2='-4' stroke='#2563eb' stroke-width='2.5'/><text x='227' y='-9' font-size='10' font-weight='bold' fill='#2563eb'>x - y = -1</text><line x1='92' y1='6' x2='292' y2='146' stroke='#059669' stroke-width='2.5'/><text x='227' y='161' font-size='10' font-weight='bold' fill='#059669'>x + y = 3</text><circle cx='192' cy='76' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='192' y1='76' x2='192' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='192' y1='76' x2='170' y2='76' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='200' y='68' font-size='11' font-weight='bold' fill='#dc2626'>(1, 2)</text></svg><br/>What are the values of $x$ and $y$ at the point of intersection?",
+            "options": [
+              "x = 1, y = 2",
+              "x = 2, y = 1",
+              "x = -1, y = 3",
+              "x = 0, y = 3"
+            ],
+            "correctAnswer": "x = 1, y = 2",
+            "hint": "Look at the coordinates of the highlighted red dot.",
+            "workedSolution": "The red marker sits at $x = 1$ on the horizontal axis and $y = 2$ on the vertical axis: $x = 1, y = 2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which pair of lines will NEVER intersect on the Cartesian coordinate plane?",
+            "options": [
+              "Lines with identical gradients and different y-intercepts (parallel lines)",
+              "Lines with perpendicular gradients",
+              "Lines with identical y-intercepts",
+              "Lines with negative gradients"
+            ],
+            "correctAnswer": "Lines with identical gradients and different y-intercepts (parallel lines)",
+            "hint": "Parallel lines have the same slope and never meet.",
+            "workedSolution": "Parallel lines have identical slopes ($m_1 = m_2$) and different intercepts ($c_1 \\ne c_2$), so they have no point of intersection.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve for $x$: $$\\frac{2x}{3} \\le 6$$.",
+            "options": [
+              "x ≤ 9",
               "x ≤ 4",
-              "x ≥ 16",
-              "x ≤ 16"
+              "x ≤ 18",
+              "x ≥ 9"
             ],
-            "correctAnswer": "x ≥ 4",
-            "hint": "Divide both sides by 2.",
-            "workedSolution": "$$x \\ge \\frac{8}{2} = 4$$.",
+            "correctAnswer": "x ≤ 9",
+            "hint": "Multiply by 3: $2x \\le 18$, then divide by 2.",
+            "workedSolution": "$$2x \\le 18 \\implies x \\le 9$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b9_l03",
+            "id": "q_b9_eq_l07",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "From the graph of $y = x + 4$ and $y = 6 - x$, at what point do the lines intersect?",
+            "prompt": "In a table of values for $y = 3 - x$, what is the value of $y$ when $x = -2$?",
             "options": [
-              "(1, 5)",
-              "(2, 4)",
-              "(0, 6)",
-              "(3, 3)"
+              "5",
+              "1",
+              "-5",
+              "-1"
             ],
-            "correctAnswer": "(1, 5)",
-            "hint": "Equate $x + 4 = 6 - x \\implies 2x = 2 \\implies x = 1$. Then $y = 1 + 4 = 5$.",
-            "workedSolution": "$$x + 4 = 6 - x \\implies 2x = 2 \\implies x = 1$$. $y = 1 + 4 = 5$. Point is $(1, 5)$.",
+            "correctAnswer": "5",
+            "hint": "Substitute: $y = 3 - (-2)$.",
+            "workedSolution": "$$y = 3 - (-2) = 3 + 2 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "From the graphical system:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='114' y1='134' x2='314' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='249' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>2x + y = 7</text><line x1='114' y1='-16' x2='314' y2='124' stroke='#059669' stroke-width='2.5'/><text x='249' y='139' font-size='10' font-weight='bold' fill='#059669'>x - y = -1</text><circle cx='214' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='214' y1='54' x2='214' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='214' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='222' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(2, 3)</text></svg><br/>Verify whether $(2, 3)$ satisfies $2x + y = 7$.",
+            "options": [
+              "Yes, 2(2) + 3 = 7",
+              "No, 2(2) + 3 ≠ 7",
+              "Only if x = 0",
+              "Cannot be determined"
+            ],
+            "correctAnswer": "Yes, 2(2) + 3 = 7",
+            "hint": "Substitute $x = 2$ and $y = 3$ into the equation.",
+            "workedSolution": "$$2(2) + 3 = 4 + 3 = 7$$, so the statement is verified.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the inequality: $$\\frac{x - 3}{2} < 4$$.",
+            "options": [
+              "x < 11",
+              "x < 5",
+              "x < 8",
+              "x > 11"
+            ],
+            "correctAnswer": "x < 11",
+            "hint": "Multiply both sides by 2, then add 3.",
+            "workedSolution": "$$x - 3 < 8 \\implies x < 8 + 3 \\implies x < 11$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $(k, 4)$ lies on the line $y = 2x - 2$, what is the value of $k$?",
+            "options": [
+              "3",
+              "6",
+              "1",
+              "2"
+            ],
+            "correctAnswer": "3",
+            "hint": "Substitute $y = 4$ and solve $4 = 2k - 2$.",
+            "workedSolution": "$$4 = 2k - 2 \\implies 2k = 6 \\implies k = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 3x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 3x - 5",
+              "y = -3x + 3",
+              "y = 4x + 3",
+              "y = -1/3x + 4"
+            ],
+            "correctAnswer": "y = 3x - 5",
+            "hint": "Parallel lines have the same gradient $m = 3$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 3$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x + 0$, what is $y$ when $x = 2$?",
+            "options": [
+              "2",
+              "3",
+              "1",
+              "4"
+            ],
+            "correctAnswer": "2",
+            "hint": "Substitute $x = 2$: $1(2) + 0$.",
+            "workedSolution": "$$y = 1(2) + 0 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 2 > 5$$.",
+            "options": [
+              "x > 9",
+              "x > 12",
+              "x < 9",
+              "x ≥ 9"
+            ],
+            "correctAnswer": "x > 9",
+            "hint": "Subtract 2 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 3 \\implies x > 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 0</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(3, 3)",
+              "(3, 3)",
+              "(4, 3)",
+              "(3, 2)"
+            ],
+            "correctAnswer": "(3, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 3$ and $y = 3$: $(3, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 2x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 2x - 5",
+              "y = -2x + 3",
+              "y = 3x + 3",
+              "y = -1/2x + 4"
+            ],
+            "correctAnswer": "y = 2x - 5",
+            "hint": "Parallel lines have the same gradient $m = 2$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 2$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x - 1$, what is $y$ when $x = 2$?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "3"
+            ],
+            "correctAnswer": "1",
+            "hint": "Substitute $x = 2$: $1(2) - 1$.",
+            "workedSolution": "$$y = 1(2) - 1 = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 3 > 5$$.",
+            "options": [
+              "x > 6",
+              "x > 9",
+              "x < 6",
+              "x ≥ 6"
+            ],
+            "correctAnswer": "x > 6",
+            "hint": "Subtract 3 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 2 \\implies x > 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='92' y1='134' x2='292' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='227' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 2</text><line x1='92' y1='-16' x2='292' y2='124' stroke='#059669' stroke-width='2.5'/><text x='227' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 4</text><circle cx='192' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='192' y1='54' x2='192' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='192' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='200' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(1, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(1, 3)",
+              "(3, 1)",
+              "(2, 3)",
+              "(1, 2)"
+            ],
+            "correctAnswer": "(1, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 1$ and $y = 3$: $(1, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 6x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 6x - 5",
+              "y = -6x + 3",
+              "y = 7x + 3",
+              "y = -1/6x + 4"
+            ],
+            "correctAnswer": "y = 6x - 5",
+            "hint": "Parallel lines have the same gradient $m = 6$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 6$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x - 2$, what is $y$ when $x = 2$?",
+            "options": [
+              "0",
+              "1",
+              "-1",
+              "2"
+            ],
+            "correctAnswer": "0",
+            "hint": "Substitute $x = 2$: $1(2) - 2$.",
+            "workedSolution": "$$y = 1(2) - 2 = 0$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 1 > 5$$.",
+            "options": [
+              "x > 12",
+              "x > 15",
+              "x < 12",
+              "x ≥ 12"
+            ],
+            "correctAnswer": "x > 12",
+            "hint": "Subtract 1 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 4 \\implies x > 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='114' y1='134' x2='314' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='249' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 1</text><line x1='114' y1='-16' x2='314' y2='124' stroke='#059669' stroke-width='2.5'/><text x='249' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 5</text><circle cx='214' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='214' y1='54' x2='214' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='214' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='222' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(2, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(2, 3)",
+              "(3, 2)",
+              "(3, 3)",
+              "(2, 2)"
+            ],
+            "correctAnswer": "(2, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 2$ and $y = 3$: $(2, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 5x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 5x - 5",
+              "y = -5x + 3",
+              "y = 6x + 3",
+              "y = -1/5x + 4"
+            ],
+            "correctAnswer": "y = 5x - 5",
+            "hint": "Parallel lines have the same gradient $m = 5$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 5$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x + 2$, what is $y$ when $x = 2$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Substitute $x = 2$: $1(2) + 2$.",
+            "workedSolution": "$$y = 1(2) + 2 = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 2 > 5$$.",
+            "options": [
+              "x > 9",
+              "x > 12",
+              "x < 9",
+              "x ≥ 9"
+            ],
+            "correctAnswer": "x > 9",
+            "hint": "Subtract 2 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 3 \\implies x > 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 0</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(3, 3)",
+              "(3, 3)",
+              "(4, 3)",
+              "(3, 2)"
+            ],
+            "correctAnswer": "(3, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 3$ and $y = 3$: $(3, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 4x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 4x - 5",
+              "y = -4x + 3",
+              "y = 5x + 3",
+              "y = -1/4x + 4"
+            ],
+            "correctAnswer": "y = 4x - 5",
+            "hint": "Parallel lines have the same gradient $m = 4$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 4$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x + 1$, what is $y$ when $x = 2$?",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Substitute $x = 2$: $1(2) + 1$.",
+            "workedSolution": "$$y = 1(2) + 1 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 3 > 5$$.",
+            "options": [
+              "x > 6",
+              "x > 9",
+              "x < 6",
+              "x ≥ 6"
+            ],
+            "correctAnswer": "x > 6",
+            "hint": "Subtract 3 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 2 \\implies x > 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='92' y1='134' x2='292' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='227' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 2</text><line x1='92' y1='-16' x2='292' y2='124' stroke='#059669' stroke-width='2.5'/><text x='227' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 4</text><circle cx='192' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='192' y1='54' x2='192' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='192' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='200' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(1, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(1, 3)",
+              "(3, 1)",
+              "(2, 3)",
+              "(1, 2)"
+            ],
+            "correctAnswer": "(1, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 1$ and $y = 3$: $(1, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 3x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 3x - 5",
+              "y = -3x + 3",
+              "y = 4x + 3",
+              "y = -1/3x + 4"
+            ],
+            "correctAnswer": "y = 3x - 5",
+            "hint": "Parallel lines have the same gradient $m = 3$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 3$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x + 0$, what is $y$ when $x = 2$?",
+            "options": [
+              "2",
+              "3",
+              "1",
+              "4"
+            ],
+            "correctAnswer": "2",
+            "hint": "Substitute $x = 2$: $1(2) + 0$.",
+            "workedSolution": "$$y = 1(2) + 0 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 1 > 5$$.",
+            "options": [
+              "x > 12",
+              "x > 15",
+              "x < 12",
+              "x ≥ 12"
+            ],
+            "correctAnswer": "x > 12",
+            "hint": "Subtract 1 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 4 \\implies x > 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='114' y1='134' x2='314' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='249' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 1</text><line x1='114' y1='-16' x2='314' y2='124' stroke='#059669' stroke-width='2.5'/><text x='249' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 5</text><circle cx='214' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='214' y1='54' x2='214' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='214' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='222' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(2, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(2, 3)",
+              "(3, 2)",
+              "(3, 3)",
+              "(2, 2)"
+            ],
+            "correctAnswer": "(2, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 2$ and $y = 3$: $(2, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 2x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 2x - 5",
+              "y = -2x + 3",
+              "y = 3x + 3",
+              "y = -1/2x + 4"
+            ],
+            "correctAnswer": "y = 2x - 5",
+            "hint": "Parallel lines have the same gradient $m = 2$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 2$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x - 1$, what is $y$ when $x = 2$?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "3"
+            ],
+            "correctAnswer": "1",
+            "hint": "Substitute $x = 2$: $1(2) - 1$.",
+            "workedSolution": "$$y = 1(2) - 1 = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 2 > 5$$.",
+            "options": [
+              "x > 9",
+              "x > 12",
+              "x < 9",
+              "x ≥ 9"
+            ],
+            "correctAnswer": "x > 9",
+            "hint": "Subtract 2 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 3 \\implies x > 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 0</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(3, 3)",
+              "(3, 3)",
+              "(4, 3)",
+              "(3, 2)"
+            ],
+            "correctAnswer": "(3, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 3$ and $y = 3$: $(3, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 6x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 6x - 5",
+              "y = -6x + 3",
+              "y = 7x + 3",
+              "y = -1/6x + 4"
+            ],
+            "correctAnswer": "y = 6x - 5",
+            "hint": "Parallel lines have the same gradient $m = 6$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 6$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x - 2$, what is $y$ when $x = 2$?",
+            "options": [
+              "0",
+              "1",
+              "-1",
+              "2"
+            ],
+            "correctAnswer": "0",
+            "hint": "Substitute $x = 2$: $1(2) - 2$.",
+            "workedSolution": "$$y = 1(2) - 2 = 0$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 3 > 5$$.",
+            "options": [
+              "x > 6",
+              "x > 9",
+              "x < 6",
+              "x ≥ 6"
+            ],
+            "correctAnswer": "x > 6",
+            "hint": "Subtract 3 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 2 \\implies x > 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='92' y1='134' x2='292' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='227' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 2</text><line x1='92' y1='-16' x2='292' y2='124' stroke='#059669' stroke-width='2.5'/><text x='227' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 4</text><circle cx='192' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='192' y1='54' x2='192' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='192' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='200' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(1, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(1, 3)",
+              "(3, 1)",
+              "(2, 3)",
+              "(1, 2)"
+            ],
+            "correctAnswer": "(1, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 1$ and $y = 3$: $(1, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 5x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 5x - 5",
+              "y = -5x + 3",
+              "y = 6x + 3",
+              "y = -1/5x + 4"
+            ],
+            "correctAnswer": "y = 5x - 5",
+            "hint": "Parallel lines have the same gradient $m = 5$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 5$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x + 2$, what is $y$ when $x = 2$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Substitute $x = 2$: $1(2) + 2$.",
+            "workedSolution": "$$y = 1(2) + 2 = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 1 > 5$$.",
+            "options": [
+              "x > 12",
+              "x > 15",
+              "x < 12",
+              "x ≥ 12"
+            ],
+            "correctAnswer": "x > 12",
+            "hint": "Subtract 1 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 4 \\implies x > 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='114' y1='134' x2='314' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='249' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 1</text><line x1='114' y1='-16' x2='314' y2='124' stroke='#059669' stroke-width='2.5'/><text x='249' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 5</text><circle cx='214' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='214' y1='54' x2='214' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='214' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='222' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(2, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(2, 3)",
+              "(3, 2)",
+              "(3, 3)",
+              "(2, 2)"
+            ],
+            "correctAnswer": "(2, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 2$ and $y = 3$: $(2, 3)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A line $L_1$ has the equation $y = 4x + 3$. Which of the following lines is parallel to $L_1$?",
+            "options": [
+              "y = 4x - 5",
+              "y = -4x + 3",
+              "y = 5x + 3",
+              "y = -1/4x + 4"
+            ],
+            "correctAnswer": "y = 4x - 5",
+            "hint": "Parallel lines have the same gradient $m = 4$.",
+            "workedSolution": "Two lines are parallel if and only if their gradients are equal ($m_1 = m_2 = 4$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the linear relation $y = 1x + 1$, what is $y$ when $x = 2$?",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Substitute $x = 2$: $1(2) + 1$.",
+            "workedSolution": "$$y = 1(2) + 1 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Solve the linear inequality: $$\\frac{x}{3} + 2 > 5$$.",
+            "options": [
+              "x > 9",
+              "x > 12",
+              "x < 9",
+              "x ≥ 9"
+            ],
+            "correctAnswer": "x > 9",
+            "hint": "Subtract 2 from both sides, then multiply by 3.",
+            "workedSolution": "$$\\frac{x}{3} > 3 \\implies x > 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The graphs of two linear functions intersect at the point shown below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x + 0</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Identify the coordinates of their point of intersection.",
+            "options": [
+              "(3, 3)",
+              "(3, 3)",
+              "(4, 3)",
+              "(3, 2)"
+            ],
+            "correctAnswer": "(3, 3)",
+            "hint": "Read the coordinates of the highlighted red intersection point.",
+            "workedSolution": "The point of intersection is located at $x = 3$ and $y = 3$: $(3, 3)$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_eq_b9_m01",
+            "id": "q_b9_eq_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Jane and Mark bought 8 items for $\\text{GH¢ } 28.00$. Pens cost $\\text{GH¢ } 3.00$ and notebooks cost $\\text{GH¢ } 4.00$. How many pens and notebooks did they buy?",
+            "prompt": "Solve the multi-step rational inequality: $$\\frac{2x - 1}{3} - \\frac{x + 2}{2} \\le 1$$.",
             "options": [
-              "4 pens and 4 notebooks",
-              "5 pens and 3 notebooks",
-              "6 pens and 2 notebooks",
-              "3 pens and 5 notebooks"
+              "x ≤ 14",
+              "x ≥ 14",
+              "x ≤ 10",
+              "x ≤ 8"
             ],
-            "correctAnswer": "4 pens and 4 notebooks",
-            "hint": "$p + n = 8$ and $3p + 4n = 28$.",
-            "workedSolution": "$$3(p + n) = 3(8) = 24$$\n$$(3p + 4n) - (3p + 3n) = 28 - 24 \\implies n = 4$$\n$$p = 8 - 4 = 4\\text{ pens and } 4\\text{ notebooks}$$.",
+            "correctAnswer": "x ≤ 14",
+            "hint": "Multiply every term by the LCM (6): $2(2x - 1) - 3(x + 2) \\le 6$.",
+            "workedSolution": "$$2(2x - 1) - 3(x + 2) \\le 6 \\implies 4x - 2 - 3x - 6 \\le 6$$\n$$x - 8 \\le 6 \\implies x \\le 14$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b9_m02",
+            "id": "q_b9_eq_m02",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Solve the inequality: $$\\frac{3}{2}y - \\frac{2}{5} < 5$$.",
+            "prompt": "Solve the simultaneous equations algebraically: $$\\begin{cases} 2x + y = 11 \\\\ x - y = 1 \\end{cases}$$",
             "options": [
-              "y < 3.6",
-              "y > 3.6",
-              "y < 2.5",
-              "y < 4.2"
+              "x = 4, y = 3",
+              "x = 3, y = 4",
+              "x = 5, y = 1",
+              "x = 6, y = -1"
             ],
-            "correctAnswer": "y < 3.6",
-            "hint": "Multiply through by 10: $15y - 4 < 50$.",
-            "workedSolution": "$$15y - 4 < 50 \\implies 15y < 54 \\implies y < \\frac{54}{15} = 3.6$$.",
+            "correctAnswer": "x = 4, y = 3",
+            "hint": "Add both equations to eliminate $y$: $3x = 12$.",
+            "workedSolution": "$$(2x + y) + (x - y) = 11 + 1 \\implies 3x = 12 \\implies x = 4$$\n$$4 - y = 1 \\implies y = 3$$.",
             "points": 1
           },
           {
-            "id": "q_eq_b9_m03",
+            "id": "q_b9_eq_m03",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "A man has $260\\text{ m}$ of fencing to enclose a rectangular field of width $50\\text{ m}$. What is the length of the field?",
+            "prompt": "Study the graphical simultaneous solution below:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='114' y1='134' x2='314' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='249' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>3x - y = 3</text><line x1='114' y1='-16' x2='314' y2='124' stroke='#059669' stroke-width='2.5'/><text x='249' y='139' font-size='10' font-weight='bold' fill='#059669'>x + 2y = 8</text><circle cx='214' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='214' y1='54' x2='214' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='214' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='222' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(2, 3)</text></svg><br/>Find the value of $2x + 3y$ at the intersection point.",
             "options": [
-              "80 m",
-              "60 m",
-              "70 m",
-              "90 m"
+              "13",
+              "12",
+              "15",
+              "10"
             ],
-            "correctAnswer": "80 m",
-            "hint": "$$2(l + 50) = 260$$.",
-            "workedSolution": "$$l + 50 = 130 \\implies l = 80\\text{ m}$$.",
+            "correctAnswer": "13",
+            "hint": "Identify the intersection $(x, y) = (2, 3)$ and evaluate $2(2) + 3(3)$.",
+            "workedSolution": "$$x = 2, \\ y = 3$$\n$$2(2) + 3(3) = 4 + 9 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3 - 2x}{5} > \\frac{x - 1}{2}$$.",
+            "options": [
+              "x < 11/9",
+              "x > 11/9",
+              "x < 1",
+              "x > 1"
+            ],
+            "correctAnswer": "x < 11/9",
+            "hint": "Cross-multiply by positive 10: $2(3 - 2x) > 5(x - 1)$.",
+            "workedSolution": "$$6 - 4x > 5x - 5 \\implies -9x > -11 \\implies x < \\frac{11}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A line passes through $(1, 3)$ and $(3, 7)$. At what coordinate does it intersect the line $y = 5$?",
+            "options": [
+              "(2, 5)",
+              "(3, 5)",
+              "(1, 5)",
+              "(4, 5)"
+            ],
+            "correctAnswer": "(2, 5)",
+            "hint": "Gradient $m = 2$, equation is $y = 2x + 1$. Substitute $y = 5$.",
+            "workedSolution": "$$5 = 2x + 1 \\implies 2x = 4 \\implies x = 2$$. Intersection is $(2, 5)$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.4$$.",
+            "options": [
+              "x < 4",
+              "x > 4",
+              "x ≤ 4",
+              "x < 6"
+            ],
+            "correctAnswer": "x < 4",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 4$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 4 \\implies x + 7 < 11 \\implies x < 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 3x + 4$. What is the value of $y$ at $x = 3$?",
+            "options": [
+              "13",
+              "15",
+              "12",
+              "16"
+            ],
+            "correctAnswer": "13",
+            "hint": "Substitute $x = 3$ into $y = 3(3) + 4$.",
+            "workedSolution": "$$y = 3(3) + 4 = 9 + 4 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{5x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/5",
+              "x ≥ 7/5",
+              "x ≤ 9/5",
+              "x ≤ 8/5"
+            ],
+            "correctAnswer": "x ≤ 7/5",
+            "hint": "Multiply by 4: $5x + 1 \\le 8$. Subtract 1 and divide by 5.",
+            "workedSolution": "$$5x + 1 \\le 8 \\implies 5x \\le 7 \\implies x \\le \\frac{7}{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 5 \\\\ x - y = 3 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 1",
+              "x = 1, y = 4",
+              "x = 5, y = 0",
+              "x = 4, y = 2"
+            ],
+            "correctAnswer": "x = 4, y = 1",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 5 - 4 = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.3$$.",
+            "options": [
+              "x < 3",
+              "x > 3",
+              "x ≤ 3",
+              "x < 5"
+            ],
+            "correctAnswer": "x < 3",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 3$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 3 \\implies x + 7 < 10 \\implies x < 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 4x + 4$. What is the value of $y$ at $x = 4$?",
+            "options": [
+              "20",
+              "22",
+              "19",
+              "23"
+            ],
+            "correctAnswer": "20",
+            "hint": "Substitute $x = 4$ into $y = 4(4) + 4$.",
+            "workedSolution": "$$y = 4(4) + 4 = 16 + 4 = 20$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{4x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/4",
+              "x ≥ 7/4",
+              "x ≤ 9/4",
+              "x ≤ 8/4"
+            ],
+            "correctAnswer": "x ≤ 7/4",
+            "hint": "Multiply by 4: $4x + 1 \\le 8$. Subtract 1 and divide by 4.",
+            "workedSolution": "$$4x + 1 \\le 8 \\implies 4x \\le 7 \\implies x \\le \\frac{7}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 6 \\\\ x - y = 2 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 2",
+              "x = 2, y = 4",
+              "x = 5, y = 1",
+              "x = 4, y = 3"
+            ],
+            "correctAnswer": "x = 4, y = 2",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 6 - 4 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.7$$.",
+            "options": [
+              "x < 7",
+              "x > 7",
+              "x ≤ 7",
+              "x < 9"
+            ],
+            "correctAnswer": "x < 7",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 7$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 7 \\implies x + 7 < 14 \\implies x < 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 2x + 4$. What is the value of $y$ at $x = 2$?",
+            "options": [
+              "8",
+              "10",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "8",
+            "hint": "Substitute $x = 2$ into $y = 2(2) + 4$.",
+            "workedSolution": "$$y = 2(2) + 4 = 4 + 4 = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{3x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/3",
+              "x ≥ 7/3",
+              "x ≤ 9/3",
+              "x ≤ 8/3"
+            ],
+            "correctAnswer": "x ≤ 7/3",
+            "hint": "Multiply by 4: $3x + 1 \\le 8$. Subtract 1 and divide by 3.",
+            "workedSolution": "$$3x + 1 \\le 8 \\implies 3x \\le 7 \\implies x \\le \\frac{7}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 7 \\\\ x - y = 1 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 3",
+              "x = 3, y = 4",
+              "x = 5, y = 2",
+              "x = 4, y = 4"
+            ],
+            "correctAnswer": "x = 4, y = 3",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 7 - 4 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.6$$.",
+            "options": [
+              "x < 6",
+              "x > 6",
+              "x ≤ 6",
+              "x < 8"
+            ],
+            "correctAnswer": "x < 6",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 6$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 6 \\implies x + 7 < 13 \\implies x < 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 3x + 4$. What is the value of $y$ at $x = 3$?",
+            "options": [
+              "13",
+              "15",
+              "12",
+              "16"
+            ],
+            "correctAnswer": "13",
+            "hint": "Substitute $x = 3$ into $y = 3(3) + 4$.",
+            "workedSolution": "$$y = 3(3) + 4 = 9 + 4 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{2x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/2",
+              "x ≥ 7/2",
+              "x ≤ 9/2",
+              "x ≤ 8/2"
+            ],
+            "correctAnswer": "x ≤ 7/2",
+            "hint": "Multiply by 4: $2x + 1 \\le 8$. Subtract 1 and divide by 2.",
+            "workedSolution": "$$2x + 1 \\le 8 \\implies 2x \\le 7 \\implies x \\le \\frac{7}{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 5 \\\\ x - y = 3 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 1",
+              "x = 1, y = 4",
+              "x = 5, y = 0",
+              "x = 4, y = 2"
+            ],
+            "correctAnswer": "x = 4, y = 1",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 5 - 4 = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.5$$.",
+            "options": [
+              "x < 5",
+              "x > 5",
+              "x ≤ 5",
+              "x < 7"
+            ],
+            "correctAnswer": "x < 5",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 5$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 5 \\implies x + 7 < 12 \\implies x < 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 4x + 4$. What is the value of $y$ at $x = 4$?",
+            "options": [
+              "20",
+              "22",
+              "19",
+              "23"
+            ],
+            "correctAnswer": "20",
+            "hint": "Substitute $x = 4$ into $y = 4(4) + 4$.",
+            "workedSolution": "$$y = 4(4) + 4 = 16 + 4 = 20$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{6x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/6",
+              "x ≥ 7/6",
+              "x ≤ 9/6",
+              "x ≤ 8/6"
+            ],
+            "correctAnswer": "x ≤ 7/6",
+            "hint": "Multiply by 4: $6x + 1 \\le 8$. Subtract 1 and divide by 6.",
+            "workedSolution": "$$6x + 1 \\le 8 \\implies 6x \\le 7 \\implies x \\le \\frac{7}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 6 \\\\ x - y = 2 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 2",
+              "x = 2, y = 4",
+              "x = 5, y = 1",
+              "x = 4, y = 3"
+            ],
+            "correctAnswer": "x = 4, y = 2",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 6 - 4 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.4$$.",
+            "options": [
+              "x < 4",
+              "x > 4",
+              "x ≤ 4",
+              "x < 6"
+            ],
+            "correctAnswer": "x < 4",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 4$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 4 \\implies x + 7 < 11 \\implies x < 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 2x + 4$. What is the value of $y$ at $x = 2$?",
+            "options": [
+              "8",
+              "10",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "8",
+            "hint": "Substitute $x = 2$ into $y = 2(2) + 4$.",
+            "workedSolution": "$$y = 2(2) + 4 = 4 + 4 = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{5x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/5",
+              "x ≥ 7/5",
+              "x ≤ 9/5",
+              "x ≤ 8/5"
+            ],
+            "correctAnswer": "x ≤ 7/5",
+            "hint": "Multiply by 4: $5x + 1 \\le 8$. Subtract 1 and divide by 5.",
+            "workedSolution": "$$5x + 1 \\le 8 \\implies 5x \\le 7 \\implies x \\le \\frac{7}{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 7 \\\\ x - y = 1 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 3",
+              "x = 3, y = 4",
+              "x = 5, y = 2",
+              "x = 4, y = 4"
+            ],
+            "correctAnswer": "x = 4, y = 3",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 7 - 4 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.3$$.",
+            "options": [
+              "x < 3",
+              "x > 3",
+              "x ≤ 3",
+              "x < 5"
+            ],
+            "correctAnswer": "x < 3",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 3$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 3 \\implies x + 7 < 10 \\implies x < 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 3x + 4$. What is the value of $y$ at $x = 3$?",
+            "options": [
+              "13",
+              "15",
+              "12",
+              "16"
+            ],
+            "correctAnswer": "13",
+            "hint": "Substitute $x = 3$ into $y = 3(3) + 4$.",
+            "workedSolution": "$$y = 3(3) + 4 = 9 + 4 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{4x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/4",
+              "x ≥ 7/4",
+              "x ≤ 9/4",
+              "x ≤ 8/4"
+            ],
+            "correctAnswer": "x ≤ 7/4",
+            "hint": "Multiply by 4: $4x + 1 \\le 8$. Subtract 1 and divide by 4.",
+            "workedSolution": "$$4x + 1 \\le 8 \\implies 4x \\le 7 \\implies x \\le \\frac{7}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 5 \\\\ x - y = 3 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 1",
+              "x = 1, y = 4",
+              "x = 5, y = 0",
+              "x = 4, y = 2"
+            ],
+            "correctAnswer": "x = 4, y = 1",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 5 - 4 = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.7$$.",
+            "options": [
+              "x < 7",
+              "x > 7",
+              "x ≤ 7",
+              "x < 9"
+            ],
+            "correctAnswer": "x < 7",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 7$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 7 \\implies x + 7 < 14 \\implies x < 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 4x + 4$. What is the value of $y$ at $x = 4$?",
+            "options": [
+              "20",
+              "22",
+              "19",
+              "23"
+            ],
+            "correctAnswer": "20",
+            "hint": "Substitute $x = 4$ into $y = 4(4) + 4$.",
+            "workedSolution": "$$y = 4(4) + 4 = 16 + 4 = 20$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{3x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/3",
+              "x ≥ 7/3",
+              "x ≤ 9/3",
+              "x ≤ 8/3"
+            ],
+            "correctAnswer": "x ≤ 7/3",
+            "hint": "Multiply by 4: $3x + 1 \\le 8$. Subtract 1 and divide by 3.",
+            "workedSolution": "$$3x + 1 \\le 8 \\implies 3x \\le 7 \\implies x \\le \\frac{7}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 6 \\\\ x - y = 2 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 2",
+              "x = 2, y = 4",
+              "x = 5, y = 1",
+              "x = 4, y = 3"
+            ],
+            "correctAnswer": "x = 4, y = 2",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 6 - 4 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.6$$.",
+            "options": [
+              "x < 6",
+              "x > 6",
+              "x ≤ 6",
+              "x < 8"
+            ],
+            "correctAnswer": "x < 6",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 6$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 6 \\implies x + 7 < 13 \\implies x < 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 2x + 4$. What is the value of $y$ at $x = 2$?",
+            "options": [
+              "8",
+              "10",
+              "7",
+              "11"
+            ],
+            "correctAnswer": "8",
+            "hint": "Substitute $x = 2$ into $y = 2(2) + 4$.",
+            "workedSolution": "$$y = 2(2) + 4 = 4 + 4 = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{2x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/2",
+              "x ≥ 7/2",
+              "x ≤ 9/2",
+              "x ≤ 8/2"
+            ],
+            "correctAnswer": "x ≤ 7/2",
+            "hint": "Multiply by 4: $2x + 1 \\le 8$. Subtract 1 and divide by 2.",
+            "workedSolution": "$$2x + 1 \\le 8 \\implies 2x \\le 7 \\implies x \\le \\frac{7}{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 7 \\\\ x - y = 1 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 3",
+              "x = 3, y = 4",
+              "x = 5, y = 2",
+              "x = 4, y = 4"
+            ],
+            "correctAnswer": "x = 4, y = 3",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 7 - 4 = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.5$$.",
+            "options": [
+              "x < 5",
+              "x > 5",
+              "x ≤ 5",
+              "x < 7"
+            ],
+            "correctAnswer": "x < 5",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 5$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 5 \\implies x + 7 < 12 \\implies x < 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 3x + 4$. What is the value of $y$ at $x = 3$?",
+            "options": [
+              "13",
+              "15",
+              "12",
+              "16"
+            ],
+            "correctAnswer": "13",
+            "hint": "Substitute $x = 3$ into $y = 3(3) + 4$.",
+            "workedSolution": "$$y = 3(3) + 4 = 9 + 4 = 13$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{6x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/6",
+              "x ≥ 7/6",
+              "x ≤ 9/6",
+              "x ≤ 8/6"
+            ],
+            "correctAnswer": "x ≤ 7/6",
+            "hint": "Multiply by 4: $6x + 1 \\le 8$. Subtract 1 and divide by 6.",
+            "workedSolution": "$$6x + 1 \\le 8 \\implies 6x \\le 7 \\implies x \\le \\frac{7}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 5 \\\\ x - y = 3 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 1",
+              "x = 1, y = 4",
+              "x = 5, y = 0",
+              "x = 4, y = 2"
+            ],
+            "correctAnswer": "x = 4, y = 1",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 5 - 4 = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.4$$.",
+            "options": [
+              "x < 4",
+              "x > 4",
+              "x ≤ 4",
+              "x < 6"
+            ],
+            "correctAnswer": "x < 4",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 4$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 4 \\implies x + 7 < 11 \\implies x < 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The line $L$ has equation $y = 4x + 4$. What is the value of $y$ at $x = 4$?",
+            "options": [
+              "20",
+              "22",
+              "19",
+              "23"
+            ],
+            "correctAnswer": "20",
+            "hint": "Substitute $x = 4$ into $y = 4(4) + 4$.",
+            "workedSolution": "$$y = 4(4) + 4 = 16 + 4 = 20$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $$\\frac{5x + 1}{4} \\le 2$$.",
+            "options": [
+              "x ≤ 7/5",
+              "x ≥ 7/5",
+              "x ≤ 9/5",
+              "x ≤ 8/5"
+            ],
+            "correctAnswer": "x ≤ 7/5",
+            "hint": "Multiply by 4: $5x + 1 \\le 8$. Subtract 1 and divide by 5.",
+            "workedSolution": "$$5x + 1 \\le 8 \\implies 5x \\le 7 \\implies x \\le \\frac{7}{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the simultaneous linear system: $$\\begin{cases} x + y = 6 \\\\ x - y = 2 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 2",
+              "x = 2, y = 4",
+              "x = 5, y = 1",
+              "x = 4, y = 3"
+            ],
+            "correctAnswer": "x = 4, y = 2",
+            "hint": "Add equations: $2x = 8 \\implies x = 4$. Subtract to find $y$.",
+            "workedSolution": "$$2x = 8 \\implies x = 4$$\n$$y = 6 - 4 = 2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_eq_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve the rational inequality: $$\\frac{3x + 1}{5} - \\frac{x - 1}{2} < 0.3$$.",
+            "options": [
+              "x < 3",
+              "x > 3",
+              "x ≤ 3",
+              "x < 5"
+            ],
+            "correctAnswer": "x < 3",
+            "hint": "Multiply by LCM 10: $2(3x + 1) - 5(x - 1) < 3$.",
+            "workedSolution": "$$6x + 2 - 5x + 5 < 3 \\implies x + 7 < 10 \\implies x < 3$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_eq_b9_h01",
+            "id": "q_b9_eq_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "A man paid $\\text{GH¢ } 290.00$ for 11 books. Geography books cost $\\text{GH¢ } 30.00$ each and History books cost $\\text{GH¢ } 20.00$ each. How many Geography books did he buy?",
+            "prompt": "Find the truth set of integers $x \\in \\mathbb{Z}$ that satisfy both inequalities: $$\\frac{2x - 1}{3} < 3 \\quad \\text{and} \\quad \\frac{3x + 4}{2} \\ge 5$$.",
             "options": [
-              "7",
+              "{2, 3, 4}",
+              "{2, 3, 4, 5}",
+              "{1, 2, 3, 4}",
+              "{3, 4}"
+            ],
+            "correctAnswer": "{2, 3, 4}",
+            "hint": "Inequality 1: $2x - 1 < 9 \\implies x < 5$. Inequality 2: $3x + 4 \\ge 10 \\implies 3x \\ge 6 \\implies x \\ge 2$. Combine: $2 \\le x < 5$.",
+            "workedSolution": "$$x < 5 \\quad \\text{and} \\quad x \\ge 2 \\implies 2 \\le x < 5$$\nIntegers in this range: $\\{2, 3, 4\\}$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = 2x - 1$ and $L_2: x + y = 5$ intersect at point $P$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='114' y1='134' x2='314' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='249' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = 2x - 1</text><line x1='114' y1='-16' x2='314' y2='124' stroke='#059669' stroke-width='2.5'/><text x='249' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 5</text><circle cx='214' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='214' y1='54' x2='214' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='214' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='222' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(2, 3)</text></svg><br/>Calculate the area of the triangle formed by $P$, the point where $L_2$ crosses the $x$-axis $(5, 0)$, and the origin $(0, 0)$.",
+            "options": [
+              "7.5 square units",
+              "10 square units",
+              "5 square units",
+              "15 square units"
+            ],
+            "correctAnswer": "7.5 square units",
+            "hint": "Base lies along the $x$-axis from $(0, 0)$ to $(5, 0)$ (base $= 5$). The vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Base} = 5, \\quad \\text{Height} = y_P = 3$$\n$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 5 \\times 3 = 7.5\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve the fractional simultaneous system: $$\\begin{cases} \\frac{x}{2} + \\frac{y}{3} = 4 \\\\ \\frac{x}{4} + \\frac{y}{2} = 4 \\end{cases}$$",
+            "options": [
+              "x = 4, y = 6",
+              "x = 6, y = 4",
+              "x = 2, y = 8",
+              "x = 4, y = 4"
+            ],
+            "correctAnswer": "x = 4, y = 6",
+            "hint": "Clear fractions: Eq 1: $3x + 2y = 24$. Eq 2: $x + 2y = 16$. Subtract Eq 2 from Eq 1.",
+            "workedSolution": "$$(3x + 2y) - (x + 2y) = 24 - 16 \\implies 2x = 8 \\implies x = 4$$\n$$4 + 2y = 16 \\implies 2y = 12 \\implies y = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A printer charges a fixed setup cost plus an amount per copy. For 50 copies, the total bill is $\\text{GH¢ } 35.00$; for 120 copies, the total bill is $\\text{GH¢ } 70.00$. By setting up simultaneous equations, determine the cost of printing 200 copies.",
+            "options": [
+              "GH¢ 110.00",
+              "GH¢ 105.00",
+              "GH¢ 100.00",
+              "GH¢ 120.00"
+            ],
+            "correctAnswer": "GH¢ 110.00",
+            "hint": "Let total cost $C = a + bx$. Find rate $b = \\frac{70 - 35}{120 - 50} = \\frac{35}{70} = 0.50$. Find fixed setup $a$.",
+            "workedSolution": "$$b = \\frac{70 - 35}{120 - 50} = \\frac{35}{70} = \\text{GH¢ } 0.50\\text{ per copy}$$\n$$a = 35 - 50(0.50) = 35 - 25 = \\text{GH¢ } 10.00$$\n$$C(200) = 10 + 200(0.50) = 10 + 100 = \\text{GH¢ } 110.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\frac{3(x + 1)}{4} - \\frac{x - 1}{2} \\le 2$$.",
+            "options": [
+              "x ≤ 3",
+              "x ≥ 3",
+              "x ≤ 5",
+              "x ≤ 1"
+            ],
+            "correctAnswer": "x ≤ 3",
+            "hint": "Multiply every term by 4: $3(x + 1) - 2(x - 1) \\le 8$.",
+            "workedSolution": "$$3x + 3 - 2x + 2 \\le 8 \\implies x + 5 \\le 8 \\implies x \\le 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$2 \\le 2x < 10$$?",
+            "options": [
               "4",
-              "6",
-              "5"
+              "5",
+              "3",
+              "6"
             ],
-            "correctAnswer": "7",
-            "hint": "$$30g + 20(11 - g) = 290$$.",
-            "workedSolution": "$$30g + 220 - 20g = 290 \\implies 10g = 70 \\implies g = 7$$.",
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 1 \\le x < 5. Count integers in this interval.",
+            "workedSolution": "$$\\frac{2}{2} \\le x < \\frac{10}{2} \\implies 1 \\le x < 5$$\nIntegers from 1 up to 4 total exactly 4 integers.",
             "points": 2
           },
           {
-            "id": "q_eq_b9_h02",
+            "id": "q_b9_eq_h07",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "A student scores 70 and 76 marks in two tests. What is the MINIMUM mark she must score in the third test to achieve an average of at least 80 marks?",
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 3.00$ to produce. If each card sells for $\\text{GH¢ } 6.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
             "options": [
-              "94",
-              "92",
-              "88",
-              "90"
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
             ],
-            "correctAnswer": "94",
-            "hint": "$$\\frac{70 + 76 + x}{3} \\ge 80$$.",
-            "workedSolution": "$$146 + x \\ge 240 \\implies x \\ge 240 - 146 = 94$$.",
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $6x = 75 + 3x$.",
+            "workedSolution": "$$6x - 3x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
             "points": 2
           },
           {
-            "id": "q_eq_b9_h03",
+            "id": "q_b9_eq_h08",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Solve the inequality: $$-3x - 8 > -26$$.",
+            "prompt": "Two straight lines $L_1: y = x + 4$ and $L_2: y = -x + 6$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
             "options": [
-              "x < 6",
-              "x > 6",
-              "x < -6",
-              "x > -6"
+              "1",
+              "2",
+              "0",
+              "2"
             ],
-            "correctAnswer": "x < 6",
-            "hint": "Add 8 to both sides: $-3x > -18$. Divide by $-3$ and reverse sign.",
-            "workedSolution": "$$-3x > -18 \\implies x < \\frac{-18}{-3} = 6$$.",
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 4 = -x + 6 \\implies 2x = 6 - 4$.",
+            "workedSolution": "$$x + 4 = -x + 6 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$4 \\le 2x < 12$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 2 \\le x < 6. Count integers in this interval.",
+            "workedSolution": "$$\\frac{4}{2} \\le x < \\frac{12}{2} \\implies 2 \\le x < 6$$\nIntegers from 2 up to 5 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 4.00$ to produce. If each card sells for $\\text{GH¢ } 7.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $7x = 75 + 4x$.",
+            "workedSolution": "$$7x - 4x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 3$ and $L_2: y = -x + 5$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 3 = -x + 5 \\implies 2x = 5 - 3$.",
+            "workedSolution": "$$x + 3 = -x + 5 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$6 \\le 2x < 14$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 3 \\le x < 7. Count integers in this interval.",
+            "workedSolution": "$$\\frac{6}{2} \\le x < \\frac{14}{2} \\implies 3 \\le x < 7$$\nIntegers from 3 up to 6 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 2.00$ to produce. If each card sells for $\\text{GH¢ } 5.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $5x = 75 + 2x$.",
+            "workedSolution": "$$5x - 2x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 2$ and $L_2: y = -x + 4$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 2 = -x + 4 \\implies 2x = 4 - 2$.",
+            "workedSolution": "$$x + 2 = -x + 4 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$2 \\le 2x < 10$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 1 \\le x < 5. Count integers in this interval.",
+            "workedSolution": "$$\\frac{2}{2} \\le x < \\frac{10}{2} \\implies 1 \\le x < 5$$\nIntegers from 1 up to 4 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 3.00$ to produce. If each card sells for $\\text{GH¢ } 6.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $6x = 75 + 3x$.",
+            "workedSolution": "$$6x - 3x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 1$ and $L_2: y = -x + 3$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 1 = -x + 3 \\implies 2x = 3 - 1$.",
+            "workedSolution": "$$x + 1 = -x + 3 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$4 \\le 2x < 12$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 2 \\le x < 6. Count integers in this interval.",
+            "workedSolution": "$$\\frac{4}{2} \\le x < \\frac{12}{2} \\implies 2 \\le x < 6$$\nIntegers from 2 up to 5 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 4.00$ to produce. If each card sells for $\\text{GH¢ } 7.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $7x = 75 + 4x$.",
+            "workedSolution": "$$7x - 4x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 5$ and $L_2: y = -x + 7$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 5 = -x + 7 \\implies 2x = 7 - 5$.",
+            "workedSolution": "$$x + 5 = -x + 7 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$6 \\le 2x < 14$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 3 \\le x < 7. Count integers in this interval.",
+            "workedSolution": "$$\\frac{6}{2} \\le x < \\frac{14}{2} \\implies 3 \\le x < 7$$\nIntegers from 3 up to 6 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 2.00$ to produce. If each card sells for $\\text{GH¢ } 5.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $5x = 75 + 2x$.",
+            "workedSolution": "$$5x - 2x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 4$ and $L_2: y = -x + 6$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 4 = -x + 6 \\implies 2x = 6 - 4$.",
+            "workedSolution": "$$x + 4 = -x + 6 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$2 \\le 2x < 10$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 1 \\le x < 5. Count integers in this interval.",
+            "workedSolution": "$$\\frac{2}{2} \\le x < \\frac{10}{2} \\implies 1 \\le x < 5$$\nIntegers from 1 up to 4 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 3.00$ to produce. If each card sells for $\\text{GH¢ } 6.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $6x = 75 + 3x$.",
+            "workedSolution": "$$6x - 3x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 3$ and $L_2: y = -x + 5$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 3 = -x + 5 \\implies 2x = 5 - 3$.",
+            "workedSolution": "$$x + 3 = -x + 5 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$4 \\le 2x < 12$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 2 \\le x < 6. Count integers in this interval.",
+            "workedSolution": "$$\\frac{4}{2} \\le x < \\frac{12}{2} \\implies 2 \\le x < 6$$\nIntegers from 2 up to 5 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 4.00$ to produce. If each card sells for $\\text{GH¢ } 7.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $7x = 75 + 4x$.",
+            "workedSolution": "$$7x - 4x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 2$ and $L_2: y = -x + 4$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 2 = -x + 4 \\implies 2x = 4 - 2$.",
+            "workedSolution": "$$x + 2 = -x + 4 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$6 \\le 2x < 14$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 3 \\le x < 7. Count integers in this interval.",
+            "workedSolution": "$$\\frac{6}{2} \\le x < \\frac{14}{2} \\implies 3 \\le x < 7$$\nIntegers from 3 up to 6 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 2.00$ to produce. If each card sells for $\\text{GH¢ } 5.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $5x = 75 + 2x$.",
+            "workedSolution": "$$5x - 2x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 1$ and $L_2: y = -x + 3$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 1 = -x + 3 \\implies 2x = 3 - 1$.",
+            "workedSolution": "$$x + 1 = -x + 3 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$2 \\le 2x < 10$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 1 \\le x < 5. Count integers in this interval.",
+            "workedSolution": "$$\\frac{2}{2} \\le x < \\frac{10}{2} \\implies 1 \\le x < 5$$\nIntegers from 1 up to 4 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 3.00$ to produce. If each card sells for $\\text{GH¢ } 6.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $6x = 75 + 3x$.",
+            "workedSolution": "$$6x - 3x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 5$ and $L_2: y = -x + 7$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 5 = -x + 7 \\implies 2x = 7 - 5$.",
+            "workedSolution": "$$x + 5 = -x + 7 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$4 \\le 2x < 12$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 2 \\le x < 6. Count integers in this interval.",
+            "workedSolution": "$$\\frac{4}{2} \\le x < \\frac{12}{2} \\implies 2 \\le x < 6$$\nIntegers from 2 up to 5 total exactly 4 integers.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student enterprise produces greeting cards. The fixed equipment cost is $\\text{GH¢ } 75.00$, and each card costs $\\text{GH¢ } 4.00$ to produce. If each card sells for $\\text{GH¢ } 7.00$, how many cards must be sold to break even (where Total Revenue = Total Cost)?",
+            "options": [
+              "25 cards",
+              "30 cards",
+              "20 cards",
+              "35 cards"
+            ],
+            "correctAnswer": "25 cards",
+            "hint": "Equate Revenue and Cost: $7x = 75 + 4x$.",
+            "workedSolution": "$$7x - 4x = 75 \\implies 3x = 75 \\implies x = 25\\text{ cards}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two straight lines $L_1: y = x + 4$ and $L_2: y = -x + 6$ are plotted on the Cartesian plane. What is the $x$-coordinate of their point of intersection?",
+            "options": [
+              "1",
+              "2",
+              "0",
+              "2"
+            ],
+            "correctAnswer": "1",
+            "hint": "Set equations equal: $x + 4 = -x + 6 \\implies 2x = 6 - 4$.",
+            "workedSolution": "$$x + 4 = -x + 6 \\implies 2x = 2 \\implies x = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The lines $y = x$ and $x + y = 6$ intersect at $P(3, 3)$:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='grid' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#grid)'/><line x1='15' y1='120' x2='325' y2='120' stroke='#475569' stroke-width='2'/><polygon points='325,117 333,120 325,123' fill='#475569'/><text x='328' y='135' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='170' y1='225' x2='170' y2='15' stroke='#475569' stroke-width='2'/><polygon points='167,15 170,7 173,15' fill='#475569'/><text x='178' y='15' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='158' y='134' font-size='10' fill='#64748b'>O</text><line x1='136' y1='134' x2='336' y2='-26' stroke='#2563eb' stroke-width='2.5'/><text x='271' y='-31' font-size='10' font-weight='bold' fill='#2563eb'>y = x</text><line x1='136' y1='-16' x2='336' y2='124' stroke='#059669' stroke-width='2.5'/><text x='271' y='139' font-size='10' font-weight='bold' fill='#059669'>x + y = 6</text><circle cx='236' cy='54' r='5.5' fill='#dc2626' stroke='#ffffff' stroke-width='2'/><line x1='236' y1='54' x2='236' y2='120' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><line x1='236' y1='54' x2='170' y2='54' stroke='#dc2626' stroke-width='1.5' stroke-dasharray='3'/><text x='244' y='46' font-size='11' font-weight='bold' fill='#dc2626'>(3, 3)</text></svg><br/>Calculate the area of the triangle bounded by the origin $(0, 0)$, the point $P(3, 3)$, and the $x$-intercept $(6, 0)$.",
+            "options": [
+              "9 sq units",
+              "18 sq units",
+              "11 sq units",
+              "4.5 sq units"
+            ],
+            "correctAnswer": "9 sq units",
+            "hint": "Base on the $x$-axis is 6. Vertical height is the $y$-coordinate of $P$ ($h = 3$).",
+            "workedSolution": "$$\\text{Area} = \\frac{1}{2} \\times \\text{base} \\times \\text{height} = \\frac{1}{2} \\times 6 \\times 3 = 9\\text{ sq units}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_eq_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "How many integers $x \\in \\mathbb{Z}$ satisfy the double inequality: $$6 \\le 2x < 14$$?",
+            "options": [
+              "4",
+              "5",
+              "3",
+              "6"
+            ],
+            "correctAnswer": "4",
+            "hint": "Divide all parts by 2: 3 \\le x < 7. Count integers in this interval.",
+            "workedSolution": "$$\\frac{6}{2} \\le x < \\frac{14}{2} \\implies 3 \\le x < 7$$\nIntegers from 3 up to 6 total exactly 4 integers.",
             "points": 2
           }
         ]
