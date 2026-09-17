@@ -41,70 +41,82 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // ============================================================================
-// 2. NEW PWA CACHING STRATEGY: Network-First
+// 2. PWA CACHING STRATEGY: Live-First, Never Cache Dashboard HTML
 // ============================================================================
 
-const CACHE_NAME = 'gam-edu-cache-v3';
+const CACHE_NAME = 'gam-edu-cache-v4';
 
+// Immediately take over when a new service worker is installed
 self.addEventListener('install', (event) => {
   self.skipWaiting(); 
 });
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Purge all old caches on activation
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Clearing old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
+          console.log('[SW] Purging cache:', cacheName);
+          return caches.delete(cacheName);
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim(); 
 });
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  
   if (!event.request.url.startsWith(self.location.origin)) return;
   if (event.request.url.includes('/_next/webpack-hmr')) return;
   if (event.request.url.includes('/api/')) return;
 
-  // NETWORK FIRST STRATEGY WITH AUTOMATIC CHUNK PURGE
-  event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      })
-      .catch(async () => {
-        const cachedResponse = await caches.match(event.request);
-        if (cachedResponse) return cachedResponse;
-
-        // If a Next.js JS chunk is missing from network and cache, clear cache to force fresh reload
-        if (event.request.url.includes('/_next/static/')) {
-          await caches.delete(CACHE_NAME);
-        }
-
-        // For navigation requests, fallback to root or cached dashboard if available
-        if (event.request.mode === 'navigate') {
-          const fallback = await caches.match('/dashboard') || await caches.match('/');
-          if (fallback) return fallback;
-        }
-
+  // 1. Navigation requests (HTML documents) & Dashboard routes: ALWAYS fetch live from network!
+  if (event.request.mode === 'navigate' || event.request.url.includes('/dashboard')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' }).catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
         return new Response('Offline or Network unavailable', { 
           status: 503, 
           statusText: 'Service Unavailable',
           headers: { 'Content-Type': 'text/plain' } 
         });
       })
+    );
+    return;
+  }
+
+  // 2. Static media assets (images, icons, fonts) - cache for performance
+  const isStaticMedia = event.request.url.match(/\.(png|jpg|jpeg|svg|gif|webp|ico|woff|woff2|ttf|eot)$/i);
+  if (isStaticMedia) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return networkResponse;
+        });
+      })
+    );
+    return;
+  }
+
+  // 3. Next.js script chunks and styles: Network first, never lock out new builds
+  event.respondWith(
+    fetch(event.request).catch(async () => {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+      return new Response('Resource unavailable offline', { status: 408 });
+    })
   );
 });
