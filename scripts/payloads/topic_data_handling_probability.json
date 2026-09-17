@@ -1,0 +1,1220 @@
+{
+  "id": "topic_data_handling_probability",
+  "topicId": "data_handling_probability",
+  "title": "Handling Data & Probability",
+  "subject": "Mathematics",
+  "tier": "Junior Secondary (JHS)",
+  "strand": {
+    "code": "S4",
+    "name": "STRAND 4: HANDLING DATA"
+  },
+  "subStrand": {
+    "code": "SS1 & SS2",
+    "name": "Data Collection, Presentation & Probability"
+  },
+  "badge": "Strand 4: Handling Data",
+  "description": "Master data collection instruments, frequency tables, bar & pie charts, measures of central tendency (mean, median, mode), stem-and-leaf displays, and single- & two-stage probability tree diagrams.",
+  "totalPracticeQuestions": 27,
+  "version": 1,
+  "levels": {
+    "b7": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "contentStandard": "B7.4.1.1 / B7.4.1.2 / B7.4.2.1: Collect, organize, and display ungrouped data in frequency tables, bar charts, and pie charts; calculate mean, median, and mode; evaluate likelihood of single events.",
+      "indicatorsCovered": [
+        "B7.4.1.1.1",
+        "B7.4.1.1.2",
+        "B7.4.1.1.3",
+        "B7.4.1.2.1",
+        "B7.4.1.2.2",
+        "B7.4.2.1.1",
+        "B7.4.2.1.2",
+        "B7.4.2.1.3"
+      ],
+      "summary": "Data collection methods, frequency tables, pie chart sector angles, mean/median/mode of ungrouped data, and single-event probability scale.",
+      "diagramSvg": "<svg viewBox='0 0 380 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><circle cx='130' cy='95' r='75' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M 130 95 L 130 20 A 75 75 0 0 1 205 95 Z' fill='#3b82f6' stroke='#1e293b' stroke-width='1.5'/><path d='M 130 95 L 205 95 A 75 75 0 0 1 130 170 Z' fill='#10b981' stroke='#1e293b' stroke-width='1.5'/><path d='M 130 95 L 130 170 A 75 75 0 0 1 55 95 Z' fill='#f59e0b' stroke='#1e293b' stroke-width='1.5'/><path d='M 130 95 L 55 95 A 75 75 0 0 1 130 20 Z' fill='#ef4444' stroke='#1e293b' stroke-width='1.5'/><text x='155' y='65' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><text x='155' y='135' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><text x='85' y='135' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><text x='85' y='65' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><rect x='240' y='35' width='14' height='14' fill='#3b82f6'/><text x='262' y='47' font-size='12' fill='#1e293b'>Football (25%)</text><rect x='240' y='65' width='14' height='14' fill='#10b981'/><text x='262' y='77' font-size='12' fill='#1e293b'>Athletics (25%)</text><rect x='240' y='95' width='14' height='14' fill='#f59e0b'/><text x='262' y='107' font-size='12' fill='#1e293b'>Volleyball (25%)</text><rect x='240' y='125' width='14' height='14' fill='#ef4444'/><text x='262' y='137' font-size='12' fill='#1e293b'>Basketball (25%)</text><text x='65' y='185' font-size='11' font-weight='bold' fill='#475569'>Sector Angle = (Frequency / Total) × 360°</text></svg>",
+      "notes": "### 1. Data Collection Instruments & Data Types\n\nStatistics begins by gathering information to answer empirical questions:\n* **Quantitative Data (Numerical):** Data measured in numbers.\n  * **Discrete:** Countable in whole numbers (e.g., number of students, cars sold).\n  * **Continuous:** Measurable on a continuum containing decimals/fractions (e.g., weights, heights, temperatures, time).\n* **Qualitative Data (Categorical):** Descriptive qualities or labels that cannot be measured numerically (e.g., favourite subject, blood group, gender, nationality).\n* **Collection Instruments:** Questionnaires, direct interviews, observations, experiments, and secondary databases.\n\n---\n\n### 2. Organizing Data & Pie Chart Sector Calculations\n\nA **pie chart** represents data as proportional angular sectors of a circle ($360^\\circ$):\n$$\\text{Sector Angle } (\\theta) = \\frac{\\text{Frequency of Item }(f)}{\\text{Total Frequency }\\left(\\sum f\\right)} \\times 360^\\circ$$\n\n<details>\n<summary>🔍 <b>Self-Check: Sector Angle Sum</b> (Click to inspect)</summary>\n\n> **Question:** In a class of 40 students, 10 choose Mathematics as their favorite subject. What is the angle representing Mathematics on a pie chart?\n>\n> **Calculation:**\n> $$\\theta = \\frac{10}{40} \\times 360^\\circ = \\frac{1}{4} \\times 360^\\circ = \\mathbf{90^\\circ}$$\n</details>\n\n---\n\n### 3. Measures of Central Tendency (Ungrouped Data)\n\n1. **Mean ($\\bar{x}$):** The arithmetic balance point or average:\n   $$\\bar{x} = \\frac{\\sum x}{n} = \\frac{\\text{Sum of all values}}{\\text{Total number of values}}$$\n2. **Median:** The physical middle number when values are arranged in ascending or descending order:\n   * If $n$ is **odd**, median is at position $\\frac{n + 1}{2}$.\n   * If $n$ is **even**, average the two middle numbers at positions $\\frac{n}{2}$ and $\\frac{n}{2} + 1$.\n3. **Mode:** The data value that occurs with the highest frequency.\n4. **Range:** The measure of statistical dispersion: $$\\text{Range} = \\text{Maximum Value} - \\text{Minimum Value}$$\n\n---\n\n### 4. Basic Probability of Single Events\n\nProbability measures the likelihood that a particular event $E$ will happen:\n$$P(E) = \\frac{n(E)}{n(S)} = \\frac{\\text{Number of favorable outcomes}}{\\text{Total number of possible outcomes in sample space } S}$$\n* **Scale of Likelihood:**\n  * $P(E) = 0 \\implies$ **Impossible Event** (e.g., rolling a 7 on a standard 6-sided die).\n  * $0 < P(E) < 1 \\implies$ **Possible Event** (e.g., getting heads on a coin toss).\n  * $P(E) = 1 \\implies$ **Certain Event** (e.g., tomorrow follows today).\n* **Complementary Probability:** $P(E') = 1 - P(E)$.",
+      "workedExamples": [
+        {
+          "id": "we_data_b7_01",
+          "title": "Pie Chart Sector Angle Construction from Survey",
+          "problem": "A school conducted a survey among 40 students regarding their favourite school meals:\n* Jollof Rice: 16 students\n* Waakye: 10 students\n* Banku: 8 students\n* Fried Rice: 6 students\nCalculate the sector angle representing each meal for a pie chart.\n\n<svg viewBox='0 0 340 160' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><circle cx='100' cy='80' r='60' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M 100 80 L 100 20 A 60 60 0 0 1 157 100 Z' fill='#ea580c' stroke='#1e293b'/><path d='M 100 80 L 157 100 A 60 60 0 0 1 80 137 Z' fill='#854d0e' stroke='#1e293b'/><path d='M 100 80 L 80 137 A 60 60 0 0 1 43 62 Z' fill='#0284c7' stroke='#1e293b'/><path d='M 100 80 L 43 62 A 60 60 0 0 1 100 20 Z' fill='#16a34a' stroke='#1e293b'/><text x='112' y='55' font-size='10' font-weight='bold' fill='#fff'>144°</text><text x='115' y='110' font-size='10' font-weight='bold' fill='#fff'>90°</text><text x='62' y='115' font-size='10' font-weight='bold' fill='#fff'>72°</text><text x='60' y='50' font-size='10' font-weight='bold' fill='#fff'>54°</text><rect x='185' y='30' width='12' height='12' fill='#ea580c'/><text x='205' y='40' font-size='11' fill='#334155'>Jollof (144°)</text><rect x='185' y='55' width='12' height='12' fill='#854d0e'/><text x='205' y='65' font-size='11' fill='#334155'>Waakye (90°)</text><rect x='185' y='80' width='12' height='12' fill='#0284c7'/><text x='205' y='90' font-size='11' fill='#334155'>Banku (72°)</text><rect x='185' y='105' width='12' height='12' fill='#16a34a'/><text x='205' y='115' font-size='11' fill='#334155'>Fried Rice (54°)</text></svg>",
+          "steps": [
+            "Step 1 (Why we do this: Determine total sample size ∑f): Total students $\\sum f = 16 + 10 + 8 + 6 = 40$.",
+            "Step 2 (Why we do this: Apply the sector formula to Jollof): \n  $$\\theta_{\\text{Jollof}} = \\frac{16}{40} \\times 360^\\circ = 16 \\times 9^\\circ = 144^\\circ$$",
+            "Step 3 (Why we do this: Apply the sector formula to Waakye): \n  $$\\theta_{\\text{Waakye}} = \\frac{10}{40} \\times 360^\\circ = \\frac{1}{4} \\times 360^\\circ = 90^\\circ$$",
+            "Step 4 (Why we do this: Apply the sector formula to Banku): \n  $$\\theta_{\\text{Banku}} = \\frac{8}{40} \\times 360^\\circ = 8 \\times 9^\\circ = 72^\\circ$$",
+            "Step 5 (Why we do this: Apply the sector formula to Fried Rice): \n  $$\\theta_{\\text{Fried Rice}} = \\frac{6}{40} \\times 360^\\circ = 6 \\times 9^\\circ = 54^\\circ$$",
+            "Step 6 (Why we do this: Verify sum of all sectors equals 360°): \n  $$144^\\circ + 90^\\circ + 72^\\circ + 54^\\circ = 360^\\circ$$. The angles are verified."
+          ],
+          "finalAnswer": "$$\\text{Jollof} = 144^\\circ, \\quad \\text{Waakye} = 90^\\circ, \\quad \\text{Banku} = 72^\\circ, \\quad \\text{Fried Rice} = 54^\\circ$$"
+        },
+        {
+          "id": "we_data_b7_02",
+          "title": "Calculating Mean, Median, and Mode for Ungrouped Scores",
+          "problem": "The marks obtained by 9 students in a mathematics test were:\n$$6, \\, 8, \\, 4, \\, 7, \\, 5, \\, 8, \\, 9, \\, 5, \\, 8$$\nFind: (i) the mean, (ii) the median, (iii) the mode.",
+          "steps": [
+            "Step 1 (Why we do this: Compute the sum of all values for the Mean): \n  $$\\sum x = 6 + 8 + 4 + 7 + 5 + 8 + 9 + 5 + 8 = 60$$\n  $$\\bar{x} = \\frac{\\sum x}{n} = \\frac{60}{9} = 6\\frac{6}{9} = 6\\frac{2}{3} \\approx 6.67$$",
+            "Step 2 (Why we do this: Arrange data in ascending order to locate the Median): \n  $$\\text{Ordered array: } 4, \\, 5, \\, 5, \\, 6, \\, \\mathbf{7}, \\, 8, \\, 8, \\, 8, \\, 9$$",
+            "Step 3 (Why we do this: Select the middle element for n = 9 odd): Position is $\\frac{9 + 1}{2} = 5^{\\text{th}}$ item. The $5^{\\text{th}}$ number is 7. Thus, $\\text{Median} = 7$.",
+            "Step 4 (Why we do this: Identify the most frequent score for the Mode): The score 8 appears three times (more than any other mark). Thus, $\\text{Mode} = 8$."
+          ],
+          "finalAnswer": "$$\\text{Mean} = 6.67, \\quad \\text{Median} = 7, \\quad \\text{Mode} = 8$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_data_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the median of the following numbers: $15, 19, 20, 29, 36$.",
+            "options": [
+              "20",
+              "19",
+              "29",
+              "24"
+            ],
+            "correctAnswer": "20",
+            "hint": "The numbers are already ordered. Pick the middle value.",
+            "workedSolution": "With 5 values, the 3rd number is the median: $20$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A fair six-sided die is rolled once. What is the probability of rolling a number greater than 4?",
+            "options": [
+              "1/3",
+              "1/2",
+              "2/3",
+              "1/6"
+            ],
+            "correctAnswer": "1/3",
+            "hint": "Favorable outcomes are {5, 6}, which is 2 outcomes out of 6.",
+            "workedSolution": "$$P(> 4) = \\frac{2}{6} = \\frac{1}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following is an example of continuous quantitative data?",
+            "options": [
+              "The weight of bags of cocoa beans",
+              "The number of desks in a classroom",
+              "The number of goals scored in a match",
+              "The gender of voters"
+            ],
+            "correctAnswer": "The weight of bags of cocoa beans",
+            "hint": "Continuous data can take any fractional or decimal measurement.",
+            "workedSolution": "Weight is measured on a continuous scale with decimals, making it continuous quantitative data.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_data_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The mean of five numbers $8, 9, 7, 6,$ and $x$ is $8$. Find the value of $x$.",
+            "options": [
+              "10",
+              "8",
+              "12",
+              "7"
+            ],
+            "correctAnswer": "10",
+            "hint": "$$\\frac{8 + 9 + 7 + 6 + x}{5} = 8$$.",
+            "workedSolution": "$$30 + x = 40 \\implies x = 10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a pie chart representing 720 students, the sector angle for those who walk to school is $120^\\circ$. How many students walk to school?",
+            "options": [
+              "240",
+              "180",
+              "360",
+              "200"
+            ],
+            "correctAnswer": "240",
+            "hint": "$$\\frac{120^\\circ}{360^\\circ} \\times 720$$.",
+            "workedSolution": "$$\\frac{1}{3} \\times 720 = 240\\text{ students}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the median of the data set: $8, 9, 7, 6, 8, 10$.",
+            "options": [
+              "8",
+              "7.5",
+              "8.5",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Order the 6 items: $6, 7, 8, 8, 9, 10$. Average the two middle numbers: $\\frac{8 + 8}{2}$.",
+            "workedSolution": "$$\\text{Middle two values are 8 and 8}. \\ \\frac{8 + 8}{2} = 8$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_data_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student scored 75, 87, 90, 88, and 79 in five subjects. If she wants to achieve an overall mean score of 85 across six subjects, what must she score in the sixth test?",
+            "options": [
+              "91",
+              "89",
+              "93",
+              "86"
+            ],
+            "correctAnswer": "91",
+            "hint": "Total marks needed $= 85 \\times 6 = 510$. Subtract the sum of the five scores.",
+            "workedSolution": "$$\\text{Sum of 5 tests} = 75 + 87 + 90 + 88 + 79 = 419$$\n$$\\text{Target sum} = 85 \\times 6 = 510$$\n$$\\text{Sixth Score} = 510 - 419 = 91$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A bag contains 36 balls, some red and some blue. The probability of picking a red ball is $x$ and the probability of picking a blue ball is $5x$. How many blue balls are in the bag?",
+            "options": [
+              "30",
+              "6",
+              "25",
+              "31"
+            ],
+            "correctAnswer": "30",
+            "hint": "Sum of all probabilities $= x + 5x = 1 \\implies 6x = 1$.",
+            "workedSolution": "$$x + 5x = 1 \\implies 6x = 1 \\implies x = \\frac{1}{6}$$\n$$P(\\text{Blue}) = 5x = \\frac{5}{6}$$\n$$\\text{Number of Blue Balls} = \\frac{5}{6} \\times 36 = 30$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The mean of four numbers is 12. When a fifth number is added, the new mean becomes 14. What is the fifth number?",
+            "options": [
+              "22",
+              "20",
+              "18",
+              "24"
+            ],
+            "correctAnswer": "22",
+            "hint": "Sum of 4 numbers $= 4 \\times 12 = 48$. Sum of 5 numbers $= 5 \\times 14 = 70$.",
+            "workedSolution": "$$70 - 48 = 22$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "b8": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "contentStandard": "B8.4.1.1 / B8.4.1.2 / B8.4.2.1: Construct grouped frequency tables and stem-and-leaf plots; analyze distributions; calculate mean, median, and mode for frequency tables; evaluate two independent events using tree diagrams.",
+      "indicatorsCovered": [
+        "B8.4.1.1.1",
+        "B8.4.1.1.2",
+        "B8.4.1.1.3",
+        "B8.4.1.2.1",
+        "B8.4.1.2.2",
+        "B8.4.2.1.1",
+        "B8.4.2.1.2"
+      ],
+      "summary": "Stem-and-leaf plots, frequency tables with fx calculations, and two independent events with tree diagrams.",
+      "diagramSvg": "<svg viewBox='0 0 380 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='95' x2='150' y2='45' stroke='#2563eb' stroke-width='2.5'/><line x1='40' y1='95' x2='150' y2='145' stroke='#dc2626' stroke-width='2.5'/><text x='70' y='60' font-size='11' font-weight='bold' fill='#2563eb'>1/2 (H)</text><text x='70' y='135' font-size='11' font-weight='bold' fill='#dc2626'>1/2 (T)</text><line x1='150' y1='45' x2='260' y2='25' stroke='#2563eb' stroke-width='2'/><line x1='150' y1='45' x2='260' y2='65' stroke='#dc2626' stroke-width='2'/><text x='185' y='30' font-size='10' fill='#2563eb'>1/2 (H)</text><text x='185' y='65' font-size='10' fill='#dc2626'>1/2 (T)</text><text x='270' y='30' font-size='11' font-weight='bold' fill='#0f172a'>HH = 1/4</text><text x='270' y='70' font-size='11' font-weight='bold' fill='#0f172a'>HT = 1/4</text><line x1='150' y1='145' x2='260' y2='125' stroke='#2563eb' stroke-width='2'/><line x1='150' y1='145' x2='260' y2='165' stroke='#dc2626' stroke-width='2'/><text x='185' y='130' font-size='10' fill='#2563eb'>1/2 (H)</text><text x='185' y='165' font-size='10' fill='#dc2626'>1/2 (T)</text><text x='270' y='130' font-size='11' font-weight='bold' fill='#0f172a'>TH = 1/4</text><text x='270' y='170' font-size='11' font-weight='bold' fill='#0f172a'>TT = 1/4</text><text x='20' y='185' font-size='11' font-weight='bold' fill='#475569'>Probability Tree: P(A and B) = P(A) × P(B)</text></svg>",
+      "notes": "### 1. Stem-and-Leaf Displays (Visualizing Raw Data)\n\nA **stem-and-leaf plot** splits each quantitative observation into a **Stem** (leading digits) and a **Leaf** (trailing final digit).\n* Retains the actual raw numerical values while showing the distribution shape.\n* Leaves must always be listed in **ascending order**.\n* A **Key** is mandatory: e.g., $2 \\mid 3 = 23$.\n\n<details>\n<summary>🔍 <b>Self-Check: Interpreting Stems and Leaves</b> (Click to inspect)</summary>\n\n> **Question:** In a stem-and-leaf plot with Key $4 \\mid 2 = 42\\text{ kg}$, what values are represented by stem 5 with leaves $0, 3, 7$?\n>\n> **Answer:**\n> The observations are $\\mathbf{50\\text{ kg}, 53\\text{ kg}, \\text{ and } 57\\text{ kg}}$.\n</details>\n\n---\n\n### 2. Frequency Tables: Mean from Tabular Data\n\nWhen data values $x$ occur with frequencies $f$:\n$$\\bar{x} = \\frac{\\sum f x}{\\sum f}$$\n\n---\n\n### 3. Probability of Two Independent Events\n\nEvents $A$ and $B$ are **independent** if the occurrence of $A$ does not affect the probability of $B$:\n$$P(A \\text{ and } B) = P(A) \\times P(B)$$\n* **With replacement** $\\implies$ trials are independent.\n* **Tree diagrams** multiply probabilities along consecutive branches and add probabilities across mutually exclusive branches.",
+      "workedExamples": [
+        {
+          "id": "we_data_b8_01",
+          "title": "Mean and Median from a Discrete Frequency Table",
+          "problem": "The scores obtained in a class quiz were recorded in the table below:\n\n| Score ($x$) | 1 | 2 | 3 | 4 | 5 |\n| :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 6 | 4 | 5 | 3 |\n\n<svg viewBox='0 0 320 120' width='100%' height='110' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='95' x2='290' y2='95' stroke='#334155' stroke-width='1.5'/><rect x='45' y='75' width='30' height='20' fill='#93c5fd' stroke='#2563eb'/><text x='55' y='70' font-size='10' font-weight='bold' fill='#1e293b'>2</text><text x='55' y='110' font-size='10' fill='#475569'>x=1</text><rect x='95' y='35' width='30' height='60' fill='#3b82f6' stroke='#1d4ed8'/><text x='105' y='30' font-size='10' font-weight='bold' fill='#1e293b'>6</text><text x='105' y='110' font-size='10' fill='#475569'>x=2</text><rect x='145' y='55' width='30' height='40' fill='#93c5fd' stroke='#2563eb'/><text x='155' y='50' font-size='10' font-weight='bold' fill='#1e293b'>4</text><text x='155' y='110' font-size='10' fill='#475569'>x=3</text><rect x='195' y='45' width='30' height='50' fill='#93c5fd' stroke='#2563eb'/><text x='205' y='40' font-size='10' font-weight='bold' fill='#1e293b'>5</text><text x='205' y='110' font-size='10' fill='#475569'>x=4</text><rect x='245' y='65' width='30' height='30' fill='#93c5fd' stroke='#2563eb'/><text x='255' y='60' font-size='10' font-weight='bold' fill='#1e293b'>3</text><text x='255' y='110' font-size='10' fill='#475569'>x=5</text></svg>\n\nCalculate:\n(i) The total number of students.\n(ii) The mean score.\n(iii) The median score.",
+          "steps": [
+            "Step 1 (Why we do this: Sum frequencies to find total candidates): \n  $$\\sum f = 2 + 6 + 4 + 5 + 3 = 20\\text{ students}$$",
+            "Step 2 (Why we do this: Multiply each score by its frequency to compute fx products): \n  * $1 \\times 2 = 2$\n  * $2 \\times 6 = 12$\n  * $3 \\times 4 = 12$\n  * $4 \\times 5 = 20$\n  * $5 \\times 3 = 15$",
+            "Step 3 (Why we do this: Sum fx products and divide by total frequency for the Mean): \n  $$\\sum fx = 2 + 12 + 12 + 20 + 15 = 61$$\n  $$\\bar{x} = \\frac{\\sum fx}{\\sum f} = \\frac{61}{20} = 3.05$$",
+            "Step 4 (Why we do this: Determine the position of the Median): Since $n = 20$ is even, the median is the average of the $10^{\\text{th}}$ and $11^{\\text{th}}$ scores.",
+            "Step 5 (Why we do this: Use cumulative frequency to identify the 10th and 11th values): \n  * Score 1: covers 1 to 2\n  * Score 2: covers 3 to 8\n  * Score 3: covers 9 to 12\n  Both the $10^{\\text{th}}$ and $11^{\\text{th}}$ scores fall under score 3. Thus, $\\text{Median} = 3$."
+          ],
+          "finalAnswer": "$$\\text{Total} = 20, \\quad \\text{Mean} = 3.05, \\quad \\text{Median} = 3$$"
+        },
+        {
+          "id": "we_data_b8_02",
+          "title": "Two Independent Events via Probability Tree",
+          "problem": "A bag contains 3 red balls and 2 green balls. A ball is drawn at random, its colour noted, and then replaced. A second ball is then drawn. Calculate:\n(i) The probability of getting two red balls ($RR$).\n(ii) The probability of getting at least one red ball.\n\n<svg viewBox='0 0 300 130' width='100%' height='120' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='65' x2='100' y2='30' stroke='#dc2626' stroke-width='2'/><line x1='20' y1='65' x2='100' y2='100' stroke='#16a34a' stroke-width='2'/><text x='45' y='42' font-size='10' font-weight='bold' fill='#dc2626'>3/5 R</text><text x='45' y='92' font-size='10' font-weight='bold' fill='#16a34a'>2/5 G</text><line x1='100' y1='30' x2='180' y2='15' stroke='#dc2626' stroke-width='1.5'/><line x1='100' y1='30' x2='180' y2='45' stroke='#16a34a' stroke-width='1.5'/><text x='130' y='20' font-size='9' fill='#dc2626'>3/5 R</text><text x='130' y='45' font-size='9' fill='#16a34a'>2/5 G</text><text x='190' y='18' font-size='10' font-weight='bold' fill='#0f172a'>RR = 9/25</text><text x='190' y='48' font-size='10' font-weight='bold' fill='#0f172a'>RG = 6/25</text><line x1='100' y1='100' x2='180' y2='85' stroke='#dc2626' stroke-width='1.5'/><line x1='100' y1='100' x2='180' y2='115' stroke='#16a34a' stroke-width='1.5'/><text x='130' y='90' font-size='9' fill='#dc2626'>3/5 R</text><text x='130' y='115' font-size='9' fill='#16a34a'>2/5 G</text><text x='190' y='88' font-size='10' font-weight='bold' fill='#0f172a'>GR = 6/25</text><text x='190' y='118' font-size='10' font-weight='bold' fill='#0f172a'>GG = 4/25</text></svg>",
+          "steps": [
+            "Step 1 (Why we do this: Determine single-draw probabilities): Total balls $= 3 + 2 = 5$. $P(R) = \\frac{3}{5}, \\ P(G) = \\frac{2}{5}$.",
+            "Step 2 (Why we do this: Replacement means trials are independent): Probabilities remain constant on the second draw.",
+            "Step 3 (Why we do this: Apply the multiplication rule for two red balls): \n  $$P(RR) = P(R) \\times P(R) = \\frac{3}{5} \\times \\frac{3}{5} = \\frac{9}{25}$$",
+            "Step 4 (Why we do this: Use complementary probability for 'at least one red'): The complement of 'at least one red' is 'no red balls' (i.e., $GG$):\n  $$P(GG) = \\frac{2}{5} \\times \\frac{2}{5} = \\frac{4}{25}$$\n  $$P(\\text{At least one Red}) = 1 - P(GG) = 1 - \\frac{4}{25} = \\frac{21}{25}$$"
+          ],
+          "finalAnswer": "$$P(RR) = \\frac{9}{25}, \\quad P(\\text{At least 1 Red}) = \\frac{21}{25}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_data_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the mode of the scores in a stem-and-leaf plot where stem 7 has leaves 1, 1, 2, 8, 8, 8?",
+            "options": [
+              "78",
+              "71",
+              "8",
+              "72"
+            ],
+            "correctAnswer": "78",
+            "hint": "Stem 7 combined with the leaf that appears most often (8).",
+            "workedSolution": "78 appears three times, which is the highest frequency.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Two fair coins are tossed simultaneously. What is the probability of obtaining two heads ($HH$)?",
+            "options": [
+              "1/4",
+              "1/2",
+              "3/4",
+              "1/8"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "Sample space $= \\{HH, HT, TH, TT\\}$.",
+            "workedSolution": "$$P(HH) = \\frac{1}{2} \\times \\frac{1}{2} = \\frac{1}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A die is rolled and a coin is tossed. How many total outcomes are in the combined sample space?",
+            "options": [
+              "12",
+              "8",
+              "6",
+              "2"
+            ],
+            "correctAnswer": "12",
+            "hint": "$$6 \\times 2$$.",
+            "workedSolution": "$$6 \\times 2 = 12\\text{ outcomes}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_data_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A team scored 2, 4, 1, and 3 goals in their first four matches. How many goals must they score in their fifth match to raise their mean to 4 goals per match?",
+            "options": [
+              "10",
+              "8",
+              "6",
+              "5"
+            ],
+            "correctAnswer": "10",
+            "hint": "Target total goals $= 4 \\times 5 = 20$. Goals so far $= 2 + 4 + 1 + 3 = 10$.",
+            "workedSolution": "$$20 - (2 + 4 + 1 + 3) = 20 - 10 = 10\\text{ goals}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A box contains 3 blue pens and 4 pink pens. A pen is drawn, replaced, and a second pen drawn. What is the probability of picking a blue pen followed by a pink pen?",
+            "options": [
+              "12/49",
+              "7/49",
+              "6/49",
+              "1/7"
+            ],
+            "correctAnswer": "12/49",
+            "hint": "$$\\frac{3}{7} \\times \\frac{4}{7}$$.",
+            "workedSolution": "$$P(B) \\times P(P) = \\frac{3}{7} \\times \\frac{4}{7} = \\frac{12}{49}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The table below shows quarterly cocoa sack sales: Q1: 29, Q2: 18, Q3: 42, Q4: 31. What is the average number of sacks sold per month for the whole year?",
+            "options": [
+              "10",
+              "30",
+              "12",
+              "15"
+            ],
+            "correctAnswer": "10",
+            "hint": "Total sacks for the year divided by 12 months.",
+            "workedSolution": "$$\\text{Total sacks} = 29 + 18 + 42 + 31 = 120\\text{ sacks}$$\n$$\\text{Per month} = \\frac{120}{12} = 10\\text{ sacks/month}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_data_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo's taxi made 8, 6, 10, 10, 9, 10, and 3 trips over seven days. Why is the median a better representative measure than the mean for reporting daily trips?",
+            "options": [
+              "The mean is distorted downward by the extreme outlier of 3 trips on Sunday",
+              "The mode cannot be computed",
+              "The median is always higher than the mean",
+              "Taxi trips must always be reported as whole numbers"
+            ],
+            "correctAnswer": "The mean is distorted downward by the extreme outlier of 3 trips on Sunday",
+            "hint": "Consider the impact of the single day with only 3 trips on the average.",
+            "workedSolution": "The mean ($56 / 7 = 8$) is pulled downward by the extreme low outlier of 3 trips, whereas the median (10) accurately reflects typical daily activity.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A spinner has 3 equal sectors: 1 Win and 2 Losses. If it is spun twice, what is the probability of winning AT LEAST once?",
+            "options": [
+              "5/9",
+              "4/9",
+              "1/9",
+              "2/3"
+            ],
+            "correctAnswer": "5/9",
+            "hint": "$$1 - P(\\text{Two Losses}) = 1 - \\left(\\frac{2}{3} \\times \\frac{2}{3}\\right)$$.",
+            "workedSolution": "$$P(LL) = \\frac{2}{3} \\times \\frac{2}{3} = \\frac{4}{9}$$\n$$P(\\text{At least 1 win}) = 1 - \\frac{4}{9} = \\frac{5}{9}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The mean of 10 numbers is 15. If each number is multiplied by 3 and then 4 is added, what is the new mean of the numbers?",
+            "options": [
+              "49",
+              "45",
+              "19",
+              "52"
+            ],
+            "correctAnswer": "49",
+            "hint": "Linear transformation of mean: $\\bar{y} = 3\\bar{x} + 4$.",
+            "workedSolution": "$$\\text{New Mean} = 3(15) + 4 = 45 + 4 = 49$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "b9": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "contentStandard": "B9.4.1.1 / B9.4.1.2 / B9.4.2.1: Construct histograms; evaluate bias and ethics in data collection; analyze effects of extreme outliers on central tendency; calculate multi-stage probability without replacement.",
+      "indicatorsCovered": [
+        "B9.4.1.1.1",
+        "B9.4.1.1.2",
+        "B9.4.1.1.3",
+        "B9.4.1.2.1",
+        "B9.4.1.2.2",
+        "B9.4.1.2.3",
+        "B9.4.2.1.1",
+        "B9.4.2.1.2"
+      ],
+      "summary": "Histograms, modal class determination, survey bias and cultural sensitivity, outlier sensitivity, and dependent probability without replacement.",
+      "diagramSvg": "<svg viewBox='0 0 380 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='160' x2='340' y2='160' stroke='#334155' stroke-width='2'/><line x1='40' y1='160' x2='40' y2='20' stroke='#334155' stroke-width='2'/><rect x='60' y='120' width='45' height='40' fill='#93c5fd' stroke='#2563eb'/><rect x='105' y='60' width='45' height='100' fill='#93c5fd' stroke='#2563eb'/><rect x='150' y='30' width='45' height='130' fill='#3b82f6' stroke='#1d4ed8'/><rect x='195' y='80' width='45' height='80' fill='#93c5fd' stroke='#2563eb'/><rect x='240' y='130' width='45' height='30' fill='#93c5fd' stroke='#2563eb'/><line x1='150' y1='30' x2='240' y2='80' stroke='#ef4444' stroke-dasharray='3'/><line x1='195' y1='30' x2='105' y2='60' stroke='#ef4444' stroke-dasharray='3'/><circle cx='169' cy='52' r='4' fill='#dc2626'/><line x1='169' y1='52' x2='169' y2='160' stroke='#dc2626' stroke-width='2'/><text x='160' y='175' font-size='11' font-weight='bold' fill='#dc2626'>Mode</text><text x='155' y='22' font-size='11' font-weight='bold' fill='#1d4ed8'>Modal Class</text><text x='65' y='192' font-size='10' fill='#64748b'>Histogram: Continuous Bins & Graphical Mode</text></svg>",
+      "notes": "### 1. Histograms & Estimating Mode Graphically\n\n* **Histogram vs. Bar Chart:**\n  * Bar charts display discrete categories with gaps between bars.\n  * **Histograms display continuous numerical data** grouped into class intervals; **there are NO gaps between adjacent bars**.\n* **Estimating the Mode Graphically from a Histogram:**\n  1. Identify the tallest bar (**Modal Class**).\n  2. Draw a diagonal line from the top-left corner of the modal bar to the top-left corner of the following bar.\n  3. Draw a second diagonal line from the top-right corner of the modal bar to the top-right corner of the preceding bar.\n  4. From the intersection point of the two diagonals, drop a vertical line down to the horizontal axis.\n  5. The value on the horizontal axis is the estimated **Mode**.\n\n---\n\n### 2. Survey Bias, Cultural Sensitivity & Ethics\n\nSound statistical collection requires avoiding bias:\n* **Leading / Loaded Questions:** Questions phrased to nudge the respondent toward a specific answer (e.g., *\"Don't you agree our school math teaching is excellent?\"*).\n* **Cultural Sensitivity:** Asking questions that offend beliefs or ignore traditions (e.g., asking about pork cooking methods in diverse communities without screening).\n* **Sample Bias:** Surveying an unrepresentative group (e.g., asking only the school soccer team about campus-wide sports injuries).\n\n---\n\n### 3. Outliers & Their Effect on Central Tendency\n\nAn **outlier** is an extreme data point far removed from the rest of the observations.\n* **Mean:** Highly sensitive to outliers; gets dragged heavily in the direction of the extreme value.\n* **Median & Mode:** Highly resistant and robust against outliers.\n\n---\n\n### 4. Probability of Dependent Events (Without Replacement)\n\nWhen items are drawn **without replacement**, the total sample space decreases by 1 on each successive trial, altering the probabilities of remaining outcomes:\n$$P(A \\text{ and } B) = P(A) \\times P(B \\mid A)$$",
+      "workedExamples": [
+        {
+          "id": "we_data_b9_01",
+          "title": "Dependent Probability without Replacement",
+          "problem": "A box contains 60 mangoes, of which some are unripe. The probability of randomly picking a ripe mango is $\\frac{3}{5}$.\n(i) How many mangoes are unripe?\n(ii) If two mangoes are picked one after the other without replacement, find the probability that BOTH mangoes are ripe.\n\n<svg viewBox='0 0 320 130' width='100%' height='120' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='65' x2='110' y2='30' stroke='#16a34a' stroke-width='2'/><line x1='20' y1='65' x2='110' y2='100' stroke='#f59e0b' stroke-width='2'/><text x='40' y='40' font-size='10' font-weight='bold' fill='#16a34a'>36/60 Ripe</text><text x='40' y='95' font-size='10' font-weight='bold' fill='#d97706'>24/60 Unripe</text><line x1='110' y1='30' x2='200' y2='15' stroke='#16a34a' stroke-width='1.5'/><line x1='110' y1='30' x2='200' y2='45' stroke='#f59e0b' stroke-width='1.5'/><text x='140' y='18' font-size='9' fill='#16a34a'>35/59 Ripe</text><text x='140' y='45' font-size='9' fill='#d97706'>24/59 Unripe</text><text x='210' y='18' font-size='10' font-weight='bold' fill='#0f172a'>R1 R2 = 21/59</text><text x='210' y='48' font-size='10' font-weight='bold' fill='#64748b'>R1 U2</text><line x1='110' y1='100' x2='200' y2='85' stroke='#16a34a' stroke-width='1.5'/><line x1='110' y1='100' x2='200' y2='115' stroke='#f59e0b' stroke-width='1.5'/><text x='140' y='90' font-size='9' fill='#16a34a'>36/59 Ripe</text><text x='140' y='115' font-size='9' fill='#d97706'>23/59 Unripe</text><text x='210' y='88' font-size='10' font-weight='bold' fill='#64748b'>U1 R2</text><text x='210' y='118' font-size='10' font-weight='bold' fill='#64748b'>U1 U2</text></svg>",
+          "steps": [
+            "Step 1 (Why we do this: Determine number of ripe and unripe mangoes): \n  $$\\text{Ripe Mangoes} = \\frac{3}{5} \\times 60 = 36$$\n  $$\\text{Unripe Mangoes} = 60 - 36 = 24$$",
+            "Step 2 (Why we do this: Probability of first draw being ripe): \n  $$P(R_1) = \\frac{36}{60} = \\frac{3}{5}$$",
+            "Step 3 (Why we do this: Decrement both ripe count and total count for second draw without replacement): After removing 1 ripe mango, 35 ripe mangoes remain out of 59 total mangoes:\n  $$P(R_2 \\mid R_1) = \\frac{35}{59}$$",
+            "Step 4 (Why we do this: Multiply conditional branch probabilities): \n  $$P(R_1 \\text{ and } R_2) = \\frac{3}{5} \\times \\frac{35}{59} = 3 \\times \\frac{7}{59} = \\frac{21}{59}$$"
+          ],
+          "finalAnswer": "$$\\text{Unripe Mangoes} = 24, \\quad P(\\text{Both Ripe}) = \\frac{21}{59}$$"
+        },
+        {
+          "id": "we_data_b9_02",
+          "title": "Impact of an Outlier on Mean versus Median",
+          "problem": "The monthly stipends of 5 interns are $\\text{GH¢ } 500, \\, 550, \\, 520, \\, 480,$ and $550$.\n(i) Calculate the original mean and median.\n(ii) If an executive director's stipend of $\\text{GH¢ } 10,000$ is mistakenly included, calculate the new mean and median, and explain which measure is more reliable.",
+          "steps": [
+            "Step 1 (Why we do this: Compute original mean): \n  $$\\sum x = 500 + 550 + 520 + 480 + 550 = 2,600$$\n  $$\\bar{x} = \\frac{2,600}{5} = \\text{GH¢ } 520.00$$",
+            "Step 2 (Why we do this: Arrange array to find original median): $480, 500, \\mathbf{520}, 550, 550$. Middle value $= \\text{GH¢ } 520.00$.",
+            "Step 3 (Why we do this: Compute new mean with outlier included): \n  $$\\text{New Sum} = 2,600 + 10,000 = 12,600$$\n  $$\\text{New Mean} = \\frac{12,600}{6} = \\text{GH¢ } 2,100.00$$",
+            "Step 4 (Why we do this: Find new median with outlier included): Ordered array: $480, 500, \\mathbf{520, 550}, 550, 10000$. Middle two are 520 and 550:\n  $$\\text{New Median} = \\frac{520 + 550}{2} = \\text{GH¢ } 535.00$$",
+            "Step 5 (Why we do this: Compare stability): The mean jumped from $\\text{GH¢ } 520$ to $\\text{GH¢ } 2,100$ (completely misrepresenting the interns' actual income), while the median moved marginally from $\\text{GH¢ } 520$ to $\\text{GH¢ } 535$. The median is far more reliable when outliers exist."
+          ],
+          "finalAnswer": "$$\\text{Original Mean} = 520, \\ \\text{Median} = 520 \\mid \\text{New Mean} = 2100, \\ \\text{Median} = 535 \\text{ (Median is robust)}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_data_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A box contains 60 mangoes and the probability of selecting a ripe mango is 3/5. How many mangoes are NOT ripe?",
+            "options": [
+              "24",
+              "36",
+              "20",
+              "15"
+            ],
+            "correctAnswer": "24",
+            "hint": "Unripe fraction $= 1 - 3/5 = 2/5$. Multiply $2/5 \\times 60$.",
+            "workedSolution": "$$\\frac{2}{5} \\times 60 = 24\\text{ mangoes}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In a histogram, what does the modal class represent?",
+            "options": [
+              "The class interval with the highest frequency (tallest bar)",
+              "The middle class interval on the horizontal axis",
+              "The average of all class frequencies",
+              "The class interval with the widest bar"
+            ],
+            "correctAnswer": "The class interval with the highest frequency (tallest bar)",
+            "hint": "Mode always corresponds to highest occurrence.",
+            "workedSolution": "The modal class is the interval containing the peak frequency, represented by the tallest bar in a histogram.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Two cards are drawn from a standard pack of 52 cards without replacement. What is the probability that the first card drawn is an Ace?",
+            "options": [
+              "4/52",
+              "1/52",
+              "2/52",
+              "4/51"
+            ],
+            "correctAnswer": "4/52",
+            "hint": "There are 4 Aces in a full deck of 52 cards.",
+            "workedSolution": "$$P(\\text{Ace}) = \\frac{4}{52} = \\frac{1}{13}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_data_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A bag contains 5 red and 3 green marbles. Two marbles are drawn one after another WITHOUT replacement. What is the probability that BOTH marbles are green?",
+            "options": [
+              "3/28",
+              "9/64",
+              "6/56",
+              "3/8"
+            ],
+            "correctAnswer": "3/28",
+            "hint": "$$P(G_1) = \\frac{3}{8}$$, $$P(G_2) = \\frac{2}{7}$$. Multiply both.",
+            "workedSolution": "$$\\frac{3}{8} \\times \\frac{2}{7} = \\frac{6}{56} = \\frac{3}{28}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Which survey question is most free from leading bias?",
+            "options": [
+              "Overall, how would you rate the quality of mathematics teaching in the school?",
+              "Don't you agree that the school mathematics teaching is excellent?",
+              "Why do you think the math classes are too difficult?",
+              "Isn't it true that homework is excessive?"
+            ],
+            "correctAnswer": "Overall, how would you rate the quality of mathematics teaching in the school?",
+            "hint": "Neutral phrasing allows respondents to provide both positive and negative ratings.",
+            "workedSolution": "Neutral open questions provide objective rating scales without nudging respondents toward a predetermined stance.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A set of raw data has a mean of 50 and a median of 48. When an extreme outlier of 250 is added, which measure of central tendency changes the most?",
+            "options": [
+              "The mean",
+              "The median",
+              "The mode",
+              "Both mean and median change equally"
+            ],
+            "correctAnswer": "The mean",
+            "hint": "The arithmetic average directly absorbs extreme values into its sum.",
+            "workedSolution": "The mean is directly computed from the sum of all values, making it highly sensitive to extreme outliers compared to position-based measures like the median.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_data_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A bag contains 3 red, 2 green, and 1 pink bottle tops. Anita picks two bottle tops at random without replacement. What is the probability of picking a Red bottle top on the first draw AND a Green bottle top on the second draw?",
+            "options": [
+              "1/5",
+              "1/6",
+              "3/10",
+              "1/12"
+            ],
+            "correctAnswer": "1/5",
+            "hint": "Total = 6. $P(R) = 3/6$. Then 5 tops remain, of which 2 are green: $P(G) = 2/5$.",
+            "workedSolution": "$$P(R_1) \\times P(G_2) = \\frac{3}{6} \\times \\frac{2}{5} = \\frac{1}{2} \\times \\frac{2}{5} = \\frac{1}{5}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In an experiment of drawing two cards from a standard 52-card deck without replacement, calculate the probability of drawing an Ace on the first draw and a King on the second draw.",
+            "options": [
+              "4/663",
+              "1/169",
+              "16/2704",
+              "1/221"
+            ],
+            "correctAnswer": "4/663",
+            "hint": "$$\\frac{4}{52} \\times \\frac{4}{51} = \\frac{1}{13} \\times \\frac{4}{51}$$.",
+            "workedSolution": "$$\\frac{4}{52} \\times \\frac{4}{51} = \\frac{1}{13} \\times \\frac{4}{51} = \\frac{4}{663}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A researcher wishes to investigate the community's knowledge regarding cholera prevention. Why is a structured face-to-face interview or survey more appropriate than an online web database?",
+            "options": [
+              "It directly reaches community members regardless of internet access or digital literacy",
+              "It is always cheaper and faster",
+              "Online databases contain false data",
+              "Interviews do not require recording responses"
+            ],
+            "correctAnswer": "It directly reaches community members regardless of internet access or digital literacy",
+            "hint": "Consider sample representation across varied socio-economic community backgrounds.",
+            "workedSolution": "Direct interviews eliminate digital-divide sample bias, allowing accurate community-wide qualitative and quantitative responses across all demographics.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "jhs1": {
+      "levelCode": "B7",
+      "gradeLabel": "Basic 7 (JHS 1)",
+      "contentStandard": "B7.4.1.1 / B7.4.1.2 / B7.4.2.1: Collect, organize, and display ungrouped data in frequency tables, bar charts, and pie charts; calculate mean, median, and mode; evaluate likelihood of single events.",
+      "indicatorsCovered": [
+        "B7.4.1.1.1",
+        "B7.4.1.1.2",
+        "B7.4.1.1.3",
+        "B7.4.1.2.1",
+        "B7.4.1.2.2",
+        "B7.4.2.1.1",
+        "B7.4.2.1.2",
+        "B7.4.2.1.3"
+      ],
+      "summary": "Data collection methods, frequency tables, pie chart sector angles, mean/median/mode of ungrouped data, and single-event probability scale.",
+      "diagramSvg": "<svg viewBox='0 0 380 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><circle cx='130' cy='95' r='75' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M 130 95 L 130 20 A 75 75 0 0 1 205 95 Z' fill='#3b82f6' stroke='#1e293b' stroke-width='1.5'/><path d='M 130 95 L 205 95 A 75 75 0 0 1 130 170 Z' fill='#10b981' stroke='#1e293b' stroke-width='1.5'/><path d='M 130 95 L 130 170 A 75 75 0 0 1 55 95 Z' fill='#f59e0b' stroke='#1e293b' stroke-width='1.5'/><path d='M 130 95 L 55 95 A 75 75 0 0 1 130 20 Z' fill='#ef4444' stroke='#1e293b' stroke-width='1.5'/><text x='155' y='65' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><text x='155' y='135' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><text x='85' y='135' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><text x='85' y='65' font-size='12' font-weight='bold' fill='#ffffff'>90°</text><rect x='240' y='35' width='14' height='14' fill='#3b82f6'/><text x='262' y='47' font-size='12' fill='#1e293b'>Football (25%)</text><rect x='240' y='65' width='14' height='14' fill='#10b981'/><text x='262' y='77' font-size='12' fill='#1e293b'>Athletics (25%)</text><rect x='240' y='95' width='14' height='14' fill='#f59e0b'/><text x='262' y='107' font-size='12' fill='#1e293b'>Volleyball (25%)</text><rect x='240' y='125' width='14' height='14' fill='#ef4444'/><text x='262' y='137' font-size='12' fill='#1e293b'>Basketball (25%)</text><text x='65' y='185' font-size='11' font-weight='bold' fill='#475569'>Sector Angle = (Frequency / Total) × 360°</text></svg>",
+      "notes": "### 1. Data Collection Instruments & Data Types\n\nStatistics begins by gathering information to answer empirical questions:\n* **Quantitative Data (Numerical):** Data measured in numbers.\n  * **Discrete:** Countable in whole numbers (e.g., number of students, cars sold).\n  * **Continuous:** Measurable on a continuum containing decimals/fractions (e.g., weights, heights, temperatures, time).\n* **Qualitative Data (Categorical):** Descriptive qualities or labels that cannot be measured numerically (e.g., favourite subject, blood group, gender, nationality).\n* **Collection Instruments:** Questionnaires, direct interviews, observations, experiments, and secondary databases.\n\n---\n\n### 2. Organizing Data & Pie Chart Sector Calculations\n\nA **pie chart** represents data as proportional angular sectors of a circle ($360^\\circ$):\n$$\\text{Sector Angle } (\\theta) = \\frac{\\text{Frequency of Item }(f)}{\\text{Total Frequency }\\left(\\sum f\\right)} \\times 360^\\circ$$\n\n<details>\n<summary>🔍 <b>Self-Check: Sector Angle Sum</b> (Click to inspect)</summary>\n\n> **Question:** In a class of 40 students, 10 choose Mathematics as their favorite subject. What is the angle representing Mathematics on a pie chart?\n>\n> **Calculation:**\n> $$\\theta = \\frac{10}{40} \\times 360^\\circ = \\frac{1}{4} \\times 360^\\circ = \\mathbf{90^\\circ}$$\n</details>\n\n---\n\n### 3. Measures of Central Tendency (Ungrouped Data)\n\n1. **Mean ($\\bar{x}$):** The arithmetic balance point or average:\n   $$\\bar{x} = \\frac{\\sum x}{n} = \\frac{\\text{Sum of all values}}{\\text{Total number of values}}$$\n2. **Median:** The physical middle number when values are arranged in ascending or descending order:\n   * If $n$ is **odd**, median is at position $\\frac{n + 1}{2}$.\n   * If $n$ is **even**, average the two middle numbers at positions $\\frac{n}{2}$ and $\\frac{n}{2} + 1$.\n3. **Mode:** The data value that occurs with the highest frequency.\n4. **Range:** The measure of statistical dispersion: $$\\text{Range} = \\text{Maximum Value} - \\text{Minimum Value}$$\n\n---\n\n### 4. Basic Probability of Single Events\n\nProbability measures the likelihood that a particular event $E$ will happen:\n$$P(E) = \\frac{n(E)}{n(S)} = \\frac{\\text{Number of favorable outcomes}}{\\text{Total number of possible outcomes in sample space } S}$$\n* **Scale of Likelihood:**\n  * $P(E) = 0 \\implies$ **Impossible Event** (e.g., rolling a 7 on a standard 6-sided die).\n  * $0 < P(E) < 1 \\implies$ **Possible Event** (e.g., getting heads on a coin toss).\n  * $P(E) = 1 \\implies$ **Certain Event** (e.g., tomorrow follows today).\n* **Complementary Probability:** $P(E') = 1 - P(E)$.",
+      "workedExamples": [
+        {
+          "id": "we_data_b7_01",
+          "title": "Pie Chart Sector Angle Construction from Survey",
+          "problem": "A school conducted a survey among 40 students regarding their favourite school meals:\n* Jollof Rice: 16 students\n* Waakye: 10 students\n* Banku: 8 students\n* Fried Rice: 6 students\nCalculate the sector angle representing each meal for a pie chart.\n\n<svg viewBox='0 0 340 160' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><circle cx='100' cy='80' r='60' fill='#f8fafc' stroke='#334155' stroke-width='2'/><path d='M 100 80 L 100 20 A 60 60 0 0 1 157 100 Z' fill='#ea580c' stroke='#1e293b'/><path d='M 100 80 L 157 100 A 60 60 0 0 1 80 137 Z' fill='#854d0e' stroke='#1e293b'/><path d='M 100 80 L 80 137 A 60 60 0 0 1 43 62 Z' fill='#0284c7' stroke='#1e293b'/><path d='M 100 80 L 43 62 A 60 60 0 0 1 100 20 Z' fill='#16a34a' stroke='#1e293b'/><text x='112' y='55' font-size='10' font-weight='bold' fill='#fff'>144°</text><text x='115' y='110' font-size='10' font-weight='bold' fill='#fff'>90°</text><text x='62' y='115' font-size='10' font-weight='bold' fill='#fff'>72°</text><text x='60' y='50' font-size='10' font-weight='bold' fill='#fff'>54°</text><rect x='185' y='30' width='12' height='12' fill='#ea580c'/><text x='205' y='40' font-size='11' fill='#334155'>Jollof (144°)</text><rect x='185' y='55' width='12' height='12' fill='#854d0e'/><text x='205' y='65' font-size='11' fill='#334155'>Waakye (90°)</text><rect x='185' y='80' width='12' height='12' fill='#0284c7'/><text x='205' y='90' font-size='11' fill='#334155'>Banku (72°)</text><rect x='185' y='105' width='12' height='12' fill='#16a34a'/><text x='205' y='115' font-size='11' fill='#334155'>Fried Rice (54°)</text></svg>",
+          "steps": [
+            "Step 1 (Why we do this: Determine total sample size ∑f): Total students $\\sum f = 16 + 10 + 8 + 6 = 40$.",
+            "Step 2 (Why we do this: Apply the sector formula to Jollof): \n  $$\\theta_{\\text{Jollof}} = \\frac{16}{40} \\times 360^\\circ = 16 \\times 9^\\circ = 144^\\circ$$",
+            "Step 3 (Why we do this: Apply the sector formula to Waakye): \n  $$\\theta_{\\text{Waakye}} = \\frac{10}{40} \\times 360^\\circ = \\frac{1}{4} \\times 360^\\circ = 90^\\circ$$",
+            "Step 4 (Why we do this: Apply the sector formula to Banku): \n  $$\\theta_{\\text{Banku}} = \\frac{8}{40} \\times 360^\\circ = 8 \\times 9^\\circ = 72^\\circ$$",
+            "Step 5 (Why we do this: Apply the sector formula to Fried Rice): \n  $$\\theta_{\\text{Fried Rice}} = \\frac{6}{40} \\times 360^\\circ = 6 \\times 9^\\circ = 54^\\circ$$",
+            "Step 6 (Why we do this: Verify sum of all sectors equals 360°): \n  $$144^\\circ + 90^\\circ + 72^\\circ + 54^\\circ = 360^\\circ$$. The angles are verified."
+          ],
+          "finalAnswer": "$$\\text{Jollof} = 144^\\circ, \\quad \\text{Waakye} = 90^\\circ, \\quad \\text{Banku} = 72^\\circ, \\quad \\text{Fried Rice} = 54^\\circ$$"
+        },
+        {
+          "id": "we_data_b7_02",
+          "title": "Calculating Mean, Median, and Mode for Ungrouped Scores",
+          "problem": "The marks obtained by 9 students in a mathematics test were:\n$$6, \\, 8, \\, 4, \\, 7, \\, 5, \\, 8, \\, 9, \\, 5, \\, 8$$\nFind: (i) the mean, (ii) the median, (iii) the mode.",
+          "steps": [
+            "Step 1 (Why we do this: Compute the sum of all values for the Mean): \n  $$\\sum x = 6 + 8 + 4 + 7 + 5 + 8 + 9 + 5 + 8 = 60$$\n  $$\\bar{x} = \\frac{\\sum x}{n} = \\frac{60}{9} = 6\\frac{6}{9} = 6\\frac{2}{3} \\approx 6.67$$",
+            "Step 2 (Why we do this: Arrange data in ascending order to locate the Median): \n  $$\\text{Ordered array: } 4, \\, 5, \\, 5, \\, 6, \\, \\mathbf{7}, \\, 8, \\, 8, \\, 8, \\, 9$$",
+            "Step 3 (Why we do this: Select the middle element for n = 9 odd): Position is $\\frac{9 + 1}{2} = 5^{\\text{th}}$ item. The $5^{\\text{th}}$ number is 7. Thus, $\\text{Median} = 7$.",
+            "Step 4 (Why we do this: Identify the most frequent score for the Mode): The score 8 appears three times (more than any other mark). Thus, $\\text{Mode} = 8$."
+          ],
+          "finalAnswer": "$$\\text{Mean} = 6.67, \\quad \\text{Median} = 7, \\quad \\text{Mode} = 8$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_data_b7_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the median of the following numbers: $15, 19, 20, 29, 36$.",
+            "options": [
+              "20",
+              "19",
+              "29",
+              "24"
+            ],
+            "correctAnswer": "20",
+            "hint": "The numbers are already ordered. Pick the middle value.",
+            "workedSolution": "With 5 values, the 3rd number is the median: $20$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A fair six-sided die is rolled once. What is the probability of rolling a number greater than 4?",
+            "options": [
+              "1/3",
+              "1/2",
+              "2/3",
+              "1/6"
+            ],
+            "correctAnswer": "1/3",
+            "hint": "Favorable outcomes are {5, 6}, which is 2 outcomes out of 6.",
+            "workedSolution": "$$P(> 4) = \\frac{2}{6} = \\frac{1}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following is an example of continuous quantitative data?",
+            "options": [
+              "The weight of bags of cocoa beans",
+              "The number of desks in a classroom",
+              "The number of goals scored in a match",
+              "The gender of voters"
+            ],
+            "correctAnswer": "The weight of bags of cocoa beans",
+            "hint": "Continuous data can take any fractional or decimal measurement.",
+            "workedSolution": "Weight is measured on a continuous scale with decimals, making it continuous quantitative data.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_data_b7_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The mean of five numbers $8, 9, 7, 6,$ and $x$ is $8$. Find the value of $x$.",
+            "options": [
+              "10",
+              "8",
+              "12",
+              "7"
+            ],
+            "correctAnswer": "10",
+            "hint": "$$\\frac{8 + 9 + 7 + 6 + x}{5} = 8$$.",
+            "workedSolution": "$$30 + x = 40 \\implies x = 10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In a pie chart representing 720 students, the sector angle for those who walk to school is $120^\\circ$. How many students walk to school?",
+            "options": [
+              "240",
+              "180",
+              "360",
+              "200"
+            ],
+            "correctAnswer": "240",
+            "hint": "$$\\frac{120^\\circ}{360^\\circ} \\times 720$$.",
+            "workedSolution": "$$\\frac{1}{3} \\times 720 = 240\\text{ students}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b7_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the median of the data set: $8, 9, 7, 6, 8, 10$.",
+            "options": [
+              "8",
+              "7.5",
+              "8.5",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Order the 6 items: $6, 7, 8, 8, 9, 10$. Average the two middle numbers: $\\frac{8 + 8}{2}$.",
+            "workedSolution": "$$\\text{Middle two values are 8 and 8}. \\ \\frac{8 + 8}{2} = 8$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_data_b7_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A student scored 75, 87, 90, 88, and 79 in five subjects. If she wants to achieve an overall mean score of 85 across six subjects, what must she score in the sixth test?",
+            "options": [
+              "91",
+              "89",
+              "93",
+              "86"
+            ],
+            "correctAnswer": "91",
+            "hint": "Total marks needed $= 85 \\times 6 = 510$. Subtract the sum of the five scores.",
+            "workedSolution": "$$\\text{Sum of 5 tests} = 75 + 87 + 90 + 88 + 79 = 419$$\n$$\\text{Target sum} = 85 \\times 6 = 510$$\n$$\\text{Sixth Score} = 510 - 419 = 91$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b7_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A bag contains 36 balls, some red and some blue. The probability of picking a red ball is $x$ and the probability of picking a blue ball is $5x$. How many blue balls are in the bag?",
+            "options": [
+              "30",
+              "6",
+              "25",
+              "31"
+            ],
+            "correctAnswer": "30",
+            "hint": "Sum of all probabilities $= x + 5x = 1 \\implies 6x = 1$.",
+            "workedSolution": "$$x + 5x = 1 \\implies 6x = 1 \\implies x = \\frac{1}{6}$$\n$$P(\\text{Blue}) = 5x = \\frac{5}{6}$$\n$$\\text{Number of Blue Balls} = \\frac{5}{6} \\times 36 = 30$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b7_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The mean of four numbers is 12. When a fifth number is added, the new mean becomes 14. What is the fifth number?",
+            "options": [
+              "22",
+              "20",
+              "18",
+              "24"
+            ],
+            "correctAnswer": "22",
+            "hint": "Sum of 4 numbers $= 4 \\times 12 = 48$. Sum of 5 numbers $= 5 \\times 14 = 70$.",
+            "workedSolution": "$$70 - 48 = 22$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "jhs2": {
+      "levelCode": "B8",
+      "gradeLabel": "Basic 8 (JHS 2)",
+      "contentStandard": "B8.4.1.1 / B8.4.1.2 / B8.4.2.1: Construct grouped frequency tables and stem-and-leaf plots; analyze distributions; calculate mean, median, and mode for frequency tables; evaluate two independent events using tree diagrams.",
+      "indicatorsCovered": [
+        "B8.4.1.1.1",
+        "B8.4.1.1.2",
+        "B8.4.1.1.3",
+        "B8.4.1.2.1",
+        "B8.4.1.2.2",
+        "B8.4.2.1.1",
+        "B8.4.2.1.2"
+      ],
+      "summary": "Stem-and-leaf plots, frequency tables with fx calculations, and two independent events with tree diagrams.",
+      "diagramSvg": "<svg viewBox='0 0 380 190' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='95' x2='150' y2='45' stroke='#2563eb' stroke-width='2.5'/><line x1='40' y1='95' x2='150' y2='145' stroke='#dc2626' stroke-width='2.5'/><text x='70' y='60' font-size='11' font-weight='bold' fill='#2563eb'>1/2 (H)</text><text x='70' y='135' font-size='11' font-weight='bold' fill='#dc2626'>1/2 (T)</text><line x1='150' y1='45' x2='260' y2='25' stroke='#2563eb' stroke-width='2'/><line x1='150' y1='45' x2='260' y2='65' stroke='#dc2626' stroke-width='2'/><text x='185' y='30' font-size='10' fill='#2563eb'>1/2 (H)</text><text x='185' y='65' font-size='10' fill='#dc2626'>1/2 (T)</text><text x='270' y='30' font-size='11' font-weight='bold' fill='#0f172a'>HH = 1/4</text><text x='270' y='70' font-size='11' font-weight='bold' fill='#0f172a'>HT = 1/4</text><line x1='150' y1='145' x2='260' y2='125' stroke='#2563eb' stroke-width='2'/><line x1='150' y1='145' x2='260' y2='165' stroke='#dc2626' stroke-width='2'/><text x='185' y='130' font-size='10' fill='#2563eb'>1/2 (H)</text><text x='185' y='165' font-size='10' fill='#dc2626'>1/2 (T)</text><text x='270' y='130' font-size='11' font-weight='bold' fill='#0f172a'>TH = 1/4</text><text x='270' y='170' font-size='11' font-weight='bold' fill='#0f172a'>TT = 1/4</text><text x='20' y='185' font-size='11' font-weight='bold' fill='#475569'>Probability Tree: P(A and B) = P(A) × P(B)</text></svg>",
+      "notes": "### 1. Stem-and-Leaf Displays (Visualizing Raw Data)\n\nA **stem-and-leaf plot** splits each quantitative observation into a **Stem** (leading digits) and a **Leaf** (trailing final digit).\n* Retains the actual raw numerical values while showing the distribution shape.\n* Leaves must always be listed in **ascending order**.\n* A **Key** is mandatory: e.g., $2 \\mid 3 = 23$.\n\n<details>\n<summary>🔍 <b>Self-Check: Interpreting Stems and Leaves</b> (Click to inspect)</summary>\n\n> **Question:** In a stem-and-leaf plot with Key $4 \\mid 2 = 42\\text{ kg}$, what values are represented by stem 5 with leaves $0, 3, 7$?\n>\n> **Answer:**\n> The observations are $\\mathbf{50\\text{ kg}, 53\\text{ kg}, \\text{ and } 57\\text{ kg}}$.\n</details>\n\n---\n\n### 2. Frequency Tables: Mean from Tabular Data\n\nWhen data values $x$ occur with frequencies $f$:\n$$\\bar{x} = \\frac{\\sum f x}{\\sum f}$$\n\n---\n\n### 3. Probability of Two Independent Events\n\nEvents $A$ and $B$ are **independent** if the occurrence of $A$ does not affect the probability of $B$:\n$$P(A \\text{ and } B) = P(A) \\times P(B)$$\n* **With replacement** $\\implies$ trials are independent.\n* **Tree diagrams** multiply probabilities along consecutive branches and add probabilities across mutually exclusive branches.",
+      "workedExamples": [
+        {
+          "id": "we_data_b8_01",
+          "title": "Mean and Median from a Discrete Frequency Table",
+          "problem": "The scores obtained in a class quiz were recorded in the table below:\n\n| Score ($x$) | 1 | 2 | 3 | 4 | 5 |\n| :---: | :---: | :---: | :---: | :---: | :---: |\n| Frequency ($f$) | 2 | 6 | 4 | 5 | 3 |\n\n<svg viewBox='0 0 320 120' width='100%' height='110' xmlns='http://www.w3.org/2000/svg'><line x1='30' y1='95' x2='290' y2='95' stroke='#334155' stroke-width='1.5'/><rect x='45' y='75' width='30' height='20' fill='#93c5fd' stroke='#2563eb'/><text x='55' y='70' font-size='10' font-weight='bold' fill='#1e293b'>2</text><text x='55' y='110' font-size='10' fill='#475569'>x=1</text><rect x='95' y='35' width='30' height='60' fill='#3b82f6' stroke='#1d4ed8'/><text x='105' y='30' font-size='10' font-weight='bold' fill='#1e293b'>6</text><text x='105' y='110' font-size='10' fill='#475569'>x=2</text><rect x='145' y='55' width='30' height='40' fill='#93c5fd' stroke='#2563eb'/><text x='155' y='50' font-size='10' font-weight='bold' fill='#1e293b'>4</text><text x='155' y='110' font-size='10' fill='#475569'>x=3</text><rect x='195' y='45' width='30' height='50' fill='#93c5fd' stroke='#2563eb'/><text x='205' y='40' font-size='10' font-weight='bold' fill='#1e293b'>5</text><text x='205' y='110' font-size='10' fill='#475569'>x=4</text><rect x='245' y='65' width='30' height='30' fill='#93c5fd' stroke='#2563eb'/><text x='255' y='60' font-size='10' font-weight='bold' fill='#1e293b'>3</text><text x='255' y='110' font-size='10' fill='#475569'>x=5</text></svg>\n\nCalculate:\n(i) The total number of students.\n(ii) The mean score.\n(iii) The median score.",
+          "steps": [
+            "Step 1 (Why we do this: Sum frequencies to find total candidates): \n  $$\\sum f = 2 + 6 + 4 + 5 + 3 = 20\\text{ students}$$",
+            "Step 2 (Why we do this: Multiply each score by its frequency to compute fx products): \n  * $1 \\times 2 = 2$\n  * $2 \\times 6 = 12$\n  * $3 \\times 4 = 12$\n  * $4 \\times 5 = 20$\n  * $5 \\times 3 = 15$",
+            "Step 3 (Why we do this: Sum fx products and divide by total frequency for the Mean): \n  $$\\sum fx = 2 + 12 + 12 + 20 + 15 = 61$$\n  $$\\bar{x} = \\frac{\\sum fx}{\\sum f} = \\frac{61}{20} = 3.05$$",
+            "Step 4 (Why we do this: Determine the position of the Median): Since $n = 20$ is even, the median is the average of the $10^{\\text{th}}$ and $11^{\\text{th}}$ scores.",
+            "Step 5 (Why we do this: Use cumulative frequency to identify the 10th and 11th values): \n  * Score 1: covers 1 to 2\n  * Score 2: covers 3 to 8\n  * Score 3: covers 9 to 12\n  Both the $10^{\\text{th}}$ and $11^{\\text{th}}$ scores fall under score 3. Thus, $\\text{Median} = 3$."
+          ],
+          "finalAnswer": "$$\\text{Total} = 20, \\quad \\text{Mean} = 3.05, \\quad \\text{Median} = 3$$"
+        },
+        {
+          "id": "we_data_b8_02",
+          "title": "Two Independent Events via Probability Tree",
+          "problem": "A bag contains 3 red balls and 2 green balls. A ball is drawn at random, its colour noted, and then replaced. A second ball is then drawn. Calculate:\n(i) The probability of getting two red balls ($RR$).\n(ii) The probability of getting at least one red ball.\n\n<svg viewBox='0 0 300 130' width='100%' height='120' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='65' x2='100' y2='30' stroke='#dc2626' stroke-width='2'/><line x1='20' y1='65' x2='100' y2='100' stroke='#16a34a' stroke-width='2'/><text x='45' y='42' font-size='10' font-weight='bold' fill='#dc2626'>3/5 R</text><text x='45' y='92' font-size='10' font-weight='bold' fill='#16a34a'>2/5 G</text><line x1='100' y1='30' x2='180' y2='15' stroke='#dc2626' stroke-width='1.5'/><line x1='100' y1='30' x2='180' y2='45' stroke='#16a34a' stroke-width='1.5'/><text x='130' y='20' font-size='9' fill='#dc2626'>3/5 R</text><text x='130' y='45' font-size='9' fill='#16a34a'>2/5 G</text><text x='190' y='18' font-size='10' font-weight='bold' fill='#0f172a'>RR = 9/25</text><text x='190' y='48' font-size='10' font-weight='bold' fill='#0f172a'>RG = 6/25</text><line x1='100' y1='100' x2='180' y2='85' stroke='#dc2626' stroke-width='1.5'/><line x1='100' y1='100' x2='180' y2='115' stroke='#16a34a' stroke-width='1.5'/><text x='130' y='90' font-size='9' fill='#dc2626'>3/5 R</text><text x='130' y='115' font-size='9' fill='#16a34a'>2/5 G</text><text x='190' y='88' font-size='10' font-weight='bold' fill='#0f172a'>GR = 6/25</text><text x='190' y='118' font-size='10' font-weight='bold' fill='#0f172a'>GG = 4/25</text></svg>",
+          "steps": [
+            "Step 1 (Why we do this: Determine single-draw probabilities): Total balls $= 3 + 2 = 5$. $P(R) = \\frac{3}{5}, \\ P(G) = \\frac{2}{5}$.",
+            "Step 2 (Why we do this: Replacement means trials are independent): Probabilities remain constant on the second draw.",
+            "Step 3 (Why we do this: Apply the multiplication rule for two red balls): \n  $$P(RR) = P(R) \\times P(R) = \\frac{3}{5} \\times \\frac{3}{5} = \\frac{9}{25}$$",
+            "Step 4 (Why we do this: Use complementary probability for 'at least one red'): The complement of 'at least one red' is 'no red balls' (i.e., $GG$):\n  $$P(GG) = \\frac{2}{5} \\times \\frac{2}{5} = \\frac{4}{25}$$\n  $$P(\\text{At least one Red}) = 1 - P(GG) = 1 - \\frac{4}{25} = \\frac{21}{25}$$"
+          ],
+          "finalAnswer": "$$P(RR) = \\frac{9}{25}, \\quad P(\\text{At least 1 Red}) = \\frac{21}{25}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_data_b8_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the mode of the scores in a stem-and-leaf plot where stem 7 has leaves 1, 1, 2, 8, 8, 8?",
+            "options": [
+              "78",
+              "71",
+              "8",
+              "72"
+            ],
+            "correctAnswer": "78",
+            "hint": "Stem 7 combined with the leaf that appears most often (8).",
+            "workedSolution": "78 appears three times, which is the highest frequency.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Two fair coins are tossed simultaneously. What is the probability of obtaining two heads ($HH$)?",
+            "options": [
+              "1/4",
+              "1/2",
+              "3/4",
+              "1/8"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "Sample space $= \\{HH, HT, TH, TT\\}$.",
+            "workedSolution": "$$P(HH) = \\frac{1}{2} \\times \\frac{1}{2} = \\frac{1}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A die is rolled and a coin is tossed. How many total outcomes are in the combined sample space?",
+            "options": [
+              "12",
+              "8",
+              "6",
+              "2"
+            ],
+            "correctAnswer": "12",
+            "hint": "$$6 \\times 2$$.",
+            "workedSolution": "$$6 \\times 2 = 12\\text{ outcomes}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_data_b8_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A team scored 2, 4, 1, and 3 goals in their first four matches. How many goals must they score in their fifth match to raise their mean to 4 goals per match?",
+            "options": [
+              "10",
+              "8",
+              "6",
+              "5"
+            ],
+            "correctAnswer": "10",
+            "hint": "Target total goals $= 4 \\times 5 = 20$. Goals so far $= 2 + 4 + 1 + 3 = 10$.",
+            "workedSolution": "$$20 - (2 + 4 + 1 + 3) = 20 - 10 = 10\\text{ goals}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A box contains 3 blue pens and 4 pink pens. A pen is drawn, replaced, and a second pen drawn. What is the probability of picking a blue pen followed by a pink pen?",
+            "options": [
+              "12/49",
+              "7/49",
+              "6/49",
+              "1/7"
+            ],
+            "correctAnswer": "12/49",
+            "hint": "$$\\frac{3}{7} \\times \\frac{4}{7}$$.",
+            "workedSolution": "$$P(B) \\times P(P) = \\frac{3}{7} \\times \\frac{4}{7} = \\frac{12}{49}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b8_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "The table below shows quarterly cocoa sack sales: Q1: 29, Q2: 18, Q3: 42, Q4: 31. What is the average number of sacks sold per month for the whole year?",
+            "options": [
+              "10",
+              "30",
+              "12",
+              "15"
+            ],
+            "correctAnswer": "10",
+            "hint": "Total sacks for the year divided by 12 months.",
+            "workedSolution": "$$\\text{Total sacks} = 29 + 18 + 42 + 31 = 120\\text{ sacks}$$\n$$\\text{Per month} = \\frac{120}{12} = 10\\text{ sacks/month}$$.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_data_b8_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Kojo's taxi made 8, 6, 10, 10, 9, 10, and 3 trips over seven days. Why is the median a better representative measure than the mean for reporting daily trips?",
+            "options": [
+              "The mean is distorted downward by the extreme outlier of 3 trips on Sunday",
+              "The mode cannot be computed",
+              "The median is always higher than the mean",
+              "Taxi trips must always be reported as whole numbers"
+            ],
+            "correctAnswer": "The mean is distorted downward by the extreme outlier of 3 trips on Sunday",
+            "hint": "Consider the impact of the single day with only 3 trips on the average.",
+            "workedSolution": "The mean ($56 / 7 = 8$) is pulled downward by the extreme low outlier of 3 trips, whereas the median (10) accurately reflects typical daily activity.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b8_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A spinner has 3 equal sectors: 1 Win and 2 Losses. If it is spun twice, what is the probability of winning AT LEAST once?",
+            "options": [
+              "5/9",
+              "4/9",
+              "1/9",
+              "2/3"
+            ],
+            "correctAnswer": "5/9",
+            "hint": "$$1 - P(\\text{Two Losses}) = 1 - \\left(\\frac{2}{3} \\times \\frac{2}{3}\\right)$$.",
+            "workedSolution": "$$P(LL) = \\frac{2}{3} \\times \\frac{2}{3} = \\frac{4}{9}$$\n$$P(\\text{At least 1 win}) = 1 - \\frac{4}{9} = \\frac{5}{9}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b8_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The mean of 10 numbers is 15. If each number is multiplied by 3 and then 4 is added, what is the new mean of the numbers?",
+            "options": [
+              "49",
+              "45",
+              "19",
+              "52"
+            ],
+            "correctAnswer": "49",
+            "hint": "Linear transformation of mean: $\\bar{y} = 3\\bar{x} + 4$.",
+            "workedSolution": "$$\\text{New Mean} = 3(15) + 4 = 45 + 4 = 49$$.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    "jhs3": {
+      "levelCode": "B9",
+      "gradeLabel": "Basic 9 (JHS 3)",
+      "contentStandard": "B9.4.1.1 / B9.4.1.2 / B9.4.2.1: Construct histograms; evaluate bias and ethics in data collection; analyze effects of extreme outliers on central tendency; calculate multi-stage probability without replacement.",
+      "indicatorsCovered": [
+        "B9.4.1.1.1",
+        "B9.4.1.1.2",
+        "B9.4.1.1.3",
+        "B9.4.1.2.1",
+        "B9.4.1.2.2",
+        "B9.4.1.2.3",
+        "B9.4.2.1.1",
+        "B9.4.2.1.2"
+      ],
+      "summary": "Histograms, modal class determination, survey bias and cultural sensitivity, outlier sensitivity, and dependent probability without replacement.",
+      "diagramSvg": "<svg viewBox='0 0 380 200' width='100%' height='190' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='160' x2='340' y2='160' stroke='#334155' stroke-width='2'/><line x1='40' y1='160' x2='40' y2='20' stroke='#334155' stroke-width='2'/><rect x='60' y='120' width='45' height='40' fill='#93c5fd' stroke='#2563eb'/><rect x='105' y='60' width='45' height='100' fill='#93c5fd' stroke='#2563eb'/><rect x='150' y='30' width='45' height='130' fill='#3b82f6' stroke='#1d4ed8'/><rect x='195' y='80' width='45' height='80' fill='#93c5fd' stroke='#2563eb'/><rect x='240' y='130' width='45' height='30' fill='#93c5fd' stroke='#2563eb'/><line x1='150' y1='30' x2='240' y2='80' stroke='#ef4444' stroke-dasharray='3'/><line x1='195' y1='30' x2='105' y2='60' stroke='#ef4444' stroke-dasharray='3'/><circle cx='169' cy='52' r='4' fill='#dc2626'/><line x1='169' y1='52' x2='169' y2='160' stroke='#dc2626' stroke-width='2'/><text x='160' y='175' font-size='11' font-weight='bold' fill='#dc2626'>Mode</text><text x='155' y='22' font-size='11' font-weight='bold' fill='#1d4ed8'>Modal Class</text><text x='65' y='192' font-size='10' fill='#64748b'>Histogram: Continuous Bins & Graphical Mode</text></svg>",
+      "notes": "### 1. Histograms & Estimating Mode Graphically\n\n* **Histogram vs. Bar Chart:**\n  * Bar charts display discrete categories with gaps between bars.\n  * **Histograms display continuous numerical data** grouped into class intervals; **there are NO gaps between adjacent bars**.\n* **Estimating the Mode Graphically from a Histogram:**\n  1. Identify the tallest bar (**Modal Class**).\n  2. Draw a diagonal line from the top-left corner of the modal bar to the top-left corner of the following bar.\n  3. Draw a second diagonal line from the top-right corner of the modal bar to the top-right corner of the preceding bar.\n  4. From the intersection point of the two diagonals, drop a vertical line down to the horizontal axis.\n  5. The value on the horizontal axis is the estimated **Mode**.\n\n---\n\n### 2. Survey Bias, Cultural Sensitivity & Ethics\n\nSound statistical collection requires avoiding bias:\n* **Leading / Loaded Questions:** Questions phrased to nudge the respondent toward a specific answer (e.g., *\"Don't you agree our school math teaching is excellent?\"*).\n* **Cultural Sensitivity:** Asking questions that offend beliefs or ignore traditions (e.g., asking about pork cooking methods in diverse communities without screening).\n* **Sample Bias:** Surveying an unrepresentative group (e.g., asking only the school soccer team about campus-wide sports injuries).\n\n---\n\n### 3. Outliers & Their Effect on Central Tendency\n\nAn **outlier** is an extreme data point far removed from the rest of the observations.\n* **Mean:** Highly sensitive to outliers; gets dragged heavily in the direction of the extreme value.\n* **Median & Mode:** Highly resistant and robust against outliers.\n\n---\n\n### 4. Probability of Dependent Events (Without Replacement)\n\nWhen items are drawn **without replacement**, the total sample space decreases by 1 on each successive trial, altering the probabilities of remaining outcomes:\n$$P(A \\text{ and } B) = P(A) \\times P(B \\mid A)$$",
+      "workedExamples": [
+        {
+          "id": "we_data_b9_01",
+          "title": "Dependent Probability without Replacement",
+          "problem": "A box contains 60 mangoes, of which some are unripe. The probability of randomly picking a ripe mango is $\\frac{3}{5}$.\n(i) How many mangoes are unripe?\n(ii) If two mangoes are picked one after the other without replacement, find the probability that BOTH mangoes are ripe.\n\n<svg viewBox='0 0 320 130' width='100%' height='120' xmlns='http://www.w3.org/2000/svg'><line x1='20' y1='65' x2='110' y2='30' stroke='#16a34a' stroke-width='2'/><line x1='20' y1='65' x2='110' y2='100' stroke='#f59e0b' stroke-width='2'/><text x='40' y='40' font-size='10' font-weight='bold' fill='#16a34a'>36/60 Ripe</text><text x='40' y='95' font-size='10' font-weight='bold' fill='#d97706'>24/60 Unripe</text><line x1='110' y1='30' x2='200' y2='15' stroke='#16a34a' stroke-width='1.5'/><line x1='110' y1='30' x2='200' y2='45' stroke='#f59e0b' stroke-width='1.5'/><text x='140' y='18' font-size='9' fill='#16a34a'>35/59 Ripe</text><text x='140' y='45' font-size='9' fill='#d97706'>24/59 Unripe</text><text x='210' y='18' font-size='10' font-weight='bold' fill='#0f172a'>R1 R2 = 21/59</text><text x='210' y='48' font-size='10' font-weight='bold' fill='#64748b'>R1 U2</text><line x1='110' y1='100' x2='200' y2='85' stroke='#16a34a' stroke-width='1.5'/><line x1='110' y1='100' x2='200' y2='115' stroke='#f59e0b' stroke-width='1.5'/><text x='140' y='90' font-size='9' fill='#16a34a'>36/59 Ripe</text><text x='140' y='115' font-size='9' fill='#d97706'>23/59 Unripe</text><text x='210' y='88' font-size='10' font-weight='bold' fill='#64748b'>U1 R2</text><text x='210' y='118' font-size='10' font-weight='bold' fill='#64748b'>U1 U2</text></svg>",
+          "steps": [
+            "Step 1 (Why we do this: Determine number of ripe and unripe mangoes): \n  $$\\text{Ripe Mangoes} = \\frac{3}{5} \\times 60 = 36$$\n  $$\\text{Unripe Mangoes} = 60 - 36 = 24$$",
+            "Step 2 (Why we do this: Probability of first draw being ripe): \n  $$P(R_1) = \\frac{36}{60} = \\frac{3}{5}$$",
+            "Step 3 (Why we do this: Decrement both ripe count and total count for second draw without replacement): After removing 1 ripe mango, 35 ripe mangoes remain out of 59 total mangoes:\n  $$P(R_2 \\mid R_1) = \\frac{35}{59}$$",
+            "Step 4 (Why we do this: Multiply conditional branch probabilities): \n  $$P(R_1 \\text{ and } R_2) = \\frac{3}{5} \\times \\frac{35}{59} = 3 \\times \\frac{7}{59} = \\frac{21}{59}$$"
+          ],
+          "finalAnswer": "$$\\text{Unripe Mangoes} = 24, \\quad P(\\text{Both Ripe}) = \\frac{21}{59}$$"
+        },
+        {
+          "id": "we_data_b9_02",
+          "title": "Impact of an Outlier on Mean versus Median",
+          "problem": "The monthly stipends of 5 interns are $\\text{GH¢ } 500, \\, 550, \\, 520, \\, 480,$ and $550$.\n(i) Calculate the original mean and median.\n(ii) If an executive director's stipend of $\\text{GH¢ } 10,000$ is mistakenly included, calculate the new mean and median, and explain which measure is more reliable.",
+          "steps": [
+            "Step 1 (Why we do this: Compute original mean): \n  $$\\sum x = 500 + 550 + 520 + 480 + 550 = 2,600$$\n  $$\\bar{x} = \\frac{2,600}{5} = \\text{GH¢ } 520.00$$",
+            "Step 2 (Why we do this: Arrange array to find original median): $480, 500, \\mathbf{520}, 550, 550$. Middle value $= \\text{GH¢ } 520.00$.",
+            "Step 3 (Why we do this: Compute new mean with outlier included): \n  $$\\text{New Sum} = 2,600 + 10,000 = 12,600$$\n  $$\\text{New Mean} = \\frac{12,600}{6} = \\text{GH¢ } 2,100.00$$",
+            "Step 4 (Why we do this: Find new median with outlier included): Ordered array: $480, 500, \\mathbf{520, 550}, 550, 10000$. Middle two are 520 and 550:\n  $$\\text{New Median} = \\frac{520 + 550}{2} = \\text{GH¢ } 535.00$$",
+            "Step 5 (Why we do this: Compare stability): The mean jumped from $\\text{GH¢ } 520$ to $\\text{GH¢ } 2,100$ (completely misrepresenting the interns' actual income), while the median moved marginally from $\\text{GH¢ } 520$ to $\\text{GH¢ } 535$. The median is far more reliable when outliers exist."
+          ],
+          "finalAnswer": "$$\\text{Original Mean} = 520, \\ \\text{Median} = 520 \\mid \\text{New Mean} = 2100, \\ \\text{Median} = 535 \\text{ (Median is robust)}$$"
+        }
+      ],
+      "practicePool": {
+        "low": [
+          {
+            "id": "q_data_b9_l01",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A box contains 60 mangoes and the probability of selecting a ripe mango is 3/5. How many mangoes are NOT ripe?",
+            "options": [
+              "24",
+              "36",
+              "20",
+              "15"
+            ],
+            "correctAnswer": "24",
+            "hint": "Unripe fraction $= 1 - 3/5 = 2/5$. Multiply $2/5 \\times 60$.",
+            "workedSolution": "$$\\frac{2}{5} \\times 60 = 24\\text{ mangoes}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In a histogram, what does the modal class represent?",
+            "options": [
+              "The class interval with the highest frequency (tallest bar)",
+              "The middle class interval on the horizontal axis",
+              "The average of all class frequencies",
+              "The class interval with the widest bar"
+            ],
+            "correctAnswer": "The class interval with the highest frequency (tallest bar)",
+            "hint": "Mode always corresponds to highest occurrence.",
+            "workedSolution": "The modal class is the interval containing the peak frequency, represented by the tallest bar in a histogram.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Two cards are drawn from a standard pack of 52 cards without replacement. What is the probability that the first card drawn is an Ace?",
+            "options": [
+              "4/52",
+              "1/52",
+              "2/52",
+              "4/51"
+            ],
+            "correctAnswer": "4/52",
+            "hint": "There are 4 Aces in a full deck of 52 cards.",
+            "workedSolution": "$$P(\\text{Ace}) = \\frac{4}{52} = \\frac{1}{13}$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_data_b9_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A bag contains 5 red and 3 green marbles. Two marbles are drawn one after another WITHOUT replacement. What is the probability that BOTH marbles are green?",
+            "options": [
+              "3/28",
+              "9/64",
+              "6/56",
+              "3/8"
+            ],
+            "correctAnswer": "3/28",
+            "hint": "$$P(G_1) = \\frac{3}{8}$$, $$P(G_2) = \\frac{2}{7}$$. Multiply both.",
+            "workedSolution": "$$\\frac{3}{8} \\times \\frac{2}{7} = \\frac{6}{56} = \\frac{3}{28}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Which survey question is most free from leading bias?",
+            "options": [
+              "Overall, how would you rate the quality of mathematics teaching in the school?",
+              "Don't you agree that the school mathematics teaching is excellent?",
+              "Why do you think the math classes are too difficult?",
+              "Isn't it true that homework is excessive?"
+            ],
+            "correctAnswer": "Overall, how would you rate the quality of mathematics teaching in the school?",
+            "hint": "Neutral phrasing allows respondents to provide both positive and negative ratings.",
+            "workedSolution": "Neutral open questions provide objective rating scales without nudging respondents toward a predetermined stance.",
+            "points": 1
+          },
+          {
+            "id": "q_data_b9_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A set of raw data has a mean of 50 and a median of 48. When an extreme outlier of 250 is added, which measure of central tendency changes the most?",
+            "options": [
+              "The mean",
+              "The median",
+              "The mode",
+              "Both mean and median change equally"
+            ],
+            "correctAnswer": "The mean",
+            "hint": "The arithmetic average directly absorbs extreme values into its sum.",
+            "workedSolution": "The mean is directly computed from the sum of all values, making it highly sensitive to extreme outliers compared to position-based measures like the median.",
+            "points": 1
+          }
+        ],
+        "hard": [
+          {
+            "id": "q_data_b9_h01",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A bag contains 3 red, 2 green, and 1 pink bottle tops. Anita picks two bottle tops at random without replacement. What is the probability of picking a Red bottle top on the first draw AND a Green bottle top on the second draw?",
+            "options": [
+              "1/5",
+              "1/6",
+              "3/10",
+              "1/12"
+            ],
+            "correctAnswer": "1/5",
+            "hint": "Total = 6. $P(R) = 3/6$. Then 5 tops remain, of which 2 are green: $P(G) = 2/5$.",
+            "workedSolution": "$$P(R_1) \\times P(G_2) = \\frac{3}{6} \\times \\frac{2}{5} = \\frac{1}{2} \\times \\frac{2}{5} = \\frac{1}{5}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b9_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In an experiment of drawing two cards from a standard 52-card deck without replacement, calculate the probability of drawing an Ace on the first draw and a King on the second draw.",
+            "options": [
+              "4/663",
+              "1/169",
+              "16/2704",
+              "1/221"
+            ],
+            "correctAnswer": "4/663",
+            "hint": "$$\\frac{4}{52} \\times \\frac{4}{51} = \\frac{1}{13} \\times \\frac{4}{51}$$.",
+            "workedSolution": "$$\\frac{4}{52} \\times \\frac{4}{51} = \\frac{1}{13} \\times \\frac{4}{51} = \\frac{4}{663}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_data_b9_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A researcher wishes to investigate the community's knowledge regarding cholera prevention. Why is a structured face-to-face interview or survey more appropriate than an online web database?",
+            "options": [
+              "It directly reaches community members regardless of internet access or digital literacy",
+              "It is always cheaper and faster",
+              "Online databases contain false data",
+              "Interviews do not require recording responses"
+            ],
+            "correctAnswer": "It directly reaches community members regardless of internet access or digital literacy",
+            "hint": "Consider sample representation across varied socio-economic community backgrounds.",
+            "workedSolution": "Direct interviews eliminate digital-divide sample bias, allowing accurate community-wide qualitative and quantitative responses across all demographics.",
+            "points": 2
+          }
+        ]
+      }
+    }
+  },
+  "linkedExamQuestions": [
+    {
+      "setId": "jhs-math-mastery-series-36",
+      "year": 1995,
+      "paper": 2,
+      "questionNumber": "5(a)",
+      "promptSnippet": "A box contains 60 mangoes of which some are not ripe. The probability of selecting a ripe mango is 3/5..."
+    },
+    {
+      "setId": "jhs-math-mastery-series-44",
+      "year": 1991,
+      "paper": 2,
+      "questionNumber": "6(a)",
+      "promptSnippet": "The marks obtained in a test by 20 students were recorded in a frequency distribution table..."
+    }
+  ],
+  "updatedAt": "2026-09-17T14:45:00.000Z"
+}
