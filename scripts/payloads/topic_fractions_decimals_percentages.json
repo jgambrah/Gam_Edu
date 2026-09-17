@@ -14,7 +14,7 @@
   },
   "badge": "Strand 1: Number",
   "description": "Master benchmark equivalences, mixed fraction operations, recurring decimals, real-life fractional sharing, and multi-step BODMAS evaluation.",
-  "totalPracticeQuestions": 27,
+  "totalPracticeQuestions": 168,
   "version": 1,
   "levels": {
     "b7": {
@@ -61,45 +61,828 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_frac_b7_l01",
+            "id": "q_b7_frac_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Which of the following fractions is equivalent to $75\\%$?",
-            "options": ["3/4", "1/4", "5/8", "2/3"],
+            "prompt": "Convert $\\frac{3}{4}$ to a percentage.",
+            "options": [
+              "75%",
+              "25%",
+              "50%",
+              "80%"
+            ],
+            "correctAnswer": "75%",
+            "hint": "Multiply the fraction by 100%.",
+            "workedSolution": "$$\\frac{3}{4} \\times 100\\% = 3 \\times 25\\% = 75\\%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.4$ as a simple fraction in its lowest terms.",
+            "options": [
+              "2/5",
+              "4/10",
+              "1/4",
+              "4/5"
+            ],
+            "correctAnswer": "2/5",
+            "hint": "Write $0.4 = \\frac{4}{10}$ and divide numerator and denominator by 2.",
+            "workedSolution": "$$\\frac{4 \\div 2}{10 \\div 2} = \\frac{2}{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $\\frac{2}{7} + \\frac{3}{7}$.",
+            "options": [
+              "5/7",
+              "5/14",
+              "6/7",
+              "1/7"
+            ],
+            "correctAnswer": "5/7",
+            "hint": "The denominators are identical; add the numerators directly.",
+            "workedSolution": "$$\\frac{2 + 3}{7} = \\frac{5}{7}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{5}$ of $\\text{GH¢ } 60.00$?",
+            "options": [
+              "GH¢ 12.00",
+              "GH¢ 10.00",
+              "GH¢ 15.00",
+              "GH¢ 20.00"
+            ],
+            "correctAnswer": "GH¢ 12.00",
+            "hint": "Divide 60 by 5.",
+            "workedSolution": "$$\\frac{1}{5} \\times 60 = \\text{GH¢ } 12.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following is equivalent to $20\\%$?",
+            "options": [
+              "1/5",
+              "1/4",
+              "1/2",
+              "2/5"
+            ],
+            "correctAnswer": "1/5",
+            "hint": "$$20\\% = \\frac{20}{100}$$. Reduce by dividing by 20.",
+            "workedSolution": "$$\\frac{20 \\div 20}{100 \\div 20} = \\frac{1}{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $2\\frac{1}{3}$ to an improper fraction.",
+            "options": [
+              "7/3",
+              "5/3",
+              "6/3",
+              "8/3"
+            ],
+            "correctAnswer": "7/3",
+            "hint": "Multiply whole number by denominator and add numerator: $2 \\times 3 + 1$.",
+            "workedSolution": "$$\\frac{(2 \\times 3) + 1}{3} = \\frac{7}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $0.125$ expressed as a common fraction?",
+            "options": [
+              "1/8",
+              "1/4",
+              "1/5",
+              "3/8"
+            ],
+            "correctAnswer": "1/8",
+            "hint": "$$\\frac{125}{1000}$$. Divide both terms by 125.",
+            "workedSolution": "$$\\frac{125 \\div 125}{1000 \\div 125} = \\frac{1}{8}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Subtract: $\\frac{7}{9} - \\frac{4}{9}$.",
+            "options": [
+              "1/3",
+              "3/9",
+              "11/9",
+              "3/18"
+            ],
+            "correctAnswer": "1/3",
+            "hint": "$$\\frac{7 - 4}{9} = \\frac{3}{9}$$, then simplify.",
+            "workedSolution": "$$\\frac{7 - 4}{9} = \\frac{3}{9} = \\frac{1}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which fraction is larger: $\\frac{3}{5}$ or $\\frac{2}{5}$?",
+            "options": [
+              "3/5",
+              "2/5",
+              "They are equal",
+              "Cannot be determined"
+            ],
+            "correctAnswer": "3/5",
+            "hint": "With identical denominators, compare numerators directly.",
+            "workedSolution": "Since 3 > 2, $\\frac{3}{5} > \\frac{2}{5}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $35\\%$ to a decimal.",
+            "options": [
+              "0.35",
+              "3.5",
+              "0.035",
+              "35.0"
+            ],
+            "correctAnswer": "0.35",
+            "hint": "Divide 35 by 100.",
+            "workedSolution": "$$\\frac{35}{100} = 0.35$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32\\%$ to a decimal numeral.",
+            "options": [
+              "0.32",
+              "3.20",
+              "0.032",
+              "32.0"
+            ],
+            "correctAnswer": "0.32",
+            "hint": "Divide 32 by 100.",
+            "workedSolution": "$$\\frac{32}{100} = 0.32$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.25$ as a fraction in its lowest terms.",
+            "options": [
+              "1/4",
+              "25/100",
+              "1/5",
+              "2/5"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.25 = 1/4$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{5}$ of $75$?",
+            "options": [
+              "15",
+              "17",
+              "12",
+              "5"
+            ],
+            "correctAnswer": "15",
+            "hint": "Divide $75$ by $5$.",
+            "workedSolution": "$$\\frac{1}{5} \\times 75 = 15$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $40\\%$ to a decimal numeral.",
+            "options": [
+              "0.40",
+              "4.00",
+              "0.040",
+              "40.0"
+            ],
+            "correctAnswer": "0.40",
+            "hint": "Divide 40 by 100.",
+            "workedSolution": "$$\\frac{40}{100} = 0.40$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.8$ as a fraction in its lowest terms.",
+            "options": [
+              "4/5",
+              "8/10",
+              "3/4",
+              "1/8"
+            ],
+            "correctAnswer": "4/5",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.8 = 4/5$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{8}$ of $64$?",
+            "options": [
+              "8",
+              "10",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide $64$ by $8$.",
+            "workedSolution": "$$\\frac{1}{8} \\times 64 = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $48\\%$ to a decimal numeral.",
+            "options": [
+              "0.48",
+              "4.80",
+              "0.048",
+              "48.0"
+            ],
+            "correctAnswer": "0.48",
+            "hint": "Divide 48 by 100.",
+            "workedSolution": "$$\\frac{48}{100} = 0.48$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.6$ as a fraction in its lowest terms.",
+            "options": [
+              "3/5",
+              "6/10",
+              "2/3",
+              "1/6"
+            ],
+            "correctAnswer": "3/5",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.6 = 3/5$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{6}$ of $42$?",
+            "options": [
+              "7",
+              "9",
+              "4",
+              "6"
+            ],
+            "correctAnswer": "7",
+            "hint": "Divide $42$ by $6$.",
+            "workedSolution": "$$\\frac{1}{6} \\times 42 = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $56\\%$ to a decimal numeral.",
+            "options": [
+              "0.56",
+              "5.60",
+              "0.056",
+              "56.0"
+            ],
+            "correctAnswer": "0.56",
+            "hint": "Divide 56 by 100.",
+            "workedSolution": "$$\\frac{56}{100} = 0.56$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.5$ as a fraction in its lowest terms.",
+            "options": [
+              "1/2",
+              "5/10",
+              "1/5",
+              "2/3"
+            ],
+            "correctAnswer": "1/2",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.5 = 1/2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{4}$ of $48$?",
+            "options": [
+              "12",
+              "14",
+              "9",
+              "4"
+            ],
+            "correctAnswer": "12",
+            "hint": "Divide $48$ by $4$.",
+            "workedSolution": "$$\\frac{1}{4} \\times 48 = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $64\\%$ to a decimal numeral.",
+            "options": [
+              "0.64",
+              "6.40",
+              "0.064",
+              "64.0"
+            ],
+            "correctAnswer": "0.64",
+            "hint": "Divide 64 by 100.",
+            "workedSolution": "$$\\frac{64}{100} = 0.64$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.75$ as a fraction in its lowest terms.",
+            "options": [
+              "3/4",
+              "75/100",
+              "7/10",
+              "4/5"
+            ],
             "correctAnswer": "3/4",
-            "hint": "$$75\\% = \\frac{75}{100}$$. Divide both terms by 25.",
-            "workedSolution": "$$\\frac{75 \\div 25}{100 \\div 25} = \\frac{3}{4}$$.",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.75 = 3/4$.",
             "points": 1
           },
           {
-            "id": "q_frac_b7_l02",
+            "id": "q_b7_frac_l29",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Evaluate: $$\\frac{5}{8} \\div \\frac{1}{4}$$.",
-            "options": ["2 1/2", "5/32", "1 1/4", "2"],
-            "correctAnswer": "2 1/2",
-            "hint": "Invert the divisor and multiply: $\\frac{5}{8} \\times \\frac{4}{1}$.",
-            "workedSolution": "$$\\frac{5}{8} \\times \\frac{4}{1} = \\frac{20}{8} = \\frac{5}{2} = 2\\frac{1}{2}$$.",
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b7_l03",
+            "id": "q_b7_frac_l30",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Express $0.625$ as a fraction in its lowest terms.",
-            "options": ["5/8", "3/8", "7/8", "5/16"],
-            "correctAnswer": "5/8",
-            "hint": "Divide $625$ and $1000$ by $125$.",
-            "workedSolution": "$$\\frac{625 \\div 125}{1000 \\div 125} = \\frac{5}{8}$$.",
+            "prompt": "What is $\\frac{1}{3}$ of $36$?",
+            "options": [
+              "12",
+              "14",
+              "9",
+              "3"
+            ],
+            "correctAnswer": "12",
+            "hint": "Divide $36$ by $3$.",
+            "workedSolution": "$$\\frac{1}{3} \\times 36 = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $72\\%$ to a decimal numeral.",
+            "options": [
+              "0.72",
+              "7.20",
+              "0.072",
+              "72.0"
+            ],
+            "correctAnswer": "0.72",
+            "hint": "Divide 72 by 100.",
+            "workedSolution": "$$\\frac{72}{100} = 0.72$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.25$ as a fraction in its lowest terms.",
+            "options": [
+              "1/4",
+              "25/100",
+              "1/5",
+              "2/5"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.25 = 1/4$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{5}$ of $75$?",
+            "options": [
+              "15",
+              "17",
+              "12",
+              "5"
+            ],
+            "correctAnswer": "15",
+            "hint": "Divide $75$ by $5$.",
+            "workedSolution": "$$\\frac{1}{5} \\times 75 = 15$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $80\\%$ to a decimal numeral.",
+            "options": [
+              "0.80",
+              "8.00",
+              "0.080",
+              "80.0"
+            ],
+            "correctAnswer": "0.80",
+            "hint": "Divide 80 by 100.",
+            "workedSolution": "$$\\frac{80}{100} = 0.80$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.8$ as a fraction in its lowest terms.",
+            "options": [
+              "4/5",
+              "8/10",
+              "3/4",
+              "1/8"
+            ],
+            "correctAnswer": "4/5",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.8 = 4/5$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{8}$ of $64$?",
+            "options": [
+              "8",
+              "10",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "8",
+            "hint": "Divide $64$ by $8$.",
+            "workedSolution": "$$\\frac{1}{8} \\times 64 = 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $88\\%$ to a decimal numeral.",
+            "options": [
+              "0.88",
+              "8.80",
+              "0.088",
+              "88.0"
+            ],
+            "correctAnswer": "0.88",
+            "hint": "Divide 88 by 100.",
+            "workedSolution": "$$\\frac{88}{100} = 0.88$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.6$ as a fraction in its lowest terms.",
+            "options": [
+              "3/5",
+              "6/10",
+              "2/3",
+              "1/6"
+            ],
+            "correctAnswer": "3/5",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.6 = 3/5$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{6}$ of $42$?",
+            "options": [
+              "7",
+              "9",
+              "4",
+              "6"
+            ],
+            "correctAnswer": "7",
+            "hint": "Divide $42$ by $6$.",
+            "workedSolution": "$$\\frac{1}{6} \\times 42 = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $96\\%$ to a decimal numeral.",
+            "options": [
+              "0.96",
+              "9.60",
+              "0.096",
+              "96.0"
+            ],
+            "correctAnswer": "0.96",
+            "hint": "Divide 96 by 100.",
+            "workedSolution": "$$\\frac{96}{100} = 0.96$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.5$ as a fraction in its lowest terms.",
+            "options": [
+              "1/2",
+              "5/10",
+              "1/5",
+              "2/3"
+            ],
+            "correctAnswer": "1/2",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.5 = 1/2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{4}$ of $48$?",
+            "options": [
+              "12",
+              "14",
+              "9",
+              "4"
+            ],
+            "correctAnswer": "12",
+            "hint": "Divide $48$ by $4$.",
+            "workedSolution": "$$\\frac{1}{4} \\times 48 = 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $104\\%$ to a decimal numeral.",
+            "options": [
+              "1.04",
+              "10.40",
+              "0.104",
+              "104.0"
+            ],
+            "correctAnswer": "1.04",
+            "hint": "Divide 104 by 100.",
+            "workedSolution": "$$\\frac{104}{100} = 1.04$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.75$ as a fraction in its lowest terms.",
+            "options": [
+              "3/4",
+              "75/100",
+              "7/10",
+              "4/5"
+            ],
+            "correctAnswer": "3/4",
+            "hint": "Convert to a fraction over powers of 10 and reduce.",
+            "workedSolution": "$0.75 = 3/4$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the missing value: $\\frac{2}{5} = \\frac{x}{15}$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "6",
+            "hint": "Multiply numerator by the same scaling factor 3.",
+            "workedSolution": "$$x = 2 \\times 3 = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\frac{1}{3}$ of $36$?",
+            "options": [
+              "12",
+              "14",
+              "9",
+              "3"
+            ],
+            "correctAnswer": "12",
+            "hint": "Divide $36$ by $3$.",
+            "workedSolution": "$$\\frac{1}{3} \\times 36 = 12$$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_frac_b7_m01",
+            "id": "q_b7_frac_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Arrange the following quantities in ascending order: $0.45, \\, \\frac{2}{5}, \\, 42\\%$.",
+            "prompt": "Evaluate: $2\\frac{1}{3} + 1\\frac{1}{2}$.",
+            "options": [
+              "3 5/6",
+              "3 2/5",
+              "3 1/6",
+              "4 1/6"
+            ],
+            "correctAnswer": "3 5/6",
+            "hint": "LCM of denominators 3 and 2 is 6.",
+            "workedSolution": "$$(2 + 1) + \\left(\\frac{2}{6} + \\frac{3}{6}\\right) = 3 + \\frac{5}{6} = 3\\frac{5}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange the following in ascending order: $0.45, \\, \\frac{2}{5}, \\, 42\\%$.",
             "options": [
               "2/5 < 42% < 0.45",
               "42% < 2/5 < 0.45",
@@ -107,65 +890,1578 @@
               "2/5 < 0.45 < 42%"
             ],
             "correctAnswer": "2/5 < 42% < 0.45",
-            "hint": "Convert to percentages: $0.45 = 45\\%$, $2/5 = 40\\%$, and $42\\%$.",
+            "hint": "Convert all to percentages: $0.45 = 45\\%$, $\\frac{2}{5} = 40\\%$, and $42\\%$.",
             "workedSolution": "$$40\\% < 42\\% < 45\\% \\implies \\frac{2}{5} < 42\\% < 0.45$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b7_m02",
+            "id": "q_b7_frac_m03",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "There are $120$ students in a class. If $\\frac{3}{5}$ of them are girls, how many boys are in the class?",
-            "options": ["48", "72", "50", "36"],
+            "prompt": "There are 120 pupils in a school hall. If $\\frac{3}{5}$ of them are girls, how many boys are in the hall?",
+            "options": [
+              "48",
+              "72",
+              "50",
+              "40"
+            ],
             "correctAnswer": "48",
-            "hint": "Fraction of boys = $1 - \\frac{3}{5} = \\frac{2}{5}$. Multiply $\\frac{2}{5} \\times 120$.",
+            "hint": "Fraction of boys $= 1 - \\frac{3}{5} = \\frac{2}{5}$. Multiply $\\frac{2}{5} \\times 120$.",
             "workedSolution": "$$\\text{Boys} = \\frac{2}{5} \\times 120 = 2 \\times 24 = 48$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b7_m03",
+            "id": "q_b7_frac_m04",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Simplify: $$2\\frac{1}{3} + 3\\frac{1}{2} - 1\\frac{5}{6}$$.",
-            "options": ["4", "4 1/3", "3 2/3", "4 1/6"],
-            "correctAnswer": "4",
-            "hint": "Use the common denominator 6: $\\frac{7}{3} + \\frac{7}{2} - \\frac{11}{6}$.",
-            "workedSolution": "$$\\frac{14 + 21 - 11}{6} = \\frac{24}{6} = 4$$.",
+            "prompt": "Evaluate: $3\\frac{1}{4} - 1\\frac{2}{3}$.",
+            "options": [
+              "1 7/12",
+              "1 5/12",
+              "2 1/12",
+              "1 1/4"
+            ],
+            "correctAnswer": "1 7/12",
+            "hint": "Convert to improper fractions: $\\frac{13}{4} - \\frac{5}{3} = \\frac{39 - 20}{12}$.",
+            "workedSolution": "$$\\frac{13}{4} - \\frac{5}{3} = \\frac{39 - 20}{12} = \\frac{19}{12} = 1\\frac{7}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the value of $x$ if $\\frac{3}{8} = \\frac{x}{40}$.",
+            "options": [
+              "15",
+              "12",
+              "20",
+              "18"
+            ],
+            "correctAnswer": "15",
+            "hint": "Cross-multiply: $8x = 3 \\times 40 = 120$.",
+            "workedSolution": "$$8x = 120 \\implies x = \\frac{120}{8} = 15$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 102.00$?",
+            "options": [
+              "GH¢ 76.5.00",
+              "GH¢ 86.5.00",
+              "GH¢ 66.5.00",
+              "GH¢ 26.00"
+            ],
+            "correctAnswer": "GH¢ 76.5.00",
+            "hint": "Divide $102$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 102 = 3 \\times 25.5 = \\text{GH¢ } 76.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $3\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "1 2/3",
+              "2 1/3",
+              "1 1/3",
+              "2 2/3"
+            ],
+            "correctAnswer": "1 2/3",
+            "hint": "Borrow 1 from the whole number: $3\\frac{1}{3} = 2\\frac{4}{3}$.",
+            "workedSolution": "$$3\\frac{1}{3} - 1\\frac{2}{3} = (2\\frac{4}{3}) - 1\\frac{2}{3} = 1\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 126.00$?",
+            "options": [
+              "GH¢ 94.5.00",
+              "GH¢ 104.5.00",
+              "GH¢ 84.5.00",
+              "GH¢ 32.00"
+            ],
+            "correctAnswer": "GH¢ 94.5.00",
+            "hint": "Divide $126$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 126 = 3 \\times 31.5 = \\text{GH¢ } 94.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $4\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "2 2/3",
+              "3 1/3",
+              "2 1/3",
+              "3 2/3"
+            ],
+            "correctAnswer": "2 2/3",
+            "hint": "Borrow 1 from the whole number: $4\\frac{1}{3} = 3\\frac{4}{3}$.",
+            "workedSolution": "$$4\\frac{1}{3} - 1\\frac{2}{3} = (3\\frac{4}{3}) - 1\\frac{2}{3} = 2\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 150.00$?",
+            "options": [
+              "GH¢ 112.5.00",
+              "GH¢ 122.5.00",
+              "GH¢ 102.5.00",
+              "GH¢ 38.00"
+            ],
+            "correctAnswer": "GH¢ 112.5.00",
+            "hint": "Divide $150$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 150 = 3 \\times 37.5 = \\text{GH¢ } 112.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $5\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "3 2/3",
+              "4 1/3",
+              "3 1/3",
+              "4 2/3"
+            ],
+            "correctAnswer": "3 2/3",
+            "hint": "Borrow 1 from the whole number: $5\\frac{1}{3} = 4\\frac{4}{3}$.",
+            "workedSolution": "$$5\\frac{1}{3} - 1\\frac{2}{3} = (4\\frac{4}{3}) - 1\\frac{2}{3} = 3\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 174.00$?",
+            "options": [
+              "GH¢ 130.5.00",
+              "GH¢ 140.5.00",
+              "GH¢ 120.5.00",
+              "GH¢ 44.00"
+            ],
+            "correctAnswer": "GH¢ 130.5.00",
+            "hint": "Divide $174$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 174 = 3 \\times 43.5 = \\text{GH¢ } 130.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $3\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "1 2/3",
+              "2 1/3",
+              "1 1/3",
+              "2 2/3"
+            ],
+            "correctAnswer": "1 2/3",
+            "hint": "Borrow 1 from the whole number: $3\\frac{1}{3} = 2\\frac{4}{3}$.",
+            "workedSolution": "$$3\\frac{1}{3} - 1\\frac{2}{3} = (2\\frac{4}{3}) - 1\\frac{2}{3} = 1\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 198.00$?",
+            "options": [
+              "GH¢ 148.5.00",
+              "GH¢ 158.5.00",
+              "GH¢ 138.5.00",
+              "GH¢ 50.00"
+            ],
+            "correctAnswer": "GH¢ 148.5.00",
+            "hint": "Divide $198$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 198 = 3 \\times 49.5 = \\text{GH¢ } 148.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $4\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "2 2/3",
+              "3 1/3",
+              "2 1/3",
+              "3 2/3"
+            ],
+            "correctAnswer": "2 2/3",
+            "hint": "Borrow 1 from the whole number: $4\\frac{1}{3} = 3\\frac{4}{3}$.",
+            "workedSolution": "$$4\\frac{1}{3} - 1\\frac{2}{3} = (3\\frac{4}{3}) - 1\\frac{2}{3} = 2\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 222.00$?",
+            "options": [
+              "GH¢ 166.5.00",
+              "GH¢ 176.5.00",
+              "GH¢ 156.5.00",
+              "GH¢ 56.00"
+            ],
+            "correctAnswer": "GH¢ 166.5.00",
+            "hint": "Divide $222$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 222 = 3 \\times 55.5 = \\text{GH¢ } 166.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $5\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "3 2/3",
+              "4 1/3",
+              "3 1/3",
+              "4 2/3"
+            ],
+            "correctAnswer": "3 2/3",
+            "hint": "Borrow 1 from the whole number: $5\\frac{1}{3} = 4\\frac{4}{3}$.",
+            "workedSolution": "$$5\\frac{1}{3} - 1\\frac{2}{3} = (4\\frac{4}{3}) - 1\\frac{2}{3} = 3\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 246.00$?",
+            "options": [
+              "GH¢ 184.5.00",
+              "GH¢ 194.5.00",
+              "GH¢ 174.5.00",
+              "GH¢ 62.00"
+            ],
+            "correctAnswer": "GH¢ 184.5.00",
+            "hint": "Divide $246$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 246 = 3 \\times 61.5 = \\text{GH¢ } 184.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $3\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "1 2/3",
+              "2 1/3",
+              "1 1/3",
+              "2 2/3"
+            ],
+            "correctAnswer": "1 2/3",
+            "hint": "Borrow 1 from the whole number: $3\\frac{1}{3} = 2\\frac{4}{3}$.",
+            "workedSolution": "$$3\\frac{1}{3} - 1\\frac{2}{3} = (2\\frac{4}{3}) - 1\\frac{2}{3} = 1\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 270.00$?",
+            "options": [
+              "GH¢ 202.5.00",
+              "GH¢ 212.5.00",
+              "GH¢ 192.5.00",
+              "GH¢ 68.00"
+            ],
+            "correctAnswer": "GH¢ 202.5.00",
+            "hint": "Divide $270$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 270 = 3 \\times 67.5 = \\text{GH¢ } 202.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $4\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "2 2/3",
+              "3 1/3",
+              "2 1/3",
+              "3 2/3"
+            ],
+            "correctAnswer": "2 2/3",
+            "hint": "Borrow 1 from the whole number: $4\\frac{1}{3} = 3\\frac{4}{3}$.",
+            "workedSolution": "$$4\\frac{1}{3} - 1\\frac{2}{3} = (3\\frac{4}{3}) - 1\\frac{2}{3} = 2\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 294.00$?",
+            "options": [
+              "GH¢ 220.5.00",
+              "GH¢ 230.5.00",
+              "GH¢ 210.5.00",
+              "GH¢ 74.00"
+            ],
+            "correctAnswer": "GH¢ 220.5.00",
+            "hint": "Divide $294$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 294 = 3 \\times 73.5 = \\text{GH¢ } 220.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $5\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "3 2/3",
+              "4 1/3",
+              "3 1/3",
+              "4 2/3"
+            ],
+            "correctAnswer": "3 2/3",
+            "hint": "Borrow 1 from the whole number: $5\\frac{1}{3} = 4\\frac{4}{3}$.",
+            "workedSolution": "$$5\\frac{1}{3} - 1\\frac{2}{3} = (4\\frac{4}{3}) - 1\\frac{2}{3} = 3\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 318.00$?",
+            "options": [
+              "GH¢ 238.5.00",
+              "GH¢ 248.5.00",
+              "GH¢ 228.5.00",
+              "GH¢ 80.00"
+            ],
+            "correctAnswer": "GH¢ 238.5.00",
+            "hint": "Divide $318$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 318 = 3 \\times 79.5 = \\text{GH¢ } 238.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $3\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "1 2/3",
+              "2 1/3",
+              "1 1/3",
+              "2 2/3"
+            ],
+            "correctAnswer": "1 2/3",
+            "hint": "Borrow 1 from the whole number: $3\\frac{1}{3} = 2\\frac{4}{3}$.",
+            "workedSolution": "$$3\\frac{1}{3} - 1\\frac{2}{3} = (2\\frac{4}{3}) - 1\\frac{2}{3} = 1\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "What is $\\frac{3}{4}$ of $\\text{GH¢ } 342.00$?",
+            "options": [
+              "GH¢ 256.5.00",
+              "GH¢ 266.5.00",
+              "GH¢ 246.5.00",
+              "GH¢ 86.00"
+            ],
+            "correctAnswer": "GH¢ 256.5.00",
+            "hint": "Divide $342$ by 4 and multiply by 3.",
+            "workedSolution": "$$\\frac{3}{4} \\times 342 = 3 \\times 85.5 = \\text{GH¢ } 256.5.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Arrange in ascending order: $0.65, \\, 3/5, \\, 58%$.",
+            "options": [
+              "58% < 3/5 < 0.65",
+              "0.65 < 58% < 3/5",
+              "3/5 < 58% < 0.65",
+              "58% < 0.65 < 3/5"
+            ],
+            "correctAnswer": "58% < 3/5 < 0.65",
+            "hint": "Convert all numbers to percentage values first (3/5 = 60%).",
+            "workedSolution": "Converting all to percentages yields: $58% < 3/5 < 0.65$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $4\\frac{1}{3} - 1\\frac{2}{3}$.",
+            "options": [
+              "2 2/3",
+              "3 1/3",
+              "2 1/3",
+              "3 2/3"
+            ],
+            "correctAnswer": "2 2/3",
+            "hint": "Borrow 1 from the whole number: $4\\frac{1}{3} = 3\\frac{4}{3}$.",
+            "workedSolution": "$$4\\frac{1}{3} - 1\\frac{2}{3} = (3\\frac{4}{3}) - 1\\frac{2}{3} = 2\\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_frac_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $1\\frac{1}{2} + 2\\frac{1}{4}$.",
+            "options": [
+              "3 3/4",
+              "3 1/2",
+              "4 1/4",
+              "3 2/6"
+            ],
+            "correctAnswer": "3 3/4",
+            "hint": "Use common denominator 4: $\\frac{2}{4} + \\frac{1}{4} = \\frac{3}{4}$.",
+            "workedSolution": "$$(1 + 2) + \\left(\\frac{2}{4} + \\frac{1}{4}\\right) = 3\\frac{3}{4}$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_frac_b7_h01",
+            "id": "q_b7_frac_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "A tank was $\\frac{2}{3}$ full of water. When $150\\text{ litres}$ of water were drawn out, it became $\\frac{1}{4}$ full. Find the total capacity of the tank.",
-            "options": ["360 litres", "300 litres", "450 litres", "240 litres"],
+            "prompt": "A water tank was $\\frac{2}{3}$ full. After $150\\text{ litres}$ of water were drawn out, the tank became $\\frac{1}{4}$ full. Find the total capacity of the tank in litres.",
+            "options": [
+              "360 litres",
+              "300 litres",
+              "450 litres",
+              "240 litres"
+            ],
             "correctAnswer": "360 litres",
-            "hint": "Fraction drawn out = $\\frac{2}{3} - \\frac{1}{4} = \\frac{5}{12}$. Set $\\frac{5}{12} C = 150$.",
-            "workedSolution": "$$\\frac{2}{3} - \\frac{1}{4} = \\frac{8 - 3}{12} = \\frac{5}{12}$$.\n$$\\frac{5}{12}C = 150 \\implies C = 150 \\times \\frac{12}{5} = 30 \\times 12 = 360\\text{ litres}$$.",
+            "hint": "Fraction drained $= \\frac{2}{3} - \\frac{1}{4} = \\frac{5}{12}$. Set $\\frac{5}{12}C = 150$.",
+            "workedSolution": "$$\\frac{2}{3} - \\frac{1}{4} = \\frac{8 - 3}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 150 \\implies C = 150 \\times \\frac{12}{5} = 30 \\times 12 = 360\\text{ litres}$$.",
             "points": 2
           },
           {
-            "id": "q_frac_b7_h02",
+            "id": "q_b7_frac_h02",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Evaluate: $$\\left(2\\frac{1}{2} \\div 1\\frac{1}{4}\\right) - \\left(\\frac{3}{5} \\times 1\\frac{2}{3}\\right)$$.",
-            "options": ["1", "1/2", "1 1/2", "0"],
-            "correctAnswer": "1",
-            "hint": "Evaluate brackets separately: $5/2 \\div 5/4 = 2$ and $3/5 \\times 5/3 = 1$.",
-            "workedSolution": "$$\\left(\\frac{5}{2} \\times \\frac{4}{5}\\right) - \\left(\\frac{3}{5} \\times \\frac{5}{3}\\right) = 2 - 1 = 1$$.",
-            "points": 2
-          },
-          {
-            "id": "q_frac_b7_h03",
-            "difficulty": "hard",
-            "dokLevel": 3,
-            "prompt": "A woman spent $\\frac{2}{5}$ of her monthly allowance on food, and $\\frac{1}{3}$ of the remainder on rent. If she had $\\text{GH¢ } 800.00$ left, how much was her original allowance?",
-            "options": ["GH¢ 2,000.00", "GH¢ 1,800.00", "GH¢ 2,400.00", "GH¢ 1,500.00"],
+            "prompt": "A trader spent $\\frac{2}{5}$ of her money on yams and $\\frac{1}{3}$ of the remainder on plantain. If she had $\\text{GH¢ } 800.00$ left, how much did she have originally?",
+            "options": [
+              "GH¢ 2,000.00",
+              "GH¢ 1,800.00",
+              "GH¢ 2,400.00",
+              "GH¢ 1,600.00"
+            ],
             "correctAnswer": "GH¢ 2,000.00",
-            "hint": "Remainder after food = $1 - 2/5 = 3/5$. Spent on rent = $1/3 \\times 3/5 = 1/5$. Final remainder = $3/5 - 1/5 = 2/5$.",
-            "workedSolution": "$$\\text{Food} = \\frac{2}{5}$$\n$$\\text{Rent} = \\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$$\n$$\\text{Remaining Fraction} = 1 - \\left(\\frac{2}{5} + \\frac{1}{5}\\right) = \\frac{2}{5}$$\n$$\\frac{2}{5}A = 800 \\implies A = 800 \\times \\frac{5}{2} = \\text{GH¢ } 2,000.00$$.",
+            "hint": "Remainder after yams $= \\frac{3}{5}$. Plantain $= \\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$. Leftover fraction $= \\frac{3}{5} - \\frac{1}{5} = \\frac{2}{5}$.",
+            "workedSolution": "$$\\text{Remaining after yams} = 1 - \\frac{2}{5} = \\frac{3}{5}$$\n$$\\text{Spent on plantain} = \\frac{1}{3} \\times \\frac{3}{5} = \\frac{1}{5}$$\n$$\\text{Total spent} = \\frac{2}{5} + \\frac{1}{5} = \\frac{3}{5} \\implies \\text{Fraction left} = \\frac{2}{5}$$\n$$\\frac{2}{5}M = 800 \\implies M = 800 \\times \\frac{5}{2} = \\text{GH¢ } 2,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\left(3\\frac{1}{2} \\div 1\\frac{3}{4}\\right) + \\left(2\\frac{2}{3} \\times \\frac{3}{8}\\right)$$.",
+            "options": [
+              "3",
+              "2",
+              "4",
+              "2 1/2"
+            ],
+            "correctAnswer": "3",
+            "hint": "Evaluate each bracket independently: $\\frac{7}{2} \\div \\frac{7}{4} = 2$ and $\\frac{8}{3} \\times \\frac{3}{8} = 1$.",
+            "workedSolution": "$$\\left(\\frac{7}{2} \\times \\frac{4}{7}\\right) + \\left(\\frac{8}{3} \\times \\frac{3}{8}\\right) = 2 + 1 = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a voting constituency, candidate A received $\\frac{4}{9}$ of the valid votes, candidate B received $\\frac{1}{3}$, and candidate C received the remaining $4,000$ votes. Find the total number of valid votes cast.",
+            "options": [
+              "18,000",
+              "24,000",
+              "15,000",
+              "36,000"
+            ],
+            "correctAnswer": "18,000",
+            "hint": "Fraction for C $= 1 - (\\frac{4}{9} + \\frac{3}{9}) = 1 - \\frac{7}{9} = \\frac{2}{9}$. Set $\\frac{2}{9}V = 4,000$.",
+            "workedSolution": "$$\\frac{4}{9} + \\frac{1}{3} = \\frac{4 + 3}{9} = \\frac{7}{9}$$\n$$\\text{Fraction for C} = 1 - \\frac{7}{9} = \\frac{2}{9}$$\n$$\\frac{2}{9}V = 4,000 \\implies V = 4,000 \\times \\frac{9}{2} = 2,000 \\times 9 = 18,000\\text{ votes}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{2}{3}$ of a number exceeds $\\frac{1}{2}$ of the same number by $12$, find the number.",
+            "options": [
+              "72",
+              "60",
+              "48",
+              "36"
+            ],
+            "correctAnswer": "72",
+            "hint": "Set up equation: $\\frac{2}{3}x - \\frac{1}{2}x = 12$.",
+            "workedSolution": "$$\\left(\\frac{4 - 3}{6}\\right)x = 12 \\implies \\frac{1}{6}x = 12 \\implies x = 12 \\times 6 = 72$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 1800.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 900.00",
+              "GH¢ 1050.00",
+              "GH¢ 750.00",
+              "GH¢ 600.00"
+            ],
+            "correctAnswer": "GH¢ 900.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 1800 = 600$$\n$$\\text{Remainder} = 1200$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 1200 = 300$$\n$$\\text{Leftover} = \\text{GH¢ } 900.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $200\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "480 litres",
+              "540 litres",
+              "420 litres",
+              "960 litres"
+            ],
+            "correctAnswer": "480 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 200$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 200 \\implies C = 200 \\times \\frac{12}{5} = 480\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $19$, what is the number?",
+            "options": [
+              "76",
+              "80",
+              "72",
+              "38"
+            ],
+            "correctAnswer": "76",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 19 \\implies \\frac{1}{4}x = 19$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 19 \\implies x = 19 \\times 4 = 76$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 2200.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 1100.00",
+              "GH¢ 1250.00",
+              "GH¢ 950.00",
+              "GH¢ 733.33"
+            ],
+            "correctAnswer": "GH¢ 1100.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 2200 = 733.3333333333334$$\n$$\\text{Remainder} = 1466.6666666666665$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 1466.6666666666665 = 366.66666666666663$$\n$$\\text{Leftover} = \\text{GH¢ } 1100.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $150\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "360 litres",
+              "420 litres",
+              "300 litres",
+              "720 litres"
+            ],
+            "correctAnswer": "360 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 150$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 150 \\implies C = 150 \\times \\frac{12}{5} = 360\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $13$, what is the number?",
+            "options": [
+              "52",
+              "56",
+              "48",
+              "26"
+            ],
+            "correctAnswer": "52",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 13 \\implies \\frac{1}{4}x = 13$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 13 \\implies x = 13 \\times 4 = 52$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 2600.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 1300.00",
+              "GH¢ 1450.00",
+              "GH¢ 1150.00",
+              "GH¢ 866.67"
+            ],
+            "correctAnswer": "GH¢ 1300.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 2600 = 866.6666666666666$$\n$$\\text{Remainder} = 1733.3333333333335$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 1733.3333333333335 = 433.33333333333337$$\n$$\\text{Leftover} = \\text{GH¢ } 1300.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $100\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "240 litres",
+              "300 litres",
+              "180 litres",
+              "480 litres"
+            ],
+            "correctAnswer": "240 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 100$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 100 \\implies C = 100 \\times \\frac{12}{5} = 240\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $17$, what is the number?",
+            "options": [
+              "68",
+              "72",
+              "64",
+              "34"
+            ],
+            "correctAnswer": "68",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 17 \\implies \\frac{1}{4}x = 17$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 17 \\implies x = 17 \\times 4 = 68$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 3000.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 1500.00",
+              "GH¢ 1650.00",
+              "GH¢ 1350.00",
+              "GH¢ 1000.00"
+            ],
+            "correctAnswer": "GH¢ 1500.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 3000 = 1000$$\n$$\\text{Remainder} = 2000$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 2000 = 500$$\n$$\\text{Leftover} = \\text{GH¢ } 1500.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $300\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "720 litres",
+              "780 litres",
+              "660 litres",
+              "1440 litres"
+            ],
+            "correctAnswer": "720 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 300$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 300 \\implies C = 300 \\times \\frac{12}{5} = 720\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $11$, what is the number?",
+            "options": [
+              "44",
+              "48",
+              "40",
+              "22"
+            ],
+            "correctAnswer": "44",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 11 \\implies \\frac{1}{4}x = 11$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 11 \\implies x = 11 \\times 4 = 44$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 3400.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 1700.00",
+              "GH¢ 1850.00",
+              "GH¢ 1550.00",
+              "GH¢ 1133.33"
+            ],
+            "correctAnswer": "GH¢ 1700.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 3400 = 1133.3333333333333$$\n$$\\text{Remainder} = 2266.666666666667$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 2266.666666666667 = 566.6666666666667$$\n$$\\text{Leftover} = \\text{GH¢ } 1700.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $250\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "600 litres",
+              "660 litres",
+              "540 litres",
+              "1200 litres"
+            ],
+            "correctAnswer": "600 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 250$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 250 \\implies C = 250 \\times \\frac{12}{5} = 600\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $15$, what is the number?",
+            "options": [
+              "60",
+              "64",
+              "56",
+              "30"
+            ],
+            "correctAnswer": "60",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 15 \\implies \\frac{1}{4}x = 15$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 15 \\implies x = 15 \\times 4 = 60$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 3800.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 1900.00",
+              "GH¢ 2050.00",
+              "GH¢ 1750.00",
+              "GH¢ 1266.67"
+            ],
+            "correctAnswer": "GH¢ 1900.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 3800 = 1266.6666666666667$$\n$$\\text{Remainder} = 2533.333333333333$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 2533.333333333333 = 633.3333333333333$$\n$$\\text{Leftover} = \\text{GH¢ } 1900.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $200\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "480 litres",
+              "540 litres",
+              "420 litres",
+              "960 litres"
+            ],
+            "correctAnswer": "480 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 200$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 200 \\implies C = 200 \\times \\frac{12}{5} = 480\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $19$, what is the number?",
+            "options": [
+              "76",
+              "80",
+              "72",
+              "38"
+            ],
+            "correctAnswer": "76",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 19 \\implies \\frac{1}{4}x = 19$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 19 \\implies x = 19 \\times 4 = 76$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 4200.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 2100.00",
+              "GH¢ 2250.00",
+              "GH¢ 1950.00",
+              "GH¢ 1400.00"
+            ],
+            "correctAnswer": "GH¢ 2100.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 4200 = 1400$$\n$$\\text{Remainder} = 2800$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 2800 = 700$$\n$$\\text{Leftover} = \\text{GH¢ } 2100.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $150\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "360 litres",
+              "420 litres",
+              "300 litres",
+              "720 litres"
+            ],
+            "correctAnswer": "360 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 150$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 150 \\implies C = 150 \\times \\frac{12}{5} = 360\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $13$, what is the number?",
+            "options": [
+              "52",
+              "56",
+              "48",
+              "26"
+            ],
+            "correctAnswer": "52",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 13 \\implies \\frac{1}{4}x = 13$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 13 \\implies x = 13 \\times 4 = 52$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 4600.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 2300.00",
+              "GH¢ 2450.00",
+              "GH¢ 2150.00",
+              "GH¢ 1533.33"
+            ],
+            "correctAnswer": "GH¢ 2300.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 4600 = 1533.3333333333333$$\n$$\\text{Remainder} = 3066.666666666667$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 3066.666666666667 = 766.6666666666667$$\n$$\\text{Leftover} = \\text{GH¢ } 2300.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $100\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "240 litres",
+              "300 litres",
+              "180 litres",
+              "480 litres"
+            ],
+            "correctAnswer": "240 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 100$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 100 \\implies C = 100 \\times \\frac{12}{5} = 240\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $17$, what is the number?",
+            "options": [
+              "68",
+              "72",
+              "64",
+              "34"
+            ],
+            "correctAnswer": "68",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 17 \\implies \\frac{1}{4}x = 17$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 17 \\implies x = 17 \\times 4 = 68$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 5000.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 2500.00",
+              "GH¢ 2650.00",
+              "GH¢ 2350.00",
+              "GH¢ 1666.67"
+            ],
+            "correctAnswer": "GH¢ 2500.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 5000 = 1666.6666666666667$$\n$$\\text{Remainder} = 3333.333333333333$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 3333.333333333333 = 833.3333333333333$$\n$$\\text{Leftover} = \\text{GH¢ } 2500.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $300\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "720 litres",
+              "780 litres",
+              "660 litres",
+              "1440 litres"
+            ],
+            "correctAnswer": "720 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 300$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 300 \\implies C = 300 \\times \\frac{12}{5} = 720\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $11$, what is the number?",
+            "options": [
+              "44",
+              "48",
+              "40",
+              "22"
+            ],
+            "correctAnswer": "44",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 11 \\implies \\frac{1}{4}x = 11$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 11 \\implies x = 11 \\times 4 = 44$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 5400.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 2700.00",
+              "GH¢ 2850.00",
+              "GH¢ 2550.00",
+              "GH¢ 1800.00"
+            ],
+            "correctAnswer": "GH¢ 2700.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 5400 = 1800$$\n$$\\text{Remainder} = 3600$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 3600 = 900$$\n$$\\text{Leftover} = \\text{GH¢ } 2700.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $250\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "600 litres",
+              "660 litres",
+              "540 litres",
+              "1200 litres"
+            ],
+            "correctAnswer": "600 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 250$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 250 \\implies C = 250 \\times \\frac{12}{5} = 600\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $15$, what is the number?",
+            "options": [
+              "60",
+              "64",
+              "56",
+              "30"
+            ],
+            "correctAnswer": "60",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 15 \\implies \\frac{1}{4}x = 15$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 15 \\implies x = 15 \\times 4 = 60$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 5800.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 2900.00",
+              "GH¢ 3050.00",
+              "GH¢ 2750.00",
+              "GH¢ 1933.33"
+            ],
+            "correctAnswer": "GH¢ 2900.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 5800 = 1933.3333333333333$$\n$$\\text{Remainder} = 3866.666666666667$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 3866.666666666667 = 966.6666666666667$$\n$$\\text{Leftover} = \\text{GH¢ } 2900.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A fuel reservoir was $\\frac{3}{4}$ full. When $200\\text{ litres}$ were consumed, it became $\\frac{1}{3}$ full. Find the total capacity of the reservoir.",
+            "options": [
+              "480 litres",
+              "540 litres",
+              "420 litres",
+              "960 litres"
+            ],
+            "correctAnswer": "480 litres",
+            "hint": "Fraction drained $= \\frac{3}{4} - \\frac{1}{3} = \\frac{5}{12}$. Solve $\\frac{5}{12}C = 200$.",
+            "workedSolution": "$$\\frac{3}{4} - \\frac{1}{3} = \\frac{9 - 4}{12} = \\frac{5}{12}$$\n$$\\frac{5}{12}C = 200 \\implies C = 200 \\times \\frac{12}{5} = 480\\text{ litres}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{1\\frac{1}{2} + 2\\frac{1}{3}}{3\\frac{5}{6}}$$.",
+            "options": [
+              "1",
+              "5/6",
+              "2",
+              "1 1/6"
+            ],
+            "correctAnswer": "1",
+            "hint": "Convert mixed numbers to improper fractions with common denominator 6.",
+            "workedSolution": "$$\\text{Numerator: } \\frac{3}{2} + \\frac{7}{3} = \\frac{9 + 14}{6} = \\frac{23}{6}$$\n$$\\text{Denominator: } 3\\frac{5}{6} = \\frac{23}{6}$$\n$$\\frac{23/6}{23/6} = 1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $\\frac{3}{4}$ of an unknown number exceeds $\\frac{1}{2}$ of the number by $19$, what is the number?",
+            "options": [
+              "76",
+              "80",
+              "72",
+              "38"
+            ],
+            "correctAnswer": "76",
+            "hint": "$$\\left(\\frac{3}{4} - \\frac{1}{2}\\right)x = 19 \\implies \\frac{1}{4}x = 19$$.",
+            "workedSolution": "$$\\frac{1}{4}x = 19 \\implies x = 19 \\times 4 = 76$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_frac_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A worker earns $\\text{GH¢ } 6200.00$. He spends $\\frac{1}{3}$ on food and $\\frac{1}{4}$ of the remainder on rent. How much money does he have left?",
+            "options": [
+              "GH¢ 3100.00",
+              "GH¢ 3250.00",
+              "GH¢ 2950.00",
+              "GH¢ 2066.67"
+            ],
+            "correctAnswer": "GH¢ 3100.00",
+            "hint": "Remainder after food is $\\frac{2}{3}$. Fraction for rent is $\\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$. Total spent is $\\frac{1}{2}$.",
+            "workedSolution": "$$\\text{Spent on food} = \\frac{1}{3} \\times 6200 = 2066.6666666666665$$\n$$\\text{Remainder} = 4133.333333333334$$\n$$\\text{Spent on rent} = \\frac{1}{4} \\times 4133.333333333334 = 1033.3333333333335$$\n$$\\text{Leftover} = \\text{GH¢ } 3100.00$$.",
             "points": 2
           }
         ]
@@ -216,7 +2512,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "Evaluate: $$\\frac{3}{4} \\div \\frac{3}{8} + \\frac{1}{2}$$.",
-            "options": ["2 1/2", "1", "3", "1 1/2"],
+            "options": [
+              "2 1/2",
+              "1",
+              "3",
+              "1 1/2"
+            ],
             "correctAnswer": "2 1/2",
             "hint": "Divide first: $3/4 \\times 8/3 = 2$. Then add $1/2$.",
             "workedSolution": "$$\\left(\\frac{3}{4} \\times \\frac{8}{3}\\right) + \\frac{1}{2} = 2 + \\frac{1}{2} = 2\\frac{1}{2}$$.",
@@ -227,7 +2528,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "Evaluate: $$\\left(\\frac{3}{4} + \\frac{5}{8}\\right) \\times \\frac{4}{11}$$.",
-            "options": ["1/2", "1/4", "3/4", "1"],
+            "options": [
+              "1/2",
+              "1/4",
+              "3/4",
+              "1"
+            ],
             "correctAnswer": "1/2",
             "hint": "Brackets first: $3/4 + 5/8 = 11/8$. Then multiply by $4/11$.",
             "workedSolution": "$$\\frac{6 + 5}{8} \\times \\frac{4}{11} = \\frac{11}{8} \\times \\frac{4}{11} = \\frac{4}{8} = \\frac{1}{2}$$.",
@@ -238,7 +2544,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "What is $35\\%$ of $\\text{GH¢ } 480.00$?",
-            "options": ["GH¢ 168.00", "GH¢ 144.00", "GH¢ 180.00", "GH¢ 192.00"],
+            "options": [
+              "GH¢ 168.00",
+              "GH¢ 144.00",
+              "GH¢ 180.00",
+              "GH¢ 192.00"
+            ],
             "correctAnswer": "GH¢ 168.00",
             "hint": "$$\\frac{35}{100} \\times 480$$.",
             "workedSolution": "$$0.35 \\times 480 = \\text{GH¢ } 168.00$$.",
@@ -251,7 +2562,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Simplify: $$\\frac{2}{3}\\left(\\frac{3}{4} - \\frac{1}{2}\\right) + \\frac{5}{6}$$.",
-            "options": ["1", "5/6", "1 1/6", "2/3"],
+            "options": [
+              "1",
+              "5/6",
+              "1 1/6",
+              "2/3"
+            ],
             "correctAnswer": "1",
             "hint": "Evaluate inside parentheses first: $3/4 - 1/2 = 1/4$.",
             "workedSolution": "$$\\frac{2}{3}\\left(\\frac{1}{4}\\right) + \\frac{5}{6} = \\frac{2}{12} + \\frac{5}{6} = \\frac{1}{6} + \\frac{5}{6} = \\frac{6}{6} = 1$$.",
@@ -262,7 +2578,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "In a school, $\\frac{2}{3}$ of the learners eat at the canteen, $\\frac{1}{4}$ bring packed food, and the remaining 35 learners go home for lunch. How many total learners are in the school?",
-            "options": ["420", "360", "480", "300"],
+            "options": [
+              "420",
+              "360",
+              "480",
+              "300"
+            ],
             "correctAnswer": "420",
             "hint": "Remaining fraction = $1 - (2/3 + 1/4) = 1/12$. Set $1/12 N = 35$.",
             "workedSolution": "$$\\frac{2}{3} + \\frac{1}{4} = \\frac{8 + 3}{12} = \\frac{11}{12}$$\n$$\\text{Fraction going home} = 1 - \\frac{11}{12} = \\frac{1}{12}$$\n$$\\frac{1}{12}N = 35 \\implies N = 35 \\times 12 = 420\\text{ learners}$$.",
@@ -273,7 +2594,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Find the area of a rectangle whose dimensions are $3\\frac{3}{4}\\text{ cm}$ long by $1\\frac{1}{3}\\text{ cm}$ wide.",
-            "options": ["5 cm²", "4 1/2 cm²", "5 1/4 cm²", "6 cm²"],
+            "options": [
+              "5 cm²",
+              "4 1/2 cm²",
+              "5 1/4 cm²",
+              "6 cm²"
+            ],
             "correctAnswer": "5 cm²",
             "hint": "Area = Length × Width: $\\frac{15}{4} \\times \\frac{4}{3}$.",
             "workedSolution": "$$\\text{Area} = \\frac{15}{4} \\times \\frac{4}{3} = \\frac{60}{12} = 5\\text{ cm}^2$$.",
@@ -286,7 +2612,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "Simplify: $$\\frac{1\\frac{1}{2} + 2\\frac{2}{3}}{3\\frac{1}{4} - 1\\frac{1}{6}}$$.",
-            "options": ["2", "1 1/2", "2 1/3", "1 3/4"],
+            "options": [
+              "2",
+              "1 1/2",
+              "2 1/3",
+              "1 3/4"
+            ],
             "correctAnswer": "2",
             "hint": "Numerator = $3/2 + 8/3 = 25/6$. Denominator = $13/4 - 7/6 = 25/12$.",
             "workedSolution": "$$\\text{Numerator} = \\frac{9 + 16}{6} = \\frac{25}{6}$$\n$$\\text{Denominator} = \\frac{39 - 14}{12} = \\frac{25}{12}$$\n$$\\frac{25}{6} \\div \\frac{25}{12} = \\frac{25}{6} \\times \\frac{12}{25} = 2$$.",
@@ -297,7 +2628,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "Dufie spent $\\frac{1}{3}$ of her pocket money on breakfast and $\\frac{1}{6}$ of what remained on sweets. If she still had $\\text{GH¢ } 55.00$, how much was her original pocket money?",
-            "options": ["GH¢ 99.00", "GH¢ 110.00", "GH¢ 90.00", "GH¢ 85.00"],
+            "options": [
+              "GH¢ 99.00",
+              "GH¢ 110.00",
+              "GH¢ 90.00",
+              "GH¢ 85.00"
+            ],
             "correctAnswer": "GH¢ 99.00",
             "hint": "After breakfast, $2/3$ remains. Sweets = $1/6 \\times 2/3 = 1/9$. Remaining fraction = $2/3 - 1/9 = 5/9$.",
             "workedSolution": "$$\\text{Remainder after breakfast} = 1 - \\frac{1}{3} = \\frac{2}{3}$$\n$$\\text{Spent on sweets} = \\frac{1}{6} \\times \\frac{2}{3} = \\frac{1}{9}$$\n$$\\text{Final Remainder} = \\frac{2}{3} - \\frac{1}{9} = \\frac{6 - 1}{9} = \\frac{5}{9}$$\n$$\\frac{5}{9}M = 55 \\implies M = 55 \\times \\frac{9}{5} = 11 \\times 9 = \\text{GH¢ } 99.00$$.",
@@ -368,7 +2704,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "Convert the recurring decimal $0.\\dot{8}$ into a common fraction.",
-            "options": ["8/9", "4/5", "8/10", "8/99"],
+            "options": [
+              "8/9",
+              "4/5",
+              "8/10",
+              "8/99"
+            ],
             "correctAnswer": "8/9",
             "hint": "A single recurring digit $0.\\dot{a} = \\frac{a}{9}$.",
             "workedSolution": "$$x = 0.888\\dots \\implies 10x - x = 8 \\implies 9x = 8 \\implies x = \\frac{8}{9}$$.",
@@ -379,7 +2720,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "A television marked $\\text{GH¢ } 2,250.00$ was sold for $\\text{GH¢ } 2,025.00$. What percentage discount was granted?",
-            "options": ["10%", "12%", "15%", "8%"],
+            "options": [
+              "10%",
+              "12%",
+              "15%",
+              "8%"
+            ],
             "correctAnswer": "10%",
             "hint": "Discount = $2,250 - 2,025 = 225$. Percentage = $(225 / 2250) \\times 100\\%$.",
             "workedSolution": "$$\\text{Discount} = \\text{GH¢ } 225.00$$.\n$$\\text{Percentage} = \\frac{225}{2250} \\times 100\\% = 10\\%$$.",
@@ -390,7 +2736,12 @@
             "difficulty": "low",
             "dokLevel": 1,
             "prompt": "Express $0.\\dot{3}\\dot{6}$ as a fraction in its simplest form.",
-            "options": ["4/11", "36/100", "12/33", "1/3"],
+            "options": [
+              "4/11",
+              "36/100",
+              "12/33",
+              "1/3"
+            ],
             "correctAnswer": "4/11",
             "hint": "$$0.\\dot{a}\\dot{b} = \\frac{ab}{99}$$. Divide $36$ and $99$ by $9$.",
             "workedSolution": "$$\\frac{36 \\div 9}{99 \\div 9} = \\frac{4}{11}$$.",
@@ -403,7 +2754,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} - \\frac{5}{8} \\div 2\\frac{1}{2}$$.",
-            "options": ["1/4", "1/2", "3/8", "0"],
+            "options": [
+              "1/4",
+              "1/2",
+              "3/8",
+              "0"
+            ],
             "correctAnswer": "1/4",
             "hint": "$2/3 \\times 3/4 = 1/2$. $5/8 \\div 5/2 = 5/8 \\times 2/5 = 1/4$.",
             "workedSolution": "$$\\frac{1}{2} - \\frac{1}{4} = \\frac{2 - 1}{4} = \\frac{1}{4}$$.",
@@ -414,7 +2770,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "In an election between two candidates, the winner obtained $56\\%$ of the valid votes. If the winner won by a majority of $1,800$ votes, find the total number of valid votes cast.",
-            "options": ["15,000", "12,000", "18,000", "20,000"],
+            "options": [
+              "15,000",
+              "12,000",
+              "18,000",
+              "20,000"
+            ],
             "correctAnswer": "15,000",
             "hint": "Opponent received $100\\% - 56\\% = 44\\%$. Majority difference = $56\\% - 44\\% = 12\\%$. Set $12\\% V = 1800$.",
             "workedSolution": "$$56\\% - 44\\% = 12\\%$$\n$$12\\% V = 1,800 \\implies V = 1,800 \\times \\frac{100}{12} = 150 \\times 100 = 15,000\\text{ votes}$$.",
@@ -425,7 +2786,12 @@
             "difficulty": "medium",
             "dokLevel": 2,
             "prompt": "Convert $0.1\\dot{6}$ ($0.1666\\dots$) into a simple common fraction.",
-            "options": ["1/6", "16/99", "1/60", "2/15"],
+            "options": [
+              "1/6",
+              "16/99",
+              "1/60",
+              "2/15"
+            ],
             "correctAnswer": "1/6",
             "hint": "$10x = 1.666\\dots$ and $100x = 16.666\\dots$. $90x = 15$.",
             "workedSolution": "$$90x = 15 \\implies x = \\frac{15}{90} = \\frac{1}{6}$$.",
@@ -438,7 +2804,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "A trader bought a consignment of goods. She spent $\\frac{1}{4}$ of her capital on transport and $\\frac{2}{5}$ of the remainder on storage. If she was left with $\\text{GH¢ } 5,400.00$, calculate her initial capital.",
-            "options": ["GH¢ 12,000.00", "GH¢ 10,800.00", "GH¢ 14,000.00", "GH¢ 9,600.00"],
+            "options": [
+              "GH¢ 12,000.00",
+              "GH¢ 10,800.00",
+              "GH¢ 14,000.00",
+              "GH¢ 9,600.00"
+            ],
             "correctAnswer": "GH¢ 12,000.00",
             "hint": "Remainder after transport = $3/4$. Storage = $2/5 \\times 3/4 = 3/10$. Remaining fraction = $3/4 - 3/10 = 9/20$.",
             "workedSolution": "$$\\text{Transport} = \\frac{1}{4}$$\n$$\\text{Storage} = \\frac{2}{5} \\times \\frac{3}{4} = \\frac{3}{10}$$\n$$\\text{Spent so far} = \\frac{1}{4} + \\frac{3}{10} = \\frac{5 + 6}{20} = \\frac{11}{20}$$\n$$\\text{Fraction Remaining} = 1 - \\frac{11}{20} = \\frac{9}{20}$$\n$$\\frac{9}{20}C = 5,400 \\implies C = 5,400 \\times \\frac{20}{9} = 600 \\times 20 = \\text{GH¢ } 12,000.00$$.",
@@ -449,7 +2820,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "Evaluate: $$\\frac{34 \\div 3^2 + 40 - 2^3 \\times 3^2 \\div 9}{2\\frac{1}{2} - 1\\frac{1}{4}}$$.",
-            "options": ["28.62", "30.44", "32.18", "25.00"],
+            "options": [
+              "28.62",
+              "30.44",
+              "32.18",
+              "25.00"
+            ],
             "correctAnswer": "28.62",
             "hint": "Numerator: $34 \\div 9 \\approx 3.778$, $2^3 \\times 9 \\div 9 = 8$. $3.778 + 40 - 8 = 35.778$. Denominator: $2.5 - 1.25 = 1.25$.",
             "workedSolution": "$$\\text{Numerator} = \\frac{34}{9} + 40 - (8 \\times 9 \\div 9) = \\frac{34}{9} + 32 = \\frac{322}{9} \\approx 35.778$$\n$$\\text{Denominator} = \\frac{5}{2} - \\frac{5}{4} = \\frac{5}{4} = 1.25$$\n$$\\frac{322}{9} \\div \\frac{5}{4} = \\frac{322 \\times 4}{45} = \\frac{1288}{45} \\approx 28.62$$.",
@@ -460,7 +2836,12 @@
             "difficulty": "hard",
             "dokLevel": 3,
             "prompt": "Express the recurring decimal $2.1\\dot{4}\\dot{5}$ as a mixed number in simplest form.",
-            "options": ["2 8/55", "2 145/990", "2 7/50", "2 16/110"],
+            "options": [
+              "2 8/55",
+              "2 145/990",
+              "2 7/50",
+              "2 16/110"
+            ],
             "correctAnswer": "2 8/55",
             "hint": "Separate integer 2: $x = 0.14545\\dots$. $10x = 1.4545\\dots$, $1000x = 145.4545\\dots$. $990x = 144$.",
             "workedSolution": "$$\\text{Fractional Part: } 990x = 144 \\implies x = \\frac{144}{990} = \\frac{72}{495} = \\frac{8}{55}$$\n$$\\text{Whole expression} = 2\\frac{8}{55}$$.",
