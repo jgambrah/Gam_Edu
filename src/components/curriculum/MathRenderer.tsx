@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -51,8 +52,20 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
     <div className={`prose prose-invert max-w-none text-sm leading-relaxed ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkMath]}
-        rehypePlugins={[rehypeKatex]}
+        rehypePlugins={[rehypeRaw, rehypeKatex]}
         components={{
+          details: ({ node, ...props }) => (
+            <details
+              {...props}
+              className="my-3 rounded-2xl border border-slate-700/70 bg-slate-900/90 p-4 shadow-md transition-all text-slate-200"
+            />
+          ),
+          summary: ({ node, ...props }) => (
+            <summary
+              {...props}
+              className="cursor-pointer font-semibold text-indigo-300 hover:text-indigo-200 select-none outline-none mb-2"
+            />
+          ),
           p: ({ children }) => (
             <p className="mb-2 last:mb-0 leading-relaxed whitespace-pre-line text-slate-200">
               {children}
