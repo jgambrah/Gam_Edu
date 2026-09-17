@@ -14,7 +14,7 @@
   },
   "badge": "Strand 1: Number",
   "description": "Master set definitions, listing elements, set-builder notation, subsets, union, intersection, complement, and 2-set and 3-set Venn problem modeling.",
-  "totalPracticeQuestions": 309,
+  "totalPracticeQuestions": 450,
   "version": 1,
   "levels": {
     "b7": {
@@ -4995,151 +4995,2407 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_sets_b9_l01",
+            "id": "q_b9_set_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Which of the following numbers belongs to the set of irrational numbers ($\\mathbb{Q}'$)?",
+            "prompt": "Which of the following correct inclusions represents the hierarchy of number systems?",
             "options": [
-              "√7",
-              "√9",
-              "-3/4",
-              "0.333..."
+              "ℕ ⊂ 𝕎 ⊂ ℤ ⊂ ℚ ⊂ ℝ",
+              "ℝ ⊂ ℚ ⊂ ℤ ⊂ 𝕎 ⊂ ℕ",
+              "ℕ ⊂ ℤ ⊂ 𝕎 ⊂ ℚ ⊂ ℝ",
+              "ℚ ⊂ ℤ ⊂ 𝕎 ⊂ ℕ ⊂ ℝ"
             ],
-            "correctAnswer": "√7",
-            "hint": "Irrational numbers cannot be written as a fraction of integers.",
-            "workedSolution": "$\\sqrt{7}$ is a non-terminating, non-repeating root, making it irrational. $\\sqrt{9} = 3$ is rational.",
+            "correctAnswer": "ℕ ⊂ 𝕎 ⊂ ℤ ⊂ ℚ ⊂ ℝ",
+            "hint": "Natural numbers are contained in Whole numbers, which are inside Integers, Rationals, and Reals.",
+            "workedSolution": "Every natural number is a whole number, every whole number is an integer, every integer is rational, and all rationals belong to the Real continuum: $$\\mathbb{N} \\subset \\mathbb{W} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}$$.",
             "points": 1
           },
           {
-            "id": "q_sets_b9_l02",
+            "id": "q_b9_set_l02",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "What is the intersection of the set of rational numbers ($\\mathbb{Q}$) and the set of irrational numbers ($\\mathbb{Q}'$)?",
+            "prompt": "Which of the following is an irrational number ($\\mathbb{Q}'$)?",
+            "options": [
+              "√7",
+              "0.35",
+              "√9",
+              "-5/8"
+            ],
+            "correctAnswer": "√7",
+            "hint": "An irrational number cannot be expressed as a ratio of integers; non-perfect square roots are irrational.",
+            "workedSolution": "$\\sqrt{7}$ is a non-terminating, non-repeating radical, so $\\sqrt{7} \\in \\mathbb{Q}'$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "In the 3-set Venn diagram below:<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text></svg><br/>What region does the letter $x$ represent?",
+            "options": [
+              "A ∩ B ∩ C",
+              "A ∪ B ∪ C",
+              "(A ∩ B) ∪ C",
+              "A ∩ (B ∪ C)"
+            ],
+            "correctAnswer": "A ∩ B ∩ C",
+            "hint": "Notice that region $x$ lies simultaneously inside all three circles $A$, $B$, and $C$.",
+            "workedSolution": "The central overlap shared by all three circles is the triple intersection $A \\cap B \\cap C$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is $\\mathbb{Q} \\cap \\mathbb{Q}'$ equal to in the Real Number System?",
             "options": [
               "∅",
-              "{0}",
               "ℝ",
+              "ℚ",
               "ℤ"
             ],
             "correctAnswer": "∅",
-            "hint": "No number can be both rational and irrational.",
-            "workedSolution": "By definition, rational and irrational sets are completely disjoint: $\\mathbb{Q} \\cap \\mathbb{Q}' = \\emptyset$.",
+            "hint": "Rational and irrational numbers are disjoint sets with zero elements in common.",
+            "workedSolution": "By definition, a number cannot be both rational and irrational: $$\\mathbb{Q} \\cap \\mathbb{Q}' = \\emptyset$$.",
             "points": 1
           },
           {
-            "id": "q_sets_b9_l03",
+            "id": "q_b9_set_l05",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "If set $A \\subset B$, what is $A \\cap B$?",
+            "prompt": "Which of the following numbers belongs to $\\mathbb{Z} \\setminus \\mathbb{N}$ (Integers but NOT Natural numbers)?",
             "options": [
-              "A",
-              "B",
-              "∅",
-              "U"
+              "-4",
+              "5",
+              "1/2",
+              "√3"
             ],
-            "correctAnswer": "A",
-            "hint": "Since all elements of A are inside B, their common elements are all of A.",
-            "workedSolution": "If $A \\subset B$, then every element of $A$ is in $B$. Therefore $A \\cap B = A$.",
+            "correctAnswer": "-4",
+            "hint": "Natural numbers are positive counting numbers $\\{1, 2, 3, \\dots\\}$.",
+            "workedSolution": "$-4$ is an integer ($\\in \\mathbb{Z}$) but is not a natural number ($\\notin \\mathbb{N}$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $A \\cap B = \\emptyset$ and $A \\cap C = \\emptyset$, then set $A$ is:",
+            "options": [
+              "Disjoint from both B and C",
+              "A subset of B and C",
+              "Equal to B ∪ C",
+              "The universal set"
+            ],
+            "correctAnswer": "Disjoint from both B and C",
+            "hint": "An empty intersection indicates disjoint sets.",
+            "workedSolution": "Having no common elements with either set means $A$ is mutually disjoint from both $B$ and $C$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "The set of all recurring decimals belongs to which domain?",
+            "options": [
+              "Rational Numbers (ℚ)",
+              "Irrational Numbers (ℚ')",
+              "Natural Numbers (ℕ)",
+              "Integers (ℤ)"
+            ],
+            "correctAnswer": "Rational Numbers (ℚ)",
+            "hint": "Every recurring decimal can be converted into a common fraction $\\frac{a}{b}$.",
+            "workedSolution": "Since any recurring decimal can be expressed as $\\frac{a}{b}$ where $a, b \\in \\mathbb{Z}, b \\ne 0$, it is rational ($\\mathbb{Q}$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "If $S = \\{x : x^2 = 25, \\, x \\in \\mathbb{N}\\}$, what is $S$?",
+            "options": [
+              "{5}",
+              "{-5, 5}",
+              "{-5}",
+              "{25}"
+            ],
+            "correctAnswer": "{5}",
+            "hint": "Natural numbers cannot be negative.",
+            "workedSolution": "$x^2 = 25 \\implies x = \\pm 5$. Because $x \\in \\mathbb{N}$, only $5$ is admissible. $S = \\{5\\}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "How many disjoint regions are formed inside the universal set rectangle by 3 intersecting sets?",
+            "options": [
+              "8",
+              "6",
+              "7",
+              "9"
+            ],
+            "correctAnswer": "8",
+            "hint": "Count: 3 single-only, 3 double-only, 1 triple-intersection, and 1 outside region.",
+            "workedSolution": "Three intersecting sets produce $2^3 = 8$ mutually exclusive regions.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which set contains the number zero ($0$)?",
+            "options": [
+              "Whole Numbers (𝕎)",
+              "Natural Numbers (ℕ)",
+              "Positive Integers (ℤ⁺)",
+              "Irrational Numbers (ℚ')"
+            ],
+            "correctAnswer": "Whole Numbers (𝕎)",
+            "hint": "$\\mathbb{W} = \\{0, 1, 2, 3, \\dots\\}$.",
+            "workedSolution": "Zero is the first element of Whole numbers ($\\mathbb{W}$).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{12}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{12}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{12}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{13}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{13}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{13}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{14}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{14}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{14}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{15}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{15}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{15}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{16}$ belong when evaluated?",
+            "options": [
+              "Rational Numbers (ℚ)",
+              "Irrational Numbers (ℚ')",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Rational Numbers (ℚ)",
+            "hint": "$\\sqrt{16} = 4$, which is an exact integer.",
+            "workedSolution": "$$\\sqrt{16} = 4 \\in \\mathbb{Q}$$ (Rational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{17}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{17}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{17}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{18}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{18}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{18}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{19}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{19}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{19}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{20}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{20}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{20}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{21}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{21}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{21}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{22}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{22}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{22}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{23}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{23}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{23}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{24}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{24}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{24}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{25}$ belong when evaluated?",
+            "options": [
+              "Rational Numbers (ℚ)",
+              "Irrational Numbers (ℚ')",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Rational Numbers (ℚ)",
+            "hint": "$\\sqrt{25} = 5$, which is an exact integer.",
+            "workedSolution": "$$\\sqrt{25} = 5 \\in \\mathbb{Q}$$ (Rational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{26}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{26}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{26}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{27}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{27}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{27}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{28}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{28}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{28}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{29}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{29}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{29}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{30}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{30}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{30}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{31}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{31}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{31}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{32}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{32}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{32}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{33}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{33}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{33}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{34}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{34}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{34}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{35}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{35}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{35}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{36}$ belong when evaluated?",
+            "options": [
+              "Rational Numbers (ℚ)",
+              "Irrational Numbers (ℚ')",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Rational Numbers (ℚ)",
+            "hint": "$\\sqrt{36} = 6$, which is an exact integer.",
+            "workedSolution": "$$\\sqrt{36} = 6 \\in \\mathbb{Q}$$ (Rational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{37}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{37}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{37}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{38}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{38}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{38}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{39}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{39}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{39}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{40}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{40}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{40}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{41}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{41}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{41}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{42}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{42}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{42}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{43}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{43}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{43}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{44}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{44}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{44}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{45}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{45}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{45}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{46}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{46}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{46}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{47}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{47}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{47}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{48}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{48}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{48}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{49}$ belong when evaluated?",
+            "options": [
+              "Rational Numbers (ℚ)",
+              "Irrational Numbers (ℚ')",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Rational Numbers (ℚ)",
+            "hint": "$\\sqrt{49} = 7$, which is an exact integer.",
+            "workedSolution": "$$\\sqrt{49} = 7 \\in \\mathbb{Q}$$ (Rational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{50}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{50}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{50}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "To which set of numbers does $\\sqrt{51}$ belong when evaluated?",
+            "options": [
+              "Irrational Numbers (ℚ')",
+              "Rational Numbers (ℚ)",
+              "Empty Set (∅)",
+              "Negative Integers (ℤ⁻)"
+            ],
+            "correctAnswer": "Irrational Numbers (ℚ')",
+            "hint": "$\\sqrt{51}$ is a non-terminating, non-repeating radical.",
+            "workedSolution": "$$\\sqrt{51}$$ cannot be written as a ratio of two integers, so it belongs to $\\mathbb{Q}'$ (Irrational).",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_sets_b9_m01",
+            "id": "q_b9_set_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "In a school of 120 candidates, 75 passed Core Math and 65 passed Science. If 10 candidates failed both subjects, how many passed Math ONLY?",
+            "prompt": "Study the Venn diagram below:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>P</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>Q</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x + 1</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x - 2</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>If $n(U) = 39$, determine the value of $x$.",
             "options": [
-              "45",
-              "30",
+              "6",
+              "5",
+              "7",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Sum all four disjoint regions: $(2x + 1) + x + (3x - 2) + 4 = 39$.",
+            "workedSolution": "$$(2x + 1) + x + (3x - 2) + 4 = 39$$\n$$6x + 3 = 39 \\implies 6x = 36 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $n(A) = 30$, $n(B) = 25$, and $n(A \\cup B) = 45$, find the cardinality of the symmetric difference $(A \\setminus B) \\cup (B \\setminus A)$.",
+            "options": [
               "35",
-              "55"
+              "10",
+              "20",
+              "25"
             ],
-            "correctAnswer": "45",
-            "hint": "$n(M \\cup S) = 120 - 10 = 110$. Both $= 75 + 65 - 110 = 30$. Math only $= 75 - 30$.",
-            "workedSolution": "$$\\text{Both} = 140 - 110 = 30$$. Math only $= 75 - 30 = 45$.",
+            "correctAnswer": "35",
+            "hint": "Find intersection first: $n(A \\cap B) = 30 + 25 - 45 = 10$. Symmetric difference $= 45 - 10$.",
+            "workedSolution": "$$n(A \\cap B) = 30 + 25 - 45 = 10$$\n$$\\text{Symmetric Difference} = n(A \\cup B) - n(A \\cap B) = 45 - 10 = 35$$.",
             "points": 1
           },
           {
-            "id": "q_sets_b9_m02",
+            "id": "q_b9_set_m03",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Which set relation correctly represents the shaded region outside circle A and inside circle B?",
+            "prompt": "In a class of 44 students, 30 study ICT and 28 study French. If every student studies at least one of the two subjects, how many study BOTH subjects?",
             "options": [
-              "B ∩ A'",
-              "A ∩ B'",
-              "A' ∪ B",
-              "A ∪ B'"
+              "14",
+              "16",
+              "12",
+              "18"
             ],
-            "correctAnswer": "B ∩ A'",
-            "hint": "Belongs to B, but not in A (the complement of A).",
-            "workedSolution": "The region containing elements of B that do not belong to A is $B \\setminus A = B \\cap A'$.",
+            "correctAnswer": "14",
+            "hint": "Use $n(I \\cap F) = n(I) + n(F) - n(I \\cup F) = 30 + 28 - 44$.",
+            "workedSolution": "$$n(I \\cap F) = 30 + 28 - 44 = 58 - 44 = 14$$.",
             "points": 1
           },
           {
-            "id": "q_sets_b9_m03",
+            "id": "q_b9_set_m04",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "If $n(U) = 80$, $n(A) = 45$, and $n(B) = 40$, what is the MAXIMUM possible value of $n(A \\cap B)$?",
+            "prompt": "In the Venn diagram below:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>M</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>N</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>18</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>7</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>15</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>x</text></svg><br/>If $n(U) = 50$, what is the value of $x$?",
+            "options": [
+              "10",
+              "8",
+              "12",
+              "5"
+            ],
+            "correctAnswer": "10",
+            "hint": "Sum all elements and subtract from 50.",
+            "workedSolution": "$$18 + 7 + 15 + x = 50 \\implies 40 + x = 50 \\implies x = 10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $A = \\{x : x \\in \\mathbb{R}, \\, -2 \\le x < 5\\}$ and $B = \\{x : x \\in \\mathbb{R}, \\, 1 < x \\le 8\\}$, what is $A \\cap B$?",
+            "options": [
+              "{x : 1 < x < 5}",
+              "{x : -2 ≤ x ≤ 8}",
+              "{x : 1 ≤ x < 5}",
+              "{x : 5 < x ≤ 8}"
+            ],
+            "correctAnswer": "{x : 1 < x < 5}",
+            "hint": "Find the overlapping continuum interval: lower bound is $> 1$ and upper bound is $< 5$.",
+            "workedSolution": "The intersection of $[-2, 5)$ and $(1, 8]$ is $(1, 5)$, which translates to $\\{x : 1 < x < 5\\}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 34$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>18</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "4",
+              "6",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Sum the 4 regions: $2x + x + 18 + 4 = 34$.",
+            "workedSolution": "$$(3)x + 22 = 34 \\implies 3x = 12 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 43$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>19</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "9"
+            ],
+            "correctAnswer": "5",
+            "hint": "Sum the 4 regions: $3x + x + 19 + 4 = 43$.",
+            "workedSolution": "$$(4)x + 23 = 43 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 42$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>20</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "10"
+            ],
+            "correctAnswer": "6",
+            "hint": "Sum the 4 regions: $2x + x + 20 + 4 = 42$.",
+            "workedSolution": "$$(3)x + 24 = 42 \\implies 3x = 18 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 53$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>21</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "11"
+            ],
+            "correctAnswer": "7",
+            "hint": "Sum the 4 regions: $3x + x + 21 + 4 = 53$.",
+            "workedSolution": "$$(4)x + 25 = 53 \\implies 4x = 28 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 35$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>22</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "3",
+              "5",
+              "2",
+              "7"
+            ],
+            "correctAnswer": "3",
+            "hint": "Sum the 4 regions: $2x + x + 22 + 4 = 35$.",
+            "workedSolution": "$$(3)x + 26 = 35 \\implies 3x = 9 \\implies x = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 43$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>23</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "4",
+              "6",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Sum the 4 regions: $3x + x + 23 + 4 = 43$.",
+            "workedSolution": "$$(4)x + 27 = 43 \\implies 4x = 16 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 43$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>24</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "9"
+            ],
+            "correctAnswer": "5",
+            "hint": "Sum the 4 regions: $2x + x + 24 + 4 = 43$.",
+            "workedSolution": "$$(3)x + 28 = 43 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 53$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>25</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "10"
+            ],
+            "correctAnswer": "6",
+            "hint": "Sum the 4 regions: $3x + x + 25 + 4 = 53$.",
+            "workedSolution": "$$(4)x + 29 = 53 \\implies 4x = 24 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 51$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>26</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "11"
+            ],
+            "correctAnswer": "7",
+            "hint": "Sum the 4 regions: $2x + x + 26 + 4 = 51$.",
+            "workedSolution": "$$(3)x + 30 = 51 \\implies 3x = 21 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 43$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>27</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "3",
+              "5",
+              "2",
+              "7"
+            ],
+            "correctAnswer": "3",
+            "hint": "Sum the 4 regions: $3x + x + 27 + 4 = 43$.",
+            "workedSolution": "$$(4)x + 31 = 43 \\implies 4x = 12 \\implies x = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 44$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>28</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "4",
+              "6",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Sum the 4 regions: $2x + x + 28 + 4 = 44$.",
+            "workedSolution": "$$(3)x + 32 = 44 \\implies 3x = 12 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 53$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>29</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "9"
+            ],
+            "correctAnswer": "5",
+            "hint": "Sum the 4 regions: $3x + x + 29 + 4 = 53$.",
+            "workedSolution": "$$(4)x + 33 = 53 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 52$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>30</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "10"
+            ],
+            "correctAnswer": "6",
+            "hint": "Sum the 4 regions: $2x + x + 30 + 4 = 52$.",
+            "workedSolution": "$$(3)x + 34 = 52 \\implies 3x = 18 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 63$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>31</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "11"
+            ],
+            "correctAnswer": "7",
+            "hint": "Sum the 4 regions: $3x + x + 31 + 4 = 63$.",
+            "workedSolution": "$$(4)x + 35 = 63 \\implies 4x = 28 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 45$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>32</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "3",
+              "5",
+              "2",
+              "7"
+            ],
+            "correctAnswer": "3",
+            "hint": "Sum the 4 regions: $2x + x + 32 + 4 = 45$.",
+            "workedSolution": "$$(3)x + 36 = 45 \\implies 3x = 9 \\implies x = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 53$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>33</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "4",
+              "6",
+              "3",
+              "8"
+            ],
+            "correctAnswer": "4",
+            "hint": "Sum the 4 regions: $3x + x + 33 + 4 = 53$.",
+            "workedSolution": "$$(4)x + 37 = 53 \\implies 4x = 16 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 53$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>34</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "5",
+              "7",
+              "4",
+              "9"
+            ],
+            "correctAnswer": "5",
+            "hint": "Sum the 4 regions: $2x + x + 34 + 4 = 53$.",
+            "workedSolution": "$$(3)x + 38 = 53 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 63$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>35</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "6",
+              "8",
+              "5",
+              "10"
+            ],
+            "correctAnswer": "6",
+            "hint": "Sum the 4 regions: $3x + x + 35 + 4 = 63$.",
+            "workedSolution": "$$(4)x + 39 = 63 \\implies 4x = 24 \\implies x = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 61$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>2x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>36</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "7",
+              "9",
+              "6",
+              "11"
+            ],
+            "correctAnswer": "7",
+            "hint": "Sum the 4 regions: $2x + x + 36 + 4 = 61$.",
+            "workedSolution": "$$(3)x + 40 = 61 \\implies 3x = 21 \\implies x = 7$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "In the Venn diagram below, $n(U) = 53$:<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>B</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>3x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>37</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>4</text></svg><br/>Find the value of $x$.",
+            "options": [
+              "3",
+              "5",
+              "2",
+              "7"
+            ],
+            "correctAnswer": "3",
+            "hint": "Sum the 4 regions: $3x + x + 37 + 4 = 53$.",
+            "workedSolution": "$$(4)x + 41 = 53 \\implies 4x = 12 \\implies x = 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 26$, $n(Q) = 24$, and $n(P \\cap Q) = 8$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "34",
+              "50",
+              "42",
+              "42"
+            ],
+            "correctAnswer": "34",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (26 + 24 - 8) - 8$.",
+            "workedSolution": "$$n(P \\Delta Q) = (26 - 8) + (24 - 8) = 18 + 16 = 34$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 27$, $n(Q) = 25$, and $n(P \\cap Q) = 9$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "34",
+              "52",
+              "43",
+              "43"
+            ],
+            "correctAnswer": "34",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (27 + 25 - 9) - 9$.",
+            "workedSolution": "$$n(P \\Delta Q) = (27 - 9) + (25 - 9) = 18 + 16 = 34$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 28$, $n(Q) = 26$, and $n(P \\cap Q) = 6$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "42",
+              "54",
+              "48",
+              "48"
+            ],
+            "correctAnswer": "42",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (28 + 26 - 6) - 6$.",
+            "workedSolution": "$$n(P \\Delta Q) = (28 - 6) + (26 - 6) = 22 + 20 = 42$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 29$, $n(Q) = 27$, and $n(P \\cap Q) = 7$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "42",
+              "56",
+              "49",
+              "49"
+            ],
+            "correctAnswer": "42",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (29 + 27 - 7) - 7$.",
+            "workedSolution": "$$n(P \\Delta Q) = (29 - 7) + (27 - 7) = 22 + 20 = 42$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 30$, $n(Q) = 22$, and $n(P \\cap Q) = 8$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "36",
+              "52",
+              "44",
+              "44"
+            ],
+            "correctAnswer": "36",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (30 + 22 - 8) - 8$.",
+            "workedSolution": "$$n(P \\Delta Q) = (30 - 8) + (22 - 8) = 22 + 14 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 31$, $n(Q) = 23$, and $n(P \\cap Q) = 9$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "36",
+              "54",
+              "45",
+              "45"
+            ],
+            "correctAnswer": "36",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (31 + 23 - 9) - 9$.",
+            "workedSolution": "$$n(P \\Delta Q) = (31 - 9) + (23 - 9) = 22 + 14 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 24$, $n(Q) = 24$, and $n(P \\cap Q) = 6$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "36",
+              "48",
+              "42",
+              "42"
+            ],
+            "correctAnswer": "36",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (24 + 24 - 6) - 6$.",
+            "workedSolution": "$$n(P \\Delta Q) = (24 - 6) + (24 - 6) = 18 + 18 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 25$, $n(Q) = 25$, and $n(P \\cap Q) = 7$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "36",
+              "50",
+              "43",
+              "43"
+            ],
+            "correctAnswer": "36",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (25 + 25 - 7) - 7$.",
+            "workedSolution": "$$n(P \\Delta Q) = (25 - 7) + (25 - 7) = 18 + 18 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 26$, $n(Q) = 26$, and $n(P \\cap Q) = 8$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "36",
+              "52",
+              "44",
+              "44"
+            ],
+            "correctAnswer": "36",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (26 + 26 - 8) - 8$.",
+            "workedSolution": "$$n(P \\Delta Q) = (26 - 8) + (26 - 8) = 18 + 18 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 27$, $n(Q) = 27$, and $n(P \\cap Q) = 9$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "36",
+              "54",
+              "45",
+              "45"
+            ],
+            "correctAnswer": "36",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (27 + 27 - 9) - 9$.",
+            "workedSolution": "$$n(P \\Delta Q) = (27 - 9) + (27 - 9) = 18 + 18 = 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 28$, $n(Q) = 22$, and $n(P \\cap Q) = 6$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "38",
+              "50",
+              "44",
+              "44"
+            ],
+            "correctAnswer": "38",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (28 + 22 - 6) - 6$.",
+            "workedSolution": "$$n(P \\Delta Q) = (28 - 6) + (22 - 6) = 22 + 16 = 38$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 29$, $n(Q) = 23$, and $n(P \\cap Q) = 7$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "38",
+              "52",
+              "45",
+              "45"
+            ],
+            "correctAnswer": "38",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (29 + 23 - 7) - 7$.",
+            "workedSolution": "$$n(P \\Delta Q) = (29 - 7) + (23 - 7) = 22 + 16 = 38$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 30$, $n(Q) = 24$, and $n(P \\cap Q) = 8$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "38",
+              "54",
+              "46",
+              "46"
+            ],
+            "correctAnswer": "38",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (30 + 24 - 8) - 8$.",
+            "workedSolution": "$$n(P \\Delta Q) = (30 - 8) + (24 - 8) = 22 + 16 = 38$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 31$, $n(Q) = 25$, and $n(P \\cap Q) = 9$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "38",
+              "56",
+              "47",
+              "47"
+            ],
+            "correctAnswer": "38",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (31 + 25 - 9) - 9$.",
+            "workedSolution": "$$n(P \\Delta Q) = (31 - 9) + (25 - 9) = 22 + 16 = 38$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 24$, $n(Q) = 26$, and $n(P \\cap Q) = 6$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "38",
+              "50",
+              "44",
+              "44"
+            ],
+            "correctAnswer": "38",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (24 + 26 - 6) - 6$.",
+            "workedSolution": "$$n(P \\Delta Q) = (24 - 6) + (26 - 6) = 18 + 20 = 38$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 25$, $n(Q) = 27$, and $n(P \\cap Q) = 7$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "38",
+              "52",
+              "45",
+              "45"
+            ],
+            "correctAnswer": "38",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (25 + 27 - 7) - 7$.",
+            "workedSolution": "$$n(P \\Delta Q) = (25 - 7) + (27 - 7) = 18 + 20 = 38$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 26$, $n(Q) = 22$, and $n(P \\cap Q) = 8$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "32",
+              "48",
+              "40",
+              "40"
+            ],
+            "correctAnswer": "32",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (26 + 22 - 8) - 8$.",
+            "workedSolution": "$$n(P \\Delta Q) = (26 - 8) + (22 - 8) = 18 + 14 = 32$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 27$, $n(Q) = 23$, and $n(P \\cap Q) = 9$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "32",
+              "50",
+              "41",
+              "41"
+            ],
+            "correctAnswer": "32",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (27 + 23 - 9) - 9$.",
+            "workedSolution": "$$n(P \\Delta Q) = (27 - 9) + (23 - 9) = 18 + 14 = 32$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 28$, $n(Q) = 24$, and $n(P \\cap Q) = 6$, find $n(P \\Delta Q)$ (the symmetric difference).",
             "options": [
               "40",
-              "45",
-              "5",
-              "80"
+              "52",
+              "46",
+              "46"
             ],
             "correctAnswer": "40",
-            "hint": "The intersection cannot exceed the total size of the smaller set.",
-            "workedSolution": "The maximum intersection occurs when the smaller set is a subset of the larger set ($B \\subseteq A$). Maximum $n(A \\cap B) = n(B) = 40$.",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (28 + 24 - 6) - 6$.",
+            "workedSolution": "$$n(P \\Delta Q) = (28 - 6) + (24 - 6) = 22 + 18 = 40$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 29$, $n(Q) = 25$, and $n(P \\cap Q) = 7$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "40",
+              "54",
+              "47",
+              "47"
+            ],
+            "correctAnswer": "40",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (29 + 25 - 7) - 7$.",
+            "workedSolution": "$$n(P \\Delta Q) = (29 - 7) + (25 - 7) = 22 + 18 = 40$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 30$, $n(Q) = 26$, and $n(P \\cap Q) = 8$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "40",
+              "56",
+              "48",
+              "48"
+            ],
+            "correctAnswer": "40",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (30 + 26 - 8) - 8$.",
+            "workedSolution": "$$n(P \\Delta Q) = (30 - 8) + (26 - 8) = 22 + 18 = 40$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 31$, $n(Q) = 27$, and $n(P \\cap Q) = 9$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "40",
+              "58",
+              "49",
+              "49"
+            ],
+            "correctAnswer": "40",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (31 + 27 - 9) - 9$.",
+            "workedSolution": "$$n(P \\Delta Q) = (31 - 9) + (27 - 9) = 22 + 18 = 40$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 24$, $n(Q) = 22$, and $n(P \\cap Q) = 6$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "34",
+              "46",
+              "40",
+              "40"
+            ],
+            "correctAnswer": "34",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (24 + 22 - 6) - 6$.",
+            "workedSolution": "$$n(P \\Delta Q) = (24 - 6) + (22 - 6) = 18 + 16 = 34$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 25$, $n(Q) = 23$, and $n(P \\cap Q) = 7$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "34",
+              "48",
+              "41",
+              "41"
+            ],
+            "correctAnswer": "34",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (25 + 23 - 7) - 7$.",
+            "workedSolution": "$$n(P \\Delta Q) = (25 - 7) + (23 - 7) = 18 + 16 = 34$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_set_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Given two sets $P$ and $Q$ with $n(P) = 26$, $n(Q) = 24$, and $n(P \\cap Q) = 8$, find $n(P \\Delta Q)$ (the symmetric difference).",
+            "options": [
+              "34",
+              "50",
+              "42",
+              "42"
+            ],
+            "correctAnswer": "34",
+            "hint": "Symmetric difference $n(P \\Delta Q) = n(P \\cup Q) - n(P \\cap Q) = (26 + 24 - 8) - 8$.",
+            "workedSolution": "$$n(P \\Delta Q) = (26 - 8) + (24 - 8) = 18 + 16 = 34$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_sets_b9_h01",
+            "id": "q_b9_set_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "In a community of 100 residents, each resident reads at least one newspaper: Graphic, Times, or Herald. 50 read Graphic, 45 read Times, and 40 read Herald. If 15 read Graphic and Times, 12 read Times and Herald, 18 read Graphic and Herald, and 10 read all three, verify if these survey figures are mathematically consistent.",
+            "prompt": "In a survey of $100$ farmers:<br/>* $50$ rear Poultry ($P$)<br/>* $45$ rear Goats ($G$)<br/>* $40$ rear Cattle ($C$)<br/>* $15$ rear Poultry and Goats<br/>* $12$ rear Goats and Cattle<br/>* $10$ rear Poultry and Cattle<br/>* $5$ rear all three animals<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg><br/>Calculate how many farmers rear NONE of these three animals.",
             "options": [
-              "Consistent: Union equals exactly 100",
-              "Inconsistent: Union exceeds 100",
-              "Inconsistent: Union is less than 100",
-              "Inconsistent: Negative values exist in regions"
-            ],
-            "correctAnswer": "Consistent: Union equals exactly 100",
-            "hint": "Apply 3-set formula: $n(G \\cup T \\cup H) = \\sum n - \\sum \\text{pairwise} + \\text{all three}$.",
-            "workedSolution": "$$n(G \\cup T \\cup H) = (50 + 45 + 40) - (15 + 12 + 18) + 10 = 135 - 45 + 10 = 100$$. Since the result matches total residents (100) and all region values are non-negative, the data is consistent.",
-            "points": 2
-          },
-          {
-            "id": "q_sets_b9_h02",
-            "difficulty": "hard",
-            "dokLevel": 3,
-            "prompt": "In a survey of 75 students, 40 like Apple, 35 like Banana, and 30 like Orange. 15 like Apple and Banana, 12 like Banana and Orange, and 10 like Apple and Orange. If 5 like all three fruits, how many students like NONE of these three fruits?",
-            "options": [
-              "2",
-              "5",
-              "0",
-              "8"
-            ],
-            "correctAnswer": "2",
-            "hint": "Calculate union first: $40 + 35 + 30 - (15 + 12 + 10) + 5 = 105 - 37 + 5 = 73$.",
-            "workedSolution": "$$n(A \\cup B \\cup O) = 73$$. Students liking none $= 75 - 73 = 2$.",
-            "points": 2
-          },
-          {
-            "id": "q_sets_b9_h03",
-            "difficulty": "hard",
-            "dokLevel": 3,
-            "prompt": "If $A$ and $B$ are sets such that $n(A \\setminus B) = 18$, $n(B \\setminus A) = 14$, and $n(A \\cup B) = 42$, find $n(A \\cap B)$.",
-            "options": [
-              "10",
+              "7",
               "12",
-              "8",
-              "16"
+              "5",
+              "10"
             ],
-            "correctAnswer": "10",
-            "hint": "Union = Only A + Only B + Both.",
-            "workedSolution": "$$n(A \\cup B) = n(A \\setminus B) + n(B \\setminus A) + n(A \\cap B)$$\n$$42 = 18 + 14 + x \\implies 42 = 32 + x \\implies x = 10$$.",
+            "correctAnswer": "7",
+            "hint": "Use 3-set union formula: $n(P \\cup G \\cup C) = \\sum n(A) - \\sum n(A \\cap B) + n(A \\cap B \\cap C)$.",
+            "workedSolution": "$$n(P \\cup G \\cup C) = (50 + 45 + 40) - (15 + 12 + 10) + 5 = 135 - 37 + 5 = 103 - 10 = 93$$\n$$\\text{None} = 100 - 93 = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a school cohort of $112$ candidates, $52$ passed Core Mathematics, $44$ passed Science, and $3x$ passed neither subject. If $x$ passed BOTH subjects, find the number of candidates who passed Science ONLY.<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>Maths</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>Science</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>52 - x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>44 - x</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>3x</text></svg>",
+            "options": [
+              "36",
+              "8",
+              "44",
+              "28"
+            ],
+            "correctAnswer": "36",
+            "hint": "Set up equation: $(52 - x) + x + (44 - x) + 3x = 112$. Solve for $x$, then calculate $44 - x$.",
+            "workedSolution": "$$96 + 2x = 112 \\implies 2x = 16 \\implies x = 8$$\n$$\\text{Science only} = 44 - 8 = 36$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a sports academy of 60 athletes, 35 play Tennis, 30 play Basketball, and 28 play Football. 12 play Tennis and Basketball, 10 play Basketball and Football, and 11 play Tennis and Football. If 4 athletes play all three sports, how many play EXACTLY TWO sports?",
+            "options": [
+              "21",
+              "25",
+              "18",
+              "24"
+            ],
+            "correctAnswer": "21",
+            "hint": "Each double-only region is $(A \\cap B) - \\text{all three}$: $(12 - 4) + (10 - 4) + (11 - 4)$.",
+            "workedSolution": "$$\\text{Exactly two} = (12 - 4) + (10 - 4) + (11 - 4) = 8 + 6 + 7 = 21$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Given universal set $U = \\mathbb{R}$, if $A = \\{x : x^2 - 4 = 0\\}$ and $B = \\{x : x^2 - 5x + 6 = 0\\}$, find the elements of $(A \\cup B) \\setminus (A \\cap B)$.",
+            "options": [
+              "{-2, 3}",
+              "{-2, 2, 3}",
+              "{2}",
+              "{3}"
+            ],
+            "correctAnswer": "{-2, 3}",
+            "hint": "Solve both quadratics: $A = \\{-2, 2\\}$ and $B = \\{2, 3\\}$. Intersection is $\\{2\\}$.",
+            "workedSolution": "$$A = \\{-2, 2\\}, \\quad B = \\{2, 3\\}$$\n$$A \\cup B = \\{-2, 2, 3\\}, \\quad A \\cap B = \\{2\\}$$\n$$(A \\cup B) \\setminus (A \\cap B) = \\{-2, 3\\}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a community library of $120$ readers, $70$ read Fiction, $60$ read Biographies, and $20$ read neither.<br/><svg viewBox='0 0 320 180' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='160' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='120' cy='95' r='54' fill='#3b82f6' fill-opacity='0.18' stroke='#2563eb' stroke-width='2'/><text x='85' y='38' font-size='12' font-weight='bold' fill='#1d4ed8'>Fiction</text><circle cx='200' cy='95' r='54' fill='#10b981' fill-opacity='0.18' stroke='#059669' stroke-width='2'/><text x='225' y='38' font-size='12' font-weight='bold' fill='#047857'>Biography</text><text x='90' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>70 - x</text><text x='160' y='100' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>x</text><text x='230' y='100' font-size='12' font-weight='600' fill='#1e293b' text-anchor='middle'>60 - x</text><text x='280' y='155' font-size='11' font-weight='600' fill='#64748b' text-anchor='middle'>20</text></svg><br/>What percentage of the readers read Fiction ONLY?",
+            "options": [
+              "33.33%",
+              "40.00%",
+              "25.00%",
+              "50.00%"
+            ],
+            "correctAnswer": "33.33%",
+            "hint": "Find both: $70 + 60 - x + 20 = 120 \\implies 150 - x = 120 \\implies x = 30$. Fiction only $= 70 - 30 = 40$. Compute $\\frac{40}{120} \\times 100\\%$.",
+            "workedSolution": "$$150 - x = 120 \\implies x = 30$$\n$$\\text{Fiction only} = 70 - 30 = 40$$\n$$\\text{Percentage} = \\frac{40}{120} \\times 100\\% = 33\\frac{1}{3}\\% \\approx 33.33\\%$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 5) + (7 - 5) + (9 - 5) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 6) + (8 - 6) + (10 - 6) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "21",
+              "24",
+              "19",
+              "27"
+            ],
+            "correctAnswer": "21",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 3) + (9 - 3) + (11 - 3) = 21$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 4) + (7 - 4) + (9 - 4) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 5) + (8 - 5) + (10 - 5) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 6) + (9 - 6) + (11 - 6) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 3) + (7 - 3) + (9 - 3) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 4) + (8 - 4) + (10 - 4) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 5) + (9 - 5) + (11 - 5) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "6",
+              "9",
+              "4",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 6) + (7 - 6) + (9 - 6) = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "18",
+              "21",
+              "16",
+              "24"
+            ],
+            "correctAnswer": "18",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 3) + (8 - 3) + (10 - 3) = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "18",
+              "21",
+              "16",
+              "24"
+            ],
+            "correctAnswer": "18",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 4) + (9 - 4) + (11 - 4) = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 5) + (7 - 5) + (9 - 5) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 6) + (8 - 6) + (10 - 6) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "21",
+              "24",
+              "19",
+              "27"
+            ],
+            "correctAnswer": "21",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 3) + (9 - 3) + (11 - 3) = 21$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 4) + (7 - 4) + (9 - 4) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 5) + (8 - 5) + (10 - 5) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 6) + (9 - 6) + (11 - 6) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 3) + (7 - 3) + (9 - 3) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 4) + (8 - 4) + (10 - 4) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 5) + (9 - 5) + (11 - 5) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "6",
+              "9",
+              "4",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 6) + (7 - 6) + (9 - 6) = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "18",
+              "21",
+              "16",
+              "24"
+            ],
+            "correctAnswer": "18",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 3) + (8 - 3) + (10 - 3) = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "18",
+              "21",
+              "16",
+              "24"
+            ],
+            "correctAnswer": "18",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 4) + (9 - 4) + (11 - 4) = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 5) + (7 - 5) + (9 - 5) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 6) + (8 - 6) + (10 - 6) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "21",
+              "24",
+              "19",
+              "27"
+            ],
+            "correctAnswer": "21",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 3) + (9 - 3) + (11 - 3) = 21$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 4) + (7 - 4) + (9 - 4) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 5) + (8 - 5) + (10 - 5) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 6) + (9 - 6) + (11 - 6) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 3) + (7 - 3) + (9 - 3) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 4) + (8 - 4) + (10 - 4) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 5) + (9 - 5) + (11 - 5) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "6",
+              "9",
+              "4",
+              "12"
+            ],
+            "correctAnswer": "6",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 6) + (7 - 6) + (9 - 6) = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "18",
+              "21",
+              "16",
+              "24"
+            ],
+            "correctAnswer": "18",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 3) + (8 - 3) + (10 - 3) = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "18",
+              "21",
+              "16",
+              "24"
+            ],
+            "correctAnswer": "18",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 4) + (9 - 4) + (11 - 4) = 18$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 5) + (7 - 5) + (9 - 5) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "9",
+              "12",
+              "7",
+              "15"
+            ],
+            "correctAnswer": "9",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 6) + (8 - 6) + (10 - 6) = 9$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "21",
+              "24",
+              "19",
+              "27"
+            ],
+            "correctAnswer": "21",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 3) + (9 - 3) + (11 - 3) = 21$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 4) + (7 - 4) + (9 - 4) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 5) + (8 - 5) + (10 - 5) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 6 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>6</text></svg>",
+            "options": [
+              "12",
+              "15",
+              "10",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Subtract the triple intersection $6$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 6) + (9 - 6) + (11 - 6) = 12$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 8$, $n(B \\cap C) = 7$, and $n(A \\cap C) = 9$. If exactly 3 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>3</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $3$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (8 - 3) + (7 - 3) + (9 - 3) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 9$, $n(B \\cap C) = 8$, and $n(A \\cap C) = 10$. If exactly 4 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>4</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $4$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (9 - 4) + (8 - 4) + (10 - 4) = 15$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_set_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a senior three-set academic competition, pairwise intersections are $n(A \\cap B) = 10$, $n(B \\cap C) = 9$, and $n(A \\cap C) = 11$. If exactly 5 candidates qualified in all three subjects, how many qualified in EXACTLY TWO subjects?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='300' height='190' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='24' y='30' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='80' r='48' fill='#3b82f6' fill-opacity='0.15' stroke='#2563eb' stroke-width='2'/><text x='155' y='30' font-size='11' font-weight='bold' fill='#1d4ed8'>A</text><circle cx='125' cy='130' r='48' fill='#10b981' fill-opacity='0.15' stroke='#059669' stroke-width='2'/><text x='85' y='165' font-size='11' font-weight='bold' fill='#047857'>B</text><circle cx='195' cy='130' r='48' fill='#f59e0b' fill-opacity='0.15' stroke='#d97706' stroke-width='2'/><text x='235' y='165' font-size='11' font-weight='bold' fill='#b45309'>C</text><text x='160' y='116' font-size='11' font-weight='bold' fill='#dc2626' text-anchor='middle'>5</text></svg>",
+            "options": [
+              "15",
+              "18",
+              "13",
+              "21"
+            ],
+            "correctAnswer": "15",
+            "hint": "Subtract the triple intersection $5$ from each pairwise intersection and sum the results.",
+            "workedSolution": "$$\\text{Exactly two} = (10 - 5) + (9 - 5) + (11 - 5) = 15$$.",
             "points": 2
           }
         ]
