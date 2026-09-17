@@ -27,14 +27,14 @@ async function checkDoc() {
   console.log('Utilization:', `${((bytes / 1048576) * 100).toFixed(2)}% of 1 MiB limit`);
   console.log('Subcollections count on this doc:', subcollections.length, '(0 means pure single-document storage)');
   console.log('Levels present:', Object.keys(data?.levels || {}));
-  console.log('B7 Notes length:', data?.levels?.b7?.notes?.length, 'chars');
-  console.log('B7 Worked Examples count:', data?.levels?.b7?.workedExamples?.length);
-  console.log('B7 Practice Pool items:', 
-    (data?.levels?.b7?.practicePool?.low?.length || 0) + 
-    (data?.levels?.b7?.practicePool?.medium?.length || 0) + 
-    (data?.levels?.b7?.practicePool?.hard?.length || 0)
-  );
-  console.log('Read operations required by client:', '1');
+  console.log('--- LEVEL BREAKDOWN ---');
+  ['b7', 'b8', 'b9'].forEach((lvl) => {
+    const l = data?.levels?.[lvl];
+    const pool = l?.practicePool || {};
+    const totalQ = (pool.low?.length || 0) + (pool.medium?.length || 0) + (pool.hard?.length || 0);
+    console.log(`- ${lvl.toUpperCase()}: Notes=${l?.notes?.length || 0} chars | WorkedExamples=${l?.workedExamples?.length || 0} | PracticePool=${totalQ} questions`);
+  });
+  console.log('Read operations required by client:', '1 (atomic single getDoc)');
 }
 
 checkDoc()
