@@ -6,7 +6,7 @@
   "tier": "Junior Secondary (JHS)",
   "badge": "Strand 1: Number & Numeration",
   "description": "Comprehensive mastery of integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.",
-  "totalPracticeQuestions": 27,
+  "totalPracticeQuestions": 168,
   "version": 1,
   "levels": {
     "jhs1": {
@@ -65,142 +65,2407 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_num_j1_l01",
+            "id": "q_b7_num_l01",
             "difficulty": "low",
-            "prompt": "Find the set of prime factors of $18$.",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is a prime number?",
             "options": [
-              "{2, 3}",
-              "{1, 2, 3}",
-              "{2, 3, 9}",
-              "{3, 6}"
+              "1",
+              "9",
+              "2",
+              "15"
             ],
-            "correctAnswer": "{2, 3}",
-            "hint": "List the factors of 18, then select only the prime numbers.",
-            "workedSolution": "Factors of 18 are 1, 2, 3, 6, 9, 18. Among these, only 2 and 3 are prime numbers.",
+            "correctAnswer": "2",
+            "hint": "A prime number has exactly two distinct factors: 1 and itself.",
+            "workedSolution": "2 has only two factors (1 and 2). 1 has only one factor, while 9 and 15 have more than two.",
             "points": 1
           },
           {
-            "id": "q_num_j1_l02",
+            "id": "q_b7_num_l02",
             "difficulty": "low",
-            "prompt": "Convert $24_{\\text{five}}$ to a base ten numeral.",
+            "dokLevel": 1,
+            "prompt": "Express $24$ as a product of prime factors in index notation.",
             "options": [
-              "14",
+              "2³ × 3",
+              "2² × 6",
+              "2 × 3³",
+              "4 × 6"
+            ],
+            "correctAnswer": "2³ × 3",
+            "hint": "Divide successively by 2: 24 = 2 × 12 = 2 × 2 × 6...",
+            "workedSolution": "$$24 = 2 \\times 2 \\times 2 \\times 3 = 2^3 \\times 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 7 in the numeral $475,230$?",
+            "options": [
+              "Ten-thousands",
+              "Thousands",
+              "Hundreds",
+              "Millions"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count places from right to left starting from units.",
+            "workedSolution": "In 475,230, 0 is units, 3 is tens, 2 is hundreds, 5 is thousands, and 7 is ten-thousands ($10^4$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $12_{\\text{five}}$ to a base ten numeral.",
+            "options": [
+              "7",
+              "10",
               "12",
-              "19",
-              "24"
+              "5"
             ],
-            "correctAnswer": "14",
-            "hint": "Expand in powers of 5: (2 × 5¹) + (4 × 5⁰).",
-            "workedSolution": "$$(2 \\times 5) + (4 \\times 1) = 10 + 4 = 14_{\\text{ten}}$$.",
+            "correctAnswer": "7",
+            "hint": "Expand as $(1 \\times 5^1) + (2 \\times 5^0)$.",
+            "workedSolution": "$$12_{\\text{five}} = (1 \\times 5) + (2 \\times 1) = 5 + 2 = 7_{\\text{ten}}$$.",
             "points": 1
           },
           {
-            "id": "q_num_j1_l03",
+            "id": "q_b7_num_l05",
             "difficulty": "low",
-            "prompt": "What is the Least Common Multiple (LCM) of $4, 6,$ and $10$?",
+            "dokLevel": 1,
+            "prompt": "Convert $101_{\\text{two}}$ to a base ten numeral.",
             "options": [
-              "60",
-              "30",
-              "120",
-              "24"
+              "5",
+              "6",
+              "3",
+              "7"
             ],
-            "correctAnswer": "60",
-            "hint": "Find the prime factors: $4 = 2^2$, $6 = 2 \\times 3$, $10 = 2 \\times 5$.",
-            "workedSolution": "$$\\text{LCM} = 2^2 \\times 3 \\times 5 = 4 \\times 15 = 60$$.",
+            "correctAnswer": "5",
+            "hint": "Expand across powers of two: $1 \\times 2^2 + 0 \\times 2^1 + 1 \\times 2^0$.",
+            "workedSolution": "$$(1 \\times 4) + (0 \\times 2) + (1 \\times 1) = 4 + 0 + 1 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 3?",
+            "options": [
+              "124",
+              "235",
+              "342",
+              "415"
+            ],
+            "correctAnswer": "342",
+            "hint": "A number is divisible by 3 if the sum of its digits is a multiple of 3.",
+            "workedSolution": "For 342: $3 + 4 + 2 = 9$. Since 9 is divisible by 3, 342 is divisible by 3.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the HCF of $12$ and $18$.",
+            "options": [
+              "6",
+              "2",
+              "3",
+              "36"
+            ],
+            "correctAnswer": "6",
+            "hint": "List the factors of both numbers and choose the largest common one.",
+            "workedSolution": "Factors of 12: {1, 2, 3, 4, 6, 12}; Factors of 18: {1, 2, 3, 6, 9, 18}. The highest common factor is 6.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the LCM of $4$ and $6$?",
+            "options": [
+              "12",
+              "24",
+              "2",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Identify the smallest positive multiple shared by both numbers.",
+            "workedSolution": "Multiples of 4: 4, 8, 12, 16... Multiples of 6: 6, 12, 18... Smallest shared is 12.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "How many digits are used in the base five numeration system?",
+            "options": [
+              "5",
+              "4",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "Count the digits {0, 1, 2, 3, 4}.",
+            "workedSolution": "Base five uses exactly 5 symbols: 0, 1, 2, 3, and 4.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Write $36$ as a product of prime factors.",
+            "options": [
+              "2² × 3²",
+              "4 × 9",
+              "2³ × 3",
+              "6²"
+            ],
+            "correctAnswer": "2² × 3²",
+            "hint": "All factors must be prime numbers: 2 and 3.",
+            "workedSolution": "$$36 = 4 \\times 9 = 2^2 \\times 3^2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_num_j1_m01",
+            "id": "q_b7_num_m01",
             "difficulty": "medium",
-            "prompt": "Convert $47_{\\text{ten}}$ to a base five numeral.",
+            "dokLevel": 2,
+            "prompt": "Convert $73_{\\text{ten}}$ to a base five numeral.",
             "options": [
-              "142_five",
-              "132_five",
-              "242_five",
-              "141_five"
+              "243_five",
+              "241_five",
+              "143_five",
+              "223_five"
             ],
-            "correctAnswer": "142_five",
-            "hint": "Repeatedly divide 47 by 5 and collect remainders upwards.",
-            "workedSolution": "$$47 = 1(25) + 4(5) + 2(1) = 142_{\\text{five}}$$.",
+            "correctAnswer": "243_five",
+            "hint": "Divide 73 successively by 5 and write remainders from bottom to top.",
+            "workedSolution": "$$73 \\div 5 = 14 \\text{ R } 3$$\n$$14 \\div 5 = 2 \\text{ R } 4$$\n$$2 \\div 5 = 0 \\text{ R } 2$$\nResult: $243_{\\text{five}}$.",
             "points": 1
           },
           {
-            "id": "q_num_j1_m02",
+            "id": "q_b7_num_m02",
             "difficulty": "medium",
-            "prompt": "Find the Highest Common Factor (HCF) of $36, 54,$ and $72$.",
+            "dokLevel": 2,
+            "prompt": "If $23_x = 11_{\\text{ten}}$, find the value of base $x$.",
             "options": [
+              "4",
+              "5",
+              "6",
+              "3"
+            ],
+            "correctAnswer": "4",
+            "hint": "Expand $2x + 3 = 11$ and solve for $x$.",
+            "workedSolution": "$$2(x) + 3 = 11 \\implies 2x = 8 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate in base two: $110_{\\text{two}} + 11_{\\text{two}}$.",
+            "options": [
+              "1001_two",
+              "1010_two",
+              "111_two",
+              "1000_two"
+            ],
+            "correctAnswer": "1001_two",
+            "hint": "In binary addition, $1 + 1 = 10_2$ (write 0, carry 1).",
+            "workedSolution": "110_two (6) + 11_two (3) = 9_ten = 1001_two.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Determine the HCF of $72$, $108$, and $144$.",
+            "options": [
+              "36",
               "18",
               "12",
-              "9",
-              "24"
+              "72"
             ],
-            "correctAnswer": "18",
-            "hint": "Identify the largest integer that divides all three numbers evenly.",
-            "workedSolution": "$$36 = 18 \\times 2$$, $$54 = 18 \\times 3$$, $$72 = 18 \\times 4$$. The HCF is 18.",
+            "correctAnswer": "36",
+            "hint": "Decompose each into prime powers and take minimum exponents.",
+            "workedSolution": "$$72 = 2^3 \\times 3^2, \\ 108 = 2^2 \\times 3^3, \\ 144 = 2^4 \\times 3^2$$\n$$\\text{HCF} = 2^2 \\times 3^2 = 4 \\times 9 = 36$$.",
             "points": 1
           },
           {
-            "id": "q_num_j1_m03",
+            "id": "q_b7_num_m05",
             "difficulty": "medium",
-            "prompt": "Convert $11011_{\\text{two}}$ to a base ten numeral.",
+            "dokLevel": 2,
+            "prompt": "Find the smallest number that is exactly divisible by $12$, $15$, and $20$.",
             "options": [
-              "27",
-              "25",
-              "31",
-              "29"
+              "60",
+              "120",
+              "30",
+              "180"
             ],
-            "correctAnswer": "27",
-            "hint": "Expand: 1(16) + 1(8) + 0(4) + 1(2) + 1(1).",
-            "workedSolution": "$$16 + 8 + 0 + 2 + 1 = 27_{\\text{ten}}$$.",
+            "correctAnswer": "60",
+            "hint": "The smallest common multiple is the LCM.",
+            "workedSolution": "$$12 = 2^2 \\times 3, \\ 15 = 3 \\times 5, \\ 20 = 2^2 \\times 5$$\n$$\\text{LCM} = 2^2 \\times 3 \\times 5 = 4 \\times 15 = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $31_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "11111_two",
+              "100000_two",
+              "11110_two",
+              "100001_two"
+            ],
+            "correctAnswer": "11111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $31$ by 2 yields remainders producing $11111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $51_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "201_five",
+              "203_five",
+              "143_five",
+              "211_five"
+            ],
+            "correctAnswer": "201_five",
+            "hint": "Divide 51 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $51$ repeatedly by 5 gives $201_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $30$ and $45$.",
+            "options": [
+              "90",
+              "180",
+              "15",
+              "78"
+            ],
+            "correctAnswer": "90",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(30, 45) = \\frac{30 \\times 45}{15} = 90$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $35_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "100011_two",
+              "100100_two",
+              "100010_two",
+              "100101_two"
+            ],
+            "correctAnswer": "100011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $35$ by 2 yields remainders producing $100011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $63_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "223_five",
+              "230_five",
+              "220_five",
+              "233_five"
+            ],
+            "correctAnswer": "223_five",
+            "hint": "Divide 63 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $63$ repeatedly by 5 gives $223_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $24$ and $36$.",
+            "options": [
+              "72",
+              "144",
+              "12",
+              "60"
+            ],
+            "correctAnswer": "72",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(24, 36) = \\frac{24 \\times 36}{12} = 72$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $39_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "100111_two",
+              "101000_two",
+              "100110_two",
+              "101001_two"
+            ],
+            "correctAnswer": "100111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $39$ by 2 yields remainders producing $100111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $75_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "300_five",
+              "302_five",
+              "242_five",
+              "310_five"
+            ],
+            "correctAnswer": "300_five",
+            "hint": "Divide 75 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $75$ repeatedly by 5 gives $300_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $31_x = 16_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $3x + 1 = 16$.",
+            "workedSolution": "$$3x + 1 = 16 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $18$ and $27$.",
+            "options": [
+              "54",
+              "108",
+              "9",
+              "42"
+            ],
+            "correctAnswer": "54",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(18, 27) = \\frac{18 \\times 27}{9} = 54$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $43_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "101011_two",
+              "101100_two",
+              "101010_two",
+              "101101_two"
+            ],
+            "correctAnswer": "101011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $43$ by 2 yields remainders producing $101011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $87_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "322_five",
+              "324_five",
+              "314_five",
+              "332_five"
+            ],
+            "correctAnswer": "322_five",
+            "hint": "Divide 87 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $87$ repeatedly by 5 gives $322_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $20$ and $30$.",
+            "options": [
+              "60",
+              "120",
+              "10",
+              "48"
+            ],
+            "correctAnswer": "60",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(20, 30) = \\frac{20 \\times 30}{10} = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $47_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "101111_two",
+              "110000_two",
+              "101110_two",
+              "110001_two"
+            ],
+            "correctAnswer": "101111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $47$ by 2 yields remainders producing $101111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $99_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "344_five",
+              "401_five",
+              "341_five",
+              "404_five"
+            ],
+            "correctAnswer": "344_five",
+            "hint": "Divide 99 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $99$ repeatedly by 5 gives $344_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $16$ and $24$.",
+            "options": [
+              "48",
+              "96",
+              "8",
+              "36"
+            ],
+            "correctAnswer": "48",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(16, 24) = \\frac{16 \\times 24}{8} = 48$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $51_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "110011_two",
+              "110100_two",
+              "110010_two",
+              "110101_two"
+            ],
+            "correctAnswer": "110011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $51$ by 2 yields remainders producing $110011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $111_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "421_five",
+              "423_five",
+              "413_five",
+              "431_five"
+            ],
+            "correctAnswer": "421_five",
+            "hint": "Divide 111 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $111$ repeatedly by 5 gives $421_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $31_x = 16_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $3x + 1 = 16$.",
+            "workedSolution": "$$3x + 1 = 16 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $30$ and $45$.",
+            "options": [
+              "90",
+              "180",
+              "15",
+              "78"
+            ],
+            "correctAnswer": "90",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(30, 45) = \\frac{30 \\times 45}{15} = 90$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $55_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "110111_two",
+              "111000_two",
+              "110110_two",
+              "111001_two"
+            ],
+            "correctAnswer": "110111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $55$ by 2 yields remainders producing $110111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $123_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "443_five",
+              "1000_five",
+              "440_five",
+              "1003_five"
+            ],
+            "correctAnswer": "443_five",
+            "hint": "Divide 123 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $123$ repeatedly by 5 gives $443_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $24$ and $36$.",
+            "options": [
+              "72",
+              "144",
+              "12",
+              "60"
+            ],
+            "correctAnswer": "72",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(24, 36) = \\frac{24 \\times 36}{12} = 72$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $59_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "111011_two",
+              "111100_two",
+              "111010_two",
+              "111101_two"
+            ],
+            "correctAnswer": "111011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $59$ by 2 yields remainders producing $111011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $135_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1020_five",
+              "1022_five",
+              "1012_five",
+              "1030_five"
+            ],
+            "correctAnswer": "1020_five",
+            "hint": "Divide 135 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $135$ repeatedly by 5 gives $1020_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $18$ and $27$.",
+            "options": [
+              "54",
+              "108",
+              "9",
+              "42"
+            ],
+            "correctAnswer": "54",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(18, 27) = \\frac{18 \\times 27}{9} = 54$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $63_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "111111_two",
+              "1000000_two",
+              "111110_two",
+              "1000001_two"
+            ],
+            "correctAnswer": "111111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $63$ by 2 yields remainders producing $111111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $147_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1042_five",
+              "1044_five",
+              "1034_five",
+              "1102_five"
+            ],
+            "correctAnswer": "1042_five",
+            "hint": "Divide 147 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $147$ repeatedly by 5 gives $1042_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $31_x = 16_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $3x + 1 = 16$.",
+            "workedSolution": "$$3x + 1 = 16 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $20$ and $30$.",
+            "options": [
+              "60",
+              "120",
+              "10",
+              "48"
+            ],
+            "correctAnswer": "60",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(20, 30) = \\frac{20 \\times 30}{10} = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $67_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "1000011_two",
+              "1000100_two",
+              "1000010_two",
+              "1000101_two"
+            ],
+            "correctAnswer": "1000011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $67$ by 2 yields remainders producing $1000011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $159_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1114_five",
+              "1121_five",
+              "1111_five",
+              "1124_five"
+            ],
+            "correctAnswer": "1114_five",
+            "hint": "Divide 159 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $159$ repeatedly by 5 gives $1114_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $16$ and $24$.",
+            "options": [
+              "48",
+              "96",
+              "8",
+              "36"
+            ],
+            "correctAnswer": "48",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(16, 24) = \\frac{16 \\times 24}{8} = 48$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $71_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "1000111_two",
+              "1001000_two",
+              "1000110_two",
+              "1001001_two"
+            ],
+            "correctAnswer": "1000111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $71$ by 2 yields remainders producing $1000111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $171_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1141_five",
+              "1143_five",
+              "1133_five",
+              "1201_five"
+            ],
+            "correctAnswer": "1141_five",
+            "hint": "Divide 171 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $171$ repeatedly by 5 gives $1141_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $30$ and $45$.",
+            "options": [
+              "90",
+              "180",
+              "15",
+              "78"
+            ],
+            "correctAnswer": "90",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(30, 45) = \\frac{30 \\times 45}{15} = 90$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $75_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "1001011_two",
+              "1001100_two",
+              "1001010_two",
+              "1001101_two"
+            ],
+            "correctAnswer": "1001011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $75$ by 2 yields remainders producing $1001011_2$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_num_j1_h01",
+            "id": "q_b7_num_h01",
             "difficulty": "hard",
-            "prompt": "If $$23_x = 13_{\\text{ten}}$$, find the unknown base $x$.",
+            "dokLevel": 3,
+            "prompt": "Three church bells toll at intervals of $9$, $12$, and $15\\text{ minutes}$ respectively. If they toll together at $6:00\\text{ a.m.}$, at what time will they next toll together?",
             "options": [
-              "five",
-              "four",
-              "six",
-              "seven"
+              "9:00 a.m.",
+              "8:30 a.m.",
+              "7:30 a.m.",
+              "10:00 a.m."
             ],
-            "correctAnswer": "five",
-            "hint": "Write as an equation: $2x + 3 = 13$.",
-            "workedSolution": "$$2x + 3 = 13 \\implies 2x = 10 \\implies x = 5$$. The base is five.",
+            "correctAnswer": "9:00 a.m.",
+            "hint": "Find the LCM of 9, 12, and 15, then convert minutes to hours.",
+            "workedSolution": "$$9 = 3^2, \\ 12 = 2^2 \\times 3, \\ 15 = 3 \\times 5$$\n$$\\text{LCM} = 2^2 \\times 3^2 \\times 5 = 4 \\times 9 \\times 5 = 180\\text{ minutes} = 3\\text{ hours}$$\n$$6:00\\text{ a.m.} + 3\\text{ hours} = 9:00\\text{ a.m.}$$.",
             "points": 2
           },
           {
-            "id": "q_num_j1_h02",
+            "id": "q_b7_num_h02",
             "difficulty": "hard",
-            "prompt": "Find the least whole number that must be added to $175$ to make it exactly divisible by $13$.",
+            "dokLevel": 3,
+            "prompt": "Evaluate $134_{\\text{five}} + 1011_{\\text{two}}$ and express the final answer in base ten.",
             "options": [
-              "7",
+              "55",
+              "52",
+              "44",
+              "49"
+            ],
+            "correctAnswer": "55",
+            "hint": "Convert both addends to base ten first, then sum.",
+            "workedSolution": "$$134_{\\text{five}} = (1 \\times 25) + (3 \\times 5) + (4 \\times 1) = 25 + 15 + 4 = 44_{10}$$\n$$1011_{\\text{two}} = 8 + 0 + 2 + 1 = 11_{10}$$\n$$\\text{Sum} = 44 + 11 = 55$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $213_x = 58_{\\text{ten}}$, find the positive integer base $x$.",
+            "options": [
+              "5",
               "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Set up polynomial $2x^2 + x + 3 = 58$ and factorize.",
+            "workedSolution": "$$2x^2 + x + 3 = 58 \\implies 2x^2 + x - 55 = 0$$\n$$(2x + 11)(x - 5) = 0 \\implies x = 5$$ (since base must be positive integer $> 3$).",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The product of two numbers is $2,160$ and their HCF is $12$. Find their LCM.",
+            "options": [
+              "180",
+              "120",
+              "240",
+              "360"
+            ],
+            "correctAnswer": "180",
+            "hint": "Apply the identity: $\\text{HCF} \\times \\text{LCM} = A \\times B$.",
+            "workedSolution": "$$12 \\times \\text{LCM} = 2,160 \\implies \\text{LCM} = \\frac{2160}{12} = 180$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the smallest whole number by which $180$ must be multiplied so that the product becomes a perfect square.",
+            "options": [
+              "5",
+              "2",
+              "3",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "Prime factorize 180 and find which prime factor has an odd exponent.",
+            "workedSolution": "$$180 = 2^2 \\times 3^2 \\times 5^1$$. The exponent of 5 is odd (1). To make it even, multiply by 5.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $8\\text{ seconds}$ and $12\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "24",
+              "48",
+              "16",
+              "96"
+            ],
+            "correctAnswer": "24",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $8$ and $12$.",
+            "workedSolution": "$$\\text{LCM}(8, 12) = 24\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $32_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "23",
+              "25",
+              "20",
+              "28"
+            ],
+            "correctAnswer": "23",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$32_{\\text{five}} = 17_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 17 + 6 = 23_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $15$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "110",
+              "111",
+              "103",
+              "105"
+            ],
+            "correctAnswer": "110",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 15) + 5 = 105 + 5 = 110$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $6\\text{ seconds}$ and $10\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "30",
+              "60",
+              "24",
+              "60"
+            ],
+            "correctAnswer": "30",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $6$ and $10$.",
+            "workedSolution": "$$\\text{LCM}(6, 10) = 30\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $41_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "31",
+              "33",
+              "28",
+              "36"
+            ],
+            "correctAnswer": "31",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$41_{\\text{five}} = 21_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 21 + 10 = 31_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $14$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "101",
+              "102",
+              "94",
+              "98"
+            ],
+            "correctAnswer": "101",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 14) + 3 = 98 + 3 = 101$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
               "5",
               "8"
             ],
-            "correctAnswer": "7",
-            "hint": "Find the remainder when 175 is divided by 13.",
-            "workedSolution": "$$175 = (13 \\times 13) + 6$$. To reach the next multiple of 13, add $$13 - 6 = 7$$.",
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
             "points": 2
           },
           {
-            "id": "q_num_j1_h03",
+            "id": "q_b7_num_h14",
             "difficulty": "hard",
-            "prompt": "Find the missing binary numeral $x$ in: $$111010_{\\text{two}} - x = 10111_{\\text{two}}$$.",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $14\\text{ seconds}$ and $18\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
             "options": [
-              "100011_two",
-              "101011_two",
-              "110011_two",
-              "100111_two"
+              "126",
+              "252",
+              "112",
+              "252"
             ],
-            "correctAnswer": "100011_two",
-            "hint": "Convert to base ten first: 58 - 23 = 35. Convert 35 back to base two.",
-            "workedSolution": "$$58 - 23 = 35_{\\text{ten}} = 32 + 2 + 1 = 100011_{\\text{two}}$$.",
+            "correctAnswer": "126",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $14$ and $18$.",
+            "workedSolution": "$$\\text{LCM}(14, 18) = 126\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $20_{\\text{five}} + 1000_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "18",
+              "20",
+              "15",
+              "23"
+            ],
+            "correctAnswer": "18",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$20_{\\text{five}} = 10_{10}, \\quad 1000_{\\text{two}} = 8_{10}$$\n$$\\text{Total} = 10 + 8 = 18_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $13$ and the remainder is $4$. Find the value of $N$.",
+            "options": [
+              "95",
+              "96",
+              "88",
+              "91"
+            ],
+            "correctAnswer": "95",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 13) + 4 = 91 + 4 = 95$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 64_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 64 \\implies x + 1 = 8 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $12\\text{ seconds}$ and $16\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "48",
+              "96",
+              "36",
+              "192"
+            ],
+            "correctAnswer": "48",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $12$ and $16$.",
+            "workedSolution": "$$\\text{LCM}(12, 16) = 48\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $24_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "20",
+              "22",
+              "17",
+              "25"
+            ],
+            "correctAnswer": "20",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$24_{\\text{five}} = 14_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 14 + 6 = 20_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $12$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "89",
+              "90",
+              "82",
+              "84"
+            ],
+            "correctAnswer": "89",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 12) + 5 = 84 + 5 = 89$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $10\\text{ seconds}$ and $14\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "70",
+              "140",
+              "60",
+              "140"
+            ],
+            "correctAnswer": "70",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $10$ and $14$.",
+            "workedSolution": "$$\\text{LCM}(10, 14) = 70\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $33_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "28",
+              "30",
+              "25",
+              "33"
+            ],
+            "correctAnswer": "28",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$33_{\\text{five}} = 18_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 18 + 10 = 28_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $16$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "115",
+              "116",
+              "108",
+              "112"
+            ],
+            "correctAnswer": "115",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 16) + 3 = 112 + 3 = 115$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $8\\text{ seconds}$ and $12\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "24",
+              "48",
+              "16",
+              "96"
+            ],
+            "correctAnswer": "24",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $8$ and $12$.",
+            "workedSolution": "$$\\text{LCM}(8, 12) = 24\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $42_{\\text{five}} + 1000_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "30",
+              "32",
+              "27",
+              "35"
+            ],
+            "correctAnswer": "30",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$42_{\\text{five}} = 22_{10}, \\quad 1000_{\\text{two}} = 8_{10}$$\n$$\\text{Total} = 22 + 8 = 30_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $15$ and the remainder is $4$. Find the value of $N$.",
+            "options": [
+              "109",
+              "110",
+              "102",
+              "105"
+            ],
+            "correctAnswer": "109",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 15) + 4 = 105 + 4 = 109$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 64_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 64 \\implies x + 1 = 8 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $6\\text{ seconds}$ and $10\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "30",
+              "60",
+              "24",
+              "60"
+            ],
+            "correctAnswer": "30",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $6$ and $10$.",
+            "workedSolution": "$$\\text{LCM}(6, 10) = 30\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $21_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "17",
+              "19",
+              "14",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$21_{\\text{five}} = 11_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 11 + 6 = 17_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $14$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "103",
+              "104",
+              "96",
+              "98"
+            ],
+            "correctAnswer": "103",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 14) + 5 = 98 + 5 = 103$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $14\\text{ seconds}$ and $18\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "126",
+              "252",
+              "112",
+              "252"
+            ],
+            "correctAnswer": "126",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $14$ and $18$.",
+            "workedSolution": "$$\\text{LCM}(14, 18) = 126\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $30_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "25",
+              "27",
+              "22",
+              "30"
+            ],
+            "correctAnswer": "25",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$30_{\\text{five}} = 15_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 15 + 10 = 25_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $13$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "94",
+              "95",
+              "87",
+              "91"
+            ],
+            "correctAnswer": "94",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 13) + 3 = 91 + 3 = 94$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $12\\text{ seconds}$ and $16\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "48",
+              "96",
+              "36",
+              "192"
+            ],
+            "correctAnswer": "48",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $12$ and $16$.",
+            "workedSolution": "$$\\text{LCM}(12, 16) = 48\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $34_{\\text{five}} + 1000_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "27",
+              "29",
+              "24",
+              "32"
+            ],
+            "correctAnswer": "27",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$34_{\\text{five}} = 19_{10}, \\quad 1000_{\\text{two}} = 8_{10}$$\n$$\\text{Total} = 19 + 8 = 27_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $12$ and the remainder is $4$. Find the value of $N$.",
+            "options": [
+              "88",
+              "89",
+              "81",
+              "84"
+            ],
+            "correctAnswer": "88",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 12) + 4 = 84 + 4 = 88$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 64_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 64 \\implies x + 1 = 8 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $10\\text{ seconds}$ and $14\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "70",
+              "140",
+              "60",
+              "140"
+            ],
+            "correctAnswer": "70",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $10$ and $14$.",
+            "workedSolution": "$$\\text{LCM}(10, 14) = 70\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $43_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "29",
+              "31",
+              "26",
+              "34"
+            ],
+            "correctAnswer": "29",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$43_{\\text{five}} = 23_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 23 + 6 = 29_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $16$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "117",
+              "118",
+              "110",
+              "112"
+            ],
+            "correctAnswer": "117",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 16) + 5 = 112 + 5 = 117$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $8\\text{ seconds}$ and $12\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "24",
+              "48",
+              "16",
+              "96"
+            ],
+            "correctAnswer": "24",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $8$ and $12$.",
+            "workedSolution": "$$\\text{LCM}(8, 12) = 24\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $22_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "22",
+              "24",
+              "19",
+              "27"
+            ],
+            "correctAnswer": "22",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$22_{\\text{five}} = 12_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 12 + 10 = 22_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $15$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "108",
+              "109",
+              "101",
+              "105"
+            ],
+            "correctAnswer": "108",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 15) + 3 = 105 + 3 = 108$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $6\\text{ seconds}$ and $10\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "30",
+              "60",
+              "24",
+              "60"
+            ],
+            "correctAnswer": "30",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $6$ and $10$.",
+            "workedSolution": "$$\\text{LCM}(6, 10) = 30\\text{ seconds}$$.",
             "points": 2
           }
         ]
@@ -649,142 +2914,2407 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_num_j1_l01",
+            "id": "q_b7_num_l01",
             "difficulty": "low",
-            "prompt": "Find the set of prime factors of $18$.",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is a prime number?",
             "options": [
-              "{2, 3}",
-              "{1, 2, 3}",
-              "{2, 3, 9}",
-              "{3, 6}"
+              "1",
+              "9",
+              "2",
+              "15"
             ],
-            "correctAnswer": "{2, 3}",
-            "hint": "List the factors of 18, then select only the prime numbers.",
-            "workedSolution": "Factors of 18 are 1, 2, 3, 6, 9, 18. Among these, only 2 and 3 are prime numbers.",
+            "correctAnswer": "2",
+            "hint": "A prime number has exactly two distinct factors: 1 and itself.",
+            "workedSolution": "2 has only two factors (1 and 2). 1 has only one factor, while 9 and 15 have more than two.",
             "points": 1
           },
           {
-            "id": "q_num_j1_l02",
+            "id": "q_b7_num_l02",
             "difficulty": "low",
-            "prompt": "Convert $24_{\\text{five}}$ to a base ten numeral.",
+            "dokLevel": 1,
+            "prompt": "Express $24$ as a product of prime factors in index notation.",
             "options": [
-              "14",
+              "2³ × 3",
+              "2² × 6",
+              "2 × 3³",
+              "4 × 6"
+            ],
+            "correctAnswer": "2³ × 3",
+            "hint": "Divide successively by 2: 24 = 2 × 12 = 2 × 2 × 6...",
+            "workedSolution": "$$24 = 2 \\times 2 \\times 2 \\times 3 = 2^3 \\times 3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 7 in the numeral $475,230$?",
+            "options": [
+              "Ten-thousands",
+              "Thousands",
+              "Hundreds",
+              "Millions"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count places from right to left starting from units.",
+            "workedSolution": "In 475,230, 0 is units, 3 is tens, 2 is hundreds, 5 is thousands, and 7 is ten-thousands ($10^4$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $12_{\\text{five}}$ to a base ten numeral.",
+            "options": [
+              "7",
+              "10",
               "12",
-              "19",
-              "24"
+              "5"
             ],
-            "correctAnswer": "14",
-            "hint": "Expand in powers of 5: (2 × 5¹) + (4 × 5⁰).",
-            "workedSolution": "$$(2 \\times 5) + (4 \\times 1) = 10 + 4 = 14_{\\text{ten}}$$.",
+            "correctAnswer": "7",
+            "hint": "Expand as $(1 \\times 5^1) + (2 \\times 5^0)$.",
+            "workedSolution": "$$12_{\\text{five}} = (1 \\times 5) + (2 \\times 1) = 5 + 2 = 7_{\\text{ten}}$$.",
             "points": 1
           },
           {
-            "id": "q_num_j1_l03",
+            "id": "q_b7_num_l05",
             "difficulty": "low",
-            "prompt": "What is the Least Common Multiple (LCM) of $4, 6,$ and $10$?",
+            "dokLevel": 1,
+            "prompt": "Convert $101_{\\text{two}}$ to a base ten numeral.",
             "options": [
-              "60",
-              "30",
-              "120",
-              "24"
+              "5",
+              "6",
+              "3",
+              "7"
             ],
-            "correctAnswer": "60",
-            "hint": "Find the prime factors: $4 = 2^2$, $6 = 2 \\times 3$, $10 = 2 \\times 5$.",
-            "workedSolution": "$$\\text{LCM} = 2^2 \\times 3 \\times 5 = 4 \\times 15 = 60$$.",
+            "correctAnswer": "5",
+            "hint": "Expand across powers of two: $1 \\times 2^2 + 0 \\times 2^1 + 1 \\times 2^0$.",
+            "workedSolution": "$$(1 \\times 4) + (0 \\times 2) + (1 \\times 1) = 4 + 0 + 1 = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 3?",
+            "options": [
+              "124",
+              "235",
+              "342",
+              "415"
+            ],
+            "correctAnswer": "342",
+            "hint": "A number is divisible by 3 if the sum of its digits is a multiple of 3.",
+            "workedSolution": "For 342: $3 + 4 + 2 = 9$. Since 9 is divisible by 3, 342 is divisible by 3.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Find the HCF of $12$ and $18$.",
+            "options": [
+              "6",
+              "2",
+              "3",
+              "36"
+            ],
+            "correctAnswer": "6",
+            "hint": "List the factors of both numbers and choose the largest common one.",
+            "workedSolution": "Factors of 12: {1, 2, 3, 4, 6, 12}; Factors of 18: {1, 2, 3, 6, 9, 18}. The highest common factor is 6.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the LCM of $4$ and $6$?",
+            "options": [
+              "12",
+              "24",
+              "2",
+              "18"
+            ],
+            "correctAnswer": "12",
+            "hint": "Identify the smallest positive multiple shared by both numbers.",
+            "workedSolution": "Multiples of 4: 4, 8, 12, 16... Multiples of 6: 6, 12, 18... Smallest shared is 12.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "How many digits are used in the base five numeration system?",
+            "options": [
+              "5",
+              "4",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "Count the digits {0, 1, 2, 3, 4}.",
+            "workedSolution": "Base five uses exactly 5 symbols: 0, 1, 2, 3, and 4.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Write $36$ as a product of prime factors.",
+            "options": [
+              "2² × 3²",
+              "4 × 9",
+              "2³ × 3",
+              "6²"
+            ],
+            "correctAnswer": "2² × 3²",
+            "hint": "All factors must be prime numbers: 2 and 3.",
+            "workedSolution": "$$36 = 4 \\times 9 = 2^2 \\times 3^2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert binary number $111_{\\text{two}}$ to base ten.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "10"
+            ],
+            "correctAnswer": "7",
+            "hint": "Expand across powers of 2.",
+            "workedSolution": "$111_{\\text{two}} = 7_{\\text{ten}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the place value of the digit 8 in the numeral $82,450$?",
+            "options": [
+              "Ten-thousands",
+              "Units",
+              "Millions",
+              "Tens"
+            ],
+            "correctAnswer": "Ten-thousands",
+            "hint": "Count the column position from the rightmost unit digit.",
+            "workedSolution": "In $82,450$, the digit 8 occupies the ten-thousands position ($Ten-thousands$).",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $16$ as a product of prime factors in index notation.",
+            "options": [
+              "2⁴",
+              "4²",
+              "2³",
+              "2⁵"
+            ],
+            "correctAnswer": "2⁴",
+            "hint": "Break down 16 into prime divisors only.",
+            "workedSolution": "Prime factorization of $16$: $2⁴$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $32_{\\text{five}}$ to base ten.",
+            "options": [
+              "17",
+              "19",
+              "15",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Expand using powers of 5: $(d_1 \\times 5^1) + (d_0 \\times 5^0)$.",
+            "workedSolution": "$$32_{\\text{five}} = (3 \\times 5) + (2 \\times 1) = 17_{\\text{ten}}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is divisible by 10?",
+            "options": [
+              "1,290",
+              "1,295",
+              "1,292",
+              "1,298"
+            ],
+            "correctAnswer": "1,290",
+            "hint": "Apply the divisibility rule for 10.",
+            "workedSolution": "$1,290$ is divisible by 10 because it ends in 0.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_num_j1_m01",
+            "id": "q_b7_num_m01",
             "difficulty": "medium",
-            "prompt": "Convert $47_{\\text{ten}}$ to a base five numeral.",
+            "dokLevel": 2,
+            "prompt": "Convert $73_{\\text{ten}}$ to a base five numeral.",
             "options": [
-              "142_five",
-              "132_five",
-              "242_five",
-              "141_five"
+              "243_five",
+              "241_five",
+              "143_five",
+              "223_five"
             ],
-            "correctAnswer": "142_five",
-            "hint": "Repeatedly divide 47 by 5 and collect remainders upwards.",
-            "workedSolution": "$$47 = 1(25) + 4(5) + 2(1) = 142_{\\text{five}}$$.",
+            "correctAnswer": "243_five",
+            "hint": "Divide 73 successively by 5 and write remainders from bottom to top.",
+            "workedSolution": "$$73 \\div 5 = 14 \\text{ R } 3$$\n$$14 \\div 5 = 2 \\text{ R } 4$$\n$$2 \\div 5 = 0 \\text{ R } 2$$\nResult: $243_{\\text{five}}$.",
             "points": 1
           },
           {
-            "id": "q_num_j1_m02",
+            "id": "q_b7_num_m02",
             "difficulty": "medium",
-            "prompt": "Find the Highest Common Factor (HCF) of $36, 54,$ and $72$.",
+            "dokLevel": 2,
+            "prompt": "If $23_x = 11_{\\text{ten}}$, find the value of base $x$.",
             "options": [
+              "4",
+              "5",
+              "6",
+              "3"
+            ],
+            "correctAnswer": "4",
+            "hint": "Expand $2x + 3 = 11$ and solve for $x$.",
+            "workedSolution": "$$2(x) + 3 = 11 \\implies 2x = 8 \\implies x = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate in base two: $110_{\\text{two}} + 11_{\\text{two}}$.",
+            "options": [
+              "1001_two",
+              "1010_two",
+              "111_two",
+              "1000_two"
+            ],
+            "correctAnswer": "1001_two",
+            "hint": "In binary addition, $1 + 1 = 10_2$ (write 0, carry 1).",
+            "workedSolution": "110_two (6) + 11_two (3) = 9_ten = 1001_two.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Determine the HCF of $72$, $108$, and $144$.",
+            "options": [
+              "36",
               "18",
               "12",
-              "9",
-              "24"
+              "72"
             ],
-            "correctAnswer": "18",
-            "hint": "Identify the largest integer that divides all three numbers evenly.",
-            "workedSolution": "$$36 = 18 \\times 2$$, $$54 = 18 \\times 3$$, $$72 = 18 \\times 4$$. The HCF is 18.",
+            "correctAnswer": "36",
+            "hint": "Decompose each into prime powers and take minimum exponents.",
+            "workedSolution": "$$72 = 2^3 \\times 3^2, \\ 108 = 2^2 \\times 3^3, \\ 144 = 2^4 \\times 3^2$$\n$$\\text{HCF} = 2^2 \\times 3^2 = 4 \\times 9 = 36$$.",
             "points": 1
           },
           {
-            "id": "q_num_j1_m03",
+            "id": "q_b7_num_m05",
             "difficulty": "medium",
-            "prompt": "Convert $11011_{\\text{two}}$ to a base ten numeral.",
+            "dokLevel": 2,
+            "prompt": "Find the smallest number that is exactly divisible by $12$, $15$, and $20$.",
             "options": [
-              "27",
-              "25",
-              "31",
-              "29"
+              "60",
+              "120",
+              "30",
+              "180"
             ],
-            "correctAnswer": "27",
-            "hint": "Expand: 1(16) + 1(8) + 0(4) + 1(2) + 1(1).",
-            "workedSolution": "$$16 + 8 + 0 + 2 + 1 = 27_{\\text{ten}}$$.",
+            "correctAnswer": "60",
+            "hint": "The smallest common multiple is the LCM.",
+            "workedSolution": "$$12 = 2^2 \\times 3, \\ 15 = 3 \\times 5, \\ 20 = 2^2 \\times 5$$\n$$\\text{LCM} = 2^2 \\times 3 \\times 5 = 4 \\times 15 = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $31_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "11111_two",
+              "100000_two",
+              "11110_two",
+              "100001_two"
+            ],
+            "correctAnswer": "11111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $31$ by 2 yields remainders producing $11111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $51_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "201_five",
+              "203_five",
+              "143_five",
+              "211_five"
+            ],
+            "correctAnswer": "201_five",
+            "hint": "Divide 51 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $51$ repeatedly by 5 gives $201_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $30$ and $45$.",
+            "options": [
+              "90",
+              "180",
+              "15",
+              "78"
+            ],
+            "correctAnswer": "90",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(30, 45) = \\frac{30 \\times 45}{15} = 90$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $35_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "100011_two",
+              "100100_two",
+              "100010_two",
+              "100101_two"
+            ],
+            "correctAnswer": "100011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $35$ by 2 yields remainders producing $100011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $63_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "223_five",
+              "230_five",
+              "220_five",
+              "233_five"
+            ],
+            "correctAnswer": "223_five",
+            "hint": "Divide 63 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $63$ repeatedly by 5 gives $223_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $24$ and $36$.",
+            "options": [
+              "72",
+              "144",
+              "12",
+              "60"
+            ],
+            "correctAnswer": "72",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(24, 36) = \\frac{24 \\times 36}{12} = 72$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $39_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "100111_two",
+              "101000_two",
+              "100110_two",
+              "101001_two"
+            ],
+            "correctAnswer": "100111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $39$ by 2 yields remainders producing $100111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $75_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "300_five",
+              "302_five",
+              "242_five",
+              "310_five"
+            ],
+            "correctAnswer": "300_five",
+            "hint": "Divide 75 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $75$ repeatedly by 5 gives $300_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $31_x = 16_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $3x + 1 = 16$.",
+            "workedSolution": "$$3x + 1 = 16 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $18$ and $27$.",
+            "options": [
+              "54",
+              "108",
+              "9",
+              "42"
+            ],
+            "correctAnswer": "54",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(18, 27) = \\frac{18 \\times 27}{9} = 54$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $43_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "101011_two",
+              "101100_two",
+              "101010_two",
+              "101101_two"
+            ],
+            "correctAnswer": "101011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $43$ by 2 yields remainders producing $101011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $87_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "322_five",
+              "324_five",
+              "314_five",
+              "332_five"
+            ],
+            "correctAnswer": "322_five",
+            "hint": "Divide 87 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $87$ repeatedly by 5 gives $322_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $20$ and $30$.",
+            "options": [
+              "60",
+              "120",
+              "10",
+              "48"
+            ],
+            "correctAnswer": "60",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(20, 30) = \\frac{20 \\times 30}{10} = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $47_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "101111_two",
+              "110000_two",
+              "101110_two",
+              "110001_two"
+            ],
+            "correctAnswer": "101111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $47$ by 2 yields remainders producing $101111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $99_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "344_five",
+              "401_five",
+              "341_five",
+              "404_five"
+            ],
+            "correctAnswer": "344_five",
+            "hint": "Divide 99 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $99$ repeatedly by 5 gives $344_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $16$ and $24$.",
+            "options": [
+              "48",
+              "96",
+              "8",
+              "36"
+            ],
+            "correctAnswer": "48",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(16, 24) = \\frac{16 \\times 24}{8} = 48$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $51_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "110011_two",
+              "110100_two",
+              "110010_two",
+              "110101_two"
+            ],
+            "correctAnswer": "110011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $51$ by 2 yields remainders producing $110011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $111_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "421_five",
+              "423_five",
+              "413_five",
+              "431_five"
+            ],
+            "correctAnswer": "421_five",
+            "hint": "Divide 111 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $111$ repeatedly by 5 gives $421_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $31_x = 16_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $3x + 1 = 16$.",
+            "workedSolution": "$$3x + 1 = 16 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $30$ and $45$.",
+            "options": [
+              "90",
+              "180",
+              "15",
+              "78"
+            ],
+            "correctAnswer": "90",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(30, 45) = \\frac{30 \\times 45}{15} = 90$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $55_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "110111_two",
+              "111000_two",
+              "110110_two",
+              "111001_two"
+            ],
+            "correctAnswer": "110111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $55$ by 2 yields remainders producing $110111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $123_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "443_five",
+              "1000_five",
+              "440_five",
+              "1003_five"
+            ],
+            "correctAnswer": "443_five",
+            "hint": "Divide 123 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $123$ repeatedly by 5 gives $443_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $24$ and $36$.",
+            "options": [
+              "72",
+              "144",
+              "12",
+              "60"
+            ],
+            "correctAnswer": "72",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(24, 36) = \\frac{24 \\times 36}{12} = 72$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $59_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "111011_two",
+              "111100_two",
+              "111010_two",
+              "111101_two"
+            ],
+            "correctAnswer": "111011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $59$ by 2 yields remainders producing $111011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $135_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1020_five",
+              "1022_five",
+              "1012_five",
+              "1030_five"
+            ],
+            "correctAnswer": "1020_five",
+            "hint": "Divide 135 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $135$ repeatedly by 5 gives $1020_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $18$ and $27$.",
+            "options": [
+              "54",
+              "108",
+              "9",
+              "42"
+            ],
+            "correctAnswer": "54",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(18, 27) = \\frac{18 \\times 27}{9} = 54$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $63_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "111111_two",
+              "1000000_two",
+              "111110_two",
+              "1000001_two"
+            ],
+            "correctAnswer": "111111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $63$ by 2 yields remainders producing $111111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $147_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1042_five",
+              "1044_five",
+              "1034_five",
+              "1102_five"
+            ],
+            "correctAnswer": "1042_five",
+            "hint": "Divide 147 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $147$ repeatedly by 5 gives $1042_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $31_x = 16_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $3x + 1 = 16$.",
+            "workedSolution": "$$3x + 1 = 16 \\implies 3x = 15 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $20$ and $30$.",
+            "options": [
+              "60",
+              "120",
+              "10",
+              "48"
+            ],
+            "correctAnswer": "60",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(20, 30) = \\frac{20 \\times 30}{10} = 60$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $67_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "1000011_two",
+              "1000100_two",
+              "1000010_two",
+              "1000101_two"
+            ],
+            "correctAnswer": "1000011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $67$ by 2 yields remainders producing $1000011_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $159_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1114_five",
+              "1121_five",
+              "1111_five",
+              "1124_five"
+            ],
+            "correctAnswer": "1114_five",
+            "hint": "Divide 159 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $159$ repeatedly by 5 gives $1114_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $41_x = 21_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $4x + 1 = 21$.",
+            "workedSolution": "$$4x + 1 = 21 \\implies 4x = 20 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $16$ and $24$.",
+            "options": [
+              "48",
+              "96",
+              "8",
+              "36"
+            ],
+            "correctAnswer": "48",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(16, 24) = \\frac{16 \\times 24}{8} = 48$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $71_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "1000111_two",
+              "1001000_two",
+              "1000110_two",
+              "1001001_two"
+            ],
+            "correctAnswer": "1000111_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $71$ by 2 yields remainders producing $1000111_2$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $171_{\\text{ten}}$ to base five numeral.",
+            "options": [
+              "1141_five",
+              "1143_five",
+              "1133_five",
+              "1201_five"
+            ],
+            "correctAnswer": "1141_five",
+            "hint": "Divide 171 by 5 repeatedly and collect remainders.",
+            "workedSolution": "Dividing $171$ repeatedly by 5 gives $1141_{\\text{five}}$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "If $21_x = 11_{\\text{ten}}$, find the value of the base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Expand in powers of $x$: $2x + 1 = 11$.",
+            "workedSolution": "$$2x + 1 = 11 \\implies 2x = 10 \\implies x = 5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Find the Lowest Common Multiple (LCM) of $30$ and $45$.",
+            "options": [
+              "90",
+              "180",
+              "15",
+              "78"
+            ],
+            "correctAnswer": "90",
+            "hint": "Use $\\text{LCM}(A, B) = \\frac{A \\times B}{\\text{HCF}(A, B)}$.",
+            "workedSolution": "$$\\text{LCM}(30, 45) = \\frac{30 \\times 45}{15} = 90$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b7_num_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert $75_{\\text{ten}}$ to binary (base two).",
+            "options": [
+              "1001011_two",
+              "1001100_two",
+              "1001010_two",
+              "1001101_two"
+            ],
+            "correctAnswer": "1001011_two",
+            "hint": "Divide by 2 successively, recording remainders from bottom to top.",
+            "workedSolution": "Successive division of $75$ by 2 yields remainders producing $1001011_2$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_num_j1_h01",
+            "id": "q_b7_num_h01",
             "difficulty": "hard",
-            "prompt": "If $$23_x = 13_{\\text{ten}}$$, find the unknown base $x$.",
+            "dokLevel": 3,
+            "prompt": "Three church bells toll at intervals of $9$, $12$, and $15\\text{ minutes}$ respectively. If they toll together at $6:00\\text{ a.m.}$, at what time will they next toll together?",
             "options": [
-              "five",
-              "four",
-              "six",
-              "seven"
+              "9:00 a.m.",
+              "8:30 a.m.",
+              "7:30 a.m.",
+              "10:00 a.m."
             ],
-            "correctAnswer": "five",
-            "hint": "Write as an equation: $2x + 3 = 13$.",
-            "workedSolution": "$$2x + 3 = 13 \\implies 2x = 10 \\implies x = 5$$. The base is five.",
+            "correctAnswer": "9:00 a.m.",
+            "hint": "Find the LCM of 9, 12, and 15, then convert minutes to hours.",
+            "workedSolution": "$$9 = 3^2, \\ 12 = 2^2 \\times 3, \\ 15 = 3 \\times 5$$\n$$\\text{LCM} = 2^2 \\times 3^2 \\times 5 = 4 \\times 9 \\times 5 = 180\\text{ minutes} = 3\\text{ hours}$$\n$$6:00\\text{ a.m.} + 3\\text{ hours} = 9:00\\text{ a.m.}$$.",
             "points": 2
           },
           {
-            "id": "q_num_j1_h02",
+            "id": "q_b7_num_h02",
             "difficulty": "hard",
-            "prompt": "Find the least whole number that must be added to $175$ to make it exactly divisible by $13$.",
+            "dokLevel": 3,
+            "prompt": "Evaluate $134_{\\text{five}} + 1011_{\\text{two}}$ and express the final answer in base ten.",
             "options": [
-              "7",
+              "55",
+              "52",
+              "44",
+              "49"
+            ],
+            "correctAnswer": "55",
+            "hint": "Convert both addends to base ten first, then sum.",
+            "workedSolution": "$$134_{\\text{five}} = (1 \\times 25) + (3 \\times 5) + (4 \\times 1) = 25 + 15 + 4 = 44_{10}$$\n$$1011_{\\text{two}} = 8 + 0 + 2 + 1 = 11_{10}$$\n$$\\text{Sum} = 44 + 11 = 55$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h03",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $213_x = 58_{\\text{ten}}$, find the positive integer base $x$.",
+            "options": [
+              "5",
               "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Set up polynomial $2x^2 + x + 3 = 58$ and factorize.",
+            "workedSolution": "$$2x^2 + x + 3 = 58 \\implies 2x^2 + x - 55 = 0$$\n$$(2x + 11)(x - 5) = 0 \\implies x = 5$$ (since base must be positive integer $> 3$).",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "The product of two numbers is $2,160$ and their HCF is $12$. Find their LCM.",
+            "options": [
+              "180",
+              "120",
+              "240",
+              "360"
+            ],
+            "correctAnswer": "180",
+            "hint": "Apply the identity: $\\text{HCF} \\times \\text{LCM} = A \\times B$.",
+            "workedSolution": "$$12 \\times \\text{LCM} = 2,160 \\implies \\text{LCM} = \\frac{2160}{12} = 180$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Find the smallest whole number by which $180$ must be multiplied so that the product becomes a perfect square.",
+            "options": [
+              "5",
+              "2",
+              "3",
+              "10"
+            ],
+            "correctAnswer": "5",
+            "hint": "Prime factorize 180 and find which prime factor has an odd exponent.",
+            "workedSolution": "$$180 = 2^2 \\times 3^2 \\times 5^1$$. The exponent of 5 is odd (1). To make it even, multiply by 5.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $8\\text{ seconds}$ and $12\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "24",
+              "48",
+              "16",
+              "96"
+            ],
+            "correctAnswer": "24",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $8$ and $12$.",
+            "workedSolution": "$$\\text{LCM}(8, 12) = 24\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $32_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "23",
+              "25",
+              "20",
+              "28"
+            ],
+            "correctAnswer": "23",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$32_{\\text{five}} = 17_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 17 + 6 = 23_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $15$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "110",
+              "111",
+              "103",
+              "105"
+            ],
+            "correctAnswer": "110",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 15) + 5 = 105 + 5 = 110$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $6\\text{ seconds}$ and $10\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "30",
+              "60",
+              "24",
+              "60"
+            ],
+            "correctAnswer": "30",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $6$ and $10$.",
+            "workedSolution": "$$\\text{LCM}(6, 10) = 30\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $41_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "31",
+              "33",
+              "28",
+              "36"
+            ],
+            "correctAnswer": "31",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$41_{\\text{five}} = 21_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 21 + 10 = 31_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $14$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "101",
+              "102",
+              "94",
+              "98"
+            ],
+            "correctAnswer": "101",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 14) + 3 = 98 + 3 = 101$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
               "5",
               "8"
             ],
-            "correctAnswer": "7",
-            "hint": "Find the remainder when 175 is divided by 13.",
-            "workedSolution": "$$175 = (13 \\times 13) + 6$$. To reach the next multiple of 13, add $$13 - 6 = 7$$.",
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
             "points": 2
           },
           {
-            "id": "q_num_j1_h03",
+            "id": "q_b7_num_h14",
             "difficulty": "hard",
-            "prompt": "Find the missing binary numeral $x$ in: $$111010_{\\text{two}} - x = 10111_{\\text{two}}$$.",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $14\\text{ seconds}$ and $18\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
             "options": [
-              "100011_two",
-              "101011_two",
-              "110011_two",
-              "100111_two"
+              "126",
+              "252",
+              "112",
+              "252"
             ],
-            "correctAnswer": "100011_two",
-            "hint": "Convert to base ten first: 58 - 23 = 35. Convert 35 back to base two.",
-            "workedSolution": "$$58 - 23 = 35_{\\text{ten}} = 32 + 2 + 1 = 100011_{\\text{two}}$$.",
+            "correctAnswer": "126",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $14$ and $18$.",
+            "workedSolution": "$$\\text{LCM}(14, 18) = 126\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $20_{\\text{five}} + 1000_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "18",
+              "20",
+              "15",
+              "23"
+            ],
+            "correctAnswer": "18",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$20_{\\text{five}} = 10_{10}, \\quad 1000_{\\text{two}} = 8_{10}$$\n$$\\text{Total} = 10 + 8 = 18_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $13$ and the remainder is $4$. Find the value of $N$.",
+            "options": [
+              "95",
+              "96",
+              "88",
+              "91"
+            ],
+            "correctAnswer": "95",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 13) + 4 = 91 + 4 = 95$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 64_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 64 \\implies x + 1 = 8 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $12\\text{ seconds}$ and $16\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "48",
+              "96",
+              "36",
+              "192"
+            ],
+            "correctAnswer": "48",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $12$ and $16$.",
+            "workedSolution": "$$\\text{LCM}(12, 16) = 48\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $24_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "20",
+              "22",
+              "17",
+              "25"
+            ],
+            "correctAnswer": "20",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$24_{\\text{five}} = 14_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 14 + 6 = 20_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $12$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "89",
+              "90",
+              "82",
+              "84"
+            ],
+            "correctAnswer": "89",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 12) + 5 = 84 + 5 = 89$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $10\\text{ seconds}$ and $14\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "70",
+              "140",
+              "60",
+              "140"
+            ],
+            "correctAnswer": "70",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $10$ and $14$.",
+            "workedSolution": "$$\\text{LCM}(10, 14) = 70\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $33_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "28",
+              "30",
+              "25",
+              "33"
+            ],
+            "correctAnswer": "28",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$33_{\\text{five}} = 18_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 18 + 10 = 28_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $16$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "115",
+              "116",
+              "108",
+              "112"
+            ],
+            "correctAnswer": "115",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 16) + 3 = 112 + 3 = 115$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $8\\text{ seconds}$ and $12\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "24",
+              "48",
+              "16",
+              "96"
+            ],
+            "correctAnswer": "24",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $8$ and $12$.",
+            "workedSolution": "$$\\text{LCM}(8, 12) = 24\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $42_{\\text{five}} + 1000_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "30",
+              "32",
+              "27",
+              "35"
+            ],
+            "correctAnswer": "30",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$42_{\\text{five}} = 22_{10}, \\quad 1000_{\\text{two}} = 8_{10}$$\n$$\\text{Total} = 22 + 8 = 30_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $15$ and the remainder is $4$. Find the value of $N$.",
+            "options": [
+              "109",
+              "110",
+              "102",
+              "105"
+            ],
+            "correctAnswer": "109",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 15) + 4 = 105 + 4 = 109$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 64_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 64 \\implies x + 1 = 8 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $6\\text{ seconds}$ and $10\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "30",
+              "60",
+              "24",
+              "60"
+            ],
+            "correctAnswer": "30",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $6$ and $10$.",
+            "workedSolution": "$$\\text{LCM}(6, 10) = 30\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $21_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "17",
+              "19",
+              "14",
+              "22"
+            ],
+            "correctAnswer": "17",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$21_{\\text{five}} = 11_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 11 + 6 = 17_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $14$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "103",
+              "104",
+              "96",
+              "98"
+            ],
+            "correctAnswer": "103",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 14) + 5 = 98 + 5 = 103$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $14\\text{ seconds}$ and $18\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "126",
+              "252",
+              "112",
+              "252"
+            ],
+            "correctAnswer": "126",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $14$ and $18$.",
+            "workedSolution": "$$\\text{LCM}(14, 18) = 126\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $30_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "25",
+              "27",
+              "22",
+              "30"
+            ],
+            "correctAnswer": "25",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$30_{\\text{five}} = 15_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 15 + 10 = 25_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $13$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "94",
+              "95",
+              "87",
+              "91"
+            ],
+            "correctAnswer": "94",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 13) + 3 = 91 + 3 = 94$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $12\\text{ seconds}$ and $16\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "48",
+              "96",
+              "36",
+              "192"
+            ],
+            "correctAnswer": "48",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $12$ and $16$.",
+            "workedSolution": "$$\\text{LCM}(12, 16) = 48\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $34_{\\text{five}} + 1000_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "27",
+              "29",
+              "24",
+              "32"
+            ],
+            "correctAnswer": "27",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$34_{\\text{five}} = 19_{10}, \\quad 1000_{\\text{two}} = 8_{10}$$\n$$\\text{Total} = 19 + 8 = 27_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $12$ and the remainder is $4$. Find the value of $N$.",
+            "options": [
+              "88",
+              "89",
+              "81",
+              "84"
+            ],
+            "correctAnswer": "88",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 12) + 4 = 84 + 4 = 88$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 64_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 64 \\implies x + 1 = 8 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $10\\text{ seconds}$ and $14\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "70",
+              "140",
+              "60",
+              "140"
+            ],
+            "correctAnswer": "70",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $10$ and $14$.",
+            "workedSolution": "$$\\text{LCM}(10, 14) = 70\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $43_{\\text{five}} + 110_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "29",
+              "31",
+              "26",
+              "34"
+            ],
+            "correctAnswer": "29",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$43_{\\text{five}} = 23_{10}, \\quad 110_{\\text{two}} = 6_{10}$$\n$$\\text{Total} = 23 + 6 = 29_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $16$ and the remainder is $5$. Find the value of $N$.",
+            "options": [
+              "117",
+              "118",
+              "110",
+              "112"
+            ],
+            "correctAnswer": "117",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 16) + 5 = 112 + 5 = 117$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 36_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "5",
+              "6",
+              "4",
+              "7"
+            ],
+            "correctAnswer": "5",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 36 \\implies x + 1 = 6 \\implies x = 5$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $8\\text{ seconds}$ and $12\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "24",
+              "48",
+              "16",
+              "96"
+            ],
+            "correctAnswer": "24",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $8$ and $12$.",
+            "workedSolution": "$$\\text{LCM}(8, 12) = 24\\text{ seconds}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate $22_{\\text{five}} + 1010_{\\text{two}}$ and express the result in base ten.",
+            "options": [
+              "22",
+              "24",
+              "19",
+              "27"
+            ],
+            "correctAnswer": "22",
+            "hint": "Convert both numerals to base ten first, then add them.",
+            "workedSolution": "$$22_{\\text{five}} = 12_{10}, \\quad 1010_{\\text{two}} = 10_{10}$$\n$$\\text{Total} = 12 + 10 = 22_{10}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "When a certain positive integer $N$ is divided by $7$, the quotient is $15$ and the remainder is $3$. Find the value of $N$.",
+            "options": [
+              "108",
+              "109",
+              "101",
+              "105"
+            ],
+            "correctAnswer": "108",
+            "hint": "Use the Division Algorithm: $\\text{Dividend} = (\\text{Divisor} \\times \\text{Quotient}) + \\text{Remainder}$.",
+            "workedSolution": "$$N = (7 \\times 15) + 3 = 105 + 3 = 108$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "If $121_x = 49_{\\text{ten}}$, find the positive base $x$.",
+            "options": [
+              "6",
+              "7",
+              "5",
+              "8"
+            ],
+            "correctAnswer": "6",
+            "hint": "Note that $121_x = x^2 + 2x + 1 = (x + 1)^2$.",
+            "workedSolution": "$$(x + 1)^2 = 49 \\implies x + 1 = 7 \\implies x = 6$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b7_num_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Two automated factory sirens sound every $6\\text{ seconds}$ and $10\\text{ seconds}$ respectively. If they sound together, after how many seconds will they sound together again?",
+            "options": [
+              "30",
+              "60",
+              "24",
+              "60"
+            ],
+            "correctAnswer": "30",
+            "hint": "The next simultaneous synchronization occurs at the Lowest Common Multiple (LCM) of $6$ and $10$.",
+            "workedSolution": "$$\\text{LCM}(6, 10) = 30\\text{ seconds}$$.",
             "points": 2
           }
         ]
