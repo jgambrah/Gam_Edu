@@ -14722,6 +14722,76 @@
       "paper": 2,
       "questionNumber": "5(a)",
       "promptSnippet": "From the top of a building 20m high, the angle of depression to a car is 30 degrees..."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 5,
+      "promptSnippet": "Find the volume of a cube with side 5 m."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 11,
+      "promptSnippet": "Image of (2, -3) under translation (x, y) -> (x, y - 2)."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 12,
+      "promptSnippet": "Square of area 144 cm² has same perimeter as equilateral triangle."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 29,
+      "promptSnippet": "Find circumference of circle whose area is 100π cm²."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 30,
+      "promptSnippet": "Find value of y in isosceles triangle between parallel lines (base angle 56°)."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 33,
+      "promptSnippet": "If a = (3, 1) and b = (-2, 1), evaluate 6b + 2a."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "2(a)",
+      "promptSnippet": "Translation vector r mapping P(2, 5) to (-3, 8), and image of Q(-4, -6)."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "3(b)",
+      "promptSnippet": "L-shaped room floor perimeter, area, and cost of carpeting."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "4(b)",
+      "promptSnippet": "Ladder leaning against building at 60° angle, foot 5m from building."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "5(c)",
+      "promptSnippet": "Athlete runs 4 times round circular track of radius 70 m."
     }
   ],
   "updatedAt": "2026-09-17T13:14:07.782Z"

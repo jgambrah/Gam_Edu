@@ -14816,5 +14816,70 @@
     }
   ],
   "strandCode": "S1",
-  "strandName": "Strand 1: Number"
+  "strandName": "Strand 1: Number",
+  "linkedExamQuestions": [
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 6,
+      "promptSnippet": "A trader sold an article for GH¢ 126.00 making a profit of 20%. Find cost price."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 8,
+      "promptSnippet": "Mary receives a commission of 15% on articles sold in a week."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 15,
+      "promptSnippet": "A class of 42 shared oranges each getting 11. How many will 22 get?"
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 18,
+      "promptSnippet": "Kofi paid simple interest of GH¢ 30.00 on a 4-year loan at 3% p.a."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 19,
+      "promptSnippet": "Cyclist at 20 km/h covered distance in 35 mins. Time taken at 28 km/h?"
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 35,
+      "promptSnippet": "Ivy and Abbey share GH¢ 30.00 in ratio 3 : 2. Find Abbey's share."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "1(c)",
+      "promptSnippet": "A typist charges GH¢ 68.00 for first 8 sheets and GH¢ 11.00 for each additional."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "2(b)",
+      "promptSnippet": "Joyce and Richard partnership profit sharing (one-third manager fee)."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "3(a)",
+      "promptSnippet": "Asana cashew-fruit collecting daily wage increased by 10% for 30 days."
+    }
+  ]
 }

@@ -14789,6 +14789,69 @@
       "paper": 1,
       "questionNumber": 4,
       "promptSnippet": "Evaluate the square root of 6.25."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 2,
+      "promptSnippet": "Mr. Mensah left his house at 9:45 am and reached his village at 4:15 pm."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 7,
+      "promptSnippet": "Write 0.000437 in standard form."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 9,
+      "promptSnippet": "Simplify: √75 - √18 - √3 + √2."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 20,
+      "promptSnippet": "Which of the following is NOT a composite number?"
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 21,
+      "promptSnippet": "Kofi had 150 birds. He sold 26 of them and kept the rest equally in 4 cages."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 24,
+      "promptSnippet": "If 2^(2m) = 8, find the value of m."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 39,
+      "promptSnippet": "The product of three numbers is 90. Two are 6 and 3, find the third."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "4(a)",
+      "promptSnippet": "Calculate yearly incomes of Aku, Brako, and Dagadu and income differences."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "5(a)",
+      "promptSnippet": "Simplify √72 / (√18 - √12) leaving answer in the form a + b√c."
     }
   ],
   "updatedAt": "2026-09-16T17:00:00.000Z",

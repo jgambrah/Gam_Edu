@@ -14800,6 +14800,27 @@
       "paper": 2,
       "questionNumber": "1(b)",
       "promptSnippet": "In a cohort of 70 students, 52 passed Maths and 48 passed English..."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 23,
+      "promptSnippet": "Given μ = {1, 2, ..., 10} and M = {2, 3, 5, 7}, list members in μ not in M."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 26,
+      "promptSnippet": "Two sets which have the same number of members are ________ sets."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "1(a)",
+      "promptSnippet": "Given K = {1..11}, list primes and find probability of selecting non-prime."
     }
   ],
   "updatedAt": "2026-09-17T09:15:00.000Z"

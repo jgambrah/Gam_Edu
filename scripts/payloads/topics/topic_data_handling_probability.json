@@ -14750,6 +14750,62 @@
       "paper": 2,
       "questionNumber": "6(a)",
       "promptSnippet": "The marks obtained in a test by 20 students were recorded in a frequency distribution table..."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 10,
+      "promptSnippet": "Probability of selecting letter P from HAPPY."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 17,
+      "promptSnippet": "Probability number chosen from {1..10} is greater than 3."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 32,
+      "promptSnippet": "Modal mark from 2, 5, 5, 6, 7, 7, 8, 8, 8, 9, 10."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 36,
+      "promptSnippet": "Median mark from test frequency distribution table."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 37,
+      "promptSnippet": "Probability learner scored 2 marks from frequency table."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "6(a)",
+      "promptSnippet": "Construct frequency distribution table for 30 learners shoe sizes."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "6(b)",
+      "promptSnippet": "Deduce most and least purchased shoe sizes based on modal frequency."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "6(c)",
+      "promptSnippet": "Calculate mean shoe size to nearest whole number."
     }
   ],
   "updatedAt": "2026-09-17T14:45:00.000Z"

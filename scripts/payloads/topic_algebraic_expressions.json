@@ -14734,6 +14734,48 @@
       "paper": 2,
       "questionNumber": "2(a)",
       "promptSnippet": "Make x the subject of the relation: y = (2x + 3) / (x - 1)"
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 4,
+      "promptSnippet": "Factorize completely: 3a²b - 9ab²."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 16,
+      "promptSnippet": "Make y the subject of the relation: p = (r - 4y) / 3."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 31,
+      "promptSnippet": "Given arithmetic sequence -9, -5, m, 3, 7, 11, find m."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 34,
+      "promptSnippet": "Evaluate p²(q - 1) when p = 2 and q = 3/4."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 1,
+      "questionNumber": 40,
+      "promptSnippet": "Simplify: x - 5(3 - 2x) - 12x + 7."
+    },
+    {
+      "setId": "bece-2026-paper",
+      "year": 2026,
+      "paper": 2,
+      "questionNumber": "1(b)",
+      "promptSnippet": "Factorize completely: (x + y)(2m - n) - m(x + y)."
     }
   ],
   "updatedAt": "2026-09-17T13:00:00.000Z"
