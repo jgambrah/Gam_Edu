@@ -2395,7 +2395,7 @@ function MathLab({
 
             return true;
         });
-    }, [activeGrade, viewMode, filterSubject, filterFormat, selectedDomain, searchQuery]);
+    }, [activeGrade, viewMode, filterSubject, filterFormat, selectedDomain, searchQuery, dynamicSets]);
 
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
