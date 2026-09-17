@@ -6,7 +6,7 @@
   "tier": "Junior Secondary (JHS)",
   "badge": "Strand 1: Number & Numeration",
   "description": "Comprehensive mastery of integers, place values, prime factorization, non-decimal bases, index laws, fractions, and standard form.",
-  "totalPracticeQuestions": 309,
+  "totalPracticeQuestions": 450,
   "version": 1,
   "levels": {
     "jhs1": {
@@ -4979,143 +4979,2408 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_num_j3_l01",
+            "id": "q_b9_num_l01",
             "difficulty": "low",
-            "prompt": "Evaluate: $$\\frac{3^5 \\times 2^5}{6^3}$$.",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $16^{1/2}$.",
             "options": [
-              "36",
+              "4",
+              "8",
+              "2",
+              "32"
+            ],
+            "correctAnswer": "4",
+            "hint": "An exponent of 1/2 denotes the principal square root: $16^{1/2} = \\sqrt{16}$.",
+            "workedSolution": "$$16^{1/2} = \\sqrt{16} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $0.007865$ to 2 significant figures.",
+            "options": [
+              "0.0079",
+              "0.0078",
+              "0.01",
+              "0.008"
+            ],
+            "correctAnswer": "0.0079",
+            "hint": "Start counting from the first non-zero digit (7). The second digit is 8, followed by 6 (round up).",
+            "workedSolution": "The first two significant figures are 7 and 8. The next digit 6 rounds 8 up to 9: $0.0079$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{48}$.",
+            "options": [
+              "4√3",
+              "3√4",
+              "2√12",
+              "16√3"
+            ],
+            "correctAnswer": "4√3",
+            "hint": "Find the largest perfect square factor of 48: $48 = 16 \\times 3$.",
+            "workedSolution": "$$\\sqrt{48} = \\sqrt{16 \\times 3} = 4\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $27^{2/3}$.",
+            "options": [
+              "9",
+              "3",
               "18",
-              "72",
-              "24"
+              "6"
             ],
-            "correctAnswer": "36",
-            "hint": "$$3^5 \\times 2^5 = 6^5$$. Subtract indices: $6^{5-3} = 6^2$.",
-            "workedSolution": "$$6^{5-3} = 6^2 = 36$$.",
+            "correctAnswer": "9",
+            "hint": "$$27^{2/3} = (\\sqrt[3]{27})^2$$.",
+            "workedSolution": "$$27^{2/3} = (3)^2 = 9$$.",
             "points": 1
           },
           {
-            "id": "q_num_j3_l02",
+            "id": "q_b9_num_l05",
             "difficulty": "low",
-            "prompt": "Simplify: $$12^8 \\div 12^6$$.",
+            "dokLevel": 1,
+            "prompt": "Round $43.8762$ to 2 decimal places.",
             "options": [
-              "144",
-              "24",
+              "43.88",
+              "43.87",
+              "43.90",
+              "44.00"
+            ],
+            "correctAnswer": "43.88",
+            "hint": "Inspect the third decimal digit (6) to round the second digit (7).",
+            "workedSolution": "The third decimal place is $6 \\ge 5$, so round $7$ up to $8$: $43.88$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\frac{x^8 \\times x^3}{x^5}$.",
+            "options": [
+              "x⁶",
+              "x⁵",
+              "x⁷",
+              "x⁴"
+            ],
+            "correctAnswer": "x⁶",
+            "hint": "Add indices in numerator, subtract denominator index: $8 + 3 - 5$.",
+            "workedSolution": "$$x^{8+3-5} = x^6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is an irrational number?",
+            "options": [
+              "√5",
+              "√16",
+              "0.75",
+              "-3/8"
+            ],
+            "correctAnswer": "√5",
+            "hint": "Irrational numbers cannot be expressed as a ratio of two integers.",
+            "workedSolution": "$\\sqrt{5}$ is a non-terminating, non-repeating root, making it irrational.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{2} + 3\\sqrt{2}$.",
+            "options": [
+              "8√2",
+              "8√4",
+              "15√2",
+              "8"
+            ],
+            "correctAnswer": "8√2",
+            "hint": "Combine like surds by adding their coefficients: $(5 + 3)\\sqrt{2}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{2} = 8\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $8^{-1/3}$.",
+            "options": [
+              "1/2",
+              "-2",
+              "2",
+              "-1/2"
+            ],
+            "correctAnswer": "1/2",
+            "hint": "$$8^{-1/3} = \\frac{1}{8^{1/3}} = \\frac{1}{\\sqrt[3]{8}}$$.",
+            "workedSolution": "$$8^{-1/3} = \\frac{1}{\\sqrt[3]{8}} = \\frac{1}{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $68,495$ to 3 significant figures.",
+            "options": [
+              "68,500",
+              "68,400",
+              "68.5",
+              "685"
+            ],
+            "correctAnswer": "68,500",
+            "hint": "The fourth digit (9) causes the third digit (4) to round up to 5.",
+            "workedSolution": "The first three digits are 6, 8, 4. Since the next digit is 9, round up to $68,500$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{125}$.",
+            "options": [
+              "5√5",
+              "5√5",
+              "25√5",
+              "5√10"
+            ],
+            "correctAnswer": "5√5",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{125} = \\sqrt{25 \\times 5} = 5\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{162}$.",
+            "options": [
+              "9√2",
+              "2√9",
+              "18√2",
+              "9√4"
+            ],
+            "correctAnswer": "9√2",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 2}$.",
+            "workedSolution": "$$\\sqrt{162} = \\sqrt{81 \\times 2} = 9\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $36^{1/2}$.",
+            "options": [
+              "6",
               "12",
-              "72"
+              "4",
+              "11"
             ],
-            "correctAnswer": "144",
-            "hint": "Subtract indices: $12^{8-6} = 12^2$.",
-            "workedSolution": "$$12^{8-6} = 12^2 = 144$$.",
+            "correctAnswer": "6",
+            "hint": "Square root of 36",
+            "workedSolution": "$$36^{1/2} = 6$$.",
             "points": 1
           },
           {
-            "id": "q_num_j3_l03",
+            "id": "q_b9_num_l17",
             "difficulty": "low",
-            "prompt": "Correct $0.02751$ to three decimal places.",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
             "options": [
-              "0.028",
-              "0.027",
-              "0.03",
-              "0.28"
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
             ],
-            "correctAnswer": "0.028",
-            "hint": "Inspect the 4th decimal digit (5) and round up.",
-            "workedSolution": "The 4th decimal place is 5, so 0.027 rounds up to 0.028.",
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 2\\sqrt{3}$.",
+            "options": [
+              "7√3",
+              "7√6",
+              "10√3",
+              "7"
+            ],
+            "correctAnswer": "7√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 2)\\sqrt{3} = 7√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{75}$.",
+            "options": [
+              "5√3",
+              "3√5",
+              "15√3",
+              "5√6"
+            ],
+            "correctAnswer": "5√3",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 3}$.",
+            "workedSolution": "$$\\sqrt{75} = \\sqrt{25 \\times 3} = 5\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{2/3}$.",
+            "options": [
+              "16",
+              "32",
+              "14",
+              "21"
+            ],
+            "correctAnswer": "16",
+            "hint": "(Cube root of 64)^2 = 4^2",
+            "workedSolution": "$$64^{2/3} = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 3\\sqrt{3}$.",
+            "options": [
+              "8√3",
+              "8√6",
+              "15√3",
+              "8"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{405}$.",
+            "options": [
+              "9√5",
+              "5√9",
+              "45√5",
+              "9√10"
+            ],
+            "correctAnswer": "9√5",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{405} = \\sqrt{81 \\times 5} = 9\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{50}$.",
+            "options": [
+              "5√2",
+              "2√5",
+              "10√2",
+              "5√4"
+            ],
+            "correctAnswer": "5√2",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 2}$.",
+            "workedSolution": "$$\\sqrt{50} = \\sqrt{25 \\times 2} = 5\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $36^{1/2}$.",
+            "options": [
+              "6",
+              "12",
+              "4",
+              "11"
+            ],
+            "correctAnswer": "6",
+            "hint": "Square root of 36",
+            "workedSolution": "$$36^{1/2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 2\\sqrt{3}$.",
+            "options": [
+              "7√3",
+              "7√6",
+              "10√3",
+              "7"
+            ],
+            "correctAnswer": "7√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 2)\\sqrt{3} = 7√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{243}$.",
+            "options": [
+              "9√3",
+              "3√9",
+              "27√3",
+              "9√6"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 3}$.",
+            "workedSolution": "$$\\sqrt{243} = \\sqrt{81 \\times 3} = 9\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{2/3}$.",
+            "options": [
+              "16",
+              "32",
+              "14",
+              "21"
+            ],
+            "correctAnswer": "16",
+            "hint": "(Cube root of 64)^2 = 4^2",
+            "workedSolution": "$$64^{2/3} = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 3\\sqrt{3}$.",
+            "options": [
+              "8√3",
+              "8√6",
+              "15√3",
+              "8"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{125}$.",
+            "options": [
+              "5√5",
+              "5√5",
+              "25√5",
+              "5√10"
+            ],
+            "correctAnswer": "5√5",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{125} = \\sqrt{25 \\times 5} = 5\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{162}$.",
+            "options": [
+              "9√2",
+              "2√9",
+              "18√2",
+              "9√4"
+            ],
+            "correctAnswer": "9√2",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 2}$.",
+            "workedSolution": "$$\\sqrt{162} = \\sqrt{81 \\times 2} = 9\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $36^{1/2}$.",
+            "options": [
+              "6",
+              "12",
+              "4",
+              "11"
+            ],
+            "correctAnswer": "6",
+            "hint": "Square root of 36",
+            "workedSolution": "$$36^{1/2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 2\\sqrt{3}$.",
+            "options": [
+              "7√3",
+              "7√6",
+              "10√3",
+              "7"
+            ],
+            "correctAnswer": "7√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 2)\\sqrt{3} = 7√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{75}$.",
+            "options": [
+              "5√3",
+              "3√5",
+              "15√3",
+              "5√6"
+            ],
+            "correctAnswer": "5√3",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 3}$.",
+            "workedSolution": "$$\\sqrt{75} = \\sqrt{25 \\times 3} = 5\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{2/3}$.",
+            "options": [
+              "16",
+              "32",
+              "14",
+              "21"
+            ],
+            "correctAnswer": "16",
+            "hint": "(Cube root of 64)^2 = 4^2",
+            "workedSolution": "$$64^{2/3} = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 3\\sqrt{3}$.",
+            "options": [
+              "8√3",
+              "8√6",
+              "15√3",
+              "8"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{405}$.",
+            "options": [
+              "9√5",
+              "5√9",
+              "45√5",
+              "9√10"
+            ],
+            "correctAnswer": "9√5",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{405} = \\sqrt{81 \\times 5} = 9\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b9_num_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{14}{\\sqrt{7}}$.",
+            "options": [
+              "2√7",
+              "7√2",
+              "14√7",
+              "2"
+            ],
+            "correctAnswer": "2√7",
+            "hint": "Multiply numerator and denominator by $\\sqrt{7}$.",
+            "workedSolution": "$$\\frac{14}{\\sqrt{7}} \\times \\frac{\\sqrt{7}}{\\sqrt{7}} = \\frac{14\\sqrt{7}}{7} = 2\\sqrt{7}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x-1} = 8^{x+1}$.",
+            "options": [
+              "-5",
+              "-3",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "-5",
+            "hint": "Express both sides in base 2: $4 = 2^2$ and $8 = 2^3$.",
+            "workedSolution": "$$(2^2)^{x-1} = (2^3)^{x+1} \\implies 2(x - 1) = 3(x + 1) \\implies 2x - 2 = 3x + 3 \\implies x = -5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{75} - \\sqrt{27} + \\sqrt{12}$.",
+            "options": [
+              "4√3",
+              "6√3",
+              "2√3",
+              "5√3"
+            ],
+            "correctAnswer": "4√3",
+            "hint": "Decompose each radicand into factors with 3: $\\sqrt{25 \\times 3} - \\sqrt{9 \\times 3} + \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$5\\sqrt{3} - 3\\sqrt{3} + 2\\sqrt{3} = (5 - 3 + 2)\\sqrt{3} = 4\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate and round to 3 significant figures: $\\frac{4.56 \\times 10^5}{1.2 \\times 10^{-2}}$.",
+            "options": [
+              "3.80 × 10⁷",
+              "3.8 × 10⁷",
+              "3.80 × 10³",
+              "3.80 × 10⁶"
+            ],
+            "correctAnswer": "3.80 × 10⁷",
+            "hint": "Divide mantissas ($4.56 \\div 1.2 = 3.8$) and subtract exponents ($5 - (-2) = 7$).",
+            "workedSolution": "$$\\frac{4.56}{1.2} \\times 10^{5 - (-2)} = 3.8 \\times 10^7 = 3.80 \\times 10^7\\text{ (to 3 sig. figs.)}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$\\left(\\frac{81}{16}\\right)^{-3/4}$$.",
+            "options": [
+              "8/27",
+              "27/8",
+              "-27/8",
+              "16/81"
+            ],
+            "correctAnswer": "8/27",
+            "hint": "Invert for the negative exponent and take the fourth root: $\\left(\\frac{16}{81}\\right)^{3/4} = \\left(\\frac{2}{3}\\right)^3$.",
+            "workedSolution": "$$\\left(\\frac{16}{81}\\right)^{3/4} = \\left(\\sqrt[4]{\\frac{16}{81}}\\right)^3 = \\left(\\frac{2}{3}\\right)^3 = \\frac{8}{27}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{6}{\\sqrt{2}}$.",
+            "options": [
+              "3√2",
+              "2√3",
+              "6√2",
+              "3"
+            ],
+            "correctAnswer": "3√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{6}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{6\\sqrt{2}}{2} = 3√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{6}{\\sqrt{3}}$.",
+            "options": [
+              "2√3",
+              "3√2",
+              "6√3",
+              "2"
+            ],
+            "correctAnswer": "2√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{6}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{6\\sqrt{3}}{3} = 2√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{30}{\\sqrt{5}}$.",
+            "options": [
+              "6√5",
+              "5√6",
+              "30√5",
+              "6"
+            ],
+            "correctAnswer": "6√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{30}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{30\\sqrt{5}}{5} = 6√5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 1} = 8^{x + 2}$.",
+            "options": [
+              "-8",
+              "-6",
+              "-10",
+              "8"
+            ],
+            "correctAnswer": "-8",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 1} = (2^3)^{x + 2} \\implies 2(x - 1) = 3(x + 2) \\implies x = -8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{10}{\\sqrt{2}}$.",
+            "options": [
+              "5√2",
+              "2√5",
+              "10√2",
+              "5"
+            ],
+            "correctAnswer": "5√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{10}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{10\\sqrt{2}}{2} = 5√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{12}{\\sqrt{3}}$.",
+            "options": [
+              "4√3",
+              "3√4",
+              "12√3",
+              "4"
+            ],
+            "correctAnswer": "4√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{12}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{12\\sqrt{3}}{3} = 4√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{15}{\\sqrt{5}}$.",
+            "options": [
+              "3√5",
+              "5√3",
+              "15√5",
+              "3"
+            ],
+            "correctAnswer": "3√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{15}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{15\\sqrt{5}}{5} = 3√5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 1} = 8^{x + 2}$.",
+            "options": [
+              "-8",
+              "-6",
+              "-10",
+              "8"
+            ],
+            "correctAnswer": "-8",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 1} = (2^3)^{x + 2} \\implies 2(x - 1) = 3(x + 2) \\implies x = -8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{4}{\\sqrt{2}}$.",
+            "options": [
+              "2√2",
+              "2√2",
+              "4√2",
+              "2"
+            ],
+            "correctAnswer": "2√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{4}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{4\\sqrt{2}}{2} = 2√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{18}{\\sqrt{3}}$.",
+            "options": [
+              "6√3",
+              "3√6",
+              "18√3",
+              "6"
+            ],
+            "correctAnswer": "6√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{18}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{18\\sqrt{3}}{3} = 6√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{25}{\\sqrt{5}}$.",
+            "options": [
+              "5√5",
+              "5√5",
+              "25√5",
+              "5"
+            ],
+            "correctAnswer": "5√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{25}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{25\\sqrt{5}}{5} = 5√5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 1} = 8^{x + 2}$.",
+            "options": [
+              "-8",
+              "-6",
+              "-10",
+              "8"
+            ],
+            "correctAnswer": "-8",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 1} = (2^3)^{x + 2} \\implies 2(x - 1) = 3(x + 2) \\implies x = -8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{8}{\\sqrt{2}}$.",
+            "options": [
+              "4√2",
+              "2√4",
+              "8√2",
+              "4"
+            ],
+            "correctAnswer": "4√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{8}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{8\\sqrt{2}}{2} = 4√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{9}{\\sqrt{3}}$.",
+            "options": [
+              "3√3",
+              "3√3",
+              "9√3",
+              "3"
+            ],
+            "correctAnswer": "3√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{9}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{9\\sqrt{3}}{3} = 3√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{10}{\\sqrt{5}}$.",
+            "options": [
+              "2√5",
+              "5√2",
+              "10√5",
+              "2"
+            ],
+            "correctAnswer": "2√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{10}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{10\\sqrt{5}}{5} = 2√5$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_num_j3_h01",
+            "id": "q_b9_num_h01",
             "difficulty": "hard",
-            "prompt": "Given that $$3^2 \\times 2^2 \\times 5 = 180$$, find the least positive integer that must be multiplied by $180$ to make the product a perfect square.",
+            "dokLevel": 3,
+            "prompt": "Simplify without using tables or calculators: $$\\frac{\\sqrt{72} + \\sqrt{32}}{\\sqrt{50} - \\sqrt{18}}$$.",
             "options": [
               "5",
-              "2",
-              "3",
+              "4",
+              "2√2",
               "10"
             ],
             "correctAnswer": "5",
-            "hint": "Identify which prime factor has an odd power.",
-            "workedSolution": "In $180 = 2^2 \\times 3^2 \\times 5^1$, 5 is the only factor with an odd power. Multiplying by 5 gives $30^2$.",
+            "hint": "Simplify each term in base $\\sqrt{2}$: $\\frac{6\\sqrt{2} + 4\\sqrt{2}}{5\\sqrt{2} - 3\\sqrt{2}}$.",
+            "workedSolution": "$$\\text{Numerator: } \\sqrt{36 \\times 2} + \\sqrt{16 \\times 2} = 6\\sqrt{2} + 4\\sqrt{2} = 10\\sqrt{2}$$\n$$\\text{Denominator: } \\sqrt{25 \\times 2} - \\sqrt{9 \\times 2} = 5\\sqrt{2} - 3\\sqrt{2} = 2\\sqrt{2}$$\n$$\\frac{10\\sqrt{2}}{2\\sqrt{2}} = 5$$.",
             "points": 2
           },
           {
-            "id": "q_num_j3_h02",
+            "id": "q_b9_num_h02",
             "difficulty": "hard",
-            "prompt": "Find the value of $k$ given that $$k = (2^7 \\div 2^4) \\times 8$$.",
+            "dokLevel": 3,
+            "prompt": "Solve for $n$: $2^{n} \\times 8^{n-1} = 4^{2n-1}$.",
             "options": [
-              "2⁶",
-              "2⁵",
-              "2⁷",
-              "2⁴"
+              "No solution (inconsistent)",
+              "2",
+              "-1",
+              "1"
             ],
-            "correctAnswer": "2⁶",
-            "hint": "$$2^{7-4} = 2^3$$, and $8 = 2^3$. Add indices.",
-            "workedSolution": "$$2^{7-4} \\times 2^3 = 2^3 \\times 2^3 = 2^{3+3} = 2^6$$.",
+            "correctAnswer": "No solution (inconsistent)",
+            "hint": "Convert all terms to base 2: $2^n \\times 2^{3(n-1)} = 2^{2(2n-1)}$.",
+            "workedSolution": "$$2^{n + 3n - 3} = 2^{4n - 2} \\implies 4n - 3 = 4n - 2 \\implies -3 = -2$$. Since this is impossible, there is no real solution.",
             "points": 2
           },
           {
-            "id": "q_num_j3_h03",
+            "id": "q_b9_num_h03",
             "difficulty": "hard",
-            "prompt": "If $$y^7 \\div y^4 = 27$$, find the value of $y$.",
+            "dokLevel": 3,
+            "prompt": "Rationalize and simplify: $$\\frac{6}{\\sqrt{3} + 1}$$.",
+            "options": [
+              "3(√3 - 1)",
+              "3(√3 + 1)",
+              "2(√3 - 1)",
+              "6(√3 - 1)"
+            ],
+            "correctAnswer": "3(√3 - 1)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{3} - 1)$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{3} - 1)}{(\\sqrt{3})^2 - 1^2} = \\frac{6(\\sqrt{3} - 1)}{3 - 1} = \\frac{6(\\sqrt{3} - 1)}{2} = 3(\\sqrt{3} - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A number is expressed as $0.000004928$. If it is rounded to 2 significant figures, what is the percentage error introduced relative to the unrounded value? (Express to 2 d.p.).",
+            "options": [
+              "0.57%",
+              "0.65%",
+              "0.48%",
+              "1.20%"
+            ],
+            "correctAnswer": "0.57%",
+            "hint": "Rounded value is $0.0000049$. Error $= 0.000004928 - 0.000004900 = 0.000000028$. Compute $(Error / Actual) \\times 100\\%$.",
+            "workedSolution": "$$\\text{Error} = 0.000004928 - 0.0000049 = 0.000000028$$\n$$\\text{Percentage Error} = \\frac{0.000000028}{0.000004928} \\times 100\\% \\approx 0.568\\% \\approx 0.57\\%$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{(2^3)^2 \\times 5^{-2}}{10^{-2}}$$.",
+            "options": [
+              "256",
+              "64",
+              "128",
+              "512"
+            ],
+            "correctAnswer": "256",
+            "hint": "Decompose $10^{-2} = (2 \\times 5)^{-2} = 2^{-2} \\times 5^{-2}$.",
+            "workedSolution": "$$\\frac{2^6 \\times 5^{-2}}{2^{-2} \\times 5^{-2}} = 2^{6 - (-2)} \\times 5^{-2 - (-2)} = 2^8 \\times 5^0 = 256$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
             "options": [
               "3",
-              "9",
+              "4",
               "2",
-              "4"
+              "5"
             ],
             "correctAnswer": "3",
-            "hint": "$$y^{7-4} = y^3 = 27$$. Take the cube root.",
-            "workedSolution": "$$y^3 = 27 \\implies y = \\sqrt[3]{27} = 3$$.",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
             "points": 2
-          }
-        ],
-        "medium": [
-          {
-            "id": "q_num_j3_m01",
-            "difficulty": "medium",
-            "prompt": "Evaluate: $$\\frac{2^7 \\times 5^4}{10^3}$$.",
-            "options": [
-              "80",
-              "40",
-              "160",
-              "20"
-            ],
-            "correctAnswer": "80",
-            "hint": "Note that $10^3 = 2^3 \\times 5^3$. Subtract indices for 2 and 5.",
-            "workedSolution": "$$2^{7-3} \\times 5^{4-3} = 2^4 \\times 5^1 = 16 \\times 5 = 80$$.",
-            "points": 1
           },
           {
-            "id": "q_num_j3_m02",
-            "difficulty": "medium",
-            "prompt": "Evaluate: $$\\sqrt{6.25}$$.",
+            "id": "q_b9_num_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
             "options": [
-              "2.5",
-              "0.25",
-              "2.25",
-              "25"
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
             ],
-            "correctAnswer": "2.5",
-            "hint": "Express as $\\sqrt{625 / 100}$.",
-            "workedSolution": "$$\\sqrt{625} / \\sqrt{100} = 25 / 10 = 2.5$$.",
-            "points": 1
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
           },
           {
-            "id": "q_num_j3_m03",
-            "difficulty": "medium",
-            "prompt": "Write $48.962\\text{ km}$ correct to three significant figures.",
+            "id": "q_b9_num_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
             "options": [
-              "49.0 km",
-              "48.9 km",
-              "49.00 km",
-              "48.96 km"
+              "-1",
+              "1",
+              "3",
+              "1"
             ],
-            "correctAnswer": "49.0 km",
-            "hint": "The 4th significant digit is 6, which rounds 48.9 up to 49.0.",
-            "workedSolution": "Rounding to 3 significant figures gives 49.0 km.",
-            "points": 1
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
           }
         ]
       },
@@ -10093,143 +12358,2408 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_num_j3_l01",
+            "id": "q_b9_num_l01",
             "difficulty": "low",
-            "prompt": "Evaluate: $$\\frac{3^5 \\times 2^5}{6^3}$$.",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $16^{1/2}$.",
             "options": [
-              "36",
+              "4",
+              "8",
+              "2",
+              "32"
+            ],
+            "correctAnswer": "4",
+            "hint": "An exponent of 1/2 denotes the principal square root: $16^{1/2} = \\sqrt{16}$.",
+            "workedSolution": "$$16^{1/2} = \\sqrt{16} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $0.007865$ to 2 significant figures.",
+            "options": [
+              "0.0079",
+              "0.0078",
+              "0.01",
+              "0.008"
+            ],
+            "correctAnswer": "0.0079",
+            "hint": "Start counting from the first non-zero digit (7). The second digit is 8, followed by 6 (round up).",
+            "workedSolution": "The first two significant figures are 7 and 8. The next digit 6 rounds 8 up to 9: $0.0079$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{48}$.",
+            "options": [
+              "4√3",
+              "3√4",
+              "2√12",
+              "16√3"
+            ],
+            "correctAnswer": "4√3",
+            "hint": "Find the largest perfect square factor of 48: $48 = 16 \\times 3$.",
+            "workedSolution": "$$\\sqrt{48} = \\sqrt{16 \\times 3} = 4\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $27^{2/3}$.",
+            "options": [
+              "9",
+              "3",
               "18",
-              "72",
-              "24"
+              "6"
             ],
-            "correctAnswer": "36",
-            "hint": "$$3^5 \\times 2^5 = 6^5$$. Subtract indices: $6^{5-3} = 6^2$.",
-            "workedSolution": "$$6^{5-3} = 6^2 = 36$$.",
+            "correctAnswer": "9",
+            "hint": "$$27^{2/3} = (\\sqrt[3]{27})^2$$.",
+            "workedSolution": "$$27^{2/3} = (3)^2 = 9$$.",
             "points": 1
           },
           {
-            "id": "q_num_j3_l02",
+            "id": "q_b9_num_l05",
             "difficulty": "low",
-            "prompt": "Simplify: $$12^8 \\div 12^6$$.",
+            "dokLevel": 1,
+            "prompt": "Round $43.8762$ to 2 decimal places.",
             "options": [
-              "144",
-              "24",
+              "43.88",
+              "43.87",
+              "43.90",
+              "44.00"
+            ],
+            "correctAnswer": "43.88",
+            "hint": "Inspect the third decimal digit (6) to round the second digit (7).",
+            "workedSolution": "The third decimal place is $6 \\ge 5$, so round $7$ up to $8$: $43.88$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\frac{x^8 \\times x^3}{x^5}$.",
+            "options": [
+              "x⁶",
+              "x⁵",
+              "x⁷",
+              "x⁴"
+            ],
+            "correctAnswer": "x⁶",
+            "hint": "Add indices in numerator, subtract denominator index: $8 + 3 - 5$.",
+            "workedSolution": "$$x^{8+3-5} = x^6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Which of the following numbers is an irrational number?",
+            "options": [
+              "√5",
+              "√16",
+              "0.75",
+              "-3/8"
+            ],
+            "correctAnswer": "√5",
+            "hint": "Irrational numbers cannot be expressed as a ratio of two integers.",
+            "workedSolution": "$\\sqrt{5}$ is a non-terminating, non-repeating root, making it irrational.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{2} + 3\\sqrt{2}$.",
+            "options": [
+              "8√2",
+              "8√4",
+              "15√2",
+              "8"
+            ],
+            "correctAnswer": "8√2",
+            "hint": "Combine like surds by adding their coefficients: $(5 + 3)\\sqrt{2}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{2} = 8\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $8^{-1/3}$.",
+            "options": [
+              "1/2",
+              "-2",
+              "2",
+              "-1/2"
+            ],
+            "correctAnswer": "1/2",
+            "hint": "$$8^{-1/3} = \\frac{1}{8^{1/3}} = \\frac{1}{\\sqrt[3]{8}}$$.",
+            "workedSolution": "$$8^{-1/3} = \\frac{1}{\\sqrt[3]{8}} = \\frac{1}{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $68,495$ to 3 significant figures.",
+            "options": [
+              "68,500",
+              "68,400",
+              "68.5",
+              "685"
+            ],
+            "correctAnswer": "68,500",
+            "hint": "The fourth digit (9) causes the third digit (4) to round up to 5.",
+            "workedSolution": "The first three digits are 6, 8, 4. Since the next digit is 9, round up to $68,500$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{125}$.",
+            "options": [
+              "5√5",
+              "5√5",
+              "25√5",
+              "5√10"
+            ],
+            "correctAnswer": "5√5",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{125} = \\sqrt{25 \\times 5} = 5\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{162}$.",
+            "options": [
+              "9√2",
+              "2√9",
+              "18√2",
+              "9√4"
+            ],
+            "correctAnswer": "9√2",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 2}$.",
+            "workedSolution": "$$\\sqrt{162} = \\sqrt{81 \\times 2} = 9\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $36^{1/2}$.",
+            "options": [
+              "6",
               "12",
-              "72"
+              "4",
+              "11"
             ],
-            "correctAnswer": "144",
-            "hint": "Subtract indices: $12^{8-6} = 12^2$.",
-            "workedSolution": "$$12^{8-6} = 12^2 = 144$$.",
+            "correctAnswer": "6",
+            "hint": "Square root of 36",
+            "workedSolution": "$$36^{1/2} = 6$$.",
             "points": 1
           },
           {
-            "id": "q_num_j3_l03",
+            "id": "q_b9_num_l17",
             "difficulty": "low",
-            "prompt": "Correct $0.02751$ to three decimal places.",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
             "options": [
-              "0.028",
-              "0.027",
-              "0.03",
-              "0.28"
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
             ],
-            "correctAnswer": "0.028",
-            "hint": "Inspect the 4th decimal digit (5) and round up.",
-            "workedSolution": "The 4th decimal place is 5, so 0.027 rounds up to 0.028.",
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 2\\sqrt{3}$.",
+            "options": [
+              "7√3",
+              "7√6",
+              "10√3",
+              "7"
+            ],
+            "correctAnswer": "7√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 2)\\sqrt{3} = 7√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{75}$.",
+            "options": [
+              "5√3",
+              "3√5",
+              "15√3",
+              "5√6"
+            ],
+            "correctAnswer": "5√3",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 3}$.",
+            "workedSolution": "$$\\sqrt{75} = \\sqrt{25 \\times 3} = 5\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{2/3}$.",
+            "options": [
+              "16",
+              "32",
+              "14",
+              "21"
+            ],
+            "correctAnswer": "16",
+            "hint": "(Cube root of 64)^2 = 4^2",
+            "workedSolution": "$$64^{2/3} = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 3\\sqrt{3}$.",
+            "options": [
+              "8√3",
+              "8√6",
+              "15√3",
+              "8"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{405}$.",
+            "options": [
+              "9√5",
+              "5√9",
+              "45√5",
+              "9√10"
+            ],
+            "correctAnswer": "9√5",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{405} = \\sqrt{81 \\times 5} = 9\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{50}$.",
+            "options": [
+              "5√2",
+              "2√5",
+              "10√2",
+              "5√4"
+            ],
+            "correctAnswer": "5√2",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 2}$.",
+            "workedSolution": "$$\\sqrt{50} = \\sqrt{25 \\times 2} = 5\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $36^{1/2}$.",
+            "options": [
+              "6",
+              "12",
+              "4",
+              "11"
+            ],
+            "correctAnswer": "6",
+            "hint": "Square root of 36",
+            "workedSolution": "$$36^{1/2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 2\\sqrt{3}$.",
+            "options": [
+              "7√3",
+              "7√6",
+              "10√3",
+              "7"
+            ],
+            "correctAnswer": "7√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 2)\\sqrt{3} = 7√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{243}$.",
+            "options": [
+              "9√3",
+              "3√9",
+              "27√3",
+              "9√6"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 3}$.",
+            "workedSolution": "$$\\sqrt{243} = \\sqrt{81 \\times 3} = 9\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{2/3}$.",
+            "options": [
+              "16",
+              "32",
+              "14",
+              "21"
+            ],
+            "correctAnswer": "16",
+            "hint": "(Cube root of 64)^2 = 4^2",
+            "workedSolution": "$$64^{2/3} = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 3\\sqrt{3}$.",
+            "options": [
+              "8√3",
+              "8√6",
+              "15√3",
+              "8"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{125}$.",
+            "options": [
+              "5√5",
+              "5√5",
+              "25√5",
+              "5√10"
+            ],
+            "correctAnswer": "5√5",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{125} = \\sqrt{25 \\times 5} = 5\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{162}$.",
+            "options": [
+              "9√2",
+              "2√9",
+              "18√2",
+              "9√4"
+            ],
+            "correctAnswer": "9√2",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 2}$.",
+            "workedSolution": "$$\\sqrt{162} = \\sqrt{81 \\times 2} = 9\\sqrt{2}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $36^{1/2}$.",
+            "options": [
+              "6",
+              "12",
+              "4",
+              "11"
+            ],
+            "correctAnswer": "6",
+            "hint": "Square root of 36",
+            "workedSolution": "$$36^{1/2} = 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 2\\sqrt{3}$.",
+            "options": [
+              "7√3",
+              "7√6",
+              "10√3",
+              "7"
+            ],
+            "correctAnswer": "7√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 2)\\sqrt{3} = 7√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{75}$.",
+            "options": [
+              "5√3",
+              "3√5",
+              "15√3",
+              "5√6"
+            ],
+            "correctAnswer": "5√3",
+            "hint": "Extract the largest perfect square factor $25$: $\\sqrt{25 \\times 3}$.",
+            "workedSolution": "$$\\sqrt{75} = \\sqrt{25 \\times 3} = 5\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{2/3}$.",
+            "options": [
+              "16",
+              "32",
+              "14",
+              "21"
+            ],
+            "correctAnswer": "16",
+            "hint": "(Cube root of 64)^2 = 4^2",
+            "workedSolution": "$$64^{2/3} = 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 3\\sqrt{3}$.",
+            "options": [
+              "8√3",
+              "8√6",
+              "15√3",
+              "8"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 3)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $\\sqrt{405}$.",
+            "options": [
+              "9√5",
+              "5√9",
+              "45√5",
+              "9√10"
+            ],
+            "correctAnswer": "9√5",
+            "hint": "Extract the largest perfect square factor $81$: $\\sqrt{81 \\times 5}$.",
+            "workedSolution": "$$\\sqrt{405} = \\sqrt{81 \\times 5} = 9\\sqrt{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Evaluate: $64^{1/3}$.",
+            "options": [
+              "4",
+              "8",
+              "2",
+              "9"
+            ],
+            "correctAnswer": "4",
+            "hint": "Cube root of 64",
+            "workedSolution": "$$64^{1/3} = 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Round $45,823$ to 3 significant figures.",
+            "options": [
+              "45,800",
+              "45,900",
+              "45,820",
+              "46,000"
+            ],
+            "correctAnswer": "45,800",
+            "hint": "Start counting from the first non-zero digit.",
+            "workedSolution": "Rounding $45,823$ to 3 significant figures gives $45,800$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $5\\sqrt{3} + 4\\sqrt{3}$.",
+            "options": [
+              "9√3",
+              "9√6",
+              "20√3",
+              "9"
+            ],
+            "correctAnswer": "9√3",
+            "hint": "Add coefficients of identical surd terms: $(a + b)\\sqrt{3}$.",
+            "workedSolution": "$$(5 + 4)\\sqrt{3} = 9√3$$.",
+            "points": 1
+          }
+        ],
+        "medium": [
+          {
+            "id": "q_b9_num_m01",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{14}{\\sqrt{7}}$.",
+            "options": [
+              "2√7",
+              "7√2",
+              "14√7",
+              "2"
+            ],
+            "correctAnswer": "2√7",
+            "hint": "Multiply numerator and denominator by $\\sqrt{7}$.",
+            "workedSolution": "$$\\frac{14}{\\sqrt{7}} \\times \\frac{\\sqrt{7}}{\\sqrt{7}} = \\frac{14\\sqrt{7}}{7} = 2\\sqrt{7}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m02",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x-1} = 8^{x+1}$.",
+            "options": [
+              "-5",
+              "-3",
+              "5",
+              "3"
+            ],
+            "correctAnswer": "-5",
+            "hint": "Express both sides in base 2: $4 = 2^2$ and $8 = 2^3$.",
+            "workedSolution": "$$(2^2)^{x-1} = (2^3)^{x+1} \\implies 2(x - 1) = 3(x + 1) \\implies 2x - 2 = 3x + 3 \\implies x = -5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m03",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{75} - \\sqrt{27} + \\sqrt{12}$.",
+            "options": [
+              "4√3",
+              "6√3",
+              "2√3",
+              "5√3"
+            ],
+            "correctAnswer": "4√3",
+            "hint": "Decompose each radicand into factors with 3: $\\sqrt{25 \\times 3} - \\sqrt{9 \\times 3} + \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$5\\sqrt{3} - 3\\sqrt{3} + 2\\sqrt{3} = (5 - 3 + 2)\\sqrt{3} = 4\\sqrt{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate and round to 3 significant figures: $\\frac{4.56 \\times 10^5}{1.2 \\times 10^{-2}}$.",
+            "options": [
+              "3.80 × 10⁷",
+              "3.8 × 10⁷",
+              "3.80 × 10³",
+              "3.80 × 10⁶"
+            ],
+            "correctAnswer": "3.80 × 10⁷",
+            "hint": "Divide mantissas ($4.56 \\div 1.2 = 3.8$) and subtract exponents ($5 - (-2) = 7$).",
+            "workedSolution": "$$\\frac{4.56}{1.2} \\times 10^{5 - (-2)} = 3.8 \\times 10^7 = 3.80 \\times 10^7\\text{ (to 3 sig. figs.)}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $$\\left(\\frac{81}{16}\\right)^{-3/4}$$.",
+            "options": [
+              "8/27",
+              "27/8",
+              "-27/8",
+              "16/81"
+            ],
+            "correctAnswer": "8/27",
+            "hint": "Invert for the negative exponent and take the fourth root: $\\left(\\frac{16}{81}\\right)^{3/4} = \\left(\\frac{2}{3}\\right)^3$.",
+            "workedSolution": "$$\\left(\\frac{16}{81}\\right)^{3/4} = \\left(\\sqrt[4]{\\frac{16}{81}}\\right)^3 = \\left(\\frac{2}{3}\\right)^3 = \\frac{8}{27}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{6}{\\sqrt{2}}$.",
+            "options": [
+              "3√2",
+              "2√3",
+              "6√2",
+              "3"
+            ],
+            "correctAnswer": "3√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{6}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{6\\sqrt{2}}{2} = 3√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{6}{\\sqrt{3}}$.",
+            "options": [
+              "2√3",
+              "3√2",
+              "6√3",
+              "2"
+            ],
+            "correctAnswer": "2√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{6}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{6\\sqrt{3}}{3} = 2√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{30}{\\sqrt{5}}$.",
+            "options": [
+              "6√5",
+              "5√6",
+              "30√5",
+              "6"
+            ],
+            "correctAnswer": "6√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{30}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{30\\sqrt{5}}{5} = 6√5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 1} = 8^{x + 2}$.",
+            "options": [
+              "-8",
+              "-6",
+              "-10",
+              "8"
+            ],
+            "correctAnswer": "-8",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 1} = (2^3)^{x + 2} \\implies 2(x - 1) = 3(x + 2) \\implies x = -8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{10}{\\sqrt{2}}$.",
+            "options": [
+              "5√2",
+              "2√5",
+              "10√2",
+              "5"
+            ],
+            "correctAnswer": "5√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{10}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{10\\sqrt{2}}{2} = 5√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{12}{\\sqrt{3}}$.",
+            "options": [
+              "4√3",
+              "3√4",
+              "12√3",
+              "4"
+            ],
+            "correctAnswer": "4√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{12}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{12\\sqrt{3}}{3} = 4√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{15}{\\sqrt{5}}$.",
+            "options": [
+              "3√5",
+              "5√3",
+              "15√5",
+              "3"
+            ],
+            "correctAnswer": "3√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{15}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{15\\sqrt{5}}{5} = 3√5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 1} = 8^{x + 2}$.",
+            "options": [
+              "-8",
+              "-6",
+              "-10",
+              "8"
+            ],
+            "correctAnswer": "-8",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 1} = (2^3)^{x + 2} \\implies 2(x - 1) = 3(x + 2) \\implies x = -8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{4}{\\sqrt{2}}$.",
+            "options": [
+              "2√2",
+              "2√2",
+              "4√2",
+              "2"
+            ],
+            "correctAnswer": "2√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{4}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{4\\sqrt{2}}{2} = 2√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{18}{\\sqrt{3}}$.",
+            "options": [
+              "6√3",
+              "3√6",
+              "18√3",
+              "6"
+            ],
+            "correctAnswer": "6√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{18}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{18\\sqrt{3}}{3} = 6√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{25}{\\sqrt{5}}$.",
+            "options": [
+              "5√5",
+              "5√5",
+              "25√5",
+              "5"
+            ],
+            "correctAnswer": "5√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{25}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{25\\sqrt{5}}{5} = 5√5$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 1} = 8^{x + 2}$.",
+            "options": [
+              "-8",
+              "-6",
+              "-10",
+              "8"
+            ],
+            "correctAnswer": "-8",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 1} = (2^3)^{x + 2} \\implies 2(x - 1) = 3(x + 2) \\implies x = -8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{8}{\\sqrt{2}}$.",
+            "options": [
+              "4√2",
+              "2√4",
+              "8√2",
+              "4"
+            ],
+            "correctAnswer": "4√2",
+            "hint": "Multiply numerator and denominator by $\\sqrt{2}$.",
+            "workedSolution": "$$\\frac{8}{\\sqrt{2}} \\times \\frac{\\sqrt{2}}{\\sqrt{2}} = \\frac{8\\sqrt{2}}{2} = 4√2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 2} = 8^{x + 2}$.",
+            "options": [
+              "-10",
+              "-8",
+              "-12",
+              "10"
+            ],
+            "correctAnswer": "-10",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 2} = (2^3)^{x + 2} \\implies 2(x - 2) = 3(x + 2) \\implies x = -10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{9}{\\sqrt{3}}$.",
+            "options": [
+              "3√3",
+              "3√3",
+              "9√3",
+              "3"
+            ],
+            "correctAnswer": "3√3",
+            "hint": "Multiply numerator and denominator by $\\sqrt{3}$.",
+            "workedSolution": "$$\\frac{9}{\\sqrt{3}} \\times \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{9\\sqrt{3}}{3} = 3√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Solve for $x$: $4^{x - 3} = 8^{x + 2}$.",
+            "options": [
+              "-12",
+              "-10",
+              "-14",
+              "12"
+            ],
+            "correctAnswer": "-12",
+            "hint": "Convert both bases to 2: $4 = 2^2$ and $8 = 2^3$. Equate exponents.",
+            "workedSolution": "$$(2^2)^{x - 3} = (2^3)^{x + 2} \\implies 2(x - 3) = 3(x + 2) \\implies x = -12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify: $\\sqrt{108} + \\sqrt{48} - \\sqrt{12}$.",
+            "options": [
+              "8√3",
+              "6√3",
+              "10√3",
+              "12√3"
+            ],
+            "correctAnswer": "8√3",
+            "hint": "Break down each radicand: $\\sqrt{36 \\times 3} + \\sqrt{16 \\times 3} - \\sqrt{4 \\times 3}$.",
+            "workedSolution": "$$6\\sqrt{3} + 4\\sqrt{3} - 2\\sqrt{3} = (6 + 4 - 2)\\sqrt{3} = 8√3$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Evaluate: $32^{-2/5}$.",
+            "options": [
+              "1/4",
+              "-1/4",
+              "1/2",
+              "2"
+            ],
+            "correctAnswer": "1/4",
+            "hint": "1 / (32^(2/5)) = 1 / 2^2 = 1/4",
+            "workedSolution": "$$32^{-2/5} = 1/4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_num_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify by rationalizing the denominator: $\\frac{10}{\\sqrt{5}}$.",
+            "options": [
+              "2√5",
+              "5√2",
+              "10√5",
+              "2"
+            ],
+            "correctAnswer": "2√5",
+            "hint": "Multiply numerator and denominator by $\\sqrt{5}$.",
+            "workedSolution": "$$\\frac{10}{\\sqrt{5}} \\times \\frac{\\sqrt{5}}{\\sqrt{5}} = \\frac{10\\sqrt{5}}{5} = 2√5$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_num_j3_h01",
+            "id": "q_b9_num_h01",
             "difficulty": "hard",
-            "prompt": "Given that $$3^2 \\times 2^2 \\times 5 = 180$$, find the least positive integer that must be multiplied by $180$ to make the product a perfect square.",
+            "dokLevel": 3,
+            "prompt": "Simplify without using tables or calculators: $$\\frac{\\sqrt{72} + \\sqrt{32}}{\\sqrt{50} - \\sqrt{18}}$$.",
             "options": [
               "5",
-              "2",
-              "3",
+              "4",
+              "2√2",
               "10"
             ],
             "correctAnswer": "5",
-            "hint": "Identify which prime factor has an odd power.",
-            "workedSolution": "In $180 = 2^2 \\times 3^2 \\times 5^1$, 5 is the only factor with an odd power. Multiplying by 5 gives $30^2$.",
+            "hint": "Simplify each term in base $\\sqrt{2}$: $\\frac{6\\sqrt{2} + 4\\sqrt{2}}{5\\sqrt{2} - 3\\sqrt{2}}$.",
+            "workedSolution": "$$\\text{Numerator: } \\sqrt{36 \\times 2} + \\sqrt{16 \\times 2} = 6\\sqrt{2} + 4\\sqrt{2} = 10\\sqrt{2}$$\n$$\\text{Denominator: } \\sqrt{25 \\times 2} - \\sqrt{9 \\times 2} = 5\\sqrt{2} - 3\\sqrt{2} = 2\\sqrt{2}$$\n$$\\frac{10\\sqrt{2}}{2\\sqrt{2}} = 5$$.",
             "points": 2
           },
           {
-            "id": "q_num_j3_h02",
+            "id": "q_b9_num_h02",
             "difficulty": "hard",
-            "prompt": "Find the value of $k$ given that $$k = (2^7 \\div 2^4) \\times 8$$.",
+            "dokLevel": 3,
+            "prompt": "Solve for $n$: $2^{n} \\times 8^{n-1} = 4^{2n-1}$.",
             "options": [
-              "2⁶",
-              "2⁵",
-              "2⁷",
-              "2⁴"
+              "No solution (inconsistent)",
+              "2",
+              "-1",
+              "1"
             ],
-            "correctAnswer": "2⁶",
-            "hint": "$$2^{7-4} = 2^3$$, and $8 = 2^3$. Add indices.",
-            "workedSolution": "$$2^{7-4} \\times 2^3 = 2^3 \\times 2^3 = 2^{3+3} = 2^6$$.",
+            "correctAnswer": "No solution (inconsistent)",
+            "hint": "Convert all terms to base 2: $2^n \\times 2^{3(n-1)} = 2^{2(2n-1)}$.",
+            "workedSolution": "$$2^{n + 3n - 3} = 2^{4n - 2} \\implies 4n - 3 = 4n - 2 \\implies -3 = -2$$. Since this is impossible, there is no real solution.",
             "points": 2
           },
           {
-            "id": "q_num_j3_h03",
+            "id": "q_b9_num_h03",
             "difficulty": "hard",
-            "prompt": "If $$y^7 \\div y^4 = 27$$, find the value of $y$.",
+            "dokLevel": 3,
+            "prompt": "Rationalize and simplify: $$\\frac{6}{\\sqrt{3} + 1}$$.",
+            "options": [
+              "3(√3 - 1)",
+              "3(√3 + 1)",
+              "2(√3 - 1)",
+              "6(√3 - 1)"
+            ],
+            "correctAnswer": "3(√3 - 1)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{3} - 1)$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{3} - 1)}{(\\sqrt{3})^2 - 1^2} = \\frac{6(\\sqrt{3} - 1)}{3 - 1} = \\frac{6(\\sqrt{3} - 1)}{2} = 3(\\sqrt{3} - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A number is expressed as $0.000004928$. If it is rounded to 2 significant figures, what is the percentage error introduced relative to the unrounded value? (Express to 2 d.p.).",
+            "options": [
+              "0.57%",
+              "0.65%",
+              "0.48%",
+              "1.20%"
+            ],
+            "correctAnswer": "0.57%",
+            "hint": "Rounded value is $0.0000049$. Error $= 0.000004928 - 0.000004900 = 0.000000028$. Compute $(Error / Actual) \\times 100\\%$.",
+            "workedSolution": "$$\\text{Error} = 0.000004928 - 0.0000049 = 0.000000028$$\n$$\\text{Percentage Error} = \\frac{0.000000028}{0.000004928} \\times 100\\% \\approx 0.568\\% \\approx 0.57\\%$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate: $$\\frac{(2^3)^2 \\times 5^{-2}}{10^{-2}}$$.",
+            "options": [
+              "256",
+              "64",
+              "128",
+              "512"
+            ],
+            "correctAnswer": "256",
+            "hint": "Decompose $10^{-2} = (2 \\times 5)^{-2} = 2^{-2} \\times 5^{-2}$.",
+            "workedSolution": "$$\\frac{2^6 \\times 5^{-2}}{2^{-2} \\times 5^{-2}} = 2^{6 - (-2)} \\times 5^{-2 - (-2)} = 2^8 \\times 5^0 = 256$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
             "options": [
               "3",
-              "9",
+              "4",
               "2",
-              "4"
+              "5"
             ],
             "correctAnswer": "3",
-            "hint": "$$y^{7-4} = y^3 = 27$$. Take the cube root.",
-            "workedSolution": "$$y^3 = 27 \\implies y = \\sqrt[3]{27} = 3$$.",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
             "points": 2
-          }
-        ],
-        "medium": [
-          {
-            "id": "q_num_j3_m01",
-            "difficulty": "medium",
-            "prompt": "Evaluate: $$\\frac{2^7 \\times 5^4}{10^3}$$.",
-            "options": [
-              "80",
-              "40",
-              "160",
-              "20"
-            ],
-            "correctAnswer": "80",
-            "hint": "Note that $10^3 = 2^3 \\times 5^3$. Subtract indices for 2 and 5.",
-            "workedSolution": "$$2^{7-3} \\times 5^{4-3} = 2^4 \\times 5^1 = 16 \\times 5 = 80$$.",
-            "points": 1
           },
           {
-            "id": "q_num_j3_m02",
-            "difficulty": "medium",
-            "prompt": "Evaluate: $$\\sqrt{6.25}$$.",
+            "id": "q_b9_num_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
             "options": [
-              "2.5",
-              "0.25",
-              "2.25",
-              "25"
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
             ],
-            "correctAnswer": "2.5",
-            "hint": "Express as $\\sqrt{625 / 100}$.",
-            "workedSolution": "$$\\sqrt{625} / \\sqrt{100} = 25 / 10 = 2.5$$.",
-            "points": 1
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
           },
           {
-            "id": "q_num_j3_m03",
-            "difficulty": "medium",
-            "prompt": "Write $48.962\\text{ km}$ correct to three significant figures.",
+            "id": "q_b9_num_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
             "options": [
-              "49.0 km",
-              "48.9 km",
-              "49.00 km",
-              "48.96 km"
+              "-1",
+              "1",
+              "3",
+              "1"
             ],
-            "correctAnswer": "49.0 km",
-            "hint": "The 4th significant digit is 6, which rounds 48.9 up to 49.0.",
-            "workedSolution": "Rounding to 3 significant figures gives 49.0 km.",
-            "points": 1
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{9x + 1} = 8$.",
+            "options": [
+              "7",
+              "8",
+              "6",
+              "9"
+            ],
+            "correctAnswer": "7",
+            "hint": "Square both sides: $9x + 1 = (8)^2$.",
+            "workedSolution": "$$9x + 1 = (8)^2 = 64 \\implies 9x = 63 \\implies x = 7$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Rationalize the denominator and simplify: $$\\frac{6}{\\sqrt{7} - 2}$$.",
+            "options": [
+              "2(√7 + 2)",
+              "2(\\sqrt{7} + 2)",
+              "6(\\sqrt{7} + 2)",
+              "1(\\sqrt{7} + 2)"
+            ],
+            "correctAnswer": "2(√7 + 2)",
+            "hint": "Multiply numerator and denominator by conjugate $(\\sqrt{7} + 2)$ and use $(a-b)(a+b) = a^2 - b^2$.",
+            "workedSolution": "$$\\frac{6(\\sqrt{7} + 2)}{3} = 2(√7 + 2)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$: $$\\left(\\frac{1}{2}\\right)^{x - 1} = 4$$.",
+            "options": [
+              "-1",
+              "1",
+              "3",
+              "1"
+            ],
+            "correctAnswer": "-1",
+            "hint": "Express $\\frac{1}{2} = 2^{-1}$ and $4 = 2^{2}$.",
+            "workedSolution": "$$(2^{-1})^{x - 1} = 2^{2} \\implies -(x - 1) = 2 \\implies -x + 1 = 2 \\implies x = -1$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Evaluate without a calculator: $$\\frac{\\sqrt{50} + \\sqrt{18}}{\\sqrt{32}}$$.",
+            "options": [
+              "2",
+              "√2",
+              "4",
+              "1/2"
+            ],
+            "correctAnswer": "2",
+            "hint": "Simplify each radical into multiples of $\\sqrt{2}$: $\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}}$.",
+            "workedSolution": "$$\\frac{5\\sqrt{2} + 3\\sqrt{2}}{4\\sqrt{2}} = \\frac{8\\sqrt{2}}{4\\sqrt{2}} = 2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_num_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Solve for $x$ in the radical equation: $\\sqrt{5x + 1} = 4$.",
+            "options": [
+              "3",
+              "4",
+              "2",
+              "5"
+            ],
+            "correctAnswer": "3",
+            "hint": "Square both sides: $5x + 1 = (4)^2$.",
+            "workedSolution": "$$5x + 1 = (4)^2 = 16 \\implies 5x = 15 \\implies x = 3$$.",
+            "points": 2
           }
         ]
       },
