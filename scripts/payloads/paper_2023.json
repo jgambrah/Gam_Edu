@@ -1,0 +1,717 @@
+{
+  "year": 2023,
+  "examination": "WAEC BECE Mathematics (Official)",
+  "paper1": {
+    "title": "Paper 1: Objective Test",
+    "durationMinutes": 60,
+    "totalQuestions": 40,
+    "questions": [
+      {
+        "number": 1,
+        "prompt": "Write 0.01723 in standard form.",
+        "options": [
+          "0.01723 × 10⁻²",
+          "1.723 × 10⁻²",
+          "0.01723 × 10²",
+          "1.723 × 10²"
+        ],
+        "correctAnswer": "1.723 × 10⁻²",
+        "hint": "Move the decimal point two places to the right to obtain a coefficient between 1 and 10.",
+        "workedSolution": "$$0.01723 = 1.723 \\times 10^{-2}$$.",
+        "points": 1
+      },
+      {
+        "number": 2,
+        "prompt": "What is the value of $3x^2 + 2x - 7$ when $x = -3$?",
+        "options": [
+          "-40",
+          "26",
+          "14",
+          "-33"
+        ],
+        "correctAnswer": "14",
+        "hint": "Substitute $x = -3$: evaluate powers first, then products.",
+        "workedSolution": "$$3(-3)^2 + 2(-3) - 7 = 3(9) - 6 - 7 = 27 - 13 = 14$$.",
+        "points": 1
+      },
+      {
+        "number": 3,
+        "prompt": "Find the image of the point $S(-2, 2)$ when it is reflected in the $y$-axis.",
+        "options": [
+          "(2, -2)",
+          "(-2, 2)",
+          "(-2, -2)",
+          "(2, 2)"
+        ],
+        "correctAnswer": "(2, 2)",
+        "hint": "Reflection across the $y$-axis negates the $x$-coordinate: $(x, y) \\to (-x, y)$.",
+        "workedSolution": "$$S(-2, 2) \\to S'(-(-2), 2) = S'(2, 2)$$.",
+        "points": 1
+      },
+      {
+        "number": 4,
+        "prompt": "What is the actual bearing of $\\text{S}25^\\circ\\text{E}$?",
+        "options": [
+          "155°",
+          "035°",
+          "115°",
+          "065°"
+        ],
+        "correctAnswer": "155°",
+        "hint": "South is $180^\\circ$. Measuring $25^\\circ$ East means subtracting $25^\\circ$ from $180^\\circ$.",
+        "workedSolution": "$$180^\\circ - 25^\\circ = 155^\\circ$$.",
+        "points": 1
+      },
+      {
+        "number": 5,
+        "prompt": "Given that $m = \\frac{b}{2} - t$, make $t$ the subject.",
+        "options": [
+          "t = (b - 2m)/2",
+          "t = (b + 2m)/2",
+          "t = (2b - m)/2",
+          "t = (2m - b)/2"
+        ],
+        "correctAnswer": "t = (b - 2m)/2",
+        "hint": "Add $t$ to both sides and subtract $m$: $t = \\frac{b}{2} - m$.",
+        "workedSolution": "$$t = \\frac{b}{2} - m = \\frac{b - 2m}{2}$$.",
+        "points": 1
+      },
+      {
+        "number": 6,
+        "prompt": "Expand: $(x - 2)(x + 4)$.",
+        "options": [
+          "x² + 2x + 8",
+          "x² - 4x - 8",
+          "x² + 2x - 8",
+          "x² - x - 8"
+        ],
+        "correctAnswer": "x² + 2x - 8",
+        "hint": "FOIL: $x^2 + 4x - 2x - 8$.",
+        "workedSolution": "$$x(x + 4) - 2(x + 4) = x^2 + 4x - 2x - 8 = x^2 + 2x - 8$$.",
+        "points": 1
+      },
+      {
+        "number": 7,
+        "prompt": "If $n(E) = 15$, $n(F) = 20$, and $n(E \\cap F) = 6$, find $n(E \\cup F)$.",
+        "options": [
+          "26",
+          "29",
+          "21",
+          "35"
+        ],
+        "correctAnswer": "29",
+        "hint": "$$n(E \\cup F) = n(E) + n(F) - n(E \\cap F)$$.",
+        "workedSolution": "$$n(E \\cup F) = 15 + 20 - 6 = 35 - 6 = 29$$.",
+        "points": 1
+      },
+      {
+        "number": 8,
+        "prompt": "Tony shared $\\frac{2}{3}$ of his plot of land equally among his three sons. What fraction of the plot did each get?",
+        "options": [
+          "5/9",
+          "1/3",
+          "1/2",
+          "2/9"
+        ],
+        "correctAnswer": "2/9",
+        "hint": "Divide $\\frac{2}{3}$ by 3.",
+        "workedSolution": "$$\\frac{2}{3} \\div 3 = \\frac{2}{3} \\times \\frac{1}{3} = \\frac{2}{9}$$.",
+        "points": 1
+      },
+      {
+        "number": 9,
+        "prompt": "Araba and Ama share 20 oranges in such a way that Ama receives 12 oranges. Find the ratio of Araba's share to that of Ama.",
+        "options": [
+          "2 : 3",
+          "3 : 5",
+          "2 : 5",
+          "3 : 2"
+        ],
+        "correctAnswer": "2 : 3",
+        "hint": "Araba receives $20 - 12 = 8$ oranges. Express $8 : 12$ in lowest terms.",
+        "workedSolution": "$$\\text{Araba's share} = 20 - 12 = 8$$\n$$\\text{Ratio} = \\frac{8}{12} = \\frac{2}{3} \\implies 2 : 3$$.",
+        "points": 1
+      },
+      {
+        "number": 10,
+        "prompt": "Solve: $3(x - 2) - \\frac{x}{3} + 6 > 0$.",
+        "options": [
+          "x < 0",
+          "x > 1/8",
+          "x > 0",
+          "x > 3"
+        ],
+        "correctAnswer": "x > 0",
+        "hint": "Expand the bracket: $3x - 6 - \\frac{x}{3} + 6 > 0$.",
+        "workedSolution": "$$3x - \\frac{x}{3} > 0 \\implies \\frac{8x}{3} > 0 \\implies x > 0$$.",
+        "points": 1
+      },
+      {
+        "number": 11,
+        "prompt": "From the stem-and-leaf plot showing French test marks:<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><text x='45' y='25' font-size='12' font-weight='bold' fill='#475569'>Stem</text><text x='100' y='25' font-size='12' font-weight='bold' fill='#475569'>Leaf</text><line x1='20' y1='32' x2='300' y2='32' stroke='#cbd5e1' stroke-width='1'/><line x1='80' y1='20' x2='80' y2='175' stroke='#64748b' stroke-width='1.5'/><text x='50' y='55' font-size='12' font-weight='bold' fill='#1e293b'>2</text><text x='95' y='55' font-size='12' font-family='monospace' fill='#2563eb'>0  2  5  7  8</text><text x='50' y='80' font-size='12' font-weight='bold' fill='#1e293b'>3</text><text x='95' y='80' font-size='12' font-family='monospace' fill='#2563eb'>2  7  9</text><text x='50' y='105' font-size='12' font-weight='bold' fill='#1e293b'>4</text><text x='95' y='105' font-size='12' font-family='monospace' fill='#2563eb'>3  5  5  5</text><text x='50' y='130' font-size='12' font-weight='bold' fill='#1e293b'>5</text><text x='95' y='130' font-size='12' font-family='monospace' fill='#2563eb'>4  6  6  8</text><text x='50' y='155' font-size='12' font-weight='bold' fill='#1e293b'>6</text><text x='95' y='155' font-size='12' font-family='monospace' fill='#2563eb'>3  5  7</text><text x='50' y='175' font-size='12' font-weight='bold' fill='#1e293b'>7</text><text x='95' y='175' font-size='12' font-family='monospace' fill='#2563eb'>0  6</text><rect x='20' y='182' width='280' height='20' rx='3' fill='#e2e8f0'/><text x='30' y='196' font-size='11' font-weight='600' fill='#334155'>Key: 4 | 3 = 43 marks</text></svg><br/>What is the modal mark?",
+        "options": [
+          "35",
+          "45",
+          "76",
+          "56"
+        ],
+        "correctAnswer": "45",
+        "hint": "Leaf 5 appears three times under stem 4.",
+        "workedSolution": "Leaf 5 occurs three times under stem 4, representing 45. Mode $= 45$.",
+        "points": 1
+      },
+      {
+        "number": 12,
+        "prompt": "Using the stem-and-leaf plot from Question 11, how many students took the test?<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><text x='45' y='25' font-size='12' font-weight='bold' fill='#475569'>Stem</text><text x='100' y='25' font-size='12' font-weight='bold' fill='#475569'>Leaf</text><line x1='20' y1='32' x2='300' y2='32' stroke='#cbd5e1' stroke-width='1'/><line x1='80' y1='20' x2='80' y2='175' stroke='#64748b' stroke-width='1.5'/><text x='50' y='55' font-size='12' font-weight='bold' fill='#1e293b'>2</text><text x='95' y='55' font-size='12' font-family='monospace' fill='#2563eb'>0  2  5  7  8</text><text x='50' y='80' font-size='12' font-weight='bold' fill='#1e293b'>3</text><text x='95' y='80' font-size='12' font-family='monospace' fill='#2563eb'>2  7  9</text><text x='50' y='105' font-size='12' font-weight='bold' fill='#1e293b'>4</text><text x='95' y='105' font-size='12' font-family='monospace' fill='#2563eb'>3  5  5  5</text><text x='50' y='130' font-size='12' font-weight='bold' fill='#1e293b'>5</text><text x='95' y='130' font-size='12' font-family='monospace' fill='#2563eb'>4  6  6  8</text><text x='50' y='155' font-size='12' font-weight='bold' fill='#1e293b'>6</text><text x='95' y='155' font-size='12' font-family='monospace' fill='#2563eb'>3  5  7</text><text x='50' y='175' font-size='12' font-weight='bold' fill='#1e293b'>7</text><text x='95' y='175' font-size='12' font-family='monospace' fill='#2563eb'>0  6</text><rect x='20' y='182' width='280' height='20' rx='3' fill='#e2e8f0'/><text x='30' y='196' font-size='11' font-weight='600' fill='#334155'>Key: 4 | 3 = 43 marks</text></svg>",
+        "options": [
+          "20",
+          "21",
+          "27",
+          "22"
+        ],
+        "correctAnswer": "21",
+        "hint": "Count all leaves: $5 + 3 + 4 + 4 + 3 + 2$.",
+        "workedSolution": "$$\\text{Total students} = 5 + 3 + 4 + 4 + 3 + 2 = 21$$.",
+        "points": 1
+      },
+      {
+        "number": 13,
+        "prompt": "Using the stem-and-leaf plot from Question 11, find the median mark:<br/><svg viewBox='0 0 320 210' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><text x='45' y='25' font-size='12' font-weight='bold' fill='#475569'>Stem</text><text x='100' y='25' font-size='12' font-weight='bold' fill='#475569'>Leaf</text><line x1='20' y1='32' x2='300' y2='32' stroke='#cbd5e1' stroke-width='1'/><line x1='80' y1='20' x2='80' y2='175' stroke='#64748b' stroke-width='1.5'/><text x='50' y='55' font-size='12' font-weight='bold' fill='#1e293b'>2</text><text x='95' y='55' font-size='12' font-family='monospace' fill='#2563eb'>0  2  5  7  8</text><text x='50' y='80' font-size='12' font-weight='bold' fill='#1e293b'>3</text><text x='95' y='80' font-size='12' font-family='monospace' fill='#2563eb'>2  7  9</text><text x='50' y='105' font-size='12' font-weight='bold' fill='#1e293b'>4</text><text x='95' y='105' font-size='12' font-family='monospace' fill='#2563eb'>3  5  5  5</text><text x='50' y='130' font-size='12' font-weight='bold' fill='#1e293b'>5</text><text x='95' y='130' font-size='12' font-family='monospace' fill='#2563eb'>4  6  6  8</text><text x='50' y='155' font-size='12' font-weight='bold' fill='#1e293b'>6</text><text x='95' y='155' font-size='12' font-family='monospace' fill='#2563eb'>3  5  7</text><text x='50' y='175' font-size='12' font-weight='bold' fill='#1e293b'>7</text><text x='95' y='175' font-size='12' font-family='monospace' fill='#2563eb'>0  6</text><rect x='20' y='182' width='280' height='20' rx='3' fill='#e2e8f0'/><text x='30' y='196' font-size='11' font-weight='600' fill='#334155'>Key: 4 | 3 = 43 marks</text></svg>",
+        "options": [
+          "54",
+          "47",
+          "45",
+          "76"
+        ],
+        "correctAnswer": "45",
+        "hint": "For 21 observations, the median is the 11th observation.",
+        "workedSolution": "Counting to the 11th score: it falls on stem 4, leaf 5, giving 45.",
+        "points": 1
+      },
+      {
+        "number": 14,
+        "prompt": "Which of the following is an even prime number?",
+        "options": [
+          "8",
+          "2",
+          "4",
+          "1"
+        ],
+        "correctAnswer": "2",
+        "hint": "2 is the only even number that is prime.",
+        "workedSolution": "2 is the smallest and only even prime number.",
+        "points": 1
+      },
+      {
+        "number": 15,
+        "prompt": "If $2n - 5 = \\frac{1}{2}n$, find the value of $n$.",
+        "options": [
+          "1/3",
+          "2 1/2",
+          "3 1/3",
+          "1/2"
+        ],
+        "correctAnswer": "3 1/3",
+        "hint": "Multiply through by 2: $4n - 10 = n$.",
+        "workedSolution": "$$4n - n = 10 \\implies 3n = 10 \\implies n = \\frac{10}{3} = 3\\frac{1}{3}$$.",
+        "points": 1
+      },
+      {
+        "number": 16,
+        "prompt": "Find the simple interest on GH¢ 350.00 for 4 years at 5% per annum.",
+        "options": [
+          "GH¢ 70.00",
+          "GH¢ 20.00",
+          "GH¢ 35.00",
+          "GH¢ 140.00"
+        ],
+        "correctAnswer": "GH¢ 70.00",
+        "hint": "$$I = \\frac{P \\times R \\times T}{100}$$.",
+        "workedSolution": "$$I = \\frac{350 \\times 5 \\times 4}{100} = \\frac{7000}{100} = \\text{GH¢ } 70.00$$.",
+        "points": 1
+      },
+      {
+        "number": 17,
+        "prompt": "A straight line passes through points $P(-5, -3)$ and $Q(-4, -7)$. Find the gradient of line $PQ$.",
+        "options": [
+          "-1/4",
+          "1/4",
+          "4",
+          "-4"
+        ],
+        "correctAnswer": "-4",
+        "hint": "$$m = \\frac{y_2 - y_1}{x_2 - x_1}$$.",
+        "workedSolution": "$$m = \\frac{-7 - (-3)}{-4 - (-5)} = \\frac{-4}{1} = -4$$.",
+        "points": 1
+      },
+      {
+        "number": 18,
+        "prompt": "Given that $1\\text{ kilometre} = \\frac{5}{8}\\text{ mile}$, what is $240\\text{ miles}$ in kilometres?",
+        "options": [
+          "190 km",
+          "384 km",
+          "150 km",
+          "390 km"
+        ],
+        "correctAnswer": "384 km",
+        "hint": "Divide 240 by $\\frac{5}{8}$.",
+        "workedSolution": "$$\\text{Kilometres} = 240 \\div \\frac{5}{8} = 240 \\times \\frac{8}{5} = 48 \\times 8 = 384\\text{ km}$$.",
+        "points": 1
+      },
+      {
+        "number": 19,
+        "prompt": "John walks for $22\\frac{1}{2}\\text{ minutes}$ and runs for $7\\frac{1}{2}\\text{ minutes}$ to school. What percentage of the total time does he spend walking?",
+        "options": [
+          "33%",
+          "30%",
+          "75%",
+          "25%"
+        ],
+        "correctAnswer": "75%",
+        "hint": "Total time $= 22.5 + 7.5 = 30\\text{ min}$. Compute $\\frac{22.5}{30} \\times 100\\%$.",
+        "workedSolution": "$$\\text{Total time} = 30\\text{ minutes}$$\n$$\\text{Walking percentage} = \\frac{22.5}{30} \\times 100\\% = 75\\%$$.",
+        "points": 1
+      },
+      {
+        "number": 20,
+        "prompt": "Kobby is 5 years older than his brother. If Kobby is 13 years old, how old is his brother?",
+        "options": [
+          "8 years",
+          "18 years",
+          "10 years",
+          "7 years"
+        ],
+        "correctAnswer": "8 years",
+        "hint": "Subtract 5 from 13.",
+        "workedSolution": "$$13 - 5 = 8\\text{ years}$$.",
+        "points": 1
+      },
+      {
+        "number": 21,
+        "prompt": "Find the rule for the mapping shown below:<br/><svg viewBox='0 0 320 180' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Set X --><ellipse cx='90' cy='95' rx='45' ry='65' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><text x='90' y='22' font-size='13' font-weight='bold' fill='#1e40af' text-anchor='middle'>x</text><text x='90' y='55' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>1</text><text x='90' y='75' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>2</text><text x='90' y='95' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>3</text><text x='90' y='115' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>4</text><text x='90' y='135' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>5</text><!-- Set Y --><ellipse cx='230' cy='95' rx='45' ry='65' fill='#eff6ff' stroke='#1e40af' stroke-width='2'/><text x='230' y='22' font-size='13' font-weight='bold' fill='#1e40af' text-anchor='middle'>y</text><text x='230' y='55' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>4</text><text x='230' y='75' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>2</text><text x='230' y='95' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>0</text><text x='230' y='115' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>-2</text><text x='230' y='135' font-size='12' font-weight='bold' fill='#1e293b' text-anchor='middle'>-4</text><!-- Directed Mapping Lines --><line x1='105' y1='52' x2='210' y2='52' stroke='#dc2626' stroke-width='1.5'/><polygon points='210,49 216,52 210,55' fill='#dc2626'/><line x1='105' y1='72' x2='210' y2='72' stroke='#dc2626' stroke-width='1.5'/><polygon points='210,69 216,72 210,75' fill='#dc2626'/><line x1='105' y1='92' x2='210' y2='92' stroke='#dc2626' stroke-width='1.5'/><polygon points='210,89 216,92 210,95' fill='#dc2626'/><line x1='105' y1='112' x2='210' y2='112' stroke='#dc2626' stroke-width='1.5'/><polygon points='210,109 216,112 210,115' fill='#dc2626'/><line x1='105' y1='132' x2='210' y2='132' stroke='#dc2626' stroke-width='1.5'/><polygon points='210,129 216,132 210,135' fill='#dc2626'/></svg>",
+        "options": [
+          "y = -2x + 2",
+          "y = 4x",
+          "y = 2x + 2",
+          "y = -2x + 6"
+        ],
+        "correctAnswer": "y = -2x + 6",
+        "hint": "Gradient is $-2$. Substitute $x = 1, y = 4$ into $y = -2x + c$.",
+        "workedSolution": "$$m = -2$$\n$$4 = -2(1) + c \\implies c = 6$$\n$$y = -2x + 6$$.",
+        "points": 1
+      },
+      {
+        "number": 22,
+        "prompt": "Arrange the numbers $\\frac{9}{5}, 1.88, \\frac{15}{8}$ in ascending order.",
+        "options": [
+          "9/5, 1.88, 15/8",
+          "1.88, 9/5, 15/8",
+          "9/5, 15/8, 1.88",
+          "15/8, 9/5, 1.88"
+        ],
+        "correctAnswer": "9/5, 15/8, 1.88",
+        "hint": "Convert fractions to decimals: $9/5 = 1.800$ and $15/8 = 1.875$.",
+        "workedSolution": "$$\\frac{9}{5} = 1.800, \\quad \\frac{15}{8} = 1.875, \\quad 1.88 = 1.880$$\nAscending: $$\\frac{9}{5}, \\frac{15}{8}, 1.88$$.",
+        "points": 1
+      },
+      {
+        "number": 23,
+        "prompt": "Simplify: $(x - 1)^2 - 1$.",
+        "options": [
+          "x² + 2x",
+          "x² - 2x + 1",
+          "x² - 2x",
+          "x² - 2x - 1"
+        ],
+        "correctAnswer": "x² - 2x",
+        "hint": "Expand: $(x^2 - 2x + 1) - 1$.",
+        "workedSolution": "$$(x^2 - 2x + 1) - 1 = x^2 - 2x$$.",
+        "points": 1
+      },
+      {
+        "number": 24,
+        "prompt": "A bag contains 20 oranges of which 6 are bad. Find the probability of picking a good orange from the bag.",
+        "options": [
+          "7/10",
+          "3/10",
+          "1/20",
+          "1/6"
+        ],
+        "correctAnswer": "7/10",
+        "hint": "Good oranges $= 20 - 6 = 14$.",
+        "workedSolution": "$$P(\\text{good}) = \\frac{14}{20} = \\frac{7}{10}$$.",
+        "points": 1
+      },
+      {
+        "number": 25,
+        "prompt": "In the diagram below, $AB$ is parallel to $CD$. Angle $AGE = 80^\\circ$ and angle $CFE = r$. What is the value of $r$?<br/><svg viewBox='0 0 360 180' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Line AB --><line x1='20' y1='35' x2='340' y2='35' stroke='#1e293b' stroke-width='2'/><polygon points='300,32 310,35 300,38' fill='#1e293b'/><text x='15' y='30' font-size='12' font-weight='bold' fill='#0f172a'>A</text><text x='342' y='30' font-size='12' font-weight='bold' fill='#0f172a'>B</text><text x='225' y='25' font-size='12' font-weight='bold' fill='#0f172a'>G</text><!-- Line CD --><line x1='60' y1='95' x2='340' y2='95' stroke='#1e293b' stroke-width='2'/><polygon points='300,92 310,95 300,98' fill='#1e293b'/><text x='50' y='95' font-size='12' font-weight='bold' fill='#0f172a'>C</text><text x='342' y='95' font-size='12' font-weight='bold' fill='#0f172a'>D</text><text x='202' y='110' font-size='12' font-weight='bold' fill='#0f172a'>F</text><!-- Triangle Lines AE and GE --><line x1='25' y1='35' x2='140' y2='165' stroke='#2563eb' stroke-width='2.5'/><line x1='225' y1='35' x2='140' y2='165' stroke='#2563eb' stroke-width='2.5'/><text x='140' y='178' font-size='12' font-weight='bold' fill='#0f172a' text-anchor='middle'>E</text><!-- Angles --><path d='M 205 35 A 20 20 0 0 0 215 50' fill='none' stroke='#dc2626' stroke-width='1.5'/><text x='200' y='50' font-size='11' font-weight='bold' fill='#dc2626'>80°</text><path d='M 175 95 A 20 20 0 0 1 190 75' fill='none' stroke='#16a34a' stroke-width='1.5'/><text x='182' y='88' font-size='11' font-weight='bold' fill='#16a34a'>5k</text><path d='M 175 95 A 20 20 0 0 0 185 110' fill='none' stroke='#d97706' stroke-width='1.5'/><text x='182' y='112' font-size='11' font-weight='bold' fill='#d97706'>r</text><text x='180' y='172' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
+        "options": [
+          "16°",
+          "80°",
+          "20°",
+          "160°"
+        ],
+        "correctAnswer": "80°",
+        "hint": "Corresponding angles are equal.",
+        "workedSolution": "$\\angle CFE$ and $\\angle AGE$ are corresponding angles across transversal $GE$, so $r = 80^\\circ$.",
+        "points": 1
+      },
+      {
+        "number": 26,
+        "prompt": "Using the diagram from Question 25 where $\\angle CFG = 5k$, find the value of $k$:<br/><svg viewBox='0 0 360 180' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Line AB --><line x1='20' y1='35' x2='340' y2='35' stroke='#1e293b' stroke-width='2'/><polygon points='300,32 310,35 300,38' fill='#1e293b'/><text x='15' y='30' font-size='12' font-weight='bold' fill='#0f172a'>A</text><text x='342' y='30' font-size='12' font-weight='bold' fill='#0f172a'>B</text><text x='225' y='25' font-size='12' font-weight='bold' fill='#0f172a'>G</text><!-- Line CD --><line x1='60' y1='95' x2='340' y2='95' stroke='#1e293b' stroke-width='2'/><polygon points='300,92 310,95 300,98' fill='#1e293b'/><text x='50' y='95' font-size='12' font-weight='bold' fill='#0f172a'>C</text><text x='342' y='95' font-size='12' font-weight='bold' fill='#0f172a'>D</text><text x='202' y='110' font-size='12' font-weight='bold' fill='#0f172a'>F</text><!-- Triangle Lines AE and GE --><line x1='25' y1='35' x2='140' y2='165' stroke='#2563eb' stroke-width='2.5'/><line x1='225' y1='35' x2='140' y2='165' stroke='#2563eb' stroke-width='2.5'/><text x='140' y='178' font-size='12' font-weight='bold' fill='#0f172a' text-anchor='middle'>E</text><!-- Angles --><path d='M 205 35 A 20 20 0 0 0 215 50' fill='none' stroke='#dc2626' stroke-width='1.5'/><text x='200' y='50' font-size='11' font-weight='bold' fill='#dc2626'>80°</text><path d='M 175 95 A 20 20 0 0 1 190 75' fill='none' stroke='#16a34a' stroke-width='1.5'/><text x='182' y='88' font-size='11' font-weight='bold' fill='#16a34a'>5k</text><path d='M 175 95 A 20 20 0 0 0 185 110' fill='none' stroke='#d97706' stroke-width='1.5'/><text x='182' y='112' font-size='11' font-weight='bold' fill='#d97706'>r</text><text x='180' y='172' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
+        "options": [
+          "16°",
+          "160°",
+          "20°",
+          "80°"
+        ],
+        "correctAnswer": "20°",
+        "hint": "Co-interior angles add to $180^\\circ$: $5k + 80^\\circ = 180^\\circ$.",
+        "workedSolution": "$$5k + 80^\\circ = 180^\\circ \\implies 5k = 100^\\circ \\implies k = 20^\\circ$$.",
+        "points": 1
+      },
+      {
+        "number": 27,
+        "prompt": "Simplify: $$\\left(1\\frac{1}{2} - \\frac{5}{6}\\right) \\times \\frac{9}{10}$$.",
+        "options": [
+          "1/10",
+          "3/5",
+          "1/5",
+          "3/20"
+        ],
+        "correctAnswer": "3/5",
+        "hint": "$$1\\frac{1}{2} - \\frac{5}{6} = \\frac{9}{6} - \\frac{5}{6} = \\frac{4}{6} = \\frac{2}{3}$$.",
+        "workedSolution": "$$\\frac{2}{3} \\times \\frac{9}{10} = \\frac{18}{30} = \\frac{3}{5}$$.",
+        "points": 1
+      },
+      {
+        "number": 28,
+        "prompt": "Factorize completely: $2pq + 6p - 6q - 18$.",
+        "options": [
+          "2(p + 3)(q - 3)",
+          "2(p - 3)(q - 3)",
+          "2(p + 3)(q + 3)",
+          "2(p - 3)(q + 3)"
+        ],
+        "correctAnswer": "2(p - 3)(q + 3)",
+        "hint": "Factor 2 first: $2(pq + 3p - 3q - 9) = 2[p(q + 3) - 3(q + 3)]$.",
+        "workedSolution": "$$2[p(q + 3) - 3(q + 3)] = 2(p - 3)(q + 3)$$.",
+        "points": 1
+      },
+      {
+        "number": 29,
+        "prompt": "The diagram below shows a square of side $2\\text{ cm}$ with an inscribed circle of center $O$:<br/><svg viewBox='0 0 220 220' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><g transform='translate(35, 25)'><!-- Square of side 150 (representing 2 cm) with shaded corners --><rect x='0' y='0' width='150' height='150' fill='#cbd5e1' stroke='#1e293b' stroke-width='2'/><!-- Inscribed circle --><circle cx='75' cy='75' r='75' fill='#ffffff' stroke='#1e293b' stroke-width='2'/><circle cx='75' cy='75' r='3' fill='#dc2626'/><text x='82' y='72' font-size='11' font-weight='bold' fill='#dc2626'>O</text><!-- Dimensions --><line x1='0' y1='-10' x2='150' y2='-10' stroke='#334155' stroke-width='1.5'/><text x='75' y='-15' font-size='11' font-weight='bold' fill='#334155' text-anchor='middle'>2 cm</text><line x1='160' y1='0' x2='160' y2='150' stroke='#334155' stroke-width='1.5'/><text x='175' y='80' font-size='11' font-weight='bold' fill='#334155' text-anchor='middle'>2 cm</text></g></svg><br/>Find the area of the shaded portion. [Take $\\pi = 3.142$]",
+        "options": [
+          "6.28 cm²",
+          "0.86 cm²",
+          "3.00 cm²",
+          "12.56 cm²"
+        ],
+        "correctAnswer": "0.86 cm²",
+        "hint": "Area of square $= 2 \\times 2 = 4$. Circle radius $r = 1\\text{ cm}$.",
+        "workedSolution": "$$\\text{Square Area} = 4\\text{ cm}^2$$\n$$\\text{Circle Area} = 3.142 \\times 1^2 = 3.142\\text{ cm}^2$$\n$$\\text{Shaded Area} = 4 - 3.142 = 0.858 \\approx 0.86\\text{ cm}^2$$.",
+        "points": 1
+      },
+      {
+        "number": 30,
+        "prompt": "Using the diagram from Question 29, find the area of the circle:<br/><svg viewBox='0 0 220 220' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><g transform='translate(35, 25)'><!-- Square of side 150 (representing 2 cm) with shaded corners --><rect x='0' y='0' width='150' height='150' fill='#cbd5e1' stroke='#1e293b' stroke-width='2'/><!-- Inscribed circle --><circle cx='75' cy='75' r='75' fill='#ffffff' stroke='#1e293b' stroke-width='2'/><circle cx='75' cy='75' r='3' fill='#dc2626'/><text x='82' y='72' font-size='11' font-weight='bold' fill='#dc2626'>O</text><!-- Dimensions --><line x1='0' y1='-10' x2='150' y2='-10' stroke='#334155' stroke-width='1.5'/><text x='75' y='-15' font-size='11' font-weight='bold' fill='#334155' text-anchor='middle'>2 cm</text><line x1='160' y1='0' x2='160' y2='150' stroke='#334155' stroke-width='1.5'/><text x='175' y='80' font-size='11' font-weight='bold' fill='#334155' text-anchor='middle'>2 cm</text></g></svg><br/>[Take $\\pi = 3.142$]",
+        "options": [
+          "6.28 cm²",
+          "4.00 cm²",
+          "3.14 cm²",
+          "12.56 cm²"
+        ],
+        "correctAnswer": "3.14 cm²",
+        "hint": "Area $= \\pi r^2 = 3.142 \\times 1^2$.",
+        "workedSolution": "$$A = 3.142 \\times 1 = 3.142 \\approx 3.14\\text{ cm}^2$$.",
+        "points": 1
+      },
+      {
+        "number": 31,
+        "prompt": "A man can take 12 hours to do a piece of work. How long will it take 6 men working at the same rate to do the work?",
+        "options": [
+          "3 hours",
+          "72 hours",
+          "2 hours",
+          "6 hours"
+        ],
+        "correctAnswer": "2 hours",
+        "hint": "Inverse variation: $12 \\div 6$.",
+        "workedSolution": "$$\\text{Time} = \\frac{12}{6} = 2\\text{ hours}$$.",
+        "points": 1
+      },
+      {
+        "number": 32,
+        "prompt": "Convert 12.03 metres to centimetres.",
+        "options": [
+          "120.3 cm",
+          "12030 cm",
+          "0.1203 cm",
+          "1203 cm"
+        ],
+        "correctAnswer": "1203 cm",
+        "hint": "Multiply by 100.",
+        "workedSolution": "$$12.03 \\times 100 = 1,203\\text{ cm}$$.",
+        "points": 1
+      },
+      {
+        "number": 33,
+        "prompt": "A quadrilateral with one pair of opposite sides parallel is called a:",
+        "options": [
+          "rectangle",
+          "kite",
+          "square",
+          "trapezium"
+        ],
+        "correctAnswer": "trapezium",
+        "hint": "Only one pair of parallel sides.",
+        "workedSolution": "A trapezium is a quadrilateral with exactly one pair of parallel opposite sides.",
+        "points": 1
+      },
+      {
+        "number": 34,
+        "prompt": "A book was sold for GH¢ 48.00 at a profit of 20%. Find the cost price.",
+        "options": [
+          "GH¢ 60.00",
+          "GH¢ 40.00",
+          "GH¢ 57.00",
+          "GH¢ 38.40"
+        ],
+        "correctAnswer": "GH¢ 40.00",
+        "hint": "$$1.20 \\times CP = 48.00$$.",
+        "workedSolution": "$$CP = \\frac{48.00}{1.20} = \\text{GH¢ } 40.00$$.",
+        "points": 1
+      },
+      {
+        "number": 35,
+        "prompt": "Find the vector which translates the point $(2, 6)$ to $(5, 4)$.",
+        "options": [
+          "(3, -2)",
+          "(7, 10)",
+          "(-1, 4)",
+          "(-3, 2)"
+        ],
+        "correctAnswer": "(3, -2)",
+        "hint": "$$\\text{Vector} = \\text{Image} - \\text{Point}$$.",
+        "workedSolution": "$$\\begin{pmatrix} 5 - 2 \\\\ 4 - 6 \\end{pmatrix} = \\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$$.",
+        "points": 1
+      },
+      {
+        "number": 36,
+        "prompt": "Cement and sand were mixed in the ratio $2 : 5$. How many kilograms of cement was contained in $35\\text{ kg}$ of the mixture?",
+        "options": [
+          "7 kg",
+          "14 kg",
+          "88 kg",
+          "10 kg"
+        ],
+        "correctAnswer": "10 kg",
+        "hint": "Total parts $= 2 + 5 = 7$. Cement portion is $\\frac{2}{7} \\times 35$.",
+        "workedSolution": "$$\\text{Cement} = \\frac{2}{7} \\times 35 = 2 \\times 5 = 10\\text{ kg}$$.",
+        "points": 1
+      },
+      {
+        "number": 37,
+        "prompt": "Which of the following is NOT an integer?",
+        "options": [
+          "1",
+          "0.5",
+          "0",
+          "-5"
+        ],
+        "correctAnswer": "0.5",
+        "hint": "0.5 has a fractional part.",
+        "workedSolution": "0.5 is a rational non-integer decimal.",
+        "points": 1
+      },
+      {
+        "number": 38,
+        "prompt": "Simplify: $$\\frac{5^7 \\times 5^{-4}}{5^3}$$.",
+        "options": [
+          "5",
+          "0",
+          "25",
+          "1"
+        ],
+        "correctAnswer": "1",
+        "hint": "Apply laws of indices: $5^{7 - 4 - 3}$.",
+        "workedSolution": "$$5^{7 - 4 - 3} = 5^0 = 1$$.",
+        "points": 1
+      },
+      {
+        "number": 39,
+        "prompt": "The height of a cylinder is $5\\text{ cm}$ and its radius is $7\\text{ cm}$. Find the volume of the cylinder. [Take $\\pi = \\frac{22}{7}$]",
+        "options": [
+          "110 cm³",
+          "154 cm³",
+          "770 cm³",
+          "700 cm³"
+        ],
+        "correctAnswer": "770 cm³",
+        "hint": "$$V = \\pi r^2 h = \\frac{22}{7} \\times 7^2 \\times 5$$.",
+        "workedSolution": "$$V = 22 \\times 7 \\times 5 = 154 \\times 5 = 770\\text{ cm}^3$$.",
+        "points": 1
+      },
+      {
+        "number": 40,
+        "prompt": "If vectors $\\mathbf{q} = \\begin{pmatrix} -2 \\\\ 3 \\end{pmatrix}$ and $\\mathbf{r} = \\begin{pmatrix} 3 \\\\ -2 \\end{pmatrix}$, find $\\mathbf{q} - \\mathbf{r}$.",
+        "options": [
+          "(-5, -5)",
+          "(-5, 5)",
+          "(1, 1)",
+          "(5, -5)"
+        ],
+        "correctAnswer": "(-5, 5)",
+        "hint": "Subtract matching vector components: $-2 - 3$ and $3 - (-2)$.",
+        "workedSolution": "$$\\begin{pmatrix} -2 - 3 \\\\ 3 - (-2) \\end{pmatrix} = \\begin{pmatrix} -5 \\\\ 5 \\end{pmatrix}$$.",
+        "points": 1
+      }
+    ]
+  },
+  "paper2": {
+    "title": "Paper 2: Essay / Theory Test",
+    "durationMinutes": 60,
+    "instructions": "Answer four questions only. All working must be clearly shown.",
+    "totalQuestions": 6,
+    "questions": [
+      {
+        "questionNumber": "1",
+        "subQuestions": [
+          {
+            "subId": "(a)",
+            "prompt": "Given the sets $A = \\{\\text{multiples of } 3 \\text{ less than } 12\\}$, $B = \\{\\text{integers between } 4 \\text{ and } 8\\}$ and $C = \\{4, 5, 7\\}$, find:\n(i) $A \\cap B$\n(ii) $(A \\cup B) \\cap C$\n(iii) $(A \\cap B) \\cup C$",
+            "workedSolution": "List elements: $A = \\{3, 6, 9\\}$, $B = \\{5, 6, 7\\}$, $C = \\{4, 5, 7\\}$.\n(i) $A \\cap B = \\{6\\}$.\n(ii) $A \\cup B = \\{3, 5, 6, 7, 9\\} \\implies (A \\cup B) \\cap C = \\{5, 7\\}$.\n(iii) $(A \\cap B) \\cup C = \\{6\\} \\cup \\{4, 5, 7\\} = \\{4, 5, 6, 7\\}$.",
+            "maxMarks": 7
+          },
+          {
+            "subId": "(b)",
+            "prompt": "Simplify: $$1\\frac{3}{4} - 2\\frac{5}{6} - 1\\frac{9}{10} + 4\\frac{7}{8}$$.",
+            "workedSolution": "Convert to improper fractions:\n$$= \\frac{7}{4} - \\frac{17}{6} - \\frac{19}{10} + \\frac{39}{8}$$\nLCM of 4, 6, 10, 8 is 120:\n$$= \\frac{30(7) - 20(17) - 12(19) + 15(39)}{120}$$\n$$= \\frac{210 - 340 - 228 + 585}{120} = \\frac{227}{120} = 1\\frac{107}{120}$$.",
+            "maxMarks": 8
+          }
+        ]
+      },
+      {
+        "questionNumber": "2",
+        "subQuestions": [
+          {
+            "subId": "(a)",
+            "prompt": "Simplify: $15(4 - 6) \\times 49 \\div 7$.",
+            "workedSolution": "$$4 - 6 = -2$$\n$$15(-2) \\times 49 \\div 7 = -30 \\times 7 = -210$$.",
+            "maxMarks": 4
+          },
+          {
+            "subId": "(b)",
+            "prompt": "Expand and simplify: $b(12a - 3) - (a - b)(3 + b)$.",
+            "workedSolution": "$$b(12a - 3) = 12ab - 3b$$\n$$(a - b)(3 + b) = 3a + ab - 3b - b^2$$\n$$12ab - 3b - (3a + ab - 3b - b^2) = 12ab - 3b - 3a - ab + 3b + b^2$$\n$$= b^2 + 11ab - 3a$$.",
+            "maxMarks": 5
+          },
+          {
+            "subId": "(c)",
+            "prompt": "Akosua walked for 3 hours at the rate of $1\\frac{1}{2}\\text{ km}$ per hour from her village to Paamu to take a bus to Quamu. If the bus travelling at $15\\frac{1}{2}\\text{ km}$ per hour takes 2 hours to travel from Paamu to Quamu:\n(i) what is the distance from Akosua's village to Quamu?\n(ii) how long would it take a man, riding a bicycle at $5\\text{ km}$ per hour, to travel from Akosua's village to Quamu?",
+            "workedSolution": "(i) Walking distance $= 1.5 \\times 3 = 4.5\\text{ km}$.\nBus distance $= 15.5 \\times 2 = 31\\text{ km}$.\n$$\\text{Total distance} = 4.5 + 31 = 35.5\\text{ km}$$.\n(ii) Time taken by bicycle:\n$$\\text{Time} = \\frac{\\text{Distance}}{\\text{Speed}} = \\frac{35.5}{5} = 7.1\\text{ hours} \\quad \\left(\\text{or } 7\\frac{1}{10}\\text{ hours}\\right)$$.",
+            "maxMarks": 6
+          }
+        ]
+      },
+      {
+        "questionNumber": "3",
+        "subQuestions": [
+          {
+            "subId": "(a)",
+            "prompt": "(i) Express $8 \\times 32 \\times 4 \\times 2$ in the form $2^m$.\n(ii) Using your answer in (a)(i), state the value of $m$.",
+            "workedSolution": "(i) $$8 = 2^3, \\quad 32 = 2^5, \\quad 4 = 2^2, \\quad 2 = 2^1$$\n$$2^3 \\times 2^5 \\times 2^2 \\times 2^1 = 2^{3 + 5 + 2 + 1} = 2^{11}$$\n(ii) $$m = 11$$.",
+            "maxMarks": 5
+          },
+          {
+            "subId": "(b)",
+            "prompt": "(i) Factorize the expression: $\\pi n^2k - \\frac{1}{4}\\pi n^2Q$.\n(ii) Use your answer in (b)(i) to find the value of the expression when $\\pi = \\frac{22}{7}$, $n = 2$, $k = 19$, and $Q = 20$.",
+            "workedSolution": "(i) Factor out common term $\\pi n^2$:\n$$\\pi n^2 \\left(k - \\frac{Q}{4}\\right)$$\n(ii) Substitute values:\n$$= \\frac{22}{7} \\times 2^2 \\times \\left(19 - \\frac{20}{4}\\right) = \\frac{22}{7} \\times 4 \\times (19 - 5)$$\n$$= \\frac{22}{7} \\times 4 \\times 14 = 22 \\times 4 \\times 2 = 176$$.",
+            "maxMarks": 5
+          },
+          {
+            "subId": "(c)",
+            "prompt": "Gifty and Justina shared an amount of GH¢ 418.00. If Gifty had 20% more than Justina, how much did Justina receive?",
+            "workedSolution": "Let Justina's share be $x$.\nGifty's share $= x + 0.20x = 1.2x$.\n$$x + 1.2x = 418$$\n$$2.2x = 418 \\implies x = \\frac{418}{2.2} = \\text{GH¢ } 190.00$$.",
+            "maxMarks": 5
+          }
+        ]
+      },
+      {
+        "questionNumber": "4",
+        "subQuestions": [
+          {
+            "subId": "(a)",
+            "prompt": "If $4m - 2(3 + 2m) + m(2m + 4) = 0$, find the values of $m$.",
+            "workedSolution": "Expand brackets:\n$$4m - 6 - 4m + 2m^2 + 4m = 0$$\n$$2m^2 + 4m - 6 = 0$$\nDivide by 2:\n$$m^2 + 2m - 3 = 0$$\nFactorize:\n$$(m + 3)(m - 1) = 0 \\implies m = -3 \\quad \\text{or} \\quad m = 1$$.",
+            "maxMarks": 6
+          },
+          {
+            "subId": "(b)",
+            "prompt": "At a political rally, there were 240 women, 200 men, 160 boys, and 120 girls:<br/><svg viewBox='0 0 340 220' width='100%' height='180' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><g transform='translate(110, 110)'><path d='M 0 0 L 80 0 A 80 80 0 0 1 -40 69.28 Z' fill='#3b82f6' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -40 69.28 A 80 80 0 0 1 -61.28 -51.42 Z' fill='#10b981' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -61.28 -51.42 A 80 80 0 0 1 40 -69.28 Z' fill='#f59e0b' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L 40 -69.28 A 80 80 0 0 1 80 0 Z' fill='#ef4444' stroke='#ffffff' stroke-width='1.5'/></g><g transform='translate(215, 45)'><circle cx='10' cy='15' r='5' fill='#3b82f6'/><text x='24' y='19' font-size='11' font-weight='bold' fill='#334155'>Women (120°)</text><circle cx='10' cy='45' r='5' fill='#10b981'/><text x='24' y='49' font-size='11' font-weight='bold' fill='#334155'>Men (100°)</text><circle cx='10' cy='75' r='5' fill='#f59e0b'/><text x='24' y='79' font-size='11' font-weight='bold' fill='#334155'>Boys (80°)</text><circle cx='10' cy='105' r='5' fill='#ef4444'/><text x='24' y='109' font-size='11' font-weight='bold' fill='#334155'>Girls (60°)</text></g></svg><br/>(i) Draw a pie chart to illustrate the information.<br/>(ii) What percentage of the people at the rally were females?",
+            "workedSolution": "(i) Total people $= 240 + 200 + 160 + 120 = 720$.\nSector angles:\n- Women: $\\frac{240}{720} \\times 360^\\circ = 120^\\circ$\n- Men: $\\frac{200}{720} \\times 360^\\circ = 100^\\circ$\n- Boys: $\\frac{160}{720} \\times 360^\\circ = 80^\\circ$\n- Girls: $\\frac{120}{720} \\times 360^\\circ = 60^\\circ$\n(ii) Females $= \\text{Women} + \\text{Girls} = 240 + 120 = 360$.\n$$\\text{Percentage} = \\frac{360}{720} \\times 100\\% = 50\\%$$.",
+            "maxMarks": 9
+          }
+        ]
+      },
+      {
+        "questionNumber": "5",
+        "subQuestions": [
+          {
+            "subId": "(a)",
+            "prompt": "Madam Esi used $\\frac{1}{4}$ and $\\frac{2}{3}$ of her $x$ acres of land to cultivate mangoes and oranges respectively. Express, in terms of $x$, the number of acres of land used for:\n(i) mangoes;\n(ii) oranges.",
+            "workedSolution": "(i) $$\\text{Mangoes} = \\frac{1}{4}x\\text{ acres} \\quad \\left(\\text{or } \\frac{x}{4}\\right)$$\n(ii) $$\\text{Oranges} = \\frac{2}{3}x\\text{ acres} \\quad \\left(\\text{or } \\frac{2x}{3}\\right)$$.",
+            "maxMarks": 4
+          },
+          {
+            "subId": "(b)",
+            "prompt": "If Madam Esi used 20 more acres of land to cultivate oranges than mangoes, find the value of $x$.",
+            "workedSolution": "$$\\frac{2}{3}x - \\frac{1}{4}x = 20$$\nMultiply through by 12:\n$$8x - 3x = 240 \\implies 5x = 240 \\implies x = 48\\text{ acres}$$.",
+            "maxMarks": 4
+          },
+          {
+            "subId": "(c)",
+            "prompt": "How many acres of land was used to cultivate mangoes?",
+            "workedSolution": "$$\\text{Mango acreage} = \\frac{48}{4} = 12\\text{ acres}$$.",
+            "maxMarks": 3
+          },
+          {
+            "subId": "(d)",
+            "prompt": "Calculate, correct to the nearest whole number, the percentage of the land that was NOT used.",
+            "workedSolution": "$$\\text{Oranges} = \\frac{2}{3}(48) = 32\\text{ acres}$$\n$$\\text{Total used} = 12 + 32 = 44\\text{ acres}$$\n$$\\text{Unused} = 48 - 44 = 4\\text{ acres}$$\n$$\\text{Percentage unused} = \\frac{4}{48} \\times 100\\% = \\frac{1}{12} \\times 100\\% = 8.33\\% \\approx 8\\%$$.",
+            "maxMarks": 4
+          }
+        ]
+      },
+      {
+        "questionNumber": "6",
+        "subQuestions": [
+          {
+            "subId": "(a)",
+            "prompt": "Using a scale of 2 cm to 2 units on both axes, draw on a graph sheet two perpendicular axes $Ox$ and $Oy$ for the intervals $-10 \\le x \\le 10$ and $-10 \\le y \\le 10$.",
+            "workedSolution": "Axes drawn with origin (0, 0), labeled tick marks every 2 cm representing 2 units.",
+            "maxMarks": 3
+          },
+          {
+            "subId": "(b)",
+            "prompt": "On the same graph sheet:<br/><svg viewBox='0 0 360 360' width='100%' height='290' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='gridBECE' width='16' height='16' patternUnits='userSpaceOnUse'><path d='M 16 0 L 0 0 0 16' fill='none' stroke='#e2e8f0' stroke-width='0.8'/></pattern></defs><rect width='100%' height='100%' fill='url(#gridBECE)'/><line x1='20' y1='180' x2='340' y2='180' stroke='#475569' stroke-width='2'/><polygon points='340,177 348,180 340,183' fill='#475569'/><text x='342' y='196' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='180' y1='340' x2='180' y2='20' stroke='#475569' stroke-width='2'/><polygon points='177,20 180,12 183,20' fill='#475569'/><text x='192' y='18' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='168' y='195' font-size='10' fill='#64748b'>O</text><polygon points='208,124 208,68 292,68 292,124' fill='#bfdbfe' fill-opacity='0.4' stroke='#1d4ed8' stroke-width='2'/><text x='202' y='136' font-size='9' font-weight='bold' fill='#1d4ed8'>A(2,4)</text><text x='202' y='64' font-size='9' font-weight='bold' fill='#1d4ed8'>B(2,8)</text><text x='296' y='64' font-size='9' font-weight='bold' fill='#1d4ed8'>C(8,8)</text><text x='296' y='136' font-size='9' font-weight='bold' fill='#1d4ed8'>D(8,4)</text><polygon points='138,152 138,96 222,96 222,152' fill='#bbf7d0' fill-opacity='0.4' stroke='#15803d' stroke-width='2'/><text x='96' y='160' font-size='9' font-weight='bold' fill='#15803d'>A₁(-3,2)</text><text x='96' y='94' font-size='9' font-weight='bold' fill='#15803d'>B₁(-3,6)</text><polygon points='152,124 152,68 68,68 68,124' fill='#fef08a' fill-opacity='0.4' stroke='#a16207' stroke-width='2'/><text x='155' y='134' font-size='9' font-weight='bold' fill='#a16207'>A₂(-2,4)</text><text x='155' y='64' font-size='9' font-weight='bold' fill='#a16207'>B₂(-2,8)</text><line x1='152' y1='124' x2='138' y2='96' stroke='#dc2626' stroke-width='2' stroke-dasharray='4,2'/></svg><br/>(i) Draw quadrilateral $ABCD$ with vertices $A(2, 4), B(2, 8), C(8, 8), D(8, 4)$.<br/>(ii) Draw the image $A_1B_1C_1D_1$ of $ABCD$ under translation by vector $\\begin{pmatrix} -5 \\\\ -2 \\end{pmatrix}$.<br/>(iii) Draw the image $A_2B_2C_2D_2$ of $ABCD$ under reflection in the $y$-axis.",
+            "workedSolution": "(i) Original $ABCD$ plotted.\n(ii) Translation $\\begin{pmatrix} x - 5 \\\\ y - 2 \\end{pmatrix}$:\n- $A_1(-3, 2), B_1(-3, 6), C_1(3, 6), D_1(3, 2)$\n(iii) Reflection in $y$-axis $(-x, y)$:\n- $A_2(-2, 4), B_2(-2, 8), C_2(-8, 8), D_2(-8, 4)$.",
+            "maxMarks": 7
+          },
+          {
+            "subId": "(c)",
+            "prompt": "(i) What type of quadrilateral is $ABCD$?\n(ii) Find the gradient of line $A_2B_1$.",
+            "workedSolution": "(i) Opposite sides are equal and parallel, and interior angles are $90^\\circ$: $ABCD$ is a **Rectangle**.\n(ii) Coordinates: $A_2(-2, 4)$ and $B_1(-3, 6)$:\n$$\\text{Gradient} = \\frac{6 - 4}{-3 - (-2)} = \\frac{2}{-1} = -2$$.",
+            "maxMarks": 5
+          }
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "ingestedAt": {},
+    "verified": true,
+    "optionsBalanced": true,
+    "isOfficial": true
+  }
+}
