@@ -14,7 +14,7 @@
   },
   "badge": "Strand 2: Algebra",
   "description": "Master linear sequence patterns, verbal-to-algebraic translations, binomial expansions, pairwise grouping factorization, algebraic fractions, and change of subject.",
-  "totalPracticeQuestions": 168,
+  "totalPracticeQuestions": 309,
   "version": 1,
   "levels": {
     "b7": {
@@ -2509,151 +2509,2407 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_alg_b8_l01",
+            "id": "q_b8_alg_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Expand: $(a + 2)(a + 3)$.",
+            "prompt": "Expand: $(x + 3)(x + 4)$.",
             "options": [
-              "a² + 5a + 6",
-              "a² + 6a + 6",
-              "a² + 5a + 5",
-              "a² + 6"
+              "x² + 7x + 12",
+              "x² + 12x + 7",
+              "x² + 7x + 7",
+              "x² + 12"
             ],
-            "correctAnswer": "a² + 5a + 6",
-            "hint": "$$a(a + 3) + 2(a + 3) = a^2 + 3a + 2a + 6$$.",
-            "workedSolution": "$$a^2 + 5a + 6$$.",
+            "correctAnswer": "x² + 7x + 12",
+            "hint": "Use FOIL: $x(x + 4) + 3(x + 4) = x^2 + 4x + 3x + 12$.",
+            "workedSolution": "$$x^2 + 4x + 3x + 12 = x^2 + 7x + 12$$.",
             "points": 1
           },
           {
-            "id": "q_alg_b8_l02",
+            "id": "q_b8_alg_l02",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Expand the difference of two squares: $(2x + y)(2x - y)$.",
+            "prompt": "Factorize completely: $5ax + 5ay$.",
             "options": [
-              "4x² - y²",
-              "4x² + y²",
-              "2x² - y²",
-              "4x² - 4xy - y²"
+              "5a(x + y)",
+              "5(ax + ay)",
+              "a(5x + 5y)",
+              "5x(a + y)"
             ],
-            "correctAnswer": "4x² - y²",
-            "hint": "$$(A + B)(A - B) = A^2 - B^2$$.",
-            "workedSolution": "$$(2x)^2 - (y)^2 = 4x^2 - y^2$$.",
+            "correctAnswer": "5a(x + y)",
+            "hint": "Identify the Highest Common Factor (HCF) shared by both terms.",
+            "workedSolution": "The common factor is $5a$: $$5a(x + y)$$.",
             "points": 1
           },
           {
-            "id": "q_alg_b8_l03",
+            "id": "q_b8_alg_l03",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Factorize completely: $3a + 6ab$.",
+            "prompt": "Simplify: $$\\frac{3x}{5} + \\frac{x}{5}$$.",
             "options": [
-              "3a(1 + 2b)",
-              "3(a + 2b)",
-              "a(3 + 6b)",
-              "3a(2b)"
+              "4x/5",
+              "4x/10",
+              "3x²/5",
+              "2x/5"
             ],
-            "correctAnswer": "3a(1 + 2b)",
-            "hint": "Highest Common Factor is $3a$.",
-            "workedSolution": "$$3a(1 + 2b)$$.",
+            "correctAnswer": "4x/5",
+            "hint": "Denominators are identical; add numerators directly.",
+            "workedSolution": "$$\\frac{3x + x}{5} = \\frac{4x}{5}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(y + 5)^2$.",
+            "options": [
+              "y² + 10y + 25",
+              "y² + 25",
+              "y² + 5y + 25",
+              "2y + 10"
+            ],
+            "correctAnswer": "y² + 10y + 25",
+            "hint": "Apply the identity: $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(5) + 5^2 = y^2 + 10y + 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the difference of two squares: $(x + 4)(x - 4)$.",
+            "options": [
+              "x² - 16",
+              "x² + 16",
+              "x² - 8x - 16",
+              "x² - 8"
+            ],
+            "correctAnswer": "x² - 16",
+            "hint": "$(A + B)(A - B) = A^2 - B^2$.",
+            "workedSolution": "$$x^2 - 4^2 = x^2 - 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize: $x^2 + 7x$.",
+            "options": [
+              "x(x + 7)",
+              "7(x + 1)",
+              "x(x + 7x)",
+              "x²(1 + 7)"
+            ],
+            "correctAnswer": "x(x + 7)",
+            "hint": "Factor out the common variable $x$.",
+            "workedSolution": "$$x(x + 7)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5a}{7} - \\frac{2a}{7}$$.",
+            "options": [
+              "3a/7",
+              "3/7",
+              "7a/7",
+              "3a/14"
+            ],
+            "correctAnswer": "3a/7",
+            "hint": "Subtract numerators: $5a - 2a$.",
+            "workedSolution": "$$\\frac{5a - 2a}{7} = \\frac{3a}{7}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(m + 2)(m + 6)$.",
+            "options": [
+              "m² + 8m + 12",
+              "m² + 12m + 8",
+              "m² + 8m + 8",
+              "m² + 12"
+            ],
+            "correctAnswer": "m² + 8m + 12",
+            "hint": "$$m(m + 6) + 2(m + 6) = m^2 + 6m + 2m + 12$$.",
+            "workedSolution": "$$m^2 + 8m + 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $6p - 18q$.",
+            "options": [
+              "6(p - 3q)",
+              "3(2p - 6q)",
+              "6(p - 18q)",
+              "6p(1 - 3q)"
+            ],
+            "correctAnswer": "6(p - 3q)",
+            "hint": "The HCF of 6 and 18 is 6.",
+            "workedSolution": "$$6(p - 3q)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{x}{2} + \\frac{x}{3}$$.",
+            "options": [
+              "5x/6",
+              "2x/5",
+              "x/5",
+              "5x/5"
+            ],
+            "correctAnswer": "5x/6",
+            "hint": "LCM of 2 and 3 is 6: $\\frac{3x + 2x}{6}$.",
+            "workedSolution": "$$\\frac{3x + 2x}{6} = \\frac{5x}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 7)(x + 2)$.",
+            "options": [
+              "x² + 9x + 14",
+              "x² + 14x + 9",
+              "x² + 9x + 9",
+              "x² + 14"
+            ],
+            "correctAnswer": "x² + 9x + 14",
+            "hint": "Multiply $(x + 7)(x + 2) = x^2 + 2x + 7x + 14$.",
+            "workedSolution": "$$x^2 + 2x + 7x + 14 = x^2 + 9x + 14$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $4mx + 4my$.",
+            "options": [
+              "4m(x + y)",
+              "4(mx + my)",
+              "m(4x + 4y)",
+              "4mx(1 + y)"
+            ],
+            "correctAnswer": "4m(x + y)",
+            "hint": "Find the common factor between $4mx$ and $4my$.",
+            "workedSolution": "The highest common factor is $4m$: $$4m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 7)^2$.",
+            "options": [
+              "y² + 14y + 49",
+              "y² + 49",
+              "y² + 7y + 49",
+              "2y + 14"
+            ],
+            "correctAnswer": "y² + 14y + 49",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(7) + 7^2 = y^2 + 14y + 49$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l16",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 4)(x + 2)$.",
+            "options": [
+              "x² + 6x + 8",
+              "x² + 8x + 6",
+              "x² + 6x + 6",
+              "x² + 8"
+            ],
+            "correctAnswer": "x² + 6x + 8",
+            "hint": "Multiply $(x + 4)(x + 2) = x^2 + 2x + 4x + 8$.",
+            "workedSolution": "$$x^2 + 2x + 4x + 8 = x^2 + 6x + 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l17",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $8mx + 8my$.",
+            "options": [
+              "8m(x + y)",
+              "8(mx + my)",
+              "m(8x + 8y)",
+              "8mx(1 + y)"
+            ],
+            "correctAnswer": "8m(x + y)",
+            "hint": "Find the common factor between $8mx$ and $8my$.",
+            "workedSolution": "The highest common factor is $8m$: $$8m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 6)^2$.",
+            "options": [
+              "y² + 12y + 36",
+              "y² + 36",
+              "y² + 6y + 36",
+              "2y + 12"
+            ],
+            "correctAnswer": "y² + 12y + 36",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(6) + 6^2 = y^2 + 12y + 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 8)(x + 2)$.",
+            "options": [
+              "x² + 10x + 16",
+              "x² + 16x + 10",
+              "x² + 10x + 10",
+              "x² + 16"
+            ],
+            "correctAnswer": "x² + 10x + 16",
+            "hint": "Multiply $(x + 8)(x + 2) = x^2 + 2x + 8x + 16$.",
+            "workedSolution": "$$x^2 + 2x + 8x + 16 = x^2 + 10x + 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $6mx + 6my$.",
+            "options": [
+              "6m(x + y)",
+              "6(mx + my)",
+              "m(6x + 6y)",
+              "6mx(1 + y)"
+            ],
+            "correctAnswer": "6m(x + y)",
+            "hint": "Find the common factor between $6mx$ and $6my$.",
+            "workedSolution": "The highest common factor is $6m$: $$6m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 5)^2$.",
+            "options": [
+              "y² + 10y + 25",
+              "y² + 25",
+              "y² + 5y + 25",
+              "2y + 10"
+            ],
+            "correctAnswer": "y² + 10y + 25",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(5) + 5^2 = y^2 + 10y + 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 5)(x + 2)$.",
+            "options": [
+              "x² + 7x + 10",
+              "x² + 10x + 7",
+              "x² + 7x + 7",
+              "x² + 10"
+            ],
+            "correctAnswer": "x² + 7x + 10",
+            "hint": "Multiply $(x + 5)(x + 2) = x^2 + 2x + 5x + 10$.",
+            "workedSolution": "$$x^2 + 2x + 5x + 10 = x^2 + 7x + 10$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $4mx + 4my$.",
+            "options": [
+              "4m(x + y)",
+              "4(mx + my)",
+              "m(4x + 4y)",
+              "4mx(1 + y)"
+            ],
+            "correctAnswer": "4m(x + y)",
+            "hint": "Find the common factor between $4mx$ and $4my$.",
+            "workedSolution": "The highest common factor is $4m$: $$4m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 4)^2$.",
+            "options": [
+              "y² + 8y + 16",
+              "y² + 16",
+              "y² + 4y + 16",
+              "2y + 8"
+            ],
+            "correctAnswer": "y² + 8y + 16",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(4) + 4^2 = y^2 + 8y + 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 2)(x + 2)$.",
+            "options": [
+              "x² + 4x + 4",
+              "x² + 4x + 4",
+              "x² + 4x + 4",
+              "x² + 4"
+            ],
+            "correctAnswer": "x² + 4x + 4",
+            "hint": "Multiply $(x + 2)(x + 2) = x^2 + 2x + 2x + 4$.",
+            "workedSolution": "$$x^2 + 2x + 2x + 4 = x^2 + 4x + 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $8mx + 8my$.",
+            "options": [
+              "8m(x + y)",
+              "8(mx + my)",
+              "m(8x + 8y)",
+              "8mx(1 + y)"
+            ],
+            "correctAnswer": "8m(x + y)",
+            "hint": "Find the common factor between $8mx$ and $8my$.",
+            "workedSolution": "The highest common factor is $8m$: $$8m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 3)^2$.",
+            "options": [
+              "y² + 6y + 9",
+              "y² + 9",
+              "y² + 3y + 9",
+              "2y + 6"
+            ],
+            "correctAnswer": "y² + 6y + 9",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(3) + 3^2 = y^2 + 6y + 9$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 6)(x + 2)$.",
+            "options": [
+              "x² + 8x + 12",
+              "x² + 12x + 8",
+              "x² + 8x + 8",
+              "x² + 12"
+            ],
+            "correctAnswer": "x² + 8x + 12",
+            "hint": "Multiply $(x + 6)(x + 2) = x^2 + 2x + 6x + 12$.",
+            "workedSolution": "$$x^2 + 2x + 6x + 12 = x^2 + 8x + 12$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $6mx + 6my$.",
+            "options": [
+              "6m(x + y)",
+              "6(mx + my)",
+              "m(6x + 6y)",
+              "6mx(1 + y)"
+            ],
+            "correctAnswer": "6m(x + y)",
+            "hint": "Find the common factor between $6mx$ and $6my$.",
+            "workedSolution": "The highest common factor is $6m$: $$6m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 7)^2$.",
+            "options": [
+              "y² + 14y + 49",
+              "y² + 49",
+              "y² + 7y + 49",
+              "2y + 14"
+            ],
+            "correctAnswer": "y² + 14y + 49",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(7) + 7^2 = y^2 + 14y + 49$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 3)(x + 2)$.",
+            "options": [
+              "x² + 5x + 6",
+              "x² + 6x + 5",
+              "x² + 5x + 5",
+              "x² + 6"
+            ],
+            "correctAnswer": "x² + 5x + 6",
+            "hint": "Multiply $(x + 3)(x + 2) = x^2 + 2x + 3x + 6$.",
+            "workedSolution": "$$x^2 + 2x + 3x + 6 = x^2 + 5x + 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $4mx + 4my$.",
+            "options": [
+              "4m(x + y)",
+              "4(mx + my)",
+              "m(4x + 4y)",
+              "4mx(1 + y)"
+            ],
+            "correctAnswer": "4m(x + y)",
+            "hint": "Find the common factor between $4mx$ and $4my$.",
+            "workedSolution": "The highest common factor is $4m$: $$4m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 6)^2$.",
+            "options": [
+              "y² + 12y + 36",
+              "y² + 36",
+              "y² + 6y + 36",
+              "2y + 12"
+            ],
+            "correctAnswer": "y² + 12y + 36",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(6) + 6^2 = y^2 + 12y + 36$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 7)(x + 2)$.",
+            "options": [
+              "x² + 9x + 14",
+              "x² + 14x + 9",
+              "x² + 9x + 9",
+              "x² + 14"
+            ],
+            "correctAnswer": "x² + 9x + 14",
+            "hint": "Multiply $(x + 7)(x + 2) = x^2 + 2x + 7x + 14$.",
+            "workedSolution": "$$x^2 + 2x + 7x + 14 = x^2 + 9x + 14$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $8mx + 8my$.",
+            "options": [
+              "8m(x + y)",
+              "8(mx + my)",
+              "m(8x + 8y)",
+              "8mx(1 + y)"
+            ],
+            "correctAnswer": "8m(x + y)",
+            "hint": "Find the common factor between $8mx$ and $8my$.",
+            "workedSolution": "The highest common factor is $8m$: $$8m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 5)^2$.",
+            "options": [
+              "y² + 10y + 25",
+              "y² + 25",
+              "y² + 5y + 25",
+              "2y + 10"
+            ],
+            "correctAnswer": "y² + 10y + 25",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(5) + 5^2 = y^2 + 10y + 25$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 4)(x + 2)$.",
+            "options": [
+              "x² + 6x + 8",
+              "x² + 8x + 6",
+              "x² + 6x + 6",
+              "x² + 8"
+            ],
+            "correctAnswer": "x² + 6x + 8",
+            "hint": "Multiply $(x + 4)(x + 2) = x^2 + 2x + 4x + 8$.",
+            "workedSolution": "$$x^2 + 2x + 4x + 8 = x^2 + 6x + 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $6mx + 6my$.",
+            "options": [
+              "6m(x + y)",
+              "6(mx + my)",
+              "m(6x + 6y)",
+              "6mx(1 + y)"
+            ],
+            "correctAnswer": "6m(x + y)",
+            "hint": "Find the common factor between $6mx$ and $6my$.",
+            "workedSolution": "The highest common factor is $6m$: $$6m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 4)^2$.",
+            "options": [
+              "y² + 8y + 16",
+              "y² + 16",
+              "y² + 4y + 16",
+              "2y + 8"
+            ],
+            "correctAnswer": "y² + 8y + 16",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(4) + 4^2 = y^2 + 8y + 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Simplify: $$\\frac{5p}{12} + \\frac{p}{12}$$.",
+            "options": [
+              "6p/12",
+              "6p/24",
+              "5p²/12",
+              "p/12"
+            ],
+            "correctAnswer": "6p/12",
+            "hint": "Add the numerators over the common denominator 12.",
+            "workedSolution": "$$\\frac{5p + p}{12} = \\frac{6p}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand: $(x + 8)(x + 2)$.",
+            "options": [
+              "x² + 10x + 16",
+              "x² + 16x + 10",
+              "x² + 10x + 10",
+              "x² + 16"
+            ],
+            "correctAnswer": "x² + 10x + 16",
+            "hint": "Multiply $(x + 8)(x + 2) = x^2 + 2x + 8x + 16$.",
+            "workedSolution": "$$x^2 + 2x + 8x + 16 = x^2 + 10x + 16$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Factorize completely: $4mx + 4my$.",
+            "options": [
+              "4m(x + y)",
+              "4(mx + my)",
+              "m(4x + 4y)",
+              "4mx(1 + y)"
+            ],
+            "correctAnswer": "4m(x + y)",
+            "hint": "Find the common factor between $4mx$ and $4my$.",
+            "workedSolution": "The highest common factor is $4m$: $$4m(x + y)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Expand the perfect square: $(y + 3)^2$.",
+            "options": [
+              "y² + 6y + 9",
+              "y² + 9",
+              "y² + 3y + 9",
+              "2y + 6"
+            ],
+            "correctAnswer": "y² + 6y + 9",
+            "hint": "Use the formula $(A + B)^2 = A^2 + 2AB + B^2$.",
+            "workedSolution": "$$y^2 + 2(y)(3) + 3^2 = y^2 + 6y + 9$$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_alg_b8_m01",
+            "id": "q_b8_alg_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Factorize by grouping: $2ax + ay - 2bx - by$.",
+            "prompt": "Factorize by pairwise grouping: $ax + ay + bx + by$.",
             "options": [
-              "(2x + y)(a - b)",
-              "(2x - y)(a + b)",
-              "(x + 2y)(a - b)",
-              "(2x + y)(a + b)"
+              "(x + y)(a + b)",
+              "(x - y)(a + b)",
+              "(x + y)(a - b)",
+              "(a + y)(x + b)"
             ],
-            "correctAnswer": "(2x + y)(a - b)",
-            "hint": "Group: $a(2x + y) - b(2x + y)$.",
-            "workedSolution": "$$a(2x + y) - b(2x + y) = (2x + y)(a - b)$$.",
+            "correctAnswer": "(x + y)(a + b)",
+            "hint": "Group into pairs: $a(x + y) + b(x + y)$.",
+            "workedSolution": "$$a(x + y) + b(x + y) = (x + y)(a + b)$$.",
             "points": 1
           },
           {
-            "id": "q_alg_b8_m02",
+            "id": "q_b8_alg_m02",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Simplify the algebraic fraction: $$\\frac{2x - 1}{3} - \\frac{x + 3}{2}$$.",
+            "prompt": "Expand and simplify: $(2x - 3)(x + 4)$.",
             "options": [
-              "(x - 11)/6",
-              "(x + 7)/6",
-              "(x - 7)/6",
-              "(x - 11)/5"
+              "2x² + 5x - 12",
+              "2x² - 5x - 12",
+              "2x² + 11x - 12",
+              "2x² - 12"
             ],
-            "correctAnswer": "(x - 11)/6",
-            "hint": "LCM is 6: $\\frac{2(2x - 1) - 3(x + 3)}{6}$.",
-            "workedSolution": "$$\\frac{4x - 2 - 3x - 9}{6} = \\frac{x - 11}{6}$$.",
+            "correctAnswer": "2x² + 5x - 12",
+            "hint": "$$2x(x + 4) - 3(x + 4) = 2x^2 + 8x - 3x - 12$$.",
+            "workedSolution": "$$2x^2 + 8x - 3x - 12 = 2x^2 + 5x - 12$$.",
             "points": 1
           },
           {
-            "id": "q_alg_b8_m03",
+            "id": "q_b8_alg_m03",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Simplify: $$\\frac{5x}{x^2 - 2x} \\times \\frac{x^2 - 4}{x^2 + 2x}$$.",
+            "prompt": "Simplify the algebraic fraction: $$\\frac{2x - 1}{3} - \\frac{x + 2}{4}$$.",
             "options": [
-              "5/x",
-              "5(x - 2)/x",
-              "5/(x + 2)",
-              "5x/(x - 2)"
+              "(5x - 10)/12",
+              "(5x - 2)/12",
+              "(5x + 2)/12",
+              "(x - 3)/12"
             ],
-            "correctAnswer": "5/x",
-            "hint": "Factorize: $x^2 - 4 = (x-2)(x+2)$ and $x^2 - 2x = x(x-2)$.",
-            "workedSolution": "$$\\frac{5x}{x(x - 2)} \\times \\frac{(x - 2)(x + 2)}{x(x + 2)} = \\frac{5}{1} \\times \\frac{1}{x} = \\frac{5}{x}$$.",
+            "correctAnswer": "(5x - 10)/12",
+            "hint": "LCM of 3 and 4 is 12: $\\frac{4(2x - 1) - 3(x + 2)}{12}$.",
+            "workedSolution": "$$\\frac{4(2x - 1) - 3(x + 2)}{12} = \\frac{8x - 4 - 3x - 6}{12} = \\frac{5x - 10}{12}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize completely: $2mx - 2my + nx - ny$.",
+            "options": [
+              "(x - y)(2m + n)",
+              "(x + y)(2m - n)",
+              "(x - y)(2m - n)",
+              "(x + y)(2m + n)"
+            ],
+            "correctAnswer": "(x - y)(2m + n)",
+            "hint": "Factor $2m$ from the first pair and $n$ from the second pair.",
+            "workedSolution": "$$2m(x - y) + n(x - y) = (x - y)(2m + n)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(3x - 2y)^2$.",
+            "options": [
+              "9x² - 12xy + 4y²",
+              "9x² - 6xy + 4y²",
+              "9x² + 4y²",
+              "9x² - 12xy - 4y²"
+            ],
+            "correctAnswer": "9x² - 12xy + 4y²",
+            "hint": "$$(A - B)^2 = A^2 - 2AB + B^2$$.",
+            "workedSolution": "$$(3x)^2 - 2(3x)(2y) + (2y)^2 = 9x^2 - 12xy + 4y^2$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $9x^2 - 16$.",
+            "options": [
+              "(3x - 4)(3x + 4)",
+              "(3x - 4)²",
+              "(3x + 4)²",
+              "(9x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(3x - 4)(3x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 3x$ and $B = 4$.",
+            "workedSolution": "$$(3x)^2 - 4^2 = (3x - 4)(3x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 2}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 8)/6",
+              "(7x + 6)/6",
+              "(7x - 8)/6",
+              "(8x + 8)/6"
+            ],
+            "correctAnswer": "(7x + 8)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 2) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 2) - 2(x - 1)}{6} = \\frac{9x + 6 - 2x + 2}{6} = \\frac{7x + 8}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 3x + 3y$.",
+            "options": [
+              "(x + y)(p + 3)",
+              "(x - y)(p + 3)",
+              "(x + y)(p - 3)",
+              "(x + p)(y + 3)"
+            ],
+            "correctAnswer": "(x + y)(p + 3)",
+            "hint": "Group as $p(x + y) + 3(x + y)$.",
+            "workedSolution": "$$p(x + y) + 3(x + y) = (x + y)(p + 3)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(2x - 2)(x + 2)$.",
+            "options": [
+              "2x² + 2x - 4",
+              "2x² - 2x - 4",
+              "2x² + 2x + 4",
+              "2x² - 4"
+            ],
+            "correctAnswer": "2x² + 2x - 4",
+            "hint": "Expand: $2x(x + 2) - 2(x + 2)$.",
+            "workedSolution": "$$2x^2 + 4x - 2x - 4 = 2x² + 2x - 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $4x^2 - 16$.",
+            "options": [
+              "(2x - 4)(2x + 4)",
+              "(2x - 4)²",
+              "(2x + 4)²",
+              "(4x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(2x - 4)(2x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 2x$ and $B = 4$.",
+            "workedSolution": "$$(2x)^2 - 4^2 = (2x - 4)(2x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 3}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 11)/6",
+              "(7x + 9)/6",
+              "(7x - 11)/6",
+              "(8x + 11)/6"
+            ],
+            "correctAnswer": "(7x + 11)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 3) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 3) - 2(x - 1)}{6} = \\frac{9x + 9 - 2x + 2}{6} = \\frac{7x + 11}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 7x + 7y$.",
+            "options": [
+              "(x + y)(p + 7)",
+              "(x - y)(p + 7)",
+              "(x + y)(p - 7)",
+              "(x + p)(y + 7)"
+            ],
+            "correctAnswer": "(x + y)(p + 7)",
+            "hint": "Group as $p(x + y) + 7(x + y)$.",
+            "workedSolution": "$$p(x + y) + 7(x + y) = (x + y)(p + 7)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(3x - 2)(x + 3)$.",
+            "options": [
+              "3x² + 7x - 6",
+              "3x² - 7x - 6",
+              "3x² + 7x + 6",
+              "3x² - 6"
+            ],
+            "correctAnswer": "3x² + 7x - 6",
+            "hint": "Expand: $3x(x + 3) - 2(x + 3)$.",
+            "workedSolution": "$$3x^2 + 9x - 2x - 6 = 3x² + 7x - 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $36x^2 - 16$.",
+            "options": [
+              "(6x - 4)(6x + 4)",
+              "(6x - 4)²",
+              "(6x + 4)²",
+              "(36x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(6x - 4)(6x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 6x$ and $B = 4$.",
+            "workedSolution": "$$(6x)^2 - 4^2 = (6x - 4)(6x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 1}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 5)/6",
+              "(7x + 3)/6",
+              "(7x - 5)/6",
+              "(8x + 5)/6"
+            ],
+            "correctAnswer": "(7x + 5)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 1) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 1) - 2(x - 1)}{6} = \\frac{9x + 3 - 2x + 2}{6} = \\frac{7x + 5}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 4x + 4y$.",
+            "options": [
+              "(x + y)(p + 4)",
+              "(x - y)(p + 4)",
+              "(x + y)(p - 4)",
+              "(x + p)(y + 4)"
+            ],
+            "correctAnswer": "(x + y)(p + 4)",
+            "hint": "Group as $p(x + y) + 4(x + y)$.",
+            "workedSolution": "$$p(x + y) + 4(x + y) = (x + y)(p + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(4x - 2)(x + 4)$.",
+            "options": [
+              "4x² + 14x - 8",
+              "4x² - 14x - 8",
+              "4x² + 14x + 8",
+              "4x² - 8"
+            ],
+            "correctAnswer": "4x² + 14x - 8",
+            "hint": "Expand: $4x(x + 4) - 2(x + 4)$.",
+            "workedSolution": "$$4x^2 + 16x - 2x - 8 = 4x² + 14x - 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $25x^2 - 16$.",
+            "options": [
+              "(5x - 4)(5x + 4)",
+              "(5x - 4)²",
+              "(5x + 4)²",
+              "(25x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(5x - 4)(5x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 5x$ and $B = 4$.",
+            "workedSolution": "$$(5x)^2 - 4^2 = (5x - 4)(5x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 2}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 8)/6",
+              "(7x + 6)/6",
+              "(7x - 8)/6",
+              "(8x + 8)/6"
+            ],
+            "correctAnswer": "(7x + 8)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 2) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 2) - 2(x - 1)}{6} = \\frac{9x + 6 - 2x + 2}{6} = \\frac{7x + 8}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 8x + 8y$.",
+            "options": [
+              "(x + y)(p + 8)",
+              "(x - y)(p + 8)",
+              "(x + y)(p - 8)",
+              "(x + p)(y + 8)"
+            ],
+            "correctAnswer": "(x + y)(p + 8)",
+            "hint": "Group as $p(x + y) + 8(x + y)$.",
+            "workedSolution": "$$p(x + y) + 8(x + y) = (x + y)(p + 8)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(2x - 2)(x + 2)$.",
+            "options": [
+              "2x² + 2x - 4",
+              "2x² - 2x - 4",
+              "2x² + 2x + 4",
+              "2x² - 4"
+            ],
+            "correctAnswer": "2x² + 2x - 4",
+            "hint": "Expand: $2x(x + 2) - 2(x + 2)$.",
+            "workedSolution": "$$2x^2 + 4x - 2x - 4 = 2x² + 2x - 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $16x^2 - 16$.",
+            "options": [
+              "(4x - 4)(4x + 4)",
+              "(4x - 4)²",
+              "(4x + 4)²",
+              "(16x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(4x - 4)(4x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 4x$ and $B = 4$.",
+            "workedSolution": "$$(4x)^2 - 4^2 = (4x - 4)(4x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 3}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 11)/6",
+              "(7x + 9)/6",
+              "(7x - 11)/6",
+              "(8x + 11)/6"
+            ],
+            "correctAnswer": "(7x + 11)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 3) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 3) - 2(x - 1)}{6} = \\frac{9x + 9 - 2x + 2}{6} = \\frac{7x + 11}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 5x + 5y$.",
+            "options": [
+              "(x + y)(p + 5)",
+              "(x - y)(p + 5)",
+              "(x + y)(p - 5)",
+              "(x + p)(y + 5)"
+            ],
+            "correctAnswer": "(x + y)(p + 5)",
+            "hint": "Group as $p(x + y) + 5(x + y)$.",
+            "workedSolution": "$$p(x + y) + 5(x + y) = (x + y)(p + 5)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(3x - 2)(x + 3)$.",
+            "options": [
+              "3x² + 7x - 6",
+              "3x² - 7x - 6",
+              "3x² + 7x + 6",
+              "3x² - 6"
+            ],
+            "correctAnswer": "3x² + 7x - 6",
+            "hint": "Expand: $3x(x + 3) - 2(x + 3)$.",
+            "workedSolution": "$$3x^2 + 9x - 2x - 6 = 3x² + 7x - 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $9x^2 - 16$.",
+            "options": [
+              "(3x - 4)(3x + 4)",
+              "(3x - 4)²",
+              "(3x + 4)²",
+              "(9x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(3x - 4)(3x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 3x$ and $B = 4$.",
+            "workedSolution": "$$(3x)^2 - 4^2 = (3x - 4)(3x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 1}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 5)/6",
+              "(7x + 3)/6",
+              "(7x - 5)/6",
+              "(8x + 5)/6"
+            ],
+            "correctAnswer": "(7x + 5)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 1) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 1) - 2(x - 1)}{6} = \\frac{9x + 3 - 2x + 2}{6} = \\frac{7x + 5}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 2x + 2y$.",
+            "options": [
+              "(x + y)(p + 2)",
+              "(x - y)(p + 2)",
+              "(x + y)(p - 2)",
+              "(x + p)(y + 2)"
+            ],
+            "correctAnswer": "(x + y)(p + 2)",
+            "hint": "Group as $p(x + y) + 2(x + y)$.",
+            "workedSolution": "$$p(x + y) + 2(x + y) = (x + y)(p + 2)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(4x - 2)(x + 4)$.",
+            "options": [
+              "4x² + 14x - 8",
+              "4x² - 14x - 8",
+              "4x² + 14x + 8",
+              "4x² - 8"
+            ],
+            "correctAnswer": "4x² + 14x - 8",
+            "hint": "Expand: $4x(x + 4) - 2(x + 4)$.",
+            "workedSolution": "$$4x^2 + 16x - 2x - 8 = 4x² + 14x - 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $4x^2 - 16$.",
+            "options": [
+              "(2x - 4)(2x + 4)",
+              "(2x - 4)²",
+              "(2x + 4)²",
+              "(4x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(2x - 4)(2x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 2x$ and $B = 4$.",
+            "workedSolution": "$$(2x)^2 - 4^2 = (2x - 4)(2x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 2}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 8)/6",
+              "(7x + 6)/6",
+              "(7x - 8)/6",
+              "(8x + 8)/6"
+            ],
+            "correctAnswer": "(7x + 8)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 2) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 2) - 2(x - 1)}{6} = \\frac{9x + 6 - 2x + 2}{6} = \\frac{7x + 8}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 6x + 6y$.",
+            "options": [
+              "(x + y)(p + 6)",
+              "(x - y)(p + 6)",
+              "(x + y)(p - 6)",
+              "(x + p)(y + 6)"
+            ],
+            "correctAnswer": "(x + y)(p + 6)",
+            "hint": "Group as $p(x + y) + 6(x + y)$.",
+            "workedSolution": "$$p(x + y) + 6(x + y) = (x + y)(p + 6)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(2x - 2)(x + 2)$.",
+            "options": [
+              "2x² + 2x - 4",
+              "2x² - 2x - 4",
+              "2x² + 2x + 4",
+              "2x² - 4"
+            ],
+            "correctAnswer": "2x² + 2x - 4",
+            "hint": "Expand: $2x(x + 2) - 2(x + 2)$.",
+            "workedSolution": "$$2x^2 + 4x - 2x - 4 = 2x² + 2x - 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $36x^2 - 16$.",
+            "options": [
+              "(6x - 4)(6x + 4)",
+              "(6x - 4)²",
+              "(6x + 4)²",
+              "(36x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(6x - 4)(6x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 6x$ and $B = 4$.",
+            "workedSolution": "$$(6x)^2 - 4^2 = (6x - 4)(6x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 3}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 11)/6",
+              "(7x + 9)/6",
+              "(7x - 11)/6",
+              "(8x + 11)/6"
+            ],
+            "correctAnswer": "(7x + 11)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 3) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 3) - 2(x - 1)}{6} = \\frac{9x + 9 - 2x + 2}{6} = \\frac{7x + 11}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 3x + 3y$.",
+            "options": [
+              "(x + y)(p + 3)",
+              "(x - y)(p + 3)",
+              "(x + y)(p - 3)",
+              "(x + p)(y + 3)"
+            ],
+            "correctAnswer": "(x + y)(p + 3)",
+            "hint": "Group as $p(x + y) + 3(x + y)$.",
+            "workedSolution": "$$p(x + y) + 3(x + y) = (x + y)(p + 3)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(3x - 2)(x + 3)$.",
+            "options": [
+              "3x² + 7x - 6",
+              "3x² - 7x - 6",
+              "3x² + 7x + 6",
+              "3x² - 6"
+            ],
+            "correctAnswer": "3x² + 7x - 6",
+            "hint": "Expand: $3x(x + 3) - 2(x + 3)$.",
+            "workedSolution": "$$3x^2 + 9x - 2x - 6 = 3x² + 7x - 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $25x^2 - 16$.",
+            "options": [
+              "(5x - 4)(5x + 4)",
+              "(5x - 4)²",
+              "(5x + 4)²",
+              "(25x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(5x - 4)(5x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 5x$ and $B = 4$.",
+            "workedSolution": "$$(5x)^2 - 4^2 = (5x - 4)(5x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 1}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 5)/6",
+              "(7x + 3)/6",
+              "(7x - 5)/6",
+              "(8x + 5)/6"
+            ],
+            "correctAnswer": "(7x + 5)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 1) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 1) - 2(x - 1)}{6} = \\frac{9x + 3 - 2x + 2}{6} = \\frac{7x + 5}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 7x + 7y$.",
+            "options": [
+              "(x + y)(p + 7)",
+              "(x - y)(p + 7)",
+              "(x + y)(p - 7)",
+              "(x + p)(y + 7)"
+            ],
+            "correctAnswer": "(x + y)(p + 7)",
+            "hint": "Group as $p(x + y) + 7(x + y)$.",
+            "workedSolution": "$$p(x + y) + 7(x + y) = (x + y)(p + 7)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(4x - 2)(x + 4)$.",
+            "options": [
+              "4x² + 14x - 8",
+              "4x² - 14x - 8",
+              "4x² + 14x + 8",
+              "4x² - 8"
+            ],
+            "correctAnswer": "4x² + 14x - 8",
+            "hint": "Expand: $4x(x + 4) - 2(x + 4)$.",
+            "workedSolution": "$$4x^2 + 16x - 2x - 8 = 4x² + 14x - 8$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $16x^2 - 16$.",
+            "options": [
+              "(4x - 4)(4x + 4)",
+              "(4x - 4)²",
+              "(4x + 4)²",
+              "(16x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(4x - 4)(4x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 4x$ and $B = 4$.",
+            "workedSolution": "$$(4x)^2 - 4^2 = (4x - 4)(4x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 2}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 8)/6",
+              "(7x + 6)/6",
+              "(7x - 8)/6",
+              "(8x + 8)/6"
+            ],
+            "correctAnswer": "(7x + 8)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 2) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 2) - 2(x - 1)}{6} = \\frac{9x + 6 - 2x + 2}{6} = \\frac{7x + 8}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 4x + 4y$.",
+            "options": [
+              "(x + y)(p + 4)",
+              "(x - y)(p + 4)",
+              "(x + y)(p - 4)",
+              "(x + p)(y + 4)"
+            ],
+            "correctAnswer": "(x + y)(p + 4)",
+            "hint": "Group as $p(x + y) + 4(x + y)$.",
+            "workedSolution": "$$p(x + y) + 4(x + y) = (x + y)(p + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(2x - 2)(x + 2)$.",
+            "options": [
+              "2x² + 2x - 4",
+              "2x² - 2x - 4",
+              "2x² + 2x + 4",
+              "2x² - 4"
+            ],
+            "correctAnswer": "2x² + 2x - 4",
+            "hint": "Expand: $2x(x + 2) - 2(x + 2)$.",
+            "workedSolution": "$$2x^2 + 4x - 2x - 4 = 2x² + 2x - 4$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $9x^2 - 16$.",
+            "options": [
+              "(3x - 4)(3x + 4)",
+              "(3x - 4)²",
+              "(3x + 4)²",
+              "(9x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(3x - 4)(3x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 3x$ and $B = 4$.",
+            "workedSolution": "$$(3x)^2 - 4^2 = (3x - 4)(3x + 4)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Simplify as a single fraction: $$\\frac{3x + 3}{2} - \\frac{x - 1}{3}$$.",
+            "options": [
+              "(7x + 11)/6",
+              "(7x + 9)/6",
+              "(7x - 11)/6",
+              "(8x + 11)/6"
+            ],
+            "correctAnswer": "(7x + 11)/6",
+            "hint": "The LCM of 2 and 3 is 6. Multiply numerators: $3(3x + 3) - 2(x - 1)$.",
+            "workedSolution": "$$\\frac{3(3x + 3) - 2(x - 1)}{6} = \\frac{9x + 9 - 2x + 2}{6} = \\frac{7x + 11}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize by grouping: $px + py + 8x + 8y$.",
+            "options": [
+              "(x + y)(p + 8)",
+              "(x - y)(p + 8)",
+              "(x + y)(p - 8)",
+              "(x + p)(y + 8)"
+            ],
+            "correctAnswer": "(x + y)(p + 8)",
+            "hint": "Group as $p(x + y) + 8(x + y)$.",
+            "workedSolution": "$$p(x + y) + 8(x + y) = (x + y)(p + 8)$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Expand and simplify: $(3x - 2)(x + 3)$.",
+            "options": [
+              "3x² + 7x - 6",
+              "3x² - 7x - 6",
+              "3x² + 7x + 6",
+              "3x² - 6"
+            ],
+            "correctAnswer": "3x² + 7x - 6",
+            "hint": "Expand: $3x(x + 3) - 2(x + 3)$.",
+            "workedSolution": "$$3x^2 + 9x - 2x - 6 = 3x² + 7x - 6$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b8_alg_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Factorize using difference of two squares: $4x^2 - 16$.",
+            "options": [
+              "(2x - 4)(2x + 4)",
+              "(2x - 4)²",
+              "(2x + 4)²",
+              "(4x - 4)(x + 4)"
+            ],
+            "correctAnswer": "(2x - 4)(2x + 4)",
+            "hint": "Recognize $A^2 - B^2 = (A - B)(A + B)$ where $A = 2x$ and $B = 4$.",
+            "workedSolution": "$$(2x)^2 - 4^2 = (2x - 4)(2x + 4)$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_alg_b8_h01",
+            "id": "q_b8_alg_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Expand and simplify: $$(2x + 3)^2 - (2x - 3)^2$$.",
+            "prompt": "Factorize completely: $3x^2 - 2xy - 12x + 8y$.",
             "options": [
-              "24x",
-              "8x² + 18",
-              "12x",
-              "0"
+              "(3x - 2y)(x - 4)",
+              "(3x + 2y)(x - 4)",
+              "(3x - 2y)(x + 4)",
+              "(x - 2y)(3x - 4)"
             ],
-            "correctAnswer": "24x",
-            "hint": "Use difference of two squares $A^2 - B^2 = (A - B)(A + B)$ or expand both squares.",
-            "workedSolution": "$$(4x^2 + 12x + 9) - (4x^2 - 12x + 9) = 12x - (-12x) = 24x$$.",
+            "correctAnswer": "(3x - 2y)(x - 4)",
+            "hint": "Factor $x$ from the first pair and $-4$ from the second pair to invert signs inside the bracket.",
+            "workedSolution": "$$x(3x - 2y) - 4(3x - 2y) = (3x - 2y)(x - 4)$$.",
             "points": 2
           },
           {
-            "id": "q_alg_b8_h02",
+            "id": "q_b8_alg_h02",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Factorize completely: $$(m + n)(2x - y) - (m + n)$$.",
+            "prompt": "Simplify completely: $$\\frac{x^2 - 9}{x^2 + 3x}$$.",
             "options": [
-              "(m + n)(2x - y - 1)",
-              "(m + n)(2x - y)",
-              "(m + n)(2x - y + 1)",
-              "-(m + n)(2x - y)"
+              "(x - 3)/x",
+              "(x + 3)/x",
+              "x - 3",
+              "-3/x"
             ],
-            "correctAnswer": "(m + n)(2x - y - 1)",
-            "hint": "Factor out $(m + n)$ from both terms. Remember the second term leaves $-1$.",
-            "workedSolution": "$$(m + n)[(2x - y) - 1] = (m + n)(2x - y - 1)$$.",
+            "correctAnswer": "(x - 3)/x",
+            "hint": "Factor numerator as difference of two squares and denominator by common factor $x$.",
+            "workedSolution": "$$\\frac{(x - 3)(x + 3)}{x(x + 3)} = \\frac{x - 3}{x}$$.",
             "points": 2
           },
           {
-            "id": "q_alg_b8_h03",
+            "id": "q_b8_alg_h03",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "If $x = 2, \\, y = -2, \\, z = 3$, evaluate: $$\\frac{6x^2 + 2x}{5z} \\times \\frac{15z^2}{3x + y}$$.",
+            "prompt": "Simplify as a single fraction: $$\\frac{3}{x - 2} - \\frac{2}{x + 3}$$.",
             "options": [
-              "63",
-              "42",
-              "36",
-              "28"
+              "(x + 13)/((x - 2)(x + 3))",
+              "(x - 5)/((x - 2)(x + 3))",
+              "(x + 5)/((x - 2)(x + 3))",
+              "1/((x - 2)(x + 3))"
             ],
-            "correctAnswer": "63",
-            "hint": "First fraction: $\\frac{6(4) + 4}{5(3)} = \\frac{28}{15}$. Second fraction: $\\frac{15(9)}{3(2) + (-2)} = \\frac{135}{4}$. Multiply: $\\frac{28}{15} \\times \\frac{135}{4} = 7 \\times 9 = 63$.",
-            "workedSolution": "$$\\frac{28}{15} \\times \\frac{135}{4} = 7 \\times 9 = 63$$.",
+            "correctAnswer": "(x + 13)/((x - 2)(x + 3))",
+            "hint": "Common denominator is $(x - 2)(x + 3)$. Cross multiply numerators: $3(x + 3) - 2(x - 2)$.",
+            "workedSolution": "$$\\frac{3(x + 3) - 2(x - 2)}{(x - 2)(x + 3)} = \\frac{3x + 9 - 2x + 4}{(x - 2)(x + 3)} = \\frac{x + 13}{(x - 2)(x + 3)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h04",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Expand and simplify: $(2x + 3y)(3x - y) - (x - 2y)^2$.",
+            "options": [
+              "5x² + 11xy - 7y²",
+              "5x² + 7xy - 7y²",
+              "5x² + 11xy - y²",
+              "7x² + 11xy - 7y²"
+            ],
+            "correctAnswer": "5x² + 11xy - 7y²",
+            "hint": "Expand both expressions separately before subtracting: $(6x^2 + 7xy - 3y^2) - (x^2 - 4xy + 4y^2)$.",
+            "workedSolution": "$$(6x^2 - 2xy + 9xy - 3y^2) - (x^2 - 4xy + 4y^2)$$\n$$= (6x^2 + 7xy - 3y^2) - (x^2 - 4xy + 4y^2)$$\n$$= 6x^2 - x^2 + 7xy + 4xy - 3y^2 - 4y^2 = 5x^2 + 11xy - 7y^2$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $2ab - 6a - b + 3$.",
+            "options": [
+              "(b - 3)(2a - 1)",
+              "(b + 3)(2a - 1)",
+              "(b - 3)(2a + 1)",
+              "(2a - 3)(b - 1)"
+            ],
+            "correctAnswer": "(b - 3)(2a - 1)",
+            "hint": "Factor $2a$ from first pair and $-1$ from second pair: $2a(b - 3) - 1(b - 3)$.",
+            "workedSolution": "$$2a(b - 3) - 1(b - 3) = (b - 3)(2a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 1}$$.",
+            "options": [
+              "(3x - 2)/((x - 4)(x + 1))",
+              "(3x - 4)/((x - 4)(x + 1))",
+              "(x + -2)/((x - 4)(x + 1))",
+              "3/((x - 4)(x + 1))"
+            ],
+            "correctAnswer": "(3x - 2)/((x - 4)(x + 1))",
+            "hint": "Find the common denominator $(x - 4)(x + 1)$ and expand numerators: $2(x + 1) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 1) + 1(x - 4)}{(x - 4)(x + 1)} = \\frac{2x + 2 + x - 4}{(x - 4)(x + 1)} = \\frac{3x - 2}{(x - 4)(x + 1)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $4ab - 4ac - b + c$.",
+            "options": [
+              "(b - c)(4a - 1)",
+              "(b + c)(4a - 1)",
+              "(b - c)(4a + 1)",
+              "(b + c)(4a + 1)"
+            ],
+            "correctAnswer": "(b - c)(4a - 1)",
+            "hint": "Factor $4a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$4a(b - c) - 1(b - c) = (b - c)(4a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $4ax - 4ay - x + y$.",
+            "options": [
+              "(x - y)(4a - 1)",
+              "(x + y)(4a - 1)",
+              "(x - y)(4a + 1)",
+              "(x + y)(4a + 1)"
+            ],
+            "correctAnswer": "(x - y)(4a - 1)",
+            "hint": "Factor 4a from the first pair and -1 from the second pair: 4a(x - y) - 1(x - y).",
+            "workedSolution": "$$4a(x - y) - 1(x - y) = (x - y)(4a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 36}{x^2 + 6x}$$.",
+            "options": [
+              "(x - 6)/x",
+              "(x + 6)/x",
+              "x - 6",
+              "-6/x"
+            ],
+            "correctAnswer": "(x - 6)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 6)(x + 6)$ and denominator as $x(x + 6)$.",
+            "workedSolution": "$$\\frac{(x - 6)(x + 6)}{x(x + 6)} = \\frac{x - 6}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 2}$$.",
+            "options": [
+              "(3x + 0)/((x - 4)(x + 2))",
+              "(3x - 2)/((x - 4)(x + 2))",
+              "(x + 0)/((x - 4)(x + 2))",
+              "3/((x - 4)(x + 2))"
+            ],
+            "correctAnswer": "(3x + 0)/((x - 4)(x + 2))",
+            "hint": "Find the common denominator $(x - 4)(x + 2)$ and expand numerators: $2(x + 2) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 2) + 1(x - 4)}{(x - 4)(x + 2)} = \\frac{2x + 4 + x - 4}{(x - 4)(x + 2)} = \\frac{3x + 0}{(x - 4)(x + 2)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $3ab - 3ac - b + c$.",
+            "options": [
+              "(b - c)(3a - 1)",
+              "(b + c)(3a - 1)",
+              "(b - c)(3a + 1)",
+              "(b + c)(3a + 1)"
+            ],
+            "correctAnswer": "(b - c)(3a - 1)",
+            "hint": "Factor $3a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$3a(b - c) - 1(b - c) = (b - c)(3a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $2ax - 2ay - x + y$.",
+            "options": [
+              "(x - y)(2a - 1)",
+              "(x + y)(2a - 1)",
+              "(x - y)(2a + 1)",
+              "(x + y)(2a + 1)"
+            ],
+            "correctAnswer": "(x - y)(2a - 1)",
+            "hint": "Factor 2a from the first pair and -1 from the second pair: 2a(x - y) - 1(x - y).",
+            "workedSolution": "$$2a(x - y) - 1(x - y) = (x - y)(2a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 25}{x^2 + 5x}$$.",
+            "options": [
+              "(x - 5)/x",
+              "(x + 5)/x",
+              "x - 5",
+              "-5/x"
+            ],
+            "correctAnswer": "(x - 5)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 5)(x + 5)$ and denominator as $x(x + 5)$.",
+            "workedSolution": "$$\\frac{(x - 5)(x + 5)}{x(x + 5)} = \\frac{x - 5}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 3}$$.",
+            "options": [
+              "(3x + 2)/((x - 4)(x + 3))",
+              "(3x - 4)/((x - 4)(x + 3))",
+              "(x + 2)/((x - 4)(x + 3))",
+              "3/((x - 4)(x + 3))"
+            ],
+            "correctAnswer": "(3x + 2)/((x - 4)(x + 3))",
+            "hint": "Find the common denominator $(x - 4)(x + 3)$ and expand numerators: $2(x + 3) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 3) + 1(x - 4)}{(x - 4)(x + 3)} = \\frac{2x + 6 + x - 4}{(x - 4)(x + 3)} = \\frac{3x + 2}{(x - 4)(x + 3)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $2ab - 2ac - b + c$.",
+            "options": [
+              "(b - c)(2a - 1)",
+              "(b + c)(2a - 1)",
+              "(b - c)(2a + 1)",
+              "(b + c)(2a + 1)"
+            ],
+            "correctAnswer": "(b - c)(2a - 1)",
+            "hint": "Factor $2a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$2a(b - c) - 1(b - c) = (b - c)(2a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $6ax - 6ay - x + y$.",
+            "options": [
+              "(x - y)(6a - 1)",
+              "(x + y)(6a - 1)",
+              "(x - y)(6a + 1)",
+              "(x + y)(6a + 1)"
+            ],
+            "correctAnswer": "(x - y)(6a - 1)",
+            "hint": "Factor 6a from the first pair and -1 from the second pair: 6a(x - y) - 1(x - y).",
+            "workedSolution": "$$6a(x - y) - 1(x - y) = (x - y)(6a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 16}{x^2 + 4x}$$.",
+            "options": [
+              "(x - 4)/x",
+              "(x + 4)/x",
+              "x - 4",
+              "-4/x"
+            ],
+            "correctAnswer": "(x - 4)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 4)(x + 4)$ and denominator as $x(x + 4)$.",
+            "workedSolution": "$$\\frac{(x - 4)(x + 4)}{x(x + 4)} = \\frac{x - 4}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 1}$$.",
+            "options": [
+              "(3x - 2)/((x - 4)(x + 1))",
+              "(3x - 4)/((x - 4)(x + 1))",
+              "(x + -2)/((x - 4)(x + 1))",
+              "3/((x - 4)(x + 1))"
+            ],
+            "correctAnswer": "(3x - 2)/((x - 4)(x + 1))",
+            "hint": "Find the common denominator $(x - 4)(x + 1)$ and expand numerators: $2(x + 1) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 1) + 1(x - 4)}{(x - 4)(x + 1)} = \\frac{2x + 2 + x - 4}{(x - 4)(x + 1)} = \\frac{3x - 2}{(x - 4)(x + 1)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $6ab - 6ac - b + c$.",
+            "options": [
+              "(b - c)(6a - 1)",
+              "(b + c)(6a - 1)",
+              "(b - c)(6a + 1)",
+              "(b + c)(6a + 1)"
+            ],
+            "correctAnswer": "(b - c)(6a - 1)",
+            "hint": "Factor $6a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$6a(b - c) - 1(b - c) = (b - c)(6a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $4ax - 4ay - x + y$.",
+            "options": [
+              "(x - y)(4a - 1)",
+              "(x + y)(4a - 1)",
+              "(x - y)(4a + 1)",
+              "(x + y)(4a + 1)"
+            ],
+            "correctAnswer": "(x - y)(4a - 1)",
+            "hint": "Factor 4a from the first pair and -1 from the second pair: 4a(x - y) - 1(x - y).",
+            "workedSolution": "$$4a(x - y) - 1(x - y) = (x - y)(4a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 9}{x^2 + 3x}$$.",
+            "options": [
+              "(x - 3)/x",
+              "(x + 3)/x",
+              "x - 3",
+              "-3/x"
+            ],
+            "correctAnswer": "(x - 3)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 3)(x + 3)$ and denominator as $x(x + 3)$.",
+            "workedSolution": "$$\\frac{(x - 3)(x + 3)}{x(x + 3)} = \\frac{x - 3}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 2}$$.",
+            "options": [
+              "(3x + 0)/((x - 4)(x + 2))",
+              "(3x - 2)/((x - 4)(x + 2))",
+              "(x + 0)/((x - 4)(x + 2))",
+              "3/((x - 4)(x + 2))"
+            ],
+            "correctAnswer": "(3x + 0)/((x - 4)(x + 2))",
+            "hint": "Find the common denominator $(x - 4)(x + 2)$ and expand numerators: $2(x + 2) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 2) + 1(x - 4)}{(x - 4)(x + 2)} = \\frac{2x + 4 + x - 4}{(x - 4)(x + 2)} = \\frac{3x + 0}{(x - 4)(x + 2)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $5ab - 5ac - b + c$.",
+            "options": [
+              "(b - c)(5a - 1)",
+              "(b + c)(5a - 1)",
+              "(b - c)(5a + 1)",
+              "(b + c)(5a + 1)"
+            ],
+            "correctAnswer": "(b - c)(5a - 1)",
+            "hint": "Factor $5a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$5a(b - c) - 1(b - c) = (b - c)(5a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $2ax - 2ay - x + y$.",
+            "options": [
+              "(x - y)(2a - 1)",
+              "(x + y)(2a - 1)",
+              "(x - y)(2a + 1)",
+              "(x + y)(2a + 1)"
+            ],
+            "correctAnswer": "(x - y)(2a - 1)",
+            "hint": "Factor 2a from the first pair and -1 from the second pair: 2a(x - y) - 1(x - y).",
+            "workedSolution": "$$2a(x - y) - 1(x - y) = (x - y)(2a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 4}{x^2 + 2x}$$.",
+            "options": [
+              "(x - 2)/x",
+              "(x + 2)/x",
+              "x - 2",
+              "-2/x"
+            ],
+            "correctAnswer": "(x - 2)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 2)(x + 2)$ and denominator as $x(x + 2)$.",
+            "workedSolution": "$$\\frac{(x - 2)(x + 2)}{x(x + 2)} = \\frac{x - 2}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 3}$$.",
+            "options": [
+              "(3x + 2)/((x - 4)(x + 3))",
+              "(3x - 4)/((x - 4)(x + 3))",
+              "(x + 2)/((x - 4)(x + 3))",
+              "3/((x - 4)(x + 3))"
+            ],
+            "correctAnswer": "(3x + 2)/((x - 4)(x + 3))",
+            "hint": "Find the common denominator $(x - 4)(x + 3)$ and expand numerators: $2(x + 3) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 3) + 1(x - 4)}{(x - 4)(x + 3)} = \\frac{2x + 6 + x - 4}{(x - 4)(x + 3)} = \\frac{3x + 2}{(x - 4)(x + 3)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $4ab - 4ac - b + c$.",
+            "options": [
+              "(b - c)(4a - 1)",
+              "(b + c)(4a - 1)",
+              "(b - c)(4a + 1)",
+              "(b + c)(4a + 1)"
+            ],
+            "correctAnswer": "(b - c)(4a - 1)",
+            "hint": "Factor $4a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$4a(b - c) - 1(b - c) = (b - c)(4a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $6ax - 6ay - x + y$.",
+            "options": [
+              "(x - y)(6a - 1)",
+              "(x + y)(6a - 1)",
+              "(x - y)(6a + 1)",
+              "(x + y)(6a + 1)"
+            ],
+            "correctAnswer": "(x - y)(6a - 1)",
+            "hint": "Factor 6a from the first pair and -1 from the second pair: 6a(x - y) - 1(x - y).",
+            "workedSolution": "$$6a(x - y) - 1(x - y) = (x - y)(6a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 36}{x^2 + 6x}$$.",
+            "options": [
+              "(x - 6)/x",
+              "(x + 6)/x",
+              "x - 6",
+              "-6/x"
+            ],
+            "correctAnswer": "(x - 6)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 6)(x + 6)$ and denominator as $x(x + 6)$.",
+            "workedSolution": "$$\\frac{(x - 6)(x + 6)}{x(x + 6)} = \\frac{x - 6}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 1}$$.",
+            "options": [
+              "(3x - 2)/((x - 4)(x + 1))",
+              "(3x - 4)/((x - 4)(x + 1))",
+              "(x + -2)/((x - 4)(x + 1))",
+              "3/((x - 4)(x + 1))"
+            ],
+            "correctAnswer": "(3x - 2)/((x - 4)(x + 1))",
+            "hint": "Find the common denominator $(x - 4)(x + 1)$ and expand numerators: $2(x + 1) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 1) + 1(x - 4)}{(x - 4)(x + 1)} = \\frac{2x + 2 + x - 4}{(x - 4)(x + 1)} = \\frac{3x - 2}{(x - 4)(x + 1)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $3ab - 3ac - b + c$.",
+            "options": [
+              "(b - c)(3a - 1)",
+              "(b + c)(3a - 1)",
+              "(b - c)(3a + 1)",
+              "(b + c)(3a + 1)"
+            ],
+            "correctAnswer": "(b - c)(3a - 1)",
+            "hint": "Factor $3a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$3a(b - c) - 1(b - c) = (b - c)(3a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $4ax - 4ay - x + y$.",
+            "options": [
+              "(x - y)(4a - 1)",
+              "(x + y)(4a - 1)",
+              "(x - y)(4a + 1)",
+              "(x + y)(4a + 1)"
+            ],
+            "correctAnswer": "(x - y)(4a - 1)",
+            "hint": "Factor 4a from the first pair and -1 from the second pair: 4a(x - y) - 1(x - y).",
+            "workedSolution": "$$4a(x - y) - 1(x - y) = (x - y)(4a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 25}{x^2 + 5x}$$.",
+            "options": [
+              "(x - 5)/x",
+              "(x + 5)/x",
+              "x - 5",
+              "-5/x"
+            ],
+            "correctAnswer": "(x - 5)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 5)(x + 5)$ and denominator as $x(x + 5)$.",
+            "workedSolution": "$$\\frac{(x - 5)(x + 5)}{x(x + 5)} = \\frac{x - 5}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 2}$$.",
+            "options": [
+              "(3x + 0)/((x - 4)(x + 2))",
+              "(3x - 2)/((x - 4)(x + 2))",
+              "(x + 0)/((x - 4)(x + 2))",
+              "3/((x - 4)(x + 2))"
+            ],
+            "correctAnswer": "(3x + 0)/((x - 4)(x + 2))",
+            "hint": "Find the common denominator $(x - 4)(x + 2)$ and expand numerators: $2(x + 2) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 2) + 1(x - 4)}{(x - 4)(x + 2)} = \\frac{2x + 4 + x - 4}{(x - 4)(x + 2)} = \\frac{3x + 0}{(x - 4)(x + 2)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $2ab - 2ac - b + c$.",
+            "options": [
+              "(b - c)(2a - 1)",
+              "(b + c)(2a - 1)",
+              "(b - c)(2a + 1)",
+              "(b + c)(2a + 1)"
+            ],
+            "correctAnswer": "(b - c)(2a - 1)",
+            "hint": "Factor $2a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$2a(b - c) - 1(b - c) = (b - c)(2a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $2ax - 2ay - x + y$.",
+            "options": [
+              "(x - y)(2a - 1)",
+              "(x + y)(2a - 1)",
+              "(x - y)(2a + 1)",
+              "(x + y)(2a + 1)"
+            ],
+            "correctAnswer": "(x - y)(2a - 1)",
+            "hint": "Factor 2a from the first pair and -1 from the second pair: 2a(x - y) - 1(x - y).",
+            "workedSolution": "$$2a(x - y) - 1(x - y) = (x - y)(2a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 16}{x^2 + 4x}$$.",
+            "options": [
+              "(x - 4)/x",
+              "(x + 4)/x",
+              "x - 4",
+              "-4/x"
+            ],
+            "correctAnswer": "(x - 4)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 4)(x + 4)$ and denominator as $x(x + 4)$.",
+            "workedSolution": "$$\\frac{(x - 4)(x + 4)}{x(x + 4)} = \\frac{x - 4}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 3}$$.",
+            "options": [
+              "(3x + 2)/((x - 4)(x + 3))",
+              "(3x - 4)/((x - 4)(x + 3))",
+              "(x + 2)/((x - 4)(x + 3))",
+              "3/((x - 4)(x + 3))"
+            ],
+            "correctAnswer": "(3x + 2)/((x - 4)(x + 3))",
+            "hint": "Find the common denominator $(x - 4)(x + 3)$ and expand numerators: $2(x + 3) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 3) + 1(x - 4)}{(x - 4)(x + 3)} = \\frac{2x + 6 + x - 4}{(x - 4)(x + 3)} = \\frac{3x + 2}{(x - 4)(x + 3)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $6ab - 6ac - b + c$.",
+            "options": [
+              "(b - c)(6a - 1)",
+              "(b + c)(6a - 1)",
+              "(b - c)(6a + 1)",
+              "(b + c)(6a + 1)"
+            ],
+            "correctAnswer": "(b - c)(6a - 1)",
+            "hint": "Factor $6a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$6a(b - c) - 1(b - c) = (b - c)(6a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $6ax - 6ay - x + y$.",
+            "options": [
+              "(x - y)(6a - 1)",
+              "(x + y)(6a - 1)",
+              "(x - y)(6a + 1)",
+              "(x + y)(6a + 1)"
+            ],
+            "correctAnswer": "(x - y)(6a - 1)",
+            "hint": "Factor 6a from the first pair and -1 from the second pair: 6a(x - y) - 1(x - y).",
+            "workedSolution": "$$6a(x - y) - 1(x - y) = (x - y)(6a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 9}{x^2 + 3x}$$.",
+            "options": [
+              "(x - 3)/x",
+              "(x + 3)/x",
+              "x - 3",
+              "-3/x"
+            ],
+            "correctAnswer": "(x - 3)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 3)(x + 3)$ and denominator as $x(x + 3)$.",
+            "workedSolution": "$$\\frac{(x - 3)(x + 3)}{x(x + 3)} = \\frac{x - 3}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 1}$$.",
+            "options": [
+              "(3x - 2)/((x - 4)(x + 1))",
+              "(3x - 4)/((x - 4)(x + 1))",
+              "(x + -2)/((x - 4)(x + 1))",
+              "3/((x - 4)(x + 1))"
+            ],
+            "correctAnswer": "(3x - 2)/((x - 4)(x + 1))",
+            "hint": "Find the common denominator $(x - 4)(x + 1)$ and expand numerators: $2(x + 1) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 1) + 1(x - 4)}{(x - 4)(x + 1)} = \\frac{2x + 2 + x - 4}{(x - 4)(x + 1)} = \\frac{3x - 2}{(x - 4)(x + 1)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $5ab - 5ac - b + c$.",
+            "options": [
+              "(b - c)(5a - 1)",
+              "(b + c)(5a - 1)",
+              "(b - c)(5a + 1)",
+              "(b + c)(5a + 1)"
+            ],
+            "correctAnswer": "(b - c)(5a - 1)",
+            "hint": "Factor $5a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$5a(b - c) - 1(b - c) = (b - c)(5a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $4ax - 4ay - x + y$.",
+            "options": [
+              "(x - y)(4a - 1)",
+              "(x + y)(4a - 1)",
+              "(x - y)(4a + 1)",
+              "(x + y)(4a + 1)"
+            ],
+            "correctAnswer": "(x - y)(4a - 1)",
+            "hint": "Factor 4a from the first pair and -1 from the second pair: 4a(x - y) - 1(x - y).",
+            "workedSolution": "$$4a(x - y) - 1(x - y) = (x - y)(4a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 4}{x^2 + 2x}$$.",
+            "options": [
+              "(x - 2)/x",
+              "(x + 2)/x",
+              "x - 2",
+              "-2/x"
+            ],
+            "correctAnswer": "(x - 2)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 2)(x + 2)$ and denominator as $x(x + 2)$.",
+            "workedSolution": "$$\\frac{(x - 2)(x + 2)}{x(x + 2)} = \\frac{x - 2}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 2}$$.",
+            "options": [
+              "(3x + 0)/((x - 4)(x + 2))",
+              "(3x - 2)/((x - 4)(x + 2))",
+              "(x + 0)/((x - 4)(x + 2))",
+              "3/((x - 4)(x + 2))"
+            ],
+            "correctAnswer": "(3x + 0)/((x - 4)(x + 2))",
+            "hint": "Find the common denominator $(x - 4)(x + 2)$ and expand numerators: $2(x + 2) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 2) + 1(x - 4)}{(x - 4)(x + 2)} = \\frac{2x + 4 + x - 4}{(x - 4)(x + 2)} = \\frac{3x + 0}{(x - 4)(x + 2)}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $4ab - 4ac - b + c$.",
+            "options": [
+              "(b - c)(4a - 1)",
+              "(b + c)(4a - 1)",
+              "(b - c)(4a + 1)",
+              "(b + c)(4a + 1)"
+            ],
+            "correctAnswer": "(b - c)(4a - 1)",
+            "hint": "Factor $4a$ from the first pair and $-1$ from the second pair.",
+            "workedSolution": "$$4a(b - c) - 1(b - c) = (b - c)(4a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Factorize completely: $2ax - 2ay - x + y$.",
+            "options": [
+              "(x - y)(2a - 1)",
+              "(x + y)(2a - 1)",
+              "(x - y)(2a + 1)",
+              "(x + y)(2a + 1)"
+            ],
+            "correctAnswer": "(x - y)(2a - 1)",
+            "hint": "Factor 2a from the first pair and -1 from the second pair: 2a(x - y) - 1(x - y).",
+            "workedSolution": "$$2a(x - y) - 1(x - y) = (x - y)(2a - 1)$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify completely: $$\\frac{x^2 - 36}{x^2 + 6x}$$.",
+            "options": [
+              "(x - 6)/x",
+              "(x + 6)/x",
+              "x - 6",
+              "-6/x"
+            ],
+            "correctAnswer": "(x - 6)/x",
+            "hint": "Factor the numerator as difference of squares $(x - 6)(x + 6)$ and denominator as $x(x + 6)$.",
+            "workedSolution": "$$\\frac{(x - 6)(x + 6)}{x(x + 6)} = \\frac{x - 6}{x}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b8_alg_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Simplify as a single fraction: $$\\frac{2}{x - 4} + \\frac{1}{x + 3}$$.",
+            "options": [
+              "(3x + 2)/((x - 4)(x + 3))",
+              "(3x - 4)/((x - 4)(x + 3))",
+              "(x + 2)/((x - 4)(x + 3))",
+              "3/((x - 4)(x + 3))"
+            ],
+            "correctAnswer": "(3x + 2)/((x - 4)(x + 3))",
+            "hint": "Find the common denominator $(x - 4)(x + 3)$ and expand numerators: $2(x + 3) + 1(x - 4)$.",
+            "workedSolution": "$$\\frac{2(x + 3) + 1(x - 4)}{(x - 4)(x + 3)} = \\frac{2x + 6 + x - 4}{(x - 4)(x + 3)} = \\frac{3x + 2}{(x - 4)(x + 3)}$$.",
             "points": 2
           }
         ]
