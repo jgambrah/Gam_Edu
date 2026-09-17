@@ -231,36 +231,48 @@
       ],
       "summary": "Universal set, complement sets, two-set Venn diagrams, algebraic region equations, and real-world survey analysis.",
       "diagramSvg": "<svg viewBox='0 0 380 220' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='370' height='210' x='5' y='5' rx='8' fill='#f8fafc' stroke='#334155' stroke-width='2'/><text x='18' y='28' font-family='sans-serif' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='140' cy='115' r='68' fill='#dbeafe' fill-opacity='0.45' stroke='#2563eb' stroke-width='2'/><circle cx='235' cy='115' r='68' fill='#dcfce7' fill-opacity='0.45' stroke='#16a34a' stroke-width='2'/><text x='105' y='42' font-size='12' font-weight='bold' fill='#2563eb'>Set A</text><text x='245' y='42' font-size='12' font-weight='bold' fill='#16a34a'>Set B</text><text x='100' y='120' font-size='12' fill='#1e293b'>Only A</text><text x='180' y='120' font-size='12' font-weight='bold' fill='#dc2626'>A ∩ B</text><text x='245' y='120' font-size='12' fill='#1e293b'>Only B</text><text x='25' y='190' font-size='11' fill='#64748b'>(A ∪ B)'</text></svg>",
-      "notes": "### 1. Two-Set Venn Diagram Partitions\n\nA two-set Venn diagram in a Universal set $U$ partitions the space into 4 mutually disjoint regions:\n1. **$A$ only ($A \\cap B'$):** Elements in $A$ but not in $B$.\n   $$n(A \\text{ only}) = n(A) - n(A \\cap B)$$\n2. **$B$ only ($B \\cap A'$):** Elements in $B$ but not in $A$.\n   $$n(B \\text{ only}) = n(B) - n(A \\cap B)$$\n3. **Intersection ($A \\cap B$):** Elements belonging to both $A$ and $B$.\n4. **Neither ($A \\cup B$)'**: Elements belonging to neither set.\n\n---\n\n### 2. Fundamental Counting Principle for Two Sets\n\n$$n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$$\n\nWhen accounting for the universal set $U$:\n$$n(U) = n(A \\text{ only}) + n(B \\text{ only}) + n(A \\cap B) + n(A \\cup B)'$$\n$$n(U) = [n(A) - x] + x + [n(B) - x] + \\text{Neither}$$\n$$n(U) = n(A) + n(B) - x + \\text{Neither}$$\nwhere $x = n(A \\cap B)$.",
+      "notes": "### 1. The Two-Set Universe: Real-World Mental Model\n\nImagine a school sports coach surveying 60 students: 35 play football and 30 play volleyball. If you simply add $35 + 30 = 65$, the total exceeds the 60 students surveyed! \n\nWhy? Because some students are counted twice—they play **both** sports. \n\nA two-set Venn diagram inside a Universal Set ($U$) organizes groups into **four mutually exclusive (non-overlapping) zones** so that no person or item is counted twice.\n\n---\n\n### 2. Deconstructing the 4 Disjoint Regions\n\nEvery standard two-set problem consists of four specific regions:\n\n1. **Region 1: Only Set A ($A \\cap B'$):**\n   * Members belonging strictly to $A$, excluding anyone who also touches $B$.\n   * Formula: $$n(A \\text{ only}) = n(A) - n(A \\cap B)$$\n\n2. **Region 2: Only Set B ($B \\cap A'$):**\n   * Members belonging strictly to $B$, excluding anyone who also touches $A$.\n   * Formula: $$n(B \\text{ only}) = n(B) - n(A \\cap B)$$\n\n3. **Region 3: The Intersection ($A \\cap B$):**\n   * Members shared simultaneously by both groups ($A$ AND $B$).\n   * In algebra problems, this middle overlap is assigned variable $x$.\n\n4. **Region 4: The Neither Zone ($(A \\cup B)'$):**\n   * Members in the universal universe $U$ who belong to neither $A$ nor $B$.\n\n---\n\n### 3. The Master Partition Equation\n\nBecause the four regions do not overlap, their sum must equal the total Universal Set $n(U)$:\n\n$$\\text{Total Universe } n(U) = n(A \\text{ only}) + n(A \\cap B) + n(B \\text{ only}) + n(A \\cup B)'$$\n\nSubstituting the algebraic terms:\n$$n(U) = [n(A) - x] + x + [n(B) - x] + \\text{Neither}$$\n\nNotice that $-x + x$ cancels out, giving the practical computational equation:\n$$n(U) = n(A) + n(B) - x + \\text{Neither}$$\n\nWhere:\n* $x = n(A \\cap B)$ (Both)\n* If every member belongs to at least one group, then $\\text{Neither} = 0$.\n\n---\n\n### 4. Common Exam Traps & Pitfalls\n\n> ⚠️ **TRAP 1: \"Set A\" vs. \"Only Set A\"**\n> When a problem states *\"50 farmers cultivate maize\"*, $50$ belongs to the **entire circle of A**, NOT the outer crescent! You must subtract the middle intersection: $\\text{Maize only} = 50 - x$.\n\n> ⚠️ **TRAP 2: Confusing $(A \\cup B)'$ with $A' \\cup B'$**\n> * $(A \\cup B)'$ means **Neither** (outside both circles).\n> * De Morgan's Law proves that $(A \\cup B)' = A' \\cap B'$.",
       "workedExamples": [
         {
           "id": "we_sets_b8_01",
           "title": "Two-Set Venn Agricultural Survey Modeling",
           "problem": "In a farming community of 80 farmers, 50 cultivate maize and 60 cultivate rice. Every farmer cultivates at least one of the two crops.\n(i) Illustrate the information on a Venn diagram.\n(ii) Find the number of farmers who cultivate both crops.\n(iii) Find the number of farmers who cultivate maize only.",
           "steps": [
-            "Let $U$ be the universal set of farmers: $n(U) = 80$.",
-            "Let $M$ be maize farmers ($n(M) = 50$) and $R$ be rice farmers ($n(R) = 60$).",
-            "Let $x = n(M \\cap R)$ be farmers cultivating both crops.",
-            "Since all cultivate at least one crop, $n(M \\cup R)' = 0$.",
-            "Set up the partition equation: $(50 - x) + x + (60 - x) = 80$.",
-            "Simplify: $110 - x = 80 \\implies x = 110 - 80 = 30$.",
-            "Calculate maize only: $n(M) - x = 50 - 30 = 20$."
+            "Step 1 (Why we do this: Define the universe and sets symbolically): Identify the given quantities: Total farmers $n(U) = 80$, Maize farmers $n(M) = 50$, and Rice farmers $n(R) = 60$.",
+            "Step 2 (Why we do this: Assign an unknown to the intersection): The phrase 'both crops' represents $M \\cap R$. Let $n(M \\cap R) = x$.",
+            "Step 3 (Why we do this: Account for the complement condition): The prompt states that *'Every farmer cultivates at least one of the two crops'*. This means nobody is outside both circles, so $\\text{Neither } n(M \\cup R)' = 0$.",
+            "Step 4 (Why we do this: Express 'only' regions in terms of x): \n  * Maize only $= n(M) - x = 50 - x$\n  * Rice only $= n(R) - x = 60 - x$",
+            "Step 5 (Why we do this: Build the Master Partition Equation): The sum of all disjoint regions must equal the total universe:\n  $$(50 - x) + x + (60 - x) + 0 = 80$$",
+            "Step 6 (Why we do this: Solve for the intersection x algebraically): Combine like terms: $110 - x = 80 \\implies x = 110 - 80 = 30$. Exactly 30 farmers grow both crops.",
+            "Step 7 (Why we do this: Evaluate the specific sub-question): Substitute $x = 30$ to find maize only: $50 - x = 50 - 30 = 20\\text{ farmers}$."
           ],
-          "finalAnswer": "$$\\text{Both crops} = 30, \\quad \\text{Maize only} = 20$$"
+          "finalAnswer": "$$\\text{Both crops } [n(M \\cap R)] = 30, \\quad \\text{Maize only} = 20$$"
         },
         {
           "id": "we_sets_b8_02",
-          "title": "Venn Diagram with a Neither Complement",
+          "title": "Venn Diagram with an External Neither Complement",
           "problem": "In a class of 45 students, 28 study French, 22 study Spanish, and 5 study neither language.\n(i) Calculate the number of students who study both French and Spanish.\n(ii) Calculate the number of students who study Spanish only.",
           "steps": [
-            "Total students $n(U) = 45$, Neither $= 5$.",
-            "Students studying at least one language: $n(F \\cup S) = 45 - 5 = 40$.",
-            "Use union formula: $n(F \\cup S) = n(F) + n(S) - n(F \\cap S)$.",
-            "Substitute values: $40 = 28 + 22 - x \\implies 40 = 50 - x$.",
-            "Solve for $x$: $x = 50 - 40 = 10$ students study both.",
-            "Calculate Spanish only: $n(S \\text{ only}) = n(S) - x = 22 - 10 = 12$."
+            "Step 1 (Why we do this: Isolate the total union population): The universal set is $n(U) = 45$. Because 5 students study neither, the active union of students studying languages is $n(F \\cup S) = n(U) - \\text{Neither} = 45 - 5 = 40$.",
+            "Step 2 (Why we do this: Apply the fundamental addition theorem for two sets): Use $n(F \\cup S) = n(F) + n(S) - n(F \\cap S)$, letting $x = n(F \\cap S)$.",
+            "Step 3 (Why we do this: Set up the equation with known values): \n  $$40 = 28 + 22 - x \\implies 40 = 50 - x$$",
+            "Step 4 (Why we do this: Isolate x to find students studying both): \n  $$x = 50 - 40 = 10\\text{ students}$$",
+            "Step 5 (Why we do this: Deduce the single-subject crescent): The prompt specifically asks for Spanish only ($S \\cap F'). Subtract the middle overlap: $n(S \\text{ only}) = n(S) - x = 22 - 10 = 12\\text{ students}$."
           ],
-          "finalAnswer": "$$\\text{Both} = 10, \\quad \\text{Spanish only} = 12$$"
+          "finalAnswer": "$$\\text{Both languages } [n(F \\cap S)] = 10, \\quad \\text{Spanish only} = 12$$"
+        },
+        {
+          "id": "we_sets_b8_03",
+          "title": "Comparative Word Problem with Difference Conditions",
+          "problem": "In a cohort of 80 students, 15 passed both Mathematics and French. Eleven (11) more students passed French than Mathematics. If each student passed in at least one subject, find the number of students who passed French.",
+          "steps": [
+            "Step 1 (Why we do this: Translate verbal comparison into an algebraic variable): Let the number of students who passed Mathematics be $m$. Since 11 more passed French, the number of French students is $m + 11$.",
+            "Step 2 (Why we do this: Identify known quantities): Total $n(U) = 80$, Both $n(M \\cap F) = 15$, and $\\text{Neither} = 0$.",
+            "Step 3 (Why we do this: Set up the union formula): \n  $$n(M \\cup F) = n(M) + n(F) - n(M \\cap F)$$\n  $$80 = m + (m + 11) - 15$$",
+            "Step 4 (Why we do this: Solve for the base variable m): \n  $$80 = 2m - 4 \\implies 2m = 84 \\implies m = 42\\text{ (Math passed)}$$",
+            "Step 5 (Why we do this: Answer the specific question asked): Calculate French passers: $n(F) = m + 11 = 42 + 11 = 53\\text{ students}$."
+          ],
+          "finalAnswer": "$$\\text{Passed French } [n(F)] = 53$$"
         }
       ],
       "practicePool": {
