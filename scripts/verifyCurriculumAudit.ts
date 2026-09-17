@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
-import * as admin from 'firebase-admin';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 import * as fs from 'fs';
 
 dotenv.config();
@@ -10,35 +11,29 @@ const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const fallbackKeyPath = 'C:\\Users\\LENOVO\\Downloads\\gamedu-69888475-f5783-firebase-adminsdk-fbsvc-f2566f9210.json';
 
-if (!admin.apps.length) {
+if (!getApps().length) {
   if (clientEmail && privateKey) {
-    admin.initializeApp({
-      credential: admin.credential.cert({
+    initializeApp({
+      credential: cert({
         projectId,
         clientEmail,
         privateKey,
       }),
     });
   } else if (serviceAccountPath && fs.existsSync(serviceAccountPath)) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccountPath),
+    initializeApp({
+      credential: cert(serviceAccountPath),
     });
   } else if (fs.existsSync(fallbackKeyPath)) {
-    admin.initializeApp({
-      credential: admin.credential.cert(fallbackKeyPath),
+    initializeApp({
+      credential: cert(fallbackKeyPath),
     });
   } else {
-    try {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
-      });
-    } catch {
-      admin.initializeApp({ projectId });
-    }
+    initializeApp({ projectId });
   }
 }
 
-const db = admin.firestore();
+const db = getFirestore();
 
 interface PracticeItem {
   id: string;
