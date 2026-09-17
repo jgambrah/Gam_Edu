@@ -14,7 +14,7 @@
   },
   "badge": "Strand 1: Number",
   "description": "Master benchmark equivalences, mixed fraction operations, recurring decimals, real-life fractional sharing, and multi-step BODMAS evaluation.",
-  "totalPracticeQuestions": 309,
+  "totalPracticeQuestions": 450,
   "version": 1,
   "levels": {
     "b7": {
@@ -4956,142 +4956,1661 @@
       "practicePool": {
         "low": [
           {
-            "id": "q_frac_b9_l01",
+            "id": "q_b9_frac_l01",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Convert the recurring decimal $0.\\dot{8}$ into a common fraction.",
+            "prompt": "Convert the recurring decimal $0.\\dot{7}$ into a common fraction.",
+            "options": [
+              "7/9",
+              "7/10",
+              "7/99",
+              "77/100"
+            ],
+            "correctAnswer": "7/9",
+            "hint": "A single repeating digit $0.\\dot{a} = \\frac{a}{9}$.",
+            "workedSolution": "$$x = 0.777\\dots \\implies 10x - x = 7 \\implies 9x = 7 \\implies x = \\frac{7}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l02",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $0.\\dot{5}\\dot{4}$ into a common fraction in its lowest terms.",
+            "options": [
+              "6/11",
+              "54/99",
+              "27/50",
+              "54/100"
+            ],
+            "correctAnswer": "6/11",
+            "hint": "Two repeating digits: $0.\\dot{a}\\dot{b} = \\frac{ab}{99}$. Reduce by 9.",
+            "workedSolution": "$$\\frac{54}{99} = \\frac{54 \\div 9}{99 \\div 9} = \\frac{6}{11}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l03",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "An item marked $\\text{GH¢ } 500.00$ is sold at a $10\\%$ discount. What is the selling price?",
+            "options": [
+              "GH¢ 450.00",
+              "GH¢ 400.00",
+              "GH¢ 490.00",
+              "GH¢ 475.00"
+            ],
+            "correctAnswer": "GH¢ 450.00",
+            "hint": "Discount = $10\\% \\times 500 = 50$. Subtract discount from marked price.",
+            "workedSolution": "$$\\text{Selling Price} = 500 - 50 = \\text{GH¢ } 450.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l04",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{1}\\dot{8}$ into a common fraction in simplest form.",
+            "options": [
+              "2/11",
+              "18/99",
+              "9/50",
+              "1/5"
+            ],
+            "correctAnswer": "2/11",
+            "hint": "$$\\frac{18}{99}$$. Divide numerator and denominator by 9.",
+            "workedSolution": "$$\\frac{18 \\div 9}{99 \\div 9} = \\frac{2}{11}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l05",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "What is the single discount percentage equivalent to a marked price of $\\text{GH¢ } 200.00$ sold for $\\text{GH¢ } 160.00$?",
+            "options": [
+              "20%",
+              "25%",
+              "15%",
+              "40%"
+            ],
+            "correctAnswer": "20%",
+            "hint": "Discount $= 200 - 160 = 40$. Percentage $= \\frac{40}{200} \\times 100\\%$.",
+            "workedSolution": "$$\\frac{40}{200} \\times 100\\% = 20\\%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l06",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Express $0.\\dot{3}$ as a fraction in simplest terms.",
+            "options": [
+              "1/3",
+              "3/10",
+              "3/99",
+              "33/100"
+            ],
+            "correctAnswer": "1/3",
+            "hint": "$$\\frac{3}{9} = \\frac{1}{3}$$.",
+            "workedSolution": "$$\\frac{3}{9} = \\frac{1}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l07",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A shop gives a $5\\%$ cash discount on a bag costing $\\text{GH¢ } 80.00$. How much did the customer pay?",
+            "options": [
+              "GH¢ 76.00",
+              "GH¢ 75.00",
+              "GH¢ 74.00",
+              "GH¢ 78.00"
+            ],
+            "correctAnswer": "GH¢ 76.00",
+            "hint": "Discount $= 0.05 \\times 80 = 4$.",
+            "workedSolution": "$$80 - 4 = \\text{GH¢ } 76.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l08",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $0.\\dot{9}$ to a whole number using algebraic recurring decimal rules.",
+            "options": [
+              "1",
+              "0.9",
+              "9/10",
+              "0.99"
+            ],
+            "correctAnswer": "1",
+            "hint": "$$x = 0.999\\dots \\implies 10x - x = 9 \\implies 9x = 9 \\implies x = 1$$.",
+            "workedSolution": "$$10x - x = 9.999\\dots - 0.999\\dots \\implies 9x = 9 \\implies x = 1$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l09",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A radio is discounted by $15\\%$. What fraction of the original marked price does the customer pay?",
+            "options": [
+              "17/20",
+              "3/20",
+              "4/5",
+              "85/10"
+            ],
+            "correctAnswer": "17/20",
+            "hint": "Customer pays $100\\% - 15\\% = 85\\% = \\frac{85}{100}$.",
+            "workedSolution": "$$\\frac{85 \\div 5}{100 \\div 5} = \\frac{17}{20}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l10",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert $0.\\dot{6}$ into a common fraction.",
+            "options": [
+              "2/3",
+              "6/10",
+              "3/5",
+              "6/99"
+            ],
+            "correctAnswer": "2/3",
+            "hint": "$$\\frac{6}{9} = \\frac{2}{3}$$.",
+            "workedSolution": "$$\\frac{6}{9} = \\frac{2}{3}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l11",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{1}$ into a fraction in its lowest terms.",
+            "options": [
+              "1/9",
+              "1/100",
+              "1/10",
+              "2/9"
+            ],
+            "correctAnswer": "1/9",
+            "hint": "Express over 9 and simplify by dividing by 1.",
+            "workedSolution": "$$x = 0.\\dot{1} \\implies 9x = 1 \\implies x = \\frac{1}{9} = \\frac{1}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l12",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{2}$ into a fraction in its lowest terms.",
+            "options": [
+              "2/9",
+              "2/100",
+              "2/10",
+              "3/9"
+            ],
+            "correctAnswer": "2/9",
+            "hint": "Express over 9 and simplify by dividing by 1.",
+            "workedSolution": "$$x = 0.\\dot{2} \\implies 9x = 2 \\implies x = \\frac{2}{9} = \\frac{2}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l13",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{4}$ into a fraction in its lowest terms.",
+            "options": [
+              "4/9",
+              "4/100",
+              "4/10",
+              "5/9"
+            ],
+            "correctAnswer": "4/9",
+            "hint": "Express over 9 and simplify by dividing by 1.",
+            "workedSolution": "$$x = 0.\\dot{4} \\implies 9x = 4 \\implies x = \\frac{4}{9} = \\frac{4}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l14",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{5}$ into a fraction in its lowest terms.",
+            "options": [
+              "5/9",
+              "5/100",
+              "5/10",
+              "6/9"
+            ],
+            "correctAnswer": "5/9",
+            "hint": "Express over 9 and simplify by dividing by 1.",
+            "workedSolution": "$$x = 0.\\dot{5} \\implies 9x = 5 \\implies x = \\frac{5}{9} = \\frac{5}{9}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l15",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{8}$ into a fraction in its lowest terms.",
             "options": [
               "8/9",
-              "4/5",
+              "8/100",
               "8/10",
-              "8/99"
+              "9/9"
             ],
             "correctAnswer": "8/9",
-            "hint": "A single recurring digit $0.\\dot{a} = \\frac{a}{9}$.",
-            "workedSolution": "$$x = 0.888\\dots \\implies 10x - x = 8 \\implies 9x = 8 \\implies x = \\frac{8}{9}$$.",
+            "hint": "Express over 9 and simplify by dividing by 1.",
+            "workedSolution": "$$x = 0.\\dot{8} \\implies 9x = 8 \\implies x = \\frac{8}{9} = \\frac{8}{9}$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b9_l02",
+            "id": "q_b9_frac_l16",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "A television marked $\\text{GH¢ } 2,250.00$ was sold for $\\text{GH¢ } 2,025.00$. What percentage discount was granted?",
+            "prompt": "Convert the recurring decimal $0.\\dot{2}\\dot{7}$ into a fraction in its lowest terms.",
             "options": [
-              "10%",
-              "12%",
-              "15%",
-              "8%"
+              "3/11",
+              "27/100",
+              "27/90",
+              "4/11"
             ],
-            "correctAnswer": "10%",
-            "hint": "Discount = $2,250 - 2,025 = 225$. Percentage = $(225 / 2250) \\times 100\\%$.",
-            "workedSolution": "$$\\text{Discount} = \\text{GH¢ } 225.00$$.\n$$\\text{Percentage} = \\frac{225}{2250} \\times 100\\% = 10\\%$$.",
+            "correctAnswer": "3/11",
+            "hint": "Express over 99 and simplify by dividing by 9.",
+            "workedSolution": "$$x = 0.\\dot{2}\\dot{7} \\implies 99x = 27 \\implies x = \\frac{27}{99} = \\frac{3}{11}$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b9_l03",
+            "id": "q_b9_frac_l17",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "Express $0.\\dot{3}\\dot{6}$ as a fraction in its simplest form.",
+            "prompt": "Convert the recurring decimal $0.\\dot{3}\\dot{6}$ into a fraction in its lowest terms.",
             "options": [
               "4/11",
               "36/100",
-              "12/33",
-              "1/3"
+              "36/90",
+              "5/11"
             ],
             "correctAnswer": "4/11",
-            "hint": "$$0.\\dot{a}\\dot{b} = \\frac{ab}{99}$$. Divide $36$ and $99$ by $9$.",
-            "workedSolution": "$$\\frac{36 \\div 9}{99 \\div 9} = \\frac{4}{11}$$.",
+            "hint": "Express over 99 and simplify by dividing by 9.",
+            "workedSolution": "$$x = 0.\\dot{3}\\dot{6} \\implies 99x = 36 \\implies x = \\frac{36}{99} = \\frac{4}{11}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l18",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{4}\\dot{5}$ into a fraction in its lowest terms.",
+            "options": [
+              "5/11",
+              "45/100",
+              "45/90",
+              "6/11"
+            ],
+            "correctAnswer": "5/11",
+            "hint": "Express over 99 and simplify by dividing by 9.",
+            "workedSolution": "$$x = 0.\\dot{4}\\dot{5} \\implies 99x = 45 \\implies x = \\frac{45}{99} = \\frac{5}{11}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l19",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{6}\\dot{3}$ into a fraction in its lowest terms.",
+            "options": [
+              "7/11",
+              "63/100",
+              "63/90",
+              "8/11"
+            ],
+            "correctAnswer": "7/11",
+            "hint": "Express over 99 and simplify by dividing by 9.",
+            "workedSolution": "$$x = 0.\\dot{6}\\dot{3} \\implies 99x = 63 \\implies x = \\frac{63}{99} = \\frac{7}{11}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l20",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{7}\\dot{2}$ into a fraction in its lowest terms.",
+            "options": [
+              "8/11",
+              "72/100",
+              "72/90",
+              "9/11"
+            ],
+            "correctAnswer": "8/11",
+            "hint": "Express over 99 and simplify by dividing by 9.",
+            "workedSolution": "$$x = 0.\\dot{7}\\dot{2} \\implies 99x = 72 \\implies x = \\frac{72}{99} = \\frac{8}{11}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l21",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{8}\\dot{1}$ into a fraction in its lowest terms.",
+            "options": [
+              "9/11",
+              "81/100",
+              "81/90",
+              "10/11"
+            ],
+            "correctAnswer": "9/11",
+            "hint": "Express over 99 and simplify by dividing by 9.",
+            "workedSolution": "$$x = 0.\\dot{8}\\dot{1} \\implies 99x = 81 \\implies x = \\frac{81}{99} = \\frac{9}{11}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l22",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{1}\\dot{2}$ into a fraction in its lowest terms.",
+            "options": [
+              "4/33",
+              "12/100",
+              "12/90",
+              "5/33"
+            ],
+            "correctAnswer": "4/33",
+            "hint": "Express over 99 and simplify by dividing by 3.",
+            "workedSolution": "$$x = 0.\\dot{1}\\dot{2} \\implies 99x = 12 \\implies x = \\frac{12}{99} = \\frac{4}{33}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l23",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{1}\\dot{5}$ into a fraction in its lowest terms.",
+            "options": [
+              "5/33",
+              "15/100",
+              "15/90",
+              "6/33"
+            ],
+            "correctAnswer": "5/33",
+            "hint": "Express over 99 and simplify by dividing by 3.",
+            "workedSolution": "$$x = 0.\\dot{1}\\dot{5} \\implies 99x = 15 \\implies x = \\frac{15}{99} = \\frac{5}{33}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l24",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{2}\\dot{1}$ into a fraction in its lowest terms.",
+            "options": [
+              "7/33",
+              "21/100",
+              "21/90",
+              "8/33"
+            ],
+            "correctAnswer": "7/33",
+            "hint": "Express over 99 and simplify by dividing by 3.",
+            "workedSolution": "$$x = 0.\\dot{2}\\dot{1} \\implies 99x = 21 \\implies x = \\frac{21}{99} = \\frac{7}{33}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l25",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "Convert the recurring decimal $0.\\dot{2}\\dot{4}$ into a fraction in its lowest terms.",
+            "options": [
+              "8/33",
+              "24/100",
+              "24/90",
+              "9/33"
+            ],
+            "correctAnswer": "8/33",
+            "hint": "Express over 99 and simplify by dividing by 3.",
+            "workedSolution": "$$x = 0.\\dot{2}\\dot{4} \\implies 99x = 24 \\implies x = \\frac{24}{99} = \\frac{8}{33}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l26",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 120.00$ is sold at a discount of $10\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 108.00",
+              "GH¢ 114.00",
+              "GH¢ 132.00",
+              "GH¢ 102.00"
+            ],
+            "correctAnswer": "GH¢ 108.00",
+            "hint": "Discount $= \\frac{10}{100} \\times 120 = \\text{GH¢ } 12.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{10}{100} \\times 120 = \\text{GH¢ } 12.00$$\n$$\\text{Selling Price} = 120 - 12 = \\text{GH¢ } 108.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l27",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 150.00$ is sold at a discount of $20\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 120.00",
+              "GH¢ 135.00",
+              "GH¢ 180.00",
+              "GH¢ 105.00"
+            ],
+            "correctAnswer": "GH¢ 120.00",
+            "hint": "Discount $= \\frac{20}{100} \\times 150 = \\text{GH¢ } 30.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{20}{100} \\times 150 = \\text{GH¢ } 30.00$$\n$$\\text{Selling Price} = 150 - 30 = \\text{GH¢ } 120.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l28",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 240.00$ is sold at a discount of $25\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 180.00",
+              "GH¢ 210.00",
+              "GH¢ 300.00",
+              "GH¢ 150.00"
+            ],
+            "correctAnswer": "GH¢ 180.00",
+            "hint": "Discount $= \\frac{25}{100} \\times 240 = \\text{GH¢ } 60.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{25}{100} \\times 240 = \\text{GH¢ } 60.00$$\n$$\\text{Selling Price} = 240 - 60 = \\text{GH¢ } 180.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l29",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 300.00$ is sold at a discount of $15\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 255.00",
+              "GH¢ 277.50",
+              "GH¢ 345.00",
+              "GH¢ 232.50"
+            ],
+            "correctAnswer": "GH¢ 255.00",
+            "hint": "Discount $= \\frac{15}{100} \\times 300 = \\text{GH¢ } 45.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{15}{100} \\times 300 = \\text{GH¢ } 45.00$$\n$$\\text{Selling Price} = 300 - 45 = \\text{GH¢ } 255.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l30",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 400.00$ is sold at a discount of $30\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 280.00",
+              "GH¢ 340.00",
+              "GH¢ 520.00",
+              "GH¢ 220.00"
+            ],
+            "correctAnswer": "GH¢ 280.00",
+            "hint": "Discount $= \\frac{30}{100} \\times 400 = \\text{GH¢ } 120.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{30}{100} \\times 400 = \\text{GH¢ } 120.00$$\n$$\\text{Selling Price} = 400 - 120 = \\text{GH¢ } 280.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l31",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 600.00$ is sold at a discount of $5\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 570.00",
+              "GH¢ 585.00",
+              "GH¢ 630.00",
+              "GH¢ 555.00"
+            ],
+            "correctAnswer": "GH¢ 570.00",
+            "hint": "Discount $= \\frac{5}{100} \\times 600 = \\text{GH¢ } 30.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{5}{100} \\times 600 = \\text{GH¢ } 30.00$$\n$$\\text{Selling Price} = 600 - 30 = \\text{GH¢ } 570.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l32",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 250.00$ is sold at a discount of $10\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 225.00",
+              "GH¢ 237.50",
+              "GH¢ 275.00",
+              "GH¢ 212.50"
+            ],
+            "correctAnswer": "GH¢ 225.00",
+            "hint": "Discount $= \\frac{10}{100} \\times 250 = \\text{GH¢ } 25.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{10}{100} \\times 250 = \\text{GH¢ } 25.00$$\n$$\\text{Selling Price} = 250 - 25 = \\text{GH¢ } 225.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l33",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 180.00$ is sold at a discount of $20\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 144.00",
+              "GH¢ 162.00",
+              "GH¢ 216.00",
+              "GH¢ 126.00"
+            ],
+            "correctAnswer": "GH¢ 144.00",
+            "hint": "Discount $= \\frac{20}{100} \\times 180 = \\text{GH¢ } 36.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{20}{100} \\times 180 = \\text{GH¢ } 36.00$$\n$$\\text{Selling Price} = 180 - 36 = \\text{GH¢ } 144.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l34",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 320.00$ is sold at a discount of $25\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 240.00",
+              "GH¢ 280.00",
+              "GH¢ 400.00",
+              "GH¢ 200.00"
+            ],
+            "correctAnswer": "GH¢ 240.00",
+            "hint": "Discount $= \\frac{25}{100} \\times 320 = \\text{GH¢ } 80.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{25}{100} \\times 320 = \\text{GH¢ } 80.00$$\n$$\\text{Selling Price} = 320 - 80 = \\text{GH¢ } 240.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l35",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 450.00$ is sold at a discount of $10\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 405.00",
+              "GH¢ 427.50",
+              "GH¢ 495.00",
+              "GH¢ 382.50"
+            ],
+            "correctAnswer": "GH¢ 405.00",
+            "hint": "Discount $= \\frac{10}{100} \\times 450 = \\text{GH¢ } 45.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{10}{100} \\times 450 = \\text{GH¢ } 45.00$$\n$$\\text{Selling Price} = 450 - 45 = \\text{GH¢ } 405.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l36",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 550.00$ is sold at a discount of $20\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 440.00",
+              "GH¢ 495.00",
+              "GH¢ 660.00",
+              "GH¢ 385.00"
+            ],
+            "correctAnswer": "GH¢ 440.00",
+            "hint": "Discount $= \\frac{20}{100} \\times 550 = \\text{GH¢ } 110.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{20}{100} \\times 550 = \\text{GH¢ } 110.00$$\n$$\\text{Selling Price} = 550 - 110 = \\text{GH¢ } 440.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l37",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 700.00$ is sold at a discount of $15\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 595.00",
+              "GH¢ 647.50",
+              "GH¢ 805.00",
+              "GH¢ 542.50"
+            ],
+            "correctAnswer": "GH¢ 595.00",
+            "hint": "Discount $= \\frac{15}{100} \\times 700 = \\text{GH¢ } 105.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{15}{100} \\times 700 = \\text{GH¢ } 105.00$$\n$$\\text{Selling Price} = 700 - 105 = \\text{GH¢ } 595.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l38",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 800.00$ is sold at a discount of $25\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 600.00",
+              "GH¢ 700.00",
+              "GH¢ 1000.00",
+              "GH¢ 500.00"
+            ],
+            "correctAnswer": "GH¢ 600.00",
+            "hint": "Discount $= \\frac{25}{100} \\times 800 = \\text{GH¢ } 200.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{25}{100} \\times 800 = \\text{GH¢ } 200.00$$\n$$\\text{Selling Price} = 800 - 200 = \\text{GH¢ } 600.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l39",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 900.00$ is sold at a discount of $10\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 810.00",
+              "GH¢ 855.00",
+              "GH¢ 990.00",
+              "GH¢ 765.00"
+            ],
+            "correctAnswer": "GH¢ 810.00",
+            "hint": "Discount $= \\frac{10}{100} \\times 900 = \\text{GH¢ } 90.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{10}{100} \\times 900 = \\text{GH¢ } 90.00$$\n$$\\text{Selling Price} = 900 - 90 = \\text{GH¢ } 810.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l40",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 1200.00$ is sold at a discount of $5\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 1140.00",
+              "GH¢ 1170.00",
+              "GH¢ 1260.00",
+              "GH¢ 1110.00"
+            ],
+            "correctAnswer": "GH¢ 1140.00",
+            "hint": "Discount $= \\frac{5}{100} \\times 1200 = \\text{GH¢ } 60.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{5}{100} \\times 1200 = \\text{GH¢ } 60.00$$\n$$\\text{Selling Price} = 1200 - 60 = \\text{GH¢ } 1140.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l41",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 1500.00$ is sold at a discount of $20\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 1200.00",
+              "GH¢ 1350.00",
+              "GH¢ 1800.00",
+              "GH¢ 1050.00"
+            ],
+            "correctAnswer": "GH¢ 1200.00",
+            "hint": "Discount $= \\frac{20}{100} \\times 1500 = \\text{GH¢ } 300.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{20}{100} \\times 1500 = \\text{GH¢ } 300.00$$\n$$\\text{Selling Price} = 1500 - 300 = \\text{GH¢ } 1200.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l42",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 350.00$ is sold at a discount of $20\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 280.00",
+              "GH¢ 315.00",
+              "GH¢ 420.00",
+              "GH¢ 245.00"
+            ],
+            "correctAnswer": "GH¢ 280.00",
+            "hint": "Discount $= \\frac{20}{100} \\times 350 = \\text{GH¢ } 70.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{20}{100} \\times 350 = \\text{GH¢ } 70.00$$\n$$\\text{Selling Price} = 350 - 70 = \\text{GH¢ } 280.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l43",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 280.00$ is sold at a discount of $25\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 210.00",
+              "GH¢ 245.00",
+              "GH¢ 350.00",
+              "GH¢ 175.00"
+            ],
+            "correctAnswer": "GH¢ 210.00",
+            "hint": "Discount $= \\frac{25}{100} \\times 280 = \\text{GH¢ } 70.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{25}{100} \\times 280 = \\text{GH¢ } 70.00$$\n$$\\text{Selling Price} = 280 - 70 = \\text{GH¢ } 210.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l44",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 480.00$ is sold at a discount of $10\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 432.00",
+              "GH¢ 456.00",
+              "GH¢ 528.00",
+              "GH¢ 408.00"
+            ],
+            "correctAnswer": "GH¢ 432.00",
+            "hint": "Discount $= \\frac{10}{100} \\times 480 = \\text{GH¢ } 48.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{10}{100} \\times 480 = \\text{GH¢ } 48.00$$\n$$\\text{Selling Price} = 480 - 48 = \\text{GH¢ } 432.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l45",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 640.00$ is sold at a discount of $25\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 480.00",
+              "GH¢ 560.00",
+              "GH¢ 800.00",
+              "GH¢ 400.00"
+            ],
+            "correctAnswer": "GH¢ 480.00",
+            "hint": "Discount $= \\frac{25}{100} \\times 640 = \\text{GH¢ } 160.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{25}{100} \\times 640 = \\text{GH¢ } 160.00$$\n$$\\text{Selling Price} = 640 - 160 = \\text{GH¢ } 480.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l46",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 750.00$ is sold at a discount of $20\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 600.00",
+              "GH¢ 675.00",
+              "GH¢ 900.00",
+              "GH¢ 525.00"
+            ],
+            "correctAnswer": "GH¢ 600.00",
+            "hint": "Discount $= \\frac{20}{100} \\times 750 = \\text{GH¢ } 150.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{20}{100} \\times 750 = \\text{GH¢ } 150.00$$\n$$\\text{Selling Price} = 750 - 150 = \\text{GH¢ } 600.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l47",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 850.00$ is sold at a discount of $10\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 765.00",
+              "GH¢ 807.50",
+              "GH¢ 935.00",
+              "GH¢ 722.50"
+            ],
+            "correctAnswer": "GH¢ 765.00",
+            "hint": "Discount $= \\frac{10}{100} \\times 850 = \\text{GH¢ } 85.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{10}{100} \\times 850 = \\text{GH¢ } 85.00$$\n$$\\text{Selling Price} = 850 - 85 = \\text{GH¢ } 765.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l48",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 950.00$ is sold at a discount of $20\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 760.00",
+              "GH¢ 855.00",
+              "GH¢ 1140.00",
+              "GH¢ 665.00"
+            ],
+            "correctAnswer": "GH¢ 760.00",
+            "hint": "Discount $= \\frac{20}{100} \\times 950 = \\text{GH¢ } 190.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{20}{100} \\times 950 = \\text{GH¢ } 190.00$$\n$$\\text{Selling Price} = 950 - 190 = \\text{GH¢ } 760.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l49",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 1100.00$ is sold at a discount of $15\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 935.00",
+              "GH¢ 1017.50",
+              "GH¢ 1265.00",
+              "GH¢ 852.50"
+            ],
+            "correctAnswer": "GH¢ 935.00",
+            "hint": "Discount $= \\frac{15}{100} \\times 1100 = \\text{GH¢ } 165.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{15}{100} \\times 1100 = \\text{GH¢ } 165.00$$\n$$\\text{Selling Price} = 1100 - 165 = \\text{GH¢ } 935.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_l50",
+            "difficulty": "low",
+            "dokLevel": 1,
+            "prompt": "A textbook marked $\\text{GH¢ } 1600.00$ is sold at a discount of $25\\%$. Calculate its selling price.",
+            "options": [
+              "GH¢ 1200.00",
+              "GH¢ 1400.00",
+              "GH¢ 2000.00",
+              "GH¢ 1000.00"
+            ],
+            "correctAnswer": "GH¢ 1200.00",
+            "hint": "Discount $= \\frac{25}{100} \\times 1600 = \\text{GH¢ } 400.00$. Subtract from marked price.",
+            "workedSolution": "$$\\text{Discount} = \\frac{25}{100} \\times 1600 = \\text{GH¢ } 400.00$$\n$$\\text{Selling Price} = 1600 - 400 = \\text{GH¢ } 1200.00$$.",
             "points": 1
           }
         ],
         "medium": [
           {
-            "id": "q_frac_b9_m01",
+            "id": "q_b9_frac_m01",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Evaluate: $$\\frac{2}{3} \\times \\frac{3}{4} - \\frac{5}{8} \\div 2\\frac{1}{2}$$.",
+            "prompt": "Convert the delayed recurring decimal $0.2\\dot{3}$ into a fraction in its simplest form.",
             "options": [
-              "1/4",
-              "1/2",
-              "3/8",
-              "0"
+              "7/30",
+              "23/99",
+              "23/90",
+              "1/4"
             ],
-            "correctAnswer": "1/4",
-            "hint": "$2/3 \\times 3/4 = 1/2$. $5/8 \\div 5/2 = 5/8 \\times 2/5 = 1/4$.",
-            "workedSolution": "$$\\frac{1}{2} - \\frac{1}{4} = \\frac{2 - 1}{4} = \\frac{1}{4}$$.",
+            "correctAnswer": "7/30",
+            "hint": "$100x - 10x = 23.333\\dots - 2.333\\dots = 21$. Solve $90x = 21$.",
+            "workedSolution": "$$90x = 21 \\implies x = \\frac{21}{90} = \\frac{7}{30}$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b9_m02",
+            "id": "q_b9_frac_m02",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "In an election between two candidates, the winner obtained $56\\%$ of the valid votes. If the winner won by a majority of $1,800$ votes, find the total number of valid votes cast.",
+            "prompt": "Successive discounts of $10\\%$ and $10\\%$ on an item are equivalent to a single discount of:",
             "options": [
-              "15,000",
-              "12,000",
-              "18,000",
-              "20,000"
+              "19%",
+              "20%",
+              "21%",
+              "18%"
             ],
-            "correctAnswer": "15,000",
-            "hint": "Opponent received $100\\% - 56\\% = 44\\%$. Majority difference = $56\\% - 44\\% = 12\\%$. Set $12\\% V = 1800$.",
-            "workedSolution": "$$56\\% - 44\\% = 12\\%$$\n$$12\\% V = 1,800 \\implies V = 1,800 \\times \\frac{100}{12} = 150 \\times 100 = 15,000\\text{ votes}$$.",
+            "correctAnswer": "19%",
+            "hint": "Let marked price be $100$. After first discount: $90$. After second discount: $90 - 9 = 81$. Total discount $= 100 - 81$.",
+            "workedSolution": "$$1 - (0.90 \\times 0.90) = 1 - 0.81 = 0.19 = 19\\%$$.",
             "points": 1
           },
           {
-            "id": "q_frac_b9_m03",
+            "id": "q_b9_frac_m03",
             "difficulty": "medium",
             "dokLevel": 2,
-            "prompt": "Convert $0.1\\dot{6}$ ($0.1666\\dots$) into a simple common fraction.",
+            "prompt": "Convert $0.1\\dot{2}\\dot{7}$ to a common fraction in its lowest terms.",
+            "options": [
+              "7/55",
+              "127/990",
+              "14/110",
+              "63/495"
+            ],
+            "correctAnswer": "7/55",
+            "hint": "$1000x - 10x = 127.2727\\dots - 1.2727\\dots = 126$. $990x = 126$.",
+            "workedSolution": "$$990x = 126 \\implies x = \\frac{126}{990} = \\frac{63}{495} = \\frac{7}{55}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m04",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A worker spends $\\frac{1}{4}$ of his basic salary on rent and $\\frac{2}{5}$ of the remainder on provisions. If he has $\\text{GH¢ } 900.00$ left, what was his basic salary?",
+            "options": [
+              "GH¢ 2,000.00",
+              "GH¢ 1,800.00",
+              "GH¢ 2,400.00",
+              "GH¢ 1,600.00"
+            ],
+            "correctAnswer": "GH¢ 2,000.00",
+            "hint": "Remainder after rent $= 3/4$. Provisions $= 2/5 \\times 3/4 = 3/10$. Leftover fraction $= 3/4 - 3/10 = 9/20$.",
+            "workedSolution": "$$\\text{Leftover fraction} = \\frac{3}{4} \\times \\left(1 - \\frac{2}{5}\\right) = \\frac{3}{4} \\times \\frac{3}{5} = \\frac{9}{20}$$\n$$\\frac{9}{20}S = 900 \\implies S = 900 \\times \\frac{20}{9} = \\text{GH¢ } 2,000.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m05",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "A dealer offers successive trade discounts of $20\\%$ and $5\\%$. Find the net price of goods marked $\\text{GH¢ } 1,000.00$.",
+            "options": [
+              "GH¢ 760.00",
+              "GH¢ 750.00",
+              "GH¢ 800.00",
+              "GH¢ 740.00"
+            ],
+            "correctAnswer": "GH¢ 760.00",
+            "hint": "Net price $= 1000 \\times (1 - 0.20) \\times (1 - 0.05) = 1000 \\times 0.80 \\times 0.95$.",
+            "workedSolution": "$$1,000 \\times 0.80 \\times 0.95 = 800 \\times 0.95 = \\text{GH¢ } 760.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m06",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.1\\dot{6}$ into a common fraction in its lowest terms.",
             "options": [
               "1/6",
               "16/99",
-              "1/60",
-              "2/15"
+              "16/90",
+              "2/6"
             ],
             "correctAnswer": "1/6",
-            "hint": "$10x = 1.666\\dots$ and $100x = 16.666\\dots$. $90x = 15$.",
-            "workedSolution": "$$90x = 15 \\implies x = \\frac{15}{90} = \\frac{1}{6}$$.",
+            "hint": "Let $x = 0.1\\dot{6}$. Multiply by 100 and 10, then subtract: $90x = 16 - 1 = 15$.",
+            "workedSolution": "$$100x - 10x = 90x = 15 \\implies x = \\frac{15}{90} = \\frac{1}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m07",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.8\\dot{3}$ into a common fraction in its lowest terms.",
+            "options": [
+              "5/6",
+              "83/99",
+              "83/90",
+              "6/6"
+            ],
+            "correctAnswer": "5/6",
+            "hint": "Let $x = 0.8\\dot{3}$. Multiply by 100 and 10, then subtract: $90x = 83 - 8 = 75$.",
+            "workedSolution": "$$100x - 10x = 90x = 75 \\implies x = \\frac{75}{90} = \\frac{5}{6}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m08",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.1\\dot{3}$ into a common fraction in its lowest terms.",
+            "options": [
+              "2/15",
+              "13/99",
+              "13/90",
+              "3/15"
+            ],
+            "correctAnswer": "2/15",
+            "hint": "Let $x = 0.1\\dot{3}$. Multiply by 100 and 10, then subtract: $90x = 13 - 1 = 12$.",
+            "workedSolution": "$$100x - 10x = 90x = 12 \\implies x = \\frac{12}{90} = \\frac{2}{15}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m09",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.2\\dot{6}$ into a common fraction in its lowest terms.",
+            "options": [
+              "4/15",
+              "26/99",
+              "26/90",
+              "5/15"
+            ],
+            "correctAnswer": "4/15",
+            "hint": "Let $x = 0.2\\dot{6}$. Multiply by 100 and 10, then subtract: $90x = 26 - 2 = 24$.",
+            "workedSolution": "$$100x - 10x = 90x = 24 \\implies x = \\frac{24}{90} = \\frac{4}{15}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m10",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.4\\dot{6}$ into a common fraction in its lowest terms.",
+            "options": [
+              "7/15",
+              "46/99",
+              "46/90",
+              "8/15"
+            ],
+            "correctAnswer": "7/15",
+            "hint": "Let $x = 0.4\\dot{6}$. Multiply by 100 and 10, then subtract: $90x = 46 - 4 = 42$.",
+            "workedSolution": "$$100x - 10x = 90x = 42 \\implies x = \\frac{42}{90} = \\frac{7}{15}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m11",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.5\\dot{3}$ into a common fraction in its lowest terms.",
+            "options": [
+              "8/15",
+              "53/99",
+              "53/90",
+              "9/15"
+            ],
+            "correctAnswer": "8/15",
+            "hint": "Let $x = 0.5\\dot{3}$. Multiply by 100 and 10, then subtract: $90x = 53 - 5 = 48$.",
+            "workedSolution": "$$100x - 10x = 90x = 48 \\implies x = \\frac{48}{90} = \\frac{8}{15}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m12",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.7\\dot{3}$ into a common fraction in its lowest terms.",
+            "options": [
+              "11/15",
+              "73/99",
+              "73/90",
+              "12/15"
+            ],
+            "correctAnswer": "11/15",
+            "hint": "Let $x = 0.7\\dot{3}$. Multiply by 100 and 10, then subtract: $90x = 73 - 7 = 66$.",
+            "workedSolution": "$$100x - 10x = 90x = 66 \\implies x = \\frac{66}{90} = \\frac{11}{15}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m13",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.3\\dot{5}$ into a common fraction in its lowest terms.",
+            "options": [
+              "16/45",
+              "35/99",
+              "35/90",
+              "17/45"
+            ],
+            "correctAnswer": "16/45",
+            "hint": "Let $x = 0.3\\dot{5}$. Multiply by 100 and 10, then subtract: $90x = 35 - 3 = 32$.",
+            "workedSolution": "$$100x - 10x = 90x = 32 \\implies x = \\frac{32}{90} = \\frac{16}{45}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m14",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.1\\dot{5}$ into a common fraction in its lowest terms.",
+            "options": [
+              "7/45",
+              "15/99",
+              "15/90",
+              "8/45"
+            ],
+            "correctAnswer": "7/45",
+            "hint": "Let $x = 0.1\\dot{5}$. Multiply by 100 and 10, then subtract: $90x = 15 - 1 = 14$.",
+            "workedSolution": "$$100x - 10x = 90x = 14 \\implies x = \\frac{14}{90} = \\frac{7}{45}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m15",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.2\\dot{5}$ into a common fraction in its lowest terms.",
+            "options": [
+              "23/90",
+              "25/99",
+              "25/90",
+              "24/90"
+            ],
+            "correctAnswer": "23/90",
+            "hint": "Let $x = 0.2\\dot{5}$. Multiply by 100 and 10, then subtract: $90x = 25 - 2 = 23$.",
+            "workedSolution": "$$100x - 10x = 90x = 23 \\implies x = \\frac{23}{90} = \\frac{23}{90}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m16",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.3\\dot{1}$ into a common fraction in its lowest terms.",
+            "options": [
+              "14/45",
+              "31/99",
+              "31/90",
+              "15/45"
+            ],
+            "correctAnswer": "14/45",
+            "hint": "Let $x = 0.3\\dot{1}$. Multiply by 100 and 10, then subtract: $90x = 31 - 3 = 28$.",
+            "workedSolution": "$$100x - 10x = 90x = 28 \\implies x = \\frac{28}{90} = \\frac{14}{45}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m17",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.6\\dot{1}$ into a common fraction in its lowest terms.",
+            "options": [
+              "11/18",
+              "61/99",
+              "61/90",
+              "12/18"
+            ],
+            "correctAnswer": "11/18",
+            "hint": "Let $x = 0.6\\dot{1}$. Multiply by 100 and 10, then subtract: $90x = 61 - 6 = 55$.",
+            "workedSolution": "$$100x - 10x = 90x = 55 \\implies x = \\frac{55}{90} = \\frac{11}{18}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m18",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.7\\dot{1}$ into a common fraction in its lowest terms.",
+            "options": [
+              "32/45",
+              "71/99",
+              "71/90",
+              "33/45"
+            ],
+            "correctAnswer": "32/45",
+            "hint": "Let $x = 0.7\\dot{1}$. Multiply by 100 and 10, then subtract: $90x = 71 - 7 = 64$.",
+            "workedSolution": "$$100x - 10x = 90x = 64 \\implies x = \\frac{64}{90} = \\frac{32}{45}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m19",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.8\\dot{1}$ into a common fraction in its lowest terms.",
+            "options": [
+              "73/90",
+              "81/99",
+              "81/90",
+              "74/90"
+            ],
+            "correctAnswer": "73/90",
+            "hint": "Let $x = 0.8\\dot{1}$. Multiply by 100 and 10, then subtract: $90x = 81 - 8 = 73$.",
+            "workedSolution": "$$100x - 10x = 90x = 73 \\implies x = \\frac{73}{90} = \\frac{73}{90}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m20",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.9\\dot{1}$ into a common fraction in its lowest terms.",
+            "options": [
+              "41/45",
+              "91/99",
+              "91/90",
+              "42/45"
+            ],
+            "correctAnswer": "41/45",
+            "hint": "Let $x = 0.9\\dot{1}$. Multiply by 100 and 10, then subtract: $90x = 91 - 9 = 82$.",
+            "workedSolution": "$$100x - 10x = 90x = 82 \\implies x = \\frac{82}{90} = \\frac{41}{45}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m21",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.1\\dot{7}$ into a common fraction in its lowest terms.",
+            "options": [
+              "8/45",
+              "17/99",
+              "17/90",
+              "9/45"
+            ],
+            "correctAnswer": "8/45",
+            "hint": "Let $x = 0.1\\dot{7}$. Multiply by 100 and 10, then subtract: $90x = 17 - 1 = 16$.",
+            "workedSolution": "$$100x - 10x = 90x = 16 \\implies x = \\frac{16}{90} = \\frac{8}{45}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m22",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.2\\dot{7}$ into a common fraction in its lowest terms.",
+            "options": [
+              "5/18",
+              "27/99",
+              "27/90",
+              "6/18"
+            ],
+            "correctAnswer": "5/18",
+            "hint": "Let $x = 0.2\\dot{7}$. Multiply by 100 and 10, then subtract: $90x = 27 - 2 = 25$.",
+            "workedSolution": "$$100x - 10x = 90x = 25 \\implies x = \\frac{25}{90} = \\frac{5}{18}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m23",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.4\\dot{7}$ into a common fraction in its lowest terms.",
+            "options": [
+              "43/90",
+              "47/99",
+              "47/90",
+              "44/90"
+            ],
+            "correctAnswer": "43/90",
+            "hint": "Let $x = 0.4\\dot{7}$. Multiply by 100 and 10, then subtract: $90x = 47 - 4 = 43$.",
+            "workedSolution": "$$100x - 10x = 90x = 43 \\implies x = \\frac{43}{90} = \\frac{43}{90}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m24",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.5\\dot{7}$ into a common fraction in its lowest terms.",
+            "options": [
+              "26/45",
+              "57/99",
+              "57/90",
+              "27/45"
+            ],
+            "correctAnswer": "26/45",
+            "hint": "Let $x = 0.5\\dot{7}$. Multiply by 100 and 10, then subtract: $90x = 57 - 5 = 52$.",
+            "workedSolution": "$$100x - 10x = 90x = 52 \\implies x = \\frac{52}{90} = \\frac{26}{45}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m25",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Convert the recurring decimal $0.6\\dot{7}$ into a common fraction in its lowest terms.",
+            "options": [
+              "61/90",
+              "67/99",
+              "67/90",
+              "62/90"
+            ],
+            "correctAnswer": "61/90",
+            "hint": "Let $x = 0.6\\dot{7}$. Multiply by 100 and 10, then subtract: $90x = 67 - 6 = 61$.",
+            "workedSolution": "$$100x - 10x = 90x = 61 \\implies x = \\frac{61}{90} = \\frac{61}{90}$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m26",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $20\\%$ and $10\\%$ are equivalent to a single discount of:",
+            "options": [
+              "28%",
+              "30%",
+              "26%"
+            ],
+            "correctAnswer": "28%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.8 \\times 0.9)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.2) \\times (1 - 0.1) = 0.8 \\times 0.9 = 0.7200$$\n$$\\text{Equivalent Discount} = 1 - 0.7200 = 0.2800 = 28%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m27",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 400.00$ is subjected to successive discounts of $15\\%$ and $10\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 306.00",
+              "GH¢ 300.00",
+              "GH¢ 321.30",
+              "GH¢ 290.70"
+            ],
+            "correctAnswer": "GH¢ 306.00",
+            "hint": "Apply each discount sequentially: $400 \\times 0.85 \\times 0.9$.",
+            "workedSolution": "$$\\text{Price after } 15\\% = 400 \\times 0.85 = \\text{GH¢ } 340.00$$\n$$\\text{Net Price after } 10\\% = 340.00 \\times 0.9 = \\text{GH¢ } 306.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m28",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $25\\%$ and $10\\%$ are equivalent to a single discount of:",
+            "options": [
+              "32.5%",
+              "35%",
+              "30.5%",
+              "34.5%"
+            ],
+            "correctAnswer": "32.5%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.75 \\times 0.9)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.25) \\times (1 - 0.1) = 0.75 \\times 0.9 = 0.6750$$\n$$\\text{Equivalent Discount} = 1 - 0.6750 = 0.3250 = 32.5%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m29",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 600.00$ is subjected to successive discounts of $30\\%$ and $10\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 378.00",
+              "GH¢ 360.00",
+              "GH¢ 396.90",
+              "GH¢ 359.10"
+            ],
+            "correctAnswer": "GH¢ 378.00",
+            "hint": "Apply each discount sequentially: $600 \\times 0.7 \\times 0.9$.",
+            "workedSolution": "$$\\text{Price after } 30\\% = 600 \\times 0.7 = \\text{GH¢ } 420.00$$\n$$\\text{Net Price after } 10\\% = 420.00 \\times 0.9 = \\text{GH¢ } 378.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m30",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $20\\%$ and $20\\%$ are equivalent to a single discount of:",
+            "options": [
+              "36%",
+              "40%",
+              "34%",
+              "38%"
+            ],
+            "correctAnswer": "36%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.8 \\times 0.8)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.2) \\times (1 - 0.2) = 0.8 \\times 0.8 = 0.6400$$\n$$\\text{Equivalent Discount} = 1 - 0.6400 = 0.3600 = 36%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m31",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 200.00$ is subjected to successive discounts of $10\\%$ and $5\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 171.00",
+              "GH¢ 170.00",
+              "GH¢ 179.55",
+              "GH¢ 162.45"
+            ],
+            "correctAnswer": "GH¢ 171.00",
+            "hint": "Apply each discount sequentially: $200 \\times 0.9 \\times 0.95$.",
+            "workedSolution": "$$\\text{Price after } 10\\% = 200 \\times 0.9 = \\text{GH¢ } 180.00$$\n$$\\text{Net Price after } 5\\% = 180.00 \\times 0.95 = \\text{GH¢ } 171.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m32",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $25\\%$ and $20\\%$ are equivalent to a single discount of:",
+            "options": [
+              "40%",
+              "45%",
+              "38%",
+              "42%"
+            ],
+            "correctAnswer": "40%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.75 \\times 0.8)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.25) \\times (1 - 0.2) = 0.75 \\times 0.8 = 0.6000$$\n$$\\text{Equivalent Discount} = 1 - 0.6000 = 0.4000 = 40%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m33",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 500.00$ is subjected to successive discounts of $30\\%$ and $5\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 332.50",
+              "GH¢ 325.00",
+              "GH¢ 349.13",
+              "GH¢ 315.88"
+            ],
+            "correctAnswer": "GH¢ 332.50",
+            "hint": "Apply each discount sequentially: $500 \\times 0.7 \\times 0.95$.",
+            "workedSolution": "$$\\text{Price after } 30\\% = 500 \\times 0.7 = \\text{GH¢ } 350.00$$\n$$\\text{Net Price after } 5\\% = 350.00 \\times 0.95 = \\text{GH¢ } 332.50$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m34",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $15\\%$ and $5\\%$ are equivalent to a single discount of:",
+            "options": [
+              "19.3%",
+              "20%",
+              "17.3%",
+              "21.3%"
+            ],
+            "correctAnswer": "19.3%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.85 \\times 0.95)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.15) \\times (1 - 0.05) = 0.85 \\times 0.95 = 0.8075$$\n$$\\text{Equivalent Discount} = 1 - 0.8075 = 0.1925 = 19.3%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m35",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 1500.00$ is subjected to successive discounts of $20\\%$ and $15\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 1020.00",
+              "GH¢ 975.00",
+              "GH¢ 1071.00",
+              "GH¢ 969.00"
+            ],
+            "correctAnswer": "GH¢ 1020.00",
+            "hint": "Apply each discount sequentially: $1500 \\times 0.8 \\times 0.85$.",
+            "workedSolution": "$$\\text{Price after } 20\\% = 1500 \\times 0.8 = \\text{GH¢ } 1200.00$$\n$$\\text{Net Price after } 15\\% = 1200.00 \\times 0.85 = \\text{GH¢ } 1020.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m36",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $10\\%$ and $10\\%$ are equivalent to a single discount of:",
+            "options": [
+              "19%",
+              "20%",
+              "17%",
+              "21%"
+            ],
+            "correctAnswer": "19%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.9 \\times 0.9)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.1) \\times (1 - 0.1) = 0.9 \\times 0.9 = 0.8100$$\n$$\\text{Equivalent Discount} = 1 - 0.8100 = 0.1900 = 19%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m37",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 400.00$ is subjected to successive discounts of $25\\%$ and $5\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 285.00",
+              "GH¢ 280.00",
+              "GH¢ 299.25",
+              "GH¢ 270.75"
+            ],
+            "correctAnswer": "GH¢ 285.00",
+            "hint": "Apply each discount sequentially: $400 \\times 0.75 \\times 0.95$.",
+            "workedSolution": "$$\\text{Price after } 25\\% = 400 \\times 0.75 = \\text{GH¢ } 300.00$$\n$$\\text{Net Price after } 5\\% = 300.00 \\times 0.95 = \\text{GH¢ } 285.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m38",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $15\\%$ and $15\\%$ are equivalent to a single discount of:",
+            "options": [
+              "27.8%",
+              "30%",
+              "25.8%",
+              "29.8%"
+            ],
+            "correctAnswer": "27.8%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.85 \\times 0.85)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.15) \\times (1 - 0.15) = 0.85 \\times 0.85 = 0.7225$$\n$$\\text{Equivalent Discount} = 1 - 0.7225 = 0.2775 = 27.8%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m39",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 2000.00$ is subjected to successive discounts of $30\\%$ and $20\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 1120.00",
+              "GH¢ 1000.00",
+              "GH¢ 1176.00",
+              "GH¢ 1064.00"
+            ],
+            "correctAnswer": "GH¢ 1120.00",
+            "hint": "Apply each discount sequentially: $2000 \\times 0.7 \\times 0.8$.",
+            "workedSolution": "$$\\text{Price after } 30\\% = 2000 \\times 0.7 = \\text{GH¢ } 1400.00$$\n$$\\text{Net Price after } 20\\% = 1400.00 \\times 0.8 = \\text{GH¢ } 1120.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m40",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $20\\%$ and $5\\%$ are equivalent to a single discount of:",
+            "options": [
+              "24%",
+              "25%",
+              "22%",
+              "26%"
+            ],
+            "correctAnswer": "24%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.8 \\times 0.95)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.2) \\times (1 - 0.05) = 0.8 \\times 0.95 = 0.7600$$\n$$\\text{Equivalent Discount} = 1 - 0.7600 = 0.2400 = 24%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m41",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 900.00$ is subjected to successive discounts of $10\\%$ and $20\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 648.00",
+              "GH¢ 630.00",
+              "GH¢ 680.40",
+              "GH¢ 615.60"
+            ],
+            "correctAnswer": "GH¢ 648.00",
+            "hint": "Apply each discount sequentially: $900 \\times 0.9 \\times 0.8$.",
+            "workedSolution": "$$\\text{Price after } 10\\% = 900 \\times 0.9 = \\text{GH¢ } 810.00$$\n$$\\text{Net Price after } 20\\% = 810.00 \\times 0.8 = \\text{GH¢ } 648.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m42",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $25\\%$ and $10\\%$ are equivalent to a single discount of:",
+            "options": [
+              "32.5%",
+              "35%",
+              "30.5%",
+              "34.5%"
+            ],
+            "correctAnswer": "32.5%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.75 \\times 0.9)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.25) \\times (1 - 0.1) = 0.75 \\times 0.9 = 0.6750$$\n$$\\text{Equivalent Discount} = 1 - 0.6750 = 0.3250 = 32.5%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m43",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 1000.00$ is subjected to successive discounts of $40\\%$ and $10\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 540.00",
+              "GH¢ 500.00",
+              "GH¢ 567.00",
+              "GH¢ 513.00"
+            ],
+            "correctAnswer": "GH¢ 540.00",
+            "hint": "Apply each discount sequentially: $1000 \\times 0.6 \\times 0.9$.",
+            "workedSolution": "$$\\text{Price after } 40\\% = 1000 \\times 0.6 = \\text{GH¢ } 600.00$$\n$$\\text{Net Price after } 10\\% = 600.00 \\times 0.9 = \\text{GH¢ } 540.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m44",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $50\\%$ and $10\\%$ are equivalent to a single discount of:",
+            "options": [
+              "55%",
+              "60%",
+              "53%",
+              "57%"
+            ],
+            "correctAnswer": "55%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.5 \\times 0.9)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.5) \\times (1 - 0.1) = 0.5 \\times 0.9 = 0.4500$$\n$$\\text{Equivalent Discount} = 1 - 0.4500 = 0.5500 = 55%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m45",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 2500.00$ is subjected to successive discounts of $20\\%$ and $10\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 1800.00",
+              "GH¢ 1750.00",
+              "GH¢ 1890.00",
+              "GH¢ 1710.00"
+            ],
+            "correctAnswer": "GH¢ 1800.00",
+            "hint": "Apply each discount sequentially: $2500 \\times 0.8 \\times 0.9$.",
+            "workedSolution": "$$\\text{Price after } 20\\% = 2500 \\times 0.8 = \\text{GH¢ } 2000.00$$\n$$\\text{Net Price after } 10\\% = 2000.00 \\times 0.9 = \\text{GH¢ } 1800.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m46",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $15\\%$ and $10\\%$ are equivalent to a single discount of:",
+            "options": [
+              "23.5%",
+              "25%",
+              "21.5%",
+              "25.5%"
+            ],
+            "correctAnswer": "23.5%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.85 \\times 0.9)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.15) \\times (1 - 0.1) = 0.85 \\times 0.9 = 0.7650$$\n$$\\text{Equivalent Discount} = 1 - 0.7650 = 0.2350 = 23.5%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m47",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 3000.00$ is subjected to successive discounts of $30\\%$ and $10\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 1890.00",
+              "GH¢ 1800.00",
+              "GH¢ 1984.50",
+              "GH¢ 1795.50"
+            ],
+            "correctAnswer": "GH¢ 1890.00",
+            "hint": "Apply each discount sequentially: $3000 \\times 0.7 \\times 0.9$.",
+            "workedSolution": "$$\\text{Price after } 30\\% = 3000 \\times 0.7 = \\text{GH¢ } 2100.00$$\n$$\\text{Net Price after } 10\\% = 2100.00 \\times 0.9 = \\text{GH¢ } 1890.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m48",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $25\\%$ and $20\\%$ are equivalent to a single discount of:",
+            "options": [
+              "40%",
+              "45%",
+              "38%",
+              "42%"
+            ],
+            "correctAnswer": "40%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.75 \\times 0.8)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.25) \\times (1 - 0.2) = 0.75 \\times 0.8 = 0.6000$$\n$$\\text{Equivalent Discount} = 1 - 0.6000 = 0.4000 = 40%$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m49",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "An article marked $\\text{GH¢ } 2000.00$ is subjected to successive discounts of $20\\%$ and $15\\%$. Calculate the net selling price.",
+            "options": [
+              "GH¢ 1360.00",
+              "GH¢ 1300.00",
+              "GH¢ 1428.00",
+              "GH¢ 1292.00"
+            ],
+            "correctAnswer": "GH¢ 1360.00",
+            "hint": "Apply each discount sequentially: $2000 \\times 0.8 \\times 0.85$.",
+            "workedSolution": "$$\\text{Price after } 20\\% = 2000 \\times 0.8 = \\text{GH¢ } 1600.00$$\n$$\\text{Net Price after } 15\\% = 1600.00 \\times 0.85 = \\text{GH¢ } 1360.00$$.",
+            "points": 1
+          },
+          {
+            "id": "q_b9_frac_m50",
+            "difficulty": "medium",
+            "dokLevel": 2,
+            "prompt": "Successive trade discounts of $10\\%$ and $10\\%$ are equivalent to a single discount of:",
+            "options": [
+              "19%",
+              "20%",
+              "17%",
+              "21%"
+            ],
+            "correctAnswer": "19%",
+            "hint": "Single equivalent discount $= 1 - (1 - d_1)(1 - d_2) = 1 - (0.9 \\times 0.9)$.",
+            "workedSolution": "$$\\text{Effective Multiplier} = (1 - 0.1) \\times (1 - 0.1) = 0.9 \\times 0.9 = 0.8100$$\n$$\\text{Equivalent Discount} = 1 - 0.8100 = 0.1900 = 19%$$.",
             "points": 1
           }
         ],
         "hard": [
           {
-            "id": "q_frac_b9_h01",
+            "id": "q_b9_frac_h01",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "A trader bought a consignment of goods. She spent $\\frac{1}{4}$ of her capital on transport and $\\frac{2}{5}$ of the remainder on storage. If she was left with $\\text{GH¢ } 5,400.00$, calculate her initial capital.",
+            "prompt": "A cocoa farmer willed his estate among his wife and three children. The wife received $\\frac{1}{3}$ of the entire estate. The eldest son received $\\frac{1}{4}$ of the remainder. The remaining balance was shared equally between the two youngest daughters. If each daughter received $\\text{GH¢ } 15,000.00$, calculate the total value of the farmer's estate.",
             "options": [
+              "GH¢ 60,000.00",
+              "GH¢ 45,000.00",
+              "GH¢ 80,000.00",
+              "GH¢ 75,000.00"
+            ],
+            "correctAnswer": "GH¢ 60,000.00",
+            "hint": "Wife leaves $2/3$. Eldest son takes $1/4 \\times 2/3 = 1/6$. Balance for daughters is $2/3 - 1/6 = 1/2$. Each daughter gets $1/4$.",
+            "workedSolution": "$$\\text{Wife} = \\frac{1}{3}, \\quad \\text{Remainder } R_1 = \\frac{2}{3}$$\n$$\\text{Eldest Son} = \\frac{1}{4} \\times \\frac{2}{3} = \\frac{1}{6}$$\n$$\\text{Balance for daughters} = \\frac{2}{3} - \\frac{1}{6} = \\frac{1}{2}$$\n$$\\text{Each daughter} = \\frac{1}{2} \\div 2 = \\frac{1}{4}$$\n$$\\frac{1}{4}E = 15,000 \\implies E = 15,000 \\times 4 = \\text{GH¢ } 60,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h02",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "An executive's monthly remuneration was allocated as follows: $\\frac{1}{5}$ on tax, $\\frac{1}{3}$ of the remainder on mortgage, and $\\frac{3}{8}$ of the subsequent remainder on family upkeep. If she deposited the final leftover of $\\text{GH¢ } 5,000.00$ into savings, calculate her total gross monthly salary.",
+            "options": [
+              "GH¢ 15,000.00",
               "GH¢ 12,000.00",
-              "GH¢ 10,800.00",
-              "GH¢ 14,000.00",
-              "GH¢ 9,600.00"
+              "GH¢ 18,000.00",
+              "GH¢ 20,000.00"
             ],
-            "correctAnswer": "GH¢ 12,000.00",
-            "hint": "Remainder after transport = $3/4$. Storage = $2/5 \\times 3/4 = 3/10$. Remaining fraction = $3/4 - 3/10 = 9/20$.",
-            "workedSolution": "$$\\text{Transport} = \\frac{1}{4}$$\n$$\\text{Storage} = \\frac{2}{5} \\times \\frac{3}{4} = \\frac{3}{10}$$\n$$\\text{Spent so far} = \\frac{1}{4} + \\frac{3}{10} = \\frac{5 + 6}{20} = \\frac{11}{20}$$\n$$\\text{Fraction Remaining} = 1 - \\frac{11}{20} = \\frac{9}{20}$$\n$$\\frac{9}{20}C = 5,400 \\implies C = 5,400 \\times \\frac{20}{9} = 600 \\times 20 = \\text{GH¢ } 12,000.00$$.",
+            "correctAnswer": "GH¢ 15,000.00",
+            "hint": "Cascading fractions: After tax: $4/5$. After mortgage: $2/3 \\times 4/5 = 8/15$. After upkeep: $5/8 \\times 8/15 = 1/3$. Set $1/3 S = 5,000$.",
+            "workedSolution": "$$\\text{After Tax} = 1 - \\frac{1}{5} = \\frac{4}{5}$$\n$$\\text{After Mortgage} = \\frac{4}{5} \\times \\left(1 - \\frac{1}{3}\\right) = \\frac{4}{5} \\times \\frac{2}{3} = \\frac{8}{15}$$\n$$\\text{After Upkeep} = \\frac{8}{15} \\times \\left(1 - \\frac{3}{8}\\right) = \\frac{8}{15} \\times \\frac{5}{8} = \\frac{1}{3}$$\n$$\\frac{1}{3}S = 5,000 \\implies S = 5,000 \\times 3 = \\text{GH¢ } 15,000.00$$.",
             "points": 2
           },
           {
-            "id": "q_frac_b9_h02",
+            "id": "q_b9_frac_h03",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Evaluate: $$\\frac{34 \\div 3^2 + 40 - 2^3 \\times 3^2 \\div 9}{2\\frac{1}{2} - 1\\frac{1}{4}}$$.",
+            "prompt": "A merchant is offered two options by different suppliers for identical goods marked $\\text{GH¢ } 10,000.00$: Option A offers a single flat discount of $25\\%$; Option B offers successive discounts of $20\\%$ and $6\\%$. Which option is cheaper for the merchant, and by how much?",
             "options": [
-              "28.62",
-              "30.44",
-              "32.18",
-              "25.00"
+              "Option A is cheaper by GH¢ 20.00",
+              "Option B is cheaper by GH¢ 20.00",
+              "Both options are identical",
+              "Option A is cheaper by GH¢ 100.00"
             ],
-            "correctAnswer": "28.62",
-            "hint": "Numerator: $34 \\div 9 \\approx 3.778$, $2^3 \\times 9 \\div 9 = 8$. $3.778 + 40 - 8 = 35.778$. Denominator: $2.5 - 1.25 = 1.25$.",
-            "workedSolution": "$$\\text{Numerator} = \\frac{34}{9} + 40 - (8 \\times 9 \\div 9) = \\frac{34}{9} + 32 = \\frac{322}{9} \\approx 35.778$$\n$$\\text{Denominator} = \\frac{5}{2} - \\frac{5}{4} = \\frac{5}{4} = 1.25$$\n$$\\frac{322}{9} \\div \\frac{5}{4} = \\frac{322 \\times 4}{45} = \\frac{1288}{45} \\approx 28.62$$.",
+            "correctAnswer": "Option A is cheaper by GH¢ 20.00",
+            "hint": "Option A price $= 10000 \\times 0.75 = 7,500$. Option B price $= 10000 \\times 0.80 \\times 0.94 = 7,520$.",
+            "workedSolution": "$$\\text{Option A: } 10,000 \\times 0.75 = \\text{GH¢ } 7,500.00$$\n$$\\text{Option B: } 10,000 \\times 0.80 \\times 0.94 = \\text{GH¢ } 7,520.00$$\nOption A is cheaper by $7,520 - 7,500 = \\text{GH¢ } 20.00$.",
             "points": 2
           },
           {
-            "id": "q_frac_b9_h03",
+            "id": "q_b9_frac_h04",
             "difficulty": "hard",
             "dokLevel": 3,
-            "prompt": "Express the recurring decimal $2.1\\dot{4}\\dot{5}$ as a mixed number in simplest form.",
+            "prompt": "Convert the recurring decimal $2.1\\dot{4}\\dot{5}$ into a mixed number in its simplest form.",
             "options": [
               "2 8/55",
               "2 145/990",
@@ -5099,8 +6618,744 @@
               "2 16/110"
             ],
             "correctAnswer": "2 8/55",
-            "hint": "Separate integer 2: $x = 0.14545\\dots$. $10x = 1.4545\\dots$, $1000x = 145.4545\\dots$. $990x = 144$.",
-            "workedSolution": "$$\\text{Fractional Part: } 990x = 144 \\implies x = \\frac{144}{990} = \\frac{72}{495} = \\frac{8}{55}$$\n$$\\text{Whole expression} = 2\\frac{8}{55}$$.",
+            "hint": "Fractional part: $x = 0.14545\\dots$. $1000x - 10x = 145.45\\dots - 1.45\\dots = 144$. Solve $990x = 144$.",
+            "workedSolution": "$$990x = 144 \\implies x = \\frac{144}{990} = \\frac{72}{495} = \\frac{8}{55}$$\n$$\\text{Mixed number} = 2\\frac{8}{55}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h05",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "In a co-operative society, $\\frac{3}{10}$ of members are traders, $\\frac{1}{4}$ of the remainder are teachers, and $\\frac{2}{7}$ of the new remainder are civil servants. If the remaining $150$ members are farmers, find the total membership of the society.",
+            "options": [
+              "400",
+              "500",
+              "350",
+              "450"
+            ],
+            "correctAnswer": "400",
+            "hint": "Chain of remainders: $7/10 \\times 3/4 \\times 5/7 = 3/8$. Set $3/8 M = 150$.",
+            "workedSolution": "$$\\text{After Traders} = 1 - \\frac{3}{10} = \\frac{7}{10}$$\n$$\\text{After Teachers} = \\frac{7}{10} \\times \\left(1 - \\frac{1}{4}\\right) = \\frac{7}{10} \\times \\frac{3}{4} = \\frac{21}{40}$$\n$$\\text{After Civil Servants} = \\frac{21}{40} \\times \\left(1 - \\frac{2}{7}\\right) = \\frac{21}{40} \\times \\frac{5}{7} = \\frac{3}{8}$$\n$$\\frac{3}{8}M = 150 \\implies M = 150 \\times \\frac{8}{3} = 50 \\times 8 = 400\\text{ members}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h06",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{4}$ on housing, $\\frac{1}{3}$ of the remainder on children's education, and $\\frac{1}{2}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 3,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 12,000.00",
+              "GH¢ 9,600.00",
+              "GH¢ 15,000.00",
+              "GH¢ 18,000.00"
+            ],
+            "correctAnswer": "GH¢ 12,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{4}\\right) \\times \\left(1 - \\frac{1}{3}\\right) \\times \\left(1 - \\frac{1}{2}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{4} = \\frac{3}{4}$$\n$$\\text{After Education} = \\frac{3}{4} \\times \\left(1 - \\frac{1}{3}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.2500$$\n$$\\text{Total Income} = \\frac{3000}{0.2500} = \\text{GH¢ } 12,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h07",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{5}$ on housing, $\\frac{1}{4}$ of the remainder on children's education, and $\\frac{1}{3}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 6,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 15,000.00",
+              "GH¢ 12,000.00",
+              "GH¢ 18,750.00",
+              "GH¢ 22,500.00"
+            ],
+            "correctAnswer": "GH¢ 15,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{1}{4}\\right) \\times \\left(1 - \\frac{1}{3}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{5} = \\frac{4}{5}$$\n$$\\text{After Education} = \\frac{4}{5} \\times \\left(1 - \\frac{1}{4}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.4000$$\n$$\\text{Total Income} = \\frac{6000}{0.4000} = \\text{GH¢ } 15,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h08",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{3}$ on housing, $\\frac{1}{4}$ of the remainder on children's education, and $\\frac{2}{5}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 6,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 20,000.00",
+              "GH¢ 16,000.00",
+              "GH¢ 25,000.00",
+              "GH¢ 30,000.00"
+            ],
+            "correctAnswer": "GH¢ 20,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{3}\\right) \\times \\left(1 - \\frac{1}{4}\\right) \\times \\left(1 - \\frac{2}{5}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{3} = \\frac{2}{3}$$\n$$\\text{After Education} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{4}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.3000$$\n$$\\text{Total Income} = \\frac{6000}{0.3000} = \\text{GH¢ } 20,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h09",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{6}$ on housing, $\\frac{2}{5}$ of the remainder on children's education, and $\\frac{1}{2}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 4,500.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 18,000.00",
+              "GH¢ 14,400.00",
+              "GH¢ 22,500.00",
+              "GH¢ 27,000.00"
+            ],
+            "correctAnswer": "GH¢ 18,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{6}\\right) \\times \\left(1 - \\frac{2}{5}\\right) \\times \\left(1 - \\frac{1}{2}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{6} = \\frac{5}{6}$$\n$$\\text{After Education} = \\frac{5}{6} \\times \\left(1 - \\frac{2}{5}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.2500$$\n$$\\text{Total Income} = \\frac{4500}{0.2500} = \\text{GH¢ } 18,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h10",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{2}{5}$ on housing, $\\frac{1}{3}$ of the remainder on children's education, and $\\frac{1}{4}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 7,500.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 25,000.00",
+              "GH¢ 20,000.00",
+              "GH¢ 31,250.00",
+              "GH¢ 37,500.00"
+            ],
+            "correctAnswer": "GH¢ 25,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{2}{5}\\right) \\times \\left(1 - \\frac{1}{3}\\right) \\times \\left(1 - \\frac{1}{4}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{2}{5} = \\frac{3}{5}$$\n$$\\text{After Education} = \\frac{3}{5} \\times \\left(1 - \\frac{1}{3}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.3000$$\n$$\\text{Total Income} = \\frac{7500}{0.3000} = \\text{GH¢ } 25,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h11",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{4}$ on housing, $\\frac{2}{5}$ of the remainder on children's education, and $\\frac{1}{3}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 4,800.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 16,000.00",
+              "GH¢ 12,800.00",
+              "GH¢ 20,000.00",
+              "GH¢ 24,000.00"
+            ],
+            "correctAnswer": "GH¢ 16,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{4}\\right) \\times \\left(1 - \\frac{2}{5}\\right) \\times \\left(1 - \\frac{1}{3}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{4} = \\frac{3}{4}$$\n$$\\text{After Education} = \\frac{3}{4} \\times \\left(1 - \\frac{2}{5}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.3000$$\n$$\\text{Total Income} = \\frac{4800}{0.3000} = \\text{GH¢ } 16,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h12",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{3}$ on housing, $\\frac{1}{2}$ of the remainder on children's education, and $\\frac{1}{4}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 6,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 24,000.00",
+              "GH¢ 19,200.00",
+              "GH¢ 30,000.00",
+              "GH¢ 36,000.00"
+            ],
+            "correctAnswer": "GH¢ 24,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{3}\\right) \\times \\left(1 - \\frac{1}{2}\\right) \\times \\left(1 - \\frac{1}{4}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{3} = \\frac{2}{3}$$\n$$\\text{After Education} = \\frac{2}{3} \\times \\left(1 - \\frac{1}{2}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.2500$$\n$$\\text{Total Income} = \\frac{6000}{0.2500} = \\text{GH¢ } 24,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h13",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{5}$ on housing, $\\frac{1}{2}$ of the remainder on children's education, and $\\frac{1}{4}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 9,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 30,000.00",
+              "GH¢ 24,000.00",
+              "GH¢ 37,500.00",
+              "GH¢ 45,000.00"
+            ],
+            "correctAnswer": "GH¢ 30,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{1}{2}\\right) \\times \\left(1 - \\frac{1}{4}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{5} = \\frac{4}{5}$$\n$$\\text{After Education} = \\frac{4}{5} \\times \\left(1 - \\frac{1}{2}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.3000$$\n$$\\text{Total Income} = \\frac{9000}{0.3000} = \\text{GH¢ } 30,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h14",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{3}{10}$ on housing, $\\frac{1}{7}$ of the remainder on children's education, and $\\frac{1}{3}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 11,200.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 28,000.00",
+              "GH¢ 22,400.00",
+              "GH¢ 35,000.00",
+              "GH¢ 42,000.00"
+            ],
+            "correctAnswer": "GH¢ 28,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{3}{10}\\right) \\times \\left(1 - \\frac{1}{7}\\right) \\times \\left(1 - \\frac{1}{3}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{3}{10} = \\frac{7}{10}$$\n$$\\text{After Education} = \\frac{7}{10} \\times \\left(1 - \\frac{1}{7}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.4000$$\n$$\\text{Total Income} = \\frac{11200}{0.4000} = \\text{GH¢ } 28,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h15",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{4}$ on housing, $\\frac{1}{5}$ of the remainder on children's education, and $\\frac{1}{2}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 3,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 10,000.00",
+              "GH¢ 8,000.00",
+              "GH¢ 12,500.00",
+              "GH¢ 15,000.00"
+            ],
+            "correctAnswer": "GH¢ 10,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{4}\\right) \\times \\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{1}{2}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{4} = \\frac{3}{4}$$\n$$\\text{After Education} = \\frac{3}{4} \\times \\left(1 - \\frac{1}{5}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.3000$$\n$$\\text{Total Income} = \\frac{3000}{0.3000} = \\text{GH¢ } 10,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h16",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{2}$ on housing, $\\frac{1}{3}$ of the remainder on children's education, and $\\frac{1}{4}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 9,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 36,000.00",
+              "GH¢ 28,800.00",
+              "GH¢ 45,000.00",
+              "GH¢ 54,000.00"
+            ],
+            "correctAnswer": "GH¢ 36,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{2}\\right) \\times \\left(1 - \\frac{1}{3}\\right) \\times \\left(1 - \\frac{1}{4}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{2} = \\frac{1}{2}$$\n$$\\text{After Education} = \\frac{1}{2} \\times \\left(1 - \\frac{1}{3}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.2500$$\n$$\\text{Total Income} = \\frac{9000}{0.2500} = \\text{GH¢ } 36,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h17",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{3}$ on housing, $\\frac{3}{4}$ of the remainder on children's education, and $\\frac{1}{5}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 4,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 30,000.00",
+              "GH¢ 24,000.00",
+              "GH¢ 37,500.00",
+              "GH¢ 45,000.00"
+            ],
+            "correctAnswer": "GH¢ 30,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{3}\\right) \\times \\left(1 - \\frac{3}{4}\\right) \\times \\left(1 - \\frac{1}{5}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{3} = \\frac{2}{3}$$\n$$\\text{After Education} = \\frac{2}{3} \\times \\left(1 - \\frac{3}{4}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.1333$$\n$$\\text{Total Income} = \\frac{4000}{0.1333} = \\text{GH¢ } 30,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h18",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{2}{7}$ on housing, $\\frac{1}{5}$ of the remainder on children's education, and $\\frac{1}{2}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 4,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 14,000.00",
+              "GH¢ 11,200.00",
+              "GH¢ 17,500.00",
+              "GH¢ 21,000.00"
+            ],
+            "correctAnswer": "GH¢ 14,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{2}{7}\\right) \\times \\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{1}{2}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{2}{7} = \\frac{5}{7}$$\n$$\\text{After Education} = \\frac{5}{7} \\times \\left(1 - \\frac{1}{5}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.2857$$\n$$\\text{Total Income} = \\frac{4000}{0.2857} = \\text{GH¢ } 14,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h19",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{5}$ on housing, $\\frac{3}{8}$ of the remainder on children's education, and $\\frac{1}{5}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 16,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 40,000.00",
+              "GH¢ 32,000.00",
+              "GH¢ 50,000.00",
+              "GH¢ 60,000.00"
+            ],
+            "correctAnswer": "GH¢ 40,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{3}{8}\\right) \\times \\left(1 - \\frac{1}{5}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{5} = \\frac{4}{5}$$\n$$\\text{After Education} = \\frac{4}{5} \\times \\left(1 - \\frac{3}{8}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.4000$$\n$$\\text{Total Income} = \\frac{16000}{0.4000} = \\text{GH¢ } 40,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h20",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{6}$ on housing, $\\frac{1}{5}$ of the remainder on children's education, and $\\frac{1}{4}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 6,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 12,000.00",
+              "GH¢ 9,600.00",
+              "GH¢ 15,000.00",
+              "GH¢ 18,000.00"
+            ],
+            "correctAnswer": "GH¢ 12,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{6}\\right) \\times \\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{1}{4}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{6} = \\frac{5}{6}$$\n$$\\text{After Education} = \\frac{5}{6} \\times \\left(1 - \\frac{1}{5}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.5000$$\n$$\\text{Total Income} = \\frac{6000}{0.5000} = \\text{GH¢ } 12,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h21",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{3}{8}$ on housing, $\\frac{1}{5}$ of the remainder on children's education, and $\\frac{1}{2}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 8,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 32,000.00",
+              "GH¢ 25,600.00",
+              "GH¢ 40,000.00",
+              "GH¢ 48,000.00"
+            ],
+            "correctAnswer": "GH¢ 32,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{3}{8}\\right) \\times \\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{1}{2}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{3}{8} = \\frac{5}{8}$$\n$$\\text{After Education} = \\frac{5}{8} \\times \\left(1 - \\frac{1}{5}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.2500$$\n$$\\text{Total Income} = \\frac{8000}{0.2500} = \\text{GH¢ } 32,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h22",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{4}$ on housing, $\\frac{1}{6}$ of the remainder on children's education, and $\\frac{2}{5}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 9,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 24,000.00",
+              "GH¢ 19,200.00",
+              "GH¢ 30,000.00",
+              "GH¢ 36,000.00"
+            ],
+            "correctAnswer": "GH¢ 24,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{4}\\right) \\times \\left(1 - \\frac{1}{6}\\right) \\times \\left(1 - \\frac{2}{5}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{4} = \\frac{3}{4}$$\n$$\\text{After Education} = \\frac{3}{4} \\times \\left(1 - \\frac{1}{6}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.3750$$\n$$\\text{Total Income} = \\frac{9000}{0.3750} = \\text{GH¢ } 24,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h23",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{5}$ on housing, $\\frac{2}{4}$ of the remainder on children's education, and $\\frac{1}{3}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 5,333.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 20,000.00",
+              "GH¢ 16,000.00",
+              "GH¢ 25,000.00",
+              "GH¢ 30,000.00"
+            ],
+            "correctAnswer": "GH¢ 20,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{5}\\right) \\times \\left(1 - \\frac{2}{4}\\right) \\times \\left(1 - \\frac{1}{3}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{5} = \\frac{4}{5}$$\n$$\\text{After Education} = \\frac{4}{5} \\times \\left(1 - \\frac{2}{4}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.2667$$\n$$\\text{Total Income} = \\frac{5333}{0.2667} = \\text{GH¢ } 20,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h24",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{2}{9}$ on housing, $\\frac{1}{7}$ of the remainder on children's education, and $\\frac{1}{3}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 12,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 27,000.00",
+              "GH¢ 21,600.00",
+              "GH¢ 33,750.00",
+              "GH¢ 40,500.00"
+            ],
+            "correctAnswer": "GH¢ 27,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{2}{9}\\right) \\times \\left(1 - \\frac{1}{7}\\right) \\times \\left(1 - \\frac{1}{3}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{2}{9} = \\frac{7}{9}$$\n$$\\text{After Education} = \\frac{7}{9} \\times \\left(1 - \\frac{1}{7}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.4444$$\n$$\\text{Total Income} = \\frac{12000}{0.4444} = \\text{GH¢ } 27,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h25",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "A professional allocates monthly income as follows: $\\frac{1}{8}$ on housing, $\\frac{2}{7}$ of the remainder on children's education, and $\\frac{1}{5}$ of the subsequent balance on investment. If the remaining sum of $\\text{GH¢ } 20,000.00$ is banked, calculate the total monthly income.",
+            "options": [
+              "GH¢ 40,000.00",
+              "GH¢ 32,000.00",
+              "GH¢ 50,000.00",
+              "GH¢ 60,000.00"
+            ],
+            "correctAnswer": "GH¢ 40,000.00",
+            "hint": "Multiply cascading remainder fractions: $\\left(1 - \\frac{1}{8}\\right) \\times \\left(1 - \\frac{2}{7}\\right) \\times \\left(1 - \\frac{1}{5}\\right)$.",
+            "workedSolution": "$$\\text{After Housing} = 1 - \\frac{1}{8} = \\frac{7}{8}$$\n$$\\text{After Education} = \\frac{7}{8} \\times \\left(1 - \\frac{2}{7}\\right)$$\n$$\\text{Final Leftover Fraction} = 0.5000$$\n$$\\text{Total Income} = \\frac{20000}{0.5000} = \\text{GH¢ } 40,000.00$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h26",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.2\\dot{3}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 7/30",
+              "1 8/30",
+              "1 7/32",
+              "2 7/30"
+            ],
+            "correctAnswer": "1 7/30",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.2\\dot{3}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.2\\dot{3} = \\frac{7}{30}$$\n$$\\text{Mixed Number} = 1\\frac{7}{30}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h27",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $3.1\\dot{6}$ into a mixed number in its lowest terms.",
+            "options": [
+              "3 1/6",
+              "3 2/6",
+              "3 1/8",
+              "4 1/6"
+            ],
+            "correctAnswer": "3 1/6",
+            "hint": "Separate the integer part $3$ and convert the fractional recurring part $0.1\\dot{6}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.1\\dot{6} = \\frac{1}{6}$$\n$$\\text{Mixed Number} = 3\\frac{1}{6}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h28",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.8\\dot{3}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 5/6",
+              "2 6/6",
+              "2 5/8",
+              "3 5/6"
+            ],
+            "correctAnswer": "2 5/6",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.8\\dot{3}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.8\\dot{3} = \\frac{5}{6}$$\n$$\\text{Mixed Number} = 2\\frac{5}{6}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h29",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.4\\dot{6}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 7/15",
+              "1 8/15",
+              "1 7/17",
+              "2 7/15"
+            ],
+            "correctAnswer": "1 7/15",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.4\\dot{6}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.4\\dot{6} = \\frac{7}{15}$$\n$$\\text{Mixed Number} = 1\\frac{7}{15}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h30",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $4.1\\dot{2}$ into a mixed number in its lowest terms.",
+            "options": [
+              "4 4/33",
+              "4 5/33",
+              "4 4/35",
+              "5 4/33"
+            ],
+            "correctAnswer": "4 4/33",
+            "hint": "Separate the integer part $4$ and convert the fractional recurring part $0.1\\dot{2}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.1\\dot{2} = \\frac{4}{33}$$\n$$\\text{Mixed Number} = 4\\frac{4}{33}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h31",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.2\\dot{7}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 5/18",
+              "2 6/18",
+              "2 5/20",
+              "3 5/18"
+            ],
+            "correctAnswer": "2 5/18",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.2\\dot{7}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.2\\dot{7} = \\frac{5}{18}$$\n$$\\text{Mixed Number} = 2\\frac{5}{18}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h32",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.0\\dot{4}\\dot{5}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 1/22",
+              "1 2/22",
+              "1 1/24",
+              "2 1/22"
+            ],
+            "correctAnswer": "1 1/22",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.0\\dot{4}\\dot{5}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.0\\dot{4}\\dot{5} = \\frac{1}{22}$$\n$$\\text{Mixed Number} = 1\\frac{1}{22}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h33",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $3.3\\dot{6}$ into a mixed number in its lowest terms.",
+            "options": [
+              "3 4/11",
+              "3 5/11",
+              "3 4/13",
+              "4 4/11"
+            ],
+            "correctAnswer": "3 4/11",
+            "hint": "Separate the integer part $3$ and convert the fractional recurring part $0.3\\dot{6}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.3\\dot{6} = \\frac{4}{11}$$\n$$\\text{Mixed Number} = 3\\frac{4}{11}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h34",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.5\\dot{4}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 6/11",
+              "2 7/11",
+              "2 6/13",
+              "3 6/11"
+            ],
+            "correctAnswer": "2 6/11",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.5\\dot{4}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.5\\dot{4} = \\frac{6}{11}$$\n$$\\text{Mixed Number} = 2\\frac{6}{11}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h35",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $5.1\\dot{8}$ into a mixed number in its lowest terms.",
+            "options": [
+              "5 2/11",
+              "5 3/11",
+              "5 2/13",
+              "6 2/11"
+            ],
+            "correctAnswer": "5 2/11",
+            "hint": "Separate the integer part $5$ and convert the fractional recurring part $0.1\\dot{8}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.1\\dot{8} = \\frac{2}{11}$$\n$$\\text{Mixed Number} = 5\\frac{2}{11}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h36",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.7\\dot{2}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 8/11",
+              "1 9/11",
+              "1 8/13",
+              "2 8/11"
+            ],
+            "correctAnswer": "1 8/11",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.7\\dot{2}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.7\\dot{2} = \\frac{8}{11}$$\n$$\\text{Mixed Number} = 1\\frac{8}{11}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h37",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.6\\dot{3}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 7/11",
+              "2 8/11",
+              "2 7/13",
+              "3 7/11"
+            ],
+            "correctAnswer": "2 7/11",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.6\\dot{3}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.6\\dot{3} = \\frac{7}{11}$$\n$$\\text{Mixed Number} = 2\\frac{7}{11}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h38",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $3.4\\dot{5}$ into a mixed number in its lowest terms.",
+            "options": [
+              "3 5/11",
+              "3 6/11",
+              "3 5/13",
+              "4 5/11"
+            ],
+            "correctAnswer": "3 5/11",
+            "hint": "Separate the integer part $3$ and convert the fractional recurring part $0.4\\dot{5}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.4\\dot{5} = \\frac{5}{11}$$\n$$\\text{Mixed Number} = 3\\frac{5}{11}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h39",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.2\\dot{6}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 4/15",
+              "1 5/15",
+              "1 4/17",
+              "2 4/15"
+            ],
+            "correctAnswer": "1 4/15",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.2\\dot{6}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.2\\dot{6} = \\frac{4}{15}$$\n$$\\text{Mixed Number} = 1\\frac{4}{15}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h40",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $4.5\\dot{3}$ into a mixed number in its lowest terms.",
+            "options": [
+              "4 8/15",
+              "4 9/15",
+              "4 8/17",
+              "5 8/15"
+            ],
+            "correctAnswer": "4 8/15",
+            "hint": "Separate the integer part $4$ and convert the fractional recurring part $0.5\\dot{3}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.5\\dot{3} = \\frac{8}{15}$$\n$$\\text{Mixed Number} = 4\\frac{8}{15}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h41",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.7\\dot{3}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 11/15",
+              "2 12/15",
+              "2 11/17",
+              "3 11/15"
+            ],
+            "correctAnswer": "2 11/15",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.7\\dot{3}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.7\\dot{3} = \\frac{11}{15}$$\n$$\\text{Mixed Number} = 2\\frac{11}{15}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h42",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.3\\dot{5}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 16/45",
+              "1 17/45",
+              "1 16/47",
+              "2 16/45"
+            ],
+            "correctAnswer": "1 16/45",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.3\\dot{5}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.3\\dot{5} = \\frac{16}{45}$$\n$$\\text{Mixed Number} = 1\\frac{16}{45}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h43",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $3.1\\dot{5}$ into a mixed number in its lowest terms.",
+            "options": [
+              "3 7/45",
+              "3 8/45",
+              "3 7/47",
+              "4 7/45"
+            ],
+            "correctAnswer": "3 7/45",
+            "hint": "Separate the integer part $3$ and convert the fractional recurring part $0.1\\dot{5}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.1\\dot{5} = \\frac{7}{45}$$\n$$\\text{Mixed Number} = 3\\frac{7}{45}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h44",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.6\\dot{1}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 11/18",
+              "2 12/18",
+              "2 11/20",
+              "3 11/18"
+            ],
+            "correctAnswer": "2 11/18",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.6\\dot{1}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.6\\dot{1} = \\frac{11}{18}$$\n$$\\text{Mixed Number} = 2\\frac{11}{18}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h45",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.1\\dot{7}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 8/45",
+              "1 9/45",
+              "1 8/47",
+              "2 8/45"
+            ],
+            "correctAnswer": "1 8/45",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.1\\dot{7}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.1\\dot{7} = \\frac{8}{45}$$\n$$\\text{Mixed Number} = 1\\frac{8}{45}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h46",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $4.2\\dot{5}$ into a mixed number in its lowest terms.",
+            "options": [
+              "4 23/90",
+              "4 24/90",
+              "4 23/92",
+              "5 23/90"
+            ],
+            "correctAnswer": "4 23/90",
+            "hint": "Separate the integer part $4$ and convert the fractional recurring part $0.2\\dot{5}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.2\\dot{5} = \\frac{23}{90}$$\n$$\\text{Mixed Number} = 4\\frac{23}{90}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h47",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.3\\dot{1}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 14/45",
+              "2 15/45",
+              "2 14/47",
+              "3 14/45"
+            ],
+            "correctAnswer": "2 14/45",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.3\\dot{1}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.3\\dot{1} = \\frac{14}{45}$$\n$$\\text{Mixed Number} = 2\\frac{14}{45}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h48",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $3.7\\dot{1}$ into a mixed number in its lowest terms.",
+            "options": [
+              "3 32/45",
+              "3 33/45",
+              "3 32/47",
+              "4 32/45"
+            ],
+            "correctAnswer": "3 32/45",
+            "hint": "Separate the integer part $3$ and convert the fractional recurring part $0.7\\dot{1}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.7\\dot{1} = \\frac{32}{45}$$\n$$\\text{Mixed Number} = 3\\frac{32}{45}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h49",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $1.5\\dot{7}$ into a mixed number in its lowest terms.",
+            "options": [
+              "1 26/45",
+              "1 27/45",
+              "1 26/47",
+              "2 26/45"
+            ],
+            "correctAnswer": "1 26/45",
+            "hint": "Separate the integer part $1$ and convert the fractional recurring part $0.5\\dot{7}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.5\\dot{7} = \\frac{26}{45}$$\n$$\\text{Mixed Number} = 1\\frac{26}{45}$$.",
+            "points": 2
+          },
+          {
+            "id": "q_b9_frac_h50",
+            "difficulty": "hard",
+            "dokLevel": 3,
+            "prompt": "Convert the recurring decimal $2.9\\dot{1}$ into a mixed number in its lowest terms.",
+            "options": [
+              "2 41/45",
+              "2 42/45",
+              "2 41/47",
+              "3 41/45"
+            ],
+            "correctAnswer": "2 41/45",
+            "hint": "Separate the integer part $2$ and convert the fractional recurring part $0.9\\dot{1}$.",
+            "workedSolution": "$$\\text{Fractional Part: } x = 0.9\\dot{1} = \\frac{41}{45}$$\n$$\\text{Mixed Number} = 2\\frac{41}{45}$$.",
             "points": 2
           }
         ]
