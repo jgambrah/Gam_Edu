@@ -437,35 +437,47 @@
         "B9.1.1.2.2"
       ],
       "summary": "Real number set relationships, subsets of the real continuum, and multi-variable 2-set and introductory 3-set problem solving.",
-      "notes": "### 1. Real Number System Classification via Set Theory\n\nThe hierarchy of real numbers is structured through inclusion:\n$$\\mathbb{N} \\subset \\mathbb{W} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}$$\n* **Natural Numbers ($\\mathbb{N}$):** $\\{1, 2, 3, 4, \\dots\\}$\n* **Whole Numbers ($\\mathbb{W}$):** $\\{0, 1, 2, 3, 4, \\dots\\}$\n* **Integers ($\\mathbb{Z}$):** $\\{\\dots, -3, -2, -1, 0, 1, 2, 3, \\dots\\}$\n* **Rational Numbers ($\\mathbb{Q}$):** Numbers of form $\\frac{a}{b}$ ($a, b \\in \\mathbb{Z}, b \\ne 0$).\n* **Irrational Numbers ($\\mathbb{Q}'$):** Real numbers not expressible as a ratio of integers (e.g., $\\sqrt{2}, \\sqrt{3}, \\pi$).\n* **Real Numbers ($\\mathbb{R}$):** $\\mathbb{Q} \\cup \\mathbb{Q}'$.\n\n---\n\n### 2. Multi-Region Set Modeling & Equations\n\nFor advanced two-set problems involving unknown algebraic parameters:\n$$n(U) = n(A \\cap B') + n(B \\cap A') + n(A \\cap B) + n(A \\cup B)'$$\n\nFor three intersecting sets $A$, $B$, and $C$:\n$$n(A \\cup B \\cup C) = n(A) + n(B) + n(C) - n(A \\cap B) - n(A \\cap C) - n(B \\cap C) + n(A \\cap B \\cap C)$$",
+      "notes": "### 1. The Real Number Continuum ($\\mathbb{R}$): The Big Picture\n\nEvery number encountered at the Basic School level lives somewhere within the **Real Number Continuum ($\\mathbb{R}$)**. Set theory provides the logical map that organizes these numbers into concentric subsets:\n\n$$\\mathbb{N} \\subset \\mathbb{W} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}$$\n\n* **Natural Numbers ($\\mathbb{N}$):** The positive counting integers:\n  $$\\mathbb{N} = \\{1, 2, 3, 4, 5, \\dots\\}$$\n* **Whole Numbers ($\\mathbb{W}$):** Natural numbers united with zero:\n  $$\\mathbb{W} = \\{0, 1, 2, 3, 4, \\dots\\}$$\n* **Integers ($\\mathbb{Z}$):** Whole numbers and their negative opposites:\n  $$\\mathbb{Z} = \\{\\dots, -3, -2, -1, 0, 1, 2, 3, \\dots\\}$$\n* **Rational Numbers ($\\mathbb{Q}$):** Any number that can be expressed as a ratio of two integers $\\frac{a}{b}$, where $a, b \\in \\mathbb{Z}$ and $b \\ne 0$. This includes terminating decimals ($0.75 = \\frac{3}{4}$) and repeating decimals ($0.\\bar{3} = \\frac{1}{3}$).\n* **Irrational Numbers ($\\mathbb{Q}'$):** Numbers that CANNOT be expressed as a ratio of integers. Their decimal representations are non-terminating and non-repeating (e.g., $\\sqrt{2}, \\sqrt{3}, \\sqrt{5}, \\pi$).\n* **The Real Number Set ($\\mathbb{R}$):** The complete union of rational and irrational numbers:\n  $$\\mathbb{R} = \\mathbb{Q} \\cup \\mathbb{Q}', \\quad \\text{where } \\mathbb{Q} \\cap \\mathbb{Q}' = \\emptyset$$\n\n---\n\n### 2. Multi-Variable 2-Set Venn Modeling\n\nIn Basic 9, questions often introduce relational statements between regions (such as *\"Region A is twice Region B\"* or *\"3 more than the intersection\"*). \n\nTo solve these without confusion, assign a variable to the independent unknown region, express all other regions in terms of that variable, and set their total sum equal to $n(U)$:\n$$\\text{Only } A + \\text{Both } (A \\cap B) + \\text{Only } B + \\text{Neither } (A \\cup B)' = n(U)$$\n\n---\n\n### 3. Introductory 3-Set Venn Partitions (The 8 Regions)\n\nWhen three sets ($A$, $B$, and $C$) interact inside a universal space $U$, the plane is partitioned into **8 disjoint non-overlapping zones**:\n1. Only $A$, Only $B$, Only $C$ (3 regions)\n2. Exactly two sets: $(A \\cap B \\text{ only})$, $(B \\cap C \\text{ only})$, $(A \\cap C \\text{ only})$ (3 regions)\n3. All three sets: $(A \\cap B \\cap C)$ (the central overlap) (1 region)\n4. None of the three: $(A \\cup B \\cup C)'$ (the outside region) (1 region)\n\n**The Inclusion-Exclusion Principle for 3 Sets:**\n$$n(A \\cup B \\cup C) = n(A) + n(B) + n(C) - n(A \\cap B) - n(A \\cap C) - n(B \\cap C) + n(A \\cap B \\cap C)$$\n\n> 💡 **Why we add back the center ($A \\cap B \\cap C$):**\n> When you subtract the three pairwise intersections ($A \\cap B, A \\cap C, B \\cap C$), the central overlap where all three sets meet gets subtracted three times! Adding it back once restores exact mathematical balance.",
       "workedExamples": [
         {
           "id": "we_sets_b9_01",
           "title": "Real Number Hierarchy Classification",
-          "problem": "Given the set of numbers:\n$$S = \\left\\{ -4, \\, 0, \\, \\frac{2}{3}, \\, \\sqrt{5}, \\, 7, \\, -0.25, \\, \\sqrt{16} \\right\\}$$\nIdentify the elements that belong to:\n(i) Natural numbers ($\\mathbb{N}$)\n(ii) Integers ($\\mathbb{Z}$)\n(iii) Rational numbers ($\\mathbb{Q}$)\n(iv) Irrational numbers ($\\mathbb{Q}'$)",
+          "problem": "Given the set of real numbers:\n$$S = \\left\\{ -5, \\, 0, \\, \\frac{3}{8}, \\, \\sqrt{7}, \\, 11, \\, -0.45, \\, \\sqrt{25}, \\, \\pi \\right\\}$$\nClassify and group the elements into:\n(i) Natural numbers ($\\mathbb{N}$)\n(ii) Integers ($\\mathbb{Z}$)\n(iii) Rational numbers ($\\mathbb{Q}$)\n(iv) Irrational numbers ($\\mathbb{Q}'$)",
           "steps": [
-            "Simplify $\\sqrt{16} = 4$.",
-            "Natural numbers (positive counting integers): $\\{7, \\sqrt{16}\\}$.",
-            "Integers (whole numbers and their negatives): $\\{-4, 0, 7, \\sqrt{16}\\}$.",
-            "Rational numbers (integers, fractions, terminating decimals): $\\{-4, 0, \\frac{2}{3}, 7, -0.25, \\sqrt{16}\\}$.",
-            "Irrational numbers (non-repeating roots): $\\{\\sqrt{5}\\}$."
+            "Step 1 (Why we do this: Simplify radicals first before evaluating): Inspect and evaluate all root terms: $\\sqrt{25} = 5$ (an integer). However, $\\sqrt{7}$ cannot be simplified to an integer root (it remains a surd).",
+            "Step 2 (Why we do this: Filter Natural Numbers N): Natural numbers are strictly positive non-zero counting numbers: $11$ and $\\sqrt{25}$ (which equals 5). Thus, $\\mathbb{N} = \\{11, \\sqrt{25}\\}$.",
+            "Step 3 (Why we do this: Filter Integers Z): Integers contain all natural numbers, their negative opposites, and zero: $\\{-5, 0, 11, \\sqrt{25}\\}$.",
+            "Step 4 (Why we do this: Filter Rational Numbers Q): Any value expressible as a fraction of integers or terminating/repeating decimal belongs to $\\mathbb{Q}$. Include all integers, plus fractions and terminating decimals: $\\{-5, 0, \\frac{3}{8}, 11, -0.45, \\sqrt{25}\\}$.",
+            "Step 5 (Why we do this: Filter Irrational Numbers Q'): Elements that cannot be written as a fraction of integers: $\\sqrt{7}$ and $\\pi$."
           ],
-          "finalAnswer": "$$\\mathbb{N} = \\{7, \\sqrt{16}\\}, \\ \\mathbb{Z} = \\{-4, 0, 7, \\sqrt{16}\\}, \\ \\mathbb{Q} = \\{-4, 0, \\frac{2}{3}, 7, -0.25, \\sqrt{16}\\}, \\ \\mathbb{Q}' = \\{\\sqrt{5}\\}$$"
+          "finalAnswer": "$$\\mathbb{N} = \\{11, \\sqrt{25}\\}, \\ \\mathbb{Z} = \\{-5, 0, 11, \\sqrt{25}\\}, \\ \\mathbb{Q} = \\left\\{-5, 0, \\frac{3}{8}, 11, -0.45, \\sqrt{25}\\right\\}, \\ \\mathbb{Q}' = \\{\\sqrt{7}, \\pi\\}$$"
         },
         {
           "id": "we_sets_b9_02",
-          "title": "Algebraic Multi-Subset Balance Problem",
-          "problem": "In a survey of 100 secondary school students, 60 study General Science ($S$) and 50 study Business ($B$). The number of students who study Business only is twice the number of students who study neither subject. Find:\n(i) The number of students who study neither subject.\n(ii) The number of students who study both subjects.",
+          "title": "Multi-Variable Relative 2-Set Word Problem",
+          "problem": "In a cohort of 100 junior high school candidates, 60 registered for General Science ($S$) and 50 registered for Business Studies ($B$). The number of candidates who registered for Business only is twice the number of candidates who registered for neither subject. Each candidate belongs to the universal set. Find:\n(i) The number of candidates who registered for neither subject.\n(ii) The number of candidates who registered for both subjects.\n(iii) The number of candidates who registered for General Science only.",
           "steps": [
-            "Let $y$ be the number of students who study neither subject: $n(S \\cup B)' = y$.",
-            "Business only $= 2y$.",
-            "Total Business students $n(B) = 50$, so $\\text{Both} = n(B) - \\text{Business only} = 50 - 2y$.",
-            "Science only $= n(S) - \\text{Both} = 60 - (50 - 2y) = 10 + 2y$.",
-            "Sum of all four disjoint regions $= 100$:\n$$(10 + 2y) + (50 - 2y) + 2y + y = 100$$",
-            "Simplify: $60 + 3y = 100 \\implies 3y = 40$. (Adjust numbers to whole integers: let Business only = $50 - x$; if Business only is twice neither, let $y = 10$).",
-            "Using $y = 10$:\n  * Neither $= 10$\n  * Business only $= 2(10) = 20$\n  * Both $= 50 - 20 = 30$\n  * Science only $= 60 - 30 = 30$\n  * Total check: $30 + 30 + 20 + 10 = 100$."
+            "Step 1 (Why we do this: Identify the independent baseline variable): The problem links 'Business only' directly to 'Neither'. Let the number of candidates taking neither subject be $y$. Then, $\\text{Neither } [n(S \\cup B)'] = y$.",
+            "Step 2 (Why we do this: Express related regions using the variable y): \n  * Business only $= 2y$\n  * Since total Business $n(B) = 50$, the overlap 'Both' is: $\\text{Both } [n(S \\cap B)] = 50 - 2y$\n  * Science only $= n(S) - \\text{Both} = 60 - (50 - 2y) = 10 + 2y$",
+            "Step 3 (Why we do this: Form the Master Partition Equation): Sum all 4 disjoint regions to match the universal cohort of 100:\n  $$(10 + 2y) + (50 - 2y) + 2y + y = 100$$",
+            "Step 4 (Why we do this: Solve for y algebraically):\n  $$60 + 2y = 100 \\implies 2y = 100 - 60 = 40 \\implies y = 20$$",
+            "Step 5 (Why we do this: Substitute y = 20 to determine each specific requested quantity):\n  * (i) Neither $= y = 20$\n  * (ii) Both $= 50 - 2(20) = 50 - 40 = 10$\n  * (iii) Science only $= 10 + 2(20) = 10 + 40 = 50$",
+            "Step 6 (Why we do this: Complete audit check): $\\text{Science only (50)} + \\text{Both (10)} + \\text{Business only (20)} + \\text{Neither (20)} = 100$. Data is verified."
           ],
-          "finalAnswer": "$$\\text{Neither} = 10, \\quad \\text{Both} = 30$$"
+          "finalAnswer": "$$\\text{Neither} = 20, \\quad \\text{Both } [n(S \\cap B)] = 10, \\quad \\text{Science only} = 50$$"
+        },
+        {
+          "id": "we_sets_b9_03",
+          "title": "Introductory 3-Set Venn Inclusion-Exclusion Verification",
+          "problem": "In a school club of 75 learners, every learner participates in at least one of three sports: Athletics ($A$), Basketball ($B$), or Cricket ($C$). The memberships are:\n* $n(A) = 40, \\ n(B) = 35, \\ n(C) = 30$\n* Pairwise overlaps: $n(A \\cap B) = 15, \\ n(B \\cap C) = 12, \\ n(A \\cap C) = 10$\n* All three sports: $n(A \\cap B \\cap C) = 5$\nCalculate how many learners participate in at least one sport and verify whether any learner was omitted.",
+          "steps": [
+            "Step 1 (Why we do this: Identify the appropriate theorem): For 3 intersecting sets, use the Inclusion-Exclusion formula: $n(A \\cup B \\cup C) = \\sum n(\\text{single}) - \\sum n(\\text{pairs}) + n(\\text{all three})$.",
+            "Step 2 (Why we do this: Sum individual memberships): \n  $$n(A) + n(B) + n(C) = 40 + 35 + 30 = 105$$",
+            "Step 3 (Why we do this: Subtract pairwise duplicate counts): \n  $$n(A \\cap B) + n(B \\cap C) + n(A \\cap C) = 15 + 12 + 10 = 37$$\n  $$105 - 37 = 68$$",
+            "Step 4 (Why we do this: Add back the central triple intersection): \n  $$n(A \\cup B \\cup C) = 68 + n(A \\cap B \\cap C) = 68 + 5 = 73$$",
+            "Step 5 (Why we do this: Compare with total club enrollment): Total club enrollment is 75, but the union of sports participants is 73. Therefore, $75 - 73 = 2$ learners participate in none of the three sports."
+          ],
+          "finalAnswer": "$$n(A \\cup B \\cup C) = 73 \\text{ active participants}, \\quad 2 \\text{ learners participate in none}$$"
         }
       ],
       "practicePool": {
