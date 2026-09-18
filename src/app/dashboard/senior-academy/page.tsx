@@ -1369,6 +1369,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics - Structured Problem-Solving Series (Set 67)",
+        domain: "CORE CURRICULUM",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions - 60 mins - Mastery Series",
+        description: "Official 6-question structured theory examination variant (Set 67 / 2019 BECE variant) featuring finite set intersection, LCM prime decomposition, rational algebraic ratio evaluation, linear fraction equations, school enrolment ratios, monomial product simplification, Venn diagram examination passes, 4-term grouping factorization, percentage conversion to mixed fractions, triangle exterior base angles, multi-step fraction division, column vector addition, Cartesian graph plotting (scale 2 cm to 1 unit and 2 cm to 2 units), line equation derivation, product of powers of 2, and ungrouped frequency distribution tables with mode, median, and mean.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-67",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions - Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",
