@@ -445,7 +445,7 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
           }
         ]
       }
-    }
+    },
       {
       subjectId: 'math',
       topicId: 'core_curriculum_mastery',
