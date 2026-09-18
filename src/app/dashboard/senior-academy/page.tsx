@@ -21,7 +21,8 @@ import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 import { QuestionRunner } from '@/components/curriculum/QuestionRunner';
-import { getTopicQuestionSets, invalidateCurriculumCache } from '@/lib/services/curriculumService';
+import { getTopicQuestionSets, getQuestionSetById, invalidateCurriculumCache } from '@/lib/services/curriculumService';
+import { isValidCurriculumLevelId, SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
@@ -2745,8 +2746,25 @@ function MathLab({
         try {
             const sets = await getTopicQuestionSets(levelId, subjectId, topicId);
             console.log("Fetched sets:", sets);
-            if (sets && sets.length > 0) {
-                const targetSet = mod.setId ? (sets.find(s => s.id === mod.setId) || sets[0]) : sets[0];
+            let targetSet: CurriculumQuestionSet | null = null;
+            if (mod.setId) {
+                targetSet = sets.find(s => s.id === mod.setId) || null;
+                if (!targetSet) {
+                    targetSet = await getQuestionSetById(levelId, subjectId, topicId, mod.setId);
+                }
+                if (!targetSet && isValidCurriculumLevelId(levelId)) {
+                    const fallbackMatch = SAMPLE_GLOBAL_QUESTION_SETS[levelId as GlobalCurriculumLevelId]?.find(
+                        (item) => item.questionSet.id === mod.setId
+                    );
+                    if (fallbackMatch) {
+                        targetSet = fallbackMatch.questionSet;
+                    }
+                }
+            }
+            if (!targetSet && sets && sets.length > 0) {
+                targetSet = sets[0];
+            }
+            if (targetSet) {
                 console.log("[senior-academy] Activated target set:", targetSet.id, targetSet.title, `(${targetSet.questions?.length} questions)`);
                 setActiveQuestionSet(targetSet);
             } else {

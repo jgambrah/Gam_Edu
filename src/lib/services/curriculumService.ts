@@ -137,6 +137,23 @@ export async function fetchTopicQuestionSetsFromFirestore(
             id: d.id
           }));
           console.log("[curriculumService] Fetched sets from Firestore:", sets.map(s => ({ id: s.id, title: s.title, qCount: s.questions?.length })));
+
+          // Append any registered fallback sets not yet in Firestore (e.g. Set 58, Set 59)
+          if (isValidCurriculumLevelId(levelId)) {
+            for (const sId of subjectAliases) {
+              for (const tId of topicAliases) {
+                const sampleItems = SAMPLE_GLOBAL_QUESTION_SETS[levelId]?.filter(
+                  (item) => item.subjectId === sId && item.topicId === tId
+                ) || [];
+                for (const item of sampleItems) {
+                  if (!sets.some(s => s.id === item.questionSet.id)) {
+                    console.log(`[curriculumService] Appending missing fallback set to Firestore list: ${item.questionSet.id} ("${item.questionSet.title}")`);
+                    sets.push(item.questionSet);
+                  }
+                }
+              }
+            }
+          }
           return sets;
         }
       }

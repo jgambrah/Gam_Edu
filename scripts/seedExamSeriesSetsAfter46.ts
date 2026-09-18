@@ -44,7 +44,7 @@ const PAPERS_TO_MAP = [
     p1SetNum: 55,
     p2SetNum: 56,
     variantType: 'past_paper_variant'
-  }
+  },
   {
     docId: 'paper_2024_variant',
     name: '2024 BECE Variant',
