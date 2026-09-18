@@ -1248,6 +1248,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics • Structured Problem-Solving Series (Set 59)",
+        domain: "GEOMETRY & DATA",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions • 60 mins • Mastery Series",
+        description: "Standardized 6-question structured theory examination variant (Set 59 / 2024 past paper variant) featuring 3x3 magic squares, compass geometric constructions, triangle similarity enlargements, and Fahrenheit-Celsius temperature conversion graphs with step-by-step marking rubrics.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-59",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",

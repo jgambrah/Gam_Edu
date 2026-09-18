@@ -45,6 +45,13 @@ const PAPERS_TO_MAP = [
     p2SetNum: 56,
     variantType: 'past_paper_variant'
   }
+  {
+    docId: 'paper_2024_variant',
+    name: '2024 BECE Variant',
+    p1SetNum: 58,
+    p2SetNum: 59,
+    variantType: 'past_paper_variant'
+  }
 ];
 
 const BASE_DEST_PATH = 'global_curriculum/jhs/subjects/math/topics/core_curriculum_mastery/question_sets';
