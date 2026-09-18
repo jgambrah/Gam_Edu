@@ -31,6 +31,7 @@ import {
 } from '@/lib/global-curriculum-types';
 import { recordQuizAttempt } from '@/lib/services/curriculumService';
 import { MathRenderer } from './MathRenderer';
+import { ActiveExamHeaderDisclaimer } from '@/components/exam/ExamDisclaimerNotice';
 
 interface QuestionRunnerProps {
   questionSet: CurriculumQuestionSet | null;
@@ -340,8 +341,17 @@ export function QuestionRunner({
     );
   }
 
+  // Extract or resolve exam year if available
+  const examYear = questionSet?.year 
+    ? Number(questionSet.year) 
+    : (() => {
+        const m = (questionSet?.title || '').match(/\b(19\d{2}|20\d{2})\b/);
+        return m ? parseInt(m[1], 10) : null;
+      })();
+
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
+      <ActiveExamHeaderDisclaimer year={examYear} />
       {/* Top Header / Breadcrumb */}
       <div className="flex items-center justify-between">
         <Button

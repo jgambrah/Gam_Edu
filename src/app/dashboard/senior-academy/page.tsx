@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 import { QuestionRunner } from '@/components/curriculum/QuestionRunner';
+import { ExamDisclaimerTooltip, PlatformExamFooterNotice } from '@/components/exam/ExamDisclaimerNotice';
 import { getTopicQuestionSets, getQuestionSetById, invalidateCurriculumCache } from '@/lib/services/curriculumService';
 import { isValidCurriculumLevelId, SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
@@ -3491,24 +3492,27 @@ function MathLab({
                                                 {/* Card Badges */}
                                                 {isExamCard ? (
                                                     <div className="flex items-center justify-between gap-2 mb-3">
-                                                        <span className={cn(
-                                                            "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1.5",
-                                                            isPaper2 
-                                                                ? "bg-amber-500/15 text-amber-400 border border-amber-500/30" 
-                                                                : "bg-sky-500/15 text-sky-400 border border-sky-500/30"
-                                                        )}>
-                                                            {isPaper2 ? (
-                                                                <>
-                                                                    <FileText className="w-3.5 h-3.5 text-amber-400" />
-                                                                    <span>Paper 2 • Structured Theory{examMeta?.year ? ` • ${examMeta.year}` : ''}</span>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <ListChecks className="w-3.5 h-3.5 text-sky-400" />
-                                                                    <span>Paper 1 • Objective CBT{examMeta?.year ? ` • ${examMeta.year}` : ''}</span>
-                                                                </>
-                                                            )}
-                                                        </span>
+                                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                                            <span className={cn(
+                                                                "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1.5",
+                                                                isPaper2 
+                                                                    ? "bg-amber-500/15 text-amber-400 border border-amber-500/30" 
+                                                                    : "bg-sky-500/15 text-sky-400 border border-sky-500/30"
+                                                            )}>
+                                                                {isPaper2 ? (
+                                                                    <>
+                                                                        <FileText className="w-3.5 h-3.5 text-amber-400" />
+                                                                        <span>Paper 2 • Structured Theory{examMeta?.year ? ` • ${examMeta.year}` : ''}</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <ListChecks className="w-3.5 h-3.5 text-sky-400" />
+                                                                        <span>Paper 1 • Objective CBT{examMeta?.year ? ` • ${examMeta.year}` : ''}</span>
+                                                                    </>
+                                                                )}
+                                                            </span>
+                                                            <ExamDisclaimerTooltip compact={true} variantYear={examMeta?.year} />
+                                                        </div>
 
                                                         {mod.status === 'pending_content' ? (
                                                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider bg-amber-500/15 text-amber-300 border-amber-500/30 flex items-center gap-1">
@@ -3690,6 +3694,9 @@ function MathLab({
                                     </div>
                                 </div>
                             )}
+
+                            {/* Persistent Footer Accreditation */}
+                            {viewMode === 'exam_series' && <PlatformExamFooterNotice />}
                         </div>
                     )}
                     {/* EXPANDABLE SYLLABUS CATALOG ARCHIVE ACCORDION */}
