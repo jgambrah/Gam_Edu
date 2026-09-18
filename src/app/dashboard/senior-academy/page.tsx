@@ -1309,6 +1309,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics - Structured Problem-Solving Series (Set 63)",
+        domain: "CORE CURRICULUM",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions - 60 mins - Mastery Series",
+        description: "Official 6-question structured theory examination variant (Set 63 / 2021 BECE variant) featuring intersecting Venn diagrams, index laws, grouping factorization, rational cross-multiplication, column vector subtraction, conference hall floor tiling, linear mappings, travel time/distance, circle center angles, brochure cost functions, and complete frequency tables with mode and mean.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-63",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions - Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",
