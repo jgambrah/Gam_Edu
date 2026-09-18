@@ -1,26 +1,26 @@
-﻿import { CurriculumQuestionSet } from '../global-curriculum-types';
+import { CurriculumQuestionSet } from '../global-curriculum-types';
 
 export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
   id: "jhs-math-mastery-series-60",
-  title: "Junior Core Mathematics â€¢ Objective Mastery Series (Set 60)",
+  title: "Junior Core Mathematics - Objective Mastery Series (Set 60)",
   tier: "Junior Secondary (JHS)",
   subject: "Mathematics",
   topic: "Comprehensive Objective Exam Series (2020 BECE Variant)",
   variantType: "past_paper_variant",
   totalQuestions: 40,
-  version: 1,
+  version: 2,
   questions: [
     {
         "id": "q01",
-        "prompt": "Simplify: $$\\frac{5}{6} - \\frac{1}{2} + \\frac{1}{12}$$.",
+        "prompt": "Simplify: $\\frac{5}{6} - \\frac{1}{2} + \\frac{1}{12}$.",
         "options": [
-            "5/12",
-            "1/2",
-            "7/12",
-            "1/3"
+            "$\\frac{1}{2}$",
+            "$\\frac{5}{12}$",
+            "$\\frac{7}{12}$",
+            "$\\frac{1}{3}$"
         ],
-        "correctAnswer": "5/12",
-        "hint": "Use the common denominator 12.",
+        "correctAnswer": "$\\frac{5}{12}$",
+        "hint": "The least common denominator of 6, 2, and 12 is 12.",
         "workedSolution": "$$\\frac{10}{12} - \\frac{6}{12} + \\frac{1}{12} = \\frac{10 - 6 + 1}{12} = \\frac{5}{12}$$.",
         "points": 1
     },
@@ -28,140 +28,140 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         "id": "q02",
         "prompt": "Given that $A = \\{x : x \\text{ is a factor of } 12\\}$ and $B = \\{x : x \\text{ is a multiple of } 8\\}$, find $A \\cap B$.",
         "options": [
-            "{ }",
-            "{2, 4}",
-            "{4}",
-            "{1, 2, 4}"
+            "$\\{2, 4\\}$",
+            "$\\{4\\}$",
+            "$\\{ \\}$",
+            "$\\{1, 2, 4\\}$"
         ],
-        "correctAnswer": "{ }",
-        "hint": "Factors of 12 are {1, 2, 3, 4, 6, 12}; multiples of 8 are {8, 16, 24, ...}.",
-        "workedSolution": "$$A = \\{1, 2, 3, 4, 6, 12\\}, \\quad B = \\{8, 16, 24, \\dots\\}$$\nThere are no common elements: $$A \\cap B = \\{ \\}$$.",
+        "correctAnswer": "$\\{ \\}$",
+        "hint": "List members: $A = \\{1, 2, 3, 4, 6, 12\\}$ and $B = \\{8, 16, 24, \\dots\\}$.",
+        "workedSolution": "There are no common elements between the factors of 12 and multiples of 8. Thus, $$A \\cap B = \\{ \\}$$.",
         "points": 1
     },
     {
         "id": "q03",
-        "prompt": "Express $5273.84$ in standard form.",
+        "prompt": "Express $5,273.84$ in standard form.",
         "options": [
-            "5.27384 Ã— 10Â³",
-            "5.27384 Ã— 10â»Â³",
-            "52.7384 Ã— 10Â²",
-            "5.27384 Ã— 10â´"
+            "$5.27384 \\times 10^{-3}$",
+            "$52.7384 \\times 10^2$",
+            "$5.27384 \\times 10^4$",
+            "$5.27384 \\times 10^3$"
         ],
-        "correctAnswer": "5.27384 Ã— 10Â³",
-        "hint": "Shift the decimal point 3 places to the left.",
-        "workedSolution": "$$5273.84 = 5.27384 \\times 10^3$$.",
+        "correctAnswer": "$5.27384 \\times 10^3$",
+        "hint": "Move the decimal point 3 places to the left.",
+        "workedSolution": "$$5,273.84 = 5.27384 \\times 10^3$$.",
         "points": 1
     },
     {
         "id": "q04",
-        "prompt": "Which property of arithmetic is illustrated by $p(m - n) = pm - pn$—",
+        "prompt": "Which property of arithmetic is illustrated by $p(m - n) = pm - pn$?",
         "options": [
-            "Distributive",
-            "Commutative",
-            "Associative",
-            "Closure"
+            "Distributive property",
+            "Commutative property",
+            "Associative property",
+            "Closure property"
         ],
-        "correctAnswer": "Distributive",
-        "hint": "Multiplication distributed over subtraction.",
-        "workedSolution": "Expanding a product across parentheses represents the distributive property.",
+        "correctAnswer": "Distributive property",
+        "hint": "The outer multiplier is distributed over each term inside the bracket.",
+        "workedSolution": "Expanding across subtraction demonstrates the distributive property of multiplication.",
         "points": 1
     },
     {
         "id": "q05",
         "prompt": "Subtract $(5x - 4)$ from $(3 - 2x)$.",
         "options": [
-            "7 - 7x",
-            "1 - 7x",
-            "7x - 7",
-            "-1 - 7x"
+            "$1 - 7x$",
+            "$7 - 7x$",
+            "$7x - 7$",
+            "$-1 - 7x$"
         ],
-        "correctAnswer": "7 - 7x",
+        "correctAnswer": "$7 - 7x$",
         "hint": "$$(3 - 2x) - (5x - 4) = 3 - 2x - 5x + 4$$.",
         "workedSolution": "$$(3 - 2x) - (5x - 4) = 3 - 2x - 5x + 4 = 7 - 7x$$.",
         "points": 1
     },
     {
         "id": "q06",
-        "prompt": "The cost of 12 exercise books is GHÂ¢ 43.44. Find the cost of one exercise book.",
+        "prompt": "The cost of 12 exercise books is GH¢ 43.44. Find the cost of one exercise book.",
         "options": [
-            "GHÂ¢ 3.62",
-            "GHÂ¢ 3.52",
-            "GHÂ¢ 4.12",
-            "GHÂ¢ 2.62"
+            "GH¢ 3.52",
+            "GH¢ 4.12",
+            "GH¢ 2.62",
+            "GH¢ 3.62"
         ],
-        "correctAnswer": "GHÂ¢ 3.62",
-        "hint": "Divide 43.44 by 12.",
-        "workedSolution": "$$\\frac{43.44}{12} = \\text{GHÂ¢ } 3.62$$.",
+        "correctAnswer": "GH¢ 3.62",
+        "hint": "Divide $43.44$ by 12.",
+        "workedSolution": "$$\\frac{43.44}{12} = \\text{GH¢ } 3.62$$.",
         "points": 1
     },
     {
         "id": "q07",
-        "prompt": "Which of the following inequalities is represented on the number line below—<br/><svg viewBox='0 0 360 80' width='100%' height='80' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='30' y1='45' x2='330' y2='45' stroke='#1e293b' stroke-width='2'/><polygon points='30,41 22,45 30,49' fill='#1e293b'/><polygon points='330,41 338,45 330,49' fill='#1e293b'/><line x1='50' y1='38' x2='50' y2='52' stroke='#475569' stroke-width='1.5'/><text x='50' y='65' font-size='10' fill='#334155' text-anchor='middle'>-4</text><line x1='85' y1='38' x2='85' y2='52' stroke='#475569' stroke-width='1.5'/><text x='85' y='65' font-size='10' fill='#334155' text-anchor='middle'>-3</text><line x1='120' y1='38' x2='120' y2='52' stroke='#475569' stroke-width='1.5'/><text x='120' y='65' font-size='10' fill='#334155' text-anchor='middle'>-2</text><line x1='155' y1='38' x2='155' y2='52' stroke='#475569' stroke-width='1.5'/><text x='155' y='65' font-size='10' fill='#334155' text-anchor='middle'>-1</text><line x1='190' y1='38' x2='190' y2='52' stroke='#475569' stroke-width='1.5'/><text x='190' y='65' font-size='10' fill='#334155' text-anchor='middle'>0</text><line x1='225' y1='38' x2='225' y2='52' stroke='#475569' stroke-width='1.5'/><text x='225' y='65' font-size='10' fill='#334155' text-anchor='middle'>1</text><line x1='260' y1='38' x2='260' y2='52' stroke='#475569' stroke-width='1.5'/><text x='260' y='65' font-size='10' fill='#334155' text-anchor='middle'>2</text><line x1='295' y1='38' x2='295' y2='52' stroke='#475569' stroke-width='1.5'/><text x='295' y='65' font-size='10' fill='#334155' text-anchor='middle'>3</text><line x1='85' y1='25' x2='295' y2='25' stroke='#2563eb' stroke-width='3.5'/><line x1='85' y1='45' x2='85' y2='25' stroke='#2563eb' stroke-width='1.5' stroke-dasharray='2,2'/><line x1='295' y1='45' x2='295' y2='25' stroke='#2563eb' stroke-width='1.5' stroke-dasharray='2,2'/><circle cx='85' cy='25' r='5' fill='#ffffff' stroke='#2563eb' stroke-width='2'/><circle cx='295' cy='25' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='1.5'/></svg>",
+        "prompt": "Which of the following inequalities is represented on the number line below?<br/><svg viewBox='0 0 360 80' width='100%' height='80' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='30' y1='45' x2='330' y2='45' stroke='#1e293b' stroke-width='2'/><polygon points='30,41 22,45 30,49' fill='#1e293b'/><polygon points='330,41 338,45 330,49' fill='#1e293b'/><line x1='50' y1='38' x2='50' y2='52' stroke='#475569' stroke-width='1.5'/><text x='50' y='65' font-size='10' fill='#334155' text-anchor='middle'>-4</text><line x1='85' y1='38' x2='85' y2='52' stroke='#475569' stroke-width='1.5'/><text x='85' y='65' font-size='10' fill='#334155' text-anchor='middle'>-3</text><line x1='120' y1='38' x2='120' y2='52' stroke='#475569' stroke-width='1.5'/><text x='120' y='65' font-size='10' fill='#334155' text-anchor='middle'>-2</text><line x1='155' y1='38' x2='155' y2='52' stroke='#475569' stroke-width='1.5'/><text x='155' y='65' font-size='10' fill='#334155' text-anchor='middle'>-1</text><line x1='190' y1='38' x2='190' y2='52' stroke='#475569' stroke-width='1.5'/><text x='190' y='65' font-size='10' fill='#334155' text-anchor='middle'>0</text><line x1='225' y1='38' x2='225' y2='52' stroke='#475569' stroke-width='1.5'/><text x='225' y='65' font-size='10' fill='#334155' text-anchor='middle'>1</text><line x1='260' y1='38' x2='260' y2='52' stroke='#475569' stroke-width='1.5'/><text x='260' y='65' font-size='10' fill='#334155' text-anchor='middle'>2</text><line x1='295' y1='38' x2='295' y2='52' stroke='#475569' stroke-width='1.5'/><text x='295' y='65' font-size='10' fill='#334155' text-anchor='middle'>3</text><line x1='85' y1='25' x2='295' y2='25' stroke='#2563eb' stroke-width='3.5'/><line x1='85' y1='45' x2='85' y2='25' stroke='#2563eb' stroke-width='1.5' stroke-dasharray='2,2'/><line x1='295' y1='45' x2='295' y2='25' stroke='#2563eb' stroke-width='1.5' stroke-dasharray='2,2'/><circle cx='85' cy='25' r='5' fill='#ffffff' stroke='#2563eb' stroke-width='2'/><circle cx='295' cy='25' r='5.5' fill='#2563eb' stroke='#1d4ed8' stroke-width='1.5'/></svg>",
         "options": [
-            "-3 < y â‰¤ 3",
-            "-3 â‰¤ y < 3",
-            "-3 < y < 3",
-            "-3 â‰¤ y â‰¤ 3"
+            "$-3 < y \\le 3$",
+            "$-3 \\le y < 3$",
+            "$-3 < y < 3$",
+            "$-3 \\le y \\le 3$"
         ],
-        "correctAnswer": "-3 < y â‰¤ 3",
-        "hint": "Open circle at -3 means strict inequality ($<$); closed circle at 3 means inclusive ($\\le$).",
-        "workedSolution": "The number line shows an open circle at $-3$ and a solid circle at $3$, giving $-3 < y \\le 3$.",
+        "correctAnswer": "$-3 < y \\le 3$",
+        "hint": "An unshaded circle indicates strict inequality ($<$), while a shaded circle indicates inclusion ($\\le$).",
+        "workedSolution": "Open circle at $-3$ and closed circle at $3$ represents $$-3 < y \\le 3$$.",
         "points": 1
     },
     {
         "id": "q08",
         "prompt": "Simplify: $(3xy^2)^2 \\times 2x^2y$.",
         "options": [
-            "18xâ´yâµ",
-            "12xâ´yâµ",
-            "18xÂ³yâ´",
-            "6xâ´yâµ"
+            "$12x^4y^5$",
+            "$18x^3y^4$",
+            "$6x^4y^5$",
+            "$18x^4y^5$"
         ],
-        "correctAnswer": "18xâ´yâµ",
-        "hint": "$$(3xy^2)^2 = 9x^2y^4$$. Multiply by $2x^2y$.",
+        "correctAnswer": "$18x^4y^5$",
+        "hint": "Square the term inside: $(3xy^2)^2 = 9x^2y^4$. Then multiply coefficients and add powers.",
         "workedSolution": "$$(9x^2y^4) \\times (2x^2y) = 18x^{2+2}y^{4+1} = 18x^4y^5$$.",
         "points": 1
     },
     {
         "id": "q09",
-        "prompt": "Which of the following geometric figures has NO line of symmetry—",
+        "prompt": "Which of the following polygons does NOT have a line of symmetry?",
         "options": [
             "Scalene triangle",
             "Isosceles triangle",
             "Kite",
-            "Rectangle"
+            "Rhombus"
         ],
         "correctAnswer": "Scalene triangle",
-        "hint": "All three sides and angles are unequal.",
-        "workedSolution": "A scalene triangle has no equal sides or angles, hence 0 lines of symmetry.",
+        "hint": "A scalene triangle has three unequal sides and three unequal angles.",
+        "workedSolution": "Because no two sides or angles are congruent, a scalene triangle has zero lines of symmetry.",
         "points": 1
     },
     {
         "id": "q10",
-        "prompt": "A merchant sold a table fan for GHÂ¢ 88.00, making a profit of 10%. Find the cost price of the fan.",
+        "prompt": "A merchant sold a table fan for GH¢ 88.00, making a profit of 10%. Find the cost price of the fan.",
         "options": [
-            "GHÂ¢ 80.00",
-            "GHÂ¢ 79.20",
-            "GHÂ¢ 82.00",
-            "GHÂ¢ 78.00"
+            "GH¢ 79.20",
+            "GH¢ 82.00",
+            "GH¢ 80.00",
+            "GH¢ 78.00"
         ],
-        "correctAnswer": "GHÂ¢ 80.00",
-        "hint": "$$1.10 \\times CP = 88.00$$.",
-        "workedSolution": "$$CP = \\frac{88.00}{1.10} = \\text{GHÂ¢ } 80.00$$.",
+        "correctAnswer": "GH¢ 80.00",
+        "hint": "$$\\text{Selling Price} = 1.10 \\times \\text{Cost Price}$$.",
+        "workedSolution": "$$\\text{Cost Price} = \\frac{88.00}{1.10} = \\text{GH¢ } 80.00$$.",
         "points": 1
     },
     {
         "id": "q11",
-        "prompt": "Kofi is 12 years old and his sister is 8 years old. They shared 50 candies in the ratio of their ages. How many more candies does Kofi get than his sister—",
+        "prompt": "Kofi is 12 years old and his sister is 8 years old. They shared 50 candies in the ratio of their ages. How many more candies does Kofi get than his sister?",
         "options": [
-            "10",
             "30",
             "20",
-            "15"
+            "15",
+            "10"
         ],
         "correctAnswer": "10",
-        "hint": "Ratio is $12 : 8 = 3 : 2$. Total parts = 5.",
-        "workedSolution": "$$\\text{Kofi} = \\frac{3}{5} \\times 50 = 30, \\quad \\text{Sister} = \\frac{2}{5} \\times 50 = 20$$\n$$\\text{Difference} = 30 - 20 = 10\\text{ candies}$$.",
+        "hint": "Age ratio: $12 : 8 = 3 : 2$. Total parts $= 5$.",
+        "workedSolution": "$$\\text{Kofi's share} = \\frac{3}{5} \\times 50 = 30$$\n$$\\text{Sister's share} = \\frac{2}{5} \\times 50 = 20$$\n$$\\text{Difference} = 30 - 20 = 10$$.",
         "points": 1
     },
     {
@@ -174,7 +174,7 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
             "16"
         ],
         "correctAnswer": "9",
-        "hint": "Take square root of both sides: $x - 4 = 5$.",
+        "hint": "Take the positive square root: $x - 4 = 5$.",
         "workedSolution": "$$x - 4 = 5 \\implies x = 9$$.",
         "points": 1
     },
@@ -182,41 +182,41 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         "id": "q13",
         "prompt": "Find the image of the point $(-3, 5)$ under a reflection in the $y$-axis.",
         "options": [
-            "(3, 5)",
-            "(-3, -5)",
-            "(3, -5)",
-            "(5, -3)"
+            "$(-3, -5)$",
+            "$(3, -5)$",
+            "$(3, 5)$",
+            "$(5, -3)$"
         ],
-        "correctAnswer": "(3, 5)",
-        "hint": "Reflection in the $y$-axis negates the $x$-coordinate.",
+        "correctAnswer": "$(3, 5)$",
+        "hint": "Reflection across the $y$-axis maps $(x, y) \\to (-x, y)$.",
         "workedSolution": "$$(-3, 5) \\to (-(-3), 5) = (3, 5)$$.",
         "points": 1
     },
     {
         "id": "q14",
-        "prompt": "What fraction of 4 weeks is 14 days—",
+        "prompt": "What fraction of 4 weeks is 14 days?",
         "options": [
-            "1/2",
-            "1/4",
-            "3/7",
-            "2/7"
+            "$\\frac{1}{4}$",
+            "$\\frac{3}{7}$",
+            "$\\frac{2}{7}$",
+            "$\\frac{1}{2}$"
         ],
-        "correctAnswer": "1/2",
+        "correctAnswer": "$\\frac{1}{2}$",
         "hint": "$4\\text{ weeks} = 4 \\times 7 = 28\\text{ days}$.",
         "workedSolution": "$$\\frac{14}{28} = \\frac{1}{2}$$.",
         "points": 1
     },
     {
         "id": "q15",
-        "prompt": "What is the median of the following set of scores: $5, 14, 11, 19, 4, 18, 7, 8, 16, 3, 10, 12$—",
+        "prompt": "What is the median of the following numbers: $5, 14, 11, 19, 4, 18, 7, 8, 16, 3, 10, 12$?",
         "options": [
-            "10.5",
-            "11",
-            "10",
-            "12"
+            "11.0",
+            "10.0",
+            "12.0",
+            "10.5"
         ],
         "correctAnswer": "10.5",
-        "hint": "Sort the 12 numbers in ascending order and average the 6th and 7th values.",
+        "hint": "Arrange the 12 numbers in ascending order and find the mean of the 6th and 7th values.",
         "workedSolution": "Ordered: $3, 4, 5, 7, 8, 10, 11, 12, 14, 16, 18, 19$.\n$$\\text{Median} = \\frac{10 + 11}{2} = 10.5$$.",
         "points": 1
     },
@@ -224,41 +224,41 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         "id": "q16",
         "prompt": "If $\\frac{y}{2} = 2(y - 1) - 1$, find the value of $y$.",
         "options": [
+            "$\\frac{3}{2}$",
             "2",
-            "3/2",
             "1",
-            "4/3"
+            "$\\frac{4}{3}$"
         ],
         "correctAnswer": "2",
-        "hint": "Multiply through by 2: $y = 4(y - 1) - 2$.",
-        "workedSolution": "$$y = 4y - 4 - 2 \\implies y = 4y - 6 \\implies 3y = 6 \\implies y = 2$$.",
+        "hint": "Clear the denominator by multiplying both sides by 2.",
+        "workedSolution": "$$y = 4(y - 1) - 2 \\implies y = 4y - 6 \\implies 3y = 6 \\implies y = 2$$.",
         "points": 1
     },
     {
         "id": "q17",
-        "prompt": "In the diagram below, the triangle is isosceles with base angle $52^\\circ$. Find the value of exterior angle $x$:<br/><svg viewBox='0 0 340 210' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='30' y1='170' x2='310' y2='170' stroke='#1e293b' stroke-width='2'/><polygon points='90,170 180,35 270,170' fill='#eff6ff' stroke='#1e40af' stroke-width='2.5'/><line x1='130' y1='100' x2='140' y2='105' stroke='#1e293b' stroke-width='2'/><line x1='220' y1='105' x2='230' y2='100' stroke='#1e293b' stroke-width='2'/><path d='M 170 52 A 20 20 0 0 0 190 52' fill='none' stroke='#dc2626' stroke-width='1.8'/><text x='180' y='72' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>y</text><path d='M 245 170 A 25 25 0 0 1 257 148' fill='none' stroke='#16a34a' stroke-width='1.8'/><text x='240' y='160' font-size='11' font-weight='bold' fill='#16a34a' text-anchor='end'>52Â°</text><path d='M 65 170 A 25 25 0 0 1 78 149' fill='none' stroke='#d97706' stroke-width='1.8'/><text x='65' y='145' font-size='12' font-weight='bold' fill='#d97706'>x</text><text x='180' y='200' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
+        "prompt": "In the diagram below, the triangle is isosceles with base angle $52^\\circ$. Find the value of exterior angle $x$:<br/><svg viewBox='0 0 340 210' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='30' y1='170' x2='310' y2='170' stroke='#1e293b' stroke-width='2'/><polygon points='90,170 180,35 270,170' fill='#eff6ff' stroke='#1e40af' stroke-width='2.5'/><line x1='130' y1='100' x2='140' y2='105' stroke='#1e293b' stroke-width='2'/><line x1='220' y1='105' x2='230' y2='100' stroke='#1e293b' stroke-width='2'/><path d='M 170 52 A 20 20 0 0 0 190 52' fill='none' stroke='#dc2626' stroke-width='1.8'/><text x='180' y='72' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>y</text><path d='M 245 170 A 25 25 0 0 1 257 148' fill='none' stroke='#16a34a' stroke-width='1.8'/><text x='240' y='160' font-size='11' font-weight='bold' fill='#16a34a' text-anchor='end'>52°</text><path d='M 65 170 A 25 25 0 0 1 78 149' fill='none' stroke='#d97706' stroke-width='1.8'/><text x='65' y='145' font-size='12' font-weight='bold' fill='#d97706'>x</text><text x='180' y='200' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
         "options": [
-            "128Â°",
-            "104Â°",
-            "76Â°",
-            "118Â°"
+            "$104^\\circ$",
+            "$128^\\circ$",
+            "$76^\\circ$",
+            "$118^\\circ$"
         ],
-        "correctAnswer": "128Â°",
-        "hint": "Adjacent angles on a straight line add to $180^\\circ$. Base angles of an isosceles triangle are equal.",
-        "workedSolution": "Left base angle is $52^\\circ$. Exterior angle $x = 180^\\circ - 52^\\circ = 128^\\circ$.",
+        "correctAnswer": "$128^\\circ$",
+        "hint": "Base angles are equal ($52^\\circ$). Exterior angle $x$ and base angle lie on a straight line.",
+        "workedSolution": "$$x = 180^\\circ - 52^\\circ = 128^\\circ$$.",
         "points": 1
     },
     {
         "id": "q18",
-        "prompt": "Using the diagram from Question 17, find the value of apex angle $y$:<br/><svg viewBox='0 0 340 210' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='30' y1='170' x2='310' y2='170' stroke='#1e293b' stroke-width='2'/><polygon points='90,170 180,35 270,170' fill='#eff6ff' stroke='#1e40af' stroke-width='2.5'/><line x1='130' y1='100' x2='140' y2='105' stroke='#1e293b' stroke-width='2'/><line x1='220' y1='105' x2='230' y2='100' stroke='#1e293b' stroke-width='2'/><path d='M 170 52 A 20 20 0 0 0 190 52' fill='none' stroke='#dc2626' stroke-width='1.8'/><text x='180' y='72' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>y</text><path d='M 245 170 A 25 25 0 0 1 257 148' fill='none' stroke='#16a34a' stroke-width='1.8'/><text x='240' y='160' font-size='11' font-weight='bold' fill='#16a34a' text-anchor='end'>52Â°</text><path d='M 65 170 A 25 25 0 0 1 78 149' fill='none' stroke='#d97706' stroke-width='1.8'/><text x='65' y='145' font-size='12' font-weight='bold' fill='#d97706'>x</text><text x='180' y='200' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
+        "prompt": "Using the diagram from Question 17, find the value of apex angle $y$:<br/><svg viewBox='0 0 340 210' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='30' y1='170' x2='310' y2='170' stroke='#1e293b' stroke-width='2'/><polygon points='90,170 180,35 270,170' fill='#eff6ff' stroke='#1e40af' stroke-width='2.5'/><line x1='130' y1='100' x2='140' y2='105' stroke='#1e293b' stroke-width='2'/><line x1='220' y1='105' x2='230' y2='100' stroke='#1e293b' stroke-width='2'/><path d='M 170 52 A 20 20 0 0 0 190 52' fill='none' stroke='#dc2626' stroke-width='1.8'/><text x='180' y='72' font-size='12' font-weight='bold' fill='#dc2626' text-anchor='middle'>y</text><path d='M 245 170 A 25 25 0 0 1 257 148' fill='none' stroke='#16a34a' stroke-width='1.8'/><text x='240' y='160' font-size='11' font-weight='bold' fill='#16a34a' text-anchor='end'>52°</text><path d='M 65 170 A 25 25 0 0 1 78 149' fill='none' stroke='#d97706' stroke-width='1.8'/><text x='65' y='145' font-size='12' font-weight='bold' fill='#d97706'>x</text><text x='180' y='200' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
         "options": [
-            "76Â°",
-            "64Â°",
-            "52Â°",
-            "104Â°"
+            "$64^\\circ$",
+            "$52^\\circ$",
+            "$76^\\circ$",
+            "$104^\\circ$"
         ],
-        "correctAnswer": "76Â°",
-        "hint": "Sum of angles in a triangle is $180^\\circ$: $y + 52^\\circ + 52^\\circ = 180^\\circ$.",
+        "correctAnswer": "$76^\\circ$",
+        "hint": "The three interior angles sum to $180^\\circ$: $y + 52^\\circ + 52^\\circ = 180^\\circ$.",
         "workedSolution": "$$y = 180^\\circ - (52^\\circ + 52^\\circ) = 180^\\circ - 104^\\circ = 76^\\circ$$.",
         "points": 1
     },
@@ -266,52 +266,52 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         "id": "q19",
         "prompt": "A delivery van took 6 hours to travel from Town P to Town Q at an average speed of $24\\text{ km/h}$. Find the distance between the two towns.",
         "options": [
-            "144 km",
             "120 km",
+            "144 km",
             "136 km",
             "4 km"
         ],
         "correctAnswer": "144 km",
         "hint": "$$\\text{Distance} = \\text{Speed} \\times \\text{Time}$$.",
-        "workedSolution": "$$d = 24 \\times 6 = 144\\text{ km}$$.",
+        "workedSolution": "$$\\text{Distance} = 24 \\times 6 = 144\\text{ km}$$.",
         "points": 1
     },
     {
         "id": "q20",
         "prompt": "The pie chart below represents a monthly family budget:<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><g transform='translate(120, 115)'><path d='M 0 0 L 85 0 A 85 85 0 0 1 -26.27 80.84 Z' fill='#3b82f6' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -26.27 80.84 A 85 85 0 0 1 -80.84 26.27 Z' fill='#64748b' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -80.84 26.27 A 85 85 0 0 1 -85 0 Z' fill='#f59e0b' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -85 0 A 85 85 0 0 1 -80.84 -26.27 Z' fill='#8b5cf6' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -80.84 -26.27 A 85 85 0 0 1 -49.96 -68.77 Z' fill='#ec4899' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -49.96 -68.77 A 85 85 0 0 1 26.27 -80.84 Z' fill='#06b6d4' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L 26.27 -80.84 A 85 85 0 0 1 85 0 Z' fill='#10b981' stroke='#ffffff' stroke-width='1.5'/></g><g transform='translate(215, 30)'><circle cx='10' cy='15' r='4.5' fill='#3b82f6'/><text x='20' y='18' font-size='9' font-weight='bold' fill='#334155'>Rent 30%</text><circle cx='10' cy='35' r='4.5' fill='#10b981'/><text x='20' y='38' font-size='9' font-weight='bold' fill='#334155'>Food 20%</text><circle cx='10' cy='55' r='4.5' fill='#06b6d4'/><text x='20' y='58' font-size='9' font-weight='bold' fill='#334155'>Insurance 15%</text><circle cx='10' cy='75' r='4.5' fill='#64748b'/><text x='20' y='78' font-size='9' font-weight='bold' fill='#334155'>Others 15%</text><circle cx='10' cy='95' r='4.5' fill='#ec4899'/><text x='20' y='98' font-size='9' font-weight='bold' fill='#334155'>Clothing 10%</text><circle cx='10' cy='115' r='4.5' fill='#8b5cf6'/><text x='20' y='118' font-size='9' font-weight='bold' fill='#334155'>Savings 5%</text><circle cx='10' cy='135' r='4.5' fill='#f59e0b'/><text x='20' y='138' font-size='9' font-weight='bold' fill='#334155'>Entertain. 5%</text></g><text x='170' y='230' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg><br/>Find the sector angle for Insurance and Taxes.",
         "options": [
-            "54Â°",
-            "36Â°",
-            "72Â°",
-            "108Â°"
+            "$54^\\circ$",
+            "$36^\\circ$",
+            "$72^\\circ$",
+            "$108^\\circ$"
         ],
-        "correctAnswer": "54Â°",
-        "hint": "Insurance and Taxes = 15%. Calculate $15\\%$ of $360^\\circ$.",
+        "correctAnswer": "$54^\\circ$",
+        "hint": "Insurance and Taxes $= 15\\%$. Find $15\\%$ of $360^\\circ$.",
         "workedSolution": "$$\\frac{15}{100} \\times 360^\\circ = 54^\\circ$$.",
         "points": 1
     },
     {
         "id": "q21",
-        "prompt": "Using the pie chart from Question 20, if the total family income is GHÂ¢ 50,000.00, how much money was allocated to Clothing—<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><g transform='translate(120, 115)'><path d='M 0 0 L 85 0 A 85 85 0 0 1 -26.27 80.84 Z' fill='#3b82f6' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -26.27 80.84 A 85 85 0 0 1 -80.84 26.27 Z' fill='#64748b' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -80.84 26.27 A 85 85 0 0 1 -85 0 Z' fill='#f59e0b' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -85 0 A 85 85 0 0 1 -80.84 -26.27 Z' fill='#8b5cf6' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -80.84 -26.27 A 85 85 0 0 1 -49.96 -68.77 Z' fill='#ec4899' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -49.96 -68.77 A 85 85 0 0 1 26.27 -80.84 Z' fill='#06b6d4' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L 26.27 -80.84 A 85 85 0 0 1 85 0 Z' fill='#10b981' stroke='#ffffff' stroke-width='1.5'/></g><g transform='translate(215, 30)'><circle cx='10' cy='15' r='4.5' fill='#3b82f6'/><text x='20' y='18' font-size='9' font-weight='bold' fill='#334155'>Rent 30%</text><circle cx='10' cy='35' r='4.5' fill='#10b981'/><text x='20' y='38' font-size='9' font-weight='bold' fill='#334155'>Food 20%</text><circle cx='10' cy='55' r='4.5' fill='#06b6d4'/><text x='20' y='58' font-size='9' font-weight='bold' fill='#334155'>Insurance 15%</text><circle cx='10' cy='75' r='4.5' fill='#64748b'/><text x='20' y='78' font-size='9' font-weight='bold' fill='#334155'>Others 15%</text><circle cx='10' cy='95' r='4.5' fill='#ec4899'/><text x='20' y='98' font-size='9' font-weight='bold' fill='#334155'>Clothing 10%</text><circle cx='10' cy='115' r='4.5' fill='#8b5cf6'/><text x='20' y='118' font-size='9' font-weight='bold' fill='#334155'>Savings 5%</text><circle cx='10' cy='135' r='4.5' fill='#f59e0b'/><text x='20' y='138' font-size='9' font-weight='bold' fill='#334155'>Entertain. 5%</text></g><text x='170' y='230' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
+        "prompt": "Using the pie chart from Question 20, if the total family income is GH¢ 50,000.00, how much was allocated to Clothing?<br/><svg viewBox='0 0 340 240' width='100%' height='210' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><g transform='translate(120, 115)'><path d='M 0 0 L 85 0 A 85 85 0 0 1 -26.27 80.84 Z' fill='#3b82f6' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -26.27 80.84 A 85 85 0 0 1 -80.84 26.27 Z' fill='#64748b' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -80.84 26.27 A 85 85 0 0 1 -85 0 Z' fill='#f59e0b' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -85 0 A 85 85 0 0 1 -80.84 -26.27 Z' fill='#8b5cf6' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -80.84 -26.27 A 85 85 0 0 1 -49.96 -68.77 Z' fill='#ec4899' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L -49.96 -68.77 A 85 85 0 0 1 26.27 -80.84 Z' fill='#06b6d4' stroke='#ffffff' stroke-width='1.5'/><path d='M 0 0 L 26.27 -80.84 A 85 85 0 0 1 85 0 Z' fill='#10b981' stroke='#ffffff' stroke-width='1.5'/></g><g transform='translate(215, 30)'><circle cx='10' cy='15' r='4.5' fill='#3b82f6'/><text x='20' y='18' font-size='9' font-weight='bold' fill='#334155'>Rent 30%</text><circle cx='10' cy='35' r='4.5' fill='#10b981'/><text x='20' y='38' font-size='9' font-weight='bold' fill='#334155'>Food 20%</text><circle cx='10' cy='55' r='4.5' fill='#06b6d4'/><text x='20' y='58' font-size='9' font-weight='bold' fill='#334155'>Insurance 15%</text><circle cx='10' cy='75' r='4.5' fill='#64748b'/><text x='20' y='78' font-size='9' font-weight='bold' fill='#334155'>Others 15%</text><circle cx='10' cy='95' r='4.5' fill='#ec4899'/><text x='20' y='98' font-size='9' font-weight='bold' fill='#334155'>Clothing 10%</text><circle cx='10' cy='115' r='4.5' fill='#8b5cf6'/><text x='20' y='118' font-size='9' font-weight='bold' fill='#334155'>Savings 5%</text><circle cx='10' cy='135' r='4.5' fill='#f59e0b'/><text x='20' y='138' font-size='9' font-weight='bold' fill='#334155'>Entertain. 5%</text></g><text x='170' y='230' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
         "options": [
-            "GHÂ¢ 5,000.00",
-            "GHÂ¢ 7,500.00",
-            "GHÂ¢ 10,000.00",
-            "GHÂ¢ 2,500.00"
+            "GH¢ 7,500.00",
+            "GH¢ 10,000.00",
+            "GH¢ 5,000.00",
+            "GH¢ 2,500.00"
         ],
-        "correctAnswer": "GHÂ¢ 5,000.00",
-        "hint": "Clothing accounts for 10% of total income.",
-        "workedSolution": "$$0.10 \\times 50,000.00 = \\text{GHÂ¢ } 5,000.00$$.",
+        "correctAnswer": "GH¢ 5,000.00",
+        "hint": "Clothing is allocated $10\\%$ of the total income.",
+        "workedSolution": "$$0.10 \\times 50,000.00 = \\text{GH¢ } 5,000.00$$.",
         "points": 1
     },
     {
         "id": "q22",
         "prompt": "Two adjacent sides of a parallelogram are $6.4\\text{ m}$ and $7.6\\text{ m}$ long. Find its perimeter.",
         "options": [
-            "28.0 m",
             "14.0 m",
             "21.6 m",
-            "48.6 m"
+            "48.6 m",
+            "28.0 m"
         ],
         "correctAnswer": "28.0 m",
         "hint": "$$\\text{Perimeter} = 2(a + b)$$.",
@@ -320,58 +320,58 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
     },
     {
         "id": "q23",
-        "prompt": "A woman earned an interest of GHÂ¢ 360.00 in 3 years at 20% per annum simple interest. Calculate the principal invested.",
+        "prompt": "A woman earned an interest of GH¢ 360.00 in 3 years at 20% per annum simple interest. Calculate the principal invested.",
         "options": [
-            "GHÂ¢ 600.00",
-            "GHÂ¢ 540.00",
-            "GHÂ¢ 720.00",
-            "GHÂ¢ 1,200.00"
+            "GH¢ 540.00",
+            "GH¢ 600.00",
+            "GH¢ 720.00",
+            "GH¢ 1,200.00"
         ],
-        "correctAnswer": "GHÂ¢ 600.00",
+        "correctAnswer": "GH¢ 600.00",
         "hint": "$$P = \\frac{100 \\times I}{R \\times T}$$.",
-        "workedSolution": "$$P = \\frac{100 \\times 360}{20 \\times 3} = \\frac{36000}{60} = \\text{GHÂ¢ } 600.00$$.",
+        "workedSolution": "$$P = \\frac{100 \\times 360}{20 \\times 3} = \\frac{36,000}{60} = \\text{GH¢ } 600.00$$.",
         "points": 1
     },
     {
         "id": "q24",
-        "prompt": "A technician worked for $18\\frac{1}{2}$ hours. If he was paid GHÂ¢ 4.00 per hour, what was his total wage—",
+        "prompt": "A technician worked for $18\\frac{1}{2}$ hours. If he was paid GH¢ 4.00 per hour, what was his total wage?",
         "options": [
-            "GHÂ¢ 74.00",
-            "GHÂ¢ 72.50",
-            "GHÂ¢ 76.00",
-            "GHÂ¢ 80.00"
+            "GH¢ 72.50",
+            "GH¢ 76.00",
+            "GH¢ 74.00",
+            "GH¢ 80.00"
         ],
-        "correctAnswer": "GHÂ¢ 74.00",
-        "hint": "Multiply 18.5 by 4.",
-        "workedSolution": "$$18.5 \\times 4 = \\text{GHÂ¢ } 74.00$$.",
+        "correctAnswer": "GH¢ 74.00",
+        "hint": "Multiply $18.5$ by 4.",
+        "workedSolution": "$$18.5 \\times 4 = \\text{GH¢ } 74.00$$.",
         "points": 1
     },
     {
         "id": "q25",
-        "prompt": "If 450 students in a school are boys representing 75% of the total enrolment, find the total student population.",
+        "prompt": "If 450 students in a school are boys representing 75% of total enrolment, find the total student population.",
         "options": [
-            "600",
             "550",
             "700",
+            "600",
             "525"
         ],
         "correctAnswer": "600",
-        "hint": "$$0.75 \\times N = 450$$.",
-        "workedSolution": "$$N = \\frac{450}{0.75} = \\frac{450 \\times 4}{3} = 600\\text{ students}$$.",
+        "hint": "$$0.75 \\times \\text{Total} = 450$$.",
+        "workedSolution": "$$\\text{Total} = \\frac{450}{0.75} = 450 \\times \\frac{4}{3} = 600$$.",
         "points": 1
     },
     {
         "id": "q26",
-        "prompt": "What is the algebraic rule for the mapping shown below—<br/><svg viewBox='0 0 320 110' width='100%' height='100' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><text x='35' y='38' font-size='14' font-style='italic' font-weight='bold' fill='#1e40af'>x</text><text x='35' y='88' font-size='14' font-style='italic' font-weight='bold' fill='#1e40af'>y</text><text x='85' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>1</text><text x='145' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>2</text><text x='205' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>3</text><text x='265' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>4</text><line x1='85' y1='48' x2='85' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='82,68 85,74 88,68' fill='#dc2626'/><line x1='145' y1='48' x2='145' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='142,68 145,74 148,68' fill='#dc2626'/><line x1='205' y1='48' x2='205' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='202,68 205,74 208,68' fill='#dc2626'/><line x1='265' y1='48' x2='265' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='262,68 265,74 268,68' fill='#dc2626'/><text x='85' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>3</text><text x='145' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>6</text><text x='205' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>11</text><text x='265' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>18</text></svg>",
+        "prompt": "What is the algebraic rule for the mapping shown below?<br/><svg viewBox='0 0 320 110' width='100%' height='100' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><text x='35' y='38' font-size='14' font-style='italic' font-weight='bold' fill='#1e40af'>x</text><text x='35' y='88' font-size='14' font-style='italic' font-weight='bold' fill='#1e40af'>y</text><text x='85' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>1</text><text x='145' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>2</text><text x='205' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>3</text><text x='265' y='38' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>4</text><line x1='85' y1='48' x2='85' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='82,68 85,74 88,68' fill='#dc2626'/><line x1='145' y1='48' x2='145' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='142,68 145,74 148,68' fill='#dc2626'/><line x1='205' y1='48' x2='205' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='202,68 205,74 208,68' fill='#dc2626'/><line x1='265' y1='48' x2='265' y2='70' stroke='#dc2626' stroke-width='1.8'/><polygon points='262,68 265,74 268,68' fill='#dc2626'/><text x='85' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>3</text><text x='145' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>6</text><text x='205' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>11</text><text x='265' y='90' font-size='13' font-weight='bold' fill='#0f172a' text-anchor='middle'>18</text></svg>",
         "options": [
-            "x â†’ xÂ² + 2",
-            "x â†’ 2xÂ² + 1",
-            "x â†’ 3x",
-            "x â†’ xÂ² + 1"
+            "$x \\to x^2 + 2$",
+            "$x \\to 2x^2 + 1$",
+            "$x \\to 3x$",
+            "$x \\to x^2 + 1$"
         ],
-        "correctAnswer": "x â†’ xÂ² + 2",
+        "correctAnswer": "$x \\to x^2 + 2$",
         "hint": "Test values: $1^2 + 2 = 3$, $2^2 + 2 = 6$, $3^2 + 2 = 11$, $4^2 + 2 = 18$.",
-        "workedSolution": "For each $x$, $y = x^2 + 2$.",
+        "workedSolution": "$$y = x^2 + 2$$.",
         "points": 1
     },
     {
@@ -385,20 +385,20 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         ],
         "correctAnswer": "8",
         "hint": "Pythagorean theorem: $t = \\sqrt{10^2 - 6^2}$.",
-        "workedSolution": "$$t^2 = 10^2 - 6^2 = 100 - 36 = 64 \\implies t = 8\\text{ cm}$$.",
+        "workedSolution": "$$t = \\sqrt{100 - 36} = \\sqrt{64} = 8$$.",
         "points": 1
     },
     {
         "id": "q28",
         "prompt": "Add the following decimal numbers: $3.5, 0.053, 1.21,$ and $0.432$.",
         "options": [
-            "5.195",
             "4.195",
             "5.185",
+            "5.195",
             "5.295"
         ],
         "correctAnswer": "5.195",
-        "hint": "Line up decimals vertically: $3.500 + 0.053 + 1.210 + 0.432$.",
+        "hint": "Line up decimals: $3.500 + 0.053 + 1.210 + 0.432$.",
         "workedSolution": "$$3.500 + 0.053 + 1.210 + 0.432 = 5.195$$.",
         "points": 1
     },
@@ -406,54 +406,54 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         "id": "q29",
         "prompt": "Solve the exponential equation: $9^x = 27$.",
         "options": [
-            "1 1/2",
-            "2 1/2",
+            "$2\\frac{1}{2}$",
             "3",
-            "2/3"
+            "$\\frac{2}{3}$",
+            "$1\\frac{1}{2}$"
         ],
-        "correctAnswer": "1 1/2",
-        "hint": "Express in base 3: $(3^2)^x = 3^3$.",
-        "workedSolution": "$$3^{2x} = 3^3 \\implies 2x = 3 \\implies x = 1.5 = 1\\frac{1}{2}$$.",
+        "correctAnswer": "$1\\frac{1}{2}$",
+        "hint": "Express both sides with base 3: $(3^2)^x = 3^3$.",
+        "workedSolution": "$$3^{2x} = 3^3 \\implies 2x = 3 \\implies x = 1\\frac{1}{2}$$.",
         "points": 1
     },
     {
         "id": "q30",
         "prompt": "Find the equation of the straight line passing through points $(-2, 4)$ and $(4, 7)$.",
         "options": [
-            "y = 1/2x + 5",
-            "y = 1/2x - 5",
-            "y = 2x + 8",
-            "y = 1/2x + 4"
+            "$y = \\frac{1}{2}x - 5$",
+            "$y = \\frac{1}{2}x + 5$",
+            "$y = 2x + 8$",
+            "$y = \\frac{1}{2}x + 4$"
         ],
-        "correctAnswer": "y = 1/2x + 5",
-        "hint": "Gradient $m = \\frac{7 - 4}{4 - (-2)} = \\frac{3}{6} = \\frac{1}{2}$. Then $4 = \\frac{1}{2}(-2) + c$.",
-        "workedSolution": "$$m = \\frac{1}{2}, \\quad 4 = -1 + c \\implies c = 5 \\implies y = \\frac{1}{2}x + 5$$.",
+        "correctAnswer": "$y = \\frac{1}{2}x + 5$",
+        "hint": "Gradient $m = \\frac{7 - 4}{4 - (-2)} = \\frac{3}{6} = \\frac{1}{2}$. Substitute $(-2, 4)$ into $y = mx + c$.",
+        "workedSolution": "$$m = \\frac{1}{2}, \\quad 4 = \\frac{1}{2}(-2) + c \\implies c = 5 \\implies y = \\frac{1}{2}x + 5$$.",
         "points": 1
     },
     {
         "id": "q31",
-        "prompt": "There are 18 girls in a science club. If the ratio of girls to boys is $3 : 2$, how many total members are in the club—",
+        "prompt": "There are 18 girls in a science club. If the ratio of girls to boys is $3 : 2$, how many total members are in the club?",
         "options": [
-            "30",
             "12",
+            "30",
             "24",
             "36"
         ],
         "correctAnswer": "30",
-        "hint": "3 parts = 18 girls $\\implies$ 1 part = 6. Total parts = 5.",
-        "workedSolution": "$$1\\text{ part} = 6$$\n$$\\text{Total} = 5 \\times 6 = 30\\text{ members}$$.",
+        "hint": "3 parts $= 18 \\implies 1\\text{ part} = 6$. Total members $= 5\\text{ parts}$.",
+        "workedSolution": "$$\\text{Total} = 5 \\times 6 = 30$$.",
         "points": 1
     },
     {
         "id": "q32",
-        "prompt": "If $P'(5, -4)$ is the image of point $P(x, y)$ translated by vector $\\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$, find the original coordinates of $P$.",
+        "prompt": "If $P'(5, -4)$ is the image of point $P(x, y)$ translated by vector $\\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$, find the coordinates of $P$.",
         "options": [
-            "(8, -6)",
-            "(2, -2)",
-            "(-8, 6)",
-            "(8, -2)"
+            "$(2, -2)$",
+            "$(-8, 6)$",
+            "$(8, -6)$",
+            "$(8, -2)$"
         ],
-        "correctAnswer": "(8, -6)",
+        "correctAnswer": "$(8, -6)$",
         "hint": "$$x - 3 = 5$$ and $$y + 2 = -4$$.",
         "workedSolution": "$$x = 5 + 3 = 8, \\quad y = -4 - 2 = -6 \\implies P(8, -6)$$.",
         "points": 1
@@ -468,21 +468,21 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
             "3"
         ],
         "correctAnswer": "-2",
-        "hint": "Substitute $x = -1$: $2y = 3 - 2(1) - 5$.",
-        "workedSolution": "$$2y = 3 - 2(-1)^2 + 5(-1) = 3 - 2 - 5 = -4 \\implies y = -2$$.",
+        "hint": "Substitute $x = -1$: $2y = 3 - 2(-1)^2 + 5(-1)$.",
+        "workedSolution": "$$2y = 3 - 2(1) - 5 = -4 \\implies y = -2$$.",
         "points": 1
     },
     {
         "id": "q34",
-        "prompt": "Given that $S = \\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12\\}$, what is the probability of selecting an even number—",
+        "prompt": "Given that $S = \\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12\\}$, what is the probability of selecting an even number?",
         "options": [
-            "1/2",
-            "5/12",
-            "7/12",
-            "1/3"
+            "$\\frac{5}{12}$",
+            "$\\frac{1}{2}$",
+            "$\\frac{7}{12}$",
+            "$\\frac{1}{3}$"
         ],
-        "correctAnswer": "1/2",
-        "hint": "Even numbers are {2, 4, 6, 8, 10, 12}.",
+        "correctAnswer": "$\\frac{1}{2}$",
+        "hint": "Even numbers are $\\{2, 4, 6, 8, 10, 12\\}$.",
         "workedSolution": "$$P(\\text{even}) = \\frac{6}{12} = \\frac{1}{2}$$.",
         "points": 1
     },
@@ -490,69 +490,69 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         "id": "q35",
         "prompt": "Solve the linear inequality: $4 - (2x + 5) \\le -5$.",
         "options": [
-            "x â‰¥ 2",
-            "x â‰¤ 2",
-            "x â‰¥ -2",
-            "x â‰¤ -2"
+            "$x \\le 2$",
+            "$x \\ge -2$",
+            "$x \\le -2$",
+            "$x \\ge 2$"
         ],
-        "correctAnswer": "x â‰¥ 2",
-        "hint": "Expand bracket: $4 - 2x - 5 \\le -5$.",
-        "workedSolution": "$$-2x - 1 \\le -5 \\implies -2x \\le -4 \\implies x \\ge 2$$.",
+        "correctAnswer": "$x \\ge 2$",
+        "hint": "$$4 - 2x - 5 \\le -5 \\implies -2x - 1 \\le -5$$.",
+        "workedSolution": "$$-2x \\le -4 \\implies x \\ge 2$$.",
         "points": 1
     },
     {
         "id": "q36",
         "prompt": "The sides of a rectangle are $9\\text{ cm}$ and $7\\text{ cm}$. Calculate the area of a square having the same perimeter as that of the rectangle.",
         "options": [
-            "64 cmÂ²",
-            "49 cmÂ²",
-            "81 cmÂ²",
-            "32 cmÂ²"
+            "64 cm²",
+            "49 cm²",
+            "81 cm²",
+            "32 cm²"
         ],
-        "correctAnswer": "64 cmÂ²",
-        "hint": "Perimeter of rectangle $= 2(9 + 7) = 32\\text{ cm}$. Side of square $= 32 \\div 4 = 8\\text{ cm}$.",
-        "workedSolution": "$$\\text{Perimeter} = 32\\text{ cm}$$\n$$\\text{Side of square} = 8\\text{ cm}$$\n$$\\text{Area} = 8^2 = 64\\text{ cm}^2$$.",
+        "correctAnswer": "64 cm²",
+        "hint": "Rectangle perimeter $= 2(9 + 7) = 32\\text{ cm}$. Square side $= 32 \\div 4 = 8\\text{ cm}$.",
+        "workedSolution": "$$\\text{Square area} = 8^2 = 64\\text{ cm}^2$$.",
         "points": 1
     },
     {
         "id": "q37",
-        "prompt": "Make $k$ the subject of the relation: $$y = \\frac{k - m}{m}$$.",
+        "prompt": "Make $k$ the subject of the relation: $y = \\frac{k - m}{m}$.",
         "options": [
-            "k = m(y + 1)",
-            "k = y(m + 1)",
-            "k = m(y - 1)",
-            "k = my - 1"
+            "$k = y(m + 1)$",
+            "$k = m(y + 1)$",
+            "$k = m(y - 1)$",
+            "$k = my - 1$"
         ],
-        "correctAnswer": "k = m(y + 1)",
-        "hint": "Multiply by $m$: $my = k - m \\implies k = my + m$.",
-        "workedSolution": "$$my = k - m \\implies k = my + m = m(y + 1)$$.",
+        "correctAnswer": "$k = m(y + 1)$",
+        "hint": "$$my = k - m \\implies k = my + m$$.",
+        "workedSolution": "$$k = m(y + 1)$$.",
         "points": 1
     },
     {
         "id": "q38",
         "prompt": "Expand and simplify: $(x - 3)(2x + 5)$.",
         "options": [
-            "2xÂ² - x - 15",
-            "2xÂ² + x - 15",
-            "2xÂ² - 11x - 15",
-            "2xÂ² - 15"
+            "$2x^2 - x - 15$",
+            "$2x^2 + x - 15$",
+            "$2x^2 - 11x - 15$",
+            "$2x^2 - 15$"
         ],
-        "correctAnswer": "2xÂ² - x - 15",
-        "hint": "FOIL: $2x^2 + 5x - 6x - 15$.",
-        "workedSolution": "$$2x^2 + 5x - 6x - 15 = 2x^2 - x - 15$$.",
+        "correctAnswer": "$2x^2 - x - 15$",
+        "hint": "$$x(2x + 5) - 3(2x + 5) = 2x^2 + 5x - 6x - 15$$.",
+        "workedSolution": "$$2x^2 - x - 15$$.",
         "points": 1
     },
     {
         "id": "q39",
-        "prompt": "Simplify: $$3^3 \\times 3^6 \\div 3^5$$.",
+        "prompt": "Simplify: $3^3 \\times 3^6 \\div 3^5$.",
         "options": [
-            "3â´",
-            "3âµ",
-            "3Â²",
-            "3Â¹â´"
+            "$3^5$",
+            "$3^2$",
+            "$3^4$",
+            "$3^{14}$"
         ],
-        "correctAnswer": "3â´",
-        "hint": "Laws of indices: $3^{3 + 6 - 5}$.",
+        "correctAnswer": "$3^4$",
+        "hint": "Index laws: $3^{3 + 6 - 5}$.",
         "workedSolution": "$$3^{3 + 6 - 5} = 3^4$$.",
         "points": 1
     },
@@ -560,16 +560,15 @@ export const SET_JHS_MASTERY_SERIES_60: CurriculumQuestionSet = {
         "id": "q40",
         "prompt": "If $M = \\{5, 9, 13\\}$ and $N = \\{7, 9, 13\\}$, find $M \\cup N$.",
         "options": [
-            "{5, 7, 9, 13}",
-            "{9, 13}",
-            "{5, 7}",
-            "{5, 9, 13}"
+            "$\\{9, 13\\}$",
+            "$\\{5, 7\\}$",
+            "$\\{5, 9, 13\\}$",
+            "$\\{5, 7, 9, 13\\}$"
         ],
-        "correctAnswer": "{5, 7, 9, 13}",
+        "correctAnswer": "$\\{5, 7, 9, 13\\}$",
         "hint": "Combine all unique elements from both sets.",
         "workedSolution": "$$M \\cup N = \\{5, 7, 9, 13\\}$$.",
         "points": 1
     }
 ]
 };
-
