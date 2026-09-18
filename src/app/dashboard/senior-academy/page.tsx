@@ -1294,6 +1294,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics - Objective Mastery Series (Set 62)",
+        domain: "CORE CURRICULUM",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions - 60 mins - Mastery Series",
+        description: "Official 40-question objective examination variant (Set 62 / 2021 BECE variant) featuring set cardinality intersections, equal sets, significant figures, rotation transformations, quadratic sequences, scale map conversions, parallel lines with transversals, and probability with full step-by-step solutions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-62",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions - Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",

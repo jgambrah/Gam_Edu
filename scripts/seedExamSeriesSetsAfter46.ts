@@ -58,6 +58,13 @@ const PAPERS_TO_MAP = [
     p1SetNum: 60,
     p2SetNum: 61,
     variantType: 'past_paper_variant'
+  },
+  {
+    docId: 'paper_2021_variant',
+    name: '2021 BECE Variant',
+    p1SetNum: 62,
+    p2SetNum: 63,
+    variantType: 'past_paper_variant'
   }
 ];
 
