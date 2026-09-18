@@ -1233,6 +1233,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics • Objective Mastery Series (Set 58)",
+        domain: "ARITHMETIC & NUMERACY",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 60 mins • Mastery Series",
+        description: "Standardized 40-question objective examination variant (Set 58 / 2024 past paper variant) covering real numbers, ratios, sets, quantitative data, linear equations, loci, and plane trigonometry.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-58",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions • Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",
