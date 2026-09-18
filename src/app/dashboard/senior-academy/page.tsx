@@ -1324,6 +1324,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics - Objective Mastery Series (Set 64)",
+        domain: "CORE CURRICULUM",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions - 60 mins - Mastery Series",
+        description: "Official 40-question objective examination variant (Set 64 / 2025 BECE variant) featuring simple interest time periods, binomial expansion, area enlargement factors, grouping factorization, percentage savings and storage, linear inequalities with responsive SVG number lines, cuboid liquid volumes, and composite means with complete step-by-step solutions.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-64",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions - Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",
