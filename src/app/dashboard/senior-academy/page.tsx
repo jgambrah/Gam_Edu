@@ -3462,18 +3462,29 @@ function MathLab({
                                 {paginatedModules.map((mod, i) => {
                                     const isExamCard = viewMode === 'exam_series' || mod.kind === 'exam_series';
                                     const examMeta = isExamCard ? resolveExamMetadata(mod) : null;
-                                    const isPaper2 = examMeta ? examMeta.paperType === 2 : (mod.format === 'structured_essay' || mod.title.toLowerCase().includes('paper 2'));
+                                    const rawTitle = (mod.title || mod.name || '').toLowerCase();
+                                    const rawFormat = (mod.format || mod.type || '').toLowerCase();
+                                    const isPaper2 = examMeta 
+                                        ? examMeta.paperType === 2 
+                                        : (
+                                            mod.paperType === 2 || 
+                                            rawFormat.includes('essay') || 
+                                            rawFormat.includes('theory') || 
+                                            rawTitle.includes('paper 2') || 
+                                            rawTitle.includes('structured') || 
+                                            rawTitle.includes('problem-solving')
+                                        );
                                     
                                     return (
                                         <div 
                                             key={mod.setId || i} 
                                             className={cn(
-                                                "border rounded-2xl p-5 transition-all flex flex-col justify-between group h-full shadow-lg",
+                                                "rounded-2xl p-5 transition-all flex flex-col justify-between group h-full",
                                                 isExamCard 
                                                     ? (isPaper2 
-                                                        ? "bg-gradient-to-br from-amber-950/20 via-slate-900/90 to-slate-900/90 border-amber-500/30 hover:border-amber-400/60 shadow-amber-950/20" 
-                                                        : "bg-gradient-to-br from-sky-950/20 via-slate-900/90 to-slate-900/90 border-sky-500/30 hover:border-sky-400/60 shadow-sky-950/20")
-                                                    : "bg-slate-900/60 border-slate-800 hover:border-indigo-500/40 hover:bg-slate-850/80"
+                                                        ? "border border-amber-500/30 hover:border-amber-400/60 bg-slate-900/90 shadow-[0_0_15px_rgba(245,158,11,0.06)]" 
+                                                        : "border border-sky-500/30 hover:border-sky-400/60 bg-slate-900/90 shadow-[0_0_15px_rgba(14,165,233,0.06)]")
+                                                    : "border border-slate-800 bg-slate-900/60 hover:border-indigo-500/40 hover:bg-slate-850/80 shadow-lg"
                                             )}
                                         >
                                             <div>
@@ -3481,10 +3492,10 @@ function MathLab({
                                                 {isExamCard ? (
                                                     <div className="flex items-center justify-between gap-2 mb-3">
                                                         <span className={cn(
-                                                            "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border uppercase tracking-wider flex items-center gap-1.5",
+                                                            "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1.5",
                                                             isPaper2 
-                                                                ? "bg-amber-500/10 text-amber-400 border-amber-500/20" 
-                                                                : "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                                                                ? "bg-amber-500/15 text-amber-400 border border-amber-500/30" 
+                                                                : "bg-sky-500/15 text-sky-400 border border-sky-500/30"
                                                         )}>
                                                             {isPaper2 ? (
                                                                 <>
@@ -3589,14 +3600,14 @@ function MathLab({
                                                     onClick={() => handleLaunchModule(mod)}
                                                     disabled={mod.status === 'pending_content'}
                                                     className={cn(
-                                                        "h-8 px-3.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border",
+                                                        "h-8 px-3.5 rounded-lg text-xs flex items-center gap-1.5 cursor-pointer",
                                                         mod.status === 'pending_content'
-                                                            ? "bg-slate-800/40 text-slate-500 border-slate-700/50 cursor-not-allowed opacity-75"
+                                                            ? "bg-slate-800/40 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-75"
                                                             : isExamCard
                                                                 ? (isPaper2 
-                                                                    ? "bg-amber-600 hover:bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-600/20 cursor-pointer" 
-                                                                    : "bg-sky-600 hover:bg-sky-500 text-white border-sky-500 shadow-md shadow-sky-600/20 cursor-pointer")
-                                                                : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40 cursor-pointer"
+                                                                    ? "bg-amber-600 hover:bg-amber-500 text-white font-medium shadow-sm transition-colors" 
+                                                                    : "bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-sm transition-colors")
+                                                                : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 font-semibold transition-all"
                                                     )}
                                                 >
                                                     <span>
