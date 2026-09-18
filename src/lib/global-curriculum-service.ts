@@ -18,6 +18,9 @@ import {
   SET_JHS_MASTERY_SERIES_59
 } from './data/jhs-curriculum-sets-58-59';
 import {
+  SET_JHS_MASTERY_SERIES_60
+} from './data/jhs-curriculum-set-60';
+import {
   SET_JHS_MASTERY_SERIES_01,
   SET_JHS_MASTERY_SERIES_02,
   SET_JHS_MASTERY_SERIES_03,
@@ -465,6 +468,26 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'mathematics',
       topicId: 'core_curriculum_mastery',
       questionSet: SET_JHS_MASTERY_SERIES_59
+    },
+    {
+      subjectId: 'math',
+      topicId: 'core_curriculum_mastery',
+      questionSet: SET_JHS_MASTERY_SERIES_60
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'core_curriculum_mastery',
+      questionSet: SET_JHS_MASTERY_SERIES_60
+    },
+    {
+      subjectId: 'math',
+      topicId: 'bece_past_papers',
+      questionSet: SET_JHS_MASTERY_SERIES_60
+    },
+    {
+      subjectId: 'mathematics',
+      topicId: 'bece_past_papers',
+      questionSet: SET_JHS_MASTERY_SERIES_60
     },
   ],
   shs: [
