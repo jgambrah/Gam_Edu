@@ -13,7 +13,7 @@ import {
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
   Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star,
-  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock, Bookmark
+  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock, Bookmark, ListChecks
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -2519,6 +2519,60 @@ const MATH_DOMAINS = [
     'STRAND 4: HANDLING DATA'
 ];
 
+
+function isPaper2Module(mod: any): boolean {
+    const title = (mod.title || '').toLowerCase();
+    const meta = (mod.meta || '').toLowerCase();
+    const desc = (mod.description || '').toLowerCase();
+    return mod.format === 'structured_essay' || 
+           title.includes('paper 2') || 
+           title.includes('structured') ||
+           meta.includes('essay') ||
+           meta.includes('paper 2') ||
+           meta.includes('theory') ||
+           desc.includes('structured essay') ||
+           desc.includes('theory examination');
+}
+
+function getModuleYear(mod: any): number | null {
+    const text = `${mod.title || ''} ${mod.description || ''} ${mod.meta || ''} ${mod.examTag || ''} ${(mod.tags || []).join(' ')} ${mod.setId || ''}`;
+    const m = text.match(/\b(19\d\d|20\d\d)\b/);
+    if (m) return parseInt(m[1], 10);
+
+    const setMatch = (mod.title || '').match(/Set\s*(\d+)/i) || (mod.setId || '').match(/(?:series|set)-?(\d+)/i);
+    if (setMatch) {
+        const setNum = parseInt(setMatch[1], 10);
+        if (setNum >= 3 && setNum <= 41) return 2011 - Math.floor((setNum - 3) / 2);
+        if (setNum === 1 || setNum === 2) return 2012;
+        if (setNum === 54 || setNum === 55) return 2023;
+        if (setNum === 56 || setNum === 57) return 2022;
+        if (setNum === 58 || setNum === 59) return 2024;
+        if (setNum === 60 || setNum === 61) return 2020;
+        if (setNum === 62 || setNum === 63) return 2021;
+        if (setNum === 64 || setNum === 65) return 2025;
+        if (setNum === 66 || setNum === 67) return 2019;
+    }
+    return null;
+}
+
+function getModuleEra(mod: any): 'modern' | 'prep' | 'legacy' | 'classic' | 'other' {
+    const yr = getModuleYear(mod);
+    if (yr !== null) {
+        if (yr >= 2019 && yr <= 2026) return 'modern';
+        if (yr >= 2013 && yr <= 2018) return 'prep';
+        if (yr >= 2005 && yr <= 2012) return 'legacy';
+        if (yr >= 1992 && yr <= 2004) return 'classic';
+    }
+    const setMatch = (mod.title || '').match(/Set\s*(\d+)/i) || (mod.setId || '').match(/(?:series|set)-?(\d+)/i);
+    if (setMatch) {
+        const s = parseInt(setMatch[1], 10);
+        if (s >= 54) return 'modern';
+        if (s >= 1 && s <= 16) return 'legacy';
+        if (s >= 17 && s <= 41) return 'classic';
+    }
+    return 'other';
+}
+
 function MathLab({ 
     canEdit, 
     activeGrade = 'Senior Secondary (SHS)',
@@ -2553,6 +2607,16 @@ function MathLab({
     const [isLoadingSet, setIsLoadingSet] = useState(false);
     const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const [selectedEra, setSelectedEra] = useState<'all' | 'modern' | 'prep' | 'legacy' | 'classic'>('all');
+    const [examPaperType, setExamPaperType] = useState<'all' | 'paper1' | 'paper2'>('all');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const ITEMS_PER_PAGE = 9;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedEra, examPaperType, searchQuery, activeGrade, selectedDomain, filterSubject, filterFormat]);
+
 
     // Dynamic scanning of seeded question sets & topical labs across topics for JHS/SHS
     const refreshCurriculumSets = useCallback(async (manual = false) => {
