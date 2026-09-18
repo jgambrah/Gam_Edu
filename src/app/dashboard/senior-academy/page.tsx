@@ -1354,6 +1354,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics - Standard Objective Series (Set 66)",
+        domain: "CORE CURRICULUM",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions - 60 mins - Mastery Series",
+        description: "Official 40-question objective examination variant (Set 66 / 2019 BECE variant) featuring set unions, standard form exponents, integer ordering, significant figures, index laws, lines of symmetry, linear equations, 4-term grouping, fraction of subgroup, percentages to fractions, subject change, dataset means, linear mapping rules, parallelogram perimeters, cuboid tank volume, back bearings, linear inequalities, line gradients, ratio proportions, isosceles triangles, direct speed calculations, prime probabilities, fraction to decimal conversions, circle circumference and diameter, word problems, transversal alternate angles, column vector addition, unit rate arithmetic, prime factorizations, monomial expansions, integer multiplication, scientific decimal operations, population differences, time percentages, LCM, simple interest rate, medians, and Venn diagrams.",
+        difficulty: "Core",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-66",
+        kind: "exam_series",
+        format: "objective",
+        questionCount: 40,
+        examTag: "40 Questions - Timed CBT",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",
