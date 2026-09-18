@@ -2520,59 +2520,142 @@ const MATH_DOMAINS = [
 ];
 
 
-function isPaper2Module(mod: any): boolean {
-    const title = (mod.title || '').toLowerCase();
-    const meta = (mod.meta || '').toLowerCase();
-    const desc = (mod.description || '').toLowerCase();
-    return mod.format === 'structured_essay' || 
-           title.includes('paper 2') || 
-           title.includes('structured') ||
-           meta.includes('essay') ||
-           meta.includes('paper 2') ||
-           meta.includes('theory') ||
-           desc.includes('structured essay') ||
-           desc.includes('theory examination');
+export interface ResolvedExamMeta {
+  year: number | null;
+  paperType: 1 | 2;
+  era: 'modern' | 'legacy' | 'classic' | 'other';
 }
 
-function getModuleYear(mod: any): number | null {
-    const text = `${mod.title || ''} ${mod.description || ''} ${mod.meta || ''} ${mod.examTag || ''} ${(mod.tags || []).join(' ')} ${mod.setId || ''}`;
-    const m = text.match(/\b(19\d\d|20\d\d)\b/);
-    if (m) return parseInt(m[1], 10);
+export function resolveExamMetadata(exam: any): ResolvedExamMeta {
+  // 1. Detect Paper Type: Paper 1 (Objective/CBT) vs Paper 2 (Theory/Essay)
+  let paperType: 1 | 2 = 1;
+  const rawTitle = (exam.title || exam.name || '').toLowerCase();
+  const format = (exam.format || exam.type || '').toLowerCase();
+  const meta = (exam.meta || '').toLowerCase();
+  const desc = (exam.description || '').toLowerCase();
+  
+  if (
+    exam.paperType === 2 || 
+    format.includes('essay') || 
+    format.includes('theory') || 
+    rawTitle.includes('paper 2') || 
+    rawTitle.includes('structured') || 
+    rawTitle.includes('problem-solving') ||
+    meta.includes('essay') ||
+    meta.includes('paper 2') ||
+    desc.includes('structured essay')
+  ) {
+    paperType = 2;
+  }
 
-    const setMatch = (mod.title || '').match(/Set\s*(\d+)/i) || (mod.setId || '').match(/(?:series|set)-?(\d+)/i);
+  // 2. Extract or Map Year
+  let year: number | null = exam.year ? Number(exam.year) : null;
+
+  if (!year) {
+    const yearMatch = (rawTitle + ' ' + meta + ' ' + desc).match(/\b(19\d{2}|20\d{2})\b/);
+    if (yearMatch) {
+      year = parseInt(yearMatch[1], 10);
+    }
+  }
+
+  // Fallback via Set Number (e.g. "Set 56" or exam.setNumber)
+  let setNum: number | null = null;
+  if (exam.setNumber) {
+    setNum = Number(exam.setNumber);
+  }
+  if (!setNum) {
+    const setMatch = (exam.setId || '' + ' ' + rawTitle).match(/set\s*(\d+)/i) || 
+                     (exam.setId || '').match(/(?:series|set)-?(\d+)/i);
     if (setMatch) {
-        const setNum = parseInt(setMatch[1], 10);
-        if (setNum >= 3 && setNum <= 41) return 2011 - Math.floor((setNum - 3) / 2);
-        if (setNum === 1 || setNum === 2) return 2012;
-        if (setNum === 54 || setNum === 55) return 2023;
-        if (setNum === 56 || setNum === 57) return 2022;
-        if (setNum === 58 || setNum === 59) return 2024;
-        if (setNum === 60 || setNum === 61) return 2020;
-        if (setNum === 62 || setNum === 63) return 2021;
-        if (setNum === 64 || setNum === 65) return 2025;
-        if (setNum === 66 || setNum === 67) return 2019;
+      setNum = parseInt(setMatch[1], 10);
     }
-    return null;
-}
+  }
 
-function getModuleEra(mod: any): 'modern' | 'prep' | 'legacy' | 'classic' | 'other' {
-    const yr = getModuleYear(mod);
-    if (yr !== null) {
-        if (yr >= 2019 && yr <= 2026) return 'modern';
-        if (yr >= 2013 && yr <= 2018) return 'prep';
-        if (yr >= 2005 && yr <= 2012) return 'legacy';
-        if (yr >= 1992 && yr <= 2004) return 'classic';
-    }
-    const setMatch = (mod.title || '').match(/Set\s*(\d+)/i) || (mod.setId || '').match(/(?:series|set)-?(\d+)/i);
-    if (setMatch) {
-        const s = parseInt(setMatch[1], 10);
-        if (s >= 54) return 'modern';
-        if (s >= 1 && s <= 16) return 'legacy';
-        if (s >= 17 && s <= 41) return 'classic';
-    }
-    return 'other';
-}
+  const setYearMap: Record<number, { year: number; paper: 1 | 2 }> = {
+    // Modern Era (2019 - 2026)
+    67: { year: 2019, paper: 2 },
+    66: { year: 2019, paper: 1 },
+    65: { year: 2025, paper: 2 },
+    64: { year: 2025, paper: 1 },
+    63: { year: 2021, paper: 2 },
+    62: { year: 2021, paper: 1 },
+    61: { year: 2020, paper: 2 },
+    60: { year: 2020, paper: 1 },
+    59: { year: 2024, paper: 2 },
+    58: { year: 2024, paper: 1 },
+    57: { year: 2022, paper: 2 },
+    56: { year: 2022, paper: 1 },
+    55: { year: 2023, paper: 2 },
+    54: { year: 2023, paper: 1 },
+    // Legacy Era 2 (2000 - 2012)
+    1: { year: 2012, paper: 1 },
+    2: { year: 2012, paper: 2 },
+    3: { year: 2011, paper: 1 },
+    4: { year: 2011, paper: 2 },
+    5: { year: 2010, paper: 1 },
+    6: { year: 2010, paper: 2 },
+    7: { year: 2009, paper: 1 },
+    8: { year: 2009, paper: 2 },
+    9: { year: 2008, paper: 1 },
+    10: { year: 2008, paper: 2 },
+    11: { year: 2007, paper: 1 },
+    12: { year: 2007, paper: 2 },
+    13: { year: 2006, paper: 1 },
+    14: { year: 2006, paper: 2 },
+    15: { year: 2005, paper: 1 },
+    16: { year: 2005, paper: 2 },
+    17: { year: 2004, paper: 1 },
+    18: { year: 2004, paper: 2 },
+    19: { year: 2003, paper: 1 },
+    20: { year: 2003, paper: 2 },
+    21: { year: 2002, paper: 1 },
+    22: { year: 2002, paper: 2 },
+    23: { year: 2001, paper: 1 },
+    24: { year: 2001, paper: 2 },
+    25: { year: 2000, paper: 1 },
+    26: { year: 2000, paper: 2 },
+    // Classic Era (1992 - 1999)
+    27: { year: 1999, paper: 1 },
+    28: { year: 1999, paper: 2 },
+    29: { year: 1998, paper: 1 },
+    30: { year: 1998, paper: 2 },
+    31: { year: 1997, paper: 1 },
+    32: { year: 1997, paper: 2 },
+    33: { year: 1996, paper: 1 },
+    34: { year: 1996, paper: 2 },
+    35: { year: 1995, paper: 1 },
+    36: { year: 1995, paper: 2 },
+    37: { year: 1994, paper: 1 },
+    38: { year: 1994, paper: 2 },
+    39: { year: 1993, paper: 1 },
+    40: { year: 1993, paper: 2 },
+    41: { year: 1992, paper: 1 },
+    42: { year: 1992, paper: 2 }
+  };
 
+  if (setNum && setYearMap[setNum]) {
+    if (!year) {
+      year = setYearMap[setNum].year;
+    }
+    if (exam.paperType === undefined && !format.includes('essay') && !rawTitle.includes('paper 1') && !rawTitle.includes('paper 2')) {
+      paperType = setYearMap[setNum].paper;
+    }
+  }
+
+  // 3. Classify Era
+  let era: 'modern' | 'legacy' | 'classic' | 'other' = 'other';
+  if (year) {
+    if (year >= 2019 && year <= 2026) era = 'modern';
+    else if (year >= 2000 && year <= 2012) era = 'legacy';
+    else if (year >= 1992 && year <= 1999) era = 'classic';
+  } else if (setNum) {
+    if (setNum >= 54) era = 'modern';
+    else if (setNum >= 1 && setNum <= 26) era = 'legacy';
+    else if (setNum >= 27 && setNum <= 42) era = 'classic';
+  }
+
+  return { year, paperType, era };
+}
 function MathLab({ 
     canEdit, 
     activeGrade = 'Senior Secondary (SHS)',
@@ -2824,7 +2907,23 @@ function MathLab({
                 if (!isEssay) return false;
             }
 
-            // 5. Strand / Domain Filter (for topical mode)
+            // 5. Exam Paper Type Quick Toggle (when in exam_series mode)
+            if (viewMode === 'exam_series' && examPaperType !== 'all') {
+                const meta = resolveExamMetadata(mod);
+                if (examPaperType === 'paper1' && meta.paperType !== 1) return false;
+                if (examPaperType === 'paper2' && meta.paperType !== 2) return false;
+            }
+
+            // 6. Era Filter (when in exam_series mode)
+            if (viewMode === 'exam_series' && selectedEra !== 'all') {
+                if (selectedEra === 'prep') {
+                    return false; // Handled by 2013-2018 in-prep empty state
+                }
+                const meta = resolveExamMetadata(mod);
+                if (meta.era !== selectedEra) return false;
+            }
+
+            // 7. Strand / Domain Filter (for topical mode)
             if (viewMode === 'topical' && selectedDomain !== 'ALL STRANDS' && selectedDomain !== 'ALL DOMAINS') {
                 const modDomain = (mod.domain || '').toUpperCase();
                 const modStrand = (mod.strandName || '').toUpperCase();
@@ -2833,7 +2932,7 @@ function MathLab({
                 }
             }
 
-            // 6. Search Query (debounced instant match over in-memory catalog)
+            // 8. Search Query (debounced instant match over in-memory catalog)
             if (searchQuery.trim()) {
                 const q = searchQuery.toLowerCase().trim();
                 const matchTitle = mod.title.toLowerCase().includes(q);
@@ -2851,7 +2950,7 @@ function MathLab({
             return true;
         });
 
-        // Numerical sorting for Standard Exam Series (Set 1 through Set 56+)
+        // Numerical sorting for Standard Exam Series (Set 1 through Set 67+)
         if (viewMode === 'exam_series') {
             return [...filtered].sort((a, b) => {
                 const extractNum = (item: any) => {
@@ -2869,7 +2968,48 @@ function MathLab({
         }
 
         return filtered;
-    }, [activeGrade, viewMode, filterSubject, filterFormat, selectedDomain, searchQuery, dynamicSets]);
+    }, [activeGrade, viewMode, filterSubject, filterFormat, selectedDomain, searchQuery, dynamicSets, selectedEra, examPaperType]);
+
+    // Live counts for Era badges based on current grade and paper type filter
+    const eraCounts = useMemo(() => {
+        if (viewMode !== 'exam_series') return { modern: 0, legacy: 0, classic: 0 };
+        const combined = [...SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series')];
+        dynamicSets.forEach(dyn => {
+            if (dyn.kind === 'exam_series') {
+                const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
+                if (!exists) combined.push(dyn);
+            }
+        });
+        const counts = { modern: 0, legacy: 0, classic: 0 };
+        combined.forEach(mod => {
+            if (mod.gradeTier !== activeGrade) return;
+            const meta = resolveExamMetadata(mod);
+            if (examPaperType !== 'all') {
+                if (examPaperType === 'paper1' && meta.paperType !== 1) return;
+                if (examPaperType === 'paper2' && meta.paperType !== 2) return;
+            }
+            if (meta.era === 'modern') counts.modern++;
+            else if (meta.era === 'legacy') counts.legacy++;
+            else if (meta.era === 'classic') counts.classic++;
+        });
+        return counts;
+    }, [dynamicSets, activeGrade, viewMode, examPaperType]);
+
+    // Pagination calculations
+    const totalItems = filteredModules.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+    const validPage = Math.min(Math.max(1, currentPage), totalPages);
+    const startIndex = (validPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+
+    const paginatedModules = viewMode === 'exam_series' 
+        ? filteredModules.slice(startIndex, endIndex)
+        : filteredModules;
+
+    const isPrepSearch = searchQuery.trim().length > 0 && /\b(2013|2014|2015|2016|2017|2018)\b/.test(searchQuery);
+    const isPrepEraSelected = selectedEra === 'prep';
+    const showPrepNotice = viewMode === 'exam_series' && (isPrepEraSelected || (isPrepSearch && filteredModules.length === 0));
+
 
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
@@ -3188,8 +3328,124 @@ function MathLab({
                         </div>
                     )}
 
-                    {/* EMPTY & FILTERED STATE */}
-                    {filteredModules.length === 0 ? (
+                    {/* EXAM FEED FILTERING PILL BAR - Rendered in Standard Exam Series mode */}
+                    {viewMode === 'exam_series' && (
+                        <div className="space-y-2.5 pt-1 pb-2">
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/50 p-2.5 rounded-2xl border border-slate-800/80 backdrop-blur-md">
+                                {/* Era / Year Range Segmented Control Chips */}
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">
+                                        Era:
+                                    </span>
+                                    {[
+                                        { id: 'all', label: 'All Sets', count: null },
+                                        { id: 'modern', label: 'Modern Era (2019 – 2026)', count: eraCounts.modern },
+                                        { id: 'prep', label: '2013 – 2018 (In Prep)', count: '0' },
+                                        { id: 'legacy', label: 'Legacy Era 2 (2000 – 2012)', count: eraCounts.legacy },
+                                        { id: 'classic', label: 'Classic Era (1992 – 1999)', count: eraCounts.classic }
+                                    ].map(era => {
+                                        const isActive = selectedEra === era.id;
+                                        return (
+                                            <button
+                                                key={era.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedEra(era.id as any);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className={cn(
+                                                    "px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer border",
+                                                    isActive
+                                                        ? era.id === 'modern'
+                                                            ? "bg-sky-600 text-white border-sky-500 shadow-md shadow-sky-600/30"
+                                                            : era.id === 'prep'
+                                                            ? "bg-amber-600 text-white border-amber-500 shadow-md shadow-amber-600/30"
+                                                            : "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                                        : "bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border-slate-800"
+                                                )}
+                                            >
+                                                <span>{era.label}</span>
+                                                {era.count !== null && (
+                                                    <span className={cn(
+                                                        "text-[10px] font-extrabold px-1.5 py-0.2 rounded-md",
+                                                        isActive ? "bg-white/20 text-white" : "bg-slate-800 text-slate-400"
+                                                    )}>
+                                                        {era.count}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Paper Type Quick Toggle: [All Papers | Paper 1 Only | Paper 2 Only] */}
+                                <div className="flex items-center gap-1 p-1 bg-slate-950/80 border border-slate-800 rounded-xl self-start lg:self-auto">
+                                    {[
+                                        { id: 'all', label: 'All Papers', icon: Layers, color: 'text-slate-400' },
+                                        { id: 'paper1', label: 'Paper 1 Only', icon: ListChecks, color: 'text-sky-400' },
+                                        { id: 'paper2', label: 'Paper 2 Only', icon: FileText, color: 'text-amber-400' }
+                                    ].map(pt => {
+                                        const isActive = examPaperType === pt.id;
+                                        const Icon = pt.icon;
+                                        return (
+                                            <button
+                                                key={pt.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setExamPaperType(pt.id as any);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className={cn(
+                                                    "px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
+                                                    isActive
+                                                        ? pt.id === 'paper1'
+                                                            ? "bg-sky-600 text-white shadow-xs"
+                                                            : pt.id === 'paper2'
+                                                            ? "bg-amber-600 text-white shadow-xs"
+                                                            : "bg-indigo-600 text-white shadow-xs"
+                                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
+                                                )}
+                                            >
+                                                <Icon className={cn("w-3.5 h-3.5", !isActive && pt.color)} />
+                                                <span>{pt.label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 2013-2018 PREPARATION EMPTY STATE OR REGULAR EMPTY STATE */}
+                    {showPrepNotice ? (
+                        <div className="py-16 px-6 text-center bg-slate-900/40 border border-dashed border-amber-500/30 rounded-3xl space-y-4">
+                            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+                                <Clock className="w-7 h-7" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <h4 className="text-base sm:text-lg font-bold text-white">Past question variants for 2013–2018 are currently in preparation.</h4>
+                                <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto leading-relaxed">
+                                    Official BECE mathematics examination variants for academic years 2013 through 2018 are currently undergoing digitization, calibration, and step-by-step marking rubric synthesis. Explore Modern Era (2019–2025) or Legacy Era sets in the meantime!
+                                </p>
+                            </div>
+                            <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
+                                <button
+                                    type="button"
+                                    onClick={() => { setSelectedEra('all'); setCurrentPage(1); }}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
+                                >
+                                    View All Available Sets
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setSelectedEra('modern'); setCurrentPage(1); }}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold bg-sky-600/20 hover:bg-sky-600 text-sky-300 hover:text-white border border-sky-500/30 transition-all cursor-pointer"
+                                >
+                                    Explore Modern Era (2019–2026)
+                                </button>
+                            </div>
+                        </div>
+                    ) : filteredModules.length === 0 ? (
                         <div className="py-16 px-6 text-center bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl space-y-3">
                             <div className="w-12 h-12 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center mx-auto text-slate-400">
                                 <Search className="w-6 h-6 opacity-60" />
@@ -3201,150 +3457,230 @@ function MathLab({
                         </div>
                     ) : (
                         /* FULL-WIDTH 3-COLUMN MODULE CARDS GRID */
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredModules.map((mod, i) => {
-                                const isExamCard = viewMode === 'exam_series' || mod.kind === 'exam_series';
-                                const isPaper2 = mod.format === 'structured_essay' || mod.title.toLowerCase().includes('paper 2');
-                                return (
-                                    <div 
-                                        key={i} 
-                                        className={cn(
-                                            "border rounded-2xl p-5 transition-all flex flex-col justify-between group h-full shadow-lg",
-                                            isExamCard 
-                                                ? (isPaper2 
-                                                    ? "bg-gradient-to-br from-amber-950/20 via-slate-900/90 to-slate-900/90 border-amber-500/30 hover:border-amber-400/60" 
-                                                    : "bg-gradient-to-br from-indigo-950/30 via-slate-900/90 to-slate-900/90 border-indigo-500/30 hover:border-indigo-400/60")
-                                                : "bg-slate-900/60 border-slate-800 hover:border-indigo-500/40 hover:bg-slate-850/80"
-                                        )}
-                                    >
-                                        <div>
-                                            {/* Card Badges */}
-                                            {isExamCard ? (
-                                                <div className="flex items-center justify-between gap-2 mb-3">
-                                                    <span className={cn(
-                                                        "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border uppercase tracking-wider flex items-center gap-1.5",
-                                                        isPaper2 
-                                                            ? "bg-amber-500/15 text-amber-300 border-amber-500/30" 
-                                                            : "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
-                                                    )}>
-                                                        {isPaper2 ? (
-                                                            <>
-                                                                <FileSpreadsheet className="w-3 h-3" />
-                                                                <span>Paper 2 • Structured Theory</span>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Award className="w-3 h-3" />
-                                                                <span>Paper 1 • Objective Test</span>
-                                                            </>
-                                                        )}
-                                                    </span>
-
-                                                    {mod.status === 'pending_content' ? (
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider bg-amber-500/15 text-amber-300 border-amber-500/30 flex items-center gap-1">
-                                                            <Clock className="w-3 h-3" />
-                                                            <span>Content coming soon</span>
-                                                        </span>
-                                                    ) : mod.difficulty ? (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {paginatedModules.map((mod, i) => {
+                                    const isExamCard = viewMode === 'exam_series' || mod.kind === 'exam_series';
+                                    const examMeta = isExamCard ? resolveExamMetadata(mod) : null;
+                                    const isPaper2 = examMeta ? examMeta.paperType === 2 : (mod.format === 'structured_essay' || mod.title.toLowerCase().includes('paper 2'));
+                                    
+                                    return (
+                                        <div 
+                                            key={mod.setId || i} 
+                                            className={cn(
+                                                "border rounded-2xl p-5 transition-all flex flex-col justify-between group h-full shadow-lg",
+                                                isExamCard 
+                                                    ? (isPaper2 
+                                                        ? "bg-gradient-to-br from-amber-950/20 via-slate-900/90 to-slate-900/90 border-amber-500/30 hover:border-amber-400/60 shadow-amber-950/20" 
+                                                        : "bg-gradient-to-br from-sky-950/20 via-slate-900/90 to-slate-900/90 border-sky-500/30 hover:border-sky-400/60 shadow-sky-950/20")
+                                                    : "bg-slate-900/60 border-slate-800 hover:border-indigo-500/40 hover:bg-slate-850/80"
+                                            )}
+                                        >
+                                            <div>
+                                                {/* Card Badges */}
+                                                {isExamCard ? (
+                                                    <div className="flex items-center justify-between gap-2 mb-3">
                                                         <span className={cn(
-                                                            "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                                            mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                                                            mod.difficulty === 'Advanced' ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                                                            "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                                            "text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border uppercase tracking-wider flex items-center gap-1.5",
+                                                            isPaper2 
+                                                                ? "bg-amber-500/10 text-amber-400 border-amber-500/20" 
+                                                                : "bg-sky-500/10 text-sky-400 border-sky-500/20"
                                                         )}>
-                                                            {mod.difficulty}
+                                                            {isPaper2 ? (
+                                                                <>
+                                                                    <FileText className="w-3.5 h-3.5 text-amber-400" />
+                                                                    <span>Paper 2 • Structured Theory{examMeta?.year ? ` • ${examMeta.year}` : ''}</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <ListChecks className="w-3.5 h-3.5 text-sky-400" />
+                                                                    <span>Paper 1 • Objective CBT{examMeta?.year ? ` • ${examMeta.year}` : ''}</span>
+                                                                </>
+                                                            )}
                                                         </span>
-                                                    ) : null}
-                                                </div>
-                                            ) : (
-                                                /* Topical Practice Lab: Official NaCCA Strand Tag Header (NO rigid difficulty badge) */
-                                                <div className="flex items-center justify-between gap-2 mb-3">
-                                                    <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-xs">
-                                                        <Bookmark className="w-3 h-3 text-indigo-400" />
-                                                        <span>{mod.strandName ? mod.strandName.toUpperCase() : mod.domain}</span>
-                                                    </span>
 
-                                                    {mod.subStrand && (
-                                                        <span className="text-[10px] font-semibold text-slate-400 hidden sm:inline truncate max-w-[150px]" title={mod.subStrand}>
-                                                            {mod.subStrand}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {/* Exam Series Highlights / Automated Tags */}
-                                            {isExamCard && (
-                                                <div className="mb-2">
-                                                    <span className={cn(
-                                                        "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border",
-                                                        isPaper2 
-                                                            ? "bg-amber-400/10 text-amber-300 border-amber-400/20" 
-                                                            : "bg-sky-400/10 text-sky-300 border-sky-400/20"
-                                                    )}>
-                                                        {mod.examTag || (isPaper2 ? '6 Essay Modules • Step-by-Step Marking Guide' : '40 Objective Questions • Automated Stepper')}
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2">
-                                                {mod.title}
-                                            </h4>
-
-                                            {/* Scope Snippet: 1-2 sentence description of skills covered */}
-                                            <p className="text-xs text-slate-400 line-clamp-2 mb-3 min-h-[36px] leading-relaxed">
-                                                {mod.description}
-                                            </p>
-
-                                            {/* Class Coverage Chips: [ B7 (JHS 1) ] [ B8 (JHS 2) ] [ B9 (JHS 3) ] */}
-                                            {!isExamCard && (
-                                                <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-                                                    {(mod.levelsAvailable || ['B7', 'B8', 'B9']).map((lvlKey) => {
-                                                        const label = lvlKey === 'B7' || lvlKey === 'b7' ? 'B7 (JHS 1)' :
-                                                                      lvlKey === 'B8' || lvlKey === 'b8' ? 'B8 (JHS 2)' :
-                                                                      lvlKey === 'B9' || lvlKey === 'b9' ? 'B9 (JHS 3)' : lvlKey;
-                                                        return (
-                                                            <span
-                                                                key={lvlKey}
-                                                                className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800/90 text-slate-300 border border-slate-700/80 shadow-xs"
-                                                            >
-                                                                {label}
+                                                        {mod.status === 'pending_content' ? (
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider bg-amber-500/15 text-amber-300 border-amber-500/30 flex items-center gap-1">
+                                                                <Clock className="w-3 h-3" />
+                                                                <span>Content coming soon</span>
                                                             </span>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
+                                                        ) : mod.difficulty ? (
+                                                            <span className={cn(
+                                                                "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                                                mod.difficulty === 'Foundation' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                                                mod.difficulty === 'Advanced' ? (isPaper2 ? "bg-amber-500/10 text-amber-400 border-amber-500/20" : "bg-sky-500/10 text-sky-400 border-sky-500/20") :
+                                                                "bg-purple-500/10 text-purple-400 border-purple-500/20"
+                                                            )}>
+                                                                {mod.difficulty}
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
+                                                ) : (
+                                                    /* Topical Practice Lab: Official NaCCA Strand Tag Header (NO rigid difficulty badge) */
+                                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                                        <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-2.5 py-1 rounded-lg uppercase tracking-wider shadow-xs">
+                                                            <Bookmark className="w-3 h-3 text-indigo-400" />
+                                                            <span>{mod.strandName ? mod.strandName.toUpperCase() : mod.domain}</span>
+                                                        </span>
+
+                                                        {mod.subStrand && (
+                                                            <span className="text-[10px] font-semibold text-slate-400 hidden sm:inline truncate max-w-[150px]" title={mod.subStrand}>
+                                                                {mod.subStrand}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {/* Exam Series Highlights / Automated Tags */}
+                                                {isExamCard && (
+                                                    <div className="mb-2">
+                                                        <span className={cn(
+                                                            "inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full border",
+                                                            isPaper2 
+                                                                ? "bg-amber-400/10 text-amber-300 border-amber-400/20" 
+                                                                : "bg-sky-400/10 text-sky-300 border-sky-400/20"
+                                                        )}>
+                                                            {mod.examTag || (isPaper2 ? '6 Essay Modules • Step-by-Step Marking Guide' : '40 Objective Questions • Automated Stepper')}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                <h4 className={cn(
+                                                    "text-base font-bold text-white transition-colors leading-snug mb-2 min-h-[44px] line-clamp-2",
+                                                    isExamCard 
+                                                        ? (isPaper2 ? "group-hover:text-amber-300" : "group-hover:text-sky-300")
+                                                        : "group-hover:text-indigo-300"
+                                                )}>
+                                                    {mod.title}
+                                                </h4>
+
+                                                {/* Scope Snippet: 1-2 sentence description of skills covered */}
+                                                <p className="text-xs text-slate-400 line-clamp-2 mb-3 min-h-[36px] leading-relaxed">
+                                                    {mod.description}
+                                                </p>
+
+                                                {/* Class Coverage Chips: [ B7 (JHS 1) ] [ B8 (JHS 2) ] [ B9 (JHS 3) ] */}
+                                                {!isExamCard && (
+                                                    <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+                                                        {(mod.levelsAvailable || ['B7', 'B8', 'B9']).map((lvlKey) => {
+                                                            const label = lvlKey === 'B7' || lvlKey === 'b7' ? 'B7 (JHS 1)' :
+                                                                          lvlKey === 'B8' || lvlKey === 'b8' ? 'B8 (JHS 2)' :
+                                                                          lvlKey === 'B9' || lvlKey === 'b9' ? 'B9 (JHS 3)' : lvlKey;
+                                                            return (
+                                                                <span
+                                                                    key={lvlKey}
+                                                                    className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800/90 text-slate-300 border border-slate-700/80 shadow-xs"
+                                                                >
+                                                                    {label}
+                                                                </span>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
+                                                <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
+                                                    <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                                                    {mod.meta}
+                                                </span>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handleLaunchModule(mod)}
+                                                    disabled={mod.status === 'pending_content'}
+                                                    className={cn(
+                                                        "h-8 px-3.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border",
+                                                        mod.status === 'pending_content'
+                                                            ? "bg-slate-800/40 text-slate-500 border-slate-700/50 cursor-not-allowed opacity-75"
+                                                            : isExamCard
+                                                                ? (isPaper2 
+                                                                    ? "bg-amber-600 hover:bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-600/20 cursor-pointer" 
+                                                                    : "bg-sky-600 hover:bg-sky-500 text-white border-sky-500 shadow-md shadow-sky-600/20 cursor-pointer")
+                                                                : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40 cursor-pointer"
+                                                    )}
+                                                >
+                                                    <span>
+                                                        {mod.status === 'pending_content' 
+                                                            ? "Coming Soon" 
+                                                            : isExamCard 
+                                                                ? (isPaper2 ? "Launch Theory Rubric" : "Launch Objective CBT") 
+                                                                : "Launch Practice Lab"}
+                                                    </span>
+                                                    {mod.status !== 'pending_content' && <ChevronRight className="w-3.5 h-3.5" />}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* COMPACT PAGINATION BAR - Rendered only in Standard Exam Series mode */}
+                            {viewMode === 'exam_series' && totalPages > 1 && (
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-5 pb-2 border-t border-slate-800/80">
+                                    <div className="text-xs font-medium text-slate-400">
+                                        Showing <span className="font-bold text-white">{totalItems === 0 ? 0 : startIndex + 1}</span>–<span className="font-bold text-white">{endIndex}</span> of <span className="font-bold text-white">{totalItems}</span> papers
+                                    </div>
+
+                                    <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                            disabled={validPage <= 1}
+                                            className="h-8 px-3 text-xs bg-slate-900/80 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                                        >
+                                            <ChevronLeft className="w-3.5 h-3.5" />
+                                            <span>Previous</span>
+                                        </Button>
+
+                                        {/* Page number buttons */}
+                                        <div className="flex items-center gap-1">
+                                            {Array.from({ length: totalPages }, (_, idx) => idx + 1)
+                                                .filter(page => {
+                                                    if (page === 1 || page === totalPages) return true;
+                                                    if (Math.abs(page - validPage) <= 1) return true;
+                                                    return false;
+                                                })
+                                                .map((page, idx, arr) => {
+                                                    const prevPage = arr[idx - 1];
+                                                    const showEllipsis = prevPage && page - prevPage > 1;
+                                                    return (
+                                                        <div key={page} className="flex items-center gap-1">
+                                                            {showEllipsis && (
+                                                                <span className="px-1 text-slate-600 text-xs font-bold">...</span>
+                                                            )}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCurrentPage(page)}
+                                                                className={cn(
+                                                                    "w-8 h-8 rounded-lg text-xs font-bold transition-all border cursor-pointer",
+                                                                    validPage === page
+                                                                        ? "bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30"
+                                                                        : "bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800"
+                                                                )}
+                                                            >
+                                                                {page}
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })}
                                         </div>
 
-                                        <div className="flex items-center justify-between pt-3.5 border-t border-slate-800/80 mt-auto">
-                                            <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
-                                                <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-                                                {mod.meta}
-                                            </span>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => handleLaunchModule(mod)}
-                                                disabled={mod.status === 'pending_content'}
-                                                className={cn(
-                                                    "h-8 px-3.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border",
-                                                    mod.status === 'pending_content'
-                                                        ? "bg-slate-800/40 text-slate-500 border-slate-700/50 cursor-not-allowed opacity-75"
-                                                        : isExamCard
-                                                            ? (isPaper2 
-                                                                ? "bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border-amber-500/40 cursor-pointer" 
-                                                                : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40 cursor-pointer")
-                                                            : "bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border-indigo-500/40 cursor-pointer"
-                                                )}
-                                            >
-                                                <span>{mod.status === 'pending_content' ? "Coming Soon" : isExamCard ? "Launch Exam Paper" : "Launch Practice Lab"}</span>
-                                                {mod.status !== 'pending_content' && <ChevronRight className="w-3.5 h-3.5" />}
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                            disabled={validPage >= totalPages}
+                                            className="h-8 px-3 text-xs bg-slate-900/80 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                                        >
+                                            <span>Next</span>
+                                            <ChevronRight className="w-3.5 h-3.5" />
+                                        </Button>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            )}
                         </div>
                     )}
-
                     {/* EXPANDABLE SYLLABUS CATALOG ARCHIVE ACCORDION */}
                     <div className="pt-6 border-t border-slate-800/80">
                         <Accordion type="single" collapsible className="w-full">
