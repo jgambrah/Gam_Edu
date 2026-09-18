@@ -11,441 +11,441 @@
     "questions": [
       {
         "number": 1,
-        "prompt": "Two models of refrigerators, Model P and Model Q, cost GH¢ 4,000.00 and GH¢ 5,500.00 respectively. An institution budgeted GH¢ 30,000.00 to purchase refrigerators. If the institution bought 5 units of Model P instead of Model Q, how much money was saved?",
+        "prompt": "Two brands of gas cookers, Brand A and Brand B, cost GH¢ 2,000.00 and GH¢ 3,000.00 respectively. A caterer budgeted GH¢ 18,000.00 to purchase cookers. If the caterer bought 5 units of Brand A instead of Brand B, how much money was saved?",
         "options": [
-          "GH¢ 7,500.00",
-          "GH¢ 1,500.00",
+          "GH¢ 5,000.00",
+          "GH¢ 1,000.00",
           "GH¢ 10,000.00",
-          "GH¢ 20,000.00"
+          "GH¢ 15,000.00"
         ],
-        "correctAnswer": "GH¢ 7,500.00",
-        "hint": "Find the cost difference per unit ($5,500 - 4,000$) and multiply by 5 units.",
-        "workedSolution": "$$\\text{Saving per unit} = 5,500 - 4,000 = \\text{GH¢ } 1,500.00$$\n$$\\text{Total saving for 5 units} = 5 \\times 1,500.00 = \\text{GH¢ } 7,500.00$$.",
+        "correctAnswer": "GH¢ 5,000.00",
+        "hint": "Calculate the savings on a single unit ($3,000 - 2,000$) and multiply by 5.",
+        "workedSolution": "$$\\text{Saving per unit} = 3,000 - 2,000 = \\text{GH¢ } 1,000.00$$\n$$\\text{Total saving for 5 units} = 5 \\times 1,000.00 = \\text{GH¢ } 5,000.00$$.",
         "points": 1
       },
       {
         "number": 2,
-        "prompt": "Kofi and Mansah shared a sum of money in the ratio $3 : 7$. If Mansah received GH¢ 160.00 more than Kofi, what was the total amount shared?",
+        "prompt": "Kwame and Abena shared an amount of money in the ratio $2 : 5$. If Abena received GH¢ 120.00 more than Kwame, how much did they share altogether?",
         "options": [
-          "GH¢ 400.00",
           "GH¢ 280.00",
-          "GH¢ 560.00",
-          "GH¢ 320.00"
+          "GH¢ 200.00",
+          "GH¢ 240.00",
+          "GH¢ 350.00"
         ],
-        "correctAnswer": "GH¢ 400.00",
-        "hint": "Difference in ratio parts is $7 - 3 = 4$ parts, which equals GH¢ 160.00. Find the total (10 parts).",
-        "workedSolution": "$$4\\text{ parts} = 160.00 \\implies 1\\text{ part} = \\frac{160.00}{4} = \\text{GH¢ } 40.00$$\n$$\\text{Total parts} = 3 + 7 = 10$$\n$$\\text{Total amount shared} = 10 \\times 40.00 = \\text{GH¢ } 400.00$$.",
+        "correctAnswer": "GH¢ 280.00",
+        "hint": "Difference in parts is $5 - 2 = 3$ parts, which equals GH¢ 120.00. Find the value of total parts ($2 + 5 = 7$).",
+        "workedSolution": "$$3\\text{ parts} = 120.00 \\implies 1\\text{ part} = \\frac{120}{3} = \\text{GH¢ } 40.00$$\n$$\\text{Total parts} = 2 + 5 = 7$$\n$$\\text{Total shared} = 7 \\times 40.00 = \\text{GH¢ } 280.00$$.",
         "points": 1
       },
       {
         "number": 3,
-        "prompt": "Which of the following represents a quantitative variable?",
+        "prompt": "Which of the following is an example of quantitative data?",
         "options": [
-          "Weight of a student",
+          "Height",
+          "Religion",
           "Nationality",
-          "Blood group",
-          "Favorite color"
+          "Blood group"
         ],
-        "correctAnswer": "Weight of a student",
-        "hint": "Quantitative data consists of numerical measurements rather than descriptive categories.",
-        "workedSolution": "Weight is measured numerically on a continuous scale, making it quantitative. Nationality, blood group, and color are qualitative categorical attributes.",
+        "correctAnswer": "Height",
+        "hint": "Quantitative data is measured numerically.",
+        "workedSolution": "Height is a numerical measurement, making it quantitative data.",
         "points": 1
       },
       {
         "number": 4,
-        "prompt": "From the Venn diagram below, determine the intersection set $X \\cap Y$:<br/><svg viewBox='0 0 340 220' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><rect x='20' y='20' width='300' height='180' rx='4' fill='none' stroke='#334155' stroke-width='2'/><text x='305' y='40' font-size='13' font-weight='bold' fill='#0f172a'>U</text><!-- Outer Set X --><circle cx='160' cy='110' r='75' fill='#eff6ff' stroke='#1d4ed8' stroke-width='2'/><text x='225' y='65' font-size='13' font-weight='bold' fill='#1d4ed8'>X</text><!-- Inner Set Y --><circle cx='160' cy='110' r='42' fill='#dbeafe' stroke='#2563eb' stroke-width='1.8'/><text x='195' y='95' font-size='12' font-weight='bold' fill='#1e40af'>Y</text><!-- Elements inside Y: p, q, r, s --><text x='150' y='100' font-size='12' font-weight='bold' fill='#1e293b'>p</text><text x='170' y='100' font-size='12' font-weight='bold' fill='#1e293b'>q</text><text x='150' y='125' font-size='12' font-weight='bold' fill='#1e293b'>r</text><text x='170' y='125' font-size='12' font-weight='bold' fill='#1e293b'>s</text><!-- Elements in X but outside Y: u, v --><text x='130' y='60' font-size='12' font-weight='bold' fill='#1e293b'>u</text><text x='190' y='60' font-size='12' font-weight='bold' fill='#1e293b'>v</text><!-- Elements in U outside X: w, z --><text x='45' y='180' font-size='12' font-weight='bold' fill='#1e293b'>w</text><text x='280' y='180' font-size='12' font-weight='bold' fill='#1e293b'>z</text></svg>",
+        "prompt": "In the Venn diagram below, $X$ and $Y$ are two sets in the universal set $U$. Find $X \\cap Y$:<br/><svg viewBox='0 0 340 220' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><rect x='20' y='20' width='300' height='180' rx='4' fill='none' stroke='#334155' stroke-width='2'/><text x='305' y='40' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='110' r='75' fill='#eff6ff' stroke='#1d4ed8' stroke-width='2'/><text x='225' y='65' font-size='13' font-weight='bold' fill='#1d4ed8'>X</text><circle cx='160' cy='110' r='42' fill='#dbeafe' stroke='#2563eb' stroke-width='1.8'/><text x='195' y='95' font-size='12' font-weight='bold' fill='#1e40af'>Y</text><text x='150' y='105' font-size='12' font-weight='bold' fill='#1e293b'>p</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#1e293b'>q</text><text x='160' y='130' font-size='12' font-weight='bold' fill='#1e293b'>r</text><text x='130' y='65' font-size='12' font-weight='bold' fill='#1e293b'>u</text><text x='190' y='65' font-size='12' font-weight='bold' fill='#1e293b'>v</text><text x='45' y='180' font-size='12' font-weight='bold' fill='#1e293b'>w</text><text x='280' y='180' font-size='12' font-weight='bold' fill='#1e293b'>z</text></svg>",
         "options": [
-          "{p, q, r, s}",
+          "{p, q, r}",
           "{u, v}",
-          "{p, q, r, s, u, v}",
+          "{p, q, r, u, v}",
           "{w, z}"
         ],
-        "correctAnswer": "{p, q, r, s}",
-        "hint": "Since $Y \\subset X$, the elements belonging to both sets are simply the elements in $Y$.",
-        "workedSolution": "Because circle $Y$ is completely enclosed within circle $X$, $X \\cap Y = Y = \\{p, q, r, s\\}$.",
+        "correctAnswer": "{p, q, r}",
+        "hint": "Circle $Y$ is completely inside circle $X$.",
+        "workedSolution": "Because $Y \\subset X$, the elements common to both sets are the elements inside $Y$: $\\{p, q, r\\}$.",
         "points": 1
       },
       {
         "number": 5,
-        "prompt": "Using the Venn diagram from Question 4, how many members belong to set $X$?<br/><svg viewBox='0 0 340 220' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><rect x='20' y='20' width='300' height='180' rx='4' fill='none' stroke='#334155' stroke-width='2'/><text x='305' y='40' font-size='13' font-weight='bold' fill='#0f172a'>U</text><!-- Outer Set X --><circle cx='160' cy='110' r='75' fill='#eff6ff' stroke='#1d4ed8' stroke-width='2'/><text x='225' y='65' font-size='13' font-weight='bold' fill='#1d4ed8'>X</text><!-- Inner Set Y --><circle cx='160' cy='110' r='42' fill='#dbeafe' stroke='#2563eb' stroke-width='1.8'/><text x='195' y='95' font-size='12' font-weight='bold' fill='#1e40af'>Y</text><!-- Elements inside Y: p, q, r, s --><text x='150' y='100' font-size='12' font-weight='bold' fill='#1e293b'>p</text><text x='170' y='100' font-size='12' font-weight='bold' fill='#1e293b'>q</text><text x='150' y='125' font-size='12' font-weight='bold' fill='#1e293b'>r</text><text x='170' y='125' font-size='12' font-weight='bold' fill='#1e293b'>s</text><!-- Elements in X but outside Y: u, v --><text x='130' y='60' font-size='12' font-weight='bold' fill='#1e293b'>u</text><text x='190' y='60' font-size='12' font-weight='bold' fill='#1e293b'>v</text><!-- Elements in U outside X: w, z --><text x='45' y='180' font-size='12' font-weight='bold' fill='#1e293b'>w</text><text x='280' y='180' font-size='12' font-weight='bold' fill='#1e293b'>z</text></svg>",
+        "prompt": "From the Venn diagram in Question 4, how many members are in set $X$?<br/><svg viewBox='0 0 340 220' width='100%' height='170' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><rect x='20' y='20' width='300' height='180' rx='4' fill='none' stroke='#334155' stroke-width='2'/><text x='305' y='40' font-size='13' font-weight='bold' fill='#0f172a'>U</text><circle cx='160' cy='110' r='75' fill='#eff6ff' stroke='#1d4ed8' stroke-width='2'/><text x='225' y='65' font-size='13' font-weight='bold' fill='#1d4ed8'>X</text><circle cx='160' cy='110' r='42' fill='#dbeafe' stroke='#2563eb' stroke-width='1.8'/><text x='195' y='95' font-size='12' font-weight='bold' fill='#1e40af'>Y</text><text x='150' y='105' font-size='12' font-weight='bold' fill='#1e293b'>p</text><text x='170' y='105' font-size='12' font-weight='bold' fill='#1e293b'>q</text><text x='160' y='130' font-size='12' font-weight='bold' fill='#1e293b'>r</text><text x='130' y='65' font-size='12' font-weight='bold' fill='#1e293b'>u</text><text x='190' y='65' font-size='12' font-weight='bold' fill='#1e293b'>v</text><text x='45' y='180' font-size='12' font-weight='bold' fill='#1e293b'>w</text><text x='280' y='180' font-size='12' font-weight='bold' fill='#1e293b'>z</text></svg>",
         "options": [
-          "6",
-          "4",
+          "5",
+          "3",
           "2",
-          "8"
+          "7"
         ],
-        "correctAnswer": "6",
-        "hint": "Count all elements within the boundary of outer circle $X$ ($u, v$ plus all elements inside $Y$).",
-        "workedSolution": "$$X = \\{p, q, r, s, u, v\\} \\implies n(X) = 6$$.",
+        "correctAnswer": "5",
+        "hint": "Count all members inside the outer circle $X$.",
+        "workedSolution": "$$X = \\{p, q, r, u, v\\} \\implies n(X) = 5$$.",
         "points": 1
       },
       {
         "number": 6,
-        "prompt": "A security guard walks along a straight path such that he remains strictly equidistant from two guard posts $A$ and $B$. Which geometric concept describes his path?",
+        "prompt": "A goat is tethered in a field such that it moves keeping an equal distance from two trees $M$ and $N$. Which of the following describes the locus of the goat?",
         "options": [
-          "Perpendicular bisector of line AB",
-          "Circle with diameter AB",
-          "Angle bisector at post A",
-          "Parallel line through AB"
+          "Perpendicular bisector of line MN",
+          "Circle passing through line MN",
+          "Arc through line MN",
+          "Straight line MN"
         ],
-        "correctAnswer": "Perpendicular bisector of line AB",
-        "hint": "The locus of points equidistant from two fixed points is the perpendicular bisector of the line segment joining them.",
-        "workedSolution": "By geometric definition, points equidistant from two fixed endpoints form the perpendicular bisector of the segment connecting those points.",
+        "correctAnswer": "Perpendicular bisector of line MN",
+        "hint": "Points equidistant from two fixed points lie on the perpendicular bisector.",
+        "workedSolution": "The locus of points equidistant from two fixed points $M$ and $N$ is the perpendicular bisector of segment $MN$.",
         "points": 1
       },
       {
         "number": 7,
-        "prompt": "A bag containing sugar weighs $3\\text{ kg}$. If the empty sack has a mass of $250\\text{ g}$, find the actual weight of the sugar in kilograms. [$1\\text{ kg} = 1,000\\text{ g}$]",
+        "prompt": "A sack of maize weighs $3\\text{ kg}$. If the empty sack weighs $120\\text{ g}$, find the weight of the maize. [$1\\text{ kg} = 1,000\\text{ g}$]",
         "options": [
-          "2.750 kg",
-          "2.850 kg",
-          "0.275 kg",
-          "2.500 kg"
+          "2.880 kg",
+          "2.780 kg",
+          "0.288 kg",
+          "1.880 kg"
         ],
-        "correctAnswer": "2.750 kg",
-        "hint": "Convert $250\\text{ g}$ to kilograms ($0.250\\text{ kg}$) and subtract from $3\\text{ kg}$.",
-        "workedSolution": "$$\\text{Empty bag} = \\frac{250}{1000} = 0.250\\text{ kg}$$\n$$\\text{Weight of sugar} = 3.000 - 0.250 = 2.750\\text{ kg}$$.",
+        "correctAnswer": "2.880 kg",
+        "hint": "Convert $120\\text{ g}$ to kilograms ($0.120\\text{ kg}$) and subtract from $3\\text{ kg}$.",
+        "workedSolution": "$$\\text{Empty sack} = 0.120\\text{ kg}$$\n$$\\text{Weight of maize} = 3.000 - 0.120 = 2.880\\text{ kg}$$.",
         "points": 1
       },
       {
         "number": 8,
-        "prompt": "A carpenter cut three timber beams such that the first beam is $12\\text{ cm}$ long, the second beam is $18\\text{ cm}$ longer than the first, and the third beam is $11\\text{ cm}$ shorter than the second. Find the length of the third beam.",
+        "prompt": "Kweku drew three sticks such that the length of the first is $10\\text{ cm}$, the second is $12\\text{ cm}$ longer than the first, and the third is $8\\text{ cm}$ shorter than the second. Find the length of the third stick.",
         "options": [
-          "19 cm",
-          "30 cm",
-          "23 cm",
-          "17 cm"
+          "14 cm",
+          "22 cm",
+          "18 cm",
+          "6 cm"
         ],
-        "correctAnswer": "19 cm",
-        "hint": "Find beam 2 ($12 + 18$), then subtract 11.",
-        "workedSolution": "$$\\text{Beam 1} = 12\\text{ cm}$$\n$$\\text{Beam 2} = 12 + 18 = 30\\text{ cm}$$\n$$\\text{Beam 3} = 30 - 11 = 19\\text{ cm}$$.",
+        "correctAnswer": "14 cm",
+        "hint": "Length of second stick is $10 + 12 = 22\\text{ cm}$. Subtract 8.",
+        "workedSolution": "$$\\text{First} = 10\\text{ cm}$$\n$$\\text{Second} = 10 + 12 = 22\\text{ cm}$$\n$$\\text{Third} = 22 - 8 = 14\\text{ cm}$$.",
         "points": 1
       },
       {
         "number": 9,
-        "prompt": "Find the truth set of the inequality: $3x - 5 < 7 + 5x$.",
+        "prompt": "Find the truth set of $3x - 5 < 7 + 5x$.",
         "options": [
           "{x : x > -6}",
           "{x : x < -6}",
           "{x : x > 6}",
-          "{x : x < 1}"
+          "{x : x < 6}"
         ],
         "correctAnswer": "{x : x > -6}",
-        "hint": "Subtract $3x$ from $5x$ and move numerical terms to the left: $-5 - 7 < 5x - 3x$.",
+        "hint": "Rearrange terms: $-5 - 7 < 5x - 3x$.",
         "workedSolution": "$$-12 < 2x \\implies 2x > -12 \\implies x > -6$$\n$$\\text{Truth set} = \\{x : x > -6\\}$$.",
         "points": 1
       },
       {
         "number": 10,
-        "prompt": "The geometric locus of all points in a plane that are at a constant distance from a fixed point is known as a:",
+        "prompt": "The locus of points equidistant from a single fixed point is called a:",
         "options": [
           "circle",
-          "circumference",
           "diameter",
-          "chord"
+          "chord",
+          "tangent"
         ],
         "correctAnswer": "circle",
-        "hint": "The fixed point is the center and the constant distance is the radius.",
-        "workedSolution": "A circle is defined mathematically as the set of all points in a plane equidistant from a fixed center point.",
+        "hint": "The fixed point is the center of the figure.",
+        "workedSolution": "A circle is the locus of all points in a plane equidistant from a fixed center point.",
         "points": 1
       },
       {
         "number": 11,
-        "prompt": "Evaluate and simplify the surd expression: $\\sqrt{48} + \\sqrt{32} - \\sqrt{12}$.",
+        "prompt": "Evaluate: $\\sqrt{48} + \\sqrt{18} - \\sqrt{12}$.",
         "options": [
-          "2√3 + 4√2",
-          "4√3 + 4√2",
-          "2√3 - 4√2",
-          "6√2"
+          "2√3 + 3√2",
+          "2√3 - 3√2",
+          "3√2",
+          "4√3"
         ],
-        "correctAnswer": "2√3 + 4√2",
-        "hint": "Simplify surds: $\\sqrt{48} = 4\\sqrt{3}$, $\\sqrt{32} = 4\\sqrt{2}$, and $\\sqrt{12} = 2\\sqrt{3}$.",
-        "workedSolution": "$$\\sqrt{48} = 4\\sqrt{3}, \\quad \\sqrt{32} = 4\\sqrt{2}, \\quad \\sqrt{12} = 2\\sqrt{3}$$\n$$(4\\sqrt{3} - 2\\sqrt{3}) + 4\\sqrt{2} = 2\\sqrt{3} + 4\\sqrt{2}$$.",
+        "correctAnswer": "2√3 + 3√2",
+        "hint": "Simplify surds: $\\sqrt{48} = 4\\sqrt{3}$, $\\sqrt{18} = 3\\sqrt{2}$, $\\sqrt{12} = 2\\sqrt{3}$.",
+        "workedSolution": "$$\\sqrt{48} = 4\\sqrt{3}, \\quad \\sqrt{18} = 3\\sqrt{2}, \\quad \\sqrt{12} = 2\\sqrt{3}$$\n$$(4\\sqrt{3} - 2\\sqrt{3}) + 3\\sqrt{2} = 2\\sqrt{3} + 3\\sqrt{2}$$.",
         "points": 1
       },
       {
         "number": 12,
-        "prompt": "In the diagram below, line $AB$ is parallel to line $CD$. Find the value of reflex angle $x$:<br/><svg viewBox='0 0 360 180' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><!-- Top Parallel Line AB --><line x1='20' y1='35' x2='340' y2='35' stroke='#1e293b' stroke-width='2'/><polygon points='280,32 290,35 280,38' fill='#1e293b'/><polygon points='290,32 300,35 290,38' fill='#1e293b'/><text x='25' y='28' font-size='12' font-weight='bold' fill='#0f172a'>A</text><text x='330' y='28' font-size='12' font-weight='bold' fill='#0f172a'>B</text><!-- Bottom Parallel Line CD --><line x1='20' y1='145' x2='340' y2='145' stroke='#1e293b' stroke-width='2'/><polygon points='280,142 290,145 280,148' fill='#1e293b'/><polygon points='290,142 300,145 290,148' fill='#1e293b'/><text x='25' y='162' font-size='12' font-weight='bold' fill='#0f172a'>C</text><text x='330' y='162' font-size='12' font-weight='bold' fill='#0f172a'>D</text><!-- Zig-zag arms meeting at vertex V (180, 95) --><line x1='60' y1='15' x2='180' y2='95' stroke='#2563eb' stroke-width='2.5'/><line x1='70' y1='180' x2='180' y2='95' stroke='#2563eb' stroke-width='2.5'/><!-- Angle markings --><path d='M 75 35 A 20 20 0 0 1 85 23' fill='none' stroke='#dc2626' stroke-width='1.8'/><text x='68' y='25' font-size='11' font-weight='bold' fill='#dc2626'>30°</text><path d='M 120 145 A 25 25 0 0 1 105 130' fill='none' stroke='#16a34a' stroke-width='1.8'/><text x='95' y='135' font-size='11' font-weight='bold' fill='#16a34a'>135°</text><!-- Reflex Angle x arc at V --><path d='M 165 85 A 20 20 0 1 1 170 108' fill='none' stroke='#d97706' stroke-width='2'/><text x='200' y='100' font-size='12' font-weight='bold' fill='#d97706'>x</text><text x='180' y='172' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
+        "prompt": "In the diagram below, line $AB$ is parallel to line $CD$. Find the value of reflex angle $x$:<br/><svg viewBox='0 0 360 180' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><line x1='20' y1='35' x2='340' y2='35' stroke='#1e293b' stroke-width='2'/><polygon points='280,32 290,35 280,38' fill='#1e293b'/><polygon points='290,32 300,35 290,38' fill='#1e293b'/><text x='25' y='28' font-size='12' font-weight='bold' fill='#0f172a'>A</text><text x='330' y='28' font-size='12' font-weight='bold' fill='#0f172a'>B</text><line x1='20' y1='145' x2='340' y2='145' stroke='#1e293b' stroke-width='2'/><polygon points='280,142 290,145 280,148' fill='#1e293b'/><polygon points='290,142 300,145 290,148' fill='#1e293b'/><text x='25' y='162' font-size='12' font-weight='bold' fill='#0f172a'>C</text><text x='330' y='162' font-size='12' font-weight='bold' fill='#0f172a'>D</text><line x1='50' y1='15' x2='180' y2='95' stroke='#2563eb' stroke-width='2.5'/><line x1='80' y1='180' x2='180' y2='95' stroke='#2563eb' stroke-width='2.5'/><path d='M 70 35 A 20 20 0 0 1 80 23' fill='none' stroke='#dc2626' stroke-width='1.8'/><text x='62' y='25' font-size='11' font-weight='bold' fill='#dc2626'>40°</text><path d='M 125 145 A 25 25 0 0 1 110 130' fill='none' stroke='#16a34a' stroke-width='1.8'/><text x='96' y='135' font-size='11' font-weight='bold' fill='#16a34a'>150°</text><path d='M 165 85 A 20 20 0 1 1 170 108' fill='none' stroke='#d97706' stroke-width='2'/><text x='200' y='100' font-size='12' font-weight='bold' fill='#d97706'>x</text><text x='180' y='172' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
         "options": [
-          "285°",
-          "255°",
-          "295°",
-          "265°"
+          "290°",
+          "250°",
+          "270°",
+          "280°"
         ],
-        "correctAnswer": "285°",
-        "hint": "Draw an auxiliary parallel line through the vertex. Interior angle $= 30^\\circ + (180^\\circ - 135^\\circ) = 75^\\circ$. Reflex angle $= 360^\\circ - 75^\\circ$.",
-        "workedSolution": "Top alternate angle $= 30^\\circ$.\nBottom co-interior angle $= 180^\\circ - 135^\\circ = 45^\\circ$.\n$$\\text{Interior angle at vertex} = 30^\\circ + 45^\\circ = 75^\\circ$$\n$$\\text{Reflex angle } x = 360^\\circ - 75^\\circ = 285^\\circ$$.",
+        "correctAnswer": "290°",
+        "hint": "Acute bend angle $= 40^\\circ + (180^\\circ - 150^\\circ) = 40^\\circ + 30^\\circ = 70^\\circ$. Reflex angle $= 360^\\circ - 70^\\circ$.",
+        "workedSolution": "Top alternate interior angle $= 40^\\circ$.\nBottom co-interior angle $= 180^\\circ - 150^\\circ = 30^\\circ$.\n$$\\text{Interior bend angle} = 40^\\circ + 30^\\circ = 70^\\circ$$\n$$\\text{Reflex angle } x = 360^\\circ - 70^\\circ = 290^\\circ$$.",
         "points": 1
       },
       {
         "number": 13,
-        "prompt": "A fruit vendor carries a crate of papayas, pineapples, and watermelons. If $\\frac{3}{10}$ are papayas and $\\frac{8}{25}$ are pineapples, what percentage of the fruits are watermelons?",
+        "prompt": "A crate contains three types of fruits: mangoes, apples, and bananas. If $\\frac{2}{5}$ are mangoes and $\\frac{7}{25}$ are apples, what percentage of the fruits are bananas?",
         "options": [
-          "38%",
-          "62%",
-          "31%",
-          "42%"
+          "32%",
+          "40%",
+          "28%",
+          "68%"
         ],
-        "correctAnswer": "38%",
-        "hint": "Convert fractions to percentages: $\\frac{3}{10} = 30\\%$ and $\\frac{8}{25} = 32\\%$.",
-        "workedSolution": "$$\\text{Papayas} = \\frac{3}{10} \\times 100\\% = 30\\%$$\n$$\\text{Pineapples} = \\frac{8}{25} \\times 100\\% = 32\\%$$\n$$\\text{Watermelons} = 100\\% - (30\\% + 32\\%) = 100\\% - 62\\% = 38\\%$$.",
+        "correctAnswer": "32%",
+        "hint": "Convert fractions to percentages: $\\frac{2}{5} = 40\\%$, $\\frac{7}{25} = 28\\%$.",
+        "workedSolution": "$$\\text{Mangoes} = 40\\%, \\quad \\text{Apples} = 28\\%$$\n$$\\text{Bananas} = 100\\% - (40\\% + 28\\%) = 100\\% - 68\\% = 32\\%$$.",
         "points": 1
       },
       {
         "number": 14,
-        "prompt": "Study the linear graph below:<br/><svg viewBox='0 0 320 280' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='cartGrid24' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#cartGrid24)'/><!-- Axes: Origin at (110, 150) --><line x1='20' y1='150' x2='300' y2='150' stroke='#334155' stroke-width='2'/><polygon points='300,147 308,150 300,153' fill='#334155'/><text x='305' y='165' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='110' y1='265' x2='110' y2='15' stroke='#334155' stroke-width='2'/><polygon points='107,15 110,7 113,15' fill='#334155'/><text x='120' y='16' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='98' y='164' font-size='10' fill='#64748b'>O</text><!-- Line y = -3x + 4. Points: (0, 4) -> (110, 62), (1, 1) -> (132, 128), (2, -2) -> (154, 194) --><line x1='80' y1='-4' x2='180' y2='272' stroke='#2563eb' stroke-width='2.5'/><circle cx='110' cy='62' r='4' fill='#dc2626'/><circle cx='132' cy='128' r='4' fill='#dc2626'/><circle cx='154' cy='194' r='4' fill='#dc2626'/><text x='155' y='75' font-size='11' font-weight='bold' fill='#2563eb'>y = mx + c</text></svg><br/>Calculate the slope ($m$) of the relation.",
+        "prompt": "Study the graph of the linear relation below:<br/><svg viewBox='0 0 320 280' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='cartGridClean' width='24' height='24' patternUnits='userSpaceOnUse'><path d='M 24 0 L 0 0 0 24' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#cartGridClean)'/><line x1='15' y1='168' x2='305' y2='168' stroke='#334155' stroke-width='2'/><polygon points='305,165 313,168 305,171' fill='#334155'/><text x='308' y='184' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='96' y1='265' x2='96' y2='15' stroke='#334155' stroke-width='2'/><polygon points='93,15 96,7 99,15' fill='#334155'/><text x='105' y='16' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='84' y='180' font-size='10' fill='#64748b'>O</text><line x1='60' y1='0' x2='180' y2='240' stroke='#2563eb' stroke-width='2.5'/><circle cx='96' cy='72' r='4' fill='#dc2626'/><circle cx='144' cy='168' r='4' fill='#dc2626'/><text x='140' y='85' font-size='11' font-weight='bold' fill='#2563eb'>y = mx + c</text></svg><br/>Find the slope ($m$) of the relation.",
         "options": [
-          "-3",
-          "3",
           "-2",
+          "2",
+          "-1",
           "4"
         ],
-        "correctAnswer": "-3",
-        "hint": "Identify two points on the line: $(0, 4)$ and $(1, 1)$. Gradient $m = \\frac{y_2 - y_1}{x_2 - x_1}$.",
-        "workedSolution": "$$m = \\frac{1 - 4}{1 - 0} = \\frac{-3}{1} = -3$$.",
+        "correctAnswer": "-2",
+        "hint": "Use points $(0, 4)$ and $(2, 0)$. Gradient $m = \\frac{y_2 - y_1}{x_2 - x_1}$.",
+        "workedSolution": "$$m = \\frac{0 - 4}{2 - 0} = \\frac{-4}{2} = -2$$.",
         "points": 1
       },
       {
         "number": 15,
-        "prompt": "Using the graph from Question 14, determine the full linear equation of the relation:<br/><svg viewBox='0 0 320 280' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='cartGrid24' width='22' height='22' patternUnits='userSpaceOnUse'><path d='M 22 0 L 0 0 0 22' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#cartGrid24)'/><!-- Axes: Origin at (110, 150) --><line x1='20' y1='150' x2='300' y2='150' stroke='#334155' stroke-width='2'/><polygon points='300,147 308,150 300,153' fill='#334155'/><text x='305' y='165' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='110' y1='265' x2='110' y2='15' stroke='#334155' stroke-width='2'/><polygon points='107,15 110,7 113,15' fill='#334155'/><text x='120' y='16' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='98' y='164' font-size='10' fill='#64748b'>O</text><!-- Line y = -3x + 4. Points: (0, 4) -> (110, 62), (1, 1) -> (132, 128), (2, -2) -> (154, 194) --><line x1='80' y1='-4' x2='180' y2='272' stroke='#2563eb' stroke-width='2.5'/><circle cx='110' cy='62' r='4' fill='#dc2626'/><circle cx='132' cy='128' r='4' fill='#dc2626'/><circle cx='154' cy='194' r='4' fill='#dc2626'/><text x='155' y='75' font-size='11' font-weight='bold' fill='#2563eb'>y = mx + c</text></svg>",
+        "prompt": "Using the graph from Question 14, find the equation of the linear relation:<br/><svg viewBox='0 0 320 280' width='100%' height='230' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><defs><pattern id='cartGridClean' width='24' height='24' patternUnits='userSpaceOnUse'><path d='M 24 0 L 0 0 0 24' fill='none' stroke='#e2e8f0' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(#cartGridClean)'/><line x1='15' y1='168' x2='305' y2='168' stroke='#334155' stroke-width='2'/><polygon points='305,165 313,168 305,171' fill='#334155'/><text x='308' y='184' font-size='11' font-weight='bold' fill='#334155'>x</text><line x1='96' y1='265' x2='96' y2='15' stroke='#334155' stroke-width='2'/><polygon points='93,15 96,7 99,15' fill='#334155'/><text x='105' y='16' font-size='11' font-weight='bold' fill='#334155'>y</text><text x='84' y='180' font-size='10' fill='#64748b'>O</text><line x1='60' y1='0' x2='180' y2='240' stroke='#2563eb' stroke-width='2.5'/><circle cx='96' cy='72' r='4' fill='#dc2626'/><circle cx='144' cy='168' r='4' fill='#dc2626'/><text x='140' y='85' font-size='11' font-weight='bold' fill='#2563eb'>y = mx + c</text></svg>",
         "options": [
-          "y = -3x + 4",
-          "y = 3x + 4",
-          "y = -3x - 4",
-          "y = -2x + 4"
+          "y = -2x + 4",
+          "y = 2x + 4",
+          "y = -2x - 4",
+          "y = 4x - 2"
         ],
-        "correctAnswer": "y = -3x + 4",
-        "hint": "Slope $m = -3$ and $y$-intercept $c = 4$. Form $y = mx + c$.",
-        "workedSolution": "From Question 14, $m = -3$. The line crosses the vertical axis at $(0, 4)$, so $c = 4$.\n$$y = -3x + 4$$.",
+        "correctAnswer": "y = -2x + 4",
+        "hint": "Slope is $-2$ and the line crosses the $y$-axis at $(0, 4)$.",
+        "workedSolution": "$$m = -2, \\quad c = 4 \\implies y = -2x + 4$$.",
         "points": 1
       },
       {
         "number": 16,
-        "prompt": "Kwabena is 4 years older than his brother. If the sum of their ages is 22 years, how old is Kwabena?",
+        "prompt": "Adwoa is 5 years younger than her sister. If the sum of their ages is 19 years, find Adwoa's age.",
         "options": [
-          "13 years",
+          "7 years",
+          "12 years",
           "9 years",
-          "11 years",
-          "15 years"
+          "8 years"
         ],
-        "correctAnswer": "13 years",
-        "hint": "Let brother's age be $b$. Then $b + (b + 4) = 22$.",
-        "workedSolution": "$$2b + 4 = 22 \\implies 2b = 18 \\implies b = 9$$\n$$\\text{Kwabena} = 9 + 4 = 13\\text{ years old}$$.",
+        "correctAnswer": "7 years",
+        "hint": "Let sister's age be $s$. Adwoa is $s - 5$. Sum: $s + (s - 5) = 19$.",
+        "workedSolution": "$$2s - 5 = 19 \\implies 2s = 24 \\implies s = 12$$\n$$\\text{Adwoa} = 12 - 5 = 7\\text{ years old}$$.",
         "points": 1
       },
       {
         "number": 17,
-        "prompt": "A crate of notebooks is shared equally among 60 pupils such that each receives 12 books. If the same crate is shared equally among 40 pupils, how many notebooks will each pupil get?",
+        "prompt": "A number of biscuits were shared among 40 children and each received 12 biscuits. If the same number of biscuits are shared equally among 30 children, how many will each child get?",
         "options": [
-          "18",
+          "16",
           "15",
-          "20",
-          "24"
+          "18",
+          "20"
         ],
-        "correctAnswer": "18",
-        "hint": "Inverse variation: total books $= 60 \\times 12$. Divide by 40.",
-        "workedSolution": "$$\\text{Total notebooks} = 60 \\times 12 = 720$$\n$$\\text{Share per pupil} = \\frac{720}{40} = 18\\text{ notebooks}$$.",
+        "correctAnswer": "16",
+        "hint": "Total biscuits $= 40 \\times 12 = 480$. Divide by 30.",
+        "workedSolution": "$$\\text{Total biscuits} = 40 \\times 12 = 480$$\n$$\\text{Per child} = \\frac{480}{30} = 16$$.",
         "points": 1
       },
       {
         "number": 18,
-        "prompt": "If the bearing of town $B$ from town $A$ is $140^\\circ$, find the back bearing of town $A$ from town $B$.",
+        "prompt": "If the bearing of point $Y$ from point $X$ is $110^\\circ$, find the bearing of $X$ from $Y$.",
         "options": [
-          "320°",
-          "040°",
-          "220°",
-          "310°"
+          "290°",
+          "070°",
+          "200°",
+          "250°"
         ],
-        "correctAnswer": "320°",
-        "hint": "For bearings $< 180^\\circ$, add $180^\\circ$ to find the back bearing.",
-        "workedSolution": "$$\\text{Back bearing} = 140^\\circ + 180^\\circ = 320^\\circ$$.",
+        "correctAnswer": "290°",
+        "hint": "Add $180^\\circ$ to find the back bearing: $110^\\circ + 180^\\circ$.",
+        "workedSolution": "$$110^\\circ + 180^\\circ = 290^\\circ$$.",
         "points": 1
       },
       {
         "number": 19,
-        "prompt": "Given vectors $\\mathbf{a} = \\begin{pmatrix} 4 \\\\ -2 \\end{pmatrix}$ and $\\mathbf{b} = \\begin{pmatrix} -3 \\\\ 5 \\end{pmatrix}$, compute $2\\mathbf{a} + \\mathbf{b}$.",
+        "prompt": "Given vectors $\\mathbf{m} = \\begin{pmatrix} 4 \\\\ -1 \\end{pmatrix}$ and $\\mathbf{n} = \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$, find $2\\mathbf{m} + \\mathbf{n}$.",
         "options": [
-          "(5, 1)",
-          "(8, 3)",
-          "(5, -1)",
-          "(1, 1)"
+          "(5, 0)",
+          "(8, -2)",
+          "(1, 1)",
+          "(5, 1)"
         ],
-        "correctAnswer": "(5, 1)",
-        "hint": "Multiply vector $\\mathbf{a}$ by 2, then add corresponding components of vector $\\mathbf{b}$.",
-        "workedSolution": "$$2\\mathbf{a} = 2\\begin{pmatrix} 4 \\\\ -2 \\end{pmatrix} = \\begin{pmatrix} 8 \\\\ -4 \\end{pmatrix}$$\n$$2\\mathbf{a} + \\mathbf{b} = \\begin{pmatrix} 8 + (-3) \\\\ -4 + 5 \\end{pmatrix} = \\begin{pmatrix} 5 \\\\ 1 \\end{pmatrix}$$.",
+        "correctAnswer": "(5, 0)",
+        "hint": "$$2\\begin{pmatrix} 4 \\\\ -1 \\end{pmatrix} + \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix}$$.",
+        "workedSolution": "$$\\begin{pmatrix} 8 \\\\ -2 \\end{pmatrix} + \\begin{pmatrix} -3 \\\\ 2 \\end{pmatrix} = \\begin{pmatrix} 5 \\\\ 0 \\end{pmatrix}$$.",
         "points": 1
       },
       {
         "number": 20,
-        "prompt": "Simplify: $$\\frac{8^{n+1}}{2^{n+1}}$$.",
+        "prompt": "Simplify: $$\\frac{27^{k+1}}{3^{k+2}}$$.",
         "options": [
-          "2^{2n+2}",
-          "2^{2n}",
-          "2^{3n+2}",
-          "4^{n}"
+          "3^{2k+1}",
+          "3^{2k}",
+          "3^{2k-1}",
+          "3^{2k+2}"
         ],
-        "correctAnswer": "2^{2n+2}",
-        "hint": "Convert 8 to base 2: $8^{n+1} = (2^3)^{n+1} = 2^{3n+3}$. Subtract exponents.",
-        "workedSolution": "$$\\frac{2^{3n+3}}{2^{n+1}} = 2^{(3n+3) - (n+1)} = 2^{2n+2}$$.",
+        "correctAnswer": "3^{2k+1}",
+        "hint": "Write 27 as $3^3$: $27^{k+1} = 3^{3(k+1)} = 3^{3k+3}$.",
+        "workedSolution": "$$\\frac{3^{3k+3}}{3^{k+2}} = 3^{(3k+3) - (k+2)} = 3^{2k+1}$$.",
         "points": 1
       },
       {
         "number": 21,
-        "prompt": "A box contains 18 red pens and 22 blue pens. If a pen is picked at random, what is the probability that it is a blue pen?",
+        "prompt": "There are 12 red balls and 28 green identical balls in a box. If a ball is picked at random, what is the probability that it is red?",
         "options": [
-          "11/20",
-          "9/20",
-          "11/40",
-          "9/40"
+          "3/10",
+          "7/10",
+          "3/7",
+          "1/12"
         ],
-        "correctAnswer": "11/20",
-        "hint": "Total pens $= 18 + 22 = 40$. Blue pens $= 22$.",
-        "workedSolution": "$$P(\\text{blue}) = \\frac{22}{40} = \\frac{11}{20}$$.",
+        "correctAnswer": "3/10",
+        "hint": "Total balls $= 12 + 28 = 40$.",
+        "workedSolution": "$$P(\\text{red}) = \\frac{12}{40} = \\frac{3}{10}$$.",
         "points": 1
       },
       {
         "number": 22,
-        "prompt": "The area of a rectangle is $32\\text{ cm}^2$. If its width is $4\\text{ cm}$, find its perimeter.",
+        "prompt": "The area of a rectangle is $24\\text{ cm}^2$. If the width is $3\\text{ cm}$, find its perimeter.",
         "options": [
-          "24 cm",
+          "22 cm",
           "16 cm",
-          "20 cm",
-          "28 cm"
+          "11 cm",
+          "24 cm"
         ],
-        "correctAnswer": "24 cm",
-        "hint": "Find length: $32 \\div 4 = 8\\text{ cm}$. Perimeter $= 2(l + w)$.",
-        "workedSolution": "$$\\text{Length} = \\frac{32}{4} = 8\\text{ cm}$$\n$$\\text{Perimeter} = 2(8 + 4) = 2(12) = 24\\text{ cm}$$.",
+        "correctAnswer": "22 cm",
+        "hint": "Length $= 24 \\div 3 = 8\\text{ cm}$. Perimeter $= 2(l + w)$.",
+        "workedSolution": "$$\\text{Length} = \\frac{24}{3} = 8\\text{ cm}$$\n$$\\text{Perimeter} = 2(8 + 3) = 2(11) = 22\\text{ cm}$$.",
         "points": 1
       },
       {
         "number": 23,
-        "prompt": "Calculate the simple interest on GH¢ 600.00 for 3 years at a rate of 8% per annum.",
+        "prompt": "Find the simple interest on GH¢ 500.00 for 2 years at 6% per annum.",
         "options": [
-          "GH¢ 144.00",
+          "GH¢ 60.00",
+          "GH¢ 30.00",
           "GH¢ 120.00",
-          "GH¢ 96.00",
-          "GH¢ 180.00"
+          "GH¢ 50.00"
         ],
-        "correctAnswer": "GH¢ 144.00",
+        "correctAnswer": "GH¢ 60.00",
         "hint": "$$I = \\frac{P \\times R \\times T}{100}$$.",
-        "workedSolution": "$$I = \\frac{600 \\times 8 \\times 3}{100} = 6 \\times 24 = \\text{GH¢ } 144.00$$.",
+        "workedSolution": "$$I = \\frac{500 \\times 6 \\times 2}{100} = 5 \\times 12 = \\text{GH¢ } 60.00$$.",
         "points": 1
       },
       {
         "number": 24,
-        "prompt": "One factor of the expression $6x^2 + 15x - 4x - 10$ is $(2x + 5)$. Find the other factor.",
+        "prompt": "One factor of the expression $3m^2 + 9m - 6m - 18$ is $(3m - 6)$. Find the other factor.",
         "options": [
-          "3x - 2",
-          "3x + 2",
-          "2x - 3",
-          "3x - 5"
+          "m + 3",
+          "m - 3",
+          "3m + 3",
+          "m + 6"
         ],
-        "correctAnswer": "3x - 2",
-        "hint": "Group terms: $3x(2x + 5) - 2(2x + 5)$.",
-        "workedSolution": "$$3x(2x + 5) - 2(2x + 5) = (2x + 5)(3x - 2)$$\nThe other factor is $3x - 2$.",
+        "correctAnswer": "m + 3",
+        "hint": "Group terms: $3m(m + 3) - 6(m + 3)$.",
+        "workedSolution": "$$3m(m + 3) - 6(m + 3) = (3m - 6)(m + 3)$$\nThe other factor is $m + 3$.",
         "points": 1
       },
       {
         "number": 25,
-        "prompt": "A radio with a marked price of GH¢ 800.00 was sold at a trade discount of 15%. Find the cash price paid.",
+        "prompt": "A pair of shoes costing GH¢ 400.00 was sold at a discount of 10%. Find the selling price.",
         "options": [
-          "GH¢ 680.00",
-          "GH¢ 720.00",
-          "GH¢ 650.00",
-          "GH¢ 120.00"
+          "GH¢ 360.00",
+          "GH¢ 40.00",
+          "GH¢ 340.00",
+          "GH¢ 380.00"
         ],
-        "correctAnswer": "GH¢ 680.00",
-        "hint": "Cash price $= 85\\%$ of marked price: $0.85 \\times 800$.",
-        "workedSolution": "$$\\text{Discount} = 0.15 \\times 800 = \\text{GH¢ } 120.00$$\n$$\\text{Selling Price} = 800.00 - 120.00 = \\text{GH¢ } 680.00$$.",
+        "correctAnswer": "GH¢ 360.00",
+        "hint": "Selling price is 90% of GH¢ 400.00.",
+        "workedSolution": "$$\\text{Discount} = 0.10 \\times 400 = \\text{GH¢ } 40.00$$\n$$\\text{Selling price} = 400 - 40 = \\text{GH¢ } 360.00$$.",
         "points": 1
       },
       {
         "number": 26,
-        "prompt": "Make $k$ the subject of the formula: $$\\frac{1}{k} = \\frac{1}{u} + \\frac{1}{v}$$.",
+        "prompt": "Make $n$ the subject of the relation: $$\\frac{1}{n} = \\frac{1}{a} + \\frac{1}{b}$$.",
         "options": [
-          "k = uv/(u + v)",
-          "k = uv/(u - v)",
-          "k = (u + v)/uv",
-          "k = u + v"
+          "n = ab/(a + b)",
+          "n = (a + b)/ab",
+          "n = ab/(a - b)",
+          "n = a + b"
         ],
-        "correctAnswer": "k = uv/(u + v)",
-        "hint": "Combine fractions on the right side over common denominator $uv$, then take the reciprocal.",
-        "workedSolution": "$$\\frac{1}{k} = \\frac{v + u}{uv} \\implies k = \\frac{uv}{u + v}$$.",
+        "correctAnswer": "n = ab/(a + b)",
+        "hint": "Find common denominator on right side and invert.",
+        "workedSolution": "$$\\frac{1}{n} = \\frac{b + a}{ab} \\implies n = \\frac{ab}{a + b}$$.",
         "points": 1
       },
       {
         "number": 27,
-        "prompt": "The point $Q(-3, 5)$ is translated by vector \\begin{pmatrix} -2 \\\\ 4 \\end{pmatrix} to point $T$. Find the coordinates of $T$.",
+        "prompt": "The point $P(-3, 4)$ is translated by the vector $\\begin{pmatrix} -1 \\\\ 2 \\end{pmatrix}$ to point $R$. Find the coordinates of $R$.",
         "options": [
-          "(-5, 9)",
-          "(5, -9)",
-          "(-1, 1)",
-          "(-5, 1)"
+          "(-4, 6)",
+          "(-2, 2)",
+          "(4, -6)",
+          "(-4, 2)"
         ],
-        "correctAnswer": "(-5, 9)",
-        "hint": "Add components: $(-3 + (-2), 5 + 4)$.",
-        "workedSolution": "$$T = (-3 - 2, 5 + 4) = (-5, 9)$$.",
+        "correctAnswer": "(-4, 6)",
+        "hint": "Add components: $(-3 + (-1), 4 + 2)$.",
+        "workedSolution": "$$R = (-3 - 1, 4 + 2) = (-4, 6)$$.",
         "points": 1
       },
       {
         "number": 28,
-        "prompt": "A grasshopper leaps in a straight line such that its displacement from start after each leap forms the arithmetic sequence: $5, 9, 13, \\dots\\text{ metres}$. Find its displacement after the 10th leap.",
+        "prompt": "A toad leaps in such a way that its distance from start after each leap is given by $3, 6, 9, \\dots\\text{ metres}$. Find its distance after the 10th leap.",
         "options": [
-          "41 m",
-          "45 m",
-          "37 m",
-          "40 m"
+          "30 m",
+          "27 m",
+          "33 m",
+          "24 m"
         ],
-        "correctAnswer": "41 m",
-        "hint": "Use $U_n = a + (n - 1)d$ with $a = 5$ and $d = 4$.",
-        "workedSolution": "$$U_{10} = 5 + (10 - 1)(4) = 5 + 9(4) = 5 + 36 = 41\\text{ metres}$$.",
+        "correctAnswer": "30 m",
+        "hint": "Sequence is $3n$. Substitute $n = 10$.",
+        "workedSolution": "$$\\text{Distance} = 3 \\times 10 = 30\\text{ metres}$$.",
         "points": 1
       },
       {
         "number": 29,
-        "prompt": "A passenger coach departed Kumasi at 8:40 pm and arrived in Tamale at 3:10 am the next morning. Calculate the duration of the trip.",
+        "prompt": "A bus departed from Cape Coast at 8:15 pm and arrived in Takoradi at 1:45 am the next day. How long did the journey take?",
         "options": [
-          "6 hours 30 minutes",
-          "6 hours 20 minutes",
-          "7 hours 30 minutes",
-          "5 hours 30 minutes"
+          "5 hours 30 minutes",
+          "4 hours 30 minutes",
+          "5 hours 15 minutes",
+          "6 hours 30 minutes"
         ],
-        "correctAnswer": "6 hours 30 minutes",
-        "hint": "8:40 pm to 12:00 midnight is $3\\text{ h } 20\\text{ min}$. Add $3\\text{ h } 10\\text{ min}$.",
-        "workedSolution": "$$8:40\\text{ pm to } 12:00\\text{ midnight} = 3\\text{ h } 20\\text{ min}$$\n$$12:00\\text{ midnight to } 3:10\\text{ am} = 3\\text{ h } 10\\text{ min}$$\n$$\\text{Total} = 3\\text{ h } 20\\text{ min} + 3\\text{ h } 10\\text{ min} = 6\\text{ hours } 30\\text{ minutes}$$.",
+        "correctAnswer": "5 hours 30 minutes",
+        "hint": "8:15 pm to 12:00 midnight is $3\\text{ h } 45\\text{ min}$. Add $1\\text{ h } 45\\text{ min}$.",
+        "workedSolution": "$$3\\text{ h } 45\\text{ min} + 1\\text{ h } 45\\text{ min} = 4\\text{ h } 90\\text{ min} = 5\\text{ hours } 30\\text{ minutes}$$.",
         "points": 1
       },
       {
         "number": 30,
-        "prompt": "Simplify: $5 - 3(2 + 3x) + x(3x + 5)$.",
+        "prompt": "Simplify: $4 - 2(3 + 3x) + x(2x + 6)$.",
         "options": [
-          "3x² - 4x - 1",
-          "3x² + 4x - 1",
-          "3x² - 9x - 1",
-          "3x² - 4x + 1"
+          "2x² - 2",
+          "2x² + 6x - 2",
+          "2x² - 6x - 2",
+          "2x² + 2"
         ],
-        "correctAnswer": "3x² - 4x - 1",
-        "hint": "Expand brackets: $5 - 6 - 9x + 3x^2 + 5x$.",
-        "workedSolution": "$$5 - 6 - 9x + 3x^2 + 5x = 3x^2 + (-9x + 5x) + (5 - 6) = 3x^2 - 4x - 1$$.",
+        "correctAnswer": "2x² - 2",
+        "hint": "Expand brackets: $4 - 6 - 6x + 2x^2 + 6x$.",
+        "workedSolution": "$$4 - 6 - 6x + 2x^2 + 6x = 2x^2 + (-6x + 6x) + (4 - 6) = 2x^2 - 2$$.",
         "points": 1
       },
       {
         "number": 31,
-        "prompt": "In the right-angled triangle below, $\\angle QPR = 30^\\circ$ and $|QR| = 6\\text{ cm}$:<br/><svg viewBox='0 0 300 190' width='100%' height='160' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><polygon points='50,150 250,150 250,45' fill='#eff6ff' stroke='#1e40af' stroke-width='2.5'/><rect x='234' y='134' width='16' height='16' fill='none' stroke='#475569' stroke-width='1.5'/><!-- Angle Arc at P(50, 150) --><path d='M 85 150 A 35 35 0 0 0 81 133' fill='none' stroke='#dc2626' stroke-width='2'/><text x='92' y='142' font-size='12' font-weight='bold' fill='#dc2626'>30°</text><!-- Vertex Labels --><text x='35' y='155' font-size='12' font-weight='bold' fill='#0f172a'>P</text><text x='260' y='155' font-size='12' font-weight='bold' fill='#0f172a'>R</text><text x='255' y='40' font-size='12' font-weight='bold' fill='#0f172a'>Q</text><!-- Dimensions --><text x='265' y='100' font-size='12' font-weight='bold' fill='#15803d'>6 cm</text><text x='150' y='170' font-size='11' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg><br/>Find the length of hypotenuse $|PQ|$. [Take $\\sin 30^\\circ = \\frac{1}{2}$]",
+        "prompt": "In the diagram below, $\\angle QPR = 30^\\circ$ and $|QR| = 4\\text{ cm}$. Find the length of $|PQ|$: [Take $\\sin 30^\\circ = \\frac{1}{2}$]<br/><svg viewBox='0 0 300 180' width='100%' height='150' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='1.5'/><polygon points='50,140 240,140 240,40' fill='#eff6ff' stroke='#1e40af' stroke-width='2.5'/><rect x='224' y='124' width='16' height='16' fill='none' stroke='#475569' stroke-width='1.5'/><path d='M 85 140 A 35 35 0 0 0 81 123' fill='none' stroke='#dc2626' stroke-width='2'/><text x='92' y='132' font-size='12' font-weight='bold' fill='#dc2626'>30°</text><text x='35' y='145' font-size='12' font-weight='bold' fill='#0f172a'>P</text><text x='250' y='145' font-size='12' font-weight='bold' fill='#0f172a'>R</text><text x='245' y='35' font-size='12' font-weight='bold' fill='#0f172a'>Q</text><text x='255' y='95' font-size='12' font-weight='bold' fill='#15803d'>4 cm</text><text x='145' y='165' font-size='10' font-weight='bold' fill='#64748b' text-anchor='middle'>NOT DRAWN TO SCALE</text></svg>",
         "options": [
-          "12 cm",
-          "3 cm",
+          "8 cm",
+          "2 cm",
           "6 cm",
-          "10 cm"
+          "12 cm"
         ],
-        "correctAnswer": "12 cm",
-        "hint": "$$\\sin 30^\\circ = \\frac{\\vert{}QR\\vert{}}{\\vert{}PQ\\vert{}} = \\frac{6}{\\vert{}PQ\\vert{}}$$.",
-        "workedSolution": "$$\\frac{1}{2} = \\frac{6}{\\vert{}PQ\\vert{}} \\implies \\vert{}PQ\\vert{} = 6 \\times 2 = 12\\text{ cm}$$.",
+        "correctAnswer": "8 cm",
+        "hint": "$$\\sin 30^\\circ = \\frac{\\text{opp}}{\\text{hyp}} = \\frac{4}{|PQ|} = \\frac{1}{2}$$.",
+        "workedSolution": "$$\\frac{4}{|PQ|} = \\frac{1}{2} \\implies |PQ| = 4 \\times 2 = 8\\text{ cm}$$.",
         "points": 1
       },
       {
         "number": 32,
-        "prompt": "A fair die and a fair coin are tossed together once. Find the probability of obtaining an even number and a head.",
+        "prompt": "A fair coin and a fair die are rolled together once. Find the probability of obtaining a head and an even number.",
         "options": [
           "1/4",
           "1/2",
@@ -453,120 +453,120 @@
           "1/3"
         ],
         "correctAnswer": "1/4",
-        "hint": "$$P(\\text{even}) = \\frac{3}{6} = \\frac{1}{2}$$, and $P(\\text{head}) = \\frac{1}{2}$. Multiply them.",
-        "workedSolution": "$$P(\\text{even} \\cap \\text{head}) = \\frac{1}{2} \\times \\frac{1}{2} = \\frac{1}{4}$$.",
+        "hint": "$$P(\\text{head}) = \\frac{1}{2}$$, $P(\\text{even}) = \\frac{3}{6} = \\frac{1}{2}$.",
+        "workedSolution": "$$\\frac{1}{2} \\times \\frac{1}{2} = \\frac{1}{4}$$.",
         "points": 1
       },
       {
         "number": 33,
-        "prompt": "If the gradient of a straight line in a Cartesian plane is zero ($m = 0$), then the line:",
+        "prompt": "If the gradient of a straight line is zero ($m = 0$), then the line:",
         "options": [
-          "is parallel to the x-axis (horizontal)",
-          "is parallel to the y-axis (vertical)",
-          "falls from left to right",
-          "rises at 45 degrees"
+          "is horizontal",
+          "is vertical",
+          "falls to the right",
+          "rises to the right"
         ],
-        "correctAnswer": "is parallel to the x-axis (horizontal)",
-        "hint": "A zero slope means vertical change $\\Delta y = 0$.",
-        "workedSolution": "A line with zero gradient has constant $y$-values and no vertical rise, which defines a horizontal line parallel to the $x$-axis.",
+        "correctAnswer": "is horizontal",
+        "hint": "A line with zero slope has no vertical incline.",
+        "workedSolution": "A line with a slope of zero is horizontal (parallel to the $x$-axis).",
         "points": 1
       },
       {
         "number": 34,
-        "prompt": "A headteacher wants to investigate pupils' satisfaction with the canteen meal quality. Which data collection method is most practical and effective?",
+        "prompt": "A teacher wants to find out which subject is preferred most by junior high school students. Which data collection method is most suitable?",
         "options": [
           "Questionnaire",
           "Laboratory experiment",
           "Database simulation",
-          "Direct calculation"
+          "Observation"
         ],
         "correctAnswer": "Questionnaire",
-        "hint": "A questionnaire allows systematic gathering of opinions and ratings across a large group.",
-        "workedSolution": "A structured questionnaire is the standard and most reliable method to gather subjective user opinions across a large population.",
+        "hint": "A questionnaire systematically records individual personal preferences.",
+        "workedSolution": "Administering a questionnaire is the most reliable way to collect preference opinions across a group of students.",
         "points": 1
       },
       {
         "number": 35,
-        "prompt": "A logistics warehouse packed 2,400 tins of milk into identical cartons. If each carton accommodates 150 tins, how many cartons were filled completely?",
+        "prompt": "Yaw packed 1,500 oranges into identical baskets. If each basket held 100 oranges, how many baskets were packed?",
         "options": [
-          "16",
           "15",
-          "18",
-          "14"
+          "12",
+          "16",
+          "20"
         ],
-        "correctAnswer": "16",
-        "hint": "Divide 2,400 by 150.",
-        "workedSolution": "$$\\text{Cartons} = \\frac{2,400}{150} = 16$$.",
+        "correctAnswer": "15",
+        "hint": "Divide 1,500 by 100.",
+        "workedSolution": "$$\\frac{1500}{100} = 15\\text{ baskets}$$.",
         "points": 1
       },
       {
         "number": 36,
-        "prompt": "A shopper bought groceries costing GH¢ 85.00, GH¢ 1,240.00, and GH¢ 175.00. If the cashier gave back a change of GH¢ 100.00, what amount did the shopper hand to the cashier initially?",
+        "prompt": "The costs of three books at a store are GH¢ 65.00, GH¢ 1,120.00, and GH¢ 215.00. If a customer paid and received GH¢ 100.00 change, how much did the customer initially give the cashier?",
         "options": [
-          "GH¢ 1,600.00",
           "GH¢ 1,500.00",
-          "GH¢ 1,700.00",
-          "GH¢ 1,400.00"
+          "GH¢ 1,400.00",
+          "GH¢ 1,600.00",
+          "GH¢ 1,300.00"
         ],
-        "correctAnswer": "GH¢ 1,600.00",
-        "hint": "Sum the purchases and add the change returned.",
-        "workedSolution": "$$\\text{Total cost} = 85.00 + 1,240.00 + 175.00 = \\text{GH¢ } 1,500.00$$\n$$\\text{Amount given} = 1,500.00 + 100.00 = \\text{GH¢ } 1,600.00$$.",
+        "correctAnswer": "GH¢ 1,500.00",
+        "hint": "Add the three item costs ($65 + 1,120 + 215 = 1,400$) and add the change.",
+        "workedSolution": "$$\\text{Total cost} = 65 + 1,120 + 215 = \\text{GH¢ } 1,400.00$$\n$$\\text{Amount paid} = 1,400 + 100 = \\text{GH¢ } 1,500.00$$.",
         "points": 1
       },
       {
         "number": 37,
-        "prompt": "A standard six-sided die was rolled multiple times, yielding the frequency distribution below:<br/><br/>| Score on Die | 1 | 2 | 3 | 4 | 5 | 6 |<br/>| :--- | :---: | :---: | :---: | :---: | :---: | :---: |<br/>| Frequency | 5 | 3 | 2 | 4 | 6 | 4 |<br/><br/>Find the modal score.",
+        "prompt": "A student rolled a die multiple times with results shown below:<br/><br/>| Number on Die | 1 | 2 | 3 | 4 | 5 | 6 |<br/>| :--- | :---: | :---: | :---: | :---: | :---: | :---: |<br/>| Frequency | 3 | 4 | 2 | 3 | 6 | 2 |<br/><br/>Find the modal number.",
         "options": [
           "5",
           "6",
-          "1",
+          "2",
           "4"
         ],
         "correctAnswer": "5",
-        "hint": "Identify the score associated with the highest frequency.",
-        "workedSolution": "The score 5 occurred 6 times, which is higher than any other outcome. Mode $= 5$.",
+        "hint": "Look for the outcome with the highest frequency.",
+        "workedSolution": "The number 5 has the highest frequency of 6. Mode $= 5$.",
         "points": 1
       },
       {
         "number": 38,
-        "prompt": "From the frequency table in Question 37, how many times was the die tossed in total?",
+        "prompt": "Using the table from Question 37, how many times did the student roll the die in total?",
         "options": [
-          "24",
           "20",
-          "22",
-          "6"
+          "18",
+          "21",
+          "24"
         ],
-        "correctAnswer": "24",
-        "hint": "Calculate the sum of all frequencies: $5 + 3 + 2 + 4 + 6 + 4$.",
-        "workedSolution": "$$\\sum f = 5 + 3 + 2 + 4 + 6 + 4 = 24\\text{ tosses}$$.",
+        "correctAnswer": "20",
+        "hint": "Sum all frequencies: $3 + 4 + 2 + 3 + 6 + 2$.",
+        "workedSolution": "$$\\sum f = 3 + 4 + 2 + 3 + 6 + 2 = 20\\text{ rolls}$$.",
         "points": 1
       },
       {
         "number": 39,
-        "prompt": "Find the coordinates of the image of point $P(-4, 6)$ when it is rotated through $360^\\circ$ about the origin.",
+        "prompt": "Find the image of the point $(-4, 7)$ when it is rotated through $360^\\circ$ about the origin.",
         "options": [
-          "(-4, 6)",
-          "(4, -6)",
-          "(6, -4)",
-          "(-6, 4)"
+          "(-4, 7)",
+          "(4, -7)",
+          "(-7, 4)",
+          "(7, -4)"
         ],
-        "correctAnswer": "(-4, 6)",
-        "hint": "A complete rotation through $360^\\circ$ maps any point back onto its initial position.",
-        "workedSolution": "A $360^\\circ$ rotation completes a full circular turn, leaving coordinates invariant: $(-4, 6) \\to (-4, 6)$.",
+        "correctAnswer": "(-4, 7)",
+        "hint": "A $360^\\circ$ rotation returns any point to its initial position.",
+        "workedSolution": "Rotation by $360^\\circ$ leaves coordinates unchanged: $(-4, 7) \\to (-4, 7)$.",
         "points": 1
       },
       {
         "number": 40,
-        "prompt": "A workbook contains 80 pages. If a pupil completes 15 pages per day, find the formula relating the number of remaining pages ($N$) to the number of days elapsed ($t$).",
+        "prompt": "A novel contains 60 pages. If a learner reads 10 pages per day, find the formula for the number of unread pages ($N$) after $t$ days.",
         "options": [
-          "N = -15t + 80",
-          "N = 15t + 80",
-          "N = 15t - 80",
-          "N = -15t - 80"
+          "N = -10t + 60",
+          "N = 10t + 60",
+          "N = 10t - 60",
+          "N = -10t - 60"
         ],
-        "correctAnswer": "N = -15t + 80",
-        "hint": "Initial pages $= 80$. Pages decrease by 15 each day.",
-        "workedSolution": "$$\\text{Unread pages} = \\text{Total} - \\text{Read} = 80 - 15t \\implies N = -15t + 80$$.",
+        "correctAnswer": "N = -10t + 60",
+        "hint": "Pages decrease by 10 each day from an initial total of 60.",
+        "workedSolution": "$$N = 60 - 10t = -10t + 60$$.",
         "points": 1
       }
     ]
@@ -576,7 +576,8 @@
     "verified": true,
     "optionsBalanced": true,
     "paper2Ingested": true,
-    "updatedAt": "2026-09-18T09:30:48.800Z"
+    "updatedAt": "2026-09-18T10:58:30.763Z",
+    "paper1Calibrated": true
   },
   "paper2": {
     "title": "Paper 2: Essay / Theory Test (Variant)",
