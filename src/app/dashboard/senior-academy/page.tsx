@@ -1279,6 +1279,21 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
         subject: "Mathematics"
     },
     {
+        title: "Junior Core Mathematics - Structured Problem-Solving Series (Set 61)",
+        domain: "CORE CURRICULUM",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "6 Questions - 60 mins - Mastery Series",
+        description: "Official 6-question structured theory examination variant (Set 61 / 2020 BECE variant) featuring set operations, BODMAS, straight-line angles, gradient/intercept from linear forms, textbook commission arithmetic, cylinder-to-rectangular tank water volume transfer, difference of two squares, and linear coordinate graph plotting with step-by-step marking rubrics.",
+        difficulty: "Advanced",
+        topicId: "core_curriculum_mastery",
+        setId: "jhs-math-mastery-series-61",
+        kind: "exam_series",
+        format: "structured_essay",
+        questionCount: 6,
+        examTag: "6 Questions - Live Stepper",
+        subject: "Mathematics"
+    },
+    {
         title: "BECE 2012 Mathematics Paper 1 (Exam Variant Mastery)",
         domain: "ARITHMETIC & NUMERACY",
         gradeTier: "Junior Secondary (JHS)",
