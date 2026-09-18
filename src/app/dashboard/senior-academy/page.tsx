@@ -159,7 +159,13 @@ interface SuggestedModuleCard {
     gradeTier: SecondaryGradeTier;
     meta: string;
     description: string;
-    difficulty?: 'Foundation' | 'Intermediate' | 'Advanced';
+    difficulty?: 'Foundation' | 'Intermediate' | 'Advanced' | 'Core' | string;
+    name?: string;
+    type?: string;
+    paperType?: 1 | 2;
+    year?: number | string;
+    setNumber?: number | string;
+    era?: string;
     sampleInstruction?: string;
     sampleFormula?: string;
     sampleAnswer?: string;

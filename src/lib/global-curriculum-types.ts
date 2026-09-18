@@ -43,6 +43,7 @@ export const CURRICULUM_LEVEL_METADATA: Record<
 export type QuestionSetVariantType = 'standard' | 'past_paper_variant';
 
 export interface StructuredQuestionPart {
+  partId?: string;
   partLabel: string;
   marks: number;
   prompt: string;
@@ -68,6 +69,10 @@ export interface CurriculumQuestion {
 }
 
 export interface CurriculumQuestionSet {
+  year?: number | string;
+  paperType?: 1 | 2;
+  setNumber?: number;
+  era?: string;
   id: string;
   title: string;
   tier: string;
