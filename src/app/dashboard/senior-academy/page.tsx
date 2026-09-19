@@ -1878,6 +1878,29 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
+        title: "2017 BECE Integrated Science Paper 1 (Set 80 Objective)",
+        domain: "DIVERSITY OF MATTER & CYCLES",
+        strandName: "STRAND 1 TO STRAND 5",
+        strandCode: "S1-S5",
+        subStrand: "2017 BECE Integrated Science Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Objective Test",
+        description: "Standardized 40-question objective examination variant with KaTeX equations, vector SVGs, and step-by-step worked solutions for 2017 BECE candidates.",
+        difficulty: "Intermediate",
+        kind: "exam_series",
+        setId: "paper_2017_variant",
+        topicId: "bece_past_papers",
+        format: "objective",
+        paperType: 1,
+        year: 2017,
+        setNumber: 80,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
         title: "Living Cells & Cell Ultrastructure",
         domain: "DIVERSITY OF MATTER",
         strandName: "STRAND 1: DIVERSITY OF MATTER",
@@ -2870,6 +2893,7 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
 
   const setYearMap: Record<number, { year: number; paper: 1 | 2 }> = {
     // Modern Era (2019 - 2026)
+    80: { year: 2017, paper: 1 },
     79: { year: 2016, paper: 2 },
     78: { year: 2016, paper: 1 },
     77: { year: 2015, paper: 2 },
@@ -2983,6 +3007,7 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_2015_variant_p2': { setNum: 77, paper: 2, year: 2015 },
         'paper_2016_variant': { setNum: 78, paper: 1, year: 2016 },
         'paper_2016_variant_p2': { setNum: 79, paper: 2, year: 2016 },
+        'paper_2017_variant': { setNum: 80, paper: 1, year: 2017 },
         'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
         'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
         'paper_2024_variant': { setNum: 60, paper: 2, year: 2024 },
