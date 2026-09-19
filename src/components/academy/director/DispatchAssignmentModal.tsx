@@ -528,10 +528,10 @@ export function DispatchAssignmentModal({
   if (!isOpen || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto box-border animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#0d1527] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto box-border text-slate-100">
-        {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-800/80 px-6 sm:px-8 py-5 shrink-0 bg-[#0d1527]">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-sm overflow-hidden box-border animate-in fade-in duration-200">
+      <div className="relative w-full max-w-4xl h-[88vh] bg-[#0d1527] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto box-border text-slate-100">
+        {/* 1. PINNED HEADER */}
+        <div className="flex items-start justify-between border-b border-slate-800/80 px-6 sm:px-8 py-4 shrink-0 bg-[#0d1527] z-10">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider px-2 py-0.5">
@@ -558,31 +558,32 @@ export function DispatchAssignmentModal({
           </button>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="overflow-y-auto flex-1 px-6 sm:px-8 py-6 space-y-6">
-          {/* Status Alerts */}
-          {errorMsg && (
-            <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-              <div className="space-y-1">
-                <p className="font-bold">Dispatch Notice</p>
-                <p className="text-[11px] text-rose-300/90 leading-relaxed">{errorMsg}</p>
+        {/* 2. FORM WRAPPING SCROLLABLE BODY AND PINNED FOOTER */}
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          {/* SCROLLABLE BODY (Only one single vertical scrollbar!) */}
+          <div className="overflow-y-auto flex-1 px-6 sm:px-8 py-5 space-y-5 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+            {/* Status Alerts */}
+            {errorMsg && (
+              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-bold">Dispatch Notice</p>
+                  <p className="text-[11px] text-rose-300/90 leading-relaxed">{errorMsg}</p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {successMsg && (
-            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-3">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-              <span className="font-bold">{successMsg}</span>
-            </div>
-          )}
+            {successMsg && (
+              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-3">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                <span className="font-bold">{successMsg}</span>
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
             {/* ========================================================================= */}
             {/* SECTION 1: QUESTION SEARCH ENGINE & CURRICULUM CATALOG */}
             {/* ========================================================================= */}
-            <div className="space-y-3.5 p-4 sm:p-5 rounded-3xl bg-slate-950/70 border border-slate-800/80 shadow-inner">
+            <div className="space-y-3 p-4 sm:p-5 rounded-3xl bg-slate-950/70 border border-slate-800/80 shadow-inner">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Search className="w-4 h-4 text-amber-400" />
@@ -610,13 +611,13 @@ export function DispatchAssignmentModal({
                   placeholder="Search by year (e.g. 2024), set (e.g. Set 60), topic (e.g. Algebra, Vectors, Newton), or subject..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="h-11 pl-10 pr-9 rounded-2xl bg-slate-900 border-slate-700/80 text-xs font-medium text-white placeholder:text-slate-500 focus:border-amber-500 transition-colors"
+                  className="h-10 pl-10 pr-9 rounded-2xl bg-slate-900 border-slate-700/80 text-xs font-medium text-white placeholder:text-slate-500 focus:border-amber-500 transition-colors"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white"
+                    className="absolute right-3.5 top-3 text-slate-400 hover:text-white"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -624,16 +625,16 @@ export function DispatchAssignmentModal({
               </div>
 
               {/* Subject Filter Chips & Format Toggles */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
                 {/* Subject Tabs */}
-                <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full">
+                <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full scrollbar-thin scrollbar-thumb-slate-800">
                   {SUBJECT_CATEGORIES.map(sub => (
                     <button
                       key={sub}
                       type="button"
                       onClick={() => setSelectedSubject(sub)}
                       className={cn(
-                        'px-3 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5',
+                        'px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5',
                         selectedSubject === sub
                           ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
                           : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
@@ -691,7 +692,7 @@ export function DispatchAssignmentModal({
               {/* Grade Tier Pills */}
               <div className="flex items-center gap-2 pt-0.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier:</span>
-                <div className="flex items-center gap-1.5 overflow-x-auto">
+                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-800">
                   {GRADE_TIERS.map(tier => (
                     <button
                       key={tier}
@@ -710,12 +711,12 @@ export function DispatchAssignmentModal({
                 </div>
               </div>
 
-              {/* Search Results Catalog Grid */}
-              <div className="space-y-2 pt-2">
-                <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+              {/* Search Results Catalog Grid (Constrained max-h-[220px] for compact height) */}
+              <div className="space-y-2 pt-1">
+                <div className="max-h-[220px] sm:max-h-[240px] overflow-y-auto space-y-2 pr-1.5 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900/40">
                   {filteredExams.length === 0 ? (
-                    <div className="p-8 text-center rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-2">
-                      <Search className="w-8 h-8 mx-auto text-slate-600" />
+                    <div className="p-6 text-center rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-2">
+                      <Search className="w-7 h-7 mx-auto text-slate-600" />
                       <p className="text-xs font-semibold text-slate-300">
                         No questions found matching &quot;{searchQuery}&quot;
                       </p>
@@ -750,7 +751,7 @@ export function DispatchAssignmentModal({
                             setSelectedPaperType(opt.paperType);
                           }}
                           className={cn(
-                            'p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-start justify-between gap-3 group',
+                            'p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-start justify-between gap-3 group',
                             isSelected
                               ? isP1
                                 ? 'bg-sky-500/15 border-sky-500/80 shadow-[0_0_15px_rgba(14,165,233,0.15)] ring-1 ring-sky-500/50'
@@ -758,7 +759,7 @@ export function DispatchAssignmentModal({
                               : 'bg-slate-900/80 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50'
                           )}
                         >
-                          <div className="space-y-1.5 flex-1 min-w-0">
+                          <div className="space-y-1 flex-1 min-w-0">
                             {/* Top Badges */}
                             <div className="flex flex-wrap items-center gap-1.5">
                               <Badge className={cn('text-[9px] font-bold px-2 py-0', getSubjectBadgeStyle(opt.subject))}>
@@ -812,7 +813,7 @@ export function DispatchAssignmentModal({
                           {/* Selection Indicator */}
                           <div
                             className={cn(
-                              'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-1 transition-all',
+                              'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-all',
                               isSelected
                                 ? isP1
                                   ? 'border-sky-400 bg-sky-500 text-slate-950 shadow-sm'
@@ -831,11 +832,11 @@ export function DispatchAssignmentModal({
 
               {/* Currently Selected Summary Pill */}
               {activeSelectedExam && (
-                <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2 text-xs">
+                <div className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2 min-w-0">
                     <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                    <span className="text-slate-400 shrink-0">Selected Exam:</span>
-                    <span className="font-bold text-white truncate">{activeSelectedExam.title}</span>
+                    <span className="text-slate-400 shrink-0 text-[11px]">Selected Exam:</span>
+                    <span className="font-bold text-white truncate text-xs">{activeSelectedExam.title}</span>
                   </div>
                   <Badge
                     className={cn(
@@ -856,7 +857,7 @@ export function DispatchAssignmentModal({
             {/* ========================================================================= */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Target Class with Live Enrollment Count */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-amber-400" /> 2. Target Class
@@ -881,7 +882,7 @@ export function DispatchAssignmentModal({
                   <select
                     value={selectedClassId}
                     onChange={e => setSelectedClassId(e.target.value)}
-                    className="w-full h-11 px-4 pr-10 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-100 focus:outline-none focus:border-amber-500 transition-colors appearance-none cursor-pointer"
+                    className="w-full h-10 px-3.5 pr-10 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-100 focus:outline-none focus:border-amber-500 transition-colors appearance-none cursor-pointer"
                   >
                     {classList.map(cls => (
                       <option key={cls.id} value={cls.id} className="bg-slate-900 text-white">
@@ -889,7 +890,7 @@ export function DispatchAssignmentModal({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 absolute right-4 top-3.5 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 absolute right-3.5 top-3 text-slate-400 pointer-events-none" />
                 </div>
 
                 {activeClassOption && activeClassOption.studentCount === 0 && !isLoadingClasses && (
@@ -900,7 +901,7 @@ export function DispatchAssignmentModal({
               </div>
 
               {/* Due Date & Time */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-amber-400" /> Due Date & Time Cutoff
                 </Label>
@@ -908,7 +909,7 @@ export function DispatchAssignmentModal({
                   type="datetime-local"
                   value={dueDateStr}
                   onChange={e => setDueDateStr(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-950 border-slate-800 text-xs font-mono text-slate-200 focus:border-amber-500"
+                  className="h-10 rounded-2xl bg-slate-950 border-slate-800 text-xs font-mono text-slate-200 focus:border-amber-500"
                   required
                 />
               </div>
@@ -917,7 +918,7 @@ export function DispatchAssignmentModal({
             {/* ========================================================================= */}
             {/* SECTION 3: ASSIGNMENT TITLE & INSTRUCTIONS */}
             {/* ========================================================================= */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 3. Assignment Display Title (Shown on Student Dashboard)
               </Label>
@@ -926,13 +927,13 @@ export function DispatchAssignmentModal({
                 value={customTitle}
                 onChange={e => setCustomTitle(e.target.value)}
                 placeholder="e.g., Weekend Task: 2024 BECE Integrated Science Paper 2 (Theory)"
-                className="h-11 rounded-2xl bg-slate-950 border-slate-800 text-xs font-medium text-slate-100 focus:border-amber-500"
+                className="h-10 rounded-2xl bg-slate-950 border-slate-800 text-xs font-medium text-slate-100 focus:border-amber-500"
                 required
               />
             </div>
 
             {/* Instructions (Optional) */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 4. Instructions / Teacher Notes (Optional)
               </Label>
@@ -940,26 +941,44 @@ export function DispatchAssignmentModal({
                 value={instructions}
                 onChange={e => setInstructions(e.target.value)}
                 placeholder="e.g., Show all working formulas and intermediate algebraic steps clearly. AI Examiner will award partial marks for correct method."
-                className="rounded-2xl min-h-[70px] bg-slate-950 border-slate-800 text-xs text-slate-200 focus:border-amber-500 placeholder:text-slate-600"
+                className="rounded-2xl min-h-[60px] bg-slate-950 border-slate-800 text-xs text-slate-200 focus:border-amber-500 placeholder:text-slate-600"
               />
             </div>
+          </div>
 
-            {/* Submit Actions */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          {/* 3. PINNED ACTION FOOTER (Sticky/Fixed at bottom of modal) */}
+          <div className="shrink-0 bg-[#0d1527] border-t border-slate-800/80 px-6 sm:px-8 py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 z-10">
+            {/* Left summary note */}
+            <div className="flex items-center gap-2 min-w-0 text-xs">
+              {activeSelectedExam ? (
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+                  <span className="text-slate-400 text-[11px] shrink-0">Selected:</span>
+                  <span className="font-bold text-white text-xs truncate max-w-[240px] sm:max-w-[340px]">
+                    {activeSelectedExam.title}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-slate-500 text-xs">Select a question set to proceed</span>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-3 shrink-0">
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="border-slate-800 bg-slate-950 text-slate-400 hover:text-white text-xs rounded-xl px-5 h-11 cursor-pointer"
+                className="border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-xs rounded-xl px-4 h-10 cursor-pointer"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || activeClassOption?.studentCount === 0}
+                disabled={isSubmitting || activeClassOption?.studentCount === 0 || !activeSelectedExam}
                 className={cn(
-                  'text-white font-bold text-xs rounded-xl px-6 h-11 shadow-lg transition-all flex items-center gap-2 cursor-pointer',
+                  'text-white font-bold text-xs rounded-xl px-5 h-10 shadow-lg transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap',
                   selectedPaperType === 1
                     ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-600/30 disabled:bg-slate-800 disabled:text-slate-600'
                     : 'bg-amber-600 hover:bg-amber-500 shadow-amber-600/30 disabled:bg-slate-800 disabled:text-slate-600'
@@ -982,8 +1001,8 @@ export function DispatchAssignmentModal({
                 )}
               </Button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>,
     document.body
