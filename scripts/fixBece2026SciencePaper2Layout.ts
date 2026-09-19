@@ -121,28 +121,28 @@ const svgQ1bRespiratory = `
     <!-- Part I: Larynx -->
     <rect x='162' y='32' width='16' height='12' rx='2' fill='#fbcfe8' stroke='#db2777' stroke-width='1.5'/>
     <line x1='178' y1='38' x2='260' y2='38' stroke='#94a3b8' stroke-width='1.2' stroke-dasharray='3,2'/>
-    <text x='265' y='42' font-size='11' font-weight='bold' fill='#f472b6'>I (Larynx)</text>
+    <text x='265' y='42' font-size='12' font-weight='bold' fill='#f472b6'>I</text>
     <!-- Part II: Trachea -->
     <rect x='164' y='46' width='12' height='45' fill='#e2e8f0' stroke='#334155' stroke-width='1.5'/>
     <line x1='164' y1='54' x2='176' y2='54' stroke='#334155' stroke-width='1.2'/>
     <line x1='164' y1='64' x2='176' y2='64' stroke='#334155' stroke-width='1.2'/>
     <line x1='164' y1='74' x2='176' y2='74' stroke='#334155' stroke-width='1.2'/>
     <line x1='176' y1='65' x2='260' y2='65' stroke='#94a3b8' stroke-width='1.2' stroke-dasharray='3,2'/>
-    <text x='265' y='69' font-size='11' font-weight='bold' fill='#38bdf8'>II (Trachea)</text>
+    <text x='265' y='69' font-size='12' font-weight='bold' fill='#38bdf8'>II</text>
     <!-- Part III: Bronchus -->
     <path d='M 166 91 L 140 115' stroke='#e2e8f0' stroke-width='3.5'/>
     <path d='M 174 91 L 200 115' stroke='#e2e8f0' stroke-width='3.5'/>
     <line x1='200' y1='115' x2='260' y2='100' stroke='#94a3b8' stroke-width='1.2' stroke-dasharray='3,2'/>
-    <text x='265' y='104' font-size='11' font-weight='bold' fill='#a78bfa'>III (Bronchus)</text>
+    <text x='265' y='104' font-size='12' font-weight='bold' fill='#a78bfa'>III</text>
     <!-- Part IV: Lungs -->
     <path d='M 120 105 C 100 105 85 130 90 175 C 100 185 135 185 145 175 C 150 145 145 110 120 105 Z' fill='#881337' stroke='#f43f5e' stroke-width='1.8'/>
     <path d='M 220 105 C 240 105 255 130 250 175 C 240 185 205 185 195 175 C 190 145 195 110 220 105 Z' fill='#881337' stroke='#f43f5e' stroke-width='1.8'/>
     <line x1='245' y1='150' x2='275' y2='150' stroke='#94a3b8' stroke-width='1.2' stroke-dasharray='3,2'/>
-    <text x='280' y='154' font-size='11' font-weight='bold' fill='#fb7185'>IV (Lung)</text>
+    <text x='280' y='154' font-size='12' font-weight='bold' fill='#fb7185'>IV</text>
     <!-- Part V: Diaphragm -->
     <path d='M 75 190 Q 170 160 265 190' fill='none' stroke='#38bdf8' stroke-width='3.5'/>
     <line x1='170' y1='175' x2='170' y2='210' stroke='#94a3b8' stroke-width='1.2' stroke-dasharray='3,2'/>
-    <text x='170' y='224' font-size='11' font-weight='bold' fill='#38bdf8' text-anchor='middle'>V (Diaphragm)</text>
+    <text x='170' y='224' font-size='12' font-weight='bold' fill='#38bdf8' text-anchor='middle'>V</text>
   </svg>
 </div>
 `.trim().replace(/\n\s*/g, '');
@@ -157,17 +157,17 @@ const svgQ1cCircuit = `
     <!-- Cell (I) -->
     <line x1='105' y1='33' x2='105' y2='57' stroke='#38bdf8' stroke-width='2'/>
     <line x1='112' y1='39' x2='112' y2='51' stroke='#38bdf8' stroke-width='3.5'/>
-    <text x='108' y='27' font-size='10' font-weight='bold' fill='#38bdf8' text-anchor='middle'>I (Cell)</text>
+    <text x='108' y='27' font-size='11' font-weight='bold' fill='#38bdf8' text-anchor='middle'>I</text>
     <line x1='112' y1='45' x2='145' y2='45' stroke='#94a3b8' stroke-width='2'/>
     <!-- Switch (III) closed -->
     <circle cx='148' cy='45' r='3' fill='#e2e8f0'/>
     <line x1='148' y1='45' x2='170' y2='35' stroke='#e2e8f0' stroke-width='2'/>
     <circle cx='174' cy='45' r='3' fill='#e2e8f0'/>
-    <text x='160' y='27' font-size='10' font-weight='bold' fill='#e2e8f0' text-anchor='middle'>III (Switch)</text>
+    <text x='160' y='27' font-size='11' font-weight='bold' fill='#e2e8f0' text-anchor='middle'>III</text>
     <line x1='174' y1='45' x2='205' y2='45' stroke='#94a3b8' stroke-width='2'/>
     <!-- Resistor (II) -->
     <rect x='205' y='37' width='55' height='16' fill='#1e293b' stroke='#f59e0b' stroke-width='2'/>
-    <text x='232' y='30' font-size='10' font-weight='bold' fill='#f59e0b' text-anchor='middle'>II (Resistor)</text>
+    <text x='232' y='30' font-size='11' font-weight='bold' fill='#f59e0b' text-anchor='middle'>II</text>
     <line x1='260' y1='45' x2='300' y2='45' stroke='#94a3b8' stroke-width='2'/>
     <!-- Right side wire drop -->
     <line x1='300' y1='45' x2='300' y2='140' stroke='#94a3b8' stroke-width='2'/>
@@ -176,12 +176,12 @@ const svgQ1cCircuit = `
     <circle cx='232' cy='85' r='14' fill='#0284c7' stroke='#38bdf8' stroke-width='2'/>
     <text x='232' y='90' font-size='12' font-weight='bold' fill='#ffffff' text-anchor='middle'>V</text>
     <path d='M 246 85 L 275 85 L 275 45' fill='none' stroke='#38bdf8' stroke-width='1.5'/>
-    <text x='232' y='112' font-size='9' font-weight='bold' fill='#38bdf8' text-anchor='middle'>IV (Voltmeter)</text>
+    <text x='232' y='112' font-size='10' font-weight='bold' fill='#38bdf8' text-anchor='middle'>IV</text>
     <!-- Ammeter (V) in series along the bottom line -->
     <line x1='300' y1='140' x2='180' y2='140' stroke='#94a3b8' stroke-width='2'/>
     <circle cx='160' cy='140' r='14' fill='#16a34a' stroke='#4ade80' stroke-width='2'/>
     <text x='160' y='145' font-size='12' font-weight='bold' fill='#ffffff' text-anchor='middle'>A</text>
-    <text x='160' y='168' font-size='9' font-weight='bold' fill='#4ade80' text-anchor='middle'>V (Ammeter)</text>
+    <text x='160' y='168' font-size='10' font-weight='bold' fill='#4ade80' text-anchor='middle'>V</text>
     <line x1='146' y1='140' x2='40' y2='140' stroke='#94a3b8' stroke-width='2'/>
     <line x1='40' y1='140' x2='40' y2='45' stroke='#94a3b8' stroke-width='2'/>
   </svg>

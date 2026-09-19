@@ -125,28 +125,28 @@ const svgQ1bRespiratoryVar = `
   <!-- Part I: Larynx -->
   <rect x='162' y='32' width='16' height='12' rx='2' fill='#fbcfe8' stroke='#db2777' stroke-width='1.5'/>
   <line x1='178' y1='38' x2='260' y2='38' stroke='#475569' stroke-width='1.2'/>
-  <text x='265' y='42' font-size='11' font-weight='bold' fill='#0f172a'>I (Larynx)</text>
+  <text x='265' y='42' font-size='11' font-weight='bold' fill='#0f172a'>I</text>
   <!-- Part II: Trachea with cartilage rings -->
   <rect x='164' y='46' width='12' height='45' fill='#e2e8f0' stroke='#334155' stroke-width='1.5'/>
   <line x1='164' y1='54' x2='176' y2='54' stroke='#334155' stroke-width='1.2'/>
   <line x1='164' y1='64' x2='176' y2='64' stroke='#334155' stroke-width='1.2'/>
   <line x1='164' y1='74' x2='176' y2='74' stroke='#334155' stroke-width='1.2'/>
   <line x1='176' y1='65' x2='260' y2='65' stroke='#475569' stroke-width='1.2'/>
-  <text x='265' y='69' font-size='11' font-weight='bold' fill='#0f172a'>II (Trachea)</text>
+  <text x='265' y='69' font-size='11' font-weight='bold' fill='#0f172a'>II</text>
   <!-- Part III: Left & Right Bronchi -->
   <path d='M 166 91 L 140 115' stroke='#334155' stroke-width='3.5'/>
   <path d='M 174 91 L 200 115' stroke='#334155' stroke-width='3.5'/>
   <line x1='200' y1='115' x2='260' y2='100' stroke='#475569' stroke-width='1.2'/>
-  <text x='265' y='104' font-size='11' font-weight='bold' fill='#0f172a'>III (Bronchus)</text>
+  <text x='265' y='104' font-size='11' font-weight='bold' fill='#0f172a'>III</text>
   <!-- Part IV: Right and Left Lungs -->
   <path d='M 120 105 C 100 105 85 130 90 175 C 100 185 135 185 145 175 C 150 145 145 110 120 105 Z' fill='#fee2e2' stroke='#ef4444' stroke-width='1.8'/>
   <path d='M 220 105 C 240 105 255 130 250 175 C 240 185 205 185 195 175 C 190 145 195 110 220 105 Z' fill='#fee2e2' stroke='#ef4444' stroke-width='1.8'/>
   <line x1='245' y1='150' x2='275' y2='150' stroke='#475569' stroke-width='1.2'/>
-  <text x='280' y='154' font-size='11' font-weight='bold' fill='#0f172a'>IV (Lung)</text>
+  <text x='280' y='154' font-size='11' font-weight='bold' fill='#0f172a'>IV</text>
   <!-- Part V: Diaphragm Sheet -->
   <path d='M 75 190 Q 170 160 265 190' fill='none' stroke='#2563eb' stroke-width='3.5'/>
   <line x1='170' y1='175' x2='170' y2='210' stroke='#475569' stroke-width='1.2'/>
-  <text x='170' y='224' font-size='11' font-weight='bold' fill='#0f172a' text-anchor='middle'>V (Diaphragm)</text>
+  <text x='170' y='224' font-size='11' font-weight='bold' fill='#0f172a' text-anchor='middle'>V</text>
 </svg>
 `.trim().replace(/\n\s*/g, '');
 
@@ -159,17 +159,17 @@ const svgQ1cCircuitVar = `
   <!-- Cell (I) -->
   <line x1='105' y1='38' x2='105' y2='62' stroke='#1e293b' stroke-width='2'/>
   <line x1='112' y1='44' x2='112' y2='56' stroke='#1e293b' stroke-width='3.5'/>
-  <text x='108' y='32' font-size='10' font-weight='bold' fill='#1e40af' text-anchor='middle'>I (Cell)</text>
+  <text x='108' y='32' font-size='10' font-weight='bold' fill='#1e40af' text-anchor='middle'>I</text>
   <line x1='112' y1='50' x2='145' y2='50' stroke='#1e293b' stroke-width='2'/>
   <!-- Key / Switch (III) closed -->
   <circle cx='148' cy='50' r='3' fill='#1e293b'/>
   <line x1='148' y1='50' x2='170' y2='40' stroke='#1e293b' stroke-width='2'/>
   <circle cx='174' cy='50' r='3' fill='#1e293b'/>
-  <text x='160' y='32' font-size='10' font-weight='bold' fill='#1e40af' text-anchor='middle'>III (Switch)</text>
+  <text x='160' y='32' font-size='10' font-weight='bold' fill='#1e40af' text-anchor='middle'>III</text>
   <line x1='174' y1='50' x2='205' y2='50' stroke='#1e293b' stroke-width='2'/>
   <!-- Resistor (II) -->
   <rect x='205' y='42' width='55' height='16' fill='#ffffff' stroke='#1e293b' stroke-width='2'/>
-  <text x='232' y='35' font-size='10' font-weight='bold' fill='#1e40af' text-anchor='middle'>II (Resistor)</text>
+  <text x='232' y='35' font-size='10' font-weight='bold' fill='#1e40af' text-anchor='middle'>II</text>
   <line x1='260' y1='50' x2='300' y2='50' stroke='#1e293b' stroke-width='2'/>
   <!-- Right edge drop -->
   <line x1='300' y1='50' x2='300' y2='145' stroke='#1e293b' stroke-width='2'/>
@@ -178,12 +178,12 @@ const svgQ1cCircuitVar = `
   <circle cx='232' cy='90' r='14' fill='#eff6ff' stroke='#2563eb' stroke-width='2'/>
   <text x='232' y='95' font-size='12' font-weight='bold' fill='#2563eb' text-anchor='middle'>V</text>
   <path d='M 246 90 L 275 90 L 275 50' fill='none' stroke='#2563eb' stroke-width='1.5'/>
-  <text x='232' y='118' font-size='9' font-weight='bold' fill='#2563eb' text-anchor='middle'>IV (Voltmeter)</text>
+  <text x='232' y='118' font-size='9' font-weight='bold' fill='#2563eb' text-anchor='middle'>IV</text>
   <!-- Bottom wire returning through Ammeter (V) -->
   <line x1='300' y1='145' x2='180' y2='145' stroke='#1e293b' stroke-width='2'/>
   <circle cx='160' cy='145' r='14' fill='#f0fdf4' stroke='#16a34a' stroke-width='2'/>
   <text x='160' y='150' font-size='12' font-weight='bold' fill='#16a34a' text-anchor='middle'>A</text>
-  <text x='160' y='173' font-size='9' font-weight='bold' fill='#16a34a' text-anchor='middle'>V (Ammeter)</text>
+  <text x='160' y='173' font-size='9' font-weight='bold' fill='#16a34a' text-anchor='middle'>V</text>
   <line x1='146' y1='145' x2='40' y2='145' stroke='#1e293b' stroke-width='2'/>
   <line x1='40' y1='145' x2='40' y2='50' stroke='#1e293b' stroke-width='2'/>
 </svg>
@@ -232,15 +232,15 @@ Anatomical reason: It possesses a complex, four-chambered stomach (rumen, reticu
 - V: Diaphragm
 
 (ii) Functional roles:
-- II (Trachea): Transports inhaled air from the larynx to the bronchi; lined with ciliated epithelial cells and mucus that trap and sweep dust particles upwards.
-- III (Bronchus): Channels air directly into the branching bronchioles and alveoli of each lung.
-- V (Diaphragm): Contracts and flattens downwards during inhalation to expand the thoracic volume and draw air into the lungs.
+- II: Transports inhaled air from the larynx to the bronchi; lined with ciliated epithelial cells and mucus that trap and sweep dust particles upwards.
+- III: Channels air directly into the branching bronchioles and alveoli of each lung.
+- V: Contracts and flattens downwards during inhalation to expand the thoracic volume and draw air into the lungs.
 
 (iii) Primary gases exchanged:
 - (α) Gas absorbed and utilized: Oxygen ($O_2$).
 - (β) Gas expelled: Carbon (IV) oxide ($CO_2$).
 
-(iv) Movement of Part V (Diaphragm) during inhalation:
+(iv) Movement of Part V during inhalation:
 The diaphragm contracts, moving downwards and flattening, which increases the vertical volume of the thoracic cavity and decreases internal pressure.`,
         maxMarks: 10
       },
