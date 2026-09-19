@@ -528,8 +528,8 @@ export function QuestionRunner({
                     </div>
 
                     {/* Sub-question Prompt with LaTeX */}
-                    <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 text-sm text-slate-100 leading-relaxed">
-                      <MathRenderer content={part.prompt} />
+                    <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 text-sm text-slate-100 leading-relaxed whitespace-pre-line">
+                      <MathRenderer content={(part.prompt || '').replace(/\\n/g, '\n')} />
                     </div>
 
                     {/* Sub-part Specific Diagram (if any) */}

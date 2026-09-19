@@ -480,8 +480,8 @@ export function Paper2ExamRunner({
                   </div>
 
                   {/* Part Prompt */}
-                  <div className="text-sm text-slate-200 leading-relaxed pl-1">
-                    <MathRenderer content={sub.prompt || ''} />
+                  <div className="text-sm text-slate-200 leading-relaxed pl-1 whitespace-pre-line">
+                    <MathRenderer content={(sub.prompt || '').replace(/\\n/g, '\n')} />
                   </div>
 
                   {/* Sub-part diagram (if any) */}

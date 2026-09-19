@@ -49,7 +49,7 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
   if (!processed) return null;
 
   return (
-    <div className={`prose prose-invert max-w-none text-sm leading-relaxed ${className}`}>
+    <div className={`prose prose-invert max-w-none text-sm leading-relaxed whitespace-pre-line ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkMath]}
         rehypePlugins={[rehypeRaw, rehypeKatex]}
