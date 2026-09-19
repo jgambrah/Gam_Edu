@@ -32,6 +32,7 @@ import {
 import { recordQuizAttempt } from '@/lib/services/curriculumService';
 import { MathRenderer } from './MathRenderer';
 import { ActiveExamHeaderDisclaimer } from '@/components/exam/ExamDisclaimerNotice';
+import { Paper2ExamRunner } from '@/components/exam/Paper2ExamRunner';
 
 interface QuestionRunnerProps {
   questionSet: CurriculumQuestionSet | null;
@@ -120,6 +121,25 @@ export function QuestionRunner({
           </div>
         </Card>
       </div>
+    );
+  }
+
+  // Delegate Paper 2 Structured Theory sessions to dedicated Paper2ExamRunner
+  const isPaper2Exam =
+    questionSet.format === 'structured_essay' ||
+    (Array.isArray(questionSet.questions) &&
+      questionSet.questions.some(
+        (q) => q.format === 'structured_essay' || (Array.isArray(q.parts) && q.parts.length > 0)
+      ));
+
+  if (isPaper2Exam) {
+    return (
+      <Paper2ExamRunner
+        questionSet={questionSet}
+        schoolId={tenantId}
+        studentId={studentId}
+        onBack={onBack}
+      />
     );
   }
 
