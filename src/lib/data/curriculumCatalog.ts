@@ -112,6 +112,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2015 BECE Practical & Theory Essay Test',
     description: 'Calibrated isomorphic practice variant of 2015 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (animal parasites, optical reflection at plane mirrors, sodium water reactivity, seed germination conditions) and Section B theory essays.'
   },
+  {
+    id: 'paper_2016_variant',
+    title: '2016 BECE Integrated Science Paper 1 (Set 78 Objective)',
+    year: 2016,
+    setNumber: 78,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 78',
+    questionCount: 40,
+    topic: '2016 BECE Integrated Science Standardized CBT',
+    description: 'Calibrated isomorphic practice variant of 2016 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step worked solutions.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)
