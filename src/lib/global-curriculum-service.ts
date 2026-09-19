@@ -2,6 +2,7 @@ import { SET_JHS_SCIENCE_SAMPLE_P1 } from './data/jhs-curriculum-set-70';
 import { SET_JHS_SCIENCE_SAMPLE_P2 } from './data/jhs-curriculum-set-71';
 import { SET_BECE_2026_SCIENCE_P1 } from './data/jhs-curriculum-set-72';
 import { SET_BECE_2026_SCIENCE_P2 } from './data/jhs-curriculum-set-73';
+import { SET_BECE_2014_SCIENCE_P1 } from './data/jhs-curriculum-set-74';
 /**
  * Global Shared Curriculum Service
  *
@@ -440,6 +441,36 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'integrated_science',
       topicId: 'nacca_preparatory_blueprint',
       questionSet: SET_BECE_2026_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_2014_variant',
+      questionSet: SET_BECE_2014_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_2014_variant',
+      questionSet: SET_BECE_2014_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2014_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2014_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2014_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2014_SCIENCE_P1
     },
     {
       subjectId: 'science',

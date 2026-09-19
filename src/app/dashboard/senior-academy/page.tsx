@@ -1740,6 +1740,29 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
+        title: "2014 BECE Integrated Science Paper 1 (Set 74 Objective)",
+        domain: "DIVERSITY OF MATTER & CYCLES",
+        strandName: "STRAND 1 TO STRAND 5",
+        strandCode: "S1-S5",
+        subStrand: "2014 BECE Integrated Science Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Objective Test",
+        description: "Standardized 40-question objective examination variant with KaTeX equations, vector SVGs, and step-by-step worked solutions for 2014 BECE candidates.",
+        difficulty: "Intermediate",
+        kind: "exam_series",
+        setId: "paper_2014_variant",
+        topicId: "bece_past_papers",
+        format: "objective",
+        paperType: 1,
+        year: 2014,
+        setNumber: 74,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
         title: "Living Cells & Cell Ultrastructure",
         domain: "DIVERSITY OF MATTER",
         strandName: "STRAND 1: DIVERSITY OF MATTER",
@@ -2732,6 +2755,7 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
 
   const setYearMap: Record<number, { year: number; paper: 1 | 2 }> = {
     // Modern Era (2019 - 2026)
+    74: { year: 2014, paper: 1 },
     73: { year: 2026, paper: 2 },
     72: { year: 2026, paper: 1 },
     71: { year: 2024, paper: 2 },
@@ -2809,7 +2833,7 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
   let era: 'modern' | 'legacy' | 'classic' | 'other' = 'other';
   if (year) {
     if (year >= 2019 && year <= 2026) era = 'modern';
-    else if (year >= 2000 && year <= 2012) era = 'legacy';
+    else if (year >= 2000 && year <= 2018) era = 'legacy';
     else if (year >= 1992 && year <= 1999) era = 'classic';
   } else if (setNum) {
     if (setNum >= 54) era = 'modern';
@@ -2833,6 +2857,7 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_nacca_sample_variant_p2': { setNum: 71, paper: 2, year: 2024 },
         'paper_2026_variant': { setNum: 72, paper: 1, year: 2026 },
         'paper_2026_variant_p2': { setNum: 73, paper: 2, year: 2026 },
+        'paper_2014_variant': { setNum: 74, paper: 1, year: 2014 },
         'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
         'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
         'paper_2024_variant': { setNum: 60, paper: 2, year: 2024 },
