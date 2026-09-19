@@ -180,6 +180,42 @@ service cloud.firestore {
       allow write: if isSuperAdmin();
       allow update: if isSignedIn() && (isSuperAdmin() || (isDirector() && getUserSchoolId() == schoolId));
 
+      match /assignments/{assignmentId} {
+        allow read, get, list: if isSignedIn();
+        allow write, create, update: if isSignedIn();
+        allow delete: if isSignedIn() && (
+          isSuperAdmin() ||
+          isAdmin() ||
+          isDirector() ||
+          isTeacher() ||
+          resource.data.assignedByUid == request.auth.uid
+        );
+
+        match /submissions/{submissionId} {
+          allow read, get, list: if isSignedIn();
+          allow write, create, update, delete: if isSignedIn();
+        }
+      }
+
+      match /question_sets/{setId} {
+        allow read, get, list: if isSignedIn();
+        allow write, create, update, delete: if isSignedIn() && (isSuperAdmin() || isAdmin() || isTeacher());
+      }
+
+      match /students/{studentId} {
+        allow read, get, list: if isSignedIn();
+        allow write, create, update: if isSignedIn();
+      }
+
+      match /classes/{classId} {
+        allow read, get, list: if true;
+        allow write: if isSignedIn() && (isSuperAdmin() || isAdmin() || isTeacher());
+      }
+
+      match /campus_tours/{tourId} {
+        allow read, write: if true;
+      }
+
       match /liveSessions/{sessionId} {
         allow read, list: if isSignedIn();
         allow write, create, update, delete: if isSignedIn();
