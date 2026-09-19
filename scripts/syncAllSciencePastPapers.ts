@@ -5,6 +5,7 @@ import { createRequire } from 'module';
 import { SET_BECE_2026_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-72';
 import { SET_JHS_SCIENCE_SAMPLE_P1 } from '../src/lib/data/jhs-curriculum-set-70';
 import { SET_JHS_SCIENCE_SAMPLE_P2 } from '../src/lib/data/jhs-curriculum-set-71';
+import { SET_BECE_2026_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-73';
 
 dotenv.config();
 
@@ -111,6 +112,17 @@ async function syncAll() {
     updatedAt: new Date()
   };
 
+  const set73Data = {
+    ...SET_BECE_2026_SCIENCE_P2,
+    id: 'paper_2026_variant_p2',
+    year: 2026,
+    setNumber: 73,
+    paperType: 2,
+    subject: 'Integrated Science',
+    topic: '2026 BECE Practical & Theory Essay Test',
+    updatedAt: new Date()
+  };
+
   // Paths for Set 72
   const set72Paths = [
     'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2026_variant',
@@ -152,6 +164,23 @@ async function syncAll() {
   for (const p of set71Paths) {
     await db.doc(p).set(set71Data, { merge: true });
     console.log('Synced Set 71 ->', p);
+  }
+
+  // Paths for Set 73
+  const set73Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2026_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2026_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/nacca_preparatory_blueprint/question_sets/paper_2026_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/bece_2026_variant/question_sets/paper_2026_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2026_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2026_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/nacca_preparatory_blueprint/question_sets/paper_2026_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2026_variant/question_sets/paper_2026_variant_p2'
+  ];
+
+  for (const p of set73Paths) {
+    await db.doc(p).set(set73Data, { merge: true });
+    console.log('Synced Set 73 ->', p);
   }
 
   console.log('✅ All Science Past Papers successfully synced across all Firestore collections.');

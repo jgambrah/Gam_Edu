@@ -47,6 +47,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: 'BECE 2026 Science Blueprint & Standardized CBT',
     description: 'Calibrated isomorphic practice variant of 2026 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step worked solutions.'
   },
+  {
+    id: 'paper_2026_variant_p2',
+    title: '2026 BECE Integrated Science Paper 2 (Set 73 Practical & Essay)',
+    year: 2026,
+    setNumber: 73,
+    paperType: 2,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 73',
+    questionCount: 5,
+    topic: '2026 BECE Practical & Theory Essay Test',
+    description: 'Calibrated isomorphic practice variant of 2026 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (farm animals, respiratory system, Ohm\'s law, pH colorimetric analysis) and Section B theory essays.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)

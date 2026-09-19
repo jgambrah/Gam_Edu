@@ -38,6 +38,15 @@ export const PAST_PAPER_EXAM_OPTIONS: AssignmentExamOption[] = [
     badge: 'Modern CBT'
   },
   {
+    id: 'paper_2026_variant_p2',
+    title: '2026 BECE Integrated Science Paper 2 (Set 73 Practical & Essay)',
+    year: 2026,
+    setNumber: 73,
+    paperType: 2,
+    subject: 'Integrated Science',
+    badge: 'Modern Essay'
+  },
+  {
     id: 'paper_nacca_sample_variant_p1',
     title: 'NaCCA Integrated Science CCP Preparatory CBT Exam (Set 70)',
     year: 2024,

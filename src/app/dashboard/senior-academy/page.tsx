@@ -1717,6 +1717,29 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
+        title: "2026 BECE Integrated Science Paper 2 (Set 73 Practical & Theory)",
+        domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+        strandName: "STRAND 1 TO STRAND 5",
+        strandCode: "S1-S5",
+        subStrand: "2026 BECE Practical & Theory Essay Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Section A + Section B • 105 mins • 100 Marks",
+        description: "Standardized 5-question practical and theory essay examination variant featuring Section A compulsory laboratory tests (farm animals, respiratory system, Ohm's law, pH colorimetric analysis) and Section B theory essays.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "paper_2026_variant_p2",
+        topicId: "bece_past_papers",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2026,
+        setNumber: 73,
+        era: "modern",
+        questionCount: 5,
+        examTag: "Practical & Theory • Section A Compulsory",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
         title: "Living Cells & Cell Ultrastructure",
         domain: "DIVERSITY OF MATTER",
         strandName: "STRAND 1: DIVERSITY OF MATTER",
@@ -2709,6 +2732,10 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
 
   const setYearMap: Record<number, { year: number; paper: 1 | 2 }> = {
     // Modern Era (2019 - 2026)
+    73: { year: 2026, paper: 2 },
+    72: { year: 2026, paper: 1 },
+    71: { year: 2024, paper: 2 },
+    70: { year: 2024, paper: 1 },
     67: { year: 2019, paper: 2 },
     66: { year: 2019, paper: 1 },
     65: { year: 2025, paper: 2 },
@@ -2805,6 +2832,7 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_nacca_sample_variant_p1': { setNum: 70, paper: 1, year: 2024 },
         'paper_nacca_sample_variant_p2': { setNum: 71, paper: 2, year: 2024 },
         'paper_2026_variant': { setNum: 72, paper: 1, year: 2026 },
+        'paper_2026_variant_p2': { setNum: 73, paper: 2, year: 2026 },
         'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
         'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
         'paper_2024_variant': { setNum: 60, paper: 2, year: 2024 },
@@ -3274,7 +3302,7 @@ function MathLab({
             else if (meta.era === 'classic') counts.classic++;
         });
         return counts;
-    }, [dynamicSets, activeGrade, viewMode, examPaperType]);
+    }, [dynamicSets, activeGrade, viewMode, examPaperType, subject]);
 
     // Pagination calculations
     const totalItems = filteredModules.length;
