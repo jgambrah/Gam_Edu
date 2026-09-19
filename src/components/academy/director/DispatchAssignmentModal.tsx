@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   Send,
@@ -101,6 +102,11 @@ export function DispatchAssignmentModal({
   const [instructions, setInstructions] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -386,20 +392,28 @@ export function DispatchAssignmentModal({
   // Auto-generate title when selected exam changes
   useEffect(() => {
     if (activeSelectedExam) {
-      const typeLabel = activeSelectedExam.paperType === 1 ? 'Paper 1 (CBT)' : 'Paper 2 (Theory)';
-      const cleanExamTitle = activeSelectedExam.title
-        .replace(' (Objective CBT)', '')
-        .replace(' Theory', '')
-        .replace(' (Set 65)', '')
-        .replace(' (Set 60)', '')
-        .replace(' (Set 61)', '')
-        .replace(' (Set 62)', '')
-        .replace(' (Set 63)', '')
-        .replace(' (Set 64)', '')
-        .replace(' (Set 67)', '')
-        .replace(' (Set 66)', '');
+      const isP1 = activeSelectedExam.paperType === 1;
+      const typeSuffix = isP1 ? 'Paper 1 (CBT)' : 'Paper 2 (Theory)';
 
-      setCustomTitle('Weekend Task: ' + cleanExamTitle + ' ' + typeLabel);
+      // 1. Remove parenthetical tags like '(Set 65 Theory)', '(Objective CBT)', '(Set 60)'
+      let cleanTitle = activeSelectedExam.title
+        .replace(/\s*\([^)]*\)/g, '')
+        .replace(/\s*Theory\b/gi, '')
+        .replace(/\s*Objective\b/gi, '')
+        .replace(/\s*CBT\b/gi, '')
+        .trim();
+
+      // 2. Strip any existing "Paper 1" or "Paper 2" phrases to prevent duplication
+      cleanTitle = cleanTitle
+        .replace(/\s*Paper\s*1\s*(CBT)?/gi, '')
+        .replace(/\s*Paper\s*2\s*(Theory)?/gi, '')
+        .replace(/\s*Paper\s*[12]\b/gi, '')
+        .trim();
+
+      // 3. Assemble clean assignment display title
+      const finalTitle = `Weekend Task: ${cleanTitle} ${typeSuffix}`.replace(/\s+/g, ' ').trim();
+
+      setCustomTitle(finalTitle);
       setSelectedPaperType(activeSelectedExam.paperType);
     }
   }, [activeSelectedExam]);
@@ -511,13 +525,13 @@ export function DispatchAssignmentModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-5 sm:p-7 space-y-6 text-slate-100">
+  return createPortal(
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto box-border animate-in fade-in duration-200">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#0d1527] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto box-border text-slate-100">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-800/80 pb-4">
+        <div className="flex items-start justify-between border-b border-slate-800/80 px-6 sm:px-8 py-5 shrink-0 bg-[#0d1527]">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider px-2 py-0.5">
@@ -538,431 +552,440 @@ export function DispatchAssignmentModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0 ml-4"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Status Alerts */}
-        {errorMsg && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-            <div className="space-y-1">
-              <p className="font-bold">Dispatch Notice</p>
-              <p className="text-[11px] text-rose-300/90 leading-relaxed">{errorMsg}</p>
-            </div>
-          </div>
-        )}
-
-        {successMsg && (
-          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-3">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-            <span className="font-bold">{successMsg}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* ========================================================================= */}
-          {/* SECTION 1: QUESTION SEARCH ENGINE & CURRICULUM CATALOG */}
-          {/* ========================================================================= */}
-          <div className="space-y-3.5 p-4 sm:p-5 rounded-3xl bg-slate-950/70 border border-slate-800/80 shadow-inner">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Search className="w-4 h-4 text-amber-400" />
-                <Label className="text-xs font-black uppercase tracking-wider text-slate-300">
-                  1. Search & Select Question Set or Past Exam Variant
-                </Label>
+        {/* Scrollable Body */}
+        <div className="overflow-y-auto flex-1 px-6 sm:px-8 py-6 space-y-6">
+          {/* Status Alerts */}
+          {errorMsg && (
+            <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-bold">Dispatch Notice</p>
+                <p className="text-[11px] text-rose-300/90 leading-relaxed">{errorMsg}</p>
               </div>
-              <div className="flex items-center gap-2">
-                {isLoadingCustomQuestions && (
-                  <span className="text-[10px] text-slate-500 flex items-center gap-1">
-                    <Loader2 className="w-3 h-3 animate-spin text-amber-400" /> Syncing questions...
-                  </span>
+            </div>
+          )}
+
+          {successMsg && (
+            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-3">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+              <span className="font-bold">{successMsg}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* ========================================================================= */}
+            {/* SECTION 1: QUESTION SEARCH ENGINE & CURRICULUM CATALOG */}
+            {/* ========================================================================= */}
+            <div className="space-y-3.5 p-4 sm:p-5 rounded-3xl bg-slate-950/70 border border-slate-800/80 shadow-inner">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Search className="w-4 h-4 text-amber-400" />
+                  <Label className="text-xs font-black uppercase tracking-wider text-slate-300">
+                    1. Search & Select Question Set or Past Exam Variant
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  {isLoadingCustomQuestions && (
+                    <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin text-amber-400" /> Syncing questions...
+                    </span>
+                  )}
+                  <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400">
+                    {filteredExams.length} Available
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500 pointer-events-none" />
+                <Input
+                  type="text"
+                  placeholder="Search by year (e.g. 2024), set (e.g. Set 60), topic (e.g. Algebra, Vectors, Newton), or subject..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="h-11 pl-10 pr-9 rounded-2xl bg-slate-900 border-slate-700/80 text-xs font-medium text-white placeholder:text-slate-500 focus:border-amber-500 transition-colors"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 )}
-                <Badge className="bg-slate-800 text-amber-400 border-slate-700 text-[10px] font-mono">
-                  {filteredExams.length} Available
-                </Badge>
-              </div>
-            </div>
-
-            {/* Instant Search Bar */}
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500 pointer-events-none" />
-              <Input
-                type="text"
-                placeholder="Search by year (e.g. 2024), set (e.g. Set 60), topic (e.g. Algebra, Vectors, Newton), or subject..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="h-11 pl-10 pr-9 rounded-2xl bg-slate-900 border-slate-700/80 text-xs font-medium text-white placeholder:text-slate-500 focus:border-amber-500 transition-colors"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-white"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-
-            {/* Subject Filter Chips & Format Toggles */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-              {/* Subject Tabs */}
-              <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full">
-                {SUBJECT_CATEGORIES.map(sub => (
-                  <button
-                    key={sub}
-                    type="button"
-                    onClick={() => setSelectedSubject(sub)}
-                    className={cn(
-                      'px-3 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5',
-                      selectedSubject === sub
-                        ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                        : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
-                    )}
-                  >
-                    {sub !== 'All Subjects' && getSubjectIcon(sub)}
-                    <span>{sub}</span>
-                  </button>
-                ))}
               </div>
 
-              {/* Format Filter Toggles (Paper 1 vs Paper 2 vs All) */}
-              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setSelectedPaperTypeFilter('all')}
-                  className={cn(
-                    'px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer',
-                    selectedPaperTypeFilter === 'all'
-                      ? 'bg-slate-800 text-white'
-                      : 'text-slate-400 hover:text-slate-200'
-                  )}
-                >
-                  All Formats
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedPaperTypeFilter(1)}
-                  className={cn(
-                    'px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1',
-                    selectedPaperTypeFilter === 1
-                      ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
-                      : 'text-slate-400 hover:text-slate-200'
-                  )}
-                >
-                  <Radio className="w-3 h-3 text-sky-400" />
-                  <span>Paper 1 (CBT)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedPaperTypeFilter(2)}
-                  className={cn(
-                    'px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1',
-                    selectedPaperTypeFilter === 2
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                      : 'text-slate-400 hover:text-slate-200'
-                  )}
-                >
-                  <FileText className="w-3 h-3 text-amber-400" />
-                  <span>Paper 2 (Theory)</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Grade Tier Pills */}
-            <div className="flex items-center gap-2 pt-0.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier:</span>
-              <div className="flex items-center gap-1.5 overflow-x-auto">
-                {GRADE_TIERS.map(tier => (
-                  <button
-                    key={tier}
-                    type="button"
-                    onClick={() => setSelectedGradeTier(tier)}
-                    className={cn(
-                      'px-2.5 py-0.5 rounded-lg text-[10px] font-medium transition-all cursor-pointer whitespace-nowrap',
-                      selectedGradeTier === tier
-                        ? 'bg-slate-800 text-white font-bold border border-slate-700'
-                        : 'text-slate-400 hover:text-slate-300'
-                    )}
-                  >
-                    {tier}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Search Results Catalog Grid */}
-            <div className="space-y-2 pt-2">
-              <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-                {filteredExams.length === 0 ? (
-                  <div className="p-8 text-center rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-2">
-                    <Search className="w-8 h-8 mx-auto text-slate-600" />
-                    <p className="text-xs font-semibold text-slate-300">
-                      No questions found matching &quot;{searchQuery}&quot;
-                    </p>
-                    <p className="text-[11px] text-slate-500">
-                      Try searching with fewer filters or by year (e.g. &apos;2024&apos;), subject (e.g. &apos;Science&apos;), or set number (e.g. &apos;Set 60&apos;).
-                    </p>
-                    <Button
+              {/* Subject Filter Chips & Format Toggles */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                {/* Subject Tabs */}
+                <div className="flex items-center gap-1.5 overflow-x-auto py-1 max-w-full">
+                  {SUBJECT_CATEGORIES.map(sub => (
+                    <button
+                      key={sub}
                       type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setSelectedSubject('All Subjects');
-                        setSelectedPaperTypeFilter('all');
-                        setSelectedGradeTier('All Levels');
-                      }}
-                      className="mt-2 text-xs border-slate-700 bg-slate-800 text-slate-300 hover:text-white"
+                      onClick={() => setSelectedSubject(sub)}
+                      className={cn(
+                        'px-3 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5',
+                        selectedSubject === sub
+                          ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                          : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800'
+                      )}
                     >
-                      Clear All Filters
-                    </Button>
-                  </div>
-                ) : (
-                  filteredExams.map(opt => {
-                    const isSelected = selectedExamId === opt.id;
-                    const isP1 = opt.paperType === 1;
+                      {sub !== 'All Subjects' && getSubjectIcon(sub)}
+                      <span>{sub}</span>
+                    </button>
+                  ))}
+                </div>
 
-                    return (
-                      <div
-                        key={opt.id}
+                {/* Format Filter Toggles (Paper 1 vs Paper 2 vs All) */}
+                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaperTypeFilter('all')}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer',
+                      selectedPaperTypeFilter === 'all'
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:text-slate-200'
+                    )}
+                  >
+                    All Formats
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaperTypeFilter(1)}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1',
+                      selectedPaperTypeFilter === 1
+                        ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                        : 'text-slate-400 hover:text-slate-200'
+                    )}
+                  >
+                    <Radio className="w-3 h-3 text-sky-400" />
+                    <span>Paper 1 (CBT)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPaperTypeFilter(2)}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1',
+                      selectedPaperTypeFilter === 2
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                        : 'text-slate-400 hover:text-slate-200'
+                    )}
+                  >
+                    <FileText className="w-3 h-3 text-amber-400" />
+                    <span>Paper 2 (Theory)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Grade Tier Pills */}
+              <div className="flex items-center gap-2 pt-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier:</span>
+                <div className="flex items-center gap-1.5 overflow-x-auto">
+                  {GRADE_TIERS.map(tier => (
+                    <button
+                      key={tier}
+                      type="button"
+                      onClick={() => setSelectedGradeTier(tier)}
+                      className={cn(
+                        'px-2.5 py-0.5 rounded-lg text-[10px] font-medium transition-all cursor-pointer whitespace-nowrap',
+                        selectedGradeTier === tier
+                          ? 'bg-slate-800 text-white font-bold border border-slate-700'
+                          : 'text-slate-400 hover:text-slate-300'
+                      )}
+                    >
+                      {tier}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Search Results Catalog Grid */}
+              <div className="space-y-2 pt-2">
+                <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                  {filteredExams.length === 0 ? (
+                    <div className="p-8 text-center rounded-2xl bg-slate-900/50 border border-slate-800/80 space-y-2">
+                      <Search className="w-8 h-8 mx-auto text-slate-600" />
+                      <p className="text-xs font-semibold text-slate-300">
+                        No questions found matching &quot;{searchQuery}&quot;
+                      </p>
+                      <p className="text-[11px] text-slate-500">
+                        Try searching with fewer filters or by year (e.g. &apos;2024&apos;), subject (e.g. &apos;Science&apos;), or set number (e.g. &apos;Set 60&apos;).
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
                         onClick={() => {
-                          setSelectedExamId(opt.id);
-                          setSelectedPaperType(opt.paperType);
+                          setSearchQuery('');
+                          setSelectedSubject('All Subjects');
+                          setSelectedPaperTypeFilter('all');
+                          setSelectedGradeTier('All Levels');
                         }}
-                        className={cn(
-                          'p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-start justify-between gap-3 group',
-                          isSelected
-                            ? isP1
-                              ? 'bg-sky-500/15 border-sky-500/80 shadow-[0_0_15px_rgba(14,165,233,0.15)] ring-1 ring-sky-500/50'
-                              : 'bg-amber-500/15 border-amber-500/80 shadow-[0_0_15px_rgba(245,158,11,0.15)] ring-1 ring-amber-500/50'
-                            : 'bg-slate-900/80 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50'
-                        )}
+                        className="mt-2 text-xs border-slate-700 bg-slate-800 text-slate-300 hover:text-white"
                       >
-                        <div className="space-y-1.5 flex-1 min-w-0">
-                          {/* Top Badges */}
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <Badge className={cn('text-[9px] font-bold px-2 py-0', getSubjectBadgeStyle(opt.subject))}>
-                              {opt.subject}
-                            </Badge>
+                        Clear All Filters
+                      </Button>
+                    </div>
+                  ) : (
+                    filteredExams.map(opt => {
+                      const isSelected = selectedExamId === opt.id;
+                      const isP1 = opt.paperType === 1;
 
-                            <Badge
-                              className={cn(
-                                'text-[9px] font-bold px-2 py-0',
-                                isP1
-                                  ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                                  : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                              )}
-                            >
-                              {isP1 ? 'Paper 1 CBT' : 'Paper 2 Theory'}
-                            </Badge>
-
-                            {opt.questionCount && (
-                              <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[9px] px-1.5 py-0">
-                                {opt.questionCount} {isP1 ? 'MCQs' : 'Problems'}
+                      return (
+                        <div
+                          key={opt.id}
+                          onClick={() => {
+                            setSelectedExamId(opt.id);
+                            setSelectedPaperType(opt.paperType);
+                          }}
+                          className={cn(
+                            'p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-start justify-between gap-3 group',
+                            isSelected
+                              ? isP1
+                                ? 'bg-sky-500/15 border-sky-500/80 shadow-[0_0_15px_rgba(14,165,233,0.15)] ring-1 ring-sky-500/50'
+                                : 'bg-amber-500/15 border-amber-500/80 shadow-[0_0_15px_rgba(245,158,11,0.15)] ring-1 ring-amber-500/50'
+                              : 'bg-slate-900/80 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50'
+                          )}
+                        >
+                          <div className="space-y-1.5 flex-1 min-w-0">
+                            {/* Top Badges */}
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <Badge className={cn('text-[9px] font-bold px-2 py-0', getSubjectBadgeStyle(opt.subject))}>
+                                {opt.subject}
                               </Badge>
-                            )}
 
-                            {opt.gradeTier && (
-                              <span className="text-[10px] text-slate-500 font-medium">
-                                • {opt.gradeTier}
-                              </span>
+                              <Badge
+                                className={cn(
+                                  'text-[9px] font-bold px-2 py-0',
+                                  isP1
+                                    ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                )}
+                              >
+                                {isP1 ? 'Paper 1 CBT' : 'Paper 2 Theory'}
+                              </Badge>
+
+                              {opt.questionCount && (
+                                <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[9px] px-1.5 py-0">
+                                  {opt.questionCount} {isP1 ? 'MCQs' : 'Problems'}
+                                </Badge>
+                              )}
+
+                              {opt.gradeTier && (
+                                <span className="text-[10px] text-slate-500 font-medium">
+                                  • {opt.gradeTier}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Title & Topic */}
+                            <div>
+                              <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
+                                {opt.title}
+                              </h4>
+                              {opt.topic && opt.topic !== opt.title && (
+                                <p className="text-[11px] text-slate-400 mt-0.5">
+                                  Topic: <span className="text-slate-300 font-medium">{opt.topic}</span>
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Description preview */}
+                            {opt.description && (
+                              <p className="text-[10px] text-slate-500 line-clamp-1">
+                                {opt.description}
+                              </p>
                             )}
                           </div>
 
-                          {/* Title */}
-                          <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
-                            {opt.title}
-                          </h4>
-
-                          {/* Description / Topics snippet */}
-                          {opt.description && (
-                            <p className="text-[11px] text-slate-400 line-clamp-1 leading-snug">
-                              {opt.description}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Selection Checkmark */}
-                        <div className="shrink-0 pt-1">
+                          {/* Selection Indicator */}
                           <div
                             className={cn(
-                              'w-5 h-5 rounded-full flex items-center justify-center border transition-all',
+                              'w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-1 transition-all',
                               isSelected
                                 ? isP1
-                                  ? 'bg-sky-500 border-sky-400 text-slate-950'
-                                  : 'bg-amber-500 border-amber-400 text-slate-950'
-                                : 'border-slate-700 bg-slate-800/40'
+                                  ? 'border-sky-400 bg-sky-500 text-slate-950 shadow-sm'
+                                  : 'border-amber-400 bg-amber-500 text-slate-950 shadow-sm'
+                                : 'border-slate-700 bg-slate-800 text-transparent'
                             )}
                           >
                             {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                           </div>
                         </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-
-            {/* Currently Selected Summary Pill */}
-            {activeSelectedExam && (
-              <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2 text-xs">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                  <span className="text-slate-400 shrink-0">Selected Exam:</span>
-                  <span className="font-bold text-white truncate">{activeSelectedExam.title}</span>
-                </div>
-                <Badge
-                  className={cn(
-                    'text-[10px] shrink-0',
-                    activeSelectedExam.paperType === 1
-                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                      : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      );
+                    })
                   )}
-                >
-                  {activeSelectedExam.paperType === 1 ? 'Objective CBT' : 'Structured Theory'}
-                </Badge>
+                </div>
               </div>
-            )}
-          </div>
 
-          {/* ========================================================================= */}
-          {/* SECTION 2: CLASS TARGET & DEADLINE GRID */}
-          {/* ========================================================================= */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Target Class with Live Enrollment Count */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-amber-400" /> 2. Target Class
-                </Label>
-                {isLoadingClasses ? (
-                  <span className="text-[10px] text-slate-500 flex items-center gap-1">
-                    <Loader2 className="w-3 h-3 animate-spin text-amber-400" /> Counting students...
-                  </span>
-                ) : activeClassOption ? (
-                  <span
+              {/* Currently Selected Summary Pill */}
+              {activeSelectedExam && (
+                <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span className="text-slate-400 shrink-0">Selected Exam:</span>
+                    <span className="font-bold text-white truncate">{activeSelectedExam.title}</span>
+                  </div>
+                  <Badge
                     className={cn(
-                      'text-[10px] font-bold',
-                      activeClassOption.studentCount > 0 ? 'text-emerald-400' : 'text-rose-400'
+                      'text-[10px] shrink-0',
+                      activeSelectedExam.paperType === 1
+                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                        : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                     )}
                   >
-                    {activeClassOption.studentCount} live students
-                  </span>
-                ) : null}
-              </div>
-
-              <div className="relative">
-                <select
-                  value={selectedClassId}
-                  onChange={e => setSelectedClassId(e.target.value)}
-                  className="w-full h-11 px-4 pr-10 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-100 focus:outline-none focus:border-amber-500 transition-colors appearance-none cursor-pointer"
-                >
-                  {classList.map(cls => (
-                    <option key={cls.id} value={cls.id} className="bg-slate-900 text-white">
-                      {cls.name} ({cls.studentCount} enrolled students)
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-4 h-4 absolute right-4 top-3.5 text-slate-400 pointer-events-none" />
-              </div>
-
-              {activeClassOption && activeClassOption.studentCount === 0 && !isLoadingClasses && (
-                <p className="text-[11px] text-rose-400/90 leading-tight">
-                  ⚠️ No active students are currently enrolled in this class. Please assign students in Students directory.
-                </p>
+                    {activeSelectedExam.paperType === 1 ? 'Objective CBT' : 'Structured Theory'}
+                  </Badge>
+                </div>
               )}
             </div>
 
-            {/* Due Date & Time */}
+            {/* ========================================================================= */}
+            {/* SECTION 2: CLASS TARGET & DEADLINE GRID */}
+            {/* ========================================================================= */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Target Class with Live Enrollment Count */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-amber-400" /> 2. Target Class
+                  </Label>
+                  {isLoadingClasses ? (
+                    <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin text-amber-400" /> Counting students...
+                    </span>
+                  ) : activeClassOption ? (
+                    <span
+                      className={cn(
+                        'text-[10px] font-bold',
+                        activeClassOption.studentCount > 0 ? 'text-emerald-400' : 'text-rose-400'
+                      )}
+                    >
+                      {activeClassOption.studentCount} live students
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={selectedClassId}
+                    onChange={e => setSelectedClassId(e.target.value)}
+                    className="w-full h-11 px-4 pr-10 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-100 focus:outline-none focus:border-amber-500 transition-colors appearance-none cursor-pointer"
+                  >
+                    {classList.map(cls => (
+                      <option key={cls.id} value={cls.id} className="bg-slate-900 text-white">
+                        {cls.name} ({cls.studentCount} enrolled students)
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 absolute right-4 top-3.5 text-slate-400 pointer-events-none" />
+                </div>
+
+                {activeClassOption && activeClassOption.studentCount === 0 && !isLoadingClasses && (
+                  <p className="text-[11px] text-rose-400/90 leading-tight">
+                    ⚠️ No active students are currently enrolled in this class. Please assign students in Students directory.
+                  </p>
+                )}
+              </div>
+
+              {/* Due Date & Time */}
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-amber-400" /> Due Date & Time Cutoff
+                </Label>
+                <Input
+                  type="datetime-local"
+                  value={dueDateStr}
+                  onChange={e => setDueDateStr(e.target.value)}
+                  className="h-11 rounded-2xl bg-slate-950 border-slate-800 text-xs font-mono text-slate-200 focus:border-amber-500"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* SECTION 3: ASSIGNMENT TITLE & INSTRUCTIONS */}
+            {/* ========================================================================= */}
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-amber-400" /> Due Date & Time Cutoff
+              <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                3. Assignment Display Title (Shown on Student Dashboard)
               </Label>
               <Input
-                type="datetime-local"
-                value={dueDateStr}
-                onChange={e => setDueDateStr(e.target.value)}
-                className="h-11 rounded-2xl bg-slate-950 border-slate-800 text-xs font-mono text-slate-200 focus:border-amber-500"
+                type="text"
+                value={customTitle}
+                onChange={e => setCustomTitle(e.target.value)}
+                placeholder="e.g., Weekend Task: 2024 BECE Integrated Science Paper 2 (Theory)"
+                className="h-11 rounded-2xl bg-slate-950 border-slate-800 text-xs font-medium text-slate-100 focus:border-amber-500"
                 required
               />
             </div>
-          </div>
 
-          {/* ========================================================================= */}
-          {/* SECTION 3: ASSIGNMENT TITLE & INSTRUCTIONS */}
-          {/* ========================================================================= */}
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              3. Assignment Display Title (Shown on Student Dashboard)
-            </Label>
-            <Input
-              type="text"
-              value={customTitle}
-              onChange={e => setCustomTitle(e.target.value)}
-              placeholder="e.g., Weekend Task: 2024 BECE Integrated Science Paper 2"
-              className="h-11 rounded-2xl bg-slate-950 border-slate-800 text-xs font-medium text-slate-100 focus:border-amber-500"
-              required
-            />
-          </div>
+            {/* Instructions (Optional) */}
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                4. Instructions / Teacher Notes (Optional)
+              </Label>
+              <Textarea
+                value={instructions}
+                onChange={e => setInstructions(e.target.value)}
+                placeholder="e.g., Show all working formulas and intermediate algebraic steps clearly. AI Examiner will award partial marks for correct method."
+                className="rounded-2xl min-h-[70px] bg-slate-950 border-slate-800 text-xs text-slate-200 focus:border-amber-500 placeholder:text-slate-600"
+              />
+            </div>
 
-          {/* Instructions (Optional) */}
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              4. Instructions / Teacher Notes (Optional)
-            </Label>
-            <Textarea
-              value={instructions}
-              onChange={e => setInstructions(e.target.value)}
-              placeholder="e.g., Show all working formulas and intermediate algebraic steps clearly. AI Examiner will award partial marks for correct method."
-              className="rounded-2xl min-h-[70px] bg-slate-950 border-slate-800 text-xs text-slate-200 focus:border-amber-500 placeholder:text-slate-600"
-            />
-          </div>
-
-          {/* Submit Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="border-slate-800 bg-slate-950 text-slate-400 hover:text-white text-xs rounded-xl px-5 h-11 cursor-pointer"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting || activeClassOption?.studentCount === 0}
-              className={cn(
-                'text-white font-bold text-xs rounded-xl px-6 h-11 shadow-lg transition-all flex items-center gap-2 cursor-pointer',
-                selectedPaperType === 1
-                  ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-600/30 disabled:bg-slate-800 disabled:text-slate-600'
-                  : 'bg-amber-600 hover:bg-amber-500 shadow-amber-600/30 disabled:bg-slate-800 disabled:text-slate-600'
-              )}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Dispatching to {activeClassOption?.name || 'Class'}...</span>
-                </>
-              ) : activeClassOption?.studentCount === 0 ? (
-                <span>Class Has 0 Enrolled Students</span>
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  <span>
-                    Dispatch to {activeClassOption?.name || 'Class'} ({activeClassOption?.studentCount || 0} Students)
-                  </span>
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
+            {/* Submit Actions */}
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={isSubmitting}
+                className="border-slate-800 bg-slate-950 text-slate-400 hover:text-white text-xs rounded-xl px-5 h-11 cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting || activeClassOption?.studentCount === 0}
+                className={cn(
+                  'text-white font-bold text-xs rounded-xl px-6 h-11 shadow-lg transition-all flex items-center gap-2 cursor-pointer',
+                  selectedPaperType === 1
+                    ? 'bg-sky-600 hover:bg-sky-500 shadow-sky-600/30 disabled:bg-slate-800 disabled:text-slate-600'
+                    : 'bg-amber-600 hover:bg-amber-500 shadow-amber-600/30 disabled:bg-slate-800 disabled:text-slate-600'
+                )}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Dispatching to {activeClassOption?.name || 'Class'}...</span>
+                  </>
+                ) : activeClassOption?.studentCount === 0 ? (
+                  <span>Class Has 0 Enrolled Students</span>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>
+                      Dispatch to {activeClassOption?.name || 'Class'} ({activeClassOption?.studentCount || 0} Students)
+                    </span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
