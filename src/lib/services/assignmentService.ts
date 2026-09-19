@@ -92,6 +92,15 @@ export const PAST_PAPER_EXAM_OPTIONS: AssignmentExamOption[] = [
     badge: 'Legacy CBT'
   },
   {
+    id: 'paper_2016_variant_p2',
+    title: '2016 BECE Integrated Science Paper 2 (Set 79 Practical & Essay)',
+    year: 2016,
+    setNumber: 79,
+    paperType: 2,
+    subject: 'Integrated Science',
+    badge: 'Legacy Essay'
+  },
+  {
     id: 'paper_nacca_sample_variant_p1',
     title: 'NaCCA Integrated Science CCP Preparatory CBT Exam (Set 70)',
     year: 2024,
