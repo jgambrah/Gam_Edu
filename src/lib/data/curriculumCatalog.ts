@@ -34,6 +34,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: 'Practical Science Labs & Core Theory',
     description: 'Section A compulsory practical tests (cells, levers, soil permeability, diode circuits) + Section B theory essay questions with AI rubrics.'
   },
+  {
+    id: 'paper_2026_variant',
+    title: '2026 BECE Integrated Science Paper 1 (Set 72 Objective)',
+    year: 2026,
+    setNumber: 72,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 72',
+    questionCount: 40,
+    topic: 'BECE 2026 Science Blueprint & Standardized CBT',
+    description: 'Calibrated isomorphic practice variant of 2026 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step worked solutions.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)

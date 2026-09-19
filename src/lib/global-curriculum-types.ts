@@ -55,6 +55,9 @@ export interface StructuredQuestionPart {
 
 export interface CurriculumQuestion {
   id: string;
+  number?: number;
+  indicator?: string;
+  level?: string;
   title?: string;
   format?: 'multiple_choice' | 'structured_essay';
   totalMarks?: number;

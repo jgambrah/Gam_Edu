@@ -303,7 +303,7 @@ export async function fetchTopicalLabDoc(
               }
             }
           }
-        } as TopicalLabDocument;
+        } as unknown as TopicalLabDocument;
       }
       return { ...(data as TopicalLabDocument), id: unitSnap.id };
     }
