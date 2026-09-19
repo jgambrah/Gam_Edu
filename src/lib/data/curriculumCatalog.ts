@@ -6,6 +6,36 @@ import { AssignmentExamOption } from '@/types/assignmentTypes';
  */
 export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
   // ==========================================
+  // INTEGRATED SCIENCE - NACCA CCP PREPARATORY VARIANTS (SETS 70 & 71)
+  // ==========================================
+  {
+    id: 'paper_nacca_sample_variant_p1',
+    title: 'NaCCA Integrated Science CCP Preparatory CBT Exam (Set 70)',
+    year: 2024,
+    setNumber: 70,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'NaCCA CBT Set 70',
+    questionCount: 50,
+    topic: 'NaCCA 50-Item Preparatory Assessment Blueprint',
+    description: 'Official 50-item randomized CBT examination with immediate grading, vector diagrams, and KaTeX equations aligned with B7-B9 strands.'
+  },
+  {
+    id: 'paper_nacca_sample_variant_p2',
+    title: 'NaCCA Integrated Science CCP Practical & Theory Exam (Set 71)',
+    year: 2024,
+    setNumber: 71,
+    paperType: 2,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'NaCCA Theory Set 71',
+    questionCount: 5,
+    topic: 'Practical Science Labs & Core Theory',
+    description: 'Section A compulsory practical tests (cells, levers, soil permeability, diode circuits) + Section B theory essay questions with AI rubrics.'
+  },
+
+  // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)
   // ==========================================
   {

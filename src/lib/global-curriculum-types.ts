@@ -112,3 +112,6 @@ export interface TenantQuizAttempt {
     userAgent?: string;
   };
 }
+
+// Re-export Science Curriculum Types
+export * from '../types/scienceCurriculumTypes';

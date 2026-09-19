@@ -1646,6 +1646,111 @@ const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
 ];
 
 const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
+    // NaCCA CCP Integrated Science Discovery Assessment Series (B7 - B9)
+    {
+        title: "NaCCA Integrated Science CCP Preparatory CBT Exam (Set 70)",
+        domain: "DIVERSITY OF MATTER & CYCLES",
+        strandName: "STRAND 1 & STRAND 2",
+        strandCode: "S1/S2",
+        subStrand: "50-Item Preparatory Assessment Blueprint",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "50 CBT Questions • 60 mins • Live Stepper",
+        description: "Official 50-item balanced preparatory examination covering all 5 NaCCA strands with instant grading, vector SVG diagrams, and KaTeX equations.",
+        difficulty: "Core",
+        kind: "exam_series",
+        setId: "paper_nacca_sample_variant_p1",
+        topicId: "nacca_preparatory_blueprint",
+        format: "objective",
+        paperType: 1,
+        year: 2024,
+        setNumber: 70,
+        era: "NaCCA Common Core Programme (CCP)",
+        questionCount: 50,
+        examTag: "50 CBT Questions • Official Blueprint",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
+        title: "NaCCA Integrated Science CCP Practical & Theory Exam (Set 71)",
+        domain: "SYSTEMS & FORCES AND ENERGY",
+        strandName: "STRAND 3 & STRAND 4",
+        strandCode: "S3/S4",
+        subStrand: "Practical Science Labs & Core Theory",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "5 Structured Questions • 105 mins • Full Rubrics",
+        description: "Section A compulsory practical tests (cells, levers, soil permeability, diode circuits) + Section B theory essay questions with AI rubrics.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "paper_nacca_sample_variant_p2",
+        topicId: "nacca_preparatory_blueprint",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2024,
+        setNumber: 71,
+        era: "NaCCA Common Core Programme (CCP)",
+        questionCount: 5,
+        examTag: "Practical & Theory • Section A Compulsory",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
+        title: "Living Cells & Cell Ultrastructure",
+        domain: "DIVERSITY OF MATTER",
+        strandName: "STRAND 1: DIVERSITY OF MATTER",
+        strandCode: "S1",
+        subStrand: "Living Cells",
+        levelsAvailable: ["B7", "B8"],
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "3 Labs • 40 mins • Microscopic Ultrastructure",
+        description: "Investigate plant vs animal cells, organelles, prokaryotes vs eukaryotes, and cell division.",
+        difficulty: "Foundation",
+        kind: "topical",
+        setId: "b7_strand1_cells",
+        topicId: "b7_strand1_cells",
+        format: "topical_lab",
+        questionCount: 3,
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
+        title: "Simple Machines, Levers & Mechanical Advantage",
+        domain: "FORCES AND ENERGY",
+        strandName: "STRAND 4: FORCES AND ENERGY",
+        strandCode: "S4",
+        subStrand: "Simple Machines & Levers",
+        levelsAvailable: ["B7", "B8", "B9"],
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "3 Labs • 45 mins • Vector Statics",
+        description: "Calculate mechanical advantage, velocity ratio, efficiency, and classes of levers.",
+        difficulty: "Intermediate",
+        kind: "topical",
+        setId: "b8_strand4_simple_machines",
+        topicId: "b8_strand4_simple_machines",
+        format: "topical_lab",
+        questionCount: 3,
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
+        title: "Biogeochemical Cycles & Crop Nutrition",
+        domain: "CYCLES & THE ENVIRONMENT",
+        strandName: "STRAND 2: CYCLES",
+        strandCode: "S2",
+        subStrand: "Earth Science & Crop Production",
+        levelsAvailable: ["B7", "B8", "B9"],
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "3 Labs • 40 mins • Ecological Nitrogen Pathways",
+        description: "Master the nitrogen cycle, Rhizobium symbiosis, crop rotation soil fertility, and NPK fertilizer roles.",
+        difficulty: "Intermediate",
+        kind: "topical",
+        setId: "b9_strand2_cycles_crop_production",
+        topicId: "b9_strand2_cycles_crop_production",
+        format: "topical_lab",
+        questionCount: 3,
+        subject: "Integrated Science",
+        status: "ready"
+    },
+
     // Senior Secondary (SHS)
     {
         title: "Newtonian Mechanics & Force Dynamics",
@@ -2674,6 +2779,8 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
 
     // 2. Known Catalog mapping
     const catalogMap: Record<string, { setNum: number; paper?: number; year?: number }> = {
+        'paper_nacca_sample_variant_p1': { setNum: 70, paper: 1, year: 2024 },
+        'paper_nacca_sample_variant_p2': { setNum: 71, paper: 2, year: 2024 },
         'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
         'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
         'paper_2024_variant': { setNum: 60, paper: 2, year: 2024 },
@@ -2744,6 +2851,7 @@ function MathLab({
     targetExamId,
     targetPaperType,
     assignmentId,
+    initialSubject = 'math',
     onOpenDispatch
 }: { 
     canEdit: boolean; 
@@ -2758,6 +2866,7 @@ function MathLab({
     targetExamId?: string;
     targetPaperType?: string | number;
     assignmentId?: string;
+    initialSubject?: 'math' | 'science';
     onOpenDispatch?: (examId?: string, paperType?: 1 | 2) => void;
 }) {
     const { user } = useUser();
@@ -2773,6 +2882,19 @@ function MathLab({
     const [isLoadingSet, setIsLoadingSet] = useState(false);
     const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [subject, setSubject] = useState<'math' | 'science'>(
+        initialSubject || (filterSubject === 'science' ? 'science' : 'math')
+    );
+
+    useEffect(() => {
+        if (filterSubject === 'science' && subject !== 'science') {
+            setSubject('science');
+            setSelectedDomain('ALL STRANDS');
+        } else if (filterSubject === 'math' && subject !== 'math') {
+            setSubject('math');
+            setSelectedDomain('ALL STRANDS');
+        }
+    }, [filterSubject]);
     // Direct Task Dispatch Auto-Launcher
     const [autoLaunchedExamId, setAutoLaunchedExamId] = useState<string | null>(null);
 
@@ -2809,7 +2931,7 @@ function MathLab({
     const refreshCurriculumSets = useCallback(async (manual = false) => {
         setIsRefreshing(true);
         const levelId = mapGradeTierToLevelId(activeGrade);
-        invalidateCurriculumCache(levelId, 'math');
+        invalidateCurriculumCache(levelId, subject);
         invalidateTopicalLabCache();
 
         try {
@@ -2818,29 +2940,37 @@ function MathLab({
             // 1. Dynamic Topical Practice Labs Manifest for JHS
             if (levelId === 'jhs') {
                 try {
-                    const manifest = await getSubjectTopicsManifest('jhs', 'math');
+                    const manifest = await getSubjectTopicsManifest('jhs', subject);
                     if (manifest && manifest.topics && manifest.topics.length > 0) {
                         manifest.topics.forEach((t) => {
-                            let strandName = t.strandName || t.strand || 'Strand 1: Number';
+                            let strandName = t.strandName || t.strand || (subject === 'science' ? 'Strand 1: Diversity of Matter' : 'Strand 1: Number');
                             const strandCode = t.strandCode || '';
-                            if (strandCode === 'S1' || strandCode === '1') {
-                                strandName = 'Strand 1: Number';
-                            } else if (strandCode === 'S2' || strandCode === '2') {
-                                strandName = 'Strand 2: Algebra';
-                            } else if (strandCode === 'S3' || strandCode === '3') {
-                                strandName = 'Strand 3: Geometry & Measurement';
-                            } else if (strandCode === 'S4' || strandCode === '4') {
-                                strandName = 'Strand 4: Handling Data';
+                            if (subject === 'science') {
+                                if (strandCode === 'S1' || strandCode === '1') strandName = 'Strand 1: Diversity of Matter';
+                                else if (strandCode === 'S2' || strandCode === '2') strandName = 'Strand 2: Cycles';
+                                else if (strandCode === 'S3' || strandCode === '3') strandName = 'Strand 3: Systems';
+                                else if (strandCode === 'S4' || strandCode === '4') strandName = 'Strand 4: Forces and Energy';
+                                else if (strandCode === 'S5' || strandCode === '5') strandName = 'Strand 5: Humans and the Environment';
                             } else {
-                                const strandUpper = strandName.toUpperCase();
-                                if (strandUpper.includes('ALGEBRA') || strandUpper.includes('PATTERNS')) {
+                                if (strandCode === 'S1' || strandCode === '1') {
+                                    strandName = 'Strand 1: Number';
+                                } else if (strandCode === 'S2' || strandCode === '2') {
                                     strandName = 'Strand 2: Algebra';
-                                } else if (strandUpper.includes('GEOMETRY') || strandUpper.includes('MEASUREMENT')) {
+                                } else if (strandCode === 'S3' || strandCode === '3') {
                                     strandName = 'Strand 3: Geometry & Measurement';
-                                } else if (strandUpper.includes('DATA') || strandUpper.includes('STATISTICS') || strandUpper.includes('PROBABILITY')) {
+                                } else if (strandCode === 'S4' || strandCode === '4') {
                                     strandName = 'Strand 4: Handling Data';
                                 } else {
-                                    strandName = 'Strand 1: Number';
+                                    const strandUpper = strandName.toUpperCase();
+                                    if (strandUpper.includes('ALGEBRA') || strandUpper.includes('PATTERNS')) {
+                                        strandName = 'Strand 2: Algebra';
+                                    } else if (strandUpper.includes('GEOMETRY') || strandUpper.includes('MEASUREMENT')) {
+                                        strandName = 'Strand 3: Geometry & Measurement';
+                                    } else if (strandUpper.includes('DATA') || strandUpper.includes('STATISTICS') || strandUpper.includes('PROBABILITY')) {
+                                        strandName = 'Strand 4: Handling Data';
+                                    } else {
+                                        strandName = 'Strand 1: Number';
+                                    }
                                 }
                             }
 
@@ -2849,7 +2979,7 @@ function MathLab({
                                 title: t.title,
                                 domain: strandName.toUpperCase(),
                                 strandName: strandName,
-                                strandCode: t.strandCode || (strandName.includes('1') ? 'S1' : strandName.includes('2') ? 'S2' : strandName.includes('3') ? 'S3' : 'S4'),
+                                strandCode: t.strandCode || (subject === 'science' ? 'S1' : 'S1'),
                                 subStrand: t.subStrand,
                                 levelsAvailable: t.levelsAvailable || ['B7', 'B8', 'B9'],
                                 gradeTier: 'Junior Secondary (JHS)',
@@ -2864,7 +2994,7 @@ function MathLab({
                                 kind: 'topical',
                                 format: 'topical_lab',
                                 questionCount: t.questionCount || (isPending ? 0 : 27),
-                                subject: 'Mathematics',
+                                subject: subject === 'science' ? 'Integrated Science' : 'Mathematics',
                                 status: t.status || 'ready'
                             });
                         });
@@ -2875,15 +3005,17 @@ function MathLab({
             }
 
             // 2. Exam Series scanning
-            const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers'];
+            const topicsToScan = ['core_curriculum_mastery', 'bece_past_papers', 'nacca_preparatory_blueprint', 'past_papers'];
             for (const tId of topicsToScan) {
-                const sets = await getTopicQuestionSets(levelId, 'math', tId);
+                const sets = await getTopicQuestionSets(levelId, subject, tId);
                 console.log("[senior-academy] Fetched sets for topic", tId, ":", sets);
                 if (sets && sets.length > 0) {
                     sets.forEach((s) => {
                         scanned.push({
                             title: s.title,
-                            domain: s.format === 'structured_essay' || s.title.toLowerCase().includes('paper 2') || s.title.toLowerCase().includes('structured') ? 'ALGEBRA' : 'ARITHMETIC & NUMERACY',
+                            domain: s.format === 'structured_essay' || s.title.toLowerCase().includes('paper 2') || s.title.toLowerCase().includes('structured')
+                                ? (subject === 'science' ? 'STRAND 1: DIVERSITY OF MATTER' : 'ALGEBRA')
+                                : (subject === 'science' ? 'STRAND 2: CYCLES' : 'ARITHMETIC & NUMERACY'),
                             gradeTier: activeGrade,
                             meta: `${s.totalQuestions || s.questions?.length || 40} Questions • 60 mins • ${s.variantType === 'past_paper_variant' ? 'Past Paper Variant' : 'Mastery Series'}`,
                             description: s.topic || s.title,
@@ -2894,7 +3026,7 @@ function MathLab({
                             format: s.format || (s.questions?.[0]?.options && s.questions[0].options.length > 0 ? 'objective' : 'structured_essay'),
                             questionCount: s.totalQuestions || s.questions?.length || 0,
                             examTag: `${s.totalQuestions || s.questions?.length || 0} Questions • Live Stepper`,
-                            subject: 'Mathematics'
+                            subject: subject === 'science' ? 'Integrated Science' : 'Mathematics'
                         });
                     });
                 }
@@ -2908,7 +3040,7 @@ function MathLab({
         } finally {
             setIsRefreshing(false);
         }
-    }, [activeGrade, toast]);
+    }, [activeGrade, subject, toast]);
 
     useEffect(() => {
         refreshCurriculumSets(false);
@@ -2953,24 +3085,31 @@ function MathLab({
         let candidateList: SuggestedModuleCard[] = [];
 
         if (viewMode === 'topical') {
-            // In Topical Practice Labs mode, strictly display canonical topical practice labs from Firestore manifest
-            const topicalCards = dynamicSets.filter(d => d.kind === 'topical' || d.format === 'topical_lab');
+            // In Topical Practice Labs mode, strictly display canonical topical practice labs matching active subject
+            const topicalCards = dynamicSets.filter(d => 
+                (d.kind === 'topical' || d.format === 'topical_lab') &&
+                (subject === 'science' ? (d.subject?.toLowerCase().includes('science')) : (!d.subject?.toLowerCase().includes('science')))
+            );
             if (topicalCards.length > 0) {
                 candidateList = topicalCards;
-            } else if (activeGrade === 'Senior Secondary (SHS)') {
+            } else if (subject === 'math' && activeGrade === 'Senior Secondary (SHS)') {
                 candidateList = SUGGESTED_MATH_MODULES.filter(m => m.gradeTier === activeGrade && m.kind !== 'exam_series');
             } else {
                 candidateList = [];
             }
         } else {
             // In Standard Exam Series mode, merge static exam series with dynamic exam series
-            const combined = [...SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series')];
-            dynamicSets.forEach(dyn => {
-                if (dyn.kind === 'exam_series') {
-                    const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
-                    if (!exists) combined.push(dyn);
-                }
-            });
+            const combined = subject === 'science'
+                ? [...dynamicSets.filter(d => d.kind === 'exam_series' && d.subject?.toLowerCase().includes('science'))]
+                : [...SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series')];
+            if (subject === 'math') {
+                dynamicSets.forEach(dyn => {
+                    if (dyn.kind === 'exam_series' && !dyn.subject?.toLowerCase().includes('science')) {
+                        const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
+                        if (!exists) combined.push(dyn);
+                    }
+                });
+            }
             candidateList = combined;
         }
 
@@ -2995,9 +3134,14 @@ function MathLab({
                 if (isExam) return false;
             }
 
-            // 3. Subject Filter (when explicitly set)
+            // 3. Subject Filter (matching active tab subject or explicit filter)
+            const modSub = (mod.subject || 'Mathematics').toLowerCase();
+            if (subject === 'science') {
+                if (!modSub.includes('science')) return false;
+            } else if (subject === 'math') {
+                if (modSub.includes('science')) return false;
+            }
             if (filterSubject !== 'ALL') {
-                const modSub = (mod.subject || 'Mathematics').toLowerCase();
                 const targetSub = filterSubject.toLowerCase();
                 if (!modSub.includes(targetSub) && !targetSub.includes(modSub)) return false;
             }
@@ -3122,11 +3266,12 @@ function MathLab({
         setActiveTopicalLab(null);
 
         // 1. Direct handling of Topical Practice Labs (costs strictly 1 Firestore read)
-        if (mod.kind === 'topical' || mod.format === 'topical_lab' || (mod.topicId && mod.topicId.startsWith('topic_'))) {
+        if (mod.kind === 'topical' || mod.format === 'topical_lab' || (mod.topicId && (mod.topicId.startsWith('topic_') || mod.topicId.startsWith('bs')))) {
             setIsLoadingSet(true);
             try {
-                const topicDocId = mod.topicId.startsWith('topic_') ? mod.topicId : `topic_${mod.topicId}`;
-                const labDoc = await getTopicalLabDoc(topicDocId);
+                const topicDocId = mod.topicId;
+                const labSubject = (mod.subject?.toLowerCase().includes('science') || subject === 'science') ? 'science' : 'math';
+                const labDoc = await getTopicalLabDoc(topicDocId, 'jhs', labSubject);
                 if (labDoc) {
                     setActiveTopicalLab(labDoc);
                     return;
@@ -3376,6 +3521,38 @@ function MathLab({
             ) : (
                 /* FULL-WIDTH CURRICULUM MODULES & CATALOG ARCHIVE */
                 <div className="space-y-4">
+                    {/* Subject filter tabs */}
+                    <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => {
+                            setSubject('math');
+                            setSelectedDomain('ALL STRANDS');
+                        }}
+                        className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                          subject === 'math'
+                            ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+                            : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        📐 Mathematics (Core & Variants)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                            setSubject('science');
+                            setSelectedDomain('ALL STRANDS');
+                        }}
+                        className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                          subject === 'science'
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                            : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        🔬 Integrated Science (Discovery)
+                      </button>
+                    </div>
+
                     {/* Section Sub-Header with mode indicator */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-800/80">
                         <div>
@@ -3419,7 +3596,7 @@ function MathLab({
                     {/* SUBJECT DOMAIN PILL BAR - Rendered only in Topical Practice Labs mode */}
                     {viewMode === 'topical' && (
                         <div className="flex flex-wrap items-center gap-2 pt-1 pb-1">
-                            {MATH_DOMAINS.map((domain) => {
+                            {(subject === 'science' ? SCIENCE_DOMAINS : MATH_DOMAINS).map((domain) => {
                                 const isActive = selectedDomain === domain;
                                 return (
                                     <button
@@ -5258,11 +5435,25 @@ function SeniorAcademyPageContent() {
                     />
                 )}
                 {activeSubject === 'science' && (
-                    <DiscoveryLab 
+                    <MathLab 
                         canEdit={canEdit} 
                         activeGrade={activeGradeTier} 
                         tenantId={schoolId || undefined} 
-                        studentId={studentId || undefined} 
+                        studentId={studentId || undefined}
+                        viewMode={viewMode}
+                        onViewModeChange={handleViewModeToggle}
+                        searchQuery={debouncedSearch}
+                        filterSubject={'science'}
+                        filterFormat={filterFormat}
+                        targetExamId={urlExamId || undefined}
+                        targetPaperType={urlPaperType || undefined}
+                        assignmentId={urlAssignmentId || undefined}
+                        initialSubject="science"
+                        onOpenDispatch={(examId, paperType) => {
+                            setSelectedDispatchExamId(examId);
+                            if (paperType) setSelectedDispatchPaperType(paperType);
+                            setShowDispatchModal(true);
+                        }}
                     />
                 )}
             </div>

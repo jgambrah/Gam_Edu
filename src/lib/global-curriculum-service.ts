@@ -1,3 +1,5 @@
+import { SET_JHS_SCIENCE_SAMPLE_P1 } from './data/jhs-curriculum-set-70';
+import { SET_JHS_SCIENCE_SAMPLE_P2 } from './data/jhs-curriculum-set-71';
 /**
  * Global Shared Curriculum Service
  *
@@ -337,6 +339,27 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
     }
   ],
   jhs: [
+    {
+      subjectId: 'science',
+      topicId: 'nacca_preparatory_blueprint',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'nacca_preparatory_blueprint',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'nacca_preparatory_blueprint',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'nacca_preparatory_blueprint',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P2
+    },
+
     {
       subjectId: 'math',
       topicId: 'core_curriculum_mastery',

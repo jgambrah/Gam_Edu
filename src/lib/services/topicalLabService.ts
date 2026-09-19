@@ -15,6 +15,7 @@ import {
   TopicalLabDocument,
   SubjectTopicsManifest
 } from '@/lib/topical-lab-types';
+import { NACCA_JHS_SCIENCE_TOPICAL_UNITS } from '../data/jhs-science-curriculum';
 
 export const topicalLabKeys = {
   all: ['topical_labs'] as const,
@@ -27,6 +28,29 @@ export const topicalLabKeys = {
 /**
  * Fallback manifest representing the 8 core Ghanaian JHS Mathematics strands/topics.
  */
+
+/**
+ * Fallback manifest representing the official NaCCA CCP Science strands/topics.
+ */
+export const DEFAULT_JHS_SCIENCE_MANIFEST: SubjectTopicsManifest = {
+  subject: 'Integrated Science',
+  tier: 'Junior Secondary (JHS)',
+  totalTopics: NACCA_JHS_SCIENCE_TOPICAL_UNITS.length,
+  topics: NACCA_JHS_SCIENCE_TOPICAL_UNITS.map(unit => ({
+    id: unit.id,
+    title: unit.subStrandTitle,
+    strandCode: `S${unit.strandNumber}`,
+    strandName: unit.strandTitle.toUpperCase(),
+    strand: unit.strandTitle.toUpperCase(),
+    subStrand: unit.subStrandTitle,
+    levelsAvailable: [unit.gradeLevel.replace('BS', 'B')],
+    status: 'ready',
+    hasNotes: true,
+    questionCount: unit.drillQuestions.length,
+    description: `NaCCA CCP ${unit.gradeLevel} unit on ${unit.subStrandTitle} with interactive labs, worked examples, and graded practice pools.`
+  }))
+};
+
 export const DEFAULT_JHS_MATH_MANIFEST: SubjectTopicsManifest = {
   subject: 'Mathematics',
   tier: 'Junior Secondary (JHS)',
@@ -226,6 +250,65 @@ export async function fetchTopicalLabDoc(
   subjectId: string = 'math'
 ): Promise<TopicalLabDocument | null> {
   try {
+    // 1. Primary check in topical_units (e.g. Science units: bs7_strand1_living_cells)
+    const unitRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topical_units', topicDocId);
+    const unitSnap = await getDoc(unitRef);
+    if (unitSnap.exists()) {
+      const data = unitSnap.data() as any;
+      if (data.notes && data.drillQuestions) {
+        const lvlKey = (data.gradeLevel?.toLowerCase() || 'b7').replace('bs', 'b');
+        const mapDrill = (q: any) => ({
+          id: q.id,
+          difficulty: q.difficulty === 'high' ? 'hard' : q.difficulty,
+          prompt: q.prompt,
+          options: q.options || [],
+          correctAnswer: q.correctAnswer,
+          hint: q.hint,
+          workedSolution: q.workedSolution,
+          points: q.points || 1,
+          diagramSvg: q.diagramSvg
+        });
+
+        const workedExamples = (data.sampleWorkedProblems || []).map((p: any) => ({
+          id: p.id,
+          title: `Worked Example: ${p.questionPrompt.slice(0, 50)}...`,
+          problem: p.questionPrompt,
+          steps: [p.stepByStepSolution],
+          finalAnswer: p.examinerTip ? `Examiner Tip: ${p.examinerTip}` : '',
+          diagramSvg: data.notes?.diagramSvg
+        }));
+
+        let notesMarkdown = data.notes.summaryMarkdown || '';
+        if (data.notes.keyTerms && data.notes.keyTerms.length > 0) {
+          notesMarkdown += '\n\n#### Key Terminology\n' + data.notes.keyTerms.map((kt: any) => `* **${kt.term}:** ${kt.definition}`).join('\n');
+        }
+
+        return {
+          id: unitSnap.id,
+          title: `${data.strandTitle}: ${data.subStrandTitle}`,
+          strand: data.strandTitle,
+          strandCode: `S${data.strandNumber}`,
+          subStrand: data.subStrandTitle,
+          levels: {
+            [lvlKey]: {
+              levelTitle: `${data.gradeLevel} • ${data.subStrandTitle}`,
+              summary: `${data.strandTitle} — ${data.subStrandTitle}`,
+              notes: notesMarkdown,
+              diagramSvg: data.notes?.diagramSvg,
+              workedExamples,
+              practicePool: {
+                low: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'low').map(mapDrill),
+                medium: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'medium').map(mapDrill),
+                hard: (data.drillQuestions || []).filter((q: any) => q.difficulty === 'high' || q.difficulty === 'hard').map(mapDrill)
+              }
+            }
+          }
+        } as TopicalLabDocument;
+      }
+      return { ...(data as TopicalLabDocument), id: unitSnap.id };
+    }
+
+    // 2. Primary topics path: global_curriculum/{levelId}/subjects/{subjectId}/topics/{topicDocId}
     const topicRef = doc(db, 'global_curriculum', levelId, 'subjects', subjectId, 'topics', topicDocId);
     const snap = await getDoc(topicRef);
 
@@ -256,9 +339,6 @@ export async function fetchTopicalLabDoc(
   }
 }
 
-/**
- * Cached getter for a Topical Lab document (24h cache, 1 read per session).
- */
 export async function getTopicalLabDoc(
   topicDocId: string,
   levelId: string = 'jhs',
