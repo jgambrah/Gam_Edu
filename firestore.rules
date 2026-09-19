@@ -430,12 +430,12 @@ service cloud.firestore {
         resource.data.studentId == request.auth.uid ||
         parentOwnsStudent(resource.data.studentId)
       )));
-      allow list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow list: if isSignedIn();
       allow write: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 
     match /report_card_remarks/{id} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 
@@ -489,13 +489,13 @@ service cloud.firestore {
     }
 
     match /lesson-plans/{planId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow create: if isSuperAdmin() || (((isStaff() && request.resource.data.teacherId == request.auth.uid) || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
       allow update, delete: if isSuperAdmin() || (getUserSchoolId() == resource.data.schoolId && (isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid)));
     }
 
     match /learning_materials/{materialId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
     }
 

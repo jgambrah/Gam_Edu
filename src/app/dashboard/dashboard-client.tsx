@@ -10540,16 +10540,34 @@ function StudentDashboard({ profile }: any) {
     }, [firestore, schoolId, user?.uid]);
     const { data: studentBehavior } = useCollection<any>(behaviorQuery);
 
-    // 12. Fetch learning materials
-    const materialsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId) return null;
-        return query(
+    // 12. Fetch learning materials (safely subscribed with non-blocking fallback)
+    const [dbMaterials, setDbMaterials] = useState<any[] | null>(null);
+    useEffect(() => {
+        if (!firestore || !schoolId) {
+            setDbMaterials([]);
+            return;
+        }
+        const q = query(
             collection(firestore, 'learning_materials'),
             where('schoolId', '==', schoolId),
             limit(50)
         );
+        const unsubscribe = onSnapshot(
+            q,
+            (snapshot) => {
+                const materials: any[] = [];
+                snapshot.forEach((doc) => {
+                    materials.push({ id: doc.id, ...doc.data() });
+                });
+                setDbMaterials(materials);
+            },
+            (err) => {
+                console.warn('[Dashboard] Learning materials notice (graceful fallback):', err?.message);
+                setDbMaterials([]);
+            }
+        );
+        return () => unsubscribe();
     }, [firestore, schoolId]);
-    const { data: dbMaterials } = useCollection<any>(materialsQuery);
 
     const behaviorRating = useMemo(() => {
         if (!studentBehavior || studentBehavior.length === 0) return 'Excellent (A)';
