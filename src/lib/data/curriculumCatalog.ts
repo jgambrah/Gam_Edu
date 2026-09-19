@@ -73,6 +73,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2014 BECE Integrated Science Standardized CBT',
     description: 'Calibrated isomorphic practice variant of 2014 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step worked solutions.'
   },
+  {
+    id: 'paper_2014_variant_p2',
+    title: '2014 BECE Integrated Science Paper 2 (Set 75 Practical & Essay)',
+    year: 2014,
+    setNumber: 75,
+    paperType: 2,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 75',
+    questionCount: 6,
+    topic: '2014 BECE Practical & Theory Essay Test',
+    description: 'Calibrated isomorphic practice variant of 2014 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (mosquito life cycle, separation setups, measuring instruments, avian digestive anatomy) and Section B theory essays.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)

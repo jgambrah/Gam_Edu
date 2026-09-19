@@ -7,6 +7,7 @@ import { SET_JHS_SCIENCE_SAMPLE_P1 } from '../src/lib/data/jhs-curriculum-set-70
 import { SET_JHS_SCIENCE_SAMPLE_P2 } from '../src/lib/data/jhs-curriculum-set-71';
 import { SET_BECE_2026_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-73';
 import { SET_BECE_2014_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-74';
+import { SET_BECE_2014_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-75';
 
 dotenv.config();
 
@@ -209,6 +210,33 @@ async function syncAll() {
     await db.doc(p).set(set74Data, { merge: true });
     console.log('Synced Set 74 ->', p);
   }
+
+  const set75Data = {
+    ...SET_BECE_2014_SCIENCE_P2,
+    id: 'paper_2014_variant_p2',
+    year: 2014,
+    setNumber: 75,
+    paperType: 2,
+    subject: 'Integrated Science',
+    topic: '2014 BECE Practical & Theory Essay Test',
+    updatedAt: new Date()
+  };
+
+  // Paths for Set 75
+  const set75Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2014_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2014_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/bece_2014_variant/question_sets/paper_2014_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2014_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2014_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2014_variant/question_sets/paper_2014_variant_p2'
+  ];
+
+  for (const p of set75Paths) {
+    await db.doc(p).set(set75Data, { merge: true });
+    console.log('Synced Set 75 ->', p);
+  }
+
 
   console.log('✅ All Science Past Papers successfully synced across all Firestore collections.');
 }
