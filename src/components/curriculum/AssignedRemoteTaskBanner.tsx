@@ -172,13 +172,7 @@ export function AssignedRemoteTaskBanner({
       // 2. Route directly to the Senior Academy exam runner with assignment query params
       const examParam = assignment.examId || 'paper_2020_variant';
       const paperTypeParam = assignment.paperType || 2;
-      const targetUrl = '/dashboard/senior-academy?tab=past-papers&examId=' + examParam + '&paperType=' + paperTypeParam + '&assignmentId=' + assignment.id;
-
-      router.push(targetUrl);
-    } catch (err) {
-      console.error('[AssignedRemoteTaskBanner] Error starting task:', err);
-      // Still route if network error
-      const examParam = assignment.examId || 'paper_2020_variant';
+      const targetUrl = '/dashboard/senior-academy?view=exam_series&tab=past-papers&examId=' + encodeURIComponent(examParam) + '&paperType=' + paperTypeParam + '&assignmentId=' + encodeURIComponent(assignment.id);
       router.push('/dashboard/senior-academy?tab=past-papers&examId=' + examParam + '&paperType=' + assignment.paperType + '&assignmentId=' + assignment.id);
     } finally {
       setStartingTaskId(null);

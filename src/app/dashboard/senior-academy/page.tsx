@@ -2665,6 +2665,73 @@ export function resolveExamMetadata(exam: any): ResolvedExamMeta {
 
   return { year, paperType, era };
 }
+function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, paperType?: string | number): SuggestedModuleCard | null {
+    if (!examId) return null;
+    const cleanId = examId.toLowerCase().trim();
+
+    // 1. Exact setId match
+    let match = modules.find(m => (m.setId || '').toLowerCase() === cleanId);
+    if (match) return match;
+
+    // 2. Known Catalog mapping
+    const catalogMap: Record<string, { setNum: number; paper?: number; year?: number }> = {
+        'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
+        'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
+        'paper_2024_variant': { setNum: 60, paper: 2, year: 2024 },
+        'paper_2024_p1_variant': { setNum: 60, paper: 1, year: 2024 },
+        'paper_2023_variant': { setNum: 59, paper: 2, year: 2023 },
+        'paper_2023_p1_variant': { setNum: 59, paper: 1, year: 2023 },
+        'paper_2022_variant': { setNum: 58, paper: 2, year: 2022 },
+        'paper_2022_p1_variant': { setNum: 58, paper: 1, year: 2022 },
+        'paper_2021_variant': { setNum: 57, paper: 2, year: 2021 },
+        'paper_2021_p1_variant': { setNum: 57, paper: 1, year: 2021 },
+        'paper_2020_variant': { setNum: 56, paper: 2, year: 2020 },
+        'paper_2020_p1_variant': { setNum: 56, paper: 1, year: 2020 },
+        'paper_2019_variant': { setNum: 55, paper: 2, year: 2019 },
+        'paper_2019_p1_variant': { setNum: 55, paper: 1, year: 2019 },
+        'paper_2018_variant': { setNum: 54, paper: 2, year: 2018 },
+        'paper_2018_p1_variant': { setNum: 54, paper: 1, year: 2018 },
+    };
+
+    const targetPaperNum = paperType ? Number(paperType) : undefined;
+    const mapped = catalogMap[cleanId];
+
+    if (mapped) {
+        match = modules.find(m => {
+            const meta = resolveExamMetadata(m);
+            const sId = (m.setId || '').toLowerCase();
+            const t = (m.title || '').toLowerCase();
+            const isSetMatch = sId.includes('-' + mapped.setNum) || t.includes('set ' + mapped.setNum) || t.includes('(set ' + mapped.setNum + ')');
+            if (!isSetMatch) return false;
+            if (targetPaperNum && meta.paperType && meta.paperType !== targetPaperNum) {
+                return false;
+            }
+            return true;
+        });
+        if (match) return match;
+    }
+
+    // 3. Extract numeric hints (e.g. "65" or "2025")
+    const numbers = cleanId.match(/\d+/g);
+    if (numbers) {
+        for (const nStr of numbers) {
+            const n = parseInt(nStr, 10);
+            match = modules.find(m => {
+                const sId = (m.setId || '').toLowerCase();
+                const t = (m.title || '').toLowerCase();
+                const d = (m.description || '').toLowerCase();
+                if (n >= 1990 && n <= 2030) {
+                    return t.includes('' + n) || d.includes('' + n);
+                }
+                return sId.includes('-' + n) || t.includes('set ' + n) || t.includes('(set ' + n + ')');
+            });
+            if (match) return match;
+        }
+    }
+
+    return null;
+}
+
 function MathLab({ 
     canEdit, 
     activeGrade = 'Senior Secondary (SHS)',
@@ -2674,7 +2741,10 @@ function MathLab({
     onViewModeChange,
     searchQuery = '',
     filterSubject = 'ALL',
-    filterFormat = 'ALL'
+    filterFormat = 'ALL',
+    targetExamId,
+    targetPaperType,
+    assignmentId
 }: { 
     canEdit: boolean; 
     activeGrade?: SecondaryGradeTier;
@@ -2685,6 +2755,9 @@ function MathLab({
     searchQuery?: string;
     filterSubject?: string;
     filterFormat?: string;
+    targetExamId?: string;
+    targetPaperType?: string | number;
+    assignmentId?: string;
 }) {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -2699,6 +2772,27 @@ function MathLab({
     const [isLoadingSet, setIsLoadingSet] = useState(false);
     const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    // Direct Task Dispatch Auto-Launcher
+    const [autoLaunchedExamId, setAutoLaunchedExamId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!targetExamId || autoLaunchedExamId === targetExamId || activeQuestionSet || activeTopicMeta || isLoadingSet) {
+            return;
+        }
+
+        const combined = [
+            ...SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series'),
+            ...dynamicSets.filter(d => d.kind === 'exam_series')
+        ];
+
+        const match = findModuleForExam(combined, targetExamId, targetPaperType);
+        if (match) {
+            console.log('[MathLab] Direct auto-launch of assigned exam module:', match.title, match.setId);
+            setAutoLaunchedExamId(targetExamId);
+            handleLaunchModule(match);
+        }
+    }, [targetExamId, targetPaperType, autoLaunchedExamId, dynamicSets, activeQuestionSet, activeTopicMeta, isLoadingSet]);
+
 
     const [selectedEra, setSelectedEra] = useState<'all' | 'modern' | 'prep' | 'legacy' | 'classic'>('all');
     const [examPaperType, setExamPaperType] = useState<'all' | 'paper1' | 'paper2'>('all');
@@ -3167,9 +3261,17 @@ function MathLab({
                         topicId={activeTopicMeta.topicId}
                         tenantId={tenantId}
                         studentId={studentId}
+                        assignmentId={assignmentId}
                         onBack={() => {
                             setActiveTopicMeta(null);
                             setActiveQuestionSet(null);
+                            if (typeof window !== 'undefined') {
+                                const url = new URL(window.location.href);
+                                url.searchParams.delete('examId');
+                                url.searchParams.delete('assignmentId');
+                                url.searchParams.delete('paperType');
+                                window.history.replaceState({}, '', url.toString());
+                            }
                         }}
                     />
                 )
@@ -4753,7 +4855,13 @@ function SeniorAcademyPageContent() {
 
     // URL sync for active view mode (?view=topical vs ?view=exam_series)
     const urlView = searchParams.get('view');
-    const initialViewMode = urlView === 'exam_series' ? 'exam_series' : 'topical';
+    const urlTab = searchParams.get('tab');
+    const urlExamId = searchParams.get('examId');
+    const urlPaperType = searchParams.get('paperType');
+    const urlAssignmentId = searchParams.get('assignmentId');
+
+    const isExamRequested = urlView === 'exam_series' || urlTab === 'past-papers' || !!urlExamId || !!urlAssignmentId;
+    const initialViewMode = isExamRequested ? 'exam_series' : 'topical';
     const [viewMode, setViewMode] = useState<'topical' | 'exam_series'>(initialViewMode);
 
     // Sync state if URL changes externally
@@ -5092,6 +5200,9 @@ function SeniorAcademyPageContent() {
                         searchQuery={debouncedSearch}
                         filterSubject={filterSubject}
                         filterFormat={filterFormat}
+                        targetExamId={urlExamId || undefined}
+                        targetPaperType={urlPaperType || undefined}
+                        assignmentId={urlAssignmentId || undefined}
                     />
                 )}
                 {activeSubject === 'english' && (

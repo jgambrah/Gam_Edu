@@ -145,6 +145,7 @@ export function QuestionRunner({
         questionSet={questionSet}
         schoolId={tenantId}
         studentId={studentId}
+        assignmentId={assignmentId}
         onBack={onBack}
       />
     );
