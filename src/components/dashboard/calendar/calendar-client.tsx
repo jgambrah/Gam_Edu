@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, deleteDoc, doc, Timestamp, serverTimestamp, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, deleteDoc, doc, Timestamp, serverTimestamp, where , onSnapshot } from 'firebase/firestore';
 import { 
   Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, 
   MapPin, Clock, Trash2, Loader2, Info, Wand2 
@@ -188,12 +188,39 @@ export default function SchoolCalendarPageContent() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  // Fetch Events (SAAS Aware)
-  const eventsQuery = useMemoFirebase(
-    () => (firestore && schoolId) ? query(collection(firestore, 'school_calendar'), where('schoolId', '==', schoolId), orderBy('date', 'asc')) : null,
-    [firestore, schoolId]
-  );
-  const { data: events, isLoading: isLoadingEvents } = useCollection<SchoolEvent>(eventsQuery);
+    // Fetch Events (SAAS Aware with resilient fallback)
+  const [events, setEvents] = useState<SchoolEvent[] | null>(null);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+
+  useEffect(() => {
+    if (!firestore || !schoolId) {
+      setIsLoadingEvents(false);
+      setEvents([]);
+      return;
+    }
+    const q = query(
+      collection(firestore, 'school_calendar'),
+      where('schoolId', '==', schoolId),
+      orderBy('date', 'asc')
+    );
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const evs: SchoolEvent[] = [];
+        snapshot.forEach(doc => {
+          evs.push({ ...(doc.data() as SchoolEvent), id: doc.id });
+        });
+        setEvents(evs);
+        setIsLoadingEvents(false);
+      },
+      (err) => {
+        console.warn('[CalendarClient] Calendar events notice (graceful fallback):', err?.message);
+        setEvents([]);
+        setIsLoadingEvents(false);
+      }
+    );
+    return () => unsubscribe();
+  }, [firestore, schoolId]);
 
   const isLoading = isLoadingEvents || isLoadingSchool;
 

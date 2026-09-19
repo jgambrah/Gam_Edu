@@ -15,7 +15,7 @@ import { StaffDirectoryDashboardView } from '@/components/dashboard/StaffDirecto
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection, useFirebase } from '@/firebase';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { useRole } from '@/context/role-context';
-import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp, updateDoc , onSnapshot } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, RefreshCw, Zap, BarChart3, Layers3,
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
@@ -10364,15 +10364,33 @@ function StudentDashboard({ profile }: any) {
     }, [firestore, schoolId, profile?.classId]);
     const { data: classTimetable } = useCollection<any>(timetableQuery);
 
-    // 1e. Fetch school calendar events
-    const calendarQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId) return null;
-        return query(
+        // 1e. Fetch school calendar events (safely subscribed with non-blocking fallback)
+    const [calendarEvents, setCalendarEvents] = useState<any[] | null>(null);
+    useEffect(() => {
+        if (!firestore || !schoolId) {
+            setCalendarEvents([]);
+            return;
+        }
+        const q = query(
             collection(firestore, 'school_calendar'),
             where('schoolId', '==', schoolId)
         );
+        const unsubscribe = onSnapshot(
+            q,
+            (snapshot) => {
+                const events: any[] = [];
+                snapshot.forEach((doc) => {
+                    events.push({ id: doc.id, ...doc.data() });
+                });
+                setCalendarEvents(events);
+            },
+            (err) => {
+                console.warn('[Dashboard] Calendar query notice (graceful fallback):', err?.message);
+                setCalendarEvents([]);
+            }
+        );
+        return () => unsubscribe();
     }, [firestore, schoolId]);
-    const { data: calendarEvents } = useCollection<any>(calendarQuery);
 
     // 1f. Fetch subjects list
     const subjectsQuery = useMemoFirebase(() => {
