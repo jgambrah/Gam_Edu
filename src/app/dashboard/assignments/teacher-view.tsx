@@ -6,7 +6,9 @@ import { collection, query, where } from 'firebase/firestore';
 import { Assignment, Quiz, Student, StudentSubmission, QuizAttempt } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, BookOpen, Layers, GraduationCap, CheckCircle, HelpCircle, Loader2, Sparkles, ChevronDown } from 'lucide-react';
+import { PlusCircle, BookOpen, Layers, GraduationCap, CheckCircle, HelpCircle, Loader2, Sparkles, ChevronDown, Send, BarChart3 } from 'lucide-react';
+import { DispatchAssignmentModal } from '@/components/academy/director/DispatchAssignmentModal';
+import { AssignmentMonitorView } from '@/components/academy/director/AssignmentMonitorView';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AssignmentCreationForm } from './assignment-creation-form';
 import { AssignmentSubmissionsList } from './assignment-submissions-list';
@@ -203,6 +205,8 @@ export default function TeacherAssignmentsView() {
   const { schoolId } = useCurrentSchool();
   const [isAssignmentFormOpen, setAssignmentFormOpen] = useState(false);
   const [isQuizFormOpen, setQuizFormOpen] = useState(false);
+  const [showDispatchModal, setShowDispatchModal] = useState(false);
+  const [showRemoteMonitor, setShowRemoteMonitor] = useState(false);
 
   const assignmentsQuery = useMemoFirebase(
     () => (user && schoolId && firestore) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
@@ -279,6 +283,39 @@ export default function TeacherAssignmentsView() {
     return Math.round(totalPct / teacherAttempts.length);
   }, [quizzes, quizAttempts]);
 
+    if (showRemoteMonitor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between pb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowRemoteMonitor(false)}
+            className="text-xs text-slate-500 hover:text-slate-800"
+          >
+            ← Back to Standard Assignments
+          </Button>
+        </div>
+        <AssignmentMonitorView
+          schoolId={schoolId || ''}
+          userRole="Teacher"
+          onOpenDispatchModal={() => setShowDispatchModal(true)}
+          onBack={() => setShowRemoteMonitor(false)}
+        />
+        <DispatchAssignmentModal
+          isOpen={showDispatchModal}
+          onClose={() => setShowDispatchModal(false)}
+          schoolId={schoolId || ''}
+          userUid={user?.uid || ''}
+          userName={user?.displayName || 'Class Teacher'}
+          onDispatched={() => {
+            setShowRemoteMonitor(true);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <SectionHeroBanner
@@ -300,6 +337,21 @@ export default function TeacherAssignmentsView() {
                 {activeQuizzesCount} ACTIVE TESTS
               </span>
             </div>
+            <Button 
+              onClick={() => setShowDispatchModal(true)}
+              className="h-9 px-3.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm flex items-center gap-1.5 shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Send className="h-3.5 w-3.5" />
+              <span>Assign Past Questions (BECE)</span>
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => setShowRemoteMonitor(true)}
+              className="h-9 px-3.5 rounded-xl font-bold text-xs border-indigo-500/30 text-indigo-300 hover:bg-indigo-950/40 hover:text-white shadow-sm flex items-center gap-1.5 shrink-0"
+            >
+              <BarChart3 className="h-3.5 w-3.5" />
+              <span>Past Paper Monitor</span>
+            </Button>
             <Button 
               onClick={() => {
                 setAssignmentFormOpen(!isAssignmentFormOpen);
@@ -479,6 +531,17 @@ export default function TeacherAssignmentsView() {
           </Card>
         </TabsContent>
       </Tabs>
+    
+      <DispatchAssignmentModal
+        isOpen={showDispatchModal}
+        onClose={() => setShowDispatchModal(false)}
+        schoolId={schoolId || ''}
+        userUid={user?.uid || ''}
+        userName={user?.displayName || 'Class Teacher'}
+        onDispatched={() => {
+          setShowRemoteMonitor(true);
+        }}
+      />
     </div>
   );
 }

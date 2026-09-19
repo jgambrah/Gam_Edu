@@ -13,8 +13,7 @@ import {
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
   Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star,
-  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock, Bookmark, ListChecks
-} from 'lucide-react';
+  Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock, Bookmark, ListChecks, Send, BarChart3 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -131,13 +130,13 @@ const juniorStyles = {
     input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
 };
 
-export type SecondaryGradeTier = 
+type SecondaryGradeTier = 
     | 'Lower Primary (BS 1 - 3)'
     | 'Upper Primary (BS 4 - 6)'
     | 'Junior Secondary (JHS)'
     | 'Senior Secondary (SHS)';
 
-export function mapGradeTierToLevelId(tier: SecondaryGradeTier): GlobalCurriculumLevelId {
+function mapGradeTierToLevelId(tier: SecondaryGradeTier): GlobalCurriculumLevelId {
     switch (tier) {
         case 'Lower Primary (BS 1 - 3)':
             return 'lower_primary';
@@ -2529,13 +2528,13 @@ const MATH_DOMAINS = [
 ];
 
 
-export interface ResolvedExamMeta {
+interface ResolvedExamMeta {
   year: number | null;
   paperType: 1 | 2;
   era: 'modern' | 'legacy' | 'classic' | 'other';
 }
 
-export function resolveExamMetadata(exam: any): ResolvedExamMeta {
+function resolveExamMetadata(exam: any): ResolvedExamMeta {
   // 1. Detect Paper Type: Paper 1 (Objective/CBT) vs Paper 2 (Theory/Essay)
   let paperType: 1 | 2 = 1;
   const rawTitle = (exam.title || exam.name || '').toLowerCase();
@@ -2744,7 +2743,8 @@ function MathLab({
     filterFormat = 'ALL',
     targetExamId,
     targetPaperType,
-    assignmentId
+    assignmentId,
+    onOpenDispatch
 }: { 
     canEdit: boolean; 
     activeGrade?: SecondaryGradeTier;
@@ -2758,6 +2758,7 @@ function MathLab({
     targetExamId?: string;
     targetPaperType?: string | number;
     assignmentId?: string;
+    onOpenDispatch?: (examId?: string, paperType?: 1 | 2) => void;
 }) {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -3709,6 +3710,21 @@ function MathLab({
                                                     <BookOpen className="w-3.5 h-3.5 text-slate-500" />
                                                     {mod.meta}
                                                 </span>
+                                                {canEdit && isExamCard && (
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onOpenDispatch?.(mod.setId, isPaper2 ? 2 : 1);
+                                                        }}
+                                                        className="h-8 px-2.5 rounded-lg text-xs flex items-center gap-1 border-amber-500/30 text-amber-300 hover:text-white hover:bg-amber-500/20 cursor-pointer mr-2"
+                                                        title="Assign this past paper to a class"
+                                                    >
+                                                        <Send className="w-3 h-3 text-amber-400" />
+                                                        <span>Assign</span>
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     size="sm"
                                                     onClick={() => handleLaunchModule(mod)}
@@ -4864,6 +4880,11 @@ function SeniorAcademyPageContent() {
     const initialViewMode = isExamRequested ? 'exam_series' : 'topical';
     const [viewMode, setViewMode] = useState<'topical' | 'exam_series'>(initialViewMode);
 
+    // Dispatch Past Questions Modal State
+    const [showDispatchModal, setShowDispatchModal] = useState(false);
+    const [selectedDispatchExamId, setSelectedDispatchExamId] = useState<string | undefined>(undefined);
+    const [selectedDispatchPaperType, setSelectedDispatchPaperType] = useState<1 | 2>(2);
+
     // Sync state if URL changes externally
     useEffect(() => {
         if (urlView === 'exam_series' && viewMode !== 'exam_series') {
@@ -4939,6 +4960,21 @@ function SeniorAcademyPageContent() {
                 className="mb-4 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
                 actions={
                     <div className="flex flex-wrap items-center gap-3">
+                        {/* TEACHER & DIRECTOR ASSIGN PAST QUESTIONS BUTTON */}
+                        {canEdit && (
+                            <Button
+                                type="button"
+                                onClick={() => {
+                                    setSelectedDispatchExamId(undefined);
+                                    setSelectedDispatchPaperType(2);
+                                    setShowDispatchModal(true);
+                                }}
+                                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md shadow-amber-500/20 cursor-pointer"
+                            >
+                                <Send className="w-3.5 h-3.5 text-slate-950" />
+                                <span>Assign Past Questions to Class</span>
+                            </Button>
+                        )}
                         {/* SEGMENTED CONTROL FOR ALL 4 STUDY LEVELS */}
                         <div className="bg-slate-950/90 border border-slate-800/90 p-1 rounded-xl flex flex-wrap items-center gap-1 shadow-lg">
                             <button
@@ -5203,6 +5239,11 @@ function SeniorAcademyPageContent() {
                         targetExamId={urlExamId || undefined}
                         targetPaperType={urlPaperType || undefined}
                         assignmentId={urlAssignmentId || undefined}
+                        onOpenDispatch={(examId, paperType) => {
+                            setSelectedDispatchExamId(examId);
+                            if (paperType) setSelectedDispatchPaperType(paperType);
+                            setShowDispatchModal(true);
+                        }}
                     />
                 )}
                 {activeSubject === 'english' && (
@@ -5227,6 +5268,21 @@ function SeniorAcademyPageContent() {
                 .math-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
                 .katex-display { margin: 0 !important; }
             `}</style>
+    
+            {/* Modal to Assign Past Questions to Class */}
+            <DispatchAssignmentModal
+                isOpen={showDispatchModal}
+                onClose={() => setShowDispatchModal(false)}
+                schoolId={schoolId || ''}
+                userUid={user?.uid || ''}
+                userName={user?.displayName || (role === 'Teacher' ? 'Class Teacher' : 'Director')}
+                initialExamId={selectedDispatchExamId}
+                initialPaperType={selectedDispatchPaperType}
+                onDispatched={(newAssignmentId) => {
+                    setShowDispatchModal(false);
+                }}
+            />
+
         </div>
     );
 }
