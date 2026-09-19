@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported } from 'firebase/messaging';
 import { useUser, useFirestore, useFirebaseApp } from '@/firebase';
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, setDoc, arrayUnion } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { BellRing, X, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -84,10 +84,18 @@ export function PushNotificationManager({ collectionName }: { collectionName: st
 
       if (currentToken) {
         console.log("FCM Token Acquired:", currentToken);
-        const userRef = doc(firestore, collectionName, user.uid);
-        await updateDoc(userRef, {
+        let targetCollection = collectionName || 'staff';
+        const email = user.email?.toLowerCase() || '';
+        if (email.includes('-student.') || email.includes('student')) {
+          targetCollection = 'students';
+        } else if (email.includes('-parent.') || email.includes('parent')) {
+          targetCollection = 'parents';
+        }
+
+        const userRef = doc(firestore, targetCollection, user.uid);
+        await setDoc(userRef, {
           fcmTokens: arrayUnion(currentToken)
-        });
+        }, { merge: true });
         setShowPrompt(false);
       }
     } catch (err: any) {

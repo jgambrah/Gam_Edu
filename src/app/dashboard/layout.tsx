@@ -123,8 +123,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   // Determine collection name for push tokens
   let collectionName = 'staff';
-  if (profile?.role === 'Student') collectionName = 'students';
-  if (profile?.role === 'Parent') collectionName = 'parents';
+  if (role === 'Student' || profile?.role === 'Student' || user?.email?.toLowerCase().includes('-student.')) {
+    collectionName = 'students';
+  } else if (role === 'Parent' || profile?.role === 'Parent' || user?.email?.toLowerCase().includes('-parent.')) {
+    collectionName = 'parents';
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-slate-800">
@@ -199,7 +202,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <AiChat />
-      <PushNotificationManager collectionName={collectionName} />
+      {!isRoleLoading && <PushNotificationManager collectionName={collectionName} />}
       <SchoolSetupWizard />
     </div>
   );

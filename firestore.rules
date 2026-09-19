@@ -378,7 +378,7 @@ service cloud.firestore {
     }
 
     match /school_calendar/{eventId} {
-      allow read, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == resource.data.schoolId);
+      allow read, list: if isSignedIn();
       allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
     }
 
