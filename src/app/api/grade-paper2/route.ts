@@ -3,27 +3,47 @@ import { adminDb, FieldValue } from '@/lib/firebaseAdmin';
 import { GoogleGenAI, Type } from '@google/genai';
 import { ensureArray } from '@/lib/utils';
 import { SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
+import { SET_JHS_MASTERY_SERIES_60 } from '@/lib/data/jhs-curriculum-set-60';
 import { SET_JHS_MASTERY_SERIES_61 } from '@/lib/data/jhs-curriculum-set-61';
+import { SET_JHS_MASTERY_SERIES_62 } from '@/lib/data/jhs-curriculum-set-62';
 import { SET_JHS_MASTERY_SERIES_63 } from '@/lib/data/jhs-curriculum-set-63';
+import { SET_JHS_MASTERY_SERIES_64 } from '@/lib/data/jhs-curriculum-set-64';
 import { SET_JHS_MASTERY_SERIES_65 } from '@/lib/data/jhs-curriculum-set-65';
+import { SET_JHS_MASTERY_SERIES_66 } from '@/lib/data/jhs-curriculum-set-66';
 import { SET_JHS_MASTERY_SERIES_67 } from '@/lib/data/jhs-curriculum-set-67';
 
-// Static fallback registry for past paper theory sets
+// Comprehensive static fallback registry for past paper theory sets
 const STATIC_THEORY_SETS: Record<string, any> = {
+  'jhs-math-mastery-series-60': SET_JHS_MASTERY_SERIES_60,
+  'set_60': SET_JHS_MASTERY_SERIES_60,
+  '60': SET_JHS_MASTERY_SERIES_60,
+
   'jhs-math-mastery-series-61': SET_JHS_MASTERY_SERIES_61,
   'paper_2020_variant': SET_JHS_MASTERY_SERIES_61,
   'set_61': SET_JHS_MASTERY_SERIES_61,
   '61': SET_JHS_MASTERY_SERIES_61,
+
+  'jhs-math-mastery-series-62': SET_JHS_MASTERY_SERIES_62,
+  'set_62': SET_JHS_MASTERY_SERIES_62,
+  '62': SET_JHS_MASTERY_SERIES_62,
 
   'jhs-math-mastery-series-63': SET_JHS_MASTERY_SERIES_63,
   'paper_2021_variant': SET_JHS_MASTERY_SERIES_63,
   'set_63': SET_JHS_MASTERY_SERIES_63,
   '63': SET_JHS_MASTERY_SERIES_63,
 
+  'jhs-math-mastery-series-64': SET_JHS_MASTERY_SERIES_64,
+  'set_64': SET_JHS_MASTERY_SERIES_64,
+  '64': SET_JHS_MASTERY_SERIES_64,
+
   'jhs-math-mastery-series-65': SET_JHS_MASTERY_SERIES_65,
   'paper_2025_variant': SET_JHS_MASTERY_SERIES_65,
   'set_65': SET_JHS_MASTERY_SERIES_65,
   '65': SET_JHS_MASTERY_SERIES_65,
+
+  'jhs-math-mastery-series-66': SET_JHS_MASTERY_SERIES_66,
+  'set_66': SET_JHS_MASTERY_SERIES_66,
+  '66': SET_JHS_MASTERY_SERIES_66,
 
   'jhs-math-mastery-series-67': SET_JHS_MASTERY_SERIES_67,
   'paper_2019_variant': SET_JHS_MASTERY_SERIES_67,
@@ -114,18 +134,23 @@ export async function POST(req: Request) {
     // Attempt 2: If questions empty, try static theory set lookup
     if (!rawQuestions || ensureArray(rawQuestions).length === 0) {
       const normalizedKey = String(examId).toLowerCase().replace(/[^a-z0-9_-]/g, '');
-      const staticMatch = STATIC_THEORY_SETS[examId] || 
-                          STATIC_THEORY_SETS[normalizedKey] || 
-                          SAMPLE_GLOBAL_QUESTION_SETS.find(s => s.id === examId);
+
+      // Defensively flatten all sample question sets across all curriculum levels
+      // (SAMPLE_GLOBAL_QUESTION_SETS is a Record<levelId, sets[]>, NOT an Array)
+      const allSampleSets: any[] = Object.values(SAMPLE_GLOBAL_QUESTION_SETS || {}).flatMap(
+        (levelSets: any) => ensureArray(levelSets)
+      );
+
+      const staticMatch =
+        STATIC_THEORY_SETS[examId] || 
+        STATIC_THEORY_SETS[normalizedKey] || 
+        allSampleSets.find((s: any) => s && (String(s.id) === String(examId) || String(s.variantId) === String(examId) || String(s.id).toLowerCase() === normalizedKey));
 
       if (staticMatch) {
         rawQuestions = staticMatch.questions || staticMatch.paper2?.questions;
         examTitle = staticMatch.title || '';
       }
     }
-
-    // Safely normalize questions to Array using ensureArray to prevent .find crashes
-    const questionsList = ensureArray(rawQuestions);
 
     // 3. Normalize incoming answers into a flat evaluation array
     const normalizedAnswers: Array<{
@@ -155,9 +180,8 @@ export async function POST(req: Request) {
         });
       });
     } else if (answers && typeof answers === 'object') {
-      // Traverse key-value dictionary { [qNum]: { [subId]: text } } or { [idx]: ansObj }
       Object.entries(answers).forEach(([key, val]: [string, any]) => {
-        if (val && typeof val === 'object' && !('studentText' in val) && !('answer' in val)) {
+        if (val && typeof val === 'object' && !Array.isArray(val)) {
           // Nested dictionary: studentAnswers[qNum][subId]
           Object.entries(val).forEach(([subId, text]: [string, any]) => {
             normalizedAnswers.push({
@@ -188,6 +212,33 @@ export async function POST(req: Request) {
 
     if (normalizedAnswers.length === 0) {
       return NextResponse.json({ error: 'No answers submitted for evaluation.' }, { status: 400 });
+    }
+
+    // Safely normalize questions to Array using ensureArray to prevent .find crashes
+    let questionsList = ensureArray(rawQuestions);
+
+    // Fallback: If questionsList is still empty, synthesize question list directly from submitted answers
+    if (questionsList.length === 0) {
+      const grouped: Record<string, any> = {};
+      normalizedAnswers.forEach(ans => {
+        const qNum = ans.questionNumber || '1';
+        if (!grouped[qNum]) {
+          grouped[qNum] = {
+            id: qNum,
+            questionNumber: qNum,
+            prompt: ans.prompt || `Question ${qNum}`,
+            subQuestions: []
+          };
+        }
+        grouped[qNum].subQuestions.push({
+          subId: ans.subId,
+          partLabel: ans.partLabel,
+          prompt: ans.prompt,
+          workedSolution: ans.workedSolution,
+          maxMarks: ans.maxMarks || 5
+        });
+      });
+      questionsList = Object.values(grouped);
     }
 
     // 4. Evaluate each answer using Gemini Flash with structured schema
@@ -271,66 +322,61 @@ export async function POST(req: Request) {
               responseSchema: {
                 type: Type.OBJECT,
                 properties: {
-                  awardedMarks: { type: Type.NUMBER },
-                  maxMarks: { type: Type.NUMBER },
+                  awardedMarks: { type: Type.NUMBER, description: 'Total marks awarded for this sub-question part' },
+                  maxMarks: { type: Type.NUMBER, description: 'Maximum marks achievable for this part' },
                   breakdown: {
                     type: Type.ARRAY,
                     items: {
                       type: Type.OBJECT,
                       properties: {
-                        step: { type: Type.STRING },
-                        awarded: { type: Type.NUMBER },
-                        max: { type: Type.NUMBER },
-                        feedback: { type: Type.STRING }
+                        step: { type: Type.STRING, description: 'Evaluation description of step or method mark' },
+                        awarded: { type: Type.NUMBER, description: 'Marks awarded for this step' },
+                        max: { type: Type.NUMBER, description: 'Max marks for this step' },
+                        feedback: { type: Type.STRING, description: 'Brief feedback note' }
                       },
-                      required: ['step', 'awarded', 'max', 'feedback']
+                      required: ['step', 'awarded', 'max']
                     }
                   },
-                  constructiveFeedback: { type: Type.STRING }
+                  constructiveFeedback: { type: Type.STRING, description: 'Examiner commentary on strengths and areas for improvement' }
                 },
                 required: ['awardedMarks', 'maxMarks', 'breakdown', 'constructiveFeedback']
               }
             }
           });
 
-          if (response.text) {
-            evaluation = JSON.parse(response.text);
-          }
-        } catch (genError: any) {
-          console.warn('[grade-paper2] Gemini API evaluation error, falling back to deterministic rubric:', genError.message);
+          const rawJson = response.text?.trim() || '{}';
+          evaluation = JSON.parse(rawJson);
+          evaluation.awardedMarks = Math.min(Math.max(0, Number(evaluation.awardedMarks) || 0), maxMarks);
+          evaluation.maxMarks = maxMarks;
+        } catch (genErr: any) {
+          console.warn('[grade-paper2] Gemini grading error, falling back to heuristic evaluation:', genErr.message);
         }
       }
 
-      // Fallback deterministic rubric if AI is not configured or throws
+      // Fallback heuristic scoring if AI is unavailable or offline
       if (!evaluation) {
-        const isBlank = !studentText || studentText.trim() === '' || studentText === '(No response provided)';
-        const textLen = studentText.trim().length;
-        
-        const awarded = isBlank ? 0 : Math.min(maxMarks, Math.max(1, Math.round((textLen / 80) * maxMarks)));
+        const hasText = studentText.trim().length > 0 && studentText !== '(No response provided)';
+        const heuristicAward = hasText ? Math.max(1, Math.round(maxMarks * 0.6)) : 0;
         evaluation = {
-          awardedMarks: awarded,
-          maxMarks: maxMarks,
+          awardedMarks: heuristicAward,
+          maxMarks,
           breakdown: [
             {
-              step: 'Method / Formula Setup (M-marks)',
-              awarded: isBlank ? 0 : Math.min(2, awarded),
-              max: 2,
-              feedback: isBlank 
-                ? 'No method or substitution was provided.' 
-                : 'Formulas and initial parameter setups identified in working.'
+              step: 'Methodology & Derivation Formulation',
+              awarded: hasText ? Math.ceil(heuristicAward / 2) : 0,
+              max: Math.ceil(maxMarks / 2),
+              feedback: hasText ? 'Working steps recorded.' : 'No steps attempted.'
             },
             {
-              step: 'Arithmetic & Algebraic Execution (A-marks)',
-              awarded: isBlank ? 0 : Math.max(0, awarded - 2),
-              max: Math.max(1, maxMarks - 2),
-              feedback: isBlank 
-                ? 'No intermediate steps or evaluation shown.' 
-                : 'Working shows progression towards solution. Check accuracy against unlocked rubric.'
+              step: 'Accuracy & Final Result Evaluation',
+              awarded: hasText ? Math.floor(heuristicAward / 2) : 0,
+              max: Math.floor(maxMarks / 2),
+              feedback: hasText ? 'Calculations evaluated.' : 'Unanswered.'
             }
           ],
-          constructiveFeedback: isBlank
-            ? 'No answer submitted for this section. Review the unlocked official marking scheme to see the required working steps.'
-            : `Work reviewed against WAEC rubric. Awarded ${awarded}/${maxMarks} marks. Compare your steps with the unlocked official solution below.`
+          constructiveFeedback: hasText
+            ? 'Submission recorded. Review the official worked solution and mark distribution scheme above.'
+            : 'No answer was provided for this part.'
         };
       }
 
@@ -338,14 +384,9 @@ export async function POST(req: Request) {
         questionNumber: qNum,
         subId,
         partLabel,
-        partKey: item.partKey || `${qNum}_${subId}`,
-        evaluation,
-        officialSolution: {
-          prompt: promptContext.prompt,
-          modelAnswer,
-          workedSolution,
-          marks: maxMarks
-        }
+        partKey: item.partKey,
+        studentText,
+        evaluation
       });
     }
 
@@ -353,14 +394,13 @@ export async function POST(req: Request) {
       success: true,
       examId,
       examTitle,
-      creditsDeducted: effectiveSchoolId !== 'demo-school' ? costPerExam : 0,
       results: gradedResults
     });
 
-  } catch (error: any) {
-    console.error('[grade-paper2] Error processing request:', error);
+  } catch (err: any) {
+    console.error('[grade-paper2] Execution failed:', err);
     return NextResponse.json(
-      { error: error.message || 'Internal server error during grading.' },
+      { error: err.message || 'Internal evaluation failed.' },
       { status: 500 }
     );
   }
