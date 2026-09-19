@@ -1,4 +1,5 @@
-import { getApps, initializeApp, cert, App } from 'firebase-admin/app';
+import { getApps, initializeApp, cert, type App } from 'firebase-admin/app';
+import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, Firestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
 import * as admin from 'firebase-admin';
 
@@ -51,6 +52,25 @@ export function getAdminDb(): Firestore {
 }
 
 // Proxy wrapper ensuring safe evaluation and lazy instantiation
+let _adminAuth: Auth | null = null;
+
+export function getAdminAuth(): Auth {
+  if (_adminAuth) return _adminAuth;
+  _adminAuth = getAuth(getAdminApp());
+  return _adminAuth;
+}
+
+export const adminAuth: Auth = new Proxy({} as Auth, {
+  get(target, prop, receiver) {
+    const auth = getAdminAuth();
+    const value = Reflect.get(auth, prop, receiver);
+    if (typeof value === 'function') {
+      return value.bind(auth);
+    }
+    return value;
+  }
+});
+
 export const adminDb: Firestore = new Proxy({} as Firestore, {
   get(target, prop, receiver) {
     const db = getAdminDb();
