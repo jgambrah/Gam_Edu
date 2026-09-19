@@ -68,3 +68,13 @@ export function getCostCenters(schoolSettings?: any) {
   return COST_CENTERS;
 }
 
+
+/**
+ * Safely normalizes an array or dictionary object into an array.
+ */
+export function ensureArray<T>(data: T[] | Record<string, T> | null | undefined): T[] {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (typeof data === 'object') return Object.values(data);
+  return [];
+}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { adminDb, FieldValue } from '@/lib/firebaseAdmin';
 import { GoogleGenAI, Type } from '@google/genai';
+import { ensureArray } from '@/lib/utils';
 import { SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
 import { SET_JHS_MASTERY_SERIES_61 } from '@/lib/data/jhs-curriculum-set-61';
 import { SET_JHS_MASTERY_SERIES_63 } from '@/lib/data/jhs-curriculum-set-63';
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
   try {
     const { schoolId, examId, answers } = await req.json();
 
-    if (!examId || !answers || !Array.isArray(answers)) {
+    if (!examId || !answers) {
       return NextResponse.json({ error: 'Missing required parameters (examId, answers).' }, { status: 400 });
     }
 
@@ -94,8 +95,8 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. Fetch official exam questions and worked solutions
-    let questions: any[] = [];
+    // 2. Fetch and normalize official exam questions and worked solutions
+    let rawQuestions: any = null;
     let examTitle = '';
 
     // Attempt 1: Fetch from Firestore past papers collection
@@ -103,7 +104,7 @@ export async function POST(req: Request) {
       const examDoc = await adminDb.doc(`global_curriculum/jhs/subjects/math/past_papers/${examId}`).get();
       if (examDoc.exists) {
         const examData = examDoc.data();
-        questions = examData?.paper2?.questions || examData?.questions || [];
+        rawQuestions = examData?.paper2?.questions ?? examData?.questions ?? examData?.paper2;
         examTitle = examData?.title || '';
       }
     } catch (e) {
@@ -111,64 +112,126 @@ export async function POST(req: Request) {
     }
 
     // Attempt 2: If questions empty, try static theory set lookup
-    if (questions.length === 0) {
-      const normalizedKey = examId.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    if (!rawQuestions || ensureArray(rawQuestions).length === 0) {
+      const normalizedKey = String(examId).toLowerCase().replace(/[^a-z0-9_-]/g, '');
       const staticMatch = STATIC_THEORY_SETS[examId] || 
                           STATIC_THEORY_SETS[normalizedKey] || 
                           SAMPLE_GLOBAL_QUESTION_SETS.find(s => s.id === examId);
 
       if (staticMatch) {
-        questions = staticMatch.questions || [];
+        rawQuestions = staticMatch.questions || staticMatch.paper2?.questions;
         examTitle = staticMatch.title || '';
       }
     }
 
-    // If still empty, construct target objects from submitted answers
-    if (questions.length === 0) {
-      console.warn(`[grade-paper2] Warning: Could not locate exam data for ${examId}. Utilizing incoming answer keys.`);
+    // Safely normalize questions to Array using ensureArray to prevent .find crashes
+    const questionsList = ensureArray(rawQuestions);
+
+    // 3. Normalize incoming answers into a flat evaluation array
+    const normalizedAnswers: Array<{
+      questionNumber: string;
+      subId: string;
+      partLabel: string;
+      partKey: string;
+      studentText: string;
+      prompt?: string;
+      workedSolution?: string;
+      maxMarks?: number;
+    }> = [];
+
+    if (Array.isArray(answers)) {
+      answers.forEach((ans: any, idx: number) => {
+        const qNum = String(ans.questionNumber ?? idx + 1);
+        const subId = String(ans.subId || ans.partLabel || ans.partKey || '(a)');
+        normalizedAnswers.push({
+          questionNumber: qNum,
+          subId,
+          partLabel: String(ans.partLabel || subId),
+          partKey: String(ans.partKey || `${qNum}_${subId}`),
+          studentText: String(ans.studentText ?? ans.answer ?? ans.text ?? ''),
+          prompt: ans.prompt,
+          workedSolution: ans.workedSolution,
+          maxMarks: ans.maxMarks ? Number(ans.maxMarks) : undefined
+        });
+      });
+    } else if (answers && typeof answers === 'object') {
+      // Traverse key-value dictionary { [qNum]: { [subId]: text } } or { [idx]: ansObj }
+      Object.entries(answers).forEach(([key, val]: [string, any]) => {
+        if (val && typeof val === 'object' && !('studentText' in val) && !('answer' in val)) {
+          // Nested dictionary: studentAnswers[qNum][subId]
+          Object.entries(val).forEach(([subId, text]: [string, any]) => {
+            normalizedAnswers.push({
+              questionNumber: key,
+              subId: String(subId),
+              partLabel: String(subId),
+              partKey: `${key}_${subId}`,
+              studentText: typeof text === 'string' ? text : String(text?.value ?? text?.text ?? '')
+            });
+          });
+        } else {
+          // Flattened dictionary item
+          const qNum = String(val?.questionNumber ?? key);
+          const subId = String(val?.subId || val?.partLabel || val?.partKey || '(a)');
+          normalizedAnswers.push({
+            questionNumber: qNum,
+            subId,
+            partLabel: String(val?.partLabel || subId),
+            partKey: String(val?.partKey || `${qNum}_${subId}`),
+            studentText: typeof val === 'string' ? val : String(val?.studentText ?? val?.answer ?? val?.text ?? ''),
+            prompt: val?.prompt,
+            workedSolution: val?.workedSolution,
+            maxMarks: val?.maxMarks ? Number(val?.maxMarks) : undefined
+          });
+        }
+      });
     }
 
-    // 3. Evaluate each answer using Gemini Flash with structured schema
+    if (normalizedAnswers.length === 0) {
+      return NextResponse.json({ error: 'No answers submitted for evaluation.' }, { status: 400 });
+    }
+
+    // 4. Evaluate each answer using Gemini Flash with structured schema
     const gradedResults: any[] = [];
 
-    for (const item of answers) {
-      const qNum = item.questionNumber || 1;
-      const partLabel = item.partLabel || item.partKey || '';
-      const studentText = item.studentText || item.answer || '(No response provided)';
+    for (const item of normalizedAnswers) {
+      const qNum = item.questionNumber;
+      const subId = item.subId;
+      const partLabel = item.partLabel;
+      const studentText = item.studentText || '(No response provided)';
 
-      // Find matching question
-      const targetQ = questions.find((q: any, idx: number) => 
-        q.questionNumber === qNum || 
-        q.id === `q0${qNum}` || 
-        q.id === `q${qNum}` || 
-        idx + 1 === qNum
-      ) || questions[0] || null;
+      // Safely find matching question using ensureArray-guaranteed questionsList
+      const targetQ = questionsList.find((q: any, idx: number) => 
+        String(q.questionNumber) === String(qNum) || 
+        String(q.id) === String(qNum) || 
+        String(q.id) === `q0${qNum}` || 
+        String(q.id) === `q${qNum}` || 
+        idx + 1 === Number(qNum)
+      ) || questionsList[0] || null;
 
-      // Find specific sub-question part if applicable
-      let targetPart: any = null;
-      if (targetQ && Array.isArray(targetQ.parts)) {
-        if (partLabel) {
-          targetPart = targetQ.parts.find((p: any) => 
-            p.partLabel?.toLowerCase() === partLabel.toLowerCase() ||
-            p.partLabel?.includes(partLabel) ||
-            p.partId === partLabel
-          );
-        }
-        if (!targetPart && targetQ.parts.length > 0) {
-          targetPart = targetQ.parts[0];
-        }
+      // Safely normalize and find specific sub-question part using ensureArray
+      const subList = ensureArray(targetQ?.subQuestions || targetQ?.parts);
+      let targetSub: any = null;
+
+      if (subList.length > 0) {
+        targetSub = subList.find((s: any) => 
+          String(s.subId) === String(subId) ||
+          String(s.partLabel) === String(subId) ||
+          String(s.partId) === String(subId) ||
+          String(s.partLabel || '').toLowerCase() === String(subId).toLowerCase() ||
+          String(s.subId || '').toLowerCase() === String(subId).toLowerCase()
+        ) || subList[0];
       }
 
-      const promptContext = targetPart || targetQ || {
-        prompt: `Mathematics Theory Question ${qNum}`,
-        marks: 5,
+      const promptContext = targetSub || targetQ || {
+        prompt: item.prompt || `Mathematics Theory Question ${qNum}`,
+        marks: item.maxMarks || 5,
         modelAnswer: 'Complete analytical solution required',
-        workedSolution: 'Follow step-by-step arithmetic and algebraic derivation rules.'
+        workedSolution: item.workedSolution || 'Follow step-by-step arithmetic and algebraic derivation rules.'
       };
 
-      const maxMarks = targetPart?.marks || targetQ?.totalMarks || targetQ?.points || 5;
-      const workedSolution = targetPart?.workedSolution || targetQ?.workedSolution || targetPart?.modelAnswer || '';
-      const modelAnswer = targetPart?.modelAnswer || '';
+      const maxMarks = Number(targetSub?.marks || targetSub?.maxMarks || targetQ?.totalMarks || targetQ?.points || item.maxMarks || 5);
+      const workedSolution = String(targetSub?.workedSolution || targetQ?.workedSolution || item.workedSolution || promptContext.workedSolution || '');
+      const modelAnswer = String(targetSub?.modelAnswer || targetQ?.modelAnswer || promptContext.modelAnswer || '');
 
       let evaluation: any = null;
 
@@ -273,8 +336,9 @@ export async function POST(req: Request) {
 
       gradedResults.push({
         questionNumber: qNum,
+        subId,
         partLabel,
-        partKey: item.partKey || `q${qNum}_${partLabel}`,
+        partKey: item.partKey || `${qNum}_${subId}`,
         evaluation,
         officialSolution: {
           prompt: promptContext.prompt,

@@ -6,16 +6,13 @@ import {
   ArrowRight,
   Sparkles,
   Lock,
-  Unlock,
   CheckCircle2,
   AlertCircle,
-  Clock,
   FileText,
   Lightbulb,
   Award,
   Loader2,
-  RotateCcw,
-  BookOpen
+  RotateCcw
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
@@ -23,8 +20,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import { CurriculumQuestionSet, StructuredQuestionPart } from '@/lib/global-curriculum-types';
+import { cn, ensureArray } from '@/lib/utils';
+import { CurriculumQuestionSet } from '@/lib/global-curriculum-types';
 import { MathRenderer } from '@/components/curriculum/MathRenderer';
 import { ActiveExamHeaderDisclaimer } from './ExamDisclaimerNotice';
 
@@ -34,18 +31,6 @@ interface Props {
   studentId?: string;
   onBack: () => void;
   onComplete?: (results: any) => void;
-}
-
-interface PartEvaluation {
-  awardedMarks: number;
-  maxMarks: number;
-  breakdown: Array<{
-    step: string;
-    awarded: number;
-    max: number;
-    feedback: string;
-  }>;
-  constructiveFeedback: string;
 }
 
 export function Paper2ExamRunner({
@@ -58,143 +43,166 @@ export function Paper2ExamRunner({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [partAnswers, setPartAnswers] = useState<Record<string, string>>({});
   const [submittedQuestions, setSubmittedQuestions] = useState<Record<string, boolean>>({});
-  const [evaluations, setEvaluations] = useState<Record<string, PartEvaluation>>({});
-  const [isGrading, setIsGrading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [gradingResults, setGradingResults] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [gradingError, setGradingError] = useState<string | null>(null);
   const [showPartHints, setShowPartHints] = useState<Record<string, boolean>>({});
-  const [unlockedSolutions, setUnlockedSolutions] = useState<Record<string, boolean>>({});
   const [examFinished, setExamFinished] = useState(false);
 
-  const questions = questionSet.questions || [];
-  const currentQuestion = questions[currentIndex] || questions[0];
-  const parts: StructuredQuestionPart[] = currentQuestion?.parts || [];
-  const totalQuestions = questions.length;
+  // Normalize top-level questions safely using ensureArray
+  const rawQuestions = questionSet?.questions ?? (questionSet as any)?.paper2?.questions;
+  const questionsList = ensureArray(rawQuestions);
+
+  const currentQuestion = questionsList[currentIndex] || questionsList[0] || {};
+  const currentQuestionId = String(currentQuestion?.id || currentQuestion?.questionNumber || currentIndex + 1);
+
+  // Normalize sub-questions safely using ensureArray
+  const rawParts = currentQuestion?.parts ?? (currentQuestion as any)?.subQuestions;
+  const parts = ensureArray(rawParts);
+
+  const totalQuestions = questionsList.length || 1;
   const isLastQuestion = currentIndex === totalQuestions - 1;
-  const isCurrentQuestionSubmitted = !!submittedQuestions[currentQuestion?.id];
+  const isSubmitted = !!submittedQuestions[currentQuestionId];
 
   // Resolve exam year
   const examYear = (questionSet as any)?.year
     ? Number((questionSet as any).year)
     : (() => {
-        const m = (questionSet.title || '').match(/\b(19\d{2}|20\d{2})\b/);
+        const m = (questionSet?.title || '').match(/\b(19\d{2}|20\d{2})\b/);
         return m ? parseInt(m[1], 10) : null;
       })();
 
-  // Toggle hints
+  // Toggle pedagogical hint
   const toggleHint = (partKey: string) => {
     setShowPartHints(prev => ({ ...prev, [partKey]: !prev[partKey] }));
   };
 
-  // Toggle solution after submit
-  const toggleSolution = (partKey: string) => {
-    if (!isCurrentQuestionSubmitted) return;
-    setUnlockedSolutions(prev => ({ ...prev, [partKey]: !prev[partKey] }));
-  };
-
-  // Submit current question parts for AI evaluation
-  const handleGradeCurrentQuestion = async () => {
+  // Submit Paper 2 answers for AI evaluation
+  const handleGradePaper2Submission = async () => {
     if (!currentQuestion) return;
-    setIsGrading(true);
-    setErrorMessage(null);
+    setIsSubmitting(true);
+    setGradingError(null);
 
     try {
-      const payloadAnswers = parts.length > 0
-        ? parts.map((p, pIdx) => {
-            const partKey = `${currentQuestion.id}_p${pIdx}`;
-            return {
-              questionNumber: currentIndex + 1,
-              partLabel: p.partLabel,
-              partKey,
-              studentText: partAnswers[partKey] || ''
-            };
-          })
-        : [
-            {
-              questionNumber: currentIndex + 1,
-              partLabel: '(a)',
-              partKey: `${currentQuestion.id}_main`,
-              studentText: partAnswers[`${currentQuestion.id}_main`] || ''
-            }
-          ];
+      if (questionsList.length === 0) {
+        throw new Error('No Paper 2 questions found for evaluation.');
+      }
 
-      const res = await fetch('/api/grade-paper2', {
+      // 1. Prepare formattedAnswers payload defensively supporting arrays and maps
+      const formattedAnswers: Array<{
+        questionNumber: string;
+        subId: string;
+        partLabel: string;
+        partKey: string;
+        prompt: string;
+        studentText: string;
+        maxMarks: number;
+        workedSolution: string;
+      }> = [];
+
+      if (parts.length > 0) {
+        parts.forEach((p: any, pIdx: number) => {
+          const subId = String(p.subId || p.partLabel || p.partId || `(${String.fromCharCode(97 + pIdx)})`);
+          const partKey = `${currentQuestionId}_p${pIdx}`;
+          const text = partAnswers[partKey] || partAnswers[subId] || '';
+
+          formattedAnswers.push({
+            questionNumber: String(currentQuestion?.questionNumber || currentIndex + 1),
+            subId,
+            partLabel: String(p.partLabel || subId),
+            partKey,
+            prompt: String(p.prompt || ''),
+            studentText: text,
+            maxMarks: Number(p.marks || p.maxMarks) || 5,
+            workedSolution: String(p.workedSolution || p.modelAnswer || '')
+          });
+        });
+      } else {
+        const mainKey = `${currentQuestionId}_main`;
+        const text = partAnswers[mainKey] || partAnswers['(a)'] || '';
+
+        formattedAnswers.push({
+          questionNumber: String(currentQuestion?.questionNumber || currentIndex + 1),
+          subId: '(a)',
+          partLabel: '(a)',
+          partKey: mainKey,
+          prompt: String(currentQuestion?.prompt || ''),
+          studentText: text,
+          maxMarks: Number(currentQuestion?.totalMarks || currentQuestion?.points) || 15,
+          workedSolution: String(currentQuestion?.workedSolution || currentQuestion?.modelAnswer || '')
+        });
+      }
+
+      // Check that at least one question has input
+      const hasAnyInput = formattedAnswers.some(a => a.studentText.trim().length > 0);
+      if (!hasAnyInput) {
+        throw new Error('Please write out your working or solution steps before submitting for AI evaluation.');
+      }
+
+      // 2. Dispatch to API endpoint
+      const response = await fetch('/api/grade-paper2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           schoolId: schoolId || 'demo-school',
           examId: questionSet.id,
-          answers: payloadAnswers
+          answers: formattedAnswers
         })
       });
 
-      const data = await res.json();
+      const result = await response.json();
 
-      if (!res.ok) {
-        if (res.status === 402 || data.code === 'INSUFFICIENT_SCHOOL_CREDITS') {
-          throw new Error(data.error || 'Your school has run out of AI credits. Please contact your administrator.');
+      if (!response.ok) {
+        if (response.status === 402 || result.code === 'INSUFFICIENT_SCHOOL_CREDITS') {
+          throw new Error(result.error || 'Your school has run out of AI credits. Please contact your administrator.');
         }
-        throw new Error(data.error || 'Failed to grade submission.');
+        throw new Error(result.error || `Evaluation failed with status ${response.status}`);
       }
 
-      // Mark this question as submitted & store evaluations
-      const newEvals: Record<string, PartEvaluation> = {};
-      if (Array.isArray(data.results)) {
-        data.results.forEach((r: any) => {
-          if (r.partKey && r.evaluation) {
-            newEvals[r.partKey] = r.evaluation;
-          }
-        });
-      }
-
-      setEvaluations(prev => ({ ...prev, ...newEvals }));
-      setSubmittedQuestions(prev => ({ ...prev, [currentQuestion.id]: true }));
-
-      // Automatically unlock solutions for the submitted question
-      const newUnlocked: Record<string, boolean> = {};
-      parts.forEach((_, pIdx) => {
-        newUnlocked[`${currentQuestion.id}_p${pIdx}`] = true;
-      });
-      newUnlocked[`${currentQuestion.id}_main`] = true;
-      setUnlockedSolutions(prev => ({ ...prev, ...newUnlocked }));
+      // 3. Update Evaluation State and Unlock Solutions
+      const newResults = ensureArray(result.results);
+      setGradingResults(prev => [...prev, ...newResults]);
+      setSubmittedQuestions(prev => ({ ...prev, [currentQuestionId]: true }));
 
       // Confetti celebration
       try {
         confetti({
-          particleCount: 70,
+          particleCount: 65,
           spread: 60,
           origin: { y: 0.6 }
         });
       } catch (e) {}
 
     } catch (err: any) {
-      setErrorMessage(err.message || 'Error communicating with AI grading service.');
+      console.error('Grading execution error:', err);
+      setGradingError(err.message || 'An unexpected error occurred during grading.');
     } finally {
-      setIsGrading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleNext = () => {
     if (isLastQuestion) {
       setExamFinished(true);
-      if (onComplete) onComplete(evaluations);
+      if (onComplete) onComplete(gradingResults);
     } else {
       setCurrentIndex(prev => prev + 1);
-      setErrorMessage(null);
+      setGradingError(null);
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
-      setErrorMessage(null);
+      setGradingError(null);
     }
   };
 
   // Completed State View
   if (examFinished) {
-    const allEvals = Object.values(evaluations);
-    const totalAwarded = allEvals.reduce((sum, e) => sum + (e.awardedMarks || 0), 0);
-    const totalMax = allEvals.reduce((sum, e) => sum + (e.maxMarks || 0), 0) || 1;
+    const allResults = ensureArray(gradingResults);
+    const totalAwarded = allResults.reduce((sum, r) => sum + (r.evaluation?.awardedMarks ?? 0), 0);
+    const totalMax = allResults.reduce((sum, r) => sum + (r.evaluation?.maxMarks ?? 5), 0) || 1;
     const overallPct = Math.round((totalAwarded / totalMax) * 100);
 
     return (
@@ -298,13 +306,13 @@ export function Paper2ExamRunner({
                 <span>Paper 2 Theory Question {currentIndex + 1} of {totalQuestions}</span>
               </Badge>
               <Badge className="bg-slate-800/80 text-slate-400 border border-slate-700/60 text-xs">
-                [{currentQuestion?.totalMarks || 15} Marks Total]
+                [{currentQuestion?.totalMarks || currentQuestion?.points || 15} Marks Total]
               </Badge>
             </div>
 
             {/* Submission Status Indicator */}
             <div>
-              {isCurrentQuestionSubmitted ? (
+              {isSubmitted ? (
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full shadow-sm">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>AI Graded & Solutions Unlocked</span>
@@ -331,32 +339,32 @@ export function Paper2ExamRunner({
 
         {/* Question Body */}
         <CardContent className="p-6 sm:p-8 space-y-8">
-          {/* Insufficient Credit or Grading Error Banner */}
-          {errorMessage && (
+          {/* Error Banner */}
+          {gradingError && (
             <div className="p-4 rounded-2xl bg-rose-950/50 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-3 animate-in shake">
               <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <strong className="block font-bold">Grading Aborted:</strong>
-                <span>{errorMessage}</span>
+                <span>{gradingError}</span>
               </div>
             </div>
           )}
 
           {/* Sub-Question Parts */}
           <div className="space-y-8">
-            {parts.map((part, pIdx) => {
-              const partKey = `${currentQuestion.id}_p${pIdx}`;
-              const isRevealed = !!unlockedSolutions[partKey];
+            {parts.map((sub: any, pIdx: number) => {
+              const subId = String(sub.subId || sub.partLabel || sub.partId || `(${String.fromCharCode(97 + pIdx)})`);
+              const partKey = `${currentQuestionId}_p${pIdx}`;
               const isHintShown = !!showPartHints[partKey];
               const currentVal = partAnswers[partKey] || '';
-              const partEval = evaluations[partKey];
+              const subMarks = Number(sub.marks || sub.maxMarks) || 5;
 
               return (
                 <div
                   key={partKey}
                   className={cn(
                     'p-5 sm:p-6 rounded-2xl border transition-all space-y-4',
-                    isCurrentQuestionSubmitted
+                    isSubmitted
                       ? 'bg-slate-900/60 border-slate-800'
                       : 'bg-slate-950/80 border-slate-800/80 shadow-md'
                   )}
@@ -365,27 +373,27 @@ export function Paper2ExamRunner({
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
                       <span className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 font-black text-xs flex items-center justify-center border border-amber-500/30">
-                        {part.partLabel}
+                        {sub.partLabel || subId}
                       </span>
                       <span className="text-sm font-bold text-white">
-                        Sub-Question Part {part.partLabel}
+                        Sub-Question Part {sub.partLabel || subId}
                       </span>
                     </div>
                     <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full">
-                      [{part.marks} Marks]
+                      [{subMarks} Marks]
                     </span>
                   </div>
 
                   {/* Part Prompt */}
                   <div className="text-sm text-slate-200 leading-relaxed pl-1">
-                    <MathRenderer content={part.prompt} />
+                    <MathRenderer content={sub.prompt || ''} />
                   </div>
 
                   {/* Sub-part diagram (if any) */}
-                  {part.diagramSvg && (
+                  {sub.diagramSvg && (
                     <div
                       className="my-3 p-4 bg-slate-950 rounded-xl border border-slate-800 flex justify-center overflow-x-auto"
-                      dangerouslySetInnerHTML={{ __html: part.diagramSvg }}
+                      dangerouslySetInnerHTML={{ __html: sub.diagramSvg }}
                     />
                   )}
 
@@ -393,28 +401,28 @@ export function Paper2ExamRunner({
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-[11px] text-slate-400">
                       <span>Your Working Steps, Formula & Final Derivation:</span>
-                      {isCurrentQuestionSubmitted && (
+                      {isSubmitted && (
                         <span className="text-emerald-400 font-bold flex items-center gap-1">
                           <Lock className="w-3 h-3" /> Working Locked Post-Submission
                         </span>
                       )}
                     </div>
                     <Textarea
-                      disabled={isCurrentQuestionSubmitted || isGrading}
+                      disabled={isSubmitted || isSubmitting}
                       value={currentVal}
                       onChange={e => setPartAnswers(prev => ({ ...prev, [partKey]: e.target.value }))}
                       placeholder="Write out your intermediate steps, formula substitutions, or final answer here..."
                       className={cn(
                         'rounded-2xl min-h-[90px] text-xs font-mono transition-all',
-                        isCurrentQuestionSubmitted
+                        isSubmitted
                           ? 'bg-slate-950/90 border-slate-800 text-slate-300 opacity-90 cursor-not-allowed'
                           : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-amber-500 placeholder:text-slate-600'
                       )}
                     />
                   </div>
 
-                  {/* Hint Toggle (Available before or after submission) */}
-                  {part.hint && !isCurrentQuestionSubmitted && (
+                  {/* Hint Toggle (Available before submission) */}
+                  {sub.hint && !isSubmitted && (
                     <div className="pt-1">
                       <button
                         type="button"
@@ -426,129 +434,97 @@ export function Paper2ExamRunner({
                       </button>
                       {isHintShown && (
                         <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed animate-in fade-in">
-                          💡 <strong>Hint {part.partLabel}:</strong> <MathRenderer content={part.hint} />
+                          💡 <strong>Hint {sub.partLabel || subId}:</strong> <MathRenderer content={sub.hint} />
                         </div>
                       )}
                     </div>
                   )}
 
-                  {/* LOCKED STATE NOTICE (Before Submission) */}
-                  {!isCurrentQuestionSubmitted && (
-                    <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                      <div className="flex items-center gap-2">
-                        <Lock className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Official worked solution & rubric locked until submission.</span>
+                  {/* Container for Each Sub-Question Gating & AI Breakdown */}
+                  <div className="mt-4 border-t border-slate-800/80 pt-4">
+                    {!isSubmitted ? (
+                      <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-800/40 border border-slate-700/50 text-xs text-slate-400">
+                        <Lock className="w-4 h-4 text-amber-400 shrink-0"/>
+                        <span>Official Worked Solution and Scoring Rubric are locked until your answers are submitted for AI evaluation.</span>
                       </div>
-                      <span className="text-[10px] text-slate-500 uppercase font-semibold">Step Gated</span>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="space-y-4 animate-in fade-in duration-300">
+                        {/* 1. AI Evaluation Score & Step Breakdown */}
+                        {(() => {
+                          const evalItem = ensureArray(gradingResults).find(
+                            (r: any) =>
+                              (String(r.questionNumber) === String(currentQuestion?.questionNumber || currentIndex + 1) || String(r.questionNumber) === String(currentIndex + 1)) &&
+                              (String(r.subId) === String(subId) || String(r.partLabel) === String(subId) || String(r.partKey) === String(partKey))
+                          );
 
-                  {/* POST-SUBMISSION AI EVALUATION & UNLOCKED RUBRIC */}
-                  {isCurrentQuestionSubmitted && (
-                    <div className="space-y-4 pt-3 border-t border-slate-800 animate-in fade-in duration-300">
-                      {/* AI Examiner Score & Breakdown Card */}
-                      {partEval && (
-                        <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-amber-500/30 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-amber-400" />
-                              <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                                AI Examiner Evaluation
-                              </span>
+                          if (!evalItem) return null;
+
+                          return (
+                            <div className="p-4 rounded-xl bg-slate-900/90 border border-sky-500/30 space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="font-semibold text-sky-400 text-sm flex items-center gap-1.5">
+                                  <Sparkles className="w-4 h-4 text-sky-400" />
+                                  <span>AI Score Breakdown</span>
+                                </span>
+                                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
+                                  Score: {evalItem.evaluation?.awardedMarks ?? 0} / {evalItem.evaluation?.maxMarks ?? subMarks} Marks
+                                </span>
+                              </div>
+
+                              <div className="space-y-2">
+                                {ensureArray(evalItem.evaluation?.breakdown).map((step: any, sIdx: number) => (
+                                  <div key={sIdx} className="text-xs flex items-start justify-between gap-2 p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/40">
+                                    <div>
+                                      <span className="text-slate-200 font-medium">{step.step}</span>
+                                      {step.feedback && <p className="text-amber-400/90 mt-0.5 text-[11px]">{step.feedback}</p>}
+                                    </div>
+                                    <span className="text-slate-300 whitespace-nowrap font-mono font-semibold">
+                                      {step.awarded} / {step.max}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {evalItem.evaluation?.constructiveFeedback && (
+                                <div className="text-xs text-slate-300 bg-sky-950/40 p-3 rounded-lg border border-sky-800/40 leading-relaxed">
+                                  <strong className="text-sky-400 block mb-0.5">Examiner Note:</strong>
+                                  {evalItem.evaluation.constructiveFeedback}
+                                </div>
+                              )}
                             </div>
-                            <span className="text-sm font-black text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-3 py-0.5 rounded-full">
-                              Awarded: {partEval.awardedMarks} / {partEval.maxMarks} Marks
-                            </span>
+                          );
+                        })()}
+
+                        {/* 2. Unlocked Step-by-Step Official Worked Solution */}
+                        <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-3">
+                          <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+                            <CheckCircle2 className="w-4 h-4 shrink-0"/>
+                            <span>Official Model Solution & Marking Rubric</span>
                           </div>
 
-                          {/* Constructive Examiner Feedback */}
-                          <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 leading-relaxed">
-                            <strong className="text-white block mb-1">Examiner Comments:</strong>
-                            {partEval.constructiveFeedback}
-                          </div>
-
-                          {/* Method / Accuracy Steps Table */}
-                          {Array.isArray(partEval.breakdown) && partEval.breakdown.length > 0 && (
-                            <div className="overflow-x-auto">
-                              <table className="w-full text-left text-xs border border-slate-800 rounded-xl overflow-hidden">
-                                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] font-bold">
-                                  <tr>
-                                    <th className="p-2.5">Marking Step</th>
-                                    <th className="p-2.5 text-center">Marks</th>
-                                    <th className="p-2.5">Examiner Note</th>
-                                  </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-800">
-                                  {partEval.breakdown.map((stepItem, sIdx) => (
-                                    <tr key={sIdx} className="bg-slate-950/50">
-                                      <td className="p-2.5 font-medium text-slate-200">{stepItem.step}</td>
-                                      <td className="p-2.5 text-center font-bold text-emerald-400">
-                                        {stepItem.awarded} / {stepItem.max}
-                                      </td>
-                                      <td className="p-2.5 text-slate-400 text-[11px]">{stepItem.feedback}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                          {sub.modelAnswer && (
+                            <div className="p-2.5 rounded-lg bg-slate-950/70 border border-emerald-500/20 text-xs">
+                              <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5">Target Value / Model Answer:</span>
+                              <div className="text-slate-100 font-bold">
+                                <MathRenderer content={sub.modelAnswer} />
+                              </div>
                             </div>
                           )}
-                        </div>
-                      )}
 
-                      {/* Official Unlocked Worked Solution Accordion */}
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                            <Unlock className="w-3.5 h-3.5" />
-                            <span>Official Marking Scheme & Target Derivation (Unlocked)</span>
-                          </span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleSolution(partKey)}
-                            className="text-xs text-slate-400 hover:text-white"
-                          >
-                            {isRevealed ? 'Collapse' : 'Expand Details'}
-                          </Button>
-                        </div>
-
-                        {isRevealed && (
-                          <div className="space-y-3 animate-in fade-in">
-                            {/* Target Model Answer */}
-                            <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-start gap-2.5">
-                              <CheckCircle2 className="w-4 h-4 mt-0.5 text-emerald-400 flex-shrink-0" />
-                              <div className="space-y-1">
-                                <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider">
-                                  Target Value / Model Answer:
-                                </span>
-                                <div className="text-xs font-bold text-white">
-                                  <MathRenderer content={part.modelAnswer} />
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Step-by-Step Derivation */}
-                            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                              <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider block">
-                                Chief Examiner Marking Scheme & Derivation • [{part.marks} Marks]
-                              </span>
-                              <div className="text-xs text-slate-200 leading-relaxed">
-                                <MathRenderer content={part.workedSolution} />
-                              </div>
-                            </div>
+                          <div className="text-xs text-slate-300 leading-relaxed pt-1">
+                            <MathRenderer content={sub.workedSolution || sub.modelAnswer || 'Follow standard derivation steps.'} />
                           </div>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
 
           {/* AI Grading Loading Skeleton */}
-          {isGrading && (
+          {isSubmitting && (
             <div className="p-6 rounded-2xl bg-slate-950 border border-amber-500/40 shadow-2xl space-y-4 animate-pulse">
               <div className="flex items-center gap-3 text-amber-400">
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -569,20 +545,20 @@ export function Paper2ExamRunner({
             <Button
               variant="outline"
               onClick={handlePrevious}
-              disabled={currentIndex === 0 || isGrading}
-              className="text-xs border-slate-800 bg-slate-900 text-slate-400 hover:text-white disabled:opacity-40"
+              disabled={currentIndex === 0 || isSubmitting}
+              className="text-xs border-slate-800 bg-slate-900 text-slate-400 hover:text-white disabled:opacity-40 cursor-pointer"
             >
               Previous Question
             </Button>
 
             <div className="flex items-center gap-3">
-              {!isCurrentQuestionSubmitted ? (
+              {!isSubmitted ? (
                 <Button
-                  onClick={handleGradeCurrentQuestion}
-                  disabled={isGrading}
+                  onClick={handleGradePaper2Submission}
+                  disabled={isSubmitting}
                   className="h-11 px-6 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-600/30 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  {isGrading ? (
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Grading Submission...</span>
