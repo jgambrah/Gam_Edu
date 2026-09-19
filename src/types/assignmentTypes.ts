@@ -61,4 +61,9 @@ export interface AssignmentExamOption {
   paperType: 1 | 2;
   subject: string;
   badge: string;
+  gradeTier?: string;
+  questionCount?: number;
+  description?: string;
+  topic?: string;
+  difficulty?: string;
 }
