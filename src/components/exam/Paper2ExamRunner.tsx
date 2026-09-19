@@ -39,6 +39,7 @@ interface Props {
   schoolId?: string;
   currentSchoolId?: string;
   studentId?: string;
+  assignmentId?: string;
   user?: any;
   studentAnswers?: any;
   onBack: () => void;
@@ -234,7 +235,9 @@ export function Paper2ExamRunner({
         body: JSON.stringify({
           schoolId: currentSchoolId || schoolId || user?.schoolId || 'demo-school',
           examId: activeExam.id || activeExam.variantId || (examYear ? `paper_${examYear}_variant` : 'paper_2020_variant'),
-          answers: formattedAnswers
+          answers: formattedAnswers,
+          assignmentId: assignmentId || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('assignmentId') : undefined),
+          studentId: studentId || user?.uid || undefined
         })
       });
 

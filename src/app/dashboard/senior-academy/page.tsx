@@ -21,6 +21,8 @@ import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 import { QuestionRunner } from '@/components/curriculum/QuestionRunner';
+import { DispatchAssignmentModal } from '@/components/academy/director/DispatchAssignmentModal';
+import { AssignmentMonitorView } from '@/components/academy/director/AssignmentMonitorView';
 import { ExamDisclaimerTooltip, PlatformExamFooterNotice } from '@/components/exam/ExamDisclaimerNotice';
 import { getTopicQuestionSets, getQuestionSetById, invalidateCurriculumCache } from '@/lib/services/curriculumService';
 import { isValidCurriculumLevelId, SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';

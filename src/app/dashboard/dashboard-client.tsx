@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition, useCallback, useEffect } from 'react';
 import StudentLearningResourcesView from './StudentLearningResourcesView';
+import { AssignedRemoteTaskBanner } from '@/components/curriculum/AssignedRemoteTaskBanner';
 import StudentTimetableView from './StudentTimetableView';
 import StudentCalendarView from './StudentCalendarView';
 import { AcademicPerformanceDashboardView } from '@/components/dashboard/AcademicPerformanceDashboardView';
@@ -11029,6 +11030,13 @@ function StudentDashboard({ profile }: any) {
 
             {activeSection === 'desk' && (
                 <div className="space-y-6">
+                    {/* Active Remote Weekend Tasks Banner */}
+                    <AssignedRemoteTaskBanner
+                      schoolId={schoolId || ''}
+                      studentUid={user?.uid || ''}
+                      studentName={profile?.firstName ? (profile.firstName + ' ' + (profile.lastName || '')).trim() : undefined}
+                      studentClass={className}
+                    />
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <StatCard 
                             title="Academic Grade" 

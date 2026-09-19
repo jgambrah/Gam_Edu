@@ -56,7 +56,7 @@ const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export async function POST(req: Request) {
   try {
-    const { schoolId, examId, answers } = await req.json();
+    const { schoolId, examId, answers, assignmentId, studentId, studentName, studentClass } = await req.json();
 
     if (!examId || !answers) {
       return NextResponse.json({ error: 'Missing required parameters (examId, answers).' }, { status: 400 });
@@ -388,6 +388,54 @@ export async function POST(req: Request) {
         studentText,
         evaluation
       });
+    }
+
+    // If this grading session is tied to an assigned remote task, record submission atomically
+    if (assignmentId && studentId && effectiveSchoolId !== 'demo-school') {
+      try {
+        const totalAwarded = gradedResults.reduce((sum, r) => sum + (r.evaluation?.awardedMarks ?? 0), 0);
+        const totalMax = gradedResults.reduce((sum, r) => sum + (r.evaluation?.maxMarks ?? 5), 0) || 1;
+        const percentage = Math.round((totalAwarded / totalMax) * 100);
+
+        const subRef = adminDb.doc(`schools/${effectiveSchoolId}/assignments/${assignmentId}/submissions/${studentId}`);
+        const assignRef = adminDb.doc(`schools/${effectiveSchoolId}/assignments/${assignmentId}`);
+
+        await adminDb.runTransaction(async (transaction) => {
+          const subSnap = await transaction.get(subRef);
+          const wasAlreadyCompleted = subSnap.exists && subSnap.data()?.status === 'completed';
+
+          transaction.set(subRef, {
+            studentUid: studentId,
+            studentName: studentName || subSnap.data()?.studentName || 'Student',
+            studentClass: studentClass || subSnap.data()?.studentClass || 'JHS',
+            status: 'completed',
+            submittedAt: FieldValue.serverTimestamp(),
+            score: totalAwarded,
+            maxScore: totalMax,
+            percentage,
+            answers: normalizedAnswers,
+            aiGradedResults: gradedResults.map(r => ({
+              questionNumber: r.questionNumber,
+              subId: r.subId,
+              partLabel: r.partLabel,
+              prompt: r.prompt,
+              studentText: r.studentText,
+              awardedMarks: r.evaluation?.awardedMarks ?? 0,
+              maxMarks: r.evaluation?.maxMarks ?? 5,
+              feedback: r.evaluation?.constructiveFeedback || '',
+              breakdown: r.evaluation?.breakdown || []
+            }))
+          }, { merge: true });
+
+          if (!wasAlreadyCompleted) {
+            transaction.update(assignRef, {
+              completedCount: FieldValue.increment(1)
+            });
+          }
+        });
+      } catch (err: any) {
+        console.warn('[grade-paper2] Could not record assignment submission in Firestore:', err.message);
+      }
     }
 
     return NextResponse.json({

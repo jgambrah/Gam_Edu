@@ -248,6 +248,21 @@ export function QuestionRunner({
             startedAt: new Date().toISOString()
           });
           setRecordSuccess(true);
+
+          if (effectiveAssignmentId && firestore) {
+            try {
+              await completeStudentAssignment(firestore, {
+                schoolId: tenantId,
+                assignmentId: effectiveAssignmentId,
+                studentUid: studentId,
+                score: totalScore,
+                maxScore,
+                answers: answerMap
+              });
+            } catch (assignErr) {
+              console.warn('[QuestionRunner] Assignment completion logging failed:', assignErr);
+            }
+          }
         } catch (err) {
           console.error('[QuestionRunner] Error recording attempt:', err);
         } finally {

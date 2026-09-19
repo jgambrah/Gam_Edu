@@ -13,6 +13,10 @@ import { Layers, GraduationCap, CheckCircle, ClipboardCheck, HelpCircle, PlusCir
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AssignmentCreationForm } from './assignment-creation-form';
+import { DispatchAssignmentModal } from '@/components/academy/director/DispatchAssignmentModal';
+import { AssignmentMonitorView } from '@/components/academy/director/AssignmentMonitorView';
+import { Send } from 'lucide-react';
+import { useUser } from '@/firebase';
 import { QuizCreationForm } from './quiz-creation-form';
 import { cn } from '@/lib/utils';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
@@ -22,6 +26,9 @@ export default function AdminAssignmentsView() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createMode, setCreateMode] = useState<'assignment' | 'quiz'>('assignment');
+  const [showRemoteMonitor, setShowRemoteMonitor] = useState(false);
+  const [showDispatchModal, setShowDispatchModal] = useState(false);
+  const { user } = useUser();
 
   const assignmentsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId)) : null,
@@ -89,6 +96,39 @@ export default function AdminAssignmentsView() {
 
   const activeAssignmentsCount = assignments?.length || 0;
 
+  if (showRemoteMonitor) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between pb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowRemoteMonitor(false)}
+            className="text-xs text-slate-500 hover:text-slate-800"
+          >
+            ← Back to Standard Assignments
+          </Button>
+        </div>
+        <AssignmentMonitorView
+          schoolId={schoolId || ''}
+          userRole="Director"
+          onOpenDispatchModal={() => setShowDispatchModal(true)}
+          onBack={() => setShowRemoteMonitor(false)}
+        />
+        <DispatchAssignmentModal
+          isOpen={showDispatchModal}
+          onClose={() => setShowDispatchModal(false)}
+          schoolId={schoolId || ''}
+          userUid={user?.uid || ''}
+          userName={user?.displayName || 'School Administrator'}
+          onDispatched={() => {
+            setShowRemoteMonitor(true);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <SectionHeroBanner
@@ -106,6 +146,14 @@ export default function AdminAssignmentsView() {
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>{activeAssignmentsCount} ACTIVE TASKS</span>
             </div>
+            <Button
+              variant="outline"
+              className="h-9 rounded-xl border-amber-500/40 bg-slate-900 text-amber-300 hover:text-white hover:bg-amber-600/20 font-bold text-xs px-3.5 gap-1.5 shadow-sm transition-all cursor-pointer shrink-0"
+              onClick={() => setShowRemoteMonitor(prev => !prev)}
+            >
+              <Send className="h-3.5 w-3.5 text-amber-400" />
+              <span>{showRemoteMonitor ? 'Standard View' : 'Remote Exam Monitor'}</span>
+            </Button>
             <Button
               className="h-9 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider px-4 gap-1.5 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shrink-0"
               onClick={() => setIsCreateOpen(true)}
