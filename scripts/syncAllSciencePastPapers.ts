@@ -13,6 +13,7 @@ import { SET_BECE_2015_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-77'
 import { SET_BECE_2016_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-78';
 import { SET_BECE_2016_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-79';
 import { SET_BECE_2017_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-80';
+import { SET_BECE_2017_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-81';
 
 dotenv.config();
 
@@ -371,6 +372,33 @@ async function syncAll() {
     await db.doc(p).set(set80Data, { merge: true });
     console.log('Synced Set 80 ->', p);
   }
+
+  const set81Data = {
+    ...SET_BECE_2017_SCIENCE_P2,
+    id: 'paper_2017_variant_p2',
+    year: 2017,
+    setNumber: 81,
+    paperType: 2,
+    subject: 'Integrated Science',
+    topic: '2017 BECE Practical & Theory Essay Test',
+    updatedAt: new Date()
+  };
+
+  // Paths for Set 81
+  const set81Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2017_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2017_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/bece_2017_variant/question_sets/paper_2017_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2017_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2017_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2017_variant/question_sets/paper_2017_variant_p2'
+  ];
+
+  for (const p of set81Paths) {
+    await db.doc(p).set(set81Data, { merge: true });
+    console.log('Synced Set 81 ->', p);
+  }
+
 
 
 

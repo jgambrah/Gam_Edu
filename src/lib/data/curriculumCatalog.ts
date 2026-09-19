@@ -151,6 +151,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2017 BECE Integrated Science Standardized CBT',
     description: 'Calibrated isomorphic practice variant of 2017 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step worked solutions.'
   },
+  {
+    id: 'paper_2017_variant_p2',
+    title: '2017 BECE Integrated Science Paper 2 (Set 81 Practical & Essay)',
+    year: 2017,
+    setNumber: 81,
+    paperType: 2,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 81',
+    questionCount: 6,
+    topic: '2017 BECE Practical & Theory Essay Test',
+    description: 'Calibrated isomorphic practice variant of 2017 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (canine tooth anatomy, optical refraction, gravity filtration, sloped farmland erosion) and Section B theory essays.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)
