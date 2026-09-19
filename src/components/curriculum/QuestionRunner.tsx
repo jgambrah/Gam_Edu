@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
+import { cn, ensureArray } from '@/lib/utils';
 import {
   CurriculumQuestionSet,
   CurriculumQuestion,

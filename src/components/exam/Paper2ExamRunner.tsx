@@ -20,26 +20,43 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn, ensureArray } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { CurriculumQuestionSet } from '@/lib/global-curriculum-types';
 import { MathRenderer } from '@/components/curriculum/MathRenderer';
 import { ActiveExamHeaderDisclaimer } from './ExamDisclaimerNotice';
 
+// Universal defensive normalization helper - prevents 'subQuestions.find is not a function' in production
+export function toSafeArray<T = any>(val: any): T[] {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'object') return Object.values(val);
+  return [];
+}
+
 interface Props {
-  questionSet: CurriculumQuestionSet;
+  questionSet?: CurriculumQuestionSet;
+  exam?: any;
   schoolId?: string;
+  currentSchoolId?: string;
   studentId?: string;
+  user?: any;
+  studentAnswers?: any;
   onBack: () => void;
   onComplete?: (results: any) => void;
 }
 
 export function Paper2ExamRunner({
   questionSet,
+  exam,
   schoolId,
+  currentSchoolId,
   studentId,
+  user,
+  studentAnswers: initialAnswers,
   onBack,
   onComplete
 }: Props) {
+  const activeExam = exam || questionSet || {};
   const [currentIndex, setCurrentIndex] = useState(0);
   const [partAnswers, setPartAnswers] = useState<Record<string, string>>({});
   const [submittedQuestions, setSubmittedQuestions] = useState<Record<string, boolean>>({});
@@ -49,26 +66,26 @@ export function Paper2ExamRunner({
   const [showPartHints, setShowPartHints] = useState<Record<string, boolean>>({});
   const [examFinished, setExamFinished] = useState(false);
 
-  // Normalize top-level questions safely using ensureArray
-  const rawQuestions = questionSet?.questions ?? (questionSet as any)?.paper2?.questions;
-  const questionsList = ensureArray(rawQuestions);
+  // 1. Defensively normalize top-level questions list
+  const rawQuestions = activeExam?.paper2?.questions ?? activeExam?.questions;
+  const questionsList = toSafeArray(rawQuestions);
 
   const currentQuestion = questionsList[currentIndex] || questionsList[0] || {};
   const currentQuestionId = String(currentQuestion?.id || currentQuestion?.questionNumber || currentIndex + 1);
 
-  // Normalize sub-questions safely using ensureArray
-  const rawParts = currentQuestion?.parts ?? (currentQuestion as any)?.subQuestions;
-  const parts = ensureArray(rawParts);
+  // 2. Defensively normalize subQuestions / parts for active question
+  const rawSubQuestions = currentQuestion?.subQuestions ?? currentQuestion?.parts;
+  const subQuestionsList = toSafeArray(rawSubQuestions);
 
   const totalQuestions = questionsList.length || 1;
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const isSubmitted = !!submittedQuestions[currentQuestionId];
 
   // Resolve exam year
-  const examYear = (questionSet as any)?.year
-    ? Number((questionSet as any).year)
+  const examYear = (activeExam as any)?.year
+    ? Number((activeExam as any).year)
     : (() => {
-        const m = (questionSet?.title || '').match(/\b(19\d{2}|20\d{2})\b/);
+        const m = (activeExam?.title || '').match(/\b(19\d{2}|20\d{2})\b/);
         return m ? parseInt(m[1], 10) : null;
       })();
 
@@ -78,89 +95,160 @@ export function Paper2ExamRunner({
   };
 
   // Submit Paper 2 answers for AI evaluation
-  const handleGradePaper2Submission = async () => {
-    if (!currentQuestion) return;
-    setIsSubmitting(true);
-    setGradingError(null);
-
+  const handleSubmitForAIEvaluation = async () => {
     try {
+      setIsSubmitting(true);
+      setGradingError(null);
+
+      // 1. Defensively normalize questions list
+      const rawQuestions = activeExam?.paper2?.questions ?? activeExam?.questions;
+      const questionsList = toSafeArray(rawQuestions);
+
       if (questionsList.length === 0) {
-        throw new Error('No Paper 2 questions found for evaluation.');
+        throw new Error('No Paper 2 questions found in this exam variant.');
       }
 
-      // 1. Prepare formattedAnswers payload defensively supporting arrays and maps
+      // 2. Build flattened answer items safely regardless of how studentAnswers is stored
       const formattedAnswers: Array<{
         questionNumber: string;
         subId: string;
-        partLabel: string;
-        partKey: string;
+        partLabel?: string;
+        partKey?: string;
         prompt: string;
         studentText: string;
         maxMarks: number;
         workedSolution: string;
       }> = [];
 
-      if (parts.length > 0) {
-        parts.forEach((p: any, pIdx: number) => {
-          const subId = String(p.subId || p.partLabel || p.partId || `(${String.fromCharCode(97 + pIdx)})`);
-          const partKey = `${currentQuestionId}_p${pIdx}`;
-          const text = partAnswers[partKey] || partAnswers[subId] || '';
+      const effectiveAnswers = initialAnswers || partAnswers;
 
-          formattedAnswers.push({
-            questionNumber: String(currentQuestion?.questionNumber || currentIndex + 1),
-            subId,
-            partLabel: String(p.partLabel || subId),
-            partKey,
-            prompt: String(p.prompt || ''),
-            studentText: text,
-            maxMarks: Number(p.marks || p.maxMarks) || 5,
-            workedSolution: String(p.workedSolution || p.modelAnswer || '')
+      if (Array.isArray(effectiveAnswers)) {
+        effectiveAnswers.forEach((ans: any) => {
+          const targetQ = questionsList.find(
+            (q: any) => String(q?.questionNumber || q?.id) === String(ans?.questionNumber || ans?.id)
+          );
+          // DEFENSIVE FIX FOR i.iM: normalize subQuestions to array before calling .find()
+          const subList = toSafeArray(targetQ?.subQuestions ?? targetQ?.parts);
+          const targetSub = subList.find(
+            (s: any) => String(s?.subId || s?.partLabel || s?.partId) === String(ans?.subId || ans?.partLabel)
+          );
+
+          if (targetSub) {
+            formattedAnswers.push({
+              questionNumber: String(ans.questionNumber || targetQ?.questionNumber || '1'),
+              subId: String(ans.subId || targetSub.subId || '(a)'),
+              partLabel: String(targetSub.partLabel || targetSub.subId || ans.subId),
+              partKey: String(ans.partKey || `${ans.questionNumber}_${ans.subId}`),
+              prompt: targetSub.prompt || '',
+              studentText: ans.studentText || ans.text || '',
+              maxMarks: Number(targetSub.maxMarks || targetSub.marks) || 5,
+              workedSolution: targetSub.workedSolution || targetSub.modelAnswer || ''
+            });
+          }
+        });
+      } else if (effectiveAnswers && typeof effectiveAnswers === 'object') {
+        // Determine if effectiveAnswers is a nested map: { [qNum]: { [subId]: text } }
+        const isNested = Object.values(effectiveAnswers).some(
+          v => v && typeof v === 'object' && !Array.isArray(v)
+        );
+
+        if (isNested) {
+          Object.entries(effectiveAnswers).forEach(([qNum, subMap]: [string, any]) => {
+            const targetQ = questionsList.find(
+              (q: any) => String(q?.questionNumber || q?.id) === String(qNum)
+            );
+            // DEFENSIVE FIX FOR i.iM: normalize subQuestions
+            const subList = toSafeArray(targetQ?.subQuestions ?? targetQ?.parts);
+
+            if (subMap && typeof subMap === 'object') {
+              Object.entries(subMap).forEach(([subId, val]: [string, any]) => {
+                const targetSub = subList.find(
+                  (s: any) => String(s?.subId || s?.partLabel || s?.partId) === String(subId)
+                );
+
+                const text = typeof val === 'string' ? val : val?.text || val?.value || '';
+                if (text.trim().length > 0) {
+                  formattedAnswers.push({
+                    questionNumber: String(qNum),
+                    subId: String(subId),
+                    partLabel: String(targetSub?.partLabel || subId),
+                    partKey: `${qNum}_${subId}`,
+                    prompt: targetSub?.prompt || '',
+                    studentText: text,
+                    maxMarks: Number(targetSub?.maxMarks || targetSub?.marks) || 5,
+                    workedSolution: targetSub?.workedSolution || targetSub?.modelAnswer || ''
+                  });
+                }
+              });
+            }
           });
-        });
-      } else {
-        const mainKey = `${currentQuestionId}_main`;
-        const text = partAnswers[mainKey] || partAnswers['(a)'] || '';
+        } else {
+          // Flat map: partAnswers from active question
+          if (subQuestionsList.length > 0) {
+            subQuestionsList.forEach((sub: any, subIdx: number) => {
+              const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
+              const partKey = `${currentQuestionId}_p${subIdx}`;
+              const text = (effectiveAnswers as any)[partKey] || (effectiveAnswers as any)[subId] || '';
 
-        formattedAnswers.push({
-          questionNumber: String(currentQuestion?.questionNumber || currentIndex + 1),
-          subId: '(a)',
-          partLabel: '(a)',
-          partKey: mainKey,
-          prompt: String(currentQuestion?.prompt || ''),
-          studentText: text,
-          maxMarks: Number(currentQuestion?.totalMarks || currentQuestion?.points) || 15,
-          workedSolution: String(currentQuestion?.workedSolution || currentQuestion?.modelAnswer || '')
-        });
+              if (text.trim().length > 0) {
+                formattedAnswers.push({
+                  questionNumber: String(currentQuestion?.questionNumber || currentIndex + 1),
+                  subId,
+                  partLabel: String(sub?.partLabel || subId),
+                  partKey,
+                  prompt: String(sub?.prompt || ''),
+                  studentText: text,
+                  maxMarks: Number(sub?.maxMarks || sub?.marks) || 5,
+                  workedSolution: String(sub?.workedSolution || sub?.modelAnswer || '')
+                });
+              }
+            });
+          } else {
+            const mainKey = `${currentQuestionId}_main`;
+            const text = (effectiveAnswers as any)[mainKey] || (effectiveAnswers as any)['(a)'] || '';
+
+            if (text.trim().length > 0) {
+              formattedAnswers.push({
+                questionNumber: String(currentQuestion?.questionNumber || currentIndex + 1),
+                subId: '(a)',
+                partLabel: '(a)',
+                partKey: mainKey,
+                prompt: String(currentQuestion?.prompt || ''),
+                studentText: text,
+                maxMarks: Number(currentQuestion?.totalMarks || currentQuestion?.points) || 15,
+                workedSolution: String(currentQuestion?.workedSolution || currentQuestion?.modelAnswer || '')
+              });
+            }
+          }
+        }
       }
 
-      // Check that at least one question has input
-      const hasAnyInput = formattedAnswers.some(a => a.studentText.trim().length > 0);
-      if (!hasAnyInput) {
-        throw new Error('Please write out your working or solution steps before submitting for AI evaluation.');
+      if (formattedAnswers.length === 0) {
+        throw new Error('Please write an answer for at least one question before submitting.');
       }
 
-      // 2. Dispatch to API endpoint
+      // 3. Post to evaluation endpoint
       const response = await fetch('/api/grade-paper2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          schoolId: schoolId || 'demo-school',
-          examId: questionSet.id,
+          schoolId: currentSchoolId || schoolId || user?.schoolId || 'demo-school',
+          examId: activeExam.id || activeExam.variantId || (examYear ? `paper_${examYear}_variant` : 'paper_2020_variant'),
           answers: formattedAnswers
         })
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        if (response.status === 402 || result.code === 'INSUFFICIENT_SCHOOL_CREDITS') {
-          throw new Error(result.error || 'Your school has run out of AI credits. Please contact your administrator.');
+        if (response.status === 402 || data.code === 'INSUFFICIENT_SCHOOL_CREDITS') {
+          throw new Error(data.error || 'Your school has run out of AI credits. Please contact your administrator.');
         }
-        throw new Error(result.error || `Evaluation failed with status ${response.status}`);
+        throw new Error(data.error || `Evaluation failed with status ${response.status}`);
       }
 
-      // 3. Update Evaluation State and Unlock Solutions
-      const newResults = ensureArray(result.results);
+      // 4. Update state safely using toSafeArray
+      const newResults = toSafeArray(data.results);
       setGradingResults(prev => [...prev, ...newResults]);
       setSubmittedQuestions(prev => ({ ...prev, [currentQuestionId]: true }));
 
@@ -174,12 +262,15 @@ export function Paper2ExamRunner({
       } catch (e) {}
 
     } catch (err: any) {
-      console.error('Grading execution error:', err);
-      setGradingError(err.message || 'An unexpected error occurred during grading.');
+      console.error('Grading execution failed:', err);
+      setGradingError(err.message || 'Failed to complete evaluation.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Backwards-compatible alias
+  const handleGradePaper2Submission = handleSubmitForAIEvaluation;
 
   const handleNext = () => {
     if (isLastQuestion) {
@@ -200,7 +291,7 @@ export function Paper2ExamRunner({
 
   // Completed State View
   if (examFinished) {
-    const allResults = ensureArray(gradingResults);
+    const allResults = toSafeArray(gradingResults);
     const totalAwarded = allResults.reduce((sum, r) => sum + (r.evaluation?.awardedMarks ?? 0), 0);
     const totalMax = allResults.reduce((sum, r) => sum + (r.evaluation?.maxMarks ?? 5), 0) || 1;
     const overallPct = Math.round((totalAwarded / totalMax) * 100);
@@ -218,7 +309,7 @@ export function Paper2ExamRunner({
             <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
           </Button>
           <span className="text-xs text-slate-400">
-            Completed: <strong className="text-amber-300">{questionSet.title}</strong>
+            Completed: <strong className="text-amber-300">{activeExam.title}</strong>
           </span>
         </div>
 
@@ -291,7 +382,7 @@ export function Paper2ExamRunner({
           <ChevronLeft className="w-4 h-4" /> Back to Curriculum Modules
         </Button>
         <span className="text-xs text-slate-400">
-          Module: <strong className="text-amber-300">{questionSet.title}</strong>
+          Module: <strong className="text-amber-300">{activeExam.title}</strong>
         </span>
       </div>
 
@@ -350,18 +441,18 @@ export function Paper2ExamRunner({
             </div>
           )}
 
-          {/* Sub-Question Parts */}
+          {/* Sub-Question Parts - Normalized via toSafeArray */}
           <div className="space-y-8">
-            {parts.map((sub: any, pIdx: number) => {
-              const subId = String(sub.subId || sub.partLabel || sub.partId || `(${String.fromCharCode(97 + pIdx)})`);
-              const partKey = `${currentQuestionId}_p${pIdx}`;
+            {toSafeArray(currentQuestion?.subQuestions || currentQuestion?.parts).map((sub: any, subIdx: number) => {
+              const subId = String(sub?.subId || sub?.partLabel || sub?.partId || `(${String.fromCharCode(97 + subIdx)})`);
+              const partKey = `${currentQuestionId}_p${subIdx}`;
               const isHintShown = !!showPartHints[partKey];
-              const currentVal = partAnswers[partKey] || '';
-              const subMarks = Number(sub.marks || sub.maxMarks) || 5;
+              const currentVal = partAnswers[partKey] || partAnswers[subId] || '';
+              const subMarks = Number(sub?.maxMarks || sub?.marks) || 5;
 
               return (
                 <div
-                  key={partKey}
+                  key={sub?.subId || subIdx}
                   className={cn(
                     'p-5 sm:p-6 rounded-2xl border transition-all space-y-4',
                     isSubmitted
@@ -451,7 +542,7 @@ export function Paper2ExamRunner({
                       <div className="space-y-4 animate-in fade-in duration-300">
                         {/* 1. AI Evaluation Score & Step Breakdown */}
                         {(() => {
-                          const evalItem = ensureArray(gradingResults).find(
+                          const evalItem = toSafeArray(gradingResults).find(
                             (r: any) =>
                               (String(r.questionNumber) === String(currentQuestion?.questionNumber || currentIndex + 1) || String(r.questionNumber) === String(currentIndex + 1)) &&
                               (String(r.subId) === String(subId) || String(r.partLabel) === String(subId) || String(r.partKey) === String(partKey))
@@ -472,7 +563,7 @@ export function Paper2ExamRunner({
                               </div>
 
                               <div className="space-y-2">
-                                {ensureArray(evalItem.evaluation?.breakdown).map((step: any, sIdx: number) => (
+                                {toSafeArray(evalItem.evaluation?.breakdown).map((step: any, sIdx: number) => (
                                   <div key={sIdx} className="text-xs flex items-start justify-between gap-2 p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/40">
                                     <div>
                                       <span className="text-slate-200 font-medium">{step.step}</span>
@@ -554,7 +645,7 @@ export function Paper2ExamRunner({
             <div className="flex items-center gap-3">
               {!isSubmitted ? (
                 <Button
-                  onClick={handleGradePaper2Submission}
+                  onClick={handleSubmitForAIEvaluation}
                   disabled={isSubmitting}
                   className="h-11 px-6 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-600/30 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
@@ -586,3 +677,6 @@ export function Paper2ExamRunner({
     </div>
   );
 }
+
+// Named alias for cross-module compatibility
+export const TheoryExamViewer = Paper2ExamRunner;
