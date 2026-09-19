@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Users,
   CheckCircle2,
@@ -19,7 +19,9 @@ import {
   Calendar,
   Send,
   X,
-  PlayCircle
+  PlayCircle,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,7 +36,9 @@ import {
 import {
   subscribeToAssignmentSubmissions,
   subscribeToSchoolAssignments,
-  nudgeStudent
+  nudgeStudent,
+  deleteSchoolAssignment,
+  resyncAssignmentRoster
 } from '@/lib/services/assignmentService';
 import { MathRenderer } from '@/components/curriculum/MathRenderer';
 
@@ -63,12 +67,18 @@ export function AssignmentMonitorView({
   const [selectedSubmissionForReport, setSelectedSubmissionForReport] = useState<StudentAssignmentSubmission | null>(null);
   const [nudgedStudents, setNudgedStudents] = useState<Record<string, boolean>>({});
 
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isResyncing, setIsResyncing] = useState(false);
+  const [actionNotice, setActionNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
   // 1. Subscribe to all assignments for this school
   useEffect(() => {
     if (!firestore || !schoolId) return;
     const unsub = subscribeToSchoolAssignments(firestore, schoolId, list => {
       setAssignments(list);
       if (!selectedAssignmentId && list.length > 0) {
+        setSelectedAssignmentId(list[0].id);
+      } else if (selectedAssignmentId && !list.some(a => a.id === selectedAssignmentId) && list.length > 0) {
         setSelectedAssignmentId(list[0].id);
       }
     });
@@ -85,6 +95,20 @@ export function AssignmentMonitorView({
   }, [firestore, schoolId, selectedAssignmentId]);
 
   const activeAssignment = assignments.find(a => a.id === selectedAssignmentId) || assignments[0];
+
+  // Check if current assignment contains legacy demo students
+  const hasDemoStudents = useMemo(() => {
+    return submissions.some(
+      s =>
+        s.studentUid.startsWith('demo_') ||
+        s.studentUid.startsWith('demo_std_') ||
+        s.studentName === 'Kwame Mensah' ||
+        s.studentName === 'Abena Osei' ||
+        s.studentName === 'Kofi Boateng' ||
+        s.studentName === 'Akosua Frimpong' ||
+        s.studentName === 'Yaw Addo'
+    );
+  }, [submissions]);
 
   // Metrics calculations
   const totalEnrolled = submissions.length || activeAssignment?.totalAssigned || 0;
@@ -118,6 +142,60 @@ export function AssignmentMonitorView({
     }
   };
 
+  // Handle Resync Live Roster
+  const handleResyncRoster = async () => {
+    if (!firestore || !schoolId || !activeAssignment || isResyncing) return;
+    setIsResyncing(true);
+    setActionNotice(null);
+    try {
+      const res = await resyncAssignmentRoster(
+        firestore,
+        schoolId,
+        activeAssignment.id,
+        activeAssignment.targetClass,
+        activeAssignment.targetClassId
+      );
+      setActionNotice({
+        type: 'success',
+        message: `Roster synced! ${res.totalSynced} live students enrolled. (Removed ${res.removedDemoCount} demo records, added ${res.addedCount} real students).`
+      });
+    } catch (err: any) {
+      setActionNotice({
+        type: 'error',
+        message: err.message || 'Failed to sync live roster. Please verify student enrollment in this class.'
+      });
+    } finally {
+      setIsResyncing(false);
+    }
+  };
+
+  // Handle Delete Assignment
+  const handleDeleteAssignment = async () => {
+    if (!firestore || !schoolId || !activeAssignment || isDeleting) return;
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${activeAssignment.title}"? This will permanently remove the assignment and all associated student submissions.`
+    );
+    if (!confirmDelete) return;
+
+    setIsDeleting(true);
+    setActionNotice(null);
+    try {
+      await deleteSchoolAssignment(firestore, schoolId, activeAssignment.id);
+      setSelectedAssignmentId('');
+      setActionNotice({
+        type: 'success',
+        message: 'Assignment successfully deleted.'
+      });
+    } catch (err: any) {
+      setActionNotice({
+        type: 'error',
+        message: err.message || 'Failed to delete assignment.'
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // Format timestamps
   const formatTimestamp = (ts: any) => {
     if (!ts) return '-';
@@ -126,6 +204,8 @@ export function AssignmentMonitorView({
       if (isNaN(date.getTime())) return '-';
       return new Intl.DateTimeFormat('en-US', {
         weekday: 'short',
+        month: 'short',
+        day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
         hour12: true
@@ -164,7 +244,7 @@ export function AssignmentMonitorView({
           </p>
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
           {/* Assignment Dropdown */}
           {assignments.length > 1 && (
             <div className="relative flex-1 md:w-64">
@@ -183,6 +263,34 @@ export function AssignmentMonitorView({
             </div>
           )}
 
+          {activeAssignment && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResyncRoster}
+                disabled={isResyncing}
+                title="Refresh live student list from school database"
+                className="border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs h-10 rounded-xl px-3 flex items-center gap-1.5 cursor-pointer"
+              >
+                <RefreshCw className={cn('w-3.5 h-3.5', isResyncing && 'animate-spin')} />
+                <span className="hidden sm:inline">Sync Live Roster</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDeleteAssignment}
+                disabled={isDeleting}
+                title="Delete this assignment and submissions"
+                className="border-rose-900/60 bg-rose-950/30 hover:bg-rose-900/50 text-rose-300 text-xs h-10 rounded-xl px-3 flex items-center gap-1.5 cursor-pointer"
+              >
+                {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                <span className="hidden sm:inline">Delete Task</span>
+              </Button>
+            </div>
+          )}
+
           {onOpenDispatchModal && (
             <Button
               onClick={onOpenDispatchModal}
@@ -194,6 +302,71 @@ export function AssignmentMonitorView({
           )}
         </div>
       </div>
+
+      {/* Action Notification */}
+      {actionNotice && (
+        <div
+          className={cn(
+            'p-4 rounded-2xl text-xs flex items-center justify-between gap-3 animate-in fade-in',
+            actionNotice.type === 'success'
+              ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'
+              : 'bg-rose-500/10 border border-rose-500/30 text-rose-300'
+          )}
+        >
+          <div className="flex items-center gap-2">
+            {actionNotice.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            ) : (
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            )}
+            <span className="font-semibold">{actionNotice.message}</span>
+          </div>
+          <button
+            onClick={() => setActionNotice(null)}
+            className="text-slate-400 hover:text-white p-1 rounded-lg"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Warning Banner: Legacy Demo Students Detected */}
+      {hasDemoStudents && activeAssignment && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-200 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg shadow-amber-500/5 animate-in slide-in-from-top-2">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-white text-sm">Demo Placeholder Students Detected</p>
+              <p className="text-amber-200/80 mt-0.5 leading-relaxed">
+                This assignment currently contains mock placeholder records (such as Kwame Mensah, Abena Osei).
+                Click <strong>&quot;Sync Live Class Roster&quot;</strong> to purge them and pull your real enrolled students for{' '}
+                <strong className="text-white">{activeAssignment.targetClass}</strong>.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+            <Button
+              size="sm"
+              onClick={handleResyncRoster}
+              disabled={isResyncing}
+              className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl px-4 h-9 shadow-md flex items-center gap-1.5 cursor-pointer"
+            >
+              {isResyncing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+              <span>Sync Live Class Roster</span>
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDeleteAssignment}
+              disabled={isDeleting}
+              className="border-rose-800/60 bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 text-xs rounded-xl px-3 h-9 cursor-pointer"
+            >
+              {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              <span>Delete</span>
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Real-time Overview Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -207,7 +380,7 @@ export function AssignmentMonitorView({
           </div>
           <div className="mt-3">
             <span className="text-3xl font-black text-white">{totalEnrolled}</span>
-            <span className="text-xs text-slate-400 block mt-0.5">Students in {activeAssignment?.targetClass || 'class'}</span>
+            <span className="text-xs text-slate-400 block mt-0.5">Live students in {activeAssignment?.targetClass || 'class'}</span>
           </div>
         </Card>
 
@@ -220,220 +393,208 @@ export function AssignmentMonitorView({
             </div>
           </div>
           <div className="mt-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-emerald-400">{completedCount}</span>
-              <span className="text-xs font-bold text-slate-400">/ {totalEnrolled} ({completionPercentage}%)</span>
-            </div>
-            {/* Color-coded progress bar: Green ≥80%, Amber 50-79%, Red <50% */}
-            <div className="w-full h-2 bg-slate-950 rounded-full mt-2 overflow-hidden border border-slate-800">
-              <div
-                className={cn(
-                  'h-full transition-all duration-500 rounded-full',
-                  completionPercentage >= 80
-                    ? 'bg-emerald-500'
-                    : completionPercentage >= 50
-                    ? 'bg-amber-500'
-                    : 'bg-rose-500'
-                )}
-                style={{ width: completionPercentage + '%' }}
-              />
-            </div>
+            <span className="text-3xl font-black text-emerald-400">{completedCount}</span>
+            <span className="text-xs text-slate-400 block mt-0.5">{completionPercentage}% submitted & scored</span>
           </div>
         </Card>
 
-        {/* Metric 3: In-Progress */}
+        {/* Metric 3: In Progress (Active Session) */}
         <Card className="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Writing Now</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">In Progress</span>
             <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
               <Clock className="w-4 h-4 animate-pulse" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-sky-400">{inProgressCount}</span>
-              <span className="text-xs text-sky-400/80 flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping inline-block" />
-                Live at home
-              </span>
-            </div>
-            <span className="text-xs text-slate-400 block mt-0.5">Currently active in test runner</span>
+            <span className="text-3xl font-black text-sky-400">{inProgressCount}</span>
+            <span className="text-xs text-slate-400 block mt-0.5">Currently taking paper</span>
           </div>
         </Card>
 
-        {/* Metric 4: Not Started */}
+        {/* Metric 4: Not Started (Pending) */}
         <Card className="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Not Started</span>
-            <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <AlertCircle className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <span className="text-3xl font-black text-slate-300">{notStartedCount}</span>
-            <span className="text-xs text-slate-400 block mt-0.5">Awaiting first session launch</span>
+            <span className="text-3xl font-black text-amber-400">{notStartedCount}</span>
+            <span className="text-xs text-slate-400 block mt-0.5">Pending student start</span>
           </div>
         </Card>
       </div>
 
-      {/* Interactive Roster & Gradebook Workstation */}
-      <Card className="rounded-[28px] bg-slate-900/90 border border-slate-800 shadow-2xl overflow-hidden">
-        {/* Controls Bar: Search & Status Filters */}
-        <div className="p-4 sm:p-6 bg-slate-950/60 border-b border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Status Filter Pills */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 w-full sm:w-auto overflow-x-auto">
-            {(['all', 'completed', 'in_progress', 'not_started'] as const).map(status => {
-              const count =
-                status === 'all'
-                  ? totalEnrolled
-                  : status === 'completed'
-                  ? completedCount
-                  : status === 'in_progress'
-                  ? inProgressCount
-                  : notStartedCount;
+      {/* Cohort Progress Bar */}
+      <Card className="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 shadow-lg space-y-3">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-bold text-slate-300">Cohort Completion Rate</span>
+          <span className="font-mono font-bold text-white">
+            {completedCount} / {totalEnrolled} ({completionPercentage}%)
+          </span>
+        </div>
+        <div className="w-full h-3 rounded-full bg-slate-950 overflow-hidden flex">
+          <div
+            style={{ width: `${totalEnrolled > 0 ? (completedCount / totalEnrolled) * 100 : 0}%` }}
+            className="bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
+          />
+          <div
+            style={{ width: `${totalEnrolled > 0 ? (inProgressCount / totalEnrolled) * 100 : 0}%` }}
+            className="bg-sky-500 transition-all duration-500"
+          />
+        </div>
+        <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> Completed
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block" /> In Progress
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block" /> Not Started
+          </span>
+        </div>
+      </Card>
 
-              const label =
-                status === 'all'
-                  ? 'All Students'
-                  : status === 'completed'
-                  ? 'Completed'
-                  : status === 'in_progress'
-                  ? 'In Progress'
-                  : 'Not Started';
-
-              return (
-                <button
-                  key={status}
-                  onClick={() => setFilterStatus(status)}
-                  className={cn(
-                    'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap',
-                    filterStatus === status
-                      ? 'bg-amber-600 text-white shadow-md'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                  )}
-                >
-                  <span>{label}</span>
-                  <span className={cn(
-                    'text-[10px] px-1.5 py-0.2 rounded-full font-mono',
-                    filterStatus === status ? 'bg-amber-700 text-amber-100' : 'bg-slate-800 text-slate-400'
-                  )}>
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Search Box */}
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500 pointer-events-none" />
+      {/* Live Student Submission Roster Table */}
+      <Card className="rounded-[28px] bg-slate-900/90 border border-slate-800 shadow-xl overflow-hidden">
+        {/* Table Filters & Search */}
+        <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
             <Input
               type="text"
-              placeholder="Search student name..."
+              placeholder="Search student by name or class..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="h-10 pl-9 rounded-xl bg-slate-900 border-slate-800 text-xs text-slate-200 focus:border-amber-500"
+              className="h-10 pl-9 rounded-xl bg-slate-950 border-slate-800 text-xs text-white focus:border-amber-500"
             />
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
+            {(['all', 'not_started', 'in_progress', 'completed'] as const).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setFilterStatus(tab)}
+                className={cn(
+                  'px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap',
+                  filterStatus === tab
+                    ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                    : 'bg-slate-800/60 text-slate-400 hover:text-white'
+                )}
+              >
+                {tab === 'all'
+                  ? `All (${submissions.length})`
+                  : tab === 'not_started'
+                  ? `Not Started (${notStartedCount})`
+                  : tab === 'in_progress'
+                  ? `In Progress (${inProgressCount})`
+                  : `Completed (${completedCount})`}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Live Roster Table */}
+        {/* Table Content */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-mono text-[10px]">
-              <tr>
-                <th className="py-3.5 px-6 font-semibold">Student Name</th>
-                <th className="py-3.5 px-4 font-semibold">Class Section</th>
-                <th className="py-3.5 px-4 font-semibold">Status</th>
-                <th className="py-3.5 px-4 font-semibold">Started At</th>
-                <th className="py-3.5 px-4 font-semibold">Submitted At</th>
-                <th className="py-3.5 px-4 font-semibold">Score / Performance</th>
-                <th className="py-3.5 px-6 font-semibold text-right">Actions</th>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-slate-800 bg-slate-950/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="py-3.5 px-5">Student</th>
+                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4">Start Time</th>
+                <th className="py-3.5 px-4">Submission Time</th>
+                <th className="py-3.5 px-4">Score</th>
+                <th className="py-3.5 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-800/60 text-xs">
               {filteredSubmissions.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-500">
-                    No students match the selected filter.
+                  <td colSpan={6} className="py-12 text-center text-slate-500">
+                    <Users className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                    <p className="font-semibold">No student records match the current filter.</p>
                   </td>
                 </tr>
               ) : (
                 filteredSubmissions.map(sub => {
-                  const isNudged = !!nudgedStudents[sub.studentUid] || !!sub.nudgedAt;
+                  const isNudged = nudgedStudents[sub.studentUid] || !!sub.nudgedAt;
+                  const isDemo = sub.studentUid.startsWith('demo_');
 
                   return (
-                    <tr key={sub.studentUid || sub.id} className="hover:bg-slate-800/40 transition-colors">
-                      {/* Name */}
-                      <td className="py-4 px-6 font-bold text-white flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-black text-amber-400">
-                          {sub.studentName.charAt(0)}
-                        </div>
-                        <div>
-                          <span className="block text-slate-100 font-bold">{sub.studentName}</span>
-                          <span className="text-[10px] text-slate-500 font-mono">UID: {sub.studentUid.slice(0, 10)}...</span>
+                    <tr key={sub.studentUid} className="hover:bg-slate-800/30 transition-colors">
+                      {/* Student Info */}
+                      <td className="py-3.5 px-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-300 text-xs">
+                            {sub.studentName.charAt(0) || 'S'}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-white">{sub.studentName}</span>
+                              {isDemo && (
+                                <Badge className="bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[9px] px-1 py-0">
+                                  Demo
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                              <span className="font-mono">UID: {sub.studentUid.slice(0, 10)}...</span>
+                              <span>•</span>
+                              <span>{sub.studentClass}</span>
+                            </div>
+                          </div>
                         </div>
                       </td>
 
-                      {/* Class */}
-                      <td className="py-4 px-4 text-slate-300 font-medium">
-                        <Badge className="bg-slate-800 text-slate-300 border-slate-700 text-[10px]">
-                          {sub.studentClass || activeAssignment?.targetClass || 'JHS 2'}
-                        </Badge>
-                      </td>
-
-                      {/* Status Badges */}
-                      <td className="py-4 px-4">
+                      {/* Status Badge */}
+                      <td className="py-3.5 px-4">
                         {sub.status === 'completed' ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            <CheckCircle2 className="w-3 h-3" /> Completed
-                          </span>
+                          <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px]">
+                            Completed
+                          </Badge>
                         ) : sub.status === 'in_progress' ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 animate-pulse">
-                            <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping inline-block" /> In Progress
-                          </span>
+                          <Badge className="bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[10px] flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 inline-block animate-pulse" />
+                            In Progress
+                          </Badge>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
-                            <Clock className="w-3 h-3" /> Not Started
-                          </span>
+                          <Badge className="bg-slate-800 text-slate-400 border border-slate-700 text-[10px]">
+                            Not Started
+                          </Badge>
                         )}
                       </td>
 
-                      {/* Started At */}
-                      <td className="py-4 px-4 text-slate-400 font-mono text-[11px]">
+                      {/* Start Time */}
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-300">
                         {formatTimestamp(sub.startedAt)}
                       </td>
 
-                      {/* Submitted At */}
-                      <td className="py-4 px-4 text-slate-400 font-mono text-[11px]">
+                      {/* Submitted Time */}
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-slate-300">
                         {formatTimestamp(sub.submittedAt)}
                       </td>
 
-                      {/* Final Score */}
-                      <td className="py-4 px-4 font-mono font-bold">
-                        {sub.status === 'completed' ? (
+                      {/* Score */}
+                      <td className="py-3.5 px-4">
+                        {sub.status === 'completed' && sub.score !== null ? (
                           <div className="flex items-center gap-2">
-                            <span className="text-amber-400 text-sm">
-                              {sub.score ?? 0} / {sub.maxScore ?? 40}
-                            </span>
-                            <Badge className={cn(
-                              'text-[10px] px-1.5 py-0.2',
-                              (sub.percentage ?? 0) >= 70
-                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                                : (sub.percentage ?? 0) >= 50
-                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                                : 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-                            )}>
-                              {sub.percentage ?? 0}%
+                            <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-bold text-xs">
+                              {sub.score} / {sub.maxScore}
                             </Badge>
+                            <span className="text-[11px] font-mono text-slate-400">
+                              ({sub.percentage}%)
+                            </span>
                           </div>
                         ) : (
-                          <span className="text-slate-600 italic font-normal text-[11px]">Pending submission</span>
+                          <span className="text-slate-500 text-[11px] italic">Pending submission</span>
                         )}
                       </td>
 
-                      {/* Action Buttons */}
-                      <td className="py-4 px-6 text-right">
+                      {/* Actions */}
+                      <td className="py-3.5 px-5 text-right">
                         <div className="flex items-center justify-end gap-2">
                           {sub.status === 'completed' ? (
                             <Button

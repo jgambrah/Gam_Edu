@@ -52,6 +52,7 @@ export function Paper2ExamRunner({
   schoolId,
   currentSchoolId,
   studentId,
+  assignmentId,
   user,
   studentAnswers: initialAnswers,
   onBack,

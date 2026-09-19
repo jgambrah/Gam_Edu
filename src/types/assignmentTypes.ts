@@ -7,7 +7,8 @@ export interface SchoolAssignment {
   title: string;              // e.g., "Weekend Task: BECE 2020 Mathematics Paper 2 (Set 61)"
   examId: string;             // e.g., "paper_2020_variant"
   paperType: AssignmentPaperType; // 1 for Objective (CBT), 2 for Theory (Essay)
-  targetClass: string;        // e.g., "JHS 2", "JHS 2 - Gold", or "ALL_JHS"
+  targetClass: string;        // e.g., "BS 8 (JHS 2)", "JHS 2", or "ALL_JHS"
+  targetClassId?: string;     // Document ID in the classes collection, or 'ALL_JHS'
   dueDate: any;               // Firestore Timestamp or ISO string
   isTimed: boolean;
   timeLimitMinutes?: number;  // e.g., 60

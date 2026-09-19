@@ -5,6 +5,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   query,
   where,
   orderBy,
@@ -156,7 +157,190 @@ export const PAST_PAPER_EXAM_OPTIONS: AssignmentExamOption[] = [
 ];
 
 /**
+ * Helper: Resolve live students from Firestore for a school and target class/cohort.
+ * Strictly queries real database records and never returns mock/demo data.
+ */
+export async function queryLiveClassStudents(
+  firestore: Firestore,
+  schoolId: string,
+  targetClass: string,
+  targetClassId?: string
+): Promise<{
+  students: Array<{ uid: string; name: string; class: string; classId?: string }>;
+  resolvedClassName: string;
+}> {
+  // 1. Fetch classes for the school to establish relational class mappings
+  const classMap = new Map<string, { id: string; name: string; gradeLevel?: string }>();
+  try {
+    const classesColRef = collection(firestore, 'classes');
+    const classesSnap = await getDocs(query(classesColRef, where('schoolId', '==', schoolId)));
+    classesSnap.docs.forEach(docSnap => {
+      const d = docSnap.data();
+      classMap.set(docSnap.id, {
+        id: docSnap.id,
+        name: String(d.name || ''),
+        gradeLevel: d.gradeLevel ? String(d.gradeLevel) : undefined
+      });
+    });
+  } catch (err) {
+    console.warn('[assignmentService] Could not fetch classes collection:', err);
+  }
+
+  const isAllJhs =
+    targetClass === 'ALL_JHS' ||
+    targetClass === 'All Classes' ||
+    targetClass === 'ALL' ||
+    targetClassId === 'ALL_JHS';
+
+  const targetClassLower = targetClass.toLowerCase().trim();
+  const matchingClassIds = new Set<string>();
+  let resolvedClassName = targetClass;
+
+  if (targetClassId && targetClassId !== 'ALL_JHS' && classMap.has(targetClassId)) {
+    matchingClassIds.add(targetClassId);
+    resolvedClassName = classMap.get(targetClassId)!.name || targetClass;
+  } else {
+    for (const [cId, cData] of classMap.entries()) {
+      const nameLower = cData.name.toLowerCase().trim();
+      const gradeLower = (cData.gradeLevel || '').toLowerCase().trim();
+
+      if (isAllJhs) {
+        if (
+          nameLower.includes('jhs') ||
+          nameLower.includes('bs 7') ||
+          nameLower.includes('bs 8') ||
+          nameLower.includes('bs 9') ||
+          gradeLower.includes('jhs') ||
+          gradeLower.includes('bs 7') ||
+          gradeLower.includes('bs 8') ||
+          gradeLower.includes('bs 9')
+        ) {
+          matchingClassIds.add(cId);
+        }
+      } else {
+        if (cId === targetClass) {
+          matchingClassIds.add(cId);
+          resolvedClassName = cData.name;
+        } else if (
+          nameLower === targetClassLower ||
+          nameLower.includes(targetClassLower) ||
+          targetClassLower.includes(nameLower) ||
+          gradeLower === targetClassLower ||
+          (gradeLower && targetClassLower.includes(gradeLower))
+        ) {
+          matchingClassIds.add(cId);
+          resolvedClassName = cData.name;
+        }
+      }
+    }
+
+    // If All JHS requested but no classes specifically named JHS, include all school classes
+    if (isAllJhs && matchingClassIds.size === 0) {
+      for (const cId of classMap.keys()) {
+        matchingClassIds.add(cId);
+      }
+      resolvedClassName = 'All Classes';
+    }
+  }
+
+  // 2. Fetch live students matching schoolId
+  const liveStudents: Array<{ uid: string; name: string; class: string; classId?: string }> = [];
+  const seenUids = new Set<string>();
+
+  const processStudentDoc = (docSnap: any) => {
+    const data = docSnap.data();
+
+    // Respect active enrollment status
+    const rawStatus = String(data.enrollmentStatus || data.status || 'Active').toLowerCase();
+    if (rawStatus === 'inactive' || rawStatus === 'graduated' || rawStatus === 'suspended' || rawStatus === 'withdrawn') {
+      return;
+    }
+
+    const sClassId = String(data.classId || '').trim();
+    const sClassName = String(data.className || data.class || data.gradeLevel || '').trim().toLowerCase();
+
+    let isMatch = false;
+
+    if (isAllJhs) {
+      isMatch =
+        (sClassId && matchingClassIds.has(sClassId)) ||
+        sClassName.includes('jhs') ||
+        sClassName.includes('bs 7') ||
+        sClassName.includes('bs 8') ||
+        sClassName.includes('bs 9') ||
+        matchingClassIds.size === 0; // If no specific classes, include all active students
+    } else {
+      if (sClassId && matchingClassIds.has(sClassId)) {
+        isMatch = true;
+      } else if (sClassId && (sClassId === targetClass || (targetClassId && sClassId === targetClassId))) {
+        isMatch = true;
+      } else if (sClassName) {
+        if (
+          sClassName === targetClassLower ||
+          sClassName.includes(targetClassLower) ||
+          targetClassLower.includes(sClassName)
+        ) {
+          isMatch = true;
+        }
+      }
+    }
+
+    if (isMatch) {
+      const studentUid = String(data.uid || docSnap.id).trim();
+      if (!studentUid || seenUids.has(studentUid)) return;
+      seenUids.add(studentUid);
+
+      // Resolve real human name
+      const firstName = data.firstName ? String(data.firstName).trim() : '';
+      const lastName = data.lastName ? String(data.lastName).trim() : '';
+      const constructedName = firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName);
+      const studentName = String(data.name || constructedName || data.fullName || 'Student').trim();
+
+      const studentClassLabel =
+        (sClassId && classMap.get(sClassId)?.name) ||
+        data.className ||
+        data.class ||
+        resolvedClassName;
+
+      liveStudents.push({
+        uid: studentUid,
+        name: studentName,
+        class: studentClassLabel,
+        classId: sClassId || undefined
+      });
+    }
+  };
+
+  try {
+    // Primary query: top-level students collection
+    const studentsColRef = collection(firestore, 'students');
+    const q1 = query(studentsColRef, where('schoolId', '==', schoolId));
+    const snap1 = await getDocs(q1);
+    snap1.docs.forEach(processStudentDoc);
+
+    // Secondary query: if top-level returned 0, check schools/{schoolId}/students subcollection
+    if (liveStudents.length === 0) {
+      const subColRef = collection(firestore, 'schools', schoolId, 'students');
+      const snap2 = await getDocs(subColRef);
+      snap2.docs.forEach(processStudentDoc);
+    }
+  } catch (err) {
+    console.error('[assignmentService] Failed to query live students:', err);
+    throw new Error('Failed to query live students from database. Please check your network connection.');
+  }
+
+  // Sort alphabetically by student name
+  liveStudents.sort((a, b) => a.name.localeCompare(b.name));
+
+  return {
+    students: liveStudents,
+    resolvedClassName
+  };
+}
+
+/**
  * Dispatch an exam assignment to a target class and seed student submissions
+ * ONLY uses live enrolled students from Firestore. Throws an error if 0 live students found.
  */
 export async function dispatchAssignment(
   firestore: Firestore,
@@ -166,6 +350,7 @@ export async function dispatchAssignment(
     examId: string;
     paperType: 1 | 2;
     targetClass: string;
+    targetClassId?: string;
     dueDate: Date;
     isTimed?: boolean;
     timeLimitMinutes?: number;
@@ -174,13 +359,14 @@ export async function dispatchAssignment(
     assignedByName: string;
     instructions?: string;
   }
-): Promise<{ assignmentId: string; totalAssigned: number }> {
+): Promise<{ assignmentId: string; totalAssigned: number; targetClassName: string }> {
   const {
     schoolId,
     title,
     examId,
     paperType,
     targetClass,
+    targetClassId,
     dueDate,
     isTimed = false,
     timeLimitMinutes = 60,
@@ -190,70 +376,19 @@ export async function dispatchAssignment(
     instructions = ''
   } = params;
 
-  // 1. Fetch targeted students in the class
-  let targetStudents: Array<{ uid: string; name: string; class: string }> = [];
+  // 1. Fetch live students for the specified class
+  const { students: targetStudents, resolvedClassName } = await queryLiveClassStudents(
+    firestore,
+    schoolId,
+    targetClass,
+    targetClassId
+  );
 
-  try {
-    // Attempt 1: Query top-level students collection
-    const studentsColRef = collection(firestore, 'students');
-    const q1 = query(studentsColRef, where('schoolId', '==', schoolId));
-    const snap1 = await getDocs(q1);
-
-    snap1.docs.forEach(docSnap => {
-      const data = docSnap.data();
-      const sClass = String(data.class || data.className || data.gradeLevel || '').trim();
-      const isMatch =
-        targetClass === 'ALL_JHS' ||
-        targetClass === 'All Classes' ||
-        sClass.toLowerCase() === targetClass.toLowerCase() ||
-        sClass.toLowerCase().includes(targetClass.toLowerCase()) ||
-        String(data.classId || '') === targetClass;
-
-      if (isMatch && (docSnap.id || data.uid)) {
-        const studentUid = String(data.uid || docSnap.id);
-        const name = String(data.name || (data.firstName ? (data.firstName + ' ' + (data.lastName || '')).trim() : '') || 'Student');
-        targetStudents.push({ uid: studentUid, name, class: sClass || targetClass });
-      }
-    });
-
-    // Attempt 2: If none found, also check schools/{schoolId}/students subcollection
-    if (targetStudents.length === 0) {
-      const subColRef = collection(firestore, 'schools', schoolId, 'students');
-      const snap2 = await getDocs(subColRef);
-      snap2.docs.forEach(docSnap => {
-        const data = docSnap.data();
-        const sClass = String(data.class || data.className || '').trim();
-        const isMatch =
-          targetClass === 'ALL_JHS' ||
-          targetClass === 'All Classes' ||
-          sClass.toLowerCase() === targetClass.toLowerCase() ||
-          sClass.toLowerCase().includes(targetClass.toLowerCase());
-
-        if (isMatch) {
-          const studentUid = String(data.uid || docSnap.id);
-          const name = String(data.name || (data.firstName ? (data.firstName + ' ' + (data.lastName || '')).trim() : '') || 'Student');
-          targetStudents.push({ uid: studentUid, name, class: sClass || targetClass });
-        }
-      });
-    }
-  } catch (e) {
-    console.warn('[assignmentService] Student query warning:', e);
-  }
-
-  // Deduplicate students by uid
-  const uniqueMap = new Map<string, { uid: string; name: string; class: string }>();
-  targetStudents.forEach(s => uniqueMap.set(s.uid, s));
-  targetStudents = Array.from(uniqueMap.values());
-
-  // Fallback demo students if no students currently seeded in this school
+  // STRICT REQUIREMENT: ZERO hardcoded or mock student fallbacks!
   if (targetStudents.length === 0) {
-    targetStudents = [
-      { uid: 'demo_std_1', name: 'Kwame Mensah', class: targetClass },
-      { uid: 'demo_std_2', name: 'Abena Osei', class: targetClass },
-      { uid: 'demo_std_3', name: 'Kofi Boateng', class: targetClass },
-      { uid: 'demo_std_4', name: 'Akosua Frimpong', class: targetClass },
-      { uid: 'demo_std_5', name: 'Yaw Addo', class: targetClass }
-    ];
+    throw new Error(
+      `No active students found enrolled in "${resolvedClassName || targetClass}". Please verify that students are registered and linked to this class in the Students directory before dispatching.`
+    );
   }
 
   // 2. Generate assignment document ID
@@ -267,7 +402,8 @@ export async function dispatchAssignment(
     title,
     examId,
     paperType,
-    targetClass,
+    targetClass: resolvedClassName || targetClass,
+    targetClassId: targetClassId || undefined,
     dueDate: Timestamp.fromDate(dueDate),
     isTimed,
     timeLimitMinutes,
@@ -281,30 +417,148 @@ export async function dispatchAssignment(
     subject: 'Mathematics'
   };
 
-  // 3. Batch write assignment and initial 'not_started' submissions
-  const batch = writeBatch(firestore);
-  batch.set(assignmentDocRef, assignmentDoc);
+  // 3. Batch write assignment and initial 'not_started' submissions for live students
+  // Firestore batches have a 500 operations limit; chunk if school class exceeds 450
+  const CHUNK_SIZE = 400;
+  for (let i = 0; i < targetStudents.length; i += CHUNK_SIZE) {
+    const chunk = targetStudents.slice(i, i + CHUNK_SIZE);
+    const batch = writeBatch(firestore);
 
-  targetStudents.forEach(student => {
-    const subDocRef = doc(firestore, 'schools', schoolId, 'assignments', assignmentId, 'submissions', student.uid);
-    const initialSub: StudentAssignmentSubmission = {
-      studentUid: student.uid,
-      studentName: student.name,
-      studentClass: student.class || targetClass,
-      status: 'not_started',
-      startedAt: null,
-      submittedAt: null,
-      score: null,
-      maxScore: null,
-      percentage: null,
-      answers: null
-    };
-    batch.set(subDocRef, initialSub);
+    if (i === 0) {
+      batch.set(assignmentDocRef, assignmentDoc);
+    }
+
+    chunk.forEach(student => {
+      const subDocRef = doc(firestore, 'schools', schoolId, 'assignments', assignmentId, 'submissions', student.uid);
+      const initialSub: StudentAssignmentSubmission = {
+        studentUid: student.uid,
+        studentName: student.name,
+        studentClass: student.class || resolvedClassName || targetClass,
+        status: 'not_started',
+        startedAt: null,
+        submittedAt: null,
+        score: null,
+        maxScore: null,
+        percentage: null,
+        answers: null
+      };
+      batch.set(subDocRef, initialSub);
+    });
+
+    await batch.commit();
+  }
+
+  return {
+    assignmentId,
+    totalAssigned: targetStudents.length,
+    targetClassName: resolvedClassName || targetClass
+  };
+}
+
+/**
+ * Resync an assignment's student roster with the current live students from the class.
+ * Purges any legacy demo submissions (e.g. demo_std_...) and adds any missing real students.
+ */
+export async function resyncAssignmentRoster(
+  firestore: Firestore,
+  schoolId: string,
+  assignmentId: string,
+  targetClass: string,
+  targetClassId?: string
+): Promise<{ totalSynced: number; removedDemoCount: number; addedCount: number }> {
+  // 1. Fetch current submissions
+  const subsCol = collection(firestore, 'schools', schoolId, 'assignments', assignmentId, 'submissions');
+  const currentSnap = await getDocs(subsCol);
+
+  let removedDemoCount = 0;
+  const existingUids = new Set<string>();
+
+  // Delete any placeholder or demo student documents
+  const deleteBatch = writeBatch(firestore);
+  currentSnap.docs.forEach(d => {
+    const data = d.data();
+    const uid = String(data.studentUid || d.id);
+    if (uid.startsWith('demo_') || uid.startsWith('demo_std_') || data.studentName === 'Kwame Mensah' || data.studentName === 'Abena Osei' || data.studentName === 'Kofi Boateng' || data.studentName === 'Akosua Frimpong' || data.studentName === 'Yaw Addo') {
+      deleteBatch.delete(d.ref);
+      removedDemoCount++;
+    } else {
+      existingUids.add(uid);
+    }
   });
 
-  await batch.commit();
+  if (removedDemoCount > 0) {
+    await deleteBatch.commit();
+  }
 
-  return { assignmentId, totalAssigned: targetStudents.length };
+  // 2. Query live students
+  const { students: liveStudents } = await queryLiveClassStudents(
+    firestore,
+    schoolId,
+    targetClass,
+    targetClassId
+  );
+
+  let addedCount = 0;
+  const addBatch = writeBatch(firestore);
+
+  liveStudents.forEach(student => {
+    if (!existingUids.has(student.uid)) {
+      const subDocRef = doc(subsCol, student.uid);
+      const initialSub: StudentAssignmentSubmission = {
+        studentUid: student.uid,
+        studentName: student.name,
+        studentClass: student.class,
+        status: 'not_started',
+        startedAt: null,
+        submittedAt: null,
+        score: null,
+        maxScore: null,
+        percentage: null,
+        answers: null
+      };
+      addBatch.set(subDocRef, initialSub);
+      addedCount++;
+    }
+  });
+
+  if (addedCount > 0) {
+    await addBatch.commit();
+  }
+
+  // 3. Update totalAssigned on assignment document
+  const assignmentDocRef = doc(firestore, 'schools', schoolId, 'assignments', assignmentId);
+  const finalTotal = liveStudents.length;
+  await updateDoc(assignmentDocRef, {
+    totalAssigned: finalTotal
+  }).catch(() => {});
+
+  return {
+    totalSynced: finalTotal,
+    removedDemoCount,
+    addedCount
+  };
+}
+
+/**
+ * Delete a school assignment and its submissions subcollection
+ */
+export async function deleteSchoolAssignment(
+  firestore: Firestore,
+  schoolId: string,
+  assignmentId: string
+): Promise<void> {
+  const subsCol = collection(firestore, 'schools', schoolId, 'assignments', assignmentId, 'submissions');
+  const subsSnap = await getDocs(subsCol);
+
+  const batch = writeBatch(firestore);
+  subsSnap.docs.forEach(docSnap => {
+    batch.delete(docSnap.ref);
+  });
+
+  const assignmentDocRef = doc(firestore, 'schools', schoolId, 'assignments', assignmentId);
+  batch.delete(assignmentDocRef);
+
+  await batch.commit();
 }
 
 /**
@@ -331,7 +585,6 @@ export async function startStudentAssignment(
         });
       }
     } else {
-      // Create if it didn't exist
       await setDoc(subDocRef, {
         studentUid,
         studentName: studentName || 'Student',
@@ -405,7 +658,6 @@ export async function completeStudentAssignment(
         { merge: true }
       );
 
-      // Only increment parent completedCount if this student hadn't already completed
       if (!isAlreadyCompleted) {
         transaction.update(assignmentRef, {
           completedCount: increment(1)
@@ -414,7 +666,6 @@ export async function completeStudentAssignment(
     });
   } catch (err) {
     console.error('[assignmentService] Transaction failed, falling back to direct write:', err);
-    // Direct write fallback
     await setDoc(
       subRef,
       {
@@ -476,7 +727,6 @@ export function subscribeToAssignmentSubmissions(
     },
     error => {
       console.warn('[assignmentService] onSnapshot submissions error:', error);
-      // Fallback: fetch without orderBy if composite index missing
       getDocs(subsCol)
         .then(snap => {
           const items: StudentAssignmentSubmission[] = [];

@@ -39,13 +39,15 @@ interface AssignedRemoteTaskBannerProps {
   studentUid: string;
   studentName?: string;
   studentClass: string;
+  studentClassId?: string;
 }
 
 export function AssignedRemoteTaskBanner({
   schoolId,
   studentUid,
   studentName,
-  studentClass
+  studentClass,
+  studentClassId
 }: AssignedRemoteTaskBannerProps) {
   const firestore = useFirestore();
   const router = useRouter();
@@ -81,7 +83,13 @@ export function AssignedRemoteTaskBanner({
         // Check class match
         const aClass = (aData.targetClass || '').toLowerCase().trim();
         const sClass = (studentClass || '').toLowerCase().trim();
+        const matchesClassId =
+          !!(aData.targetClassId &&
+          studentClassId &&
+          (aData.targetClassId === studentClassId || aData.targetClassId === 'ALL_JHS'));
+
         const matchesClass =
+          matchesClassId ||
           aClass === 'all_jhs' ||
           aClass === 'all classes' ||
           aClass === sClass ||
@@ -114,7 +122,7 @@ export function AssignedRemoteTaskBanner({
     });
 
     return () => unsub();
-  }, [firestore, schoolId, studentUid, studentClass]);
+  }, [firestore, schoolId, studentUid, studentClass, studentClassId]);
 
   if (loading || activeTasks.length === 0) {
     return null;

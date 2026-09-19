@@ -30,6 +30,8 @@ import {
   StructuredQuestionPart
 } from '@/lib/global-curriculum-types';
 import { recordQuizAttempt } from '@/lib/services/curriculumService';
+import { useFirestore } from '@/firebase';
+import { completeStudentAssignment } from '@/lib/services/assignmentService';
 import { MathRenderer } from './MathRenderer';
 import { ActiveExamHeaderDisclaimer } from '@/components/exam/ExamDisclaimerNotice';
 import { Paper2ExamRunner } from '@/components/exam/Paper2ExamRunner';
@@ -43,6 +45,7 @@ interface QuestionRunnerProps {
   topicId: string;
   tenantId?: string;
   studentId?: string;
+  assignmentId?: string;
   onBack: () => void;
 }
 
@@ -55,8 +58,12 @@ export function QuestionRunner({
   topicId,
   tenantId,
   studentId,
+  assignmentId,
   onBack
 }: QuestionRunnerProps) {
+  const firestore = useFirestore();
+  const effectiveAssignmentId = assignmentId || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('assignmentId') : null);
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // MCQ State

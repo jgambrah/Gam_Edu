@@ -11036,6 +11036,7 @@ function StudentDashboard({ profile }: any) {
                       studentUid={user?.uid || ''}
                       studentName={profile?.firstName ? (profile.firstName + ' ' + (profile.lastName || '')).trim() : undefined}
                       studentClass={className}
+                      studentClassId={profile?.classId}
                     />
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <StatCard 
