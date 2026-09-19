@@ -4959,86 +4959,89 @@ function SeniorAcademyPageContent() {
                 icon={Rocket}
                 className="mb-4 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
                 actions={
-                    <div className="flex flex-wrap items-center gap-3">
-                        {/* TEACHER & DIRECTOR ASSIGN PAST QUESTIONS BUTTON */}
-                        {canEdit && (
-                            <Button
-                                type="button"
-                                onClick={() => {
-                                    setSelectedDispatchExamId(undefined);
-                                    setSelectedDispatchPaperType(2);
-                                    setShowDispatchModal(true);
-                                }}
-                                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md shadow-amber-500/20 cursor-pointer"
-                            >
-                                <Send className="w-3.5 h-3.5 text-slate-950" />
-                                <span>Assign Past Questions to Class</span>
-                            </Button>
-                        )}
-                        {/* SEGMENTED CONTROL FOR ALL 4 STUDY LEVELS */}
+                    canEdit ? (
+                        <Button
+                            type="button"
+                            onClick={() => {
+                                setSelectedDispatchExamId(undefined);
+                                setSelectedDispatchPaperType(2);
+                                setShowDispatchModal(true);
+                            }}
+                            className="h-9 sm:h-10 px-3.5 sm:px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-amber-500/25 shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer whitespace-nowrap"
+                        >
+                            <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 shrink-0" />
+                            <span>Assign Past Questions to Class</span>
+                        </Button>
+                    ) : undefined
+                }
+            >
+                {/* HORIZONTAL NAVIGATION BAR (Tier Selector tabs & Status Badge) */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 mt-4 border-t border-white/[0.08] overflow-visible">
+                    {/* SEGMENTED CONTROL FOR ALL 4 STUDY LEVELS */}
+                    <div className="flex flex-wrap items-center gap-2">
                         <div className="bg-slate-950/90 border border-slate-800/90 p-1 rounded-xl flex flex-wrap items-center gap-1 shadow-lg">
                             <button
                                 type="button"
                                 onClick={() => setActiveGradeTier('Lower Primary (BS 1 - 3)')}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0",
                                     activeGradeTier === 'Lower Primary (BS 1 - 3)'
                                         ? "bg-amber-600 text-white shadow-md shadow-amber-600/30"
                                         : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
                                 )}
                             >
-                                <Star className="w-3.5 h-3.5" />
+                                <Star className="w-3.5 h-3.5 shrink-0" />
                                 <span>Lower Primary (BS 1 - 3)</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setActiveGradeTier('Upper Primary (BS 4 - 6)')}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0",
                                     activeGradeTier === 'Upper Primary (BS 4 - 6)'
                                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                                         : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
                                 )}
                             >
-                                <Sparkles className="w-3.5 h-3.5" />
+                                <Sparkles className="w-3.5 h-3.5 shrink-0" />
                                 <span>Upper Primary (BS 4 - 6)</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setActiveGradeTier('Junior Secondary (JHS)')}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0",
                                     activeGradeTier === 'Junior Secondary (JHS)'
                                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                                         : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
                                 )}
                             >
-                                <BookOpen className="w-3.5 h-3.5" />
+                                <BookOpen className="w-3.5 h-3.5 shrink-0" />
                                 <span>Junior Secondary (JHS)</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setActiveGradeTier('Senior Secondary (SHS)')}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer",
+                                    "px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0",
                                     activeGradeTier === 'Senior Secondary (SHS)'
                                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
                                         : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
                                 )}
                             >
-                                <GraduationCap className="w-3.5 h-3.5" />
+                                <GraduationCap className="w-3.5 h-3.5 shrink-0" />
                                 <span>Senior Secondary (SHS)</span>
                             </button>
                         </div>
-
-                        {/* STATUS BADGE */}
-                        <div className="hidden sm:flex items-center gap-2 bg-slate-950/60 border border-slate-800/80 px-3 py-1.5 rounded-xl shadow-inner text-xs">
-                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="font-bold text-slate-300">Curriculum Synced</span>
-                        </div>
                     </div>
-                }
-            />
+
+                    {/* STATUS BADGE */}
+                    <div className="flex items-center gap-2 bg-slate-950/60 border border-slate-800/80 px-3 py-1.5 rounded-xl shadow-inner text-xs shrink-0 self-start sm:self-auto">
+                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                        <span className="font-bold text-slate-300 whitespace-nowrap">Curriculum Synced</span>
+                    </div>
+                </div>
+            </SectionHeroBanner>
 
             {canEdit && (
                 <div className="mb-4">

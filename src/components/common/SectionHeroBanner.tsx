@@ -198,7 +198,7 @@ export function SectionHeroBanner({
               </div>
             )}
 
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 flex flex-col">
               {/* Eyebrow Tag & Optional Badge */}
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 {eyebrow && (
@@ -227,13 +227,13 @@ export function SectionHeroBanner({
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl font-bold tracking-tight text-white leading-snug truncate">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight break-words">
                 {title}
               </h1>
 
               {/* Subtitle / Description */}
               {subtitle && (
-                <p className="text-xs sm:text-sm text-slate-300 sm:text-slate-400 max-w-2xl leading-relaxed mt-1 font-normal">
+                <p className="text-xs sm:text-sm text-slate-300 sm:text-slate-400 max-w-xl sm:max-w-2xl leading-relaxed mt-1 font-normal whitespace-normal break-words">
                   {subtitle}
                 </p>
               )}
@@ -242,7 +242,7 @@ export function SectionHeroBanner({
 
           {/* Right Slot: Quick Stats Chips and/or Actions (when breadcrumbs are absent) */}
           {((stats && stats.length > 0) || (actions && (!breadcrumbs || breadcrumbs.length === 0))) && (
-            <div className="flex items-center gap-3 shrink-0 self-start lg:self-center">
+            <div className="flex items-center gap-3 shrink-0 self-start sm:self-center z-10">
               {stats && stats.map((stat, i) => (
                 <div
                   key={i}
@@ -279,7 +279,7 @@ export function SectionHeroBanner({
 
         {/* Optional Docked Children (e.g. Domain Segmented Controls, Search bars, Filter pills) */}
         {children && (
-          <div className="pt-2 border-t border-white/[0.08]">
+          <div className="pt-2 overflow-visible">
             {children}
           </div>
         )}
