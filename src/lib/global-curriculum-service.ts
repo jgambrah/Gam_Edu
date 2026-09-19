@@ -370,6 +370,56 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       topicId: 'bece_2026_variant',
       questionSet: SET_BECE_2026_SCIENCE_P1
     },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2026_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2026_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2026_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2026_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'nacca_preparatory_blueprint',
+      questionSet: SET_BECE_2026_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'nacca_preparatory_blueprint',
+      questionSet: SET_BECE_2026_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_JHS_SCIENCE_SAMPLE_P2
+    },
 
     {
       subjectId: 'math',

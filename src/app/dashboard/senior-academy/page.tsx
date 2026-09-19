@@ -1694,6 +1694,29 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
+        title: "2026 BECE Integrated Science Paper 1 (Set 72 Objective)",
+        domain: "DIVERSITY OF MATTER & CYCLES",
+        strandName: "STRAND 1 TO STRAND 5",
+        strandCode: "S1-S5",
+        subStrand: "2026 BECE Integrated Science Blueprint & Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Objective Test",
+        description: "Standardized 40-question objective examination variant with KaTeX equations, vector SVGs, and step-by-step worked solutions for 2026 BECE candidates.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "paper_2026_variant",
+        topicId: "bece_past_papers",
+        format: "objective",
+        paperType: 1,
+        year: 2026,
+        setNumber: 72,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
         title: "Living Cells & Cell Ultrastructure",
         domain: "DIVERSITY OF MATTER",
         strandName: "STRAND 1: DIVERSITY OF MATTER",
@@ -2781,6 +2804,7 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
     const catalogMap: Record<string, { setNum: number; paper?: number; year?: number }> = {
         'paper_nacca_sample_variant_p1': { setNum: 70, paper: 1, year: 2024 },
         'paper_nacca_sample_variant_p2': { setNum: 71, paper: 2, year: 2024 },
+        'paper_2026_variant': { setNum: 72, paper: 1, year: 2026 },
         'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
         'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
         'paper_2024_variant': { setNum: 60, paper: 2, year: 2024 },
@@ -3099,17 +3123,20 @@ function MathLab({
             }
         } else {
             // In Standard Exam Series mode, merge static exam series with dynamic exam series
-            const combined = subject === 'science'
-                ? [...dynamicSets.filter(d => d.kind === 'exam_series' && d.subject?.toLowerCase().includes('science'))]
-                : [...SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series')];
-            if (subject === 'math') {
-                dynamicSets.forEach(dyn => {
-                    if (dyn.kind === 'exam_series' && !dyn.subject?.toLowerCase().includes('science')) {
+            const staticModules = subject === 'science'
+                ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series')
+                : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series');
+            const combined = [...staticModules];
+
+            dynamicSets.forEach(dyn => {
+                if (dyn.kind === 'exam_series') {
+                    const isScience = dyn.subject?.toLowerCase().includes('science');
+                    if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
                         const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
                         if (!exists) combined.push(dyn);
                     }
-                });
-            }
+                }
+            });
             candidateList = combined;
         }
 
@@ -3221,11 +3248,17 @@ function MathLab({
     // Live counts for Era badges based on current grade and paper type filter
     const eraCounts = useMemo(() => {
         if (viewMode !== 'exam_series') return { modern: 0, legacy: 0, classic: 0 };
-        const combined = [...SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series')];
+        const staticModules = subject === 'science'
+            ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series')
+            : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series');
+        const combined = [...staticModules];
         dynamicSets.forEach(dyn => {
             if (dyn.kind === 'exam_series') {
-                const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
-                if (!exists) combined.push(dyn);
+                const isScience = dyn.subject?.toLowerCase().includes('science');
+                if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
+                    const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
+                    if (!exists) combined.push(dyn);
+                }
             }
         });
         const counts = { modern: 0, legacy: 0, classic: 0 };

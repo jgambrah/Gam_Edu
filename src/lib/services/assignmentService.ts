@@ -27,6 +27,34 @@ import {
  * Curated list of standard exam options for past paper assignment dispatch
  */
 export const PAST_PAPER_EXAM_OPTIONS: AssignmentExamOption[] = [
+  // Integrated Science Variants
+  {
+    id: 'paper_2026_variant',
+    title: '2026 BECE Integrated Science Paper 1 (Set 72 Objective)',
+    year: 2026,
+    setNumber: 72,
+    paperType: 1,
+    subject: 'Integrated Science',
+    badge: 'Modern CBT'
+  },
+  {
+    id: 'paper_nacca_sample_variant_p1',
+    title: 'NaCCA Integrated Science CCP Preparatory CBT Exam (Set 70)',
+    year: 2024,
+    setNumber: 70,
+    paperType: 1,
+    subject: 'Integrated Science',
+    badge: 'NaCCA CBT Set 70'
+  },
+  {
+    id: 'paper_nacca_sample_variant_p2',
+    title: 'NaCCA Integrated Science CCP Practical & Theory Exam (Set 71)',
+    year: 2024,
+    setNumber: 71,
+    paperType: 2,
+    subject: 'Integrated Science',
+    badge: 'NaCCA Theory Set 71'
+  },
   {
     id: 'paper_2025_variant',
     title: '2025 BECE Mathematics Paper 2 (Set 65 Theory)',
