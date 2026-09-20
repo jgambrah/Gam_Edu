@@ -190,6 +190,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2019 BECE Practical & Theory Essay Test',
     description: 'Calibrated isomorphic practice variant of 2019 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (rusting of iron nails, leaf starch photosynthesis, soil water-holding capacity, thermal conduction) and Section B theory essays.'
   },
+  {
+    id: 'paper_2018_variant',
+    title: '2018 BECE Integrated Science Paper 1 (Set 84 Objective)',
+    year: 2018,
+    setNumber: 84,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 84',
+    questionCount: 40,
+    topic: '2018 BECE Integrated Science Standardized CBT',
+    description: 'Calibrated isomorphic practice variant of 2018 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step worked solutions.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)

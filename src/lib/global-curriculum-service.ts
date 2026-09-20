@@ -10,6 +10,7 @@ import { SET_BECE_2016_SCIENCE_P1 } from './data/jhs-curriculum-set-78';
 import { SET_BECE_2016_SCIENCE_P2 } from './data/jhs-curriculum-set-79';
 import { SET_BECE_2017_SCIENCE_P1 } from './data/jhs-curriculum-set-80';
 import { SET_BECE_2017_SCIENCE_P2 } from './data/jhs-curriculum-set-81';
+import { SET_BECE_2018_SCIENCE_P1 } from './data/jhs-curriculum-set-84';
 import { SET_BECE_2019_SCIENCE_P1 } from './data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from './data/jhs-curriculum-set-83';
 /**
@@ -720,6 +721,36 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'integrated_science',
       topicId: 'past_papers',
       questionSet: SET_BECE_2019_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_2018_variant',
+      questionSet: SET_BECE_2018_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_2018_variant',
+      questionSet: SET_BECE_2018_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2018_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2018_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2018_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2018_SCIENCE_P1
     },
     {
       subjectId: 'science',
