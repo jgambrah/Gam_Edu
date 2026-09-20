@@ -285,7 +285,13 @@ An astronomical phenomenon that occurs when the Moon passes directly between the
 ];
 
 export const SET_BECE_2001_SCIENCE_P2 = {
-  title: "Paper 2: Practical & Theory Essay (Variant)",
+  id: "paper_2001_variant_p2",
+  year: 2001,
+  setNumber: 115,
+  paperType: 2,
+  subject: "Integrated Science",
+  title: "2001 BECE Integrated Science Paper 2 (Theory & Practical)",
+  examination: "WAEC BECE Integrated Science (Cloned Practice Model)",
   durationMinutes: 75,
   instructions: "Answer four questions in all. All working must be clearly shown. Credit will be given for clarity of expression and orderly presentation of material.",
   totalQuestions: 4,
@@ -856,7 +862,13 @@ export const SET_BECE_2001_SCIENCE_P1_QUESTIONS: QuestionItem[] = [
 ];
 
 export const SET_BECE_2001_SCIENCE_P1 = {
-  title: "Paper 1: Objective Test (Variant)",
+  id: "paper_2001_variant",
+  year: 2001,
+  setNumber: 114,
+  paperType: 1,
+  subject: "Integrated Science",
+  title: "2001 BECE Integrated Science Paper 1 (Objective Test)",
+  examination: "WAEC BECE Integrated Science (Cloned Practice Model)",
   durationMinutes: 45,
   totalQuestions: 40,
   questions: SET_BECE_2001_SCIENCE_P1_QUESTIONS

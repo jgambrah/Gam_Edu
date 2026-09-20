@@ -307,7 +307,13 @@ Answer: The stored energy of the coconut is $$750\\text{ J}$$.`,
 ];
 
 export const SET_BECE_2000_SCIENCE_P2 = {
-  title: "Paper 2: Practical & Theory Essay (Variant)",
+  id: "paper_2000_variant_p2",
+  year: 2000,
+  setNumber: 117,
+  paperType: 2,
+  subject: "Integrated Science",
+  title: "2000 BECE Integrated Science Paper 2 (Theory & Practical)",
+  examination: "WAEC BECE Integrated Science (Cloned Practice Model)",
   durationMinutes: 75,
   instructions: "Answer four questions in all. All working must be clearly shown. Credit will be given for clarity of expression and orderly presentation of material.",
   totalQuestions: 4,
