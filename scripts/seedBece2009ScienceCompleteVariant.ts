@@ -1245,7 +1245,7 @@ Wearing spectacles or contact lenses fitted with diverging concave lenses. The c
 // SEEDING AND INGESTION ENGINE
 // ==========================================
 async function seedBece2009ScienceCompleteVariant() {
-  console.log('Calibrating & Seeding 2009 BECE Integrated Science Complete Variant (Set 100)...');
+  console.log('Calibrating & Seeding 2009 BECE Integrated Science Complete Variant (Sets 100 & 101)...');
   const db = await getFirestore();
 
   // Verify balanced key distribution for Paper 1
@@ -1259,6 +1259,7 @@ async function seedBece2009ScienceCompleteVariant() {
   });
   console.log('Verified Paper 1 Key Distribution across 40 items:', keyDist);
 
+  // 1. Target parent document (used by verifySet100 and verifySet101)
   const docRef = db.doc('global_curriculum/jhs/subjects/science/past_papers/paper_2009_variant');
   await docRef.set({
     year: 2009,
@@ -1283,47 +1284,95 @@ async function seedBece2009ScienceCompleteVariant() {
       sanitized: true,
       optionsBalanced: true,
       vectorGraphicsCount: 5,
+      paper2Calibrated: true,
+      set101Verified: true,
       copyright: "Proprietary content © GAM IT Solutions (GAM EDU). All rights reserved.",
       updatedAt: adminInstance.firestore?.FieldValue ? adminInstance.firestore.FieldValue.serverTimestamp() : new Date()
     }
   }, { merge: true });
-  console.log('✅ Ingested into past_papers/paper_2009_variant.');
+  console.log('✅ Ingested into past_papers/paper_2009_variant with calibration flags.');
 
-  // Single-document read pattern
-  const topicP1DocRef = db.doc('global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2009_variant_p1');
-  await topicP1DocRef.set({
-    id: "paper_2009_variant_p1",
-    year: 2009,
+  // 2. Paper 1 single-doc read paths (Set 100)
+  const p1Data = {
+    id: "paper_2009_variant",
+    title: "2009 BECE Integrated Science Paper 1 (Set 100 Objective)",
+    tier: "Junior Secondary (JHS)",
     subject: "Integrated Science",
+    topic: "2009 BECE Standardized Objective Examination",
+    variantType: "past_paper_variant",
+    year: 2009,
+    paperType: 1,
     setNumber: 100,
-    title: "Paper 1: Objective Test (Variant)",
-    durationMinutes: 45,
+    era: "classic",
     totalQuestions: 40,
+    version: 1,
+    format: "multiple_choice",
+    durationMinutes: 45,
+    instructions: "Answer all forty questions. Each question is followed by four options lettered A to D. Choose the correct option for each question.",
     questions: balancedScience2009P1,
     updatedAt: adminInstance.firestore?.FieldValue ? adminInstance.firestore.FieldValue.serverTimestamp() : new Date()
-  }, { merge: true });
-  console.log('✅ Ingested into topics/bece_past_papers/question_sets/paper_2009_variant_p1.');
+  };
 
-  const topicP2DocRef = db.doc('global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2009_variant_p2');
-  await topicP2DocRef.set({
+  const p1Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2009_variant',
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2009_variant_p1',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2009_variant',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2009_variant_p1',
+    'global_curriculum/jhs/subjects/science/topics/bece_2009_variant/question_sets/paper_2009_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2009_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2009_variant_p1',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2009_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2009_variant_p1',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2009_variant/question_sets/paper_2009_variant',
+  ];
+
+  for (const p of p1Paths) {
+    const docData = p.endsWith('_p1') ? { ...p1Data, id: "paper_2009_variant_p1" } : p1Data;
+    await db.doc(p).set(docData, { merge: true });
+    console.log('✅ Ingested P1 ->', p);
+  }
+
+  // 3. Paper 2 single-doc read paths (Set 101)
+  const p2Data = {
     id: "paper_2009_variant_p2",
-    year: 2009,
+    title: "2009 BECE Integrated Science Paper 2 (Set 101 Theory & Practical)",
+    tier: "Junior Secondary (JHS)",
     subject: "Integrated Science",
-    setNumber: 100,
-    title: "Paper 2: Practical & Theory Essay (Variant)",
-    durationMinutes: 75,
+    topic: "2009 BECE Standardized Theory & Practical Examination",
+    variantType: "past_paper_variant",
+    year: 2009,
+    paperType: 2,
+    setNumber: 101,
+    era: "classic",
     totalQuestions: 5,
+    version: 1,
+    format: "structured_essay",
+    durationMinutes: 75,
+    instructions: "Answer four questions in all. Answer Question 1 in Section A (compulsory), and any other three questions from Section B. All working must be clearly shown.",
     questions: paper2Science2009Questions,
     updatedAt: adminInstance.firestore?.FieldValue ? adminInstance.firestore.FieldValue.serverTimestamp() : new Date()
-  }, { merge: true });
-  console.log('✅ Ingested into topics/bece_past_papers/question_sets/paper_2009_variant_p2.');
+  };
 
-  console.log('🌟 Ingestion complete: Set 100 (2009 Complete Science Variant) seeded successfully.');
+  const p2Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2009_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2009_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/bece_2009_variant/question_sets/paper_2009_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2009_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2009_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2009_variant/question_sets/paper_2009_variant_p2',
+  ];
+
+  for (const p of p2Paths) {
+    await db.doc(p).set(p2Data, { merge: true });
+    console.log('✅ Ingested P2 ->', p);
+  }
+
+  console.log('🌟 Ingestion complete: Sets 100 & 101 seeded successfully across all topic paths.');
 }
 
 seedBece2009ScienceCompleteVariant()
   .then(() => process.exit(0))
   .catch(err => {
-    console.error('Failed ingestion for Set 100 Science Variant:', err);
+    console.error('Failed ingestion for Set 100/101 Science Variant:', err);
     process.exit(1);
   });
