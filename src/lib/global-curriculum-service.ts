@@ -18,6 +18,8 @@ import { SET_BECE_2022_SCIENCE_P1 } from './data/jhs-curriculum-set-88';
 import { SET_BECE_2022_SCIENCE_P2 } from './data/jhs-curriculum-set-89';
 import { SET_BECE_2013_SCIENCE_P1 } from './data/jhs-curriculum-set-90';
 import { SET_BECE_2013_SCIENCE_P2 } from './data/jhs-curriculum-set-91';
+import { SET_BECE_2012_SCIENCE_P1 } from './data/jhs-curriculum-set-92';
+import { SET_BECE_2012_SCIENCE_P2 } from './data/jhs-curriculum-set-93';
 import { SET_BECE_2019_SCIENCE_P1 } from './data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from './data/jhs-curriculum-set-83';
 /**
@@ -943,6 +945,76 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'integrated_science',
       topicId: 'past_papers',
       questionSet: SET_BECE_2013_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_2012_variant',
+      questionSet: SET_BECE_2012_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_2012_variant',
+      questionSet: SET_BECE_2012_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_2012_variant_p2',
+      questionSet: SET_BECE_2012_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_2012_variant_p2',
+      questionSet: SET_BECE_2012_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_2012_variant_p2',
+      questionSet: SET_BECE_2012_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_2012_variant_p2',
+      questionSet: SET_BECE_2012_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2012_SCIENCE_P2
     },
     {
       subjectId: 'integrated_science',
