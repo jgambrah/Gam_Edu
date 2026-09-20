@@ -163,6 +163,24 @@ export const PAST_PAPER_EXAM_OPTIONS: AssignmentExamOption[] = [
     subject: 'Integrated Science',
     badge: 'Legacy Essay'
   },
+  {
+    id: 'paper_2022_variant',
+    title: '2022 BECE Integrated Science Paper 1 (Set 88 Objective)',
+    year: 2022,
+    setNumber: 88,
+    paperType: 1,
+    subject: 'Integrated Science',
+    badge: 'Legacy CBT'
+  },
+  {
+    id: 'paper_2022_variant_p2',
+    title: '2022 BECE Integrated Science Paper 2 (Set 89 Practical & Essay)',
+    year: 2022,
+    setNumber: 89,
+    paperType: 2,
+    subject: 'Integrated Science',
+    badge: 'Legacy Essay'
+  },
 {
     id: 'paper_2019_variant_p2',
     title: '2019 BECE Integrated Science Paper 2 (Set 83 Practical & Essay)',

@@ -242,6 +242,32 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2021 BECE Practical & Theory Essay Test',
     description: 'Calibrated isomorphic practice variant of 2021 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (gravitational PE & free-fall, comparative dentition, horticultural vegetable classification, phase changes of water) and Section B theory essays.'
   },
+  {
+    id: 'paper_2022_variant',
+    title: '2022 BECE Integrated Science Paper 1 (Set 88 Objective)',
+    year: 2022,
+    setNumber: 88,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 88',
+    questionCount: 40,
+    topic: '2022 BECE Integrated Science Standardized CBT',
+    description: 'Calibrated isomorphic practice variant of 2022 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs (Capacitor-LED circuit, NPN transistor), and step-by-step diagnostic solutions.'
+  },
+  {
+    id: 'paper_2022_variant_p2',
+    title: '2022 BECE Integrated Science Paper 2 (Set 89 Practical & Essay)',
+    year: 2022,
+    setNumber: 89,
+    paperType: 2,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 89',
+    questionCount: 6,
+    topic: '2022 BECE Practical & Theory Essay Test',
+    description: 'Calibrated isomorphic practice variant of 2022 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (filtration vs. magnetic separation, human respiratory anatomy, soil thermometer, series vs. parallel resistor circuits) and Section B theory essays.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)

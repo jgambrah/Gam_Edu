@@ -18,6 +18,8 @@ import { SET_BECE_2018_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-84'
 import { SET_BECE_2018_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-85';
 import { SET_BECE_2021_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-86';
 import { SET_BECE_2021_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-87';
+import { SET_BECE_2022_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-88';
+import { SET_BECE_2022_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-89';
 import { SET_BECE_2019_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-83';
 
@@ -561,6 +563,58 @@ async function syncAll() {
   for (const p of set87Paths) {
     await db.doc(p).set(set87Data, { merge: true });
     console.log('Synced Set 87 ->', p);
+  }
+
+  const set88Data = {
+    ...SET_BECE_2022_SCIENCE_P1,
+    id: 'paper_2022_variant',
+    year: 2022,
+    setNumber: 88,
+    paperType: 1,
+    subject: 'Integrated Science',
+    topic: '2022 BECE Integrated Science Standardized CBT',
+    updatedAt: new Date()
+  };
+
+  // Paths for Set 88
+  const set88Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2022_variant',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2022_variant',
+    'global_curriculum/jhs/subjects/science/topics/bece_2022_variant/question_sets/paper_2022_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2022_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2022_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2022_variant/question_sets/paper_2022_variant'
+  ];
+
+  for (const p of set88Paths) {
+    await db.doc(p).set(set88Data, { merge: true });
+    console.log('Synced Set 88 ->', p);
+  }
+
+  const set89Data = {
+    ...SET_BECE_2022_SCIENCE_P2,
+    id: 'paper_2022_variant_p2',
+    year: 2022,
+    setNumber: 89,
+    paperType: 2,
+    subject: 'Integrated Science',
+    topic: '2022 BECE Practical & Theory Essay Test',
+    updatedAt: new Date()
+  };
+
+  // Paths for Set 89
+  const set89Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2022_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2022_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/bece_2022_variant/question_sets/paper_2022_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2022_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2022_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2022_variant/question_sets/paper_2022_variant_p2'
+  ];
+
+  for (const p of set89Paths) {
+    await db.doc(p).set(set89Data, { merge: true });
+    console.log('Synced Set 89 ->', p);
   }
 
 
