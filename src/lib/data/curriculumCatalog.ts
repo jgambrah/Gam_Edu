@@ -281,6 +281,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2013 BECE Integrated Science Standardized CBT',
     description: 'Calibrated isomorphic practice variant of 2013 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs (mechanical lever, railway expansion gaps), and step-by-step diagnostic solutions.'
   },
+  {
+    id: 'paper_2013_variant_p2',
+    title: '2013 BECE Integrated Science Paper 2 (Set 91 Practical & Essay)',
+    year: 2013,
+    setNumber: 91,
+    paperType: 2,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 91',
+    questionCount: 6,
+    topic: '2013 BECE Practical & Theory Essay Test',
+    description: 'Calibrated isomorphic practice variant of 2013 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (potato cavity osmosis, zinc-acid reaction, thermos flask thermodynamic cross-section, soil drainage comparison) and Section B theory essays.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)
