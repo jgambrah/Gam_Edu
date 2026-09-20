@@ -15,6 +15,7 @@ import { SET_BECE_2016_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-79'
 import { SET_BECE_2017_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-80';
 import { SET_BECE_2017_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-81';
 import { SET_BECE_2018_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-84';
+import { SET_BECE_2018_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-85';
 import { SET_BECE_2019_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-83';
 
@@ -481,6 +482,33 @@ async function syncAll() {
     await db.doc(p).set(set83Data, { merge: true });
     console.log('Synced Set 83 ->', p);
   }
+
+  const set85Data = {
+    ...SET_BECE_2018_SCIENCE_P2,
+    id: 'paper_2018_variant_p2',
+    year: 2018,
+    setNumber: 85,
+    paperType: 2,
+    subject: 'Integrated Science',
+    topic: '2018 BECE Practical & Theory Essay Test',
+    updatedAt: new Date()
+  };
+
+  // Paths for Set 85
+  const set85Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2018_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2018_variant_p2',
+    'global_curriculum/jhs/subjects/science/topics/bece_2018_variant/question_sets/paper_2018_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2018_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2018_variant_p2',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2018_variant/question_sets/paper_2018_variant_p2'
+  ];
+
+  for (const p of set85Paths) {
+    await db.doc(p).set(set85Data, { merge: true });
+    console.log('Synced Set 85 ->', p);
+  }
+
 
 
 
