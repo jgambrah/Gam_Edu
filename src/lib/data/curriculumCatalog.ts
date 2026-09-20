@@ -164,7 +164,20 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2017 BECE Practical & Theory Essay Test',
     description: 'Calibrated isomorphic practice variant of 2017 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (canine tooth anatomy, optical refraction, gravity filtration, sloped farmland erosion) and Section B theory essays.'
   },
-  {
+    {
+    id: 'paper_2019_variant',
+    title: '2019 BECE Integrated Science Paper 1 (Set 82 Objective)',
+    year: 2019,
+    setNumber: 82,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 82',
+    questionCount: 40,
+    topic: '2019 BECE Integrated Science Standardized CBT',
+    description: 'Calibrated isomorphic practice variant of 2019 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step worked solutions.'
+  },
+{
     id: 'paper_2019_variant_p2',
     title: '2019 BECE Integrated Science Paper 2 (Set 83 Practical & Essay)',
     year: 2019,

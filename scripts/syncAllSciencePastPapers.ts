@@ -14,6 +14,7 @@ import { SET_BECE_2016_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-78'
 import { SET_BECE_2016_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-79';
 import { SET_BECE_2017_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-80';
 import { SET_BECE_2017_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-81';
+import { SET_BECE_2019_SCIENCE_P1 } from '../src/lib/data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from '../src/lib/data/jhs-curriculum-set-83';
 
 dotenv.config();
@@ -399,6 +400,33 @@ async function syncAll() {
     await db.doc(p).set(set81Data, { merge: true });
     console.log('Synced Set 81 ->', p);
   }
+
+  const set82Data = {
+    ...SET_BECE_2019_SCIENCE_P1,
+    id: 'paper_2019_variant',
+    year: 2019,
+    setNumber: 82,
+    paperType: 1,
+    subject: 'Integrated Science',
+    topic: '2019 BECE Integrated Science Standardized CBT',
+    updatedAt: new Date()
+  };
+
+  // Paths for Set 82
+  const set82Paths = [
+    'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2019_variant',
+    'global_curriculum/jhs/subjects/science/topics/past_papers/question_sets/paper_2019_variant',
+    'global_curriculum/jhs/subjects/science/topics/bece_2019_variant/question_sets/paper_2019_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_past_papers/question_sets/paper_2019_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/past_papers/question_sets/paper_2019_variant',
+    'global_curriculum/jhs/subjects/integrated_science/topics/bece_2019_variant/question_sets/paper_2019_variant'
+  ];
+
+  for (const p of set82Paths) {
+    await db.doc(p).set(set82Data, { merge: true });
+    console.log('Synced Set 82 ->', p);
+  }
+
 
   const set83Data = {
     ...SET_BECE_2019_SCIENCE_P2,

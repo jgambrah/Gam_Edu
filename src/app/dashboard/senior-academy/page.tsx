@@ -1923,7 +1923,30 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         subject: "Integrated Science",
         status: "ready"
     },
-    {
+        {
+        title: "2019 BECE Integrated Science Paper 1 (Set 82 Objective CBT)",
+        domain: "SCIENTIFIC INQUIRY & EXPERIMENTAL CONCEPTS",
+        strandName: "STRAND 1 TO STRAND 5",
+        strandCode: "S1-S5",
+        subStrand: "2019 BECE Objective Test Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • 100% Curriculum Calibrated",
+        description: "Standardized 40-question objective examination variant covering metallurgy, atomic structure, levers, fluid mechanics, and plant/animal physiology with step-by-step diagnostic solutions.",
+        difficulty: "Standard",
+        kind: "exam_series",
+        setId: "paper_2019_variant",
+        topicId: "bece_past_papers",
+        format: "cbt_quiz",
+        paperType: 1,
+        year: 2019,
+        setNumber: 82,
+        era: "legacy",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+{
         title: "2019 BECE Integrated Science Paper 2 (Set 83 Practical & Theory)",
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
@@ -2940,6 +2963,7 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
   const setYearMap: Record<number, { year: number; paper: 1 | 2 }> = {
     // Modern Era (2019 - 2026)
     83: { year: 2019, paper: 2 },
+    82: { year: 2019, paper: 1 },
     81: { year: 2017, paper: 2 },
     80: { year: 2017, paper: 1 },
     79: { year: 2016, paper: 2 },
@@ -3057,6 +3081,7 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_2016_variant_p2': { setNum: 79, paper: 2, year: 2016 },
         'paper_2017_variant': { setNum: 80, paper: 1, year: 2017 },
         'paper_2017_variant_p2': { setNum: 81, paper: 2, year: 2017 },
+        'paper_2019_variant': modules[0]?.subject === 'Mathematics' ? { setNum: 55, paper: 2, year: 2019 } : { setNum: 82, paper: 1, year: 2019 },
         'paper_2019_variant_p2': { setNum: 83, paper: 2, year: 2019 },
         'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
         'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
