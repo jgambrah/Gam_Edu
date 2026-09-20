@@ -2039,6 +2039,29 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         status: "ready"
     },
     {
+        title: "2021 BECE Integrated Science Paper 2 (Set 87 Practical & Theory)",
+        domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+        strandName: "STRAND 1 TO STRAND 5",
+        strandCode: "S1-S5",
+        subStrand: "2021 BECE Practical & Theory Essay Examination",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Section A + Section B • 75 mins • 100 Marks",
+        description: "Standardized practical and theory essay examination variant featuring Section A compulsory laboratory tests (gravitational potential energy & free-fall, comparative dentition, horticultural vegetable classification, phase changes of water) and Section B theory essays.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "paper_2021_variant_p2",
+        topicId: "bece_past_papers",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2021,
+        setNumber: 87,
+        era: "legacy",
+        questionCount: 6,
+        examTag: "Practical & Theory • Section A Compulsory",
+        subject: "Integrated Science",
+        status: "ready"
+    },
+    {
         title: "Living Cells & Cell Ultrastructure",
         domain: "DIVERSITY OF MATTER",
         strandName: "STRAND 1: DIVERSITY OF MATTER",
@@ -3031,6 +3054,7 @@ function resolveExamMetadata(exam: any): ResolvedExamMeta {
 
   const setYearMap: Record<number, { year: number; paper: 1 | 2 }> = {
     // Modern Era (2019 - 2026)
+    87: { year: 2021, paper: 2 },
     86: { year: 2021, paper: 1 },
     85: { year: 2018, paper: 2 },
     84: { year: 2018, paper: 1 },
@@ -3158,6 +3182,7 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_2018_variant': modules[0]?.subject === 'Mathematics' ? { setNum: 54, paper: 2, year: 2018 } : { setNum: 84, paper: 1, year: 2018 },
         'paper_2018_variant_p2': { setNum: 85, paper: 2, year: 2018 },
         'paper_2021_variant': { setNum: 86, paper: 1, year: 2021 },
+        'paper_2021_variant_p2': { setNum: 87, paper: 2, year: 2021 },
         'paper_2025_variant': { setNum: 65, paper: 2, year: 2025 },
         'paper_2025_p1_variant': { setNum: 65, paper: 1, year: 2025 },
         'paper_2024_variant': { setNum: 60, paper: 2, year: 2024 },
