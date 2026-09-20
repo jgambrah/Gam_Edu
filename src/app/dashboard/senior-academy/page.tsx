@@ -4473,19 +4473,26 @@ function MathLab({
             console.log("Fetched sets:", sets);
             let targetSet: CurriculumQuestionSet | null = null;
             if (mod.setId) {
-                targetSet = sets.find(s => s.id === mod.setId) || null;
-                if (!targetSet) {
-                    targetSet = await getQuestionSetById(levelId, subjectId, topicId, mod.setId);
+                targetSet = sets.find(s => s.id === mod.setId) || 
+                            sets.find(s => s.id === `${mod.setId}_p1`) || 
+                            null;
+                if (!targetSet || !targetSet.questions?.length) {
+                    const directDoc = await getQuestionSetById(levelId, subjectId, topicId, mod.setId);
+                    if (directDoc && (directDoc.questions?.length || (directDoc as any).paper1?.questions?.length)) {
+                        targetSet = directDoc;
+                    }
                 }
-                if (!targetSet && isValidCurriculumLevelId(levelId)) {
+                if ((!targetSet || !targetSet.questions?.length) && isValidCurriculumLevelId(levelId)) {
                     const fallbackMatch = SAMPLE_GLOBAL_QUESTION_SETS[levelId as GlobalCurriculumLevelId]?.find(
-                        (item: any) => item.setId === mod.setId || item.questionSet?.id === mod.setId
+                        (item: any) => item.setId === mod.setId || 
+                                       item.questionSet?.id === mod.setId ||
+                                       item.questionSet?.id === `${mod.setId}_p1`
                     );
                     if (fallbackMatch) {
                         targetSet = fallbackMatch.questionSet;
                     }
                 }
-                if (!targetSet && firestore) {
+                if ((!targetSet || !targetSet.questions?.length) && firestore) {
                     try {
                         const cleanSetId = mod.setId.replace(/_p\d+$/, '');
                         const ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_papers/${cleanSetId}`));
@@ -4516,6 +4523,26 @@ function MathLab({
                 targetSet = sets[0];
             }
             if (targetSet) {
+                // Defensive normalization: extract questions if nested under paper1 or paper2
+                const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                const pData = isP2 ? ((targetSet as any).paper2 || targetSet) : ((targetSet as any).paper1 || targetSet);
+                const extractedQuestions = (targetSet.questions && targetSet.questions.length > 0)
+                    ? targetSet.questions
+                    : (pData?.questions || (targetSet as any).questions || []);
+
+                targetSet = {
+                    ...targetSet,
+                    id: mod.setId,
+                    title: pData?.title || targetSet.title || mod.title,
+                    tier: activeGrade,
+                    subject: isScienceMod ? 'Integrated Science' : 'Mathematics',
+                    topic: mod.title,
+                    format: isP2 ? 'structured_essay' : (targetSet.format || 'objective'),
+                    paperType: isP2 ? 2 : 1,
+                    totalQuestions: pData?.totalQuestions || extractedQuestions.length || (isP2 ? 4 : 40),
+                    questions: extractedQuestions
+                } as CurriculumQuestionSet;
+
                 console.log("[senior-academy] Activated target set:", targetSet.id, targetSet.title, `(${targetSet.questions?.length} questions)`);
                 setActiveQuestionSet(targetSet);
             } else {

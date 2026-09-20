@@ -50,7 +50,7 @@ interface QuestionRunnerProps {
 }
 
 export function QuestionRunner({
-  questionSet,
+  questionSet: rawQuestionSet,
   topicTitle,
   gradeTier,
   levelId,
@@ -63,6 +63,24 @@ export function QuestionRunner({
 }: QuestionRunnerProps) {
   const firestore = useFirestore();
   const effectiveAssignmentId = assignmentId || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('assignmentId') : null);
+
+  // Defensive normalization: resolve questions if nested in paper1 or paper2
+  const questionSet: CurriculumQuestionSet | null = React.useMemo(() => {
+    if (!rawQuestionSet) return null;
+    if (Array.isArray(rawQuestionSet.questions) && rawQuestionSet.questions.length > 0) return rawQuestionSet;
+    const p1Q = (rawQuestionSet as any).paper1?.questions;
+    const p2Q = (rawQuestionSet as any).paper2?.questions;
+    const isP2 = (rawQuestionSet as any).paperType === 2 || (rawQuestionSet.id && rawQuestionSet.id.includes('_p2'));
+    const chosen = isP2 ? (p2Q || p1Q) : (p1Q || p2Q);
+    if (Array.isArray(chosen) && chosen.length > 0) {
+      return {
+        ...rawQuestionSet,
+        questions: chosen,
+        totalQuestions: rawQuestionSet.totalQuestions || chosen.length
+      };
+    }
+    return rawQuestionSet;
+  }, [rawQuestionSet]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
