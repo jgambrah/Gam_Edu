@@ -21,15 +21,21 @@ export interface QuestionItem {
   points: number;
 }
 
-export const SET_BECE_2013_SCIENCE_P1: {
-  title: string;
-  durationMinutes: number;
-  totalQuestions: number;
-  questions: QuestionItem[];
-} = {
-  title: "Paper 1: Objective Test (Variant)",
-  durationMinutes: 45,
+export const SET_BECE_2013_SCIENCE_P1: any = {
+  id: "paper_2013_variant",
+  title: "2013 BECE Integrated Science Paper 1 (Set 90 Objective)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Integrated Science",
+  topic: "2013 BECE Integrated Science Standardized CBT",
+  variantType: "past_paper_variant",
+  year: 2013,
+  paperType: 1,
+  setNumber: 90,
+  era: "classic",
   totalQuestions: 40,
+  version: 1,
+  format: "objective",
+  durationMinutes: 45,
   questions: [
   {
     "number": 1,

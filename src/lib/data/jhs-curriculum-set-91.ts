@@ -25,17 +25,22 @@ export interface Paper2Question {
   subQuestions: PracticalSubQuestion[];
 }
 
-export const SET_BECE_2013_SCIENCE_P2: {
-  title: string;
-  durationMinutes: number;
-  instructions: string;
-  totalQuestions: number;
-  questions: Paper2Question[];
-} = {
-  title: "Paper 2: Practical & Theory Essay (Variant)",
+export const SET_BECE_2013_SCIENCE_P2: any = {
+  id: "paper_2013_variant_p2",
+  title: "2013 BECE Integrated Science Paper 2 (Set 91 Practical & Theory)",
+  tier: "Junior Secondary (JHS)",
+  subject: "Integrated Science",
+  topic: "2013 BECE Practical & Theory Essay Test",
+  variantType: "past_paper_variant",
+  year: 2013,
+  paperType: 2,
+  setNumber: 91,
+  era: "classic",
+  totalQuestions: 6,
+  version: 1,
+  format: "structured_essay",
   durationMinutes: 75,
   instructions: "Answer four questions in all. Answer Question 1 from Section A (compulsory, 40 marks), and any three questions from Section B (60 marks). All working must be clearly shown.",
-  totalQuestions: 6,
   questions: [
     // ==========================================
     // SECTION A: COMPULSORY PRACTICAL TEST (40 MARKS)

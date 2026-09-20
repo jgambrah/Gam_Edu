@@ -134,9 +134,14 @@ export function QuestionRunner({
   // Delegate Paper 2 Structured Theory sessions to dedicated Paper2ExamRunner
   const isPaper2Exam =
     questionSet.format === 'structured_essay' ||
+    (questionSet as any).paperType === 2 ||
     (Array.isArray(questionSet.questions) &&
       questionSet.questions.some(
-        (q) => q.format === 'structured_essay' || (Array.isArray(q.parts) && q.parts.length > 0)
+        (q: any) =>
+          q.format === 'structured_essay' ||
+          (Array.isArray(q.parts) && q.parts.length > 0) ||
+          (Array.isArray(q.subQuestions) && q.subQuestions.length > 0) ||
+          q.isPracticalSectionA
       ));
 
   if (isPaper2Exam) {

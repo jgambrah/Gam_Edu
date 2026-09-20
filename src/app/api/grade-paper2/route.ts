@@ -119,9 +119,12 @@ export async function POST(req: Request) {
     let rawQuestions: any = null;
     let examTitle = '';
 
-    // Attempt 1: Fetch from Firestore past papers collection
+    // Attempt 1: Fetch from Firestore past papers collection (science or math)
     try {
-      const examDoc = await adminDb.doc(`global_curriculum/jhs/subjects/math/past_papers/${examId}`).get();
+      let examDoc = await adminDb.doc(`global_curriculum/jhs/subjects/science/past_papers/${examId}`).get();
+      if (!examDoc.exists) {
+        examDoc = await adminDb.doc(`global_curriculum/jhs/subjects/math/past_papers/${examId}`).get();
+      }
       if (examDoc.exists) {
         const examData = examDoc.data();
         rawQuestions = examData?.paper2?.questions ?? examData?.questions ?? examData?.paper2;

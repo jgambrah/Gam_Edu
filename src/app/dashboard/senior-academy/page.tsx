@@ -8,7 +8,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
-import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, addDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, addDoc, getDoc } from 'firebase/firestore';
 import { 
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
@@ -1936,7 +1936,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         kind: "exam_series",
         setId: "paper_2019_variant",
         topicId: "bece_past_papers",
-        format: "cbt_quiz",
+        format: "multiple_choice",
         paperType: 1,
         year: 2019,
         setNumber: 82,
@@ -1982,7 +1982,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         kind: "exam_series",
         setId: "paper_2018_variant",
         topicId: "bece_past_papers",
-        format: "cbt_quiz",
+        format: "multiple_choice",
         paperType: 1,
         year: 2018,
         setNumber: 84,
@@ -2028,7 +2028,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         kind: "exam_series",
         setId: "paper_2021_variant",
         topicId: "bece_past_papers",
-        format: "cbt_quiz",
+        format: "multiple_choice",
         paperType: 1,
         year: 2021,
         setNumber: 86,
@@ -3277,7 +3277,7 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_2019_variant_p2': { setNum: 83, paper: 2, year: 2019 },
         'paper_2018_variant': modules[0]?.subject === 'Mathematics' ? { setNum: 54, paper: 2, year: 2018 } : { setNum: 84, paper: 1, year: 2018 },
         'paper_2018_variant_p2': { setNum: 85, paper: 2, year: 2018 },
-        'paper_2021_variant': { setNum: 86, paper: 1, year: 2021 },
+        'paper_2021_variant': modules[0]?.subject === 'Mathematics' ? { setNum: 57, paper: 2, year: 2021 } : { setNum: 86, paper: 1, year: 2021 },
         'paper_2021_variant_p2': { setNum: 87, paper: 2, year: 2021 },
         'paper_2022_variant': modules[0]?.subject === 'Mathematics' ? { setNum: 58, paper: 2, year: 2022 } : { setNum: 88, paper: 1, year: 2022 },
         'paper_2022_variant_p2': { setNum: 89, paper: 2, year: 2022 },
@@ -3290,13 +3290,10 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_2023_variant': { setNum: 59, paper: 2, year: 2023 },
         'paper_2023_p1_variant': { setNum: 59, paper: 1, year: 2023 },
         'paper_2022_p1_variant': { setNum: 58, paper: 1, year: 2022 },
-        'paper_2021_variant': { setNum: 57, paper: 2, year: 2021 },
         'paper_2021_p1_variant': { setNum: 57, paper: 1, year: 2021 },
         'paper_2020_variant': { setNum: 56, paper: 2, year: 2020 },
         'paper_2020_p1_variant': { setNum: 56, paper: 1, year: 2020 },
-        'paper_2019_variant': { setNum: 55, paper: 2, year: 2019 },
         'paper_2019_p1_variant': { setNum: 55, paper: 1, year: 2019 },
-        'paper_2018_variant': { setNum: 54, paper: 2, year: 2018 },
         'paper_2018_p1_variant': { setNum: 54, paper: 1, year: 2018 },
     };
 
@@ -3607,6 +3604,7 @@ function MathLab({
 
             dynamicSets.forEach(dyn => {
                 if (dyn.kind === 'exam_series') {
+                    if (dyn.title === 'Paper 2: Practical & Theory Essay (Variant)' || dyn.title === 'Paper 1: Objective Test (Variant)') return;
                     const isScience = dyn.subject?.toLowerCase().includes('science');
                     if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
                         const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
@@ -3731,6 +3729,7 @@ function MathLab({
         const combined = [...staticModules];
         dynamicSets.forEach(dyn => {
             if (dyn.kind === 'exam_series') {
+                if (dyn.title === 'Paper 2: Practical & Theory Essay (Variant)' || dyn.title === 'Paper 1: Objective Test (Variant)') return;
                 const isScience = dyn.subject?.toLowerCase().includes('science');
                 if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
                     const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
@@ -3800,9 +3799,10 @@ function MathLab({
         }
 
         const levelId = mapGradeTierToLevelId(activeGrade);
-        const subjectId = 'math';
+        const isScienceMod = (mod.subject || '').toLowerCase().includes('science') || subject === 'science' || (mod.title || '').toLowerCase().includes('science');
+        const subjectId = isScienceMod ? 'science' : 'math';
         
-        let topicId = mod.topicId || 'visual_blocks_addition';
+        let topicId = mod.topicId || (isScienceMod ? 'bece_past_papers' : 'visual_blocks_addition');
         if (!mod.topicId) {
             const titleLower = (mod.title || mod.subTopic || '').toLowerCase();
             if (titleLower.includes('mastery') || titleLower.includes('problem-solving') || titleLower.includes('core curriculum') || titleLower.includes('series')) {
@@ -3837,14 +3837,40 @@ function MathLab({
                 }
                 if (!targetSet && isValidCurriculumLevelId(levelId)) {
                     const fallbackMatch = SAMPLE_GLOBAL_QUESTION_SETS[levelId as GlobalCurriculumLevelId]?.find(
-                        (item) => item.questionSet.id === mod.setId
+                        (item: any) => item.setId === mod.setId || item.questionSet?.id === mod.setId
                     );
                     if (fallbackMatch) {
                         targetSet = fallbackMatch.questionSet;
                     }
                 }
+                if (!targetSet && firestore) {
+                    try {
+                        const cleanSetId = mod.setId.replace(/_p\d+$/, '');
+                        const ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_papers/${cleanSetId}`));
+                        if (ppSnap.exists()) {
+                            const ppData = ppSnap.data();
+                            const isP2 = mod.paperType === 2 || mod.setId.includes('_p2');
+                            const pData = isP2 ? (ppData.paper2 || ppData) : (ppData.paper1 || ppData);
+                            if (pData && (pData.questions || pData.paper2?.questions)) {
+                                targetSet = {
+                                    id: mod.setId,
+                                    title: pData.title || mod.title,
+                                    tier: activeGrade,
+                                    subject: isScienceMod ? 'Integrated Science' : 'Mathematics',
+                                    topic: mod.title,
+                                    format: isP2 ? 'structured_essay' : 'objective',
+                                    paperType: isP2 ? 2 : 1,
+                                    totalQuestions: pData.totalQuestions || pData.questions?.length || (isP2 ? 6 : 40),
+                                    questions: pData.questions || pData.paper2?.questions || []
+                                } as CurriculumQuestionSet;
+                            }
+                        }
+                    } catch (ppErr) {
+                        console.warn('[senior-academy] Error checking past_papers doc:', ppErr);
+                    }
+                }
             }
-            if (!targetSet && sets && sets.length > 0) {
+            if (!targetSet && !mod.setId && sets && sets.length > 0) {
                 targetSet = sets[0];
             }
             if (targetSet) {
@@ -3913,7 +3939,7 @@ function MathLab({
                         topicTitle={activeTopicMeta.title}
                         gradeTier={activeGrade}
                         levelId={mapGradeTierToLevelId(activeGrade)}
-                        subjectId="mathematics"
+                        subjectId={(activeQuestionSet?.subject?.toLowerCase().includes("science") || subject === "science" || (activeTopicMeta?.title || "").toLowerCase().includes("science")) ? "science" : "mathematics"}
                         topicId={activeTopicMeta.topicId}
                         tenantId={tenantId}
                         studentId={studentId}

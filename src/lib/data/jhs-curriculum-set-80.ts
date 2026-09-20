@@ -25,7 +25,7 @@ export const SET_BECE_2017_SCIENCE_P1: CurriculumQuestionSet = {
   era: "legacy",
   totalQuestions: 40,
   version: 1,
-  format: "objective",
+  format: 'multiple_choice',
   questions: [
   {
     "id": "q01",

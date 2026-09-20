@@ -46,6 +46,7 @@ export interface StructuredQuestionPart {
   partId?: string;
   partLabel: string;
   marks: number;
+  points?: number;
   prompt: string;
   hint?: string;
   modelAnswer: string;
