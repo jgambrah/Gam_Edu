@@ -216,6 +216,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2018 BECE Practical & Theory Essay Test',
     description: 'Calibrated isomorphic practice variant of 2018 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (bony fish anatomy, soil profile cross-section, resistance investigation circuit, neutralization reaction) and Section B theory essays.'
   },
+  {
+    id: 'paper_2021_variant',
+    title: '2021 BECE Integrated Science Paper 1 (Set 86 Objective)',
+    year: 2021,
+    setNumber: 86,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 86',
+    questionCount: 40,
+    topic: '2021 BECE Integrated Science Standardized CBT',
+    description: 'Calibrated isomorphic practice variant of 2021 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs, and step-by-step diagnostic solutions.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)

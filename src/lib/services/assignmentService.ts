@@ -145,6 +145,15 @@ export const PAST_PAPER_EXAM_OPTIONS: AssignmentExamOption[] = [
     subject: 'Integrated Science',
     badge: 'Legacy Essay'
   },
+  {
+    id: 'paper_2021_variant',
+    title: '2021 BECE Integrated Science Paper 1 (Set 86 Objective)',
+    year: 2021,
+    setNumber: 86,
+    paperType: 1,
+    subject: 'Integrated Science',
+    badge: 'Legacy CBT'
+  },
 {
     id: 'paper_2019_variant_p2',
     title: '2019 BECE Integrated Science Paper 2 (Set 83 Practical & Essay)',
