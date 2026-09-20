@@ -268,6 +268,19 @@ export const COMPREHENSIVE_QUESTION_CATALOG: AssignmentExamOption[] = [
     topic: '2022 BECE Practical & Theory Essay Test',
     description: 'Calibrated isomorphic practice variant of 2022 BECE Integrated Science Paper 2 featuring Section A compulsory practical tests (filtration vs. magnetic separation, human respiratory anatomy, soil thermometer, series vs. parallel resistor circuits) and Section B theory essays.'
   },
+  {
+    id: 'paper_2013_variant',
+    title: '2013 BECE Integrated Science Paper 1 (Set 90 Objective)',
+    year: 2013,
+    setNumber: 90,
+    paperType: 1,
+    subject: 'Integrated Science',
+    gradeTier: 'Junior High (JHS)',
+    badge: 'BECE Science Set 90',
+    questionCount: 40,
+    topic: '2013 BECE Integrated Science Standardized CBT',
+    description: 'Calibrated isomorphic practice variant of 2013 BECE Integrated Science Paper 1 with KaTeX equations, vector SVGs (mechanical lever, railway expansion gaps), and step-by-step diagnostic solutions.'
+  },
 
   // ==========================================
   // MATHEMATICS - BECE PAST EXAM VARIANTS (MODERN ERA)

@@ -181,6 +181,15 @@ export const PAST_PAPER_EXAM_OPTIONS: AssignmentExamOption[] = [
     subject: 'Integrated Science',
     badge: 'Legacy Essay'
   },
+  {
+    id: 'paper_2013_variant',
+    title: '2013 BECE Integrated Science Paper 1 (Set 90 Objective)',
+    year: 2013,
+    setNumber: 90,
+    paperType: 1,
+    subject: 'Integrated Science',
+    badge: 'Legacy CBT'
+  },
 {
     id: 'paper_2019_variant_p2',
     title: '2019 BECE Integrated Science Paper 2 (Set 83 Practical & Essay)',
