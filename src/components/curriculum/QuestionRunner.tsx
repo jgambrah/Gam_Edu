@@ -158,6 +158,10 @@ export function QuestionRunner({
 
   const questions: CurriculumQuestion[] = questionSet.questions;
   const currentQuestion = questions[currentIndex];
+  const currentQuestionId = String(
+    currentQuestion?.id ||
+    (currentQuestion?.number ? `q${String(currentQuestion.number).padStart(2, '0')}` : `q${String(currentIndex + 1).padStart(2, '0')}`)
+  );
   const totalQuestions = questions.length;
   const isLastQuestion = currentIndex === totalQuestions - 1;
   const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
@@ -188,7 +192,7 @@ export function QuestionRunner({
     setAnswersLog((prev) => [
       ...prev,
       {
-        questionId: currentQuestion.id,
+        questionId: currentQuestionId,
         selected: selectedOption,
         correct: currentQuestion.correctAnswer || '',
         isCorrect,
@@ -217,7 +221,7 @@ export function QuestionRunner({
   const revealAllPartSolutions = () => {
     const next: Record<string, boolean> = {};
     parts.forEach((_, idx) => {
-      next[`${currentQuestion.id}_p${idx}`] = true;
+      next[`${currentQuestionId}_p${idx}`] = true;
     });
     setRevealedParts((prev) => ({ ...prev, ...next }));
   };
@@ -465,8 +469,8 @@ export function QuestionRunner({
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">
                 {isStructuredEssay
-                  ? `THEORY SECTION • ${currentQuestion.id.toUpperCase()}`
-                  : `OBJECTIVE CHALLENGE • ${currentQuestion.id.toUpperCase()}`}
+                  ? `THEORY SECTION • ${currentQuestionId.toUpperCase()}`
+                  : `OBJECTIVE CHALLENGE • ${currentQuestionId.toUpperCase()}`}
               </span>
               {currentQuestion.totalMarks && (
                 <Badge variant="secondary" className="bg-slate-800 text-indigo-300 text-xs font-semibold">
@@ -507,7 +511,7 @@ export function QuestionRunner({
           {isStructuredEssay ? (
             <div className="space-y-6 pt-2">
               {parts.map((part, pIdx) => {
-                const partKey = `${currentQuestion.id}_p${pIdx}`;
+                const partKey = `${currentQuestionId}_p${pIdx}`;
                 const isRevealed = !!revealedParts[partKey];
                 const isHintShown = !!showPartHints[partKey];
                 const currentVal = partAnswers[partKey] || '';

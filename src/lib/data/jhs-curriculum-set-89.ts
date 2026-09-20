@@ -46,6 +46,7 @@ export const SET_BECE_2022_SCIENCE_P2: any = {
     // SECTION A: COMPULSORY PRACTICAL TEST (40 MARKS)
     // ==========================================
     {
+      id: "q01",
       questionNumber: "1",
       isPracticalSectionA: true,
       subQuestions: [
@@ -212,6 +213,7 @@ Bulb III in Circuit B glows significantly brighter, whereas bulb III in Circuit 
     // SECTION B: THEORY & ESSAY QUESTIONS (ANSWER 4 ONLY)
     // ==========================================
     {
+      id: "q02",
       questionNumber: "2",
       isPracticalSectionA: false,
       subQuestions: [
@@ -263,6 +265,7 @@ The valuable natural biological, mineral, and physical constituents of topsoil (
       ]
     },
     {
+      id: "q03",
       questionNumber: "3",
       isPracticalSectionA: false,
       subQuestions: [
@@ -318,6 +321,7 @@ $$2\text{K}_{(s)} + 2\text{H}_2\text{O}_{(l)} \to 2\text{KOH}_{(aq)} + \text{H}_
       ]
     },
     {
+      id: "q04",
       questionNumber: "4",
       isPracticalSectionA: false,
       subQuestions: [
@@ -370,6 +374,7 @@ The region located near the ends of a magnet where magnetic flux density is grea
       ]
     },
     {
+      id: "q05",
       questionNumber: "5",
       isPracticalSectionA: false,
       subQuestions: [
@@ -423,6 +428,7 @@ Rubber, plastic (polythene, PVC), porcelain, dry wood, or glass.`,
       ]
     },
     {
+      id: "q06",
       questionNumber: "6",
       isPracticalSectionA: false,
       subQuestions: [

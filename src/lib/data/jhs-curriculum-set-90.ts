@@ -38,6 +38,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
   durationMinutes: 45,
   questions: [
   {
+    "id": "q01",
     "number": 1,
     "prompt": "In the International System of Units (S.I.), what is the fundamental base unit for thermodynamic temperature?",
     "options": [
@@ -52,6 +53,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q02",
     "number": 2,
     "prompt": "Atmospheric air sampled from clean natural surroundings is physically classified as:",
     "options": [
@@ -66,6 +68,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q03",
     "number": 3,
     "prompt": "Which of the following routine husbandry operations are essential in commercial freshwater tilapia aquaculture?",
     "options": [
@@ -80,6 +83,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q04",
     "number": 4,
     "prompt": "In the anatomy of an entomophilous (insect-pollinated) flower, where is sweet sugary nectar synthesized and secreted?",
     "options": [
@@ -94,6 +98,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q05",
     "number": 5,
     "prompt": "Which anti-corrosion technique protects structural iron from rusting by coating it with a sacrificial layer of metallic zinc?",
     "options": [
@@ -108,6 +113,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q06",
     "number": 6,
     "prompt": "Continuous leaching of basic mineral nutrients from agricultural topsoil by percolating rainwater leads directly to soil:",
     "options": [
@@ -122,6 +128,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q07",
     "number": 7,
     "prompt": "What is the biological term for the basic physical and functional unit of heredity transmitted from parents to offspring?",
     "options": [
@@ -136,6 +143,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q08",
     "number": 8,
     "prompt": "Our astronomical Solar System consists of:",
     "options": [
@@ -150,6 +158,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q09",
     "number": 9,
     "prompt": "Which livestock management system allows farm animals to roam about freely in open pasture to scavenge for food and water?",
     "options": [
@@ -164,6 +173,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q10",
     "number": 10,
     "prompt": "In animal biology, the physical process of inhaling oxygen-rich air and exhaling air containing carbon dioxide is known as:",
     "options": [
@@ -178,6 +188,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q11",
     "number": 11,
     "prompt": "What type of simple machine is defined as a rigid bar that is pivoted and capable of turning about a fixed fulcrum?<br/><div class=\"my-4 flex justify-center\"><svg viewBox='0 0 340 140' width='100%' height='130' style='max-width: 440px;' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#0f172a' stroke='#334155' stroke-width='1.5'/><!-- Base Surface --><line x1='30' y1='105' x2='310' y2='105' stroke='#64748b' stroke-width='2'/><!-- Fulcrum Triangle (Pivot point) --><polygon points='160,70 145,105 175,105' fill='#3b82f6' stroke='#1d4ed8' stroke-width='2'/><circle cx='160' cy='70' r='4' fill='#ffffff'/><text x='160' y='122' font-size='10' font-weight='bold' fill='#38bdf8' text-anchor='middle'>Fixed Pivot (Fulcrum)</text><!-- Rigid Bar --><line x1='50' y1='70' x2='290' y2='70' stroke='#cbd5e1' stroke-width='4'/><!-- Load on Left --><rect x='60' y='45' width='30' height='25' fill='#ef4444' stroke='#b91c1c' stroke-width='1.5'/><text x='75' y='61' font-size='9' font-weight='bold' fill='#ffffff' text-anchor='middle'>LOAD</text><!-- Downward Effort on Right --><line x1='270' y1='35' x2='270' y2='68' stroke='#10b981' stroke-width='2.5'/><polygon points='266,62 270,70 274,62' fill='#10b981'/><text x='270' y='28' font-size='10' font-weight='bold' fill='#10b981' text-anchor='middle'>Effort</text><text x='170' y='134' font-size='8' font-weight='bold' fill='#64748b' text-anchor='middle'>RIGID BAR TURNING ABOUT A FIXED FULCRUM (LEVER)</text></svg></div>",
     "options": [
@@ -192,6 +203,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q12",
     "number": 12,
     "prompt": "What is the scientific term for an atom that carries a net positive electrical charge due to the loss of valence electrons?",
     "options": [
@@ -206,6 +218,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q13",
     "number": 13,
     "prompt": "Which environmental conservation strategy ensures that vulnerable wildlife species do not become endangered or extinct?",
     "options": [
@@ -220,6 +233,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q14",
     "number": 14,
     "prompt": "Which of the following physical characteristics is an essential requirement of a reliable thermometric liquid in glass thermometers?",
     "options": [
@@ -234,6 +248,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q15",
     "number": 15,
     "prompt": "Which of the following metallic elements will react with dilute natural acid (such as lime juice) to liberate effervescent bubbles of hydrogen gas?",
     "options": [
@@ -248,6 +263,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q16",
     "number": 16,
     "prompt": "In field agricultural pedology, what diagnostic physical property of soil is evaluated by rubbing a moist soil ball between the thumb and forefinger?",
     "options": [
@@ -262,6 +278,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q17",
     "number": 17,
     "prompt": "Why are small expansion gaps engineered between consecutive steel rail segments on railway lines?<br/><div class=\"my-4 flex justify-center\"><svg viewBox='0 0 340 140' width='100%' height='130' style='max-width: 440px;' xmlns='http://www.w3.org/2000/svg'><rect width='100%' height='100%' rx='6' fill='#0f172a' stroke='#334155' stroke-width='1.5'/><!-- Ballast Bed --><rect x='20' y='80' width='300' height='35' fill='#334155' stroke='#475569' stroke-width='1.5'/><!-- Left Steel Rail Segment --><rect x='30' y='55' width='125' height='25' fill='#94a3b8' stroke='#cbd5e1' stroke-width='2'/><!-- Right Steel Rail Segment --><rect x='185' y='55' width='125' height='25' fill='#94a3b8' stroke='#cbd5e1' stroke-width='2'/><!-- Expansion Gap in Middle (30 mm gap) --><line x1='155' y1='40' x2='185' y2='40' stroke='#f59e0b' stroke-width='2'/><line x1='155' y1='35' x2='155' y2='45' stroke='#f59e0b' stroke-width='1.5'/><line x1='185' y1='35' x2='185' y2='45' stroke='#f59e0b' stroke-width='1.5'/><text x='170' y='32' font-size='10' font-weight='bold' fill='#f59e0b' text-anchor='middle'>Expansion Gap</text><!-- Fishplate linking rails --><rect x='140' y='63' width='60' height='9' fill='#64748b' opacity='0.7'/><circle cx='148' cy='67' r='2' fill='#0f172a'/><circle cx='192' cy='67' r='2' fill='#0f172a'/><text x='170' y='130' font-size='9' font-weight='bold' fill='#cbd5e1' text-anchor='middle'>GAPS PREVENT THERMAL BUCKLING OF RAILS</text></svg></div>",
     "options": [
@@ -276,6 +293,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q18",
     "number": 18,
     "prompt": "Which of the following detrimental effects are caused by the atmospheric rusting (oxidation) of structural iron?",
     "options": [
@@ -290,6 +308,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q19",
     "number": 19,
     "prompt": "Why do farmers frequently include leguminous crops (such as cowpea and soybean) in rotational cropping programs?",
     "options": [
@@ -304,6 +323,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q20",
     "number": 20,
     "prompt": "In ecology, what is the specific term for the natural physical locality where an organism lives, feeds, and reproduces successfully?",
     "options": [
@@ -318,6 +338,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q21",
     "number": 21,
     "prompt": "Which water treatment chemical softens permanently hard water by precipitating dissolved calcium and magnesium ions as insoluble carbonates?",
     "options": [
@@ -332,6 +353,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q22",
     "number": 22,
     "prompt": "In post-harvest processing of agricultural produce, dehusking and shelling are essential processing stages carried out on:",
     "options": [
@@ -346,6 +368,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q23",
     "number": 23,
     "prompt": "How is typhoid fever, caused by the bacterium Salmonella typhi, primarily transmitted to human beings?",
     "options": [
@@ -360,6 +383,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q24",
     "number": 24,
     "prompt": "Which of the following situations illustrates a practical engineering or everyday advantage of friction?",
     "options": [
@@ -374,6 +398,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q25",
     "number": 25,
     "prompt": "Which traditional agricultural hand tool with a curved, sharp steel blade is specifically designed for harvesting rice, wheat, and forage grass?",
     "options": [
@@ -388,6 +413,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q26",
     "number": 26,
     "prompt": "Which of the following optical characteristics correctly describe the image formed on the screen of a pinhole camera?",
     "options": [
@@ -402,6 +428,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q27",
     "number": 27,
     "prompt": "Why do vegetable farmers transplant nursery seedlings into field seedbeds in the cool late afternoon or evening?",
     "options": [
@@ -416,6 +443,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q28",
     "number": 28,
     "prompt": "Which of the following statements concerning chemical molecules is scientifically accurate?",
     "options": [
@@ -430,6 +458,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q29",
     "number": 29,
     "prompt": "Which morphological feature is a characteristic adaptation of seeds and fruits dispersed by wind currents (anemochory)?",
     "options": [
@@ -444,6 +473,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q30",
     "number": 30,
     "prompt": "Which of the following materials allows electric current to pass through it with negligible resistance and is classified as a conductor?",
     "options": [
@@ -458,6 +488,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q31",
     "number": 31,
     "prompt": "A pure molecule of water contains hydrogen and oxygen atoms chemically combined in a fixed ratio of:",
     "options": [
@@ -472,6 +503,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q32",
     "number": 32,
     "prompt": "In the complex multi-chambered stomach of ruminant animals, where do symbiotic microflora synthesize B-complex vitamins and ferment cellulose?",
     "options": [
@@ -486,6 +518,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q33",
     "number": 33,
     "prompt": "Which lifestyle habit helps prevent and manage high blood pressure (hypertension) in human adults?",
     "options": [
@@ -500,6 +533,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q34",
     "number": 34,
     "prompt": "What mechanical property of metals enables them to be drawn into long, thin wires without fracturing or snapping?",
     "options": [
@@ -514,6 +548,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q35",
     "number": 35,
     "prompt": "An atom of aluminum is represented by the nuclear symbol ²⁷₁₃Al. How many uncharged neutrons reside within its nucleus?",
     "options": [
@@ -528,6 +563,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q36",
     "number": 36,
     "prompt": "In agricultural crop production, viable seeds are scientifically defined as seeds that:",
     "options": [
@@ -542,6 +578,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q37",
     "number": 37,
     "prompt": "Which physical phase transition can occur continuously from the exposed surface of a liquid at any temperature below its boiling point?",
     "options": [
@@ -556,6 +593,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q38",
     "number": 38,
     "prompt": "Which intentional human environmental action helps maintain balance in the global carbon cycle and prevents global warming?",
     "options": [
@@ -570,6 +608,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q39",
     "number": 39,
     "prompt": "What is the agronomic term for a cropping practice where only one single crop species is grown on the same field parcel season after season?",
     "options": [
@@ -584,6 +623,7 @@ export const SET_BECE_2013_SCIENCE_P1: any = {
     "points": 1
   },
   {
+    "id": "q40",
     "number": 40,
     "prompt": "Why is the green pigment chlorophyll indispensable for the process of photosynthesis in plants?",
     "options": [
