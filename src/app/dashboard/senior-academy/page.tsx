@@ -25,6 +25,7 @@ import { AssignmentMonitorView } from '@/components/academy/director/AssignmentM
 import { ExamDisclaimerTooltip, PlatformExamFooterNotice } from '@/components/exam/ExamDisclaimerNotice';
 import { getTopicQuestionSets, getQuestionSetById, invalidateCurriculumCache } from '@/lib/services/curriculumService';
 import { isValidCurriculumLevelId, SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
+import { SET_BECE_MOCK_1_SCIENCE_P1, SET_BECE_MOCK_1_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-132';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
@@ -3935,40 +3936,7 @@ function EnglishMastery({
     const isJunior = isJuniorLevel(activeGrade);
     const isPrimary = (activeGrade as string) === 'Early Childhood' || (activeGrade as string) === 'Lower Primary' || (activeGrade as string) === 'Upper Primary';
 
-    const handleLaunchMockPaper = (mockNum: number, paperNum: 1 | 2) => {
-        if (mockNum === 1) {
-            handleLaunchModule({
-                title: paperNum === 1 
-                    ? "BECE Integrated Science Mock 1 (Set 132 Objective)" 
-                    : "BECE Integrated Science Mock 1 (Set 132 Practical & Theory)",
-                domain: paperNum === 1 ? "PREDICTIVE LONGITUDINAL MODELS" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
-                strandName: "STRAND 1 TO STRAND 5",
-                strandCode: "S1-S5",
-                subStrand: paperNum === 1 
-                    ? "High-Fidelity Predictive Standard Mock 1 Objective" 
-                    : "High-Fidelity Predictive Standard Mock 1 Practical & Theory",
-                gradeTier: "Junior Secondary (JHS)",
-                meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
-                description: paperNum === 1 
-                    ? "Standardized 40-question objective examination synthesizing three decades of longitudinal BECE science curriculum trends with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
-                    : "Standardized practical and theory essay examination model featuring Eureka can displacement with vector SVG, paper chromatography with vector SVG, monohybrid genetics, and crop rotation design.",
-                difficulty: paperNum === 1 ? "Core" : "Advanced",
-                kind: "mock_suite",
-                setId: paperNum === 1 ? "paper_mock_1" : "paper_mock_1_p2",
-                topicId: "mock_exams",
-                format: paperNum === 1 ? "multiple_choice" : "structured_essay",
-                paperType: paperNum,
-                year: 2026,
-                setNumber: 132,
-                era: "modern",
-                isMock: true,
-                questionCount: paperNum === 1 ? 40 : 5,
-                examTag: paperNum === 1 ? "Predictive CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
-                subject: "Integrated Science",
-                status: "ready"
-            });
-        }
-    };
+
 
     const handleLaunchModule = async (mod: any) => {
         const levelId = mapGradeTierToLevelId(activeGrade);
@@ -5093,11 +5061,107 @@ function MathLab({
     const showPrepNotice = viewMode === 'exam_series' && (isPrepEraSelected || (isPrepSearch && filteredModules.length === 0));
 
 
+    const handleLaunchMockPaper = async (mockNum: number, paperNum: 1 | 2) => {
+        console.log(`[senior-academy] handleLaunchMockPaper called for Mock ${mockNum}, Paper ${paperNum}`);
+        if (mockNum === 1) {
+            await handleLaunchModule({
+                title: paperNum === 1 
+                    ? "BECE Integrated Science Mock 1 (Set 132 Objective)" 
+                    : "BECE Integrated Science Mock 1 (Set 132 Practical & Theory)",
+                domain: paperNum === 1 ? "PREDICTIVE LONGITUDINAL MODELS" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+                strandName: "STRAND 1 TO STRAND 5",
+                strandCode: "S1-S5",
+                subStrand: paperNum === 1 
+                    ? "High-Fidelity Predictive Standard Mock 1 Objective" 
+                    : "High-Fidelity Predictive Standard Mock 1 Practical & Theory",
+                gradeTier: "Junior Secondary (JHS)",
+                meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
+                description: paperNum === 1 
+                    ? "Standardized 40-question objective examination synthesizing three decades of longitudinal BECE science curriculum trends with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                    : "Standardized practical and theory essay examination model featuring Eureka can displacement with vector SVG, paper chromatography with vector SVG, monohybrid genetics, and crop rotation design.",
+                difficulty: paperNum === 1 ? "Core" : "Advanced",
+                kind: "mock_suite",
+                setId: paperNum === 1 ? "paper_mock_1" : "paper_mock_1_p2",
+                topicId: "mock_exams",
+                format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                paperType: paperNum,
+                year: 2026,
+                setNumber: 132,
+                era: "modern",
+                isMock: true,
+                questionCount: paperNum === 1 ? 40 : 5,
+                examTag: paperNum === 1 ? "Predictive CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
+                subject: "Integrated Science",
+                status: "ready"
+            });
+        }
+    };
+
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
         setActiveQuestionSet(null);
         setActiveTopicMeta(null);
         setActiveTopicalLab(null);
+
+        // 0. Direct Dedicated Mock Exam Loader with zero friction
+        if (mod.isMock || mod.setId?.includes('mock') || mod.topicId === 'mock_exams' || (mod.title && mod.title.toLowerCase().includes('mock 1'))) {
+            setActiveTopicMeta({ title: mod.title || 'BECE Integrated Science Mock 1', topicId: 'mock_exams' });
+            setIsLoadingSet(true);
+            try {
+                let pData: any = null;
+                const cleanMockId = (mod.setId || 'mock_1').replace(/_p\d+$/, '').replace(/^paper_/, '');
+                if (firestore) {
+                    try {
+                        const mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/science/mock_exams/${cleanMockId}`));
+                        if (mockSnap.exists()) {
+                            const mData = mockSnap.data();
+                            const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                            pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
+                        }
+                    } catch (fErr) {
+                        console.warn('[senior-academy] Firestore mock fetch warning:', fErr);
+                    }
+                }
+                
+                // Robust fallback to bundled data
+                if (!pData) {
+                    const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                    pData = isP2 ? SET_BECE_MOCK_1_SCIENCE_P2 : SET_BECE_MOCK_1_SCIENCE_P1;
+                }
+
+                if (pData) {
+                    const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                    const pQuestions = pData.questions || (isP2 ? [...(pData.sectionA || []), ...(pData.sectionB || [])] : []);
+                    const resolvedMockSet: CurriculumQuestionSet = {
+                        id: mod.setId || (isP2 ? 'paper_mock_1_p2' : 'paper_mock_1'),
+                        title: pData.title || mod.title,
+                        tier: 'Junior Secondary (JHS)',
+                        subject: 'Integrated Science',
+                        topic: mod.title,
+                        format: isP2 ? 'structured_essay' : 'objective',
+                        paperType: isP2 ? 2 : 1,
+                        totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 5 : 40),
+                        questions: pQuestions
+                    };
+                    console.log('[senior-academy] Mock Exam Activated Successfully:', resolvedMockSet.id, resolvedMockSet.title, `(${resolvedMockSet.questions?.length} questions)`);
+                    setActiveQuestionSet(resolvedMockSet);
+                    return;
+                }
+            } catch (mockErr) {
+                console.error('[senior-academy] Error activating mock exam:', mockErr);
+                const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                const fallbackData = isP2 ? SET_BECE_MOCK_1_SCIENCE_P2 : SET_BECE_MOCK_1_SCIENCE_P1;
+                setActiveQuestionSet({
+                    ...fallbackData,
+                    id: mod.setId || (isP2 ? 'paper_mock_1_p2' : 'paper_mock_1'),
+                    tier: 'Junior Secondary (JHS)',
+                    paperType: isP2 ? 2 : 1
+                } as any);
+                return;
+            } finally {
+                setIsLoadingSet(false);
+            }
+        }
 
         // 1. Direct handling of Topical Practice Labs (costs strictly 1 Firestore read)
         if (mod.kind === 'topical' || mod.format === 'topical_lab' || (mod.topicId && (mod.topicId.startsWith('topic_') || mod.topicId.startsWith('bs')))) {
