@@ -946,6 +946,7 @@ Answer: The kinetic energy just before hitting the ground is $$2,400.0\\text{ J}
 ];
 
 export const SET_BECE_1998_SCIENCE_P1 = {
+  id: "paper_1998_variant_p1",
   year: 1998,
   isVariant: true,
   setNumber: 130,
@@ -959,6 +960,7 @@ export const SET_BECE_1998_SCIENCE_P1 = {
 };
 
 export const SET_BECE_1998_SCIENCE_P2 = {
+  id: "paper_1998_variant_p2",
   year: 1998,
   isVariant: true,
   setNumber: 130,

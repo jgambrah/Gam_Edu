@@ -146,9 +146,15 @@ export async function fetchTopicQuestionSetsFromFirestore(
                   (item) => item.subjectId === sId && item.topicId === tId
                 ) || [];
                 for (const item of sampleItems) {
-                  if (!sets.some(s => s.id === item.questionSet.id)) {
-                    console.log(`[curriculumService] Appending missing fallback set to Firestore list: ${item.questionSet.id} ("${item.questionSet.title}")`);
-                    sets.push(item.questionSet);
+                  if (item?.questionSet && item.questionSet.title) {
+                    const fallbackId = item.questionSet.id || item.id || (item.questionSet.setNumber ? `paper_set_${item.questionSet.setNumber}` : undefined);
+                    if (fallbackId && !item.questionSet.id) {
+                      item.questionSet.id = fallbackId;
+                    }
+                    if (fallbackId && !sets.some(s => s && s.id === fallbackId)) {
+                      console.log(`[curriculumService] Appending missing fallback set to Firestore list: ${fallbackId} ("${item.questionSet.title}")`);
+                      sets.push(item.questionSet);
+                    }
                   }
                 }
               }

@@ -1017,6 +1017,7 @@ Answer: The density of the object is $$0.60\\text{ g cm}^{-3}$$.`,
 ];
 
 export const SET_BECE_1999_SCIENCE_P1 = {
+  id: "paper_1999_variant_p1",
   year: 1999,
   isVariant: true,
   setNumber: 131,
@@ -1029,6 +1030,7 @@ export const SET_BECE_1999_SCIENCE_P1 = {
 };
 
 export const SET_BECE_1999_SCIENCE_P2 = {
+  id: "paper_1999_variant_p2",
   year: 1999,
   isVariant: true,
   setNumber: 131,

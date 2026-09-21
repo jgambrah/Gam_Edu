@@ -12,7 +12,7 @@ import { collection, query, where, orderBy, serverTimestamp, deleteDoc, doc, add
 import { 
   Sigma, Languages, Microscope, BookOpen, 
   Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon,
-  Folder, FileText, ChevronRight, ChevronLeft, GraduationCap, Lock, Star,
+  Folder, FileText, ChevronRight, ChevronLeft, ArrowRight, GraduationCap, Lock, Star,
   Search, Filter, Compass, Award, FileSpreadsheet, Layers, SlidersHorizontal, RotateCcw, Clock, Bookmark, ListChecks, Send, BarChart3 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -4801,9 +4801,12 @@ function MathLab({
                 console.log("[senior-academy] Fetched sets for topic", tId, ":", sets);
                 if (sets && sets.length > 0) {
                     sets.forEach((s) => {
+                        if (!s || !s.title) return;
+                        const sTitle = s.title || '';
+                        const titleLower = sTitle.toLowerCase();
                         scanned.push({
                             title: s.title,
-                            domain: s.format === 'structured_essay' || s.title.toLowerCase().includes('paper 2') || s.title.toLowerCase().includes('structured')
+                            domain: s.format === 'structured_essay' || titleLower.includes('paper 2') || titleLower.includes('structured')
                                 ? (subject === 'science' ? 'STRAND 1: DIVERSITY OF MATTER' : 'ALGEBRA')
                                 : (subject === 'science' ? 'STRAND 2: CYCLES' : 'ARITHMETIC & NUMERACY'),
                             gradeTier: activeGrade,
