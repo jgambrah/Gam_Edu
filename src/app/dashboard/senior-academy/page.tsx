@@ -5145,12 +5145,22 @@ function MathLab({
                 if ((!targetSet || !targetSet.questions?.length) && firestore) {
                     try {
                         const cleanSetId = mod.setId.replace(/_p\d+$/, '');
-                        const ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_papers/${cleanSetId}`));
+                        let ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_papers/${cleanSetId}`));
+                        let ppData: any = null;
                         if (ppSnap.exists()) {
-                            const ppData = ppSnap.data();
+                            ppData = ppSnap.data();
+                        } else {
+                            const mockCleanId = cleanSetId.replace(/^paper_/, '');
+                            const mockSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/mock_exams/${mockCleanId}`));
+                            if (mockSnap.exists()) {
+                                ppData = mockSnap.data();
+                            }
+                        }
+                        if (ppData) {
                             const isP2 = mod.paperType === 2 || mod.setId.includes('_p2');
                             const pData = isP2 ? (ppData.paper2 || ppData) : (ppData.paper1 || ppData);
-                            if (pData && (pData.questions || pData.paper2?.questions)) {
+                            const pQuestions = pData?.questions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || [])] : []);
+                            if (pData && (pQuestions.length > 0 || pData.paper2?.questions)) {
                                 targetSet = {
                                     id: mod.setId,
                                     title: pData.title || mod.title,
@@ -5159,13 +5169,13 @@ function MathLab({
                                     topic: mod.title,
                                     format: isP2 ? 'structured_essay' : 'objective',
                                     paperType: isP2 ? 2 : 1,
-                                    totalQuestions: pData.totalQuestions || pData.questions?.length || (isP2 ? 6 : 40),
-                                    questions: pData.questions || pData.paper2?.questions || []
+                                    totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 5 : 40),
+                                    questions: pQuestions.length > 0 ? pQuestions : (pData.paper2?.questions || [])
                                 } as CurriculumQuestionSet;
                             }
                         }
                     } catch (ppErr) {
-                        console.warn('[senior-academy] Error checking past_papers doc:', ppErr);
+                        console.warn('[senior-academy] Error checking past_papers/mock_exams doc:', ppErr);
                     }
                 }
             }
