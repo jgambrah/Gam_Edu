@@ -76,27 +76,32 @@ function verifySet121Local() {
     }
   }
 
-  // 3. Vector SVG presence and unlabelled verification checks
+  // 3. Vector SVG presence and placement verification
   console.log('\nChecking Reconstructed Vector SVGs:');
-  const svgs = [
-    { name: 'Human Reproductive Systems (IMG_2614.jpg)', match: 'Female System', forbidden: 'I (Uterus)' },
-    { name: 'Horticultural Farm Tools (IMG_2613.jpg)', match: 'HORTICULTURAL FARM TOOLS', forbidden: 'A (Pickaxe / Mattock)' },
-    { name: 'Forward-Biased Circuit with LED, Diode, Resistor', match: 'FORWARD BIASING: ANODES CONNECTED TOWARDS POSITIVE TERMINAL', forbidden: null }
-  ];
+  
+  // Q1(a): in prompt, unlabelled
+  const q1a = q1.subQuestions[0];
+  if (!q1a.prompt.includes('Female System') || q1a.prompt.includes('I (Uterus)')) {
+    throw new Error('Q1(a) prompt must include unlabelled reproductive systems diagram without spoiler text');
+  }
+  console.log('✅ Q1(a) Reproductive Systems diagram verified unlabelled in prompt.');
 
-  svgs.forEach(svg => {
-    const foundInP2 = p2Questions.some(q => q.subQuestions.some(sub => sub.prompt.includes(svg.match)));
-    if (!foundInP2) {
-      throw new Error(`Missing SVG setup for: ${svg.name}`);
-    }
-    if (svg.forbidden) {
-      const hasForbidden = p2Questions.some(q => q.subQuestions.some(sub => sub.prompt.includes(svg.forbidden)));
-      if (hasForbidden) {
-        throw new Error(`SVG for ${svg.name} still contains spoiler text: ${svg.forbidden}`);
-      }
-    }
-    console.log(`✅ Reconstructed SVG verified & unlabelled: ${svg.name}`);
-  });
+  // Q1(b): in prompt, unlabelled
+  const q1b = q1.subQuestions[1];
+  if (!q1b.prompt.includes('HORTICULTURAL FARM TOOLS') || q1b.prompt.includes('A (Pickaxe / Mattock)')) {
+    throw new Error('Q1(b) prompt must include unlabelled farm tools diagram without spoiler text');
+  }
+  console.log('✅ Q1(b) Horticultural Farm Tools diagram verified unlabelled in prompt.');
+
+  // Q1(c): NOT in prompt, IS in workedSolution
+  const q1c = q1.subQuestions[2];
+  if (q1c.prompt.includes('FORWARD BIASING') || q1c.prompt.includes('<svg')) {
+    throw new Error('Q1(c) prompt must NOT show the drawn circuit diagram! The student must draw it.');
+  }
+  if (!q1c.workedSolution.includes('FORWARD BIASING') || !q1c.workedSolution.includes('<svg')) {
+    throw new Error('Q1(c) workedSolution must contain the forward-biased circuit diagram schematic rubric.');
+  }
+  console.log('✅ Q1(c) Forward-biased circuit diagram verified absent from prompt and present in workedSolution!');
 
   console.log('\n🎉 All Set 121 criteria successfully validated!');
 }

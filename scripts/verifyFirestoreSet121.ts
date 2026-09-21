@@ -99,7 +99,7 @@ async function verifyFirestoreSet121() {
     throw new Error(`Firestore key distribution not 10 of each! ${JSON.stringify(keyDist)}`);
   }
 
-  // Check Paper 2 marks and verify diagrams are unlabelled
+  // Check Paper 2 marks and verify diagram placements
   const q1 = mainData.paper2.questions[0];
   const q1Marks = q1.subQuestions.reduce((acc: number, sub: any) => acc + sub.maxMarks, 0);
   console.log(`   - Q1 Section A Practical marks: ${q1Marks} (Expected: 40)`);
@@ -107,16 +107,26 @@ async function verifyFirestoreSet121() {
 
   const q1aPrompt = q1.subQuestions[0].prompt;
   const q1bPrompt = q1.subQuestions[1].prompt;
+  const q1cPrompt = q1.subQuestions[2].prompt;
+  const q1cSolution = q1.subQuestions[2].workedSolution;
 
   if (q1aPrompt.includes('I (Uterus)') || q1aPrompt.includes('II (Oviduct)') || q1aPrompt.includes('VII (Testis)')) {
     throw new Error('Firestore document still contains organ names in Q1(a) reproductive diagram!');
   }
-  console.log('✅ Confirmed: Reproductive system diagram in Firestore has all part names removed (only labels I, II, III, IV, V, VI, VII, VIII).');
+  console.log('✅ Confirmed: Reproductive system diagram in Firestore has all part names removed (labels I-VIII only).');
 
   if (q1bPrompt.includes('A (Pickaxe / Mattock)') || q1bPrompt.includes('B (Dibber)') || q1bPrompt.includes('C (Hand Fork)')) {
     throw new Error('Firestore document still contains tool names in Q1(b) farm tools diagram!');
   }
-  console.log('✅ Confirmed: Farm tools diagram in Firestore has all tool names removed (only labels A, B, C).');
+  console.log('✅ Confirmed: Farm tools diagram in Firestore has all tool names removed (labels A, B, C only).');
+
+  if (q1cPrompt.includes('FORWARD BIASING') || q1cPrompt.includes('<svg')) {
+    throw new Error('Firestore document still contains circuit diagram in Q1(c) prompt!');
+  }
+  if (!q1cSolution.includes('FORWARD BIASING') || !q1cSolution.includes('<svg')) {
+    throw new Error('Firestore document missing circuit diagram from Q1(c) workedSolution!');
+  }
+  console.log('✅ Confirmed: Q1(c) circuit diagram is NOT shown in prompt, and IS present in workedSolution rubric!');
 
   // 2. Check single-doc P2 path
   const p2Path = 'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2023_variant_p2';
@@ -125,11 +135,12 @@ async function verifyFirestoreSet121() {
     throw new Error(`P2 single doc does not exist at ${p2Path}`);
   }
   const p2Data = p2Snap.data();
-  const p2Q1aPrompt = p2Data.questions[0].subQuestions[0].prompt;
-  if (p2Q1aPrompt.includes('I (Uterus)')) {
-    throw new Error('P2 single doc still contains organ names!');
+  const p2Q1cPrompt = p2Data.questions[0].subQuestions[2].prompt;
+  const p2Q1cSolution = p2Data.questions[0].subQuestions[2].workedSolution;
+  if (p2Q1cPrompt.includes('<svg') || !p2Q1cSolution.includes('<svg')) {
+    throw new Error('P2 single doc Q1(c) prompt or solution circuit diagram mismatch!');
   }
-  console.log(`✅ P2 single-doc verified unlabelled: ${p2Path}`);
+  console.log(`✅ P2 single-doc verified with proper circuit diagram placement: ${p2Path}`);
 
   console.log('\n🎉 ALL FIRESTORE DATASETS VERIFIED SUCCESSFULLY FOR SET 121!');
 }
