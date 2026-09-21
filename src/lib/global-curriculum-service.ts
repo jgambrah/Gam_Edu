@@ -49,6 +49,9 @@ import { SET_BECE_1991_SCIENCE_P1, SET_BECE_1991_SCIENCE_P2 } from './data/jhs-c
 import { SET_BECE_1992_SCIENCE_P1, SET_BECE_1992_SCIENCE_P2 } from './data/jhs-curriculum-set-124';
 import { SET_BECE_1993_SCIENCE_P1, SET_BECE_1993_SCIENCE_P2 } from './data/jhs-curriculum-set-125';
 import { SET_BECE_1994_SCIENCE_P1, SET_BECE_1994_SCIENCE_P2 } from './data/jhs-curriculum-set-126';
+import { SET_BECE_1995_SCIENCE_P1, SET_BECE_1995_SCIENCE_P2 } from './data/jhs-curriculum-set-127';
+import { SET_BECE_1996_SCIENCE_P1, SET_BECE_1996_SCIENCE_P2 } from './data/jhs-curriculum-set-128';
+import { SET_BECE_1997_SCIENCE_P1, SET_BECE_1997_SCIENCE_P2 } from './data/jhs-curriculum-set-129';
 import { SET_BECE_2019_SCIENCE_P1 } from './data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from './data/jhs-curriculum-set-83';
 /**
@@ -1298,6 +1301,249 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'integrated_science',
       topicId: 'past_papers',
       questionSet: SET_BECE_1994_SCIENCE_P2
+    },
+    // 1995 BECE Integrated Science Complete Variant (Set 127)
+    {
+      subjectId: 'science',
+      topicId: 'bece_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    // 1996 BECE Integrated Science Complete Variant (Set 128)
+    {
+      subjectId: 'science',
+      topicId: 'bece_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    // 1997 BECE Integrated Science Complete Variant (Set 129)
+    {
+      subjectId: 'science',
+      topicId: 'bece_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
     },
     {
       subjectId: 'science',
@@ -2969,6 +3215,249 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'integrated_science',
       topicId: 'past_papers',
       questionSet: SET_BECE_1994_SCIENCE_P2
+    },
+    // 1995 BECE Integrated Science Complete Variant (Set 127)
+    {
+      subjectId: 'science',
+      topicId: 'bece_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1995_variant',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1995_variant_p2',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1995_SCIENCE_P2
+    },
+    // 1996 BECE Integrated Science Complete Variant (Set 128)
+    {
+      subjectId: 'science',
+      topicId: 'bece_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1996_variant',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1996_variant_p2',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1996_SCIENCE_P2
+    },
+    // 1997 BECE Integrated Science Complete Variant (Set 129)
+    {
+      subjectId: 'science',
+      topicId: 'bece_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1997_variant',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_1997_variant_p2',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_1997_SCIENCE_P2
     },
     {
       subjectId: 'science',
