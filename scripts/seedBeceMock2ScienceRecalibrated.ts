@@ -46,61 +46,73 @@ const svgQ1aOhmsLawCircuit = `
   <svg viewBox='0 0 380 220' width='100%' height='200' style='max-width: 480px;' xmlns='http://www.w3.org/2000/svg'>
     <rect width='100%' height='100%' rx='8' fill='#0f172a' stroke='#334155' stroke-width='1.5'/>
     
-    <!-- Top Wire with DC Battery (Two Cells in Series) -->
-    <line x1='50' y1='40' x2='140' y2='40' stroke='#38bdf8' stroke-width='2'/>
     
-    <!-- 2 Cells in Series -->
+    <line x1='50' y1='40' x2='140' y2='40' stroke='#38bdf8' stroke-width='2'/>
     <g transform='translate(140, 40)'>
       <line x1='0' y1='-14' x2='0' y2='14' stroke='#10b981' stroke-width='2.5'/>
       <line x1='8' y1='-8' x2='8' y2='8' stroke='#ef4444' stroke-width='4'/>
       <line x1='18' y1='-14' x2='18' y2='14' stroke='#10b981' stroke-width='2.5'/>
       <line x1='26' y1='-8' x2='26' y2='8' stroke='#ef4444' stroke-width='4'/>
-      <text x='13' y='-20' font-size='10' font-weight='bold' fill='#cbd5e1' text-anchor='middle'>Battery I</text>
+      
+      <circle cx='13' cy='-22' r='8' fill='#1e293b' stroke='#38bdf8' stroke-width='1.5'/>
+      <text x='13' y='-19' font-size='9' font-weight='bold' fill='#38bdf8' text-anchor='middle'>I</text>
     </g>
     
-    <!-- Switch / Key II (Closed) -->
+    
     <line x1='166' y1='40' x2='230' y2='40' stroke='#38bdf8' stroke-width='2'/>
     <circle cx='233' cy='40' r='2.5' fill='#e2e8f0'/>
     <line x1='233' y1='40' x2='257' y2='40' stroke='#e2e8f0' stroke-width='2.5'/>
     <circle cx='257' cy='40' r='2.5' fill='#e2e8f0'/>
-    <text x='245' y='25' font-size='9' font-weight='bold' fill='#e2e8f0' text-anchor='middle'>Key II</text>
+    
+    <circle cx='245' cy='22' r='8' fill='#1e293b' stroke='#e2e8f0' stroke-width='1.5'/>
+    <text x='245' y='25' font-size='9' font-weight='bold' fill='#e2e8f0' text-anchor='middle'>II</text>
     
     <line x1='257' y1='40' x2='320' y2='40' stroke='#38bdf8' stroke-width='2'/>
 
-    <!-- Right Side Bus with Series Ammeter III -->
+    
     <line x1='320' y1='40' x2='320' y2='75' stroke='#38bdf8' stroke-width='2'/>
     <circle cx='320' cy='90' r='14' fill='#1e293b' stroke='#38bdf8' stroke-width='2'/>
     <text x='320' y='94' font-size='11' font-weight='bold' fill='#ffffff' text-anchor='middle'>A</text>
-    <text x='345' y='94' font-size='9' font-weight='bold' fill='#38bdf8'>Ammeter III</text>
+    
+    <circle cx='350' cy='90' r='8' fill='#1e293b' stroke='#38bdf8' stroke-width='1.5'/>
+    <text x='350' y='93' font-size='9' font-weight='bold' fill='#38bdf8' text-anchor='middle'>III</text>
     <line x1='320' y1='104' x2='320' y2='140' stroke='#38bdf8' stroke-width='2'/>
 
-    <!-- Bottom Branch with Unknown Resistor IV and Rheostat V -->
+    
     <line x1='320' y1='140' x2='240' y2='140' stroke='#38bdf8' stroke-width='2'/>
     
-    <!-- Rheostat V (Variable Resistor with slider) -->
+    
     <g transform='translate(170, 130)'>
       <rect x='0' y='0' width='55' height='20' fill='#1e293b' stroke='#a855f7' stroke-width='1.8'/>
       <line x1='5' y1='25' x2='50' y2='-5' stroke='#a855f7' stroke-width='2'/>
       <polygon points='46,-9 54,-5 51,3' fill='#a855f7'/>
-      <text x='27' y='-10' font-size='8' font-weight='bold' fill='#a855f7' text-anchor='middle'>Rheostat V</text>
+      
+      <circle cx='27' cy='-18' r='8' fill='#1e293b' stroke='#a855f7' stroke-width='1.5'/>
+      <text x='27' y='-15' font-size='9' font-weight='bold' fill='#a855f7' text-anchor='middle'>V</text>
     </g>
 
     <line x1='170' y1='140' x2='140' y2='140' stroke='#38bdf8' stroke-width='2'/>
 
-    <!-- Unknown Resistor IV -->
-    <rect x='70' y='130' width='55' height='20' fill='#1e293b' stroke='#f59e0b' stroke-width='2'/>
-    <text x='97' y='144' font-size='9' font-weight='bold' fill='#f59e0b' text-anchor='middle'>Resistor IV</text>
+    
+    <g transform='translate(70, 130)'>
+      <rect x='0' y='0' width='55' height='20' fill='#1e293b' stroke='#f59e0b' stroke-width='2'/>
+      
+      <circle cx='27.5' cy='-12' r='8' fill='#1e293b' stroke='#f59e0b' stroke-width='1.5'/>
+      <text x='27.5' y='-9' font-size='9' font-weight='bold' fill='#f59e0b' text-anchor='middle'>IV</text>
+    </g>
 
     <line x1='70' y1='140' x2='50' y2='140' stroke='#38bdf8' stroke-width='2'/>
     <line x1='50' y1='140' x2='50' y2='40' stroke='#38bdf8' stroke-width='2'/>
 
-    <!-- Parallel Voltmeter VI connected across Resistor IV -->
+    
     <line x1='60' y1='140' x2='60' y2='180' stroke='#38bdf8' stroke-width='1.5'/>
     <line x1='135' y1='140' x2='135' y2='180' stroke='#38bdf8' stroke-width='1.5'/>
     <line x1='60' y1='180' x2='85' y2='180' stroke='#38bdf8' stroke-width='1.5'/>
     <circle cx='97' cy='180' r='12' fill='#1e293b' stroke='#10b981' stroke-width='2'/>
     <text x='97' y='184' font-size='11' font-weight='bold' fill='#ffffff' text-anchor='middle'>V</text>
-    <text x='115' y='198' font-size='8' font-weight='bold' fill='#10b981'>Voltmeter VI</text>
+    
+    <circle cx='97' cy='204' r='8' fill='#1e293b' stroke='#10b981' stroke-width='1.5'/>
+    <text x='97' y='207' font-size='9' font-weight='bold' fill='#10b981' text-anchor='middle'>VI</text>
     <line x1='109' y1='180' x2='135' y2='180' stroke='#38bdf8' stroke-width='1.5'/>
   </svg>
 </div>
@@ -600,15 +612,15 @@ const rawScienceBank: QuestionItem[] = [
   },
   {
     number: 29,
-    prompt: "Which environmental factor is essential for the light-independent reactions (Calvin cycle) of photosynthesis to synthesize glucose?",
+    prompt: "Which atmospheric gas is absorbed by green plants through leaf stomata to manufacture food (glucose) during photosynthesis?",
     correctAnswer: "Carbon dioxide [CO₂]",
     distractors: [
       "Molecular nitrogen [N₂]",
       "Inert argon gas [Ar]",
       "Carbon monoxide [CO]"
     ],
-    hint: "Provides carbon and oxygen atoms fixed into glucose molecules.",
-    workedSolution: "Carbon dioxide ($\\text{CO}_2$) is absorbed through stomata and fixed into glucose during the light-independent stage of photosynthesis.",
+    hint: "Absorbed from the surrounding air through microscopic pores on leaves called stomata.",
+    workedSolution: "Carbon dioxide ($\\text{CO}_2$) is absorbed from atmospheric air through leaf stomata and combined with water in chloroplasts during photosynthesis to synthesize glucose.",
     points: 1
   },
   {
