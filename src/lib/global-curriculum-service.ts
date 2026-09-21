@@ -44,6 +44,7 @@ import { SET_BECE_2001_SCIENCE_P1, SET_BECE_2001_SCIENCE_P2 } from './data/jhs-c
 import { SET_BECE_2000_SCIENCE_P1, SET_BECE_2000_SCIENCE_P2 } from './data/jhs-curriculum-set-116';
 import { SET_BECE_2025_SCIENCE_P1 } from './data/jhs-curriculum-set-118';
 import { SET_BECE_2025_SCIENCE_P2 } from './data/jhs-curriculum-set-119';
+import { SET_BECE_2024_SCIENCE_P1, SET_BECE_2024_SCIENCE_P2 } from './data/jhs-curriculum-set-120';
 import { SET_BECE_2019_SCIENCE_P1 } from './data/jhs-curriculum-set-82';
 import { SET_BECE_2019_SCIENCE_P2 } from './data/jhs-curriculum-set-83';
 /**
@@ -2073,6 +2074,87 @@ export const SAMPLE_GLOBAL_QUESTION_SETS: Record<
       subjectId: 'integrated_science',
       topicId: 'past_papers',
       questionSet: SET_BECE_2025_SCIENCE_P2
+    },
+    // Set 120: 2024 BECE Integrated Science Complete Variant
+    {
+      subjectId: 'science',
+      topicId: 'bece_2024_variant',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_2024_variant',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_2024_variant',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_2024_variant',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P1
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_2024_variant_p2',
+      questionSet: SET_BECE_2024_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_2024_variant_p2',
+      questionSet: SET_BECE_2024_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'paper_2024_variant_p2',
+      questionSet: SET_BECE_2024_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'paper_2024_variant_p2',
+      questionSet: SET_BECE_2024_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'bece_past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P2
+    },
+    {
+      subjectId: 'science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P2
+    },
+    {
+      subjectId: 'integrated_science',
+      topicId: 'past_papers',
+      questionSet: SET_BECE_2024_SCIENCE_P2
     },
     {
       subjectId: 'science',
