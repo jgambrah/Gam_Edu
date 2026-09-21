@@ -27,6 +27,8 @@ import { getTopicQuestionSets, getQuestionSetById, invalidateCurriculumCache } f
 import { isValidCurriculumLevelId, SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
 import { SET_BECE_MOCK_1_SCIENCE_P1, SET_BECE_MOCK_1_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-132';
 import { SET_BECE_MOCK_2_SCIENCE_P1, SET_BECE_MOCK_2_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-133';
+import { SET_BECE_MOCK_3_SCIENCE_P1, SET_BECE_MOCK_3_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-134';
+import { SET_BECE_MOCK_4_SCIENCE_P1, SET_BECE_MOCK_4_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-135';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
@@ -4505,6 +4507,15 @@ function findModuleForExam(modules: SuggestedModuleCard[], examId?: string, pape
         'paper_mock_1': { setNum: 132, paper: 1, year: 2026 },
         'paper_mock_1_p1': { setNum: 132, paper: 1, year: 2026 },
         'paper_mock_1_p2': { setNum: 132, paper: 2, year: 2026 },
+        'paper_mock_2': { setNum: 133, paper: 1, year: 2026 },
+        'paper_mock_2_p1': { setNum: 133, paper: 1, year: 2026 },
+        'paper_mock_2_p2': { setNum: 133, paper: 2, year: 2026 },
+        'paper_mock_3': { setNum: 134, paper: 1, year: 2026 },
+        'paper_mock_3_p1': { setNum: 134, paper: 1, year: 2026 },
+        'paper_mock_3_p2': { setNum: 134, paper: 2, year: 2026 },
+        'paper_mock_4': { setNum: 135, paper: 1, year: 2026 },
+        'paper_mock_4_p1': { setNum: 135, paper: 1, year: 2026 },
+        'paper_mock_4_p2': { setNum: 135, paper: 2, year: 2026 },
         'paper_1999_variant': modules[0]?.subject === 'Mathematics' ? { setNum: 27, paper: 1, year: 1999 } : { setNum: 131, paper: 1, year: 1999 },
         'paper_1999_variant_p1': { setNum: 131, paper: 1, year: 1999 },
         'paper_1999_variant_p2': { setNum: 131, paper: 2, year: 1999 },
@@ -5129,6 +5140,68 @@ function MathLab({
                 subject: "Integrated Science",
                 status: "ready"
             });
+        } else if (mockNum === 3) {
+            await handleLaunchModule({
+                title: paperNum === 1 
+                    ? "BECE Integrated Science Mock 3 (Set 134 Objective)" 
+                    : "BECE Integrated Science Mock 3 (Set 134 Practical & Theory)",
+                domain: paperNum === 1 ? "COMPREHENSIVE MOCK CURRICULUM" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+                strandName: "STRAND 1 TO STRAND 5",
+                strandCode: "S1-S5",
+                subStrand: paperNum === 1 
+                    ? "High-Fidelity Standard Mock 3 Objective" 
+                    : "High-Fidelity Standard Mock 3 Practical & Theory",
+                gradeTier: "Junior Secondary (JHS)",
+                meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
+                description: paperNum === 1 
+                    ? "Standardized 40-question objective examination synthesizing NaCCA BECE science curriculum standards with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                    : "Standardized practical and theory essay examination featuring chemical food tests, pinhole camera ray diagram, separating funnel immiscible liquids, and mammalian digestive systems.",
+                difficulty: paperNum === 1 ? "Core" : "Advanced",
+                kind: "mock_suite",
+                setId: paperNum === 1 ? "paper_mock_3" : "paper_mock_3_p2",
+                topicId: "mock_exams",
+                format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                paperType: paperNum,
+                year: 2026,
+                setNumber: 134,
+                era: "modern",
+                isMock: true,
+                questionCount: paperNum === 1 ? 40 : 5,
+                examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
+                subject: "Integrated Science",
+                status: "ready"
+            });
+        } else if (mockNum === 4) {
+            await handleLaunchModule({
+                title: paperNum === 1 
+                    ? "BECE Integrated Science Mock 4 (Set 135 Objective)" 
+                    : "BECE Integrated Science Mock 4 (Set 135 Practical & Theory)",
+                domain: paperNum === 1 ? "COMPREHENSIVE MOCK CURRICULUM" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+                strandName: "STRAND 1 TO STRAND 5",
+                strandCode: "S1-S5",
+                subStrand: paperNum === 1 
+                    ? "High-Fidelity Standard Mock 4 Objective" 
+                    : "High-Fidelity Standard Mock 4 Practical & Theory",
+                gradeTier: "Junior Secondary (JHS)",
+                meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
+                description: paperNum === 1 
+                    ? "Standardized 40-question objective examination synthesizing NaCCA BECE science curriculum standards with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                    : "Standardized practical and theory essay examination featuring dispersion of white light, simple distillation, plant cell plasmolysis, and horticultural farm hand tools.",
+                difficulty: paperNum === 1 ? "Core" : "Advanced",
+                kind: "mock_suite",
+                setId: paperNum === 1 ? "paper_mock_4" : "paper_mock_4_p2",
+                topicId: "mock_exams",
+                format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                paperType: paperNum,
+                year: 2026,
+                setNumber: 135,
+                era: "modern",
+                isMock: true,
+                questionCount: paperNum === 1 ? 40 : 5,
+                examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
+                subject: "Integrated Science",
+                status: "ready"
+            });
         }
     };
 
@@ -5161,7 +5234,11 @@ function MathLab({
                 // Robust fallback to bundled data
                 if (!pData) {
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
-                    if (cleanMockId === 'mock_2' || mod.setId?.includes('mock_2')) {
+                    if (cleanMockId === 'mock_4' || mod.setId?.includes('mock_4')) {
+                        pData = isP2 ? SET_BECE_MOCK_4_SCIENCE_P2 : SET_BECE_MOCK_4_SCIENCE_P1;
+                    } else if (cleanMockId === 'mock_3' || mod.setId?.includes('mock_3')) {
+                        pData = isP2 ? SET_BECE_MOCK_3_SCIENCE_P2 : SET_BECE_MOCK_3_SCIENCE_P1;
+                    } else if (cleanMockId === 'mock_2' || mod.setId?.includes('mock_2')) {
                         pData = isP2 ? SET_BECE_MOCK_2_SCIENCE_P2 : SET_BECE_MOCK_2_SCIENCE_P1;
                     } else {
                         pData = isP2 ? SET_BECE_MOCK_1_SCIENCE_P2 : SET_BECE_MOCK_1_SCIENCE_P1;
@@ -5179,6 +5256,7 @@ function MathLab({
                         topic: mod.title,
                         format: isP2 ? 'structured_essay' : 'objective',
                         paperType: isP2 ? 2 : 1,
+                        durationMinutes: pData.durationMinutes || (isP2 ? 105 : 45),
                         totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 5 : 40),
                         questions: pQuestions
                     };
@@ -5189,15 +5267,18 @@ function MathLab({
             } catch (mockErr) {
                 console.error('[senior-academy] Error activating mock exam:', mockErr);
                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
+                const isMock4 = mod.setId?.includes('mock_4') || mod.title?.toLowerCase().includes('mock 4');
+                const isMock3 = mod.setId?.includes('mock_3') || mod.title?.toLowerCase().includes('mock 3');
                 const isMock2 = mod.setId?.includes('mock_2') || mod.title?.toLowerCase().includes('mock 2');
                 const fallbackData = isP2 
-                    ? (isMock2 ? SET_BECE_MOCK_2_SCIENCE_P2 : SET_BECE_MOCK_1_SCIENCE_P2) 
-                    : (isMock2 ? SET_BECE_MOCK_2_SCIENCE_P1 : SET_BECE_MOCK_1_SCIENCE_P1);
+                    ? (isMock4 ? SET_BECE_MOCK_4_SCIENCE_P2 : (isMock3 ? SET_BECE_MOCK_3_SCIENCE_P2 : (isMock2 ? SET_BECE_MOCK_2_SCIENCE_P2 : SET_BECE_MOCK_1_SCIENCE_P2))) 
+                    : (isMock4 ? SET_BECE_MOCK_4_SCIENCE_P1 : (isMock3 ? SET_BECE_MOCK_3_SCIENCE_P1 : (isMock2 ? SET_BECE_MOCK_2_SCIENCE_P1 : SET_BECE_MOCK_1_SCIENCE_P1)));
                 setActiveQuestionSet({
                     ...fallbackData,
-                    id: mod.setId || (isP2 ? (isMock2 ? 'paper_mock_2_p2' : 'paper_mock_1_p2') : (isMock2 ? 'paper_mock_2' : 'paper_mock_1')),
+                    id: mod.setId || (isP2 ? (isMock4 ? 'paper_mock_4_p2' : (isMock3 ? 'paper_mock_3_p2' : (isMock2 ? 'paper_mock_2_p2' : 'paper_mock_1_p2'))) : (isMock4 ? 'paper_mock_4' : (isMock3 ? 'paper_mock_3' : (isMock2 ? 'paper_mock_2' : 'paper_mock_1')))),
                     tier: 'Junior Secondary (JHS)',
                     paperType: isP2 ? 2 : 1,
+                    durationMinutes: fallbackData.durationMinutes || (isP2 ? 105 : 45),
                     durationMinutes: fallbackData.durationMinutes || (isP2 ? 105 : 45)
                 } as any);
                 return;
@@ -5418,6 +5499,10 @@ function MathLab({
                                 handleLaunchMockPaper(1, 2);
                             } else if (activeQuestionSet?.id === 'paper_mock_2' || activeQuestionSet?.id === 'mock_2' || activeQuestionSet?.title?.toLowerCase().includes('mock 2')) {
                                 handleLaunchMockPaper(2, 2);
+                            } else if (activeQuestionSet?.id === 'paper_mock_3' || activeQuestionSet?.id === 'mock_3' || activeQuestionSet?.title?.toLowerCase().includes('mock 3')) {
+                                handleLaunchMockPaper(3, 2);
+                            } else if (activeQuestionSet?.id === 'paper_mock_4' || activeQuestionSet?.id === 'mock_4' || activeQuestionSet?.title?.toLowerCase().includes('mock 4')) {
+                                handleLaunchMockPaper(4, 2);
                             }
                         }}
                         onBack={() => {
@@ -5969,48 +6054,178 @@ function MathLab({
                                 </div>
 
                                 {/* MOCK 3 CARD */}
-                                <div className="rounded-3xl border border-slate-800/80 bg-slate-900/50 p-6 sm:p-7 shadow-lg flex flex-col justify-between opacity-80">
+                                <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/40 transition-all flex flex-col justify-between group">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between gap-2">
-                                            <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs font-bold">
+                                            <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 bg-indigo-500/10 text-xs font-bold px-3 py-1">
                                                 MOCK 3 • SET 134
                                             </Badge>
-                                            <span className="text-[11px] font-semibold text-slate-500">Upcoming Suite</span>
+                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                                Live & Calibrated
+                                            </span>
                                         </div>
+
                                         <div>
-                                            <h3 className="text-base sm:text-lg font-bold text-slate-200">
+                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-indigo-300 transition-colors">
                                                 BECE Integrated Science Mock 3 (Standard Mock Suite)
                                             </h3>
-                                            <p className="text-xs text-slate-500 mt-1">
-                                                Equilibrium mechanics, electromagnetic induction, acid-base stoichiometry, infectious disease transmission, and ecological biomes.
+                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                                                Advanced curriculum synthesis targeting qualitative food tests, rectilinear light propagation in pinhole optics, immiscible liquid separation, and comparative digestive physiology.
                                             </p>
                                         </div>
+
+                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                            {/* Paper 1 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
+                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
+                                                        40 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400">
+                                                    40 Questions • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D) with diagnostic hints & solutions.
+                                                </p>
+                                            </div>
+
+                                            {/* Paper 2 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
+                                                        <BookOpen className="w-3.5 h-3.5" /> Paper 2: Theory & Practical
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
+                                                        100 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400">
+                                                    5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="pt-4 border-t border-slate-800/60 mt-4">
-                                        <span className="text-xs text-slate-500 font-medium">Coming Soon in Series</span>
+
+                                    {/* Action Buttons */}
+                                    <div className="space-y-2.5 pt-5 border-t border-slate-800 mt-5">
+                                        <Button
+                                            onClick={() => handleLaunchMockPaper(3, 1)}
+                                            className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
+                                        >
+                                            <Sparkles className="w-4 h-4 text-amber-300" />
+                                            <span>Start Unified Mock 3 (Paper 1 → Paper 2)</span>
+                                            <ArrowRight className="w-4 h-4" />
+                                        </Button>
+                                        
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(3, 1)}
+                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
+                                            >
+                                                Take Paper 1 Only
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(3, 2)}
+                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
+                                            >
+                                                Take Paper 2 Only
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* MOCK 4 CARD */}
-                                <div className="rounded-3xl border border-slate-800/80 bg-slate-900/50 p-6 sm:p-7 shadow-lg flex flex-col justify-between opacity-80">
+                                <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-6 sm:p-7 shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/40 transition-all flex flex-col justify-between group">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between gap-2">
-                                            <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs font-bold">
+                                            <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 bg-indigo-500/10 text-xs font-bold px-3 py-1">
                                                 MOCK 4 • SET 135
                                             </Badge>
-                                            <span className="text-[11px] font-semibold text-slate-500">Upcoming Suite</span>
+                                            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm shadow-emerald-500/20">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                                Live & Calibrated
+                                            </span>
                                         </div>
+
                                         <div>
-                                            <h3 className="text-base sm:text-lg font-bold text-slate-200">
-                                                BECE Integrated Science Mock 4 (Comprehensive Mock Suite)
+                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-indigo-300 transition-colors">
+                                                BECE Integrated Science Mock 4 (Standard Mock Suite)
                                             </h3>
-                                            <p className="text-xs text-slate-500 mt-1">
-                                                Comprehensive grand simulation synthesizing all five strands across JHS 1, 2, and 3 with multi-concept integrative problem sets.
+                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                                                Grand final benchmark examination targeting triangular prism dispersion, simple laboratory distillation, plant cell plasmolysis, and farm hand tool mechanics.
                                             </p>
                                         </div>
+
+                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                            {/* Paper 1 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
+                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
+                                                        40 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400">
+                                                    40 Questions • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D) with diagnostic hints & solutions.
+                                                </p>
+                                            </div>
+
+                                            {/* Paper 2 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
+                                                        <BookOpen className="w-3.5 h-3.5" /> Paper 2: Theory & Practical
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
+                                                        100 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400">
+                                                    5 Questions • 105 Mins • Section A Practical (4 SVGs) + Section B Essay Rubrics.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="pt-4 border-t border-slate-800/60 mt-4">
-                                        <span className="text-xs text-slate-500 font-medium">Coming Soon in Series</span>
+
+                                    {/* Action Buttons */}
+                                    <div className="space-y-2.5 pt-5 border-t border-slate-800 mt-5">
+                                        <Button
+                                            onClick={() => handleLaunchMockPaper(4, 1)}
+                                            className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
+                                        >
+                                            <Sparkles className="w-4 h-4 text-amber-300" />
+                                            <span>Start Unified Mock 4 (Paper 1 → Paper 2)</span>
+                                            <ArrowRight className="w-4 h-4" />
+                                        </Button>
+                                        
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(4, 1)}
+                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
+                                            >
+                                                Take Paper 1 Only
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(4, 2)}
+                                                className="border-slate-800 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs rounded-xl cursor-pointer"
+                                            >
+                                                Take Paper 2 Only
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
