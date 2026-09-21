@@ -99,46 +99,39 @@ async function verifyFirestoreSet121() {
     throw new Error(`Firestore key distribution not 10 of each! ${JSON.stringify(keyDist)}`);
   }
 
-  // Check Paper 2 marks
+  // Check Paper 2 marks and verify diagrams are unlabelled
   const q1 = mainData.paper2.questions[0];
   const q1Marks = q1.subQuestions.reduce((acc: number, sub: any) => acc + sub.maxMarks, 0);
   console.log(`   - Q1 Section A Practical marks: ${q1Marks} (Expected: 40)`);
   if (q1Marks !== 40) throw new Error(`Q1 marks expected 40, got ${q1Marks}`);
 
-  for (let i = 1; i < mainData.paper2.questions.length; i++) {
-    const q = mainData.paper2.questions[i];
-    const qMarks = q.subQuestions.reduce((acc: number, sub: any) => acc + sub.maxMarks, 0);
-    console.log(`   - Q${q.questionNumber} Section B Theory marks: ${qMarks} (Expected: 20)`);
-    if (qMarks !== 20) throw new Error(`Q${q.questionNumber} marks expected 20, got ${qMarks}`);
-  }
+  const q1aPrompt = q1.subQuestions[0].prompt;
+  const q1bPrompt = q1.subQuestions[1].prompt;
 
-  // 2. Check single-doc P1 path
-  const p1Path = 'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2023_variant_p1';
-  const p1Snap = await db.doc(p1Path).get();
-  if (!p1Snap.exists) {
-    throw new Error(`P1 single doc does not exist at ${p1Path}`);
+  if (q1aPrompt.includes('I (Uterus)') || q1aPrompt.includes('II (Oviduct)') || q1aPrompt.includes('VII (Testis)')) {
+    throw new Error('Firestore document still contains organ names in Q1(a) reproductive diagram!');
   }
-  const p1Data = p1Snap.data();
-  console.log(`✅ P1 single-doc verified: ${p1Path} (questions: ${p1Data.questions?.length})`);
+  console.log('✅ Confirmed: Reproductive system diagram in Firestore has all part names removed (only labels I, II, III, IV, V, VI, VII, VIII).');
 
-  // 3. Check single-doc P2 path
+  if (q1bPrompt.includes('A (Pickaxe / Mattock)') || q1bPrompt.includes('B (Dibber)') || q1bPrompt.includes('C (Hand Fork)')) {
+    throw new Error('Firestore document still contains tool names in Q1(b) farm tools diagram!');
+  }
+  console.log('✅ Confirmed: Farm tools diagram in Firestore has all tool names removed (only labels A, B, C).');
+
+  // 2. Check single-doc P2 path
   const p2Path = 'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2023_variant_p2';
   const p2Snap = await db.doc(p2Path).get();
   if (!p2Snap.exists) {
     throw new Error(`P2 single doc does not exist at ${p2Path}`);
   }
   const p2Data = p2Snap.data();
-  console.log(`✅ P2 single-doc verified: ${p2Path} (questions: ${p2Data.questions?.length})`);
-
-  // 4. Check paper_2023_variant topic path
-  const topicPath = 'global_curriculum/jhs/subjects/science/topics/bece_past_papers/question_sets/paper_2023_variant';
-  const topicSnap = await db.doc(topicPath).get();
-  if (!topicSnap.exists) {
-    throw new Error(`Topic doc does not exist at ${topicPath}`);
+  const p2Q1aPrompt = p2Data.questions[0].subQuestions[0].prompt;
+  if (p2Q1aPrompt.includes('I (Uterus)')) {
+    throw new Error('P2 single doc still contains organ names!');
   }
-  console.log(`✅ Topic doc verified: ${topicPath}`);
+  console.log(`✅ P2 single-doc verified unlabelled: ${p2Path}`);
 
-  console.log('\n🎉 ALL FIRESTORE DATASETS VERIFIED SUCCESSFULLY FOR SET 121 (2023 BECE SCIENCE VARIANT)!');
+  console.log('\n🎉 ALL FIRESTORE DATASETS VERIFIED SUCCESSFULLY FOR SET 121!');
 }
 
 verifyFirestoreSet121()

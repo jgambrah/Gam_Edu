@@ -76,12 +76,12 @@ function verifySet121Local() {
     }
   }
 
-  // 3. Vector SVG presence checks
+  // 3. Vector SVG presence and unlabelled verification checks
   console.log('\nChecking Reconstructed Vector SVGs:');
   const svgs = [
-    { name: 'Human Reproductive Systems (IMG_2614.jpg)', match: 'I (Uterus)' },
-    { name: 'Horticultural Farm Tools (IMG_2613.jpg)', match: 'A (Pickaxe / Mattock)' },
-    { name: 'Forward-Biased Circuit with LED, Diode, Resistor', match: 'FORWARD BIASING: ANODES CONNECTED TOWARDS POSITIVE TERMINAL' }
+    { name: 'Human Reproductive Systems (IMG_2614.jpg)', match: 'Female System', forbidden: 'I (Uterus)' },
+    { name: 'Horticultural Farm Tools (IMG_2613.jpg)', match: 'HORTICULTURAL FARM TOOLS', forbidden: 'A (Pickaxe / Mattock)' },
+    { name: 'Forward-Biased Circuit with LED, Diode, Resistor', match: 'FORWARD BIASING: ANODES CONNECTED TOWARDS POSITIVE TERMINAL', forbidden: null }
   ];
 
   svgs.forEach(svg => {
@@ -89,7 +89,13 @@ function verifySet121Local() {
     if (!foundInP2) {
       throw new Error(`Missing SVG setup for: ${svg.name}`);
     }
-    console.log(`✅ Reconstructed SVG verified: ${svg.name}`);
+    if (svg.forbidden) {
+      const hasForbidden = p2Questions.some(q => q.subQuestions.some(sub => sub.prompt.includes(svg.forbidden)));
+      if (hasForbidden) {
+        throw new Error(`SVG for ${svg.name} still contains spoiler text: ${svg.forbidden}`);
+      }
+    }
+    console.log(`✅ Reconstructed SVG verified & unlabelled: ${svg.name}`);
   });
 
   console.log('\n🎉 All Set 121 criteria successfully validated!');
