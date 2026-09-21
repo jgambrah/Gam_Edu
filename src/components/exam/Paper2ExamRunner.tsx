@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft,
   ArrowRight,
@@ -12,7 +12,8 @@ import {
   Lightbulb,
   Award,
   Loader2,
-  RotateCcw
+  RotateCcw,
+  Clock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,19 @@ interface Props {
   onComplete?: (results: any) => void;
 }
 
+
+function formatCountdown(totalSecs: number): string {
+  const clamped = Math.max(0, totalSecs);
+  const mins = Math.floor(clamped / 60);
+  const secs = clamped % 60;
+  if (mins >= 60) {
+    const hrs = Math.floor(mins / 60);
+    const remMins = mins % 60;
+    return `${hrs}h ${remMins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+  }
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
 export function Paper2ExamRunner({
   questionSet,
   exam,
@@ -67,6 +81,30 @@ export function Paper2ExamRunner({
   const [gradingError, setGradingError] = useState<string | null>(null);
   const [showPartHints, setShowPartHints] = useState<Record<string, boolean>>({});
   const [examFinished, setExamFinished] = useState(false);
+
+  // --- REAL-TIME LIVE COUNTDOWN TIMER (Paper 2: 105 mins standard) ---
+  const examDurationMinutes = Number(activeExam?.paper2?.durationMinutes || activeExam?.durationMinutes || 105);
+  const initialDurationSeconds = examDurationMinutes * 60;
+  const [timeLeft, setTimeLeft] = useState(initialDurationSeconds);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+
+  useEffect(() => {
+    if (examFinished) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+      setTimeElapsed((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [examFinished]);
+
 
   // 1. Defensively normalize top-level questions list
   const rawQuestions = activeExam?.paper2?.questions ?? activeExam?.questions;
@@ -336,14 +374,18 @@ export function Paper2ExamRunner({
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
+            <div className="grid grid-cols-3 gap-3 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
               <div>
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Marks Awarded</span>
-                <span className="text-2xl font-black text-amber-400">{totalAwarded} / {totalMax}</span>
+                <span className="text-xl sm:text-2xl font-black text-amber-400">{totalAwarded} / {totalMax}</span>
               </div>
               <div>
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Accuracy Index</span>
-                <span className="text-2xl font-black text-white">{overallPct}%</span>
+                <span className="text-xl sm:text-2xl font-black text-white">{overallPct}%</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 block uppercase">Time Used</span>
+                <span className="text-xl sm:text-2xl font-black text-cyan-400">{formatCountdown(timeElapsed)}</span>
               </div>
             </div>
 
@@ -405,19 +447,34 @@ export function Paper2ExamRunner({
               </Badge>
             </div>
 
-            {/* Submission Status Indicator */}
-            <div>
-              {isSubmitted ? (
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full shadow-sm">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>AI Graded & Solutions Unlocked</span>
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 bg-amber-950/60 border border-amber-500/40 px-3 py-1 rounded-full">
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>Official Solution Locked Until Submission</span>
-                </span>
-              )}
+            <div className="flex items-center gap-3">
+              {/* Real-time Countdown Timer Badge */}
+              <div className={cn(
+                "flex items-center gap-1.5 px-3 py-1 rounded-xl border text-xs font-mono font-black transition-all shadow-inner",
+                timeLeft <= 300
+                  ? "bg-red-500/25 border-red-500/60 text-red-300 animate-pulse shadow-red-500/20"
+                  : timeLeft <= 900
+                  ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
+                  : "bg-slate-950/90 border-cyan-500/40 text-cyan-300 shadow-slate-950"
+              )}>
+                <Clock className={cn("w-3.5 h-3.5", timeLeft <= 300 ? "text-red-400 animate-spin" : "text-cyan-400")} />
+                <span>{timeLeft <= 0 ? 'Time Expired' : formatCountdown(timeLeft)}</span>
+              </div>
+
+              {/* Submission Status Indicator */}
+              <div>
+                {isSubmitted ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full shadow-sm">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>AI Graded & Solutions Unlocked</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 bg-amber-950/60 border border-amber-500/40 px-3 py-1 rounded-full">
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Official Solution Locked Until Submission</span>
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

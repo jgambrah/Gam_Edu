@@ -3287,10 +3287,10 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
     },
     {
         title: "BECE Integrated Science Mock 1 (Set 132 Objective)",
-        domain: "PREDICTIVE LONGITUDINAL MODELS",
+        domain: "COMPREHENSIVE MOCK CURRICULUM",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
-        subStrand: "High-Fidelity Predictive Standard Mock 1 Objective",
+        subStrand: "High-Fidelity Standard Mock 1 Objective",
         gradeTier: "Junior Secondary (JHS)",
         meta: "Paper 1 (40 Questions) • 45 mins • 40 Marks",
         description: "Standardized 40-question objective examination synthesizing three decades of longitudinal BECE science curriculum trends with balanced key distribution (10 A, 10 B, 10 C, 10 D), KaTeX equations, diagnostic hints, and step-by-step worked solutions covering derived S.I. units, optical refraction, hypertension hemodynamics, semiconductor diodes, and green economy principles.",
@@ -3302,7 +3302,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         setNumber: 132,
         era: "modern",
         questionCount: 40,
-        examTag: "Predictive CBT • 10 A, 10 B, 10 C, 10 D",
+        examTag: "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D",
         subject: "Integrated Science",
         status: "ready"
     },
@@ -3311,7 +3311,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         domain: "SCIENTIFIC INQUIRY & PRACTICAL LABS",
         strandName: "STRAND 1 TO STRAND 5",
         strandCode: "S1-S5",
-        subStrand: "High-Fidelity Predictive Standard Mock 1 Practical & Theory",
+        subStrand: "High-Fidelity Standard Mock 1 Practical & Theory",
         gradeTier: "Junior Secondary (JHS)",
         meta: "Section A & B (5 Questions) • 105 mins • 100 Marks",
         description: "Standardized practical and theory essay examination model featuring Eureka can displacement with vector SVG, paper chromatography with vector SVG, monohybrid Punnett square genetics, 4-course crop rotation design, hypertension, and renewable energy.",
@@ -5068,12 +5068,12 @@ function MathLab({
                 title: paperNum === 1 
                     ? "BECE Integrated Science Mock 1 (Set 132 Objective)" 
                     : "BECE Integrated Science Mock 1 (Set 132 Practical & Theory)",
-                domain: paperNum === 1 ? "PREDICTIVE LONGITUDINAL MODELS" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+                domain: paperNum === 1 ? "COMPREHENSIVE MOCK CURRICULUM" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
                 strandName: "STRAND 1 TO STRAND 5",
                 strandCode: "S1-S5",
                 subStrand: paperNum === 1 
-                    ? "High-Fidelity Predictive Standard Mock 1 Objective" 
-                    : "High-Fidelity Predictive Standard Mock 1 Practical & Theory",
+                    ? "High-Fidelity Standard Mock 1 Objective" 
+                    : "High-Fidelity Standard Mock 1 Practical & Theory",
                 gradeTier: "Junior Secondary (JHS)",
                 meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
                 description: paperNum === 1 
@@ -5090,7 +5090,7 @@ function MathLab({
                 era: "modern",
                 isMock: true,
                 questionCount: paperNum === 1 ? 40 : 5,
-                examTag: paperNum === 1 ? "Predictive CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
+                examTag: paperNum === 1 ? "Timed Mock CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
                 subject: "Integrated Science",
                 status: "ready"
             });
@@ -5527,7 +5527,7 @@ function MathLab({
                                 {viewMode === 'predictive_mocks' ? (
                                     <>
                                         <Sparkles className="w-4 h-4 text-emerald-400" />
-                                        <span>Predictive Mock Examination Suite • {activeGrade}</span>
+                                        <span>Mock Examination Suite • {activeGrade}</span>
                                     </>
                                 ) : viewMode === 'exam_series' ? (
                                     <>
@@ -5543,7 +5543,7 @@ function MathLab({
                             </h3>
                             <p className="text-xs text-slate-400 mt-0.5">
                                 {viewMode === 'predictive_mocks'
-                                    ? "Unified CBT Objective (Paper 1) and Practical & Theory Essay (Paper 2) predictive suites."
+                                    ? "Unified CBT Objective (Paper 1) and Practical & Theory Essay (Paper 2) mock suites."
                                     : viewMode === 'exam_series' 
                                     ? "Historical WAEC examination papers from 1990 to 2026. Paper 1 objective steppers and Paper 2 structured theory rubrics."
                                     : "Subject-by-subject unit drills, conceptual frameworks, and interactive laboratory problems."}
@@ -5595,7 +5595,7 @@ function MathLab({
                                     )}
                                 >
                                     <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-                                    <span>Predictive Mocks Suite (Mock 1–4)</span>
+                                    <span>Mock Examination Suite (Mock 1–4)</span>
                                 </button>
                             </div>
                         </div>
@@ -5713,7 +5713,7 @@ function MathLab({
                         </div>
                     )}
 
-                    {/* PREDICTIVE MOCK EXAM SUITE WORKSTATION */}
+                    {/* MOCK EXAM SUITE WORKSTATION */}
                     {viewMode === 'predictive_mocks' ? (
                         <div className="space-y-6 animate-in fade-in duration-300">
                             {/* Hero Header */}
@@ -5725,15 +5725,15 @@ function MathLab({
                                         <span>Dedicated Examination Suite • 2027–2029 Standards</span>
                                     </div>
                                     <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight">
-                                        BECE Integrated Science Predictive Mock Examinations
+                                        BECE Integrated Science Mock Examinations
                                     </h2>
                                     <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                                        Isomorphic, high-fidelity predictive practice suites calibrated from 35+ years of longitudinal WAEC trend modeling. Each mock packages a 45-minute timed objective test (Paper 1) and a 105-minute practical & theory essay paper (Paper 2) in a single unified room with zero friction transitions.
+                                        Isomorphic, high-fidelity mock practice suites calibrated from 35+ years of longitudinal WAEC syllabus standards. Each mock packages a 45-minute timed objective test (Paper 1) and a 105-minute practical & theory essay paper (Paper 2) in a single unified room with zero friction transitions.
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Predictive Mocks Grid */}
+                            {/* Mocks Grid */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* MOCK 1 CARD - LIVE */}
                                 <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-slate-900 via-slate-900/95 to-emerald-950/30 p-6 sm:p-7 shadow-2xl shadow-emerald-500/10 flex flex-col justify-between relative overflow-hidden group">
@@ -5757,10 +5757,10 @@ function MathLab({
 
                                         <div>
                                             <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-emerald-300 transition-colors">
-                                                BECE Integrated Science Mock 1 (Standard Predictive Suite)
+                                                BECE Integrated Science Mock 1 (Standard Mock Suite)
                                             </h3>
                                             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                                                Full longitudinal predictive simulation synthesizing three decades of WAEC science foundations: compound optics, simple machines, genetics, soil physics, Bohr models, and cardiovascular hemodynamics.
+                                                Full longitudinal mock simulation synthesizing three decades of WAEC science foundations: compound optics, simple machines, genetics, soil physics, Bohr models, and cardiovascular hemodynamics.
                                             </p>
                                         </div>
 
@@ -5849,7 +5849,7 @@ function MathLab({
 
                                         <div>
                                             <h3 className="text-lg sm:text-xl font-black text-white">
-                                                BECE Integrated Science Mock 2 (Advanced Predictive Model)
+                                                BECE Integrated Science Mock 2 (Advanced Mock Suite)
                                             </h3>
                                             <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                                                 Advanced curriculum synthesis targeting ray optics with curved mirrors, organic esterification reactions, DC electrical circuits with Ohm's law, agroforestry crop protection, and human renal excretion.
@@ -5889,7 +5889,7 @@ function MathLab({
                                         </div>
                                         <div>
                                             <h3 className="text-base sm:text-lg font-bold text-slate-200">
-                                                BECE Integrated Science Mock 3 (Standard Predictive Model)
+                                                BECE Integrated Science Mock 3 (Standard Mock Suite)
                                             </h3>
                                             <p className="text-xs text-slate-500 mt-1">
                                                 Equilibrium mechanics, electromagnetic induction, acid-base stoichiometry, infectious disease transmission, and ecological biomes.
@@ -5912,7 +5912,7 @@ function MathLab({
                                         </div>
                                         <div>
                                             <h3 className="text-base sm:text-lg font-bold text-slate-200">
-                                                BECE Integrated Science Mock 4 (Grand Finale Predictive Model)
+                                                BECE Integrated Science Mock 4 (Comprehensive Mock Suite)
                                             </h3>
                                             <p className="text-xs text-slate-500 mt-1">
                                                 Comprehensive grand simulation synthesizing all five strands across JHS 1, 2, and 3 with multi-concept integrative problem sets.

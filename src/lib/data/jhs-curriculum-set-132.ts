@@ -1,6 +1,6 @@
 /**
  * JHS Curriculum Data - Set 132
- * BECE Integrated Science Predictive Mock 1 (Paper 1 & Paper 2)
+ * BECE Integrated Science Mock 1 (Paper 1 & Paper 2)
  *
  * Proprietary Content © GAM IT Solutions (GAM EDU). All rights reserved.
  */
@@ -1085,7 +1085,7 @@ export const SET_BECE_MOCK_1_SCIENCE_P1 = {
   isMock: true,
   setNumber: 132,
   subject: "Integrated Science",
-  examination: "WAEC BECE Integrated Science (Predictive Standard Mock 1)",
+  examination: "WAEC BECE Integrated Science (Standard Mock 1)",
   title: "Paper 1: Objective Test (Mock 1)",
   durationMinutes: 45,
   totalQuestions: 40,
@@ -1097,7 +1097,7 @@ export const SET_BECE_MOCK_1_SCIENCE_P2 = {
   isMock: true,
   setNumber: 132,
   subject: "Integrated Science",
-  examination: "WAEC BECE Integrated Science (Predictive Standard Mock 1)",
+  examination: "WAEC BECE Integrated Science (Standard Mock 1)",
   title: "Paper 2: Practical & Theory Essay (Mock 1)",
   durationMinutes: 105,
   instructions: "This paper is in two sections: A and B. Answer Question 1 in Section A (compulsory), and any other three questions from Section B. All working must be clearly shown.",
@@ -1110,7 +1110,7 @@ export const SET_BECE_MOCK_1_SCIENCE_COMPLETE = {
   isMock: true,
   setNumber: 132,
   subject: "Integrated Science",
-  examination: "WAEC BECE Integrated Science (Predictive Standard Mock 1)",
+  examination: "WAEC BECE Integrated Science (Standard Mock 1)",
   paper1: {
     title: "Paper 1: Objective Test (Mock 1)",
     durationMinutes: 45,
@@ -1127,7 +1127,7 @@ export const SET_BECE_MOCK_1_SCIENCE_COMPLETE = {
   metadata: {
     sanitized: true,
     optionsBalanced: true,
-    predictiveModel: true,
+    isMockExam: true,
     vectorGraphicsCount: 2,
     copyright: "Proprietary content © GAM IT Solutions (GAM EDU). All rights reserved."
   }

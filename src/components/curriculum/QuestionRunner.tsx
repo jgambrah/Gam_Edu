@@ -103,6 +103,41 @@ export function QuestionRunner({
   const [isRecording, setIsRecording] = useState(false);
   const [recordSuccess, setRecordSuccess] = useState(false);
 
+  // --- REAL-TIME LIVE COUNTDOWN TIMER ---
+  const examDurationMinutes = (questionSet as any)?.durationMinutes || 45;
+  const initialDurationSeconds = examDurationMinutes * 60;
+  const [timeLeft, setTimeLeft] = useState(initialDurationSeconds);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+
+  React.useEffect(() => {
+    if (isComplete) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsComplete(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+      setTimeElapsed((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isComplete]);
+
+  const formatCountdown = (totalSecs: number) => {
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    if (mins >= 60) {
+      const hrs = Math.floor(mins / 60);
+      const remMins = mins % 60;
+      return `${hrs}h ${remMins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+    }
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // Fallback / Empty State if no question set is seeded for this topic
   if (!questionSet || !questionSet.questions || questionSet.questions.length === 0) {
     return (
@@ -370,18 +405,22 @@ export function QuestionRunner({
             </div>
 
             {/* Score Pill Bar */}
-            <div className="grid grid-cols-3 gap-3 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
               <div>
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Accuracy</span>
-                <span className="text-xl font-black text-emerald-400">{percentage}%</span>
+                <span className="text-lg sm:text-xl font-black text-emerald-400">{percentage}%</span>
               </div>
               <div>
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Correct</span>
-                <span className="text-xl font-black text-white">{correctCount}/{totalQuestions}</span>
+                <span className="text-lg sm:text-xl font-black text-white">{correctCount}/{totalQuestions}</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-slate-400 block uppercase">Time Used</span>
+                <span className="text-lg sm:text-xl font-black text-cyan-400">{formatCountdown(timeElapsed)}</span>
               </div>
               <div>
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Points Earned</span>
-                <span className="text-xl font-black text-indigo-400">+{totalScore}</span>
+                <span className="text-lg sm:text-xl font-black text-indigo-400">+{totalScore}</span>
               </div>
             </div>
 
@@ -478,7 +517,19 @@ export function QuestionRunner({
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Real-time Countdown Timer Badge */}
+              <div className={cn(
+                "flex items-center gap-1.5 px-3 py-1 rounded-xl border text-xs font-mono font-black transition-all shadow-inner",
+                timeLeft <= 60 
+                  ? "bg-red-500/25 border-red-500/60 text-red-300 animate-pulse shadow-red-500/20" 
+                  : timeLeft <= 300 
+                  ? "bg-amber-500/20 border-amber-500/50 text-amber-300" 
+                  : "bg-slate-950/90 border-cyan-500/40 text-cyan-300 shadow-slate-950"
+              )}>
+                <Clock className={cn("w-3.5 h-3.5", timeLeft <= 60 ? "text-red-400 animate-spin" : "text-cyan-400")} />
+                <span>{timeLeft <= 0 ? 'Time Expired' : formatCountdown(timeLeft)}</span>
+              </div>
               <span className="text-xs font-bold text-indigo-400">
                 +{currentQuestion.totalMarks || currentQuestion.points} Marks
               </span>
