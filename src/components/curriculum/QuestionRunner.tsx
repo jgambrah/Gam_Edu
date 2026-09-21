@@ -47,6 +47,7 @@ interface QuestionRunnerProps {
   studentId?: string;
   assignmentId?: string;
   onBack: () => void;
+  onProceedToPaper2?: () => void;
 }
 
 export function QuestionRunner({
@@ -59,7 +60,8 @@ export function QuestionRunner({
   tenantId,
   studentId,
   assignmentId,
-  onBack
+  onBack,
+  onProceedToPaper2
 }: QuestionRunnerProps) {
   const firestore = useFirestore();
   const effectiveAssignmentId = assignmentId || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('assignmentId') : null);
@@ -398,12 +400,23 @@ export function QuestionRunner({
               >
                 <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Practice Again
               </Button>
-              <Button
-                onClick={onBack}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 cursor-pointer"
-              >
-                Next Curriculum Topic
-              </Button>
+              {onProceedToPaper2 ? (
+                <Button
+                  onClick={onProceedToPaper2}
+                  className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white text-xs font-black px-6 py-2.5 rounded-xl shadow-lg shadow-amber-500/25 flex items-center gap-2 cursor-pointer transition-all hover:scale-[1.02] border border-amber-400/40"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Proceed to Paper 2 (Theory)</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={onBack}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 cursor-pointer"
+                >
+                  Next Curriculum Topic
+                </Button>
+              )}
             </div>
           </div>
         </Card>

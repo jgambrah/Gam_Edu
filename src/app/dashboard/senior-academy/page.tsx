@@ -3294,9 +3294,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         meta: "Paper 1 (40 Questions) • 45 mins • 40 Marks",
         description: "Standardized 40-question objective examination synthesizing three decades of longitudinal BECE science curriculum trends with balanced key distribution (10 A, 10 B, 10 C, 10 D), KaTeX equations, diagnostic hints, and step-by-step worked solutions covering derived S.I. units, optical refraction, hypertension hemodynamics, semiconductor diodes, and green economy principles.",
         difficulty: "Core",
-        kind: "exam_series",
-        setId: "paper_mock_1",
-        topicId: "bece_past_papers",
+        kind: "mock_suite", setId: "paper_mock_1", topicId: "mock_exams", isMock: true,
         format: "multiple_choice",
         paperType: 1,
         year: 2026,
@@ -3317,9 +3315,7 @@ const SUGGESTED_SCIENCE_MODULES: SuggestedModuleCard[] = [
         meta: "Section A & B (5 Questions) • 105 mins • 100 Marks",
         description: "Standardized practical and theory essay examination model featuring Eureka can displacement with vector SVG, paper chromatography with vector SVG, monohybrid Punnett square genetics, 4-course crop rotation design, hypertension, and renewable energy.",
         difficulty: "Advanced",
-        kind: "exam_series",
-        setId: "paper_mock_1_p2",
-        topicId: "bece_past_papers",
+        kind: "mock_suite", setId: "paper_mock_1_p2", topicId: "mock_exams", isMock: true,
         format: "structured_essay",
         paperType: 2,
         year: 2026,
@@ -3938,6 +3934,41 @@ function EnglishMastery({
 
     const isJunior = isJuniorLevel(activeGrade);
     const isPrimary = (activeGrade as string) === 'Early Childhood' || (activeGrade as string) === 'Lower Primary' || (activeGrade as string) === 'Upper Primary';
+
+    const handleLaunchMockPaper = (mockNum: number, paperNum: 1 | 2) => {
+        if (mockNum === 1) {
+            handleLaunchModule({
+                title: paperNum === 1 
+                    ? "BECE Integrated Science Mock 1 (Set 132 Objective)" 
+                    : "BECE Integrated Science Mock 1 (Set 132 Practical & Theory)",
+                domain: paperNum === 1 ? "PREDICTIVE LONGITUDINAL MODELS" : "SCIENTIFIC INQUIRY & PRACTICAL LABS",
+                strandName: "STRAND 1 TO STRAND 5",
+                strandCode: "S1-S5",
+                subStrand: paperNum === 1 
+                    ? "High-Fidelity Predictive Standard Mock 1 Objective" 
+                    : "High-Fidelity Predictive Standard Mock 1 Practical & Theory",
+                gradeTier: "Junior Secondary (JHS)",
+                meta: paperNum === 1 ? "Paper 1 (40 Questions) • 45 mins • 40 Marks" : "Section A & B (5 Questions) • 105 mins • 100 Marks",
+                description: paperNum === 1 
+                    ? "Standardized 40-question objective examination synthesizing three decades of longitudinal BECE science curriculum trends with balanced key distribution (10 A, 10 B, 10 C, 10 D)."
+                    : "Standardized practical and theory essay examination model featuring Eureka can displacement with vector SVG, paper chromatography with vector SVG, monohybrid genetics, and crop rotation design.",
+                difficulty: paperNum === 1 ? "Core" : "Advanced",
+                kind: "mock_suite",
+                setId: paperNum === 1 ? "paper_mock_1" : "paper_mock_1_p2",
+                topicId: "mock_exams",
+                format: paperNum === 1 ? "multiple_choice" : "structured_essay",
+                paperType: paperNum,
+                year: 2026,
+                setNumber: 132,
+                era: "modern",
+                isMock: true,
+                questionCount: paperNum === 1 ? 40 : 5,
+                examTag: paperNum === 1 ? "Predictive CBT • 10 A, 10 B, 10 C, 10 D" : "Practical & Theory • 100 Marks",
+                subject: "Integrated Science",
+                status: "ready"
+            });
+        }
+    };
 
     const handleLaunchModule = async (mod: any) => {
         const levelId = mapGradeTierToLevelId(activeGrade);
@@ -4648,8 +4679,8 @@ function MathLab({
     activeGrade?: SecondaryGradeTier;
     tenantId?: string;
     studentId?: string;
-    viewMode?: 'topical' | 'exam_series';
-    onViewModeChange?: (mode: 'topical' | 'exam_series') => void;
+    viewMode?: 'topical' | 'exam_series' | 'predictive_mocks';
+    onViewModeChange?: (mode: 'topical' | 'exam_series' | 'predictive_mocks') => void;
     searchQuery?: string;
     filterSubject?: string;
     filterFormat?: string;
@@ -4890,13 +4921,14 @@ function MathLab({
         } else {
             // In Standard Exam Series mode, merge static exam series with dynamic exam series
             const staticModules = subject === 'science'
-                ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series')
-                : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series');
+                ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams')
+                : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams');
             const combined = [...staticModules];
 
             dynamicSets.forEach(dyn => {
                 if (dyn.kind === 'exam_series') {
                     if (dyn.title === 'Paper 2: Practical & Theory Essay (Variant)' || dyn.title === 'Paper 1: Objective Test (Variant)') return;
+                    if (dyn.setId?.includes('mock') || dyn.title?.toLowerCase().includes('mock') || (dyn as any).isMock || dyn.topicId === 'mock_exams') return;
                     const isScience = dyn.subject?.toLowerCase().includes('science');
                     if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
                         const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
@@ -5016,12 +5048,13 @@ function MathLab({
     const eraCounts = useMemo(() => {
         if (viewMode !== 'exam_series') return { modern: 0, legacy: 0, classic: 0 };
         const staticModules = subject === 'science'
-            ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series')
-            : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series');
+            ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams')
+            : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams');
         const combined = [...staticModules];
         dynamicSets.forEach(dyn => {
             if (dyn.kind === 'exam_series') {
                 if (dyn.title === 'Paper 2: Practical & Theory Essay (Variant)' || dyn.title === 'Paper 1: Objective Test (Variant)') return;
+                if (dyn.setId?.includes('mock') || dyn.title?.toLowerCase().includes('mock') || (dyn as any).isMock || dyn.topicId === 'mock_exams') return;
                 const isScience = dyn.subject?.toLowerCase().includes('science');
                 if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
                     const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
@@ -5273,6 +5306,11 @@ function MathLab({
                         tenantId={tenantId}
                         studentId={studentId}
                         assignmentId={assignmentId}
+                        onProceedToPaper2={() => {
+                            if (activeQuestionSet?.id === 'paper_mock_1' || activeQuestionSet?.id === 'mock_1' || activeQuestionSet?.title?.toLowerCase().includes('mock 1')) {
+                                handleLaunchMockPaper(1, 2);
+                            }
+                        }}
                         onBack={() => {
                             setActiveTopicMeta(null);
                             setActiveQuestionSet(null);
@@ -5422,10 +5460,15 @@ function MathLab({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-800/80">
                         <div>
                             <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                                {viewMode === 'exam_series' ? (
+                                {viewMode === 'predictive_mocks' ? (
+                                    <>
+                                        <Sparkles className="w-4 h-4 text-emerald-400" />
+                                        <span>Predictive Mock Examination Suite • {activeGrade}</span>
+                                    </>
+                                ) : viewMode === 'exam_series' ? (
                                     <>
                                         <Award className="w-4 h-4 text-amber-400" />
-                                        <span>Standard Exam Series & Past Paper Variants • {activeGrade}</span>
+                                        <span>Historical Past Papers Archive (1990 – 2026) • {activeGrade}</span>
                                     </>
                                 ) : (
                                     <>
@@ -5435,8 +5478,10 @@ function MathLab({
                                 )}
                             </h3>
                             <p className="text-xs text-slate-400 mt-0.5">
-                                {viewMode === 'exam_series' 
-                                    ? "Timed official examination sets, Paper 1 objective steppers, and Paper 2 structured theory rubrics."
+                                {viewMode === 'predictive_mocks'
+                                    ? "Unified CBT Objective (Paper 1) and Practical & Theory Essay (Paper 2) predictive suites."
+                                    : viewMode === 'exam_series' 
+                                    ? "Historical WAEC examination papers from 1990 to 2026. Paper 1 objective steppers and Paper 2 structured theory rubrics."
                                     : "Subject-by-subject unit drills, conceptual frameworks, and interactive laboratory problems."}
                             </p>
                         </div>
@@ -5453,10 +5498,44 @@ function MathLab({
                                 <span>{isRefreshing ? "Refreshing..." : "Refresh Resources"}</span>
                             </Button>
                             <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
-                                {filteredModules.length} {viewMode === 'exam_series' ? 'Exam Papers' : 'Topical Labs'}
+                                {viewMode === 'predictive_mocks' ? '4 Mock Suites' : `${filteredModules.length} ${viewMode === 'exam_series' ? 'Past Papers' : 'Topical Labs'}`}
                             </span>
                         </div>
                     </div>
+
+                    {/* SUB-TRACK SEGMENTED CONTROLLER (Visible when exploring past papers or mocks) */}
+                    {(viewMode === 'exam_series' || viewMode === 'predictive_mocks') && (
+                        <div className="flex items-center gap-2 pt-1 pb-1">
+                            <div className="inline-flex p-1 bg-slate-950/90 rounded-xl border border-slate-800 shadow-inner">
+                                <button
+                                    type="button"
+                                    onClick={() => onViewModeChange && onViewModeChange('exam_series')}
+                                    className={cn(
+                                        "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                                        viewMode === 'exam_series'
+                                            ? "bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-md shadow-amber-600/30 border border-amber-400/30"
+                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-850/60"
+                                    )}
+                                >
+                                    <Award className="w-3.5 h-3.5" />
+                                    <span>Historical Past Papers (1990–2026)</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => onViewModeChange && onViewModeChange('predictive_mocks')}
+                                    className={cn(
+                                        "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer",
+                                        viewMode === 'predictive_mocks'
+                                            ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-md shadow-emerald-600/30 border border-emerald-400/30"
+                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-850/60"
+                                    )}
+                                >
+                                    <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+                                    <span>Predictive Mocks Suite (Mock 1–4)</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {/* SUBJECT DOMAIN PILL BAR - Rendered only in Topical Practice Labs mode */}
                     {viewMode === 'topical' && (
@@ -5570,8 +5649,219 @@ function MathLab({
                         </div>
                     )}
 
-                    {/* 2013-2018 PREPARATION EMPTY STATE OR REGULAR EMPTY STATE */}
-                    {showPrepNotice ? (
+                    {/* PREDICTIVE MOCK EXAM SUITE WORKSTATION */}
+                    {viewMode === 'predictive_mocks' ? (
+                        <div className="space-y-6 animate-in fade-in duration-300">
+                            {/* Hero Header */}
+                            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950/40 via-slate-900 to-indigo-950/30 border border-emerald-500/30 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+                                <div className="absolute -right-12 -top-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                                <div className="relative z-10 max-w-3xl space-y-3">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[11px] font-extrabold uppercase tracking-wider">
+                                        <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                                        <span>Dedicated Examination Suite • 2027–2029 Standards</span>
+                                    </div>
+                                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight">
+                                        BECE Integrated Science Predictive Mock Examinations
+                                    </h2>
+                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                        Isomorphic, high-fidelity predictive practice suites calibrated from 35+ years of longitudinal WAEC trend modeling. Each mock packages a 45-minute timed objective test (Paper 1) and a 105-minute practical & theory essay paper (Paper 2) in a single unified room with zero friction transitions.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Predictive Mocks Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* MOCK 1 CARD - LIVE */}
+                                <div className="rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-slate-900 via-slate-900/95 to-emerald-950/30 p-6 sm:p-7 shadow-2xl shadow-emerald-500/10 flex flex-col justify-between relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+                                    
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                                            <div className="flex items-center gap-2">
+                                                <Badge className="bg-emerald-600 text-white text-xs font-black px-3 py-1">
+                                                    MOCK 1 • SET 132
+                                                </Badge>
+                                                <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 text-xs font-bold">
+                                                    150 Mins Total • 140 Marks
+                                                </Badge>
+                                            </div>
+                                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                                Live & Calibrated
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg sm:text-xl font-black text-white group-hover:text-emerald-300 transition-colors">
+                                                BECE Integrated Science Mock 1 (Standard Predictive Suite)
+                                            </h3>
+                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                                                Full longitudinal predictive simulation synthesizing three decades of WAEC science foundations: compound optics, simple machines, genetics, soil physics, Bohr models, and cardiovascular hemodynamics.
+                                            </p>
+                                        </div>
+
+                                        {/* Paper 1 & Paper 2 Unified Breakdown Panels */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                            {/* Paper 1 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-sky-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-sky-400 flex items-center gap-1.5">
+                                                        <ListChecks className="w-3.5 h-3.5" /> Paper 1: Objective
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded">
+                                                        40 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400">
+                                                    40 Questions • 45 Mins • Balanced Keys (10 A, 10 B, 10 C, 10 D) with diagnostic hints & solutions.
+                                                </p>
+                                            </div>
+
+                                            {/* Paper 2 Box */}
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs font-extrabold text-amber-400 flex items-center gap-1.5">
+                                                        <FileText className="w-3.5 h-3.5" /> Paper 2: Theory & Practical
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded">
+                                                        100 Marks
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400">
+                                                    5 Questions • 105 Mins • Section A Practical (SVGs) + Section B Essay Rubrics.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="pt-5 border-t border-slate-800/80 mt-5 space-y-2">
+                                        <Button
+                                            onClick={() => handleLaunchMockPaper(1, 1)}
+                                            className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs sm:text-sm h-11 rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
+                                        >
+                                            <Rocket className="w-4 h-4" />
+                                            <span>Start Unified Mock 1 (Paper 1 → Paper 2)</span>
+                                            <ChevronRight className="w-4 h-4" />
+                                        </Button>
+
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(1, 1)}
+                                                className="flex-1 text-xs border-sky-500/40 text-sky-300 hover:text-white hover:bg-sky-600/20 cursor-pointer"
+                                            >
+                                                <ListChecks className="w-3.5 h-3.5 mr-1" /> Take Paper 1 Only
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleLaunchMockPaper(1, 2)}
+                                                className="flex-1 text-xs border-amber-500/40 text-amber-300 hover:text-white hover:bg-amber-600/20 cursor-pointer"
+                                            >
+                                                <FileText className="w-3.5 h-3.5 mr-1" /> Take Paper 2 Only
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* MOCK 2 CARD - INGESTION QUEUE */}
+                                <div className="rounded-3xl border border-indigo-500/40 bg-slate-900/80 p-6 sm:p-7 shadow-xl flex flex-col justify-between relative overflow-hidden">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                                            <div className="flex items-center gap-2">
+                                                <Badge className="bg-indigo-600 text-white text-xs font-black px-3 py-1">
+                                                    MOCK 2 • SET 133
+                                                </Badge>
+                                                <Badge variant="outline" className="border-indigo-500/40 text-indigo-300 text-xs font-bold">
+                                                    150 Mins Total • 140 Marks
+                                                </Badge>
+                                            </div>
+                                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/30">
+                                                Ready for Generation
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg sm:text-xl font-black text-white">
+                                                BECE Integrated Science Mock 2 (Advanced Predictive Model)
+                                            </h3>
+                                            <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                                                Advanced curriculum synthesis targeting ray optics with curved mirrors, organic esterification reactions, DC electrical circuits with Ohm's law, agroforestry crop protection, and human renal excretion.
+                                            </p>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400">
+                                                <strong className="text-sky-300 block mb-0.5">Paper 1: Objective CBT</strong>
+                                                40 Questions • 45 Mins • Balanced Key Distribution
+                                            </div>
+                                            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400">
+                                                <strong className="text-amber-300 block mb-0.5">Paper 2: Practical & Theory</strong>
+                                                Section A Practicals (Vector SVGs) + Section B Theory
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-5 border-t border-slate-800 mt-5">
+                                        <Button
+                                            disabled
+                                            className="w-full bg-slate-800 text-slate-400 font-bold text-xs sm:text-sm h-11 rounded-xl cursor-not-allowed"
+                                        >
+                                            <span>Mock 2 Ingestion Queue • Ready to Seed</span>
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {/* MOCK 3 CARD */}
+                                <div className="rounded-3xl border border-slate-800/80 bg-slate-900/50 p-6 sm:p-7 shadow-lg flex flex-col justify-between opacity-80">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs font-bold">
+                                                MOCK 3 • SET 134
+                                            </Badge>
+                                            <span className="text-[11px] font-semibold text-slate-500">Upcoming Suite</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-base sm:text-lg font-bold text-slate-200">
+                                                BECE Integrated Science Mock 3 (Standard Predictive Model)
+                                            </h3>
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                Equilibrium mechanics, electromagnetic induction, acid-base stoichiometry, infectious disease transmission, and ecological biomes.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="pt-4 border-t border-slate-800/60 mt-4">
+                                        <span className="text-xs text-slate-500 font-medium">Coming Soon in Series</span>
+                                    </div>
+                                </div>
+
+                                {/* MOCK 4 CARD */}
+                                <div className="rounded-3xl border border-slate-800/80 bg-slate-900/50 p-6 sm:p-7 shadow-lg flex flex-col justify-between opacity-80">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs font-bold">
+                                                MOCK 4 • SET 135
+                                            </Badge>
+                                            <span className="text-[11px] font-semibold text-slate-500">Upcoming Suite</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-base sm:text-lg font-bold text-slate-200">
+                                                BECE Integrated Science Mock 4 (Grand Finale Predictive Model)
+                                            </h3>
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                Comprehensive grand simulation synthesizing all five strands across JHS 1, 2, and 3 with multi-concept integrative problem sets.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="pt-4 border-t border-slate-800/60 mt-4">
+                                        <span className="text-xs text-slate-500 font-medium">Coming Soon in Series</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : showPrepNotice ? (
                         <div className="py-16 px-6 text-center bg-slate-900/40 border border-dashed border-amber-500/30 rounded-3xl space-y-4">
                             <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
                                 <Clock className="w-7 h-7" />
@@ -6919,8 +7209,9 @@ function SeniorAcademyPageContent() {
     const urlAssignmentId = searchParams.get('assignmentId');
 
     const isExamRequested = urlView === 'exam_series' || urlTab === 'past-papers' || !!urlExamId || !!urlAssignmentId;
-    const initialViewMode = isExamRequested ? 'exam_series' : 'topical';
-    const [viewMode, setViewMode] = useState<'topical' | 'exam_series'>(initialViewMode);
+    const isMockRequested = urlView === 'predictive_mocks' || urlTab === 'mocks';
+    const initialViewMode = isMockRequested ? 'predictive_mocks' : (isExamRequested ? 'exam_series' : 'topical');
+    const [viewMode, setViewMode] = useState<'topical' | 'exam_series' | 'predictive_mocks'>(initialViewMode);
 
     // Dispatch Past Questions Modal State
     const [showDispatchModal, setShowDispatchModal] = useState(false);
@@ -6929,17 +7220,21 @@ function SeniorAcademyPageContent() {
 
     // Sync state if URL changes externally
     useEffect(() => {
-        if (urlView === 'exam_series' && viewMode !== 'exam_series') {
+        if (urlView === 'predictive_mocks' && viewMode !== 'predictive_mocks') {
+            setViewMode('predictive_mocks');
+        } else if (urlView === 'exam_series' && viewMode !== 'exam_series') {
             setViewMode('exam_series');
         } else if ((!urlView || urlView === 'topical') && viewMode !== 'topical') {
             setViewMode('topical');
         }
     }, [urlView]);
 
-    const handleViewModeToggle = (mode: 'topical' | 'exam_series') => {
+    const handleViewModeToggle = (mode: 'topical' | 'exam_series' | 'predictive_mocks') => {
         setViewMode(mode);
         const params = new URLSearchParams(searchParams.toString());
-        if (mode === 'exam_series') {
+        if (mode === 'predictive_mocks') {
+            params.set('view', 'predictive_mocks');
+        } else if (mode === 'exam_series') {
             params.set('view', 'exam_series');
         } else {
             params.set('view', 'topical');
