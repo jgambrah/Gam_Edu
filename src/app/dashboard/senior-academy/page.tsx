@@ -193,7 +193,8 @@ interface SuggestedModuleCard {
     format?: 'objective' | 'structured_essay' | 'standard' | 'multiple_choice' | 'topical_lab';
     questionCount?: number;
     examTag?: string;
-    subject?: 'Mathematics' | 'English' | 'Integrated Science' | 'Computing';
+    subject?: 'Mathematics' | 'English' | 'English Language' | 'Integrated Science' | 'Computing' | string;
+    isMock?: boolean;
     status?: 'ready' | 'pending_content' | string;
 }
 
@@ -1504,6 +1505,380 @@ const SUGGESTED_MATH_MODULES: SuggestedModuleCard[] = [
 ];
 
 const SUGGESTED_ENGLISH_MODULES: SuggestedModuleCard[] = [
+    // ==========================================
+    // JHS BECE ENGLISH LANGUAGE EXAM SERIES
+    // ==========================================
+    {
+        title: "2025 BECE English Language Paper 1 (Objective & Comprehension)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2025 BECE English Language Standardized CBT",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Standardized CBT",
+        description: "Official 40-question objective examination variant covering Lexis and Structure, Synonyms, Antonyms, Idiomatic Expressions, and Literature in English.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2025_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2025,
+        setNumber: 1,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • Balanced Key Distribution",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "2025 BECE English Language Paper 2 (Essay, Comprehension & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2025 BECE English Language Written Essay & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Standardized Essay",
+        description: "Complete 3-part structured examination featuring Part A Composition (Formal/Informal Letter, Article), Part B Reading Comprehension, and Part C Literature (The Cockcrow prose, drama & poetry).",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2025_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2025,
+        setNumber: 1,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay & Literature • Authentic Ghanaian Marking Guide",
+        subject: "English Language",
+        status: "ready"
+    },
+    {
+        title: "2024 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2024 BECE English Language Objective Assessment",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Digitization In Prep",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2024_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2024,
+        setNumber: 2,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2024 BECE English Language Paper 2 (Essay & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2024 BECE Written Essay, Comprehension & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Digitization In Prep",
+        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2024_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2024,
+        setNumber: 2,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay & Literature • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2023 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2023 BECE English Language Objective Assessment",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Digitization In Prep",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2023_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2023,
+        setNumber: 3,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2023 BECE English Language Paper 2 (Essay & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2023 BECE Written Essay, Comprehension & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Digitization In Prep",
+        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2023_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2023,
+        setNumber: 3,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay & Literature • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2022 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2022 BECE English Language Objective Assessment",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Digitization In Prep",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2022_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2022,
+        setNumber: 4,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2022 BECE English Language Paper 2 (Essay & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2022 BECE Written Essay, Comprehension & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Digitization In Prep",
+        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2022_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2022,
+        setNumber: 4,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay & Literature • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2021 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2021 BECE English Language Objective Assessment",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Digitization In Prep",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2021_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2021,
+        setNumber: 5,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2021 BECE English Language Paper 2 (Essay & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2021 BECE Written Essay, Comprehension & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Digitization In Prep",
+        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2021_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2021,
+        setNumber: 5,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay & Literature • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2020 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2020 BECE English Language Objective Assessment",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Digitization In Prep",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2020_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2020,
+        setNumber: 6,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2020 BECE English Language Paper 2 (Essay & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2020 BECE Written Essay, Comprehension & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Digitization In Prep",
+        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2020_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2020,
+        setNumber: 6,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay & Literature • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2019 BECE English Language Paper 1 (Objective)",
+        domain: "B7–B9.3 GRAMMAR & VOCABULARY",
+        strandName: "Strand 3: Grammar & Usage",
+        strandCode: "B7-B9.3",
+        subStrand: "2019 BECE English Language Objective Assessment",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "40 Questions • 45 mins • Digitization In Prep",
+        description: "Official 40-question objective assessment covering Lexis and Structure, Synonyms, Antonyms, and Literature in English.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2019_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2019,
+        setNumber: 7,
+        era: "modern",
+        questionCount: 40,
+        examTag: "40 Objective Questions • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2019 BECE English Language Paper 2 (Essay & Literature)",
+        domain: "B7–B9.4 WRITING & COMPOSITION",
+        strandName: "Strand 4: Writing",
+        strandCode: "B7-B9.4",
+        subStrand: "2019 BECE Written Essay, Comprehension & Literature",
+        gradeTier: "Junior Secondary (JHS)",
+        meta: "Part A, B & C • 75 mins • Digitization In Prep",
+        description: "Standardized 3-part essay and literature examination with Ghanaian rubric model answers.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "bece_2019_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2019,
+        setNumber: 7,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay & Literature • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    // ==========================================
+    // SHS WASSCE ENGLISH LANGUAGE EXAM SERIES
+    // ==========================================
+    {
+        title: "2024 WASSCE English Language Paper 1 (Core Language & Lexis)",
+        domain: "RHETORIC & ESSAYS",
+        strandName: "Strand 1: Lexis & Structure",
+        strandCode: "SHS-ENG-1",
+        subStrand: "2024 WASSCE English Language Objective Assessment",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "80 Questions • 60 mins • Digitization In Prep",
+        description: "Official WASSCE objective assessment testing lexis, structure, idioms, and reading comprehension.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "wassce_2024_english_p1",
+        topicId: "past_questions",
+        format: "objective",
+        paperType: 1,
+        year: 2024,
+        setNumber: 1,
+        era: "modern",
+        questionCount: 80,
+        examTag: "80 Objective Questions • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
+    {
+        title: "2024 WASSCE English Language Paper 2 (Essay, Comprehension & Summary)",
+        domain: "RHETORIC & ESSAYS",
+        strandName: "Strand 2: Writing & Summary",
+        strandCode: "SHS-ENG-2",
+        subStrand: "2024 WASSCE Essay, Comprehension & Summary Writing",
+        gradeTier: "Senior Secondary (SHS)",
+        meta: "Section A, B & C • 120 mins • Digitization In Prep",
+        description: "Rigorous WASSCE paper with essay writing, reading comprehension, and summary writing.",
+        difficulty: "Advanced",
+        kind: "exam_series",
+        setId: "wassce_2024_english_p2",
+        topicId: "past_questions",
+        format: "structured_essay",
+        paperType: 2,
+        year: 2024,
+        setNumber: 1,
+        era: "modern",
+        questionCount: 3,
+        examTag: "Essay, Comprehension & Summary • In Prep",
+        subject: "English Language",
+        status: "pending_content"
+    },
     // Senior Secondary (SHS)
     {
         title: "Rhetorical Devices & Argumentation",
@@ -4660,6 +5035,7 @@ function MathLab({
     targetPaperType,
     assignmentId,
     initialSubject = 'math',
+    onSubjectChange,
     onOpenDispatch
 }: { 
     canEdit: boolean; 
@@ -4674,7 +5050,8 @@ function MathLab({
     targetExamId?: string;
     targetPaperType?: string | number;
     assignmentId?: string;
-    initialSubject?: 'math' | 'science';
+    initialSubject?: 'math' | 'science' | 'english';
+    onSubjectChange?: (sub: 'math' | 'science' | 'english') => void;
     onOpenDispatch?: (examId?: string, paperType?: 1 | 2) => void;
 }) {
     const { user } = useUser();
@@ -4690,13 +5067,23 @@ function MathLab({
     const [isLoadingSet, setIsLoadingSet] = useState(false);
     const [dynamicSets, setDynamicSets] = useState<SuggestedModuleCard[]>([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [subject, setSubject] = useState<'math' | 'science'>(
-        initialSubject || (filterSubject === 'science' ? 'science' : 'math')
+    const [subject, setSubject] = useState<'math' | 'science' | 'english'>(
+        initialSubject || (filterSubject === 'science' ? 'science' : filterSubject === 'english' ? 'english' : 'math')
     );
+
+    useEffect(() => {
+        if (initialSubject && initialSubject !== subject) {
+            setSubject(initialSubject);
+            setSelectedDomain('ALL STRANDS');
+        }
+    }, [initialSubject]);
 
     useEffect(() => {
         if (filterSubject === 'science' && subject !== 'science') {
             setSubject('science');
+            setSelectedDomain('ALL STRANDS');
+        } else if (filterSubject === 'english' && subject !== 'english') {
+            setSubject('english');
             setSelectedDomain('ALL STRANDS');
         } else if (filterSubject === 'math' && subject !== 'math') {
             setSubject('math');
@@ -4712,7 +5099,7 @@ function MathLab({
         }
 
         const combined = [
-            ...(subject === 'science' ? SUGGESTED_SCIENCE_MODULES : SUGGESTED_MATH_MODULES).filter(m => m.kind === 'exam_series'),
+            ...(subject === 'science' ? SUGGESTED_SCIENCE_MODULES : subject === 'english' ? SUGGESTED_ENGLISH_MODULES : SUGGESTED_MATH_MODULES).filter(m => m.kind === 'exam_series'),
             ...dynamicSets.filter(d => d.kind === 'exam_series')
         ];
 
@@ -4751,7 +5138,7 @@ function MathLab({
                     const manifest = await getSubjectTopicsManifest('jhs', subject);
                     if (manifest && manifest.topics && manifest.topics.length > 0) {
                         manifest.topics.forEach((t) => {
-                            let strandName = t.strandName || t.strand || (subject === 'science' ? 'Strand 1: Diversity of Matter' : 'Strand 1: Number');
+                            let strandName = t.strandName || t.strand || (subject === 'science' ? 'Strand 1: Diversity of Matter' : subject === 'english' ? 'Strand 1: Oral Language' : 'Strand 1: Number');
                             const strandCode = t.strandCode || '';
                             if (subject === 'science') {
                                 if (strandCode === 'S1' || strandCode === '1') strandName = 'Strand 1: Diversity of Matter';
@@ -4759,6 +5146,11 @@ function MathLab({
                                 else if (strandCode === 'S3' || strandCode === '3') strandName = 'Strand 3: Systems';
                                 else if (strandCode === 'S4' || strandCode === '4') strandName = 'Strand 4: Forces and Energy';
                                 else if (strandCode === 'S5' || strandCode === '5') strandName = 'Strand 5: Humans and the Environment';
+                            } else if (subject === 'english') {
+                                if (strandCode === 'B7-B9.1' || strandCode === 'S1' || strandCode === '1') strandName = 'Strand 1: Oral Language';
+                                else if (strandCode === 'B7-B9.2' || strandCode === 'S2' || strandCode === '2') strandName = 'Strand 2: Reading & Literature';
+                                else if (strandCode === 'B7-B9.3' || strandCode === 'S3' || strandCode === '3') strandName = 'Strand 3: Grammar & Usage';
+                                else if (strandCode === 'B7-B9.4' || strandCode === 'S4' || strandCode === '4') strandName = 'Strand 4: Writing & Composition';
                             } else {
                                 if (strandCode === 'S1' || strandCode === '1') {
                                     strandName = 'Strand 1: Number';
@@ -4802,7 +5194,7 @@ function MathLab({
                                 kind: 'topical',
                                 format: 'topical_lab',
                                 questionCount: t.questionCount || (isPending ? 0 : 27),
-                                subject: subject === 'science' ? 'Integrated Science' : 'Mathematics',
+                                subject: subject === 'science' ? 'Integrated Science' : subject === 'english' ? 'English Language' : 'Mathematics',
                                 status: t.status || 'ready'
                             });
                         });
@@ -4897,14 +5289,18 @@ function MathLab({
 
         if (viewMode === 'topical') {
             // In Topical Practice Labs mode, strictly display canonical topical practice labs matching active subject
+            const isSci = (d: any) => d.subject?.toLowerCase().includes('science');
+            const isEng = (d: any) => d.subject?.toLowerCase().includes('english');
             const topicalCards = dynamicSets.filter(d => 
                 (d.kind === 'topical' || d.format === 'topical_lab') &&
-                (subject === 'science' ? (d.subject?.toLowerCase().includes('science')) : (!d.subject?.toLowerCase().includes('science')))
+                (subject === 'science' ? isSci(d) : subject === 'english' ? isEng(d) : (!isSci(d) && !isEng(d)))
             );
             if (topicalCards.length > 0) {
                 candidateList = topicalCards;
             } else if (subject === 'math' && activeGrade === 'Senior Secondary (SHS)') {
                 candidateList = SUGGESTED_MATH_MODULES.filter(m => m.gradeTier === activeGrade && m.kind !== 'exam_series');
+            } else if (subject === 'english') {
+                candidateList = SUGGESTED_ENGLISH_MODULES.filter(m => m.gradeTier === activeGrade && m.kind !== 'exam_series');
             } else {
                 candidateList = [];
             }
@@ -4912,7 +5308,9 @@ function MathLab({
             // In Standard Exam Series mode, merge static exam series with dynamic exam series
             const staticModules = subject === 'science'
                 ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams')
-                : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams');
+                : subject === 'english'
+                    ? SUGGESTED_ENGLISH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams')
+                    : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams');
             const combined = [...staticModules];
 
             dynamicSets.forEach(dyn => {
@@ -4920,7 +5318,8 @@ function MathLab({
                     if (dyn.title === 'Paper 2: Practical & Theory Essay (Variant)' || dyn.title === 'Paper 1: Objective Test (Variant)') return;
                     if (dyn.setId?.includes('mock') || dyn.title?.toLowerCase().includes('mock') || (dyn as any).isMock || dyn.topicId === 'mock_exams') return;
                     const isScience = dyn.subject?.toLowerCase().includes('science');
-                    if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
+                    const isEnglish = dyn.subject?.toLowerCase().includes('english');
+                    if ((subject === 'science' && isScience) || (subject === 'english' && isEnglish) || (subject === 'math' && !isScience && !isEnglish)) {
                         const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
                         if (!exists) combined.push(dyn);
                     }
@@ -4954,8 +5353,10 @@ function MathLab({
             const modSub = (mod.subject || 'Mathematics').toLowerCase();
             if (subject === 'science') {
                 if (!modSub.includes('science')) return false;
+            } else if (subject === 'english') {
+                if (!modSub.includes('english')) return false;
             } else if (subject === 'math') {
-                if (modSub.includes('science')) return false;
+                if (modSub.includes('science') || modSub.includes('english')) return false;
             }
             if (filterSubject !== 'ALL') {
                 const targetSub = filterSubject.toLowerCase();
@@ -5032,21 +5433,24 @@ function MathLab({
         }
 
         return filtered;
-    }, [activeGrade, viewMode, filterSubject, filterFormat, selectedDomain, searchQuery, dynamicSets, selectedEra, examPaperType]);
+    }, [activeGrade, viewMode, subject, filterSubject, filterFormat, selectedDomain, searchQuery, dynamicSets, selectedEra, examPaperType]);
 
     // Live counts for Era badges based on current grade and paper type filter
     const eraCounts = useMemo(() => {
         if (viewMode !== 'exam_series') return { modern: 0, legacy: 0, classic: 0 };
         const staticModules = subject === 'science'
             ? SUGGESTED_SCIENCE_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams')
-            : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams');
+            : subject === 'english'
+                ? SUGGESTED_ENGLISH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams')
+                : SUGGESTED_MATH_MODULES.filter(m => m.kind === 'exam_series' && !m.setId?.includes('mock') && !m.title?.toLowerCase().includes('mock') && !(m as any).isMock && m.topicId !== 'mock_exams');
         const combined = [...staticModules];
         dynamicSets.forEach(dyn => {
             if (dyn.kind === 'exam_series') {
                 if (dyn.title === 'Paper 2: Practical & Theory Essay (Variant)' || dyn.title === 'Paper 1: Objective Test (Variant)') return;
                 if (dyn.setId?.includes('mock') || dyn.title?.toLowerCase().includes('mock') || (dyn as any).isMock || dyn.topicId === 'mock_exams') return;
                 const isScience = dyn.subject?.toLowerCase().includes('science');
-                if ((subject === 'science' && isScience) || (subject === 'math' && !isScience)) {
+                const isEnglish = dyn.subject?.toLowerCase().includes('english');
+                if ((subject === 'science' && isScience) || (subject === 'english' && isEnglish) || (subject === 'math' && !isScience && !isEnglish)) {
                     const exists = combined.some(m => (m.setId && m.setId === dyn.setId) || (m.title.toLowerCase() === dyn.title.toLowerCase()));
                     if (!exists) combined.push(dyn);
                 }
@@ -5598,7 +6002,7 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                         durationMinutes: pData.durationMinutes || (isP2 ? 105 : 45),
                         totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 5 : 40),
                         questions: pQuestions
-                    };
+                    } as any;
                     console.log('[senior-academy] Mock Exam Activated Successfully:', resolvedMockSet.id, resolvedMockSet.title, `(${resolvedMockSet.questions?.length} questions)`);
                     setActiveQuestionSet(resolvedMockSet);
                     return;
@@ -5651,7 +6055,8 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
 
         const levelId = mapGradeTierToLevelId(activeGrade);
         const isScienceMod = (mod.subject || '').toLowerCase().includes('science') || subject === 'science' || (mod.title || '').toLowerCase().includes('science');
-        const subjectId = isScienceMod ? 'science' : 'math';
+        const isEnglishMod = (mod.subject || '').toLowerCase().includes('english') || subject === 'english' || (mod.title || '').toLowerCase().includes('english');
+        const subjectId = isEnglishMod ? 'english' : (isScienceMod ? 'science' : 'math');
         
         let topicId = mod.topicId || (isScienceMod ? 'bece_past_papers' : 'visual_blocks_addition');
         if (!mod.topicId) {
@@ -5705,6 +6110,9 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                     try {
                         const cleanSetId = mod.setId.replace(/_p\d+$/, '');
                         let ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_papers/${cleanSetId}`));
+                        if (!ppSnap.exists()) {
+                            ppSnap = await getDoc(doc(firestore, `global_curriculum/${levelId}/subjects/${subjectId}/past_questions/${cleanSetId}`));
+                        }
                         let ppData: any = null;
                         if (ppSnap.exists()) {
                             ppData = ppSnap.data();
@@ -5718,17 +6126,17 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                         if (ppData) {
                             const isP2 = mod.paperType === 2 || mod.setId.includes('_p2');
                             const pData = isP2 ? (ppData.paper2 || ppData) : (ppData.paper1 || ppData);
-                            const pQuestions = pData?.questions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || [])] : []);
+                            const pQuestions = pData?.questions || (isP2 ? [...(pData?.sectionA || []), ...(pData?.sectionB || []), ...(pData?.sectionC || [])] : []);
                             if (pData && (pQuestions.length > 0 || pData.paper2?.questions)) {
                                 targetSet = {
                                     id: mod.setId,
                                     title: pData.title || mod.title,
                                     tier: activeGrade,
-                                    subject: isScienceMod ? 'Integrated Science' : 'Mathematics',
+                                    subject: isEnglishMod ? 'English Language' : (isScienceMod ? 'Integrated Science' : 'Mathematics'),
                                     topic: mod.title,
                                     format: isP2 ? 'structured_essay' : 'objective',
                                     paperType: isP2 ? 2 : 1,
-                                    totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 5 : 40),
+                                    totalQuestions: pData.totalQuestions || pQuestions.length || (isP2 ? 3 : 40),
                                     questions: pQuestions.length > 0 ? pQuestions : (pData.paper2?.questions || [])
                                 } as CurriculumQuestionSet;
                             }
@@ -5754,7 +6162,7 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                     id: mod.setId,
                     title: pData?.title || targetSet.title || mod.title,
                     tier: activeGrade,
-                    subject: isScienceMod ? 'Integrated Science' : 'Mathematics',
+                    subject: isEnglishMod ? 'English Language' : (isScienceMod ? 'Integrated Science' : 'Mathematics'),
                     topic: mod.title,
                     format: isP2 ? 'structured_essay' : (targetSet.format || 'objective'),
                     paperType: isP2 ? 2 : 1,
@@ -5827,13 +6235,15 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                         topicTitle={activeTopicMeta.title}
                         gradeTier={activeGrade}
                         levelId={mapGradeTierToLevelId(activeGrade)}
-                        subjectId={(activeQuestionSet?.subject?.toLowerCase().includes("science") || subject === "science" || (activeTopicMeta?.title || "").toLowerCase().includes("science")) ? "science" : "mathematics"}
+                        subjectId={(activeQuestionSet?.subject?.toLowerCase().includes("science") || subject === "science" || (activeTopicMeta?.title || "").toLowerCase().includes("science")) ? "science" : (activeQuestionSet?.subject?.toLowerCase().includes("english") || subject === "english" || (activeTopicMeta?.title || "").toLowerCase().includes("english")) ? "english" : "mathematics"}
                         topicId={activeTopicMeta.topicId}
                         tenantId={tenantId}
                         studentId={studentId}
                         assignmentId={assignmentId}
                         onProceedToPaper2={() => {
-                            if (activeQuestionSet?.id === 'paper_mock_1' || activeQuestionSet?.id === 'mock_1' || activeQuestionSet?.title?.toLowerCase().includes('mock 1')) {
+                            if (activeQuestionSet?.id === 'bece_2025_p1' || activeQuestionSet?.id === 'bece_2025') {
+                                handleLaunchModule({ setId: 'bece_2025_p2', title: 'BECE English Language 2025 (Paper 2: Essay & Literature)', paperType: 2, subject: 'English Language' });
+                            } else if (activeQuestionSet?.id === 'paper_mock_1' || activeQuestionSet?.id === 'mock_1' || activeQuestionSet?.title?.toLowerCase().includes('mock 1')) {
                                 handleLaunchMockPaper(1, 2);
                             } else if (activeQuestionSet?.id === 'paper_mock_2' || activeQuestionSet?.id === 'mock_2' || activeQuestionSet?.title?.toLowerCase().includes('mock 2')) {
                                 handleLaunchMockPaper(2, 2);
@@ -5957,34 +6367,51 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                 /* FULL-WIDTH CURRICULUM MODULES & CATALOG ARCHIVE */
                 <div className="space-y-4">
                     {/* Subject filter tabs */}
-                    <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
+                    <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-800">
                       <button
                         type="button"
                         onClick={() => {
                             setSubject('math');
                             setSelectedDomain('ALL STRANDS');
+                            onSubjectChange?.('math');
                         }}
-                        className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer ${
                           subject === 'math'
-                            ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
-                            : 'text-slate-400 hover:text-slate-200'
+                            ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm shadow-sky-500/10'
+                            : 'bg-slate-900/60 border border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-800/80'
                         }`}
                       >
-                        📐 Mathematics (Core & Variants)
+                        <span>📐 Mathematics (Core & Variants)</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => {
                             setSubject('science');
                             setSelectedDomain('ALL STRANDS');
+                            onSubjectChange?.('science');
                         }}
-                        className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer ${
                           subject === 'science'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                            : 'text-slate-400 hover:text-slate-200'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+                            : 'bg-slate-900/60 border border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-800/80'
                         }`}
                       >
-                        🔬 Integrated Science (Discovery)
+                        <span>🔬 Integrated Science (Discovery)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                            setSubject('english');
+                            setSelectedDomain('ALL STRANDS');
+                            onSubjectChange?.('english');
+                        }}
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                          subject === 'english'
+                            ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm shadow-indigo-500/10'
+                            : 'bg-slate-900/60 border border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-800/80'
+                        }`}
+                      >
+                        <span>📖 English Language (Mastery)</span>
                       </button>
                     </div>
 
@@ -6322,7 +6749,7 @@ const SCIENCE_MOCK_SUITES: MockSuiteItem[] = [
                             <div className="space-y-1.5">
                                 <h4 className="text-base sm:text-lg font-bold text-white">Past question variants for 2013–2018 are currently in preparation.</h4>
                                 <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto leading-relaxed">
-                                    Official BECE mathematics examination variants for academic years 2013 through 2018 are currently undergoing digitization, calibration, and step-by-step marking rubric synthesis. Explore Modern Era (2019–2025) or Legacy Era sets in the meantime!
+                                    Official BECE ${subject === 'science' ? 'integrated science' : subject === 'english' ? 'English language' : 'mathematics'} examination variants for academic years 2013 through 2018 are currently undergoing digitization, calibration, and step-by-step marking rubric synthesis. Explore Modern Era (2019–2026) or Legacy Era sets in the meantime!
                                 </p>
                             </div>
                             <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
@@ -7910,38 +8337,6 @@ function SeniorAcademyPageContent() {
 
                     {/* Dynamic Filters Row */}
                     <div className="flex flex-wrap items-center gap-2">
-                        {/* Subject Filter Tag */}
-                        <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-800/90 rounded-xl p-1 text-xs">
-                            <span className="text-[10px] font-bold text-slate-500 uppercase px-1.5 flex items-center gap-1">
-                                <Filter className="w-3 h-3" /> Subject:
-                            </span>
-                            {[
-                                { id: 'ALL', label: 'All Subjects' },
-                                { id: 'math', label: 'Mathematics' },
-                                { id: 'english', label: 'English' },
-                                { id: 'science', label: 'Science' }
-                            ].map((s) => (
-                                <button
-                                    key={s.id}
-                                    type="button"
-                                    onClick={() => {
-                                        setFilterSubject(s.id);
-                                        if (s.id === 'math' || s.id === 'english' || s.id === 'science') {
-                                            setActiveSubject(s.id);
-                                        }
-                                    }}
-                                    className={cn(
-                                        "px-2.5 py-1 rounded-lg font-bold transition-all text-xs cursor-pointer",
-                                        filterSubject === s.id
-                                            ? "bg-indigo-600 text-white shadow-sm"
-                                            : "text-slate-400 hover:text-slate-200 hover:bg-slate-850"
-                                    )}
-                                >
-                                    {s.label}
-                                </button>
-                            ))}
-                        </div>
-
                         {/* Question Format Filter Tag */}
                         <div className="flex items-center gap-1 bg-slate-950/80 border border-slate-800/90 rounded-xl p-1 text-xs">
                             <span className="text-[10px] font-bold text-slate-500 uppercase px-1.5 flex items-center gap-1">
@@ -8018,57 +8413,30 @@ function SeniorAcademyPageContent() {
 
             {/* DIRECT FULL-WIDTH ACTIVE LAB RENDERING WITH DUAL-TRACK & SEARCH PARAMS */}
             <div className="space-y-4 sm:space-y-5">
-                {activeSubject === 'math' && (
-                    <MathLab 
-                        canEdit={canEdit} 
-                        activeGrade={activeGradeTier} 
-                        tenantId={schoolId || undefined} 
-                        studentId={studentId || undefined}
-                        viewMode={viewMode}
-                        onViewModeChange={handleViewModeToggle}
-                        searchQuery={debouncedSearch}
-                        filterSubject={filterSubject}
-                        filterFormat={filterFormat}
-                        targetExamId={urlExamId || undefined}
-                        targetPaperType={urlPaperType || undefined}
-                        assignmentId={urlAssignmentId || undefined}
-                        onOpenDispatch={(examId, paperType) => {
-                            setSelectedDispatchExamId(examId);
-                            if (paperType) setSelectedDispatchPaperType(paperType);
-                            setShowDispatchModal(true);
-                        }}
-                    />
-                )}
-                {activeSubject === 'english' && (
-                    <EnglishMastery 
-                        canEdit={canEdit} 
-                        activeGrade={activeGradeTier} 
-                        tenantId={schoolId || undefined} 
-                        studentId={studentId || undefined} 
-                    />
-                )}
-                {activeSubject === 'science' && (
-                    <MathLab 
-                        canEdit={canEdit} 
-                        activeGrade={activeGradeTier} 
-                        tenantId={schoolId || undefined} 
-                        studentId={studentId || undefined}
-                        viewMode={viewMode}
-                        onViewModeChange={handleViewModeToggle}
-                        searchQuery={debouncedSearch}
-                        filterSubject={'science'}
-                        filterFormat={filterFormat}
-                        targetExamId={urlExamId || undefined}
-                        targetPaperType={urlPaperType || undefined}
-                        assignmentId={urlAssignmentId || undefined}
-                        initialSubject="science"
-                        onOpenDispatch={(examId, paperType) => {
-                            setSelectedDispatchExamId(examId);
-                            if (paperType) setSelectedDispatchPaperType(paperType);
-                            setShowDispatchModal(true);
-                        }}
-                    />
-                )}
+                <MathLab 
+                    canEdit={canEdit} 
+                    activeGrade={activeGradeTier} 
+                    tenantId={schoolId || undefined} 
+                    studentId={studentId || undefined}
+                    viewMode={viewMode}
+                    onViewModeChange={handleViewModeToggle}
+                    searchQuery={debouncedSearch}
+                    filterSubject={filterSubject}
+                    filterFormat={filterFormat}
+                    targetExamId={urlExamId || undefined}
+                    targetPaperType={urlPaperType || undefined}
+                    assignmentId={urlAssignmentId || undefined}
+                    initialSubject={activeSubject as 'math' | 'science' | 'english'}
+                    onSubjectChange={(newSub) => {
+                        setActiveSubject(newSub);
+                        setFilterSubject(newSub);
+                    }}
+                    onOpenDispatch={(examId, paperType) => {
+                        setSelectedDispatchExamId(examId);
+                        if (paperType) setSelectedDispatchPaperType(paperType);
+                        setShowDispatchModal(true);
+                    }}
+                />
             </div>
 
             <style jsx global>{`
